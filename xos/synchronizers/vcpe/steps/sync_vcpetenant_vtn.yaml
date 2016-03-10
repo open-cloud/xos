@@ -122,44 +122,60 @@
     shell: touch /root/network_is_setup
 
 {% if full_setup %}
+  - name: Check to see if environment is setup
+    stat: path=/root/environment_is_setup
+    register: environment_is_setup
+
   - name: Docker repository
     copy: src=/opt/xos/synchronizers/vcpe/files/docker.list
       dest=/etc/apt/sources.list.d/docker.list
+    when: environment_is_setup.stat.exists == False
 
   - name: Import the repository key
     apt_key: keyserver=keyserver.ubuntu.com id=36A1D7869245C8950F966E92D8576A8BA88D21E9
-    register: docker_repo
+    when: environment_is_setup.stat.exists == False
 
   - name: Update cache
     apt: update_cache=yes
-    when: docker_repo.changed
+    when: environment_is_setup.stat.exists == False
 
   - name: install Docker
     apt: name=lxc-docker state=present
+    when: environment_is_setup.stat.exists == False
 
   - name: install python-setuptools
     apt: name=python-setuptools state=present
+    when: environment_is_setup.stat.exists == False
 
   - name: install pip
     easy_install: name=pip
+    when: environment_is_setup.stat.exists == False
 
   - name: install docker-py
     pip: name=docker-py version=0.5.3
+    when: environment_is_setup.stat.exists == False
 
   - name: install Pipework
     get_url: url=https://raw.githubusercontent.com/jpetazzo/pipework/master/pipework
        dest=/usr/local/bin/pipework
        mode=0755
+    when: environment_is_setup.stat.exists == False
 
   - name: Stop resolvconf service
     service: name=resolvconf state=stopped
+    when: environment_is_setup.stat.exists == False
 
   - name: Disable resolvconf service
     copy: dest=/etc/init/resolvconf.override content="manual"
+    when: environment_is_setup.stat.exists == False
 
   - name: Install resolv.conf
     copy: src=/opt/xos/synchronizers/vcpe/files/vm-resolv.conf
       dest=/etc/resolv.conf
+    when: environment_is_setup.stat.exists == False
+
+  - name: Remember that the environment is setup, so we never do the above again
+    shell: touch /root/environment_is_setup
 
   - name: Verify if vcpe_stats_notifier ([] is to avoid capturing the shell process) cron job is already running
     shell: pgrep -f [v]cpe_stats_notifier | wc -l
@@ -199,8 +215,8 @@
      - remove container
      - start vcpe
 
-  - name: create /var/container_volumes/{{ container_name }}/etc/dnsmasq.d
-    file: path=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d state=directory owner=root group=root
+  - name: create /var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe/
+    file: path=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe state=directory owner=root group=root
 
   - name: vCPE basic dnsmasq config
     copy: src=/opt/xos/synchronizers/vcpe/files/vcpe.dnsmasq dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/vcpe.conf owner=root group=root
@@ -212,18 +228,13 @@
     notify:
     - restart dnsmasq
 
-  - name: create directory for "safe" config
-    file: path=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe state=directory
-
   - name: dnsmasq "safe" config
     template: src=/opt/xos/synchronizers/vcpe/templates/dnsmasq_safe_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe/servers.conf owner=root group=root
     notify:
     - restart dnsmasq
 
-  - name: copy base ufw files
-    copy: src=/opt/xos/synchronizers/vcpe/files/etc/ufw/ dest=/var/container_volumes/{{ container_name }}/etc/ufw/
-    notify:
-    - reload ufw
+  - name: create /var/container_volumes/{{ container_name }}/etc/ufw/
+    file: path=/var/container_volumes/{{ container_name }}/etc/ufw state=directory owner=root group=root
 
   - name: redirection rules for safe DNS
     template: src=/opt/xos/synchronizers/vcpe/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/etc/ufw/before.rules owner=root group=root mode=0644
@@ -233,7 +244,6 @@
   - name: base ufw setup uses /etc/rc.local
     template: src=/opt/xos/synchronizers/vcpe/templates/rc.local.j2 dest=/var/container_volumes/{{ container_name }}/etc/rc.local owner=root group=root mode=0755
     notify:
-    - copy in /etc/rc.local
     - rerun /etc/rc.local
 
   - name: create directory for local programs
@@ -266,13 +276,6 @@
     service: name={{ container_name }} state=started
 
   handlers:
-  # Use docker cp instead of single-file volume
-  # The reason is that changes to external file volume don't show up inside the container
-  # Probably Ansible deletes and then recreates the external file, and container has old version
-  # Do this handler first, e.g., before restarting the container
-  - name: copy in /etc/rc.local
-    shell: docker cp /var/container_volumes/{{ container_name }}/etc/rc.local {{ container_name }}:/etc/
-
   # Dnsmasq is automatically restarted in the container
   - name: restart dnsmasq
     shell: docker exec {{ container_name }} killall dnsmasq
