@@ -203,8 +203,7 @@
 
         p = Tenant.queryVsgInstances(param[service.name]).$promise
         .then((instances) => {
-
-          return Ceilometer.getInstancesStats(instances);
+          return Ceilometer.getInstancesStats(lodash.uniq(instances));
         });
       }
 

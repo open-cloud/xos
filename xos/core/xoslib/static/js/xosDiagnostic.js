@@ -1155,16 +1155,66 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
 
       // NOTE this should be dinamically positioned
       // base on the number of element present
+
+      // fake the position
+      var translation = {
+        'mysite_vsg-1': '200, -120',
+        'mysite_vsg-2': '-300, 30',
+        'mysite_vsg-3': '-300, -250'
+      };
+
       var statsContainer = container.append('g').attr({
-        transform: 'translate(200, -120)',
+        transform: 'translate(' + translation[instance.humanReadableName] + ')',
         'class': 'stats-container'
+      }).on('click', function (d) {
+        // toggling visisbility
+        d.fade = !d.fade;
+        var opacity = undefined;
+        if (d.fade) {
+          opacity = 0.1;
+        } else {
+          opacity = 1;
+        }
+
+        d3.select(this).transition().duration(serviceTopologyConfig.duration).attr({
+          opacity: opacity
+        });
       });
 
+      var lines = {
+        'mysite_vsg-1': {
+          x1: -160,
+          y1: 120,
+          x2: 0,
+          y2: 50
+        },
+        'mysite_vsg-2': {
+          x1: 250,
+          y1: 50,
+          x2: 300,
+          y2: -10
+        },
+        'mysite_vsg-3': {
+          x1: 250,
+          y1: 50,
+          x2: 300,
+          y2: 270
+        }
+      };
+
       statsContainer.append('line').attr({
-        x1: -160,
-        y1: 120,
-        x2: 0,
-        y2: 50,
+        x1: function x1(d) {
+          return lines[d.humanReadableName].x1;
+        },
+        y1: function y1(d) {
+          return lines[d.humanReadableName].y1;
+        },
+        x2: function x2(d) {
+          return lines[d.humanReadableName].x2;
+        },
+        y2: function y2(d) {
+          return lines[d.humanReadableName].y2;
+        },
         stroke: 'black',
         opacity: 0
       }).transition().duration(serviceTopologyConfig.duration).attr({
@@ -1179,7 +1229,7 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
         statsHeight += serviceTopologyConfig.container.height + serviceTopologyConfig.container.margin * 2;
       }
 
-      statsContainer.append('rect').attr({
+      var statsVignette = statsContainer.append('rect').attr({
         width: statsWidth,
         height: statsHeight,
         opacity: 0
@@ -1207,17 +1257,21 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
       });
 
       // add stats
-      var interestingMeters = ['memory', 'memory.usage', 'cpu', 'vcpus'];
+      var interestingMeters = ['memory', 'memory.usage', 'cpu', 'cpu_util'];
 
       interestingMeters.forEach(function (m, i) {
         var meter = lodash.find(instance.stats, { meter: m });
-        statsContainer.append('text').attr({
-          y: 55 + i * 15,
-          x: serviceTopologyConfig.instance.margin,
-          opacity: 0
-        }).text(meter.description + ': ' + Math.round(meter.value) + ' ' + meter.unit).transition().duration(serviceTopologyConfig.duration).attr({
-          opacity: 1
-        });
+
+        if (meter) {
+
+          statsContainer.append('text').attr({
+            y: 55 + i * 15,
+            x: serviceTopologyConfig.instance.margin,
+            opacity: 0
+          }).text(meter.description + ': ' + Math.round(meter.value) + ' ' + meter.unit).transition().duration(serviceTopologyConfig.duration).attr({
+            opacity: 1
+          });
+        }
       });
 
       if (instance.container) {
@@ -1282,9 +1336,10 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
         }
       });
 
-      instanceContainer.on('click', function (d) {
-        console.log('Draw vignette with stats for instance: ' + d.name);
-      });
+      // instanceContainer
+      // .on('click', function(d){
+      //   console.log(`Draw vignette with stats for instance: ${d.name}`);
+      // });
     };
 
     this.addPhisical = function (nodes) {
@@ -1923,8 +1978,7 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
           };
 
           p = Tenant.queryVsgInstances(param[service.name]).$promise.then(function (instances) {
-
-            return Ceilometer.getInstancesStats(instances);
+            return Ceilometer.getInstancesStats(lodash.uniq(instances));
           });
         }
 
