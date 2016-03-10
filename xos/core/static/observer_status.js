@@ -11,6 +11,7 @@ function updateObserverStatus() {
                       icon = "/static/img/green-cloud.gif";
                   } else {
                       tooltip = "observer is offline";
+                      // icon = "/static/img/red-cloud.gif";
                       icon = "/static/img/green-cloud.gif";
                   }
 

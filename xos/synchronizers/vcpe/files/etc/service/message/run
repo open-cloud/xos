@@ -1,15 +1,20 @@
 #!/usr/bin/python
 
 import BaseHTTPServer
+
+
 class HTTPHandlerOne(BaseHTTPServer.BaseHTTPRequestHandler):
-  def do_GET(self):
-      with open('./message.html', 'r') as msgfile:
-          message = msgfile.read()
-      self.wfile.write(message)
+    def do_GET(self):
+        # with open('./message.html', 'r') as msgfile:
+        with open('../../../../templates/message.html.j2', 'r') as msgfile:
+            message = msgfile.read()
+        self.wfile.write(message)
+
 
 def run(server_class=BaseHTTPServer.HTTPServer,
         handler_class=BaseHTTPServer.BaseHTTPRequestHandler):
-    server_address = ('192.168.0.1', 8000)
+    # server_address = ('192.168.0.1', 8000)
+    server_address = ('127.0.0.1', 8000)
     httpd = server_class(server_address, handler_class)
     httpd.serve_forever()
 

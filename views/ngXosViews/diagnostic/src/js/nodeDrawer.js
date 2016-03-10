@@ -315,19 +315,65 @@
 
       // NOTE this should be dinamically positioned
       // base on the number of element present
+
+      // fake the position
+      let translation = {
+        'mysite_vsg-1': '200, -120',
+        'mysite_vsg-2': '-300, 30',
+        'mysite_vsg-3': '-300, -250',
+      };
+
       const statsContainer = container.append('g')
         .attr({
-          transform: `translate(200, -120)`,
+          transform: `translate(${translation[instance.humanReadableName]})`,
           class: 'stats-container'
+        })
+        .on('click', function(d) {
+          // toggling visisbility
+          d.fade = !d.fade;
+          let opacity;
+          if(d.fade){
+            opacity = 0.1;
+          }
+          else{
+            opacity = 1;
+          }
+
+          d3.select(this)
+          .transition()
+          .duration(serviceTopologyConfig.duration)
+          .attr({
+            opacity: opacity
+          })
         });
 
-
-      statsContainer.append('line')
-        .attr({
+      let lines = {
+        'mysite_vsg-1': {
           x1: -160,
           y1: 120,
           x2: 0,
           y2: 50,
+        },
+        'mysite_vsg-2': {
+          x1: 250,
+          y1: 50,
+          x2: 300,
+          y2: -10
+        },
+        'mysite_vsg-3': {
+          x1: 250,
+          y1: 50,
+          x2: 300,
+          y2: 270
+        }
+      }
+
+      statsContainer.append('line')
+        .attr({
+          x1: d => lines[d.humanReadableName].x1,
+          y1: d => lines[d.humanReadableName].y1,
+          x2: d => lines[d.humanReadableName].x2,
+          y2: d => lines[d.humanReadableName].y2,
           stroke: 'black',
           opacity: 0
         })
@@ -345,7 +391,7 @@
         statsHeight += serviceTopologyConfig.container.height + (serviceTopologyConfig.container.margin * 2)
       }
 
-      statsContainer.append('rect')
+      const statsVignette = statsContainer.append('rect')
         .attr({
           width: statsWidth,
           height: statsHeight,
@@ -356,6 +402,7 @@
         .attr({
           opacity: 1
         });
+
 
       // add instance info
       statsContainer.append('text')
@@ -387,22 +434,27 @@
         })
 
       // add stats
-      const interestingMeters = ['memory', 'memory.usage', 'cpu', 'vcpus'];
+      const interestingMeters = ['memory', 'memory.usage', 'cpu', 'cpu_util'];
 
       interestingMeters.forEach((m, i) => {
         const meter = lodash.find(instance.stats, {meter: m});
-        statsContainer.append('text')
-        .attr({
-          y: 55 + (i * 15),
-          x: serviceTopologyConfig.instance.margin,
-          opacity: 0
-        })
-        .text(`${meter.description}: ${Math.round(meter.value)} ${meter.unit}`)
-        .transition()
-        .duration(serviceTopologyConfig.duration)
-        .attr({
-          opacity: 1
-        });
+
+        if(meter){
+          
+          statsContainer.append('text')
+          .attr({
+            y: 55 + (i * 15),
+            x: serviceTopologyConfig.instance.margin,
+            opacity: 0
+          })
+          .text(`${meter.description}: ${Math.round(meter.value)} ${meter.unit}`)
+          .transition()
+          .duration(serviceTopologyConfig.duration)
+          .attr({
+            opacity: 1
+          });
+        }
+
       });
 
       if(instance.container){
@@ -471,10 +523,10 @@
         }
       });
 
-      instanceContainer
-      .on('click', function(d){
-        console.log(`Draw vignette with stats for instance: ${d.name}`);
-      });
+      // instanceContainer
+      // .on('click', function(d){
+      //   console.log(`Draw vignette with stats for instance: ${d.name}`);
+      // });
     };
 
     this.addPhisical = (nodes) => {
