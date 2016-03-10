@@ -1,0 +1,11 @@
+---
+- hosts: cmi
+  connection: ssh
+  user: root
+  tasks:
+  - name: copy over cmi logical interface template
+    template: src=templates/setup_cmi_logicalinterfaces.sh dest=/vservers/coplc/root/setup_cmi_logicalinterfaces.sh
+
+  - name: run logical interface script
+    command: vserver coplc exec onevsh /root/setup_cmi_logicalinterfaces.sh
+
