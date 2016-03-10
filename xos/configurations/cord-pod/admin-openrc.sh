@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Replace with the OpenStack admin credentials for your cluster
 export OS_TENANT_NAME=admin
 export OS_USERNAME=admin
