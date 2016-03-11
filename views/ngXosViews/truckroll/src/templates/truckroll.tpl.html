@@ -73,14 +73,24 @@
       <div class="loader"></div>
     </div>
   </div>
-  <div class="row" ng-hide="!vm.truckroll.result">
-    <div class="col-xs-12">
-      <label>
-        Result:
-      </label>
+  <section ng-hide="!vm.truckroll.is_synced">
+    <div class="row" style="margin-top: 20px">
+      <div class="col-xs-12" ng-hide="!vm.truckroll.result_code">
+        <label>Result Code</label>
+      </div>
+      <div class="col-xs-12">
+        <pre>{{vm.truckroll.result_code}}</pre>
+      </div>
     </div>
-    <div class="col-xs-12">
-      <pre>{{vm.truckroll.result}}</pre>
+    <div class="row">
+      <div class="col-xs-12">
+        <label>
+          Result:
+        </label>
+      </div>
+      <div class="col-xs-12" ng-hide="!vm.truckroll.result">
+        <pre>{{vm.truckroll.result}}</pre>
+      </div>
     </div>
-  </div>
+  </section>
 </form>
