@@ -14,10 +14,14 @@
     var _this = this;
 
     this.addNetworks = (nodes) => {
+
+      // clean childs
+      nodes.selectAll('*').remove();
+
       nodes.append('path')
       .attr({
         d: shapes.cloud,
-        transform: 'translate(-63, -52), scale(0.5)',
+        transform: 'translate(-100, -72), scale(0.7)',
         class: 'cloud'
       });
 
@@ -45,14 +49,14 @@
           currentNode.append('text')
           .attr({
             'text-anchor': 'middle',
-            y: 40
+            y: 50
           })
           .text(() => `C-Tag: ${n.subscriberTag.cTag}`);
 
           currentNode.append('text')
           .attr({
             'text-anchor': 'middle',
-            y: 60
+            y: 70
           })
           .text(() => `S-Tag: ${n.subscriberTag.sTag}`);
         }
@@ -61,7 +65,7 @@
           currentNode.append('text')
           .attr({
             'text-anchor': 'middle',
-            y: 40
+            y: 50
           })
           .text(() => `Public IP: ${n.subscriberIP}`);
         }
@@ -164,7 +168,7 @@
       nodeContainer.append('text')
       .attr({
         'text-anchor': 'start',
-        y: 15, //FIXME
+        y: 17, //FIXME
         x: 10, //FIXME
         opacity: 0
       })
@@ -370,10 +374,10 @@
 
       statsContainer.append('line')
         .attr({
-          x1: d => lines[d.humanReadableName].x1 || lines['mysite_vsg-1'],
-          y1: d => lines[d.humanReadableName].y1 || lines['mysite_vsg-1'],
-          x2: d => lines[d.humanReadableName].x2 || lines['mysite_vsg-1'],
-          y2: d => lines[d.humanReadableName].y2 || lines['mysite_vsg-1'],
+          x1: d => lines[d.humanReadableName].x1 || lines['mysite_vsg-1'].x1,
+          y1: d => lines[d.humanReadableName].y1 || lines['mysite_vsg-1'].y1,
+          x2: d => lines[d.humanReadableName].x2 || lines['mysite_vsg-1'].x2,
+          y2: d => lines[d.humanReadableName].y2 || lines['mysite_vsg-1'].y2,
           stroke: 'black',
           opacity: 0
         })
