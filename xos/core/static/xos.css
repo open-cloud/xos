@@ -501,7 +501,9 @@ margin-bottom: 5px;
 background-color: #ffffff;
 }
 
-
+.ui-tabs .ui-tabs-panel {
+  position:relative;
+}
 
 
 .nav-tabs-suit li{
