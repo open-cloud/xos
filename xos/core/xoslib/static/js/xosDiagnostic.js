@@ -16,7 +16,7 @@
   }]);
 })();
 angular.module("xos.diagnostic").run(["$templateCache", function($templateCache) {$templateCache.put("templates/diagnostic.tpl.html","<div class=\"container-fluid\">\n  <div ng-hide=\"vm.error && vm.loader\" style=\"height: 900px\">\n    <div class=\"onethird-height\">\n      <div class=\"well\">\n        Services Graph\n      </div>\n      <div class=\"well pull-right\" ng-click=\"vm.reloadGlobalScope()\" ng-show=\"vm.selectedSubscriber\">\n        Reset subscriber\n      </div>\n      <service-topology service-chain=\"vm.serviceChain\"></service-topology>\n    </div>\n    <div class=\"twothird-height\">\n      <div class=\"well\">\n        Logical Resources\n      </div>\n      <logic-topology ng-if=\"vm.subscribers\" subscribers=\"vm.subscribers\" selected=\"vm.selectedSubscriber\"></logic-topology>\n    </div>\n  </div>\n  <div class=\"row\" ng-if=\"vm.error\">\n    <div class=\"col-xs-12\">\n      <div class=\"alert alert-danger\">\n        {{vm.error}}\n      </div>\n    </div>\n  </div>\n  <div class=\"row\" ng-if=\"vm.loader\">\n    <div class=\"col-xs-12\">\n      <div class=\"loader\">Loading</div>\n    </div>\n  </div>\n</div>");
-$templateCache.put("templates/logicTopology.tpl.html","<select-subscriber-modal open=\"vm.openSelectSubscriberModal\" subscribers=\"vm.subscribers\"></select-subscriber-modal>\n<subscriber-status-modal open=\"vm.openSubscriberStatusModal\" subscriber=\"vm.currentSubscriber\"></subscriber-status-modal>\n<div class=\"instances-stats animate\" ng-hide=\"vm.hideInstanceStats\">\n  <div class=\"row\">\n    <div class=\"col-sm-3 col-sm-offset-8\">\n      <div class=\"panel panel-primary\" ng-repeat=\"instance in vm.selectedInstances\">\n        <div class=\"panel-heading\">\n          {{instance.humanReadableName}}\n        </div>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\">Backend Status: {{instance.backend_status}}</li>\n            <li class=\"list-group-item\">IP Address: {{instance.ip}}</li>\n          </ul>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\" ng-repeat=\"stat in instance.stats\">\n              <span class=\"badge\">{{stat.value}}</span>\n              {{stat.meter}}\n            </li>\n          </ul>\n        </div>\n      </div>  \n    </div>\n  </div>\n</div>");
+$templateCache.put("templates/logicTopology.tpl.html","<select-subscriber-modal open=\"vm.openSelectSubscriberModal\" subscribers=\"vm.subscribers\"></select-subscriber-modal>\n<subscriber-status-modal open=\"vm.openSubscriberStatusModal\" subscriber=\"vm.currentSubscriber\"></subscriber-status-modal>\n<div class=\"alert alert-danger animate\" ng-hide=\"!vm.error\">\n  {{vm.error}}\n</div>\n<!-- <div class=\"instances-stats animate\" ng-hide=\"vm.hideInstanceStats\">\n  <div class=\"row\">\n    <div class=\"col-sm-3 col-sm-offset-8\">\n      <div class=\"panel panel-primary\" ng-repeat=\"instance in vm.selectedInstances\">\n        <div class=\"panel-heading\">\n          {{instance.humanReadableName}}\n        </div>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\">Backend Status: {{instance.backend_status}}</li>\n            <li class=\"list-group-item\">IP Address: {{instance.ip}}</li>\n          </ul>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\" ng-repeat=\"stat in instance.stats\">\n              <span class=\"badge\">{{stat.value}}</span>\n              {{stat.meter}}\n            </li>\n          </ul>\n        </div>\n      </div>  \n    </div>\n  </div>\n</div> -->");
 $templateCache.put("templates/select-subscriber-modal.tpl.html","<div class=\"modal fade\" ng-class=\"{in: vm.open}\" tabindex=\"-1\" role=\"dialog\">\n  <div class=\"modal-dialog modal-sm\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button ng-click=\"vm.close()\"  type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n        <h4 class=\"modal-title\">Select a subscriber:</h4>\n      </div>\n      <div class=\"modal-body\">\n        <select class=\"form-control\" ng-options=\"s as s.humanReadableName for s in vm.subscribers\" ng-model=\"vm.selected\"></select>\n      </div>\n      <div class=\"modal-footer\">\n        <button ng-click=\"vm.close()\" type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n        <button ng-click=\"vm.select(vm.selected)\" type=\"button\" class=\"btn btn-primary\">Select</button>\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->");
 $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"modal fade\" ng-class=\"{in: vm.open}\" tabindex=\"-1\" role=\"dialog\">\n  <div class=\"modal-dialog modal-sm\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button ng-click=\"vm.close()\"  type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n        <h4 class=\"modal-title\">Manage subscriber:</h4>\n      </div>\n      <form name=\"vm.subscriber-detail\">\n        <div class=\"modal-body\">\n          <div class=\"row\">\n            <div class=\"col-xs-12\">\n              <label>Status</label>\n            </div>\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'enabled\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'enabled\' ,\'btn-default\': vm.subscriber.status !== \'enabled\'}\"\n                >Enabled</a>\n            </div>\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'suspended\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'suspended\' ,\'btn-default\': vm.subscriber.status !== \'suspended\'}\"\n                >Suspended</a>\n            </div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'delinquent\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'delinquent\' ,\'btn-default\': vm.subscriber.status !== \'delinquent\'}\"\n                >Delinquent <br> payment</a>\n            </div>\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'copyrightviolation\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'copyrightviolation\' ,\'btn-default\': vm.subscriber.status !== \'copyrightviolation\'}\"\n                >Copyright <br> violation</a>\n            </div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col-xs-6\">\n              <label>Uplink Speed</label>\n              <div class=\"input-group\">\n                <input type=\"number\" class=\"form-control small-padding\" ng-model=\"vm.subscriber.uplink_speed\"/>\n                <span class=\"input-group-addon\">Mbps</span>\n              </div>\n            </div>\n            <div class=\"col-xs-6\">\n              <label>Downlink Speed</label>\n              <div class=\"input-group\">\n                <input type=\"number\" class=\"form-control small-padding\" ng-model=\"vm.subscriber.downlink_speed\"/>\n                <span class=\"input-group-addon\">Mbps</span>\n              </div>\n            </div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col-xs-6\">\n              <label>Enable Internet</label>\n            </div>\n            <div class=\"col-xs-6\">\n              <a \n                ng-click=\"vm.subscriber.enable_uverse = !vm.subscriber.enable_uverse\" \n                ng-class=\"{\'btn-success\': vm.subscriber.enable_uverse, \'btn-danger\': !vm.subscriber.enable_uverse}\"\n                class=\"btn btn-block\">\n                <span ng-show=\"vm.subscriber.enable_uverse === true\">Enabled</span>\n                <span ng-show=\"vm.subscriber.enable_uverse !== true\">Disabled</span>\n              </a>\n            </div>\n          </div>\n        </div>\n        <div class=\"modal-footer\" ng-show=\"vm.success || vm.formError\">\n          <div class=\"alert alert-success\" ng-show=\"vm.success\">\n            {{vm.success}}\n          </div>\n          <div class=\"alert alert-danger\" ng-show=\"vm.formError\">\n            {{vm.formError}}\n          </div>\n        </div>\n        <div class=\"modal-footer\">\n          <button ng-click=\"vm.close()\" type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n          <button ng-click=\"vm.updateSubscriber(vm.subscriber)\" type=\"button\" class=\"btn btn-primary\">Save</button>\n        </div>\n      </form>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->");}]);
 'use strict';
@@ -1213,16 +1213,16 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
 
       statsContainer.append('line').attr({
         x1: function x1(d) {
-          return lines[d.humanReadableName].x1 || lines['mysite_vsg-1'];
+          return lines[d.humanReadableName].x1 || lines['mysite_vsg-1'].x1;
         },
         y1: function y1(d) {
-          return lines[d.humanReadableName].y1 || lines['mysite_vsg-1'];
+          return lines[d.humanReadableName].y1 || lines['mysite_vsg-1'].y1;
         },
         x2: function x2(d) {
-          return lines[d.humanReadableName].x2 || lines['mysite_vsg-1'];
+          return lines[d.humanReadableName].x2 || lines['mysite_vsg-1'].x2;
         },
         y2: function y2(d) {
-          return lines[d.humanReadableName].y2 || lines['mysite_vsg-1'];
+          return lines[d.humanReadableName].y2 || lines['mysite_vsg-1'].y2;
         },
         stroke: 'black',
         opacity: 0
@@ -1584,13 +1584,14 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
       controllerAs: 'vm',
       templateUrl: 'templates/logicTopology.tpl.html',
       controller: ["$element", "$log", "$scope", "$rootScope", "$timeout", "d3", "LogicTopologyHelper", "Node", "Tenant", "Ceilometer", "serviceTopologyConfig", "ChartData", function controller($element, $log, $scope, $rootScope, $timeout, d3, LogicTopologyHelper, Node, Tenant, Ceilometer, serviceTopologyConfig, ChartData) {
-        var _this = this;
+        var _this2 = this;
 
         $log.info('Logic Plane');
 
         var svg;
         this.selectedInstances = [];
         this.hideInstanceStats = true;
+        var _this = this;
 
         var handleSvg = function handleSvg(el) {
 
@@ -1607,7 +1608,7 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
         loadGlobalScope();
 
         $scope.$watch(function () {
-          return _this.selected;
+          return _this2.selected;
         }, function (selected) {
           if (selected) {
             ChartData.selectSubscriber(selected);
@@ -1619,9 +1620,9 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
         });
 
         $rootScope.$on('instance.detail.hide', function () {
-          _this.hideInstanceStats = true;
+          _this2.hideInstanceStats = true;
           $timeout(function () {
-            _this.selectedInstances = [];
+            _this2.selectedInstances = [];
             ChartData.highlightInstances([]);
             LogicTopologyHelper.updateTree(svg);
           }, 500);
@@ -1630,6 +1631,11 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
         $rootScope.$on('instance.detail', function (evt, service) {
           ChartData.getInstanceStatus(service).then(function (instances) {
             LogicTopologyHelper.updateTree(svg);
+          })['catch'](function (e) {
+            _this.error = 'Service statistics are not available at this time. Please try again later.';
+            $timeout(function () {
+              _this.error = null;
+            }, 2000);
           });
         });
 
@@ -1643,12 +1649,12 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
         LogicTopologyHelper.setupTree(svg);
 
         this.selectSubscriberModal = function () {
-          _this.openSelectSubscriberModal = true;
+          _this2.openSelectSubscriberModal = true;
           $scope.$apply();
         };
 
         this.subscriberStatusModal = function () {
-          _this.openSubscriberStatusModal = true;
+          _this2.openSubscriberStatusModal = true;
           $scope.$apply();
         };
 
@@ -1656,9 +1662,9 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
         $rootScope.$on('subscriber.modal.open', function () {
 
           if (ChartData.currentSubscriber) {
-            _this.subscriberStatusModal();
+            _this2.subscriberStatusModal();
           } else {
-            _this.selectSubscriberModal();
+            _this2.selectSubscriberModal();
           }
         });
 
@@ -1666,10 +1672,10 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
         $rootScope.$on('subscriber.modal.open', function () {
 
           if (ChartData.currentSubscriber) {
-            _this.currentSubscriber = ChartData.currentSubscriber;
-            _this.subscriberStatusModal();
+            _this2.currentSubscriber = ChartData.currentSubscriber;
+            _this2.subscriberStatusModal();
           } else {
-            _this.selectSubscriberModal();
+            _this2.selectSubscriberModal();
           }
         });
       }]

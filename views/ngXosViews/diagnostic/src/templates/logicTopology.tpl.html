@@ -1,6 +1,9 @@
 <select-subscriber-modal open="vm.openSelectSubscriberModal" subscribers="vm.subscribers"></select-subscriber-modal>
 <subscriber-status-modal open="vm.openSubscriberStatusModal" subscriber="vm.currentSubscriber"></subscriber-status-modal>
-<div class="instances-stats animate" ng-hide="vm.hideInstanceStats">
+<div class="alert alert-danger animate" ng-hide="!vm.error">
+  {{vm.error}}
+</div>
+<!-- <div class="instances-stats animate" ng-hide="vm.hideInstanceStats">
   <div class="row">
     <div class="col-sm-3 col-sm-offset-8">
       <div class="panel panel-primary" ng-repeat="instance in vm.selectedInstances">
@@ -21,4 +24,4 @@
       </div>  
     </div>
   </div>
-</div>
+</div> -->

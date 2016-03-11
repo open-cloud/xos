@@ -374,10 +374,10 @@
 
       statsContainer.append('line')
         .attr({
-          x1: d => lines[d.humanReadableName].x1 || lines['mysite_vsg-1'],
-          y1: d => lines[d.humanReadableName].y1 || lines['mysite_vsg-1'],
-          x2: d => lines[d.humanReadableName].x2 || lines['mysite_vsg-1'],
-          y2: d => lines[d.humanReadableName].y2 || lines['mysite_vsg-1'],
+          x1: d => lines[d.humanReadableName].x1 || lines['mysite_vsg-1'].x1,
+          y1: d => lines[d.humanReadableName].y1 || lines['mysite_vsg-1'].y1,
+          x2: d => lines[d.humanReadableName].x2 || lines['mysite_vsg-1'].x2,
+          y2: d => lines[d.humanReadableName].y2 || lines['mysite_vsg-1'].y2,
           stroke: 'black',
           opacity: 0
         })
