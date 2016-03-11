@@ -65,3 +65,4 @@
 ## Restart CDN after power-down
 
 To do...
+test
