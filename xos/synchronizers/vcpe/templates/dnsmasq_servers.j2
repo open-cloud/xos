@@ -11,6 +11,11 @@ server=/{{ prefix }}/{{ dnsdemux_ip }}
 {% endif %}
 {% endif %}
 
+{% if url_filter_kind=="answerx" %}
+cache-size=0
+add-mac
+{% endif %}
+
 # use google's DNS service
 {% for dns_server in dns_servers %}
 server={{ dns_server }}

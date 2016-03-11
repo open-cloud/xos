@@ -362,7 +362,7 @@ def model_policy_volt(pk):
 class VSGService(Service):
     KIND = VCPE_KIND
 
-    URL_FILTER_KIND_CHOICES = ( (None, "None"), ("safebrowsing", "Safe Browsing") )
+    URL_FILTER_KIND_CHOICES = ( (None, "None"), ("safebrowsing", "Safe Browsing"), ("answerx", "AnswerX") )
 
     simple_attributes = ( ("bbs_api_hostname", None),
                           ("bbs_api_port", None),
