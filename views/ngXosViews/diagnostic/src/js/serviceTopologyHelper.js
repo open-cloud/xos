@@ -71,8 +71,13 @@
 
       nodeEnter.append('text')
         .attr({
-          x: d => d.children ? -serviceTopologyConfig.circle.selectedRadius -3 : serviceTopologyConfig.circle.selectedRadius + 3,
+          x: d => d.children ? -serviceTopologyConfig.circle.selectedRadius -5 : serviceTopologyConfig.circle.selectedRadius + 5,
           dy: '.35em',
+          y: d => {
+            if (d.children && d.parent){
+              return '-5';
+            }
+          },
           transform: d => {
             if (d.children && d.parent){
               if(d.parent.x < d.x){

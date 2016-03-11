@@ -184,9 +184,14 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
 
       nodeEnter.append('text').attr({
         x: function x(d) {
-          return d.children ? -serviceTopologyConfig.circle.selectedRadius - 3 : serviceTopologyConfig.circle.selectedRadius + 3;
+          return d.children ? -serviceTopologyConfig.circle.selectedRadius - 5 : serviceTopologyConfig.circle.selectedRadius + 5;
         },
         dy: '.35em',
+        y: function y(d) {
+          if (d.children && d.parent) {
+            return '-5';
+          }
+        },
         transform: function transform(d) {
           if (d.children && d.parent) {
             if (d.parent.x < d.x) {
@@ -890,9 +895,13 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
     var _this = this;
 
     this.addNetworks = function (nodes) {
+
+      // clean childs
+      nodes.selectAll('*').remove();
+
       nodes.append('path').attr({
         d: shapes.cloud,
-        transform: 'translate(-63, -52), scale(0.5)',
+        transform: 'translate(-100, -72), scale(0.7)',
         'class': 'cloud'
       });
 
@@ -919,14 +928,14 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
         if (n.name === 'LAN-Side' && angular.isDefined(n.subscriberTag)) {
           currentNode.append('text').attr({
             'text-anchor': 'middle',
-            y: 40
+            y: 50
           }).text(function () {
             return 'C-Tag: ' + n.subscriberTag.cTag;
           });
 
           currentNode.append('text').attr({
             'text-anchor': 'middle',
-            y: 60
+            y: 70
           }).text(function () {
             return 'S-Tag: ' + n.subscriberTag.sTag;
           });
@@ -935,7 +944,7 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
         if (n.name === 'WAN-Side' && angular.isDefined(n.subscriberIP)) {
           currentNode.append('text').attr({
             'text-anchor': 'middle',
-            y: 40
+            y: 50
           }).text(function () {
             return 'Public IP: ' + n.subscriberIP;
           });
@@ -1030,7 +1039,7 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
 
       nodeContainer.append('text').attr({
         'text-anchor': 'start',
-        y: 15, //FIXME
+        y: 17, //FIXME
         x: 10, //FIXME
         opacity: 0
       }).text(function (d) {
@@ -1861,6 +1870,10 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
       if (serviceTopologyConfig.elWidths[serviceTopologyConfig.elWidths.length - 1] === 160) {
         serviceTopologyConfig.elWidths.pop();
       }
+
+      //remove tags and ip
+      delete _this.logicTopologyData.children[0].children[0].children[0].subscriberTag;
+      delete _this.logicTopologyData.children[0].subscriberIP;
 
       _this.highlightInstances([]);
       delete _this.logicTopologyData.children[0].children[0].children[0].children[0].children;
