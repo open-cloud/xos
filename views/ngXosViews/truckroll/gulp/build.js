@@ -98,7 +98,8 @@ module.exports = function(options){
         inject(
           gulp.src([
             options.static + 'js/vendor/xosTruckrollVendor.js',
-            options.static + 'js/xosTruckroll.js'
+            options.static + 'js/xosTruckroll.js',
+            options.static + 'css/xosTruckroll.css'
           ]),
           {ignorePath: '/../../../xos/core/xoslib'}
         )
