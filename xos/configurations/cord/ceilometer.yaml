@@ -222,15 +222,21 @@ topology_template:
 #                node: mysite_sflow
 #                relationship: tosca.relationships.MemberOfSlice
 
+    Customer Care:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosDiagnostic
+
+    TruckRoll:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosTruckroll
+
     Ceilometer:
       type: tosca.nodes.DashboardView
       properties:
           url: template:xosCeilometerDashboard
 
-    Customer Care:
-      type: tosca.nodes.DashboardView
-      properties:
-          url: template:xosDiagnostic
 
     Tenant:
       type: tosca.nodes.DashboardView
@@ -246,12 +252,15 @@ topology_template:
           lastname: admin
           is_admin: true
       requirements:
-          - tenant_dashboard:
-              node: Tenant
+          - customer_care_dashboard:
+              node: Customer Care
+              relationship: tosca.relationships.UsesDashboard
+          - truckroll_dashboard:
+              node: TruckRoll
               relationship: tosca.relationships.UsesDashboard
           - ceilometer_dashboard:
               node: Ceilometer
               relationship: tosca.relationships.UsesDashboard
-          - customer_care_dashboard:
-              node: Customer Care
+          - tenant_dashboard:
+              node: Tenant
               relationship: tosca.relationships.UsesDashboard
