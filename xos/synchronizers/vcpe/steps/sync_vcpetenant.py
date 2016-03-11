@@ -22,7 +22,6 @@ from broadbandshield import BBS
 
 logger = Logger(level=logging.INFO)
 
-PARENTAL_MECHANISM="dnsmasq"
 ENABLE_QUICK_UPDATE=False
 
 CORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
@@ -145,13 +144,14 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
             full_setup = True
 
         safe_macs=[]
-        if o.volt and o.volt.subscriber:
-            for user in o.volt.subscriber.users:
-                level = user.get("level",None)
-                mac = user.get("mac",None)
-                if level in ["G", "PG"]:
-                    if mac:
-                        safe_macs.append(mac)
+        if vcpe_service.url_filter_kind == "safebrowsing":
+            if o.volt and o.volt.subscriber:
+                for user in o.volt.subscriber.users:
+                    level = user.get("level",None)
+                    mac = user.get("mac",None)
+                    if level in ["G", "PG"]:
+                        if mac:
+                            safe_macs.append(mac)
 
         wan_vm_ip=""
         wan_vm_mac=""
@@ -181,7 +181,8 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                 "wan_vm_ip": wan_vm_ip,
                 "safe_browsing_macs": safe_macs,
                 "container_name": "vcpe-%s-%s" % (s_tags[0], c_tags[0]),
-                "dns_servers": [x.strip() for x in vcpe_service.dns_servers.split(",")] }
+                "dns_servers": [x.strip() for x in vcpe_service.dns_servers.split(",")],
+                "url_filter_kind": vcpe_service.url_filter_kind }
 
         # add in the sync_attributes that come from the SubscriberRoot object
 
@@ -218,7 +219,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
             url_filter_level = o.volt.subscriber.url_filter_level
             url_filter_users = o.volt.subscriber.users
 
-        if PARENTAL_MECHANISM=="broadbandshield":
+        if service.url_filter_kind == "broadbandshield":
             # disable url_filter if there are no bbs_addrs
             if url_filter_enable and (not fields.get("bbs_addrs",[])):
                 logger.info("disabling url_filter because there are no bbs_addrs")

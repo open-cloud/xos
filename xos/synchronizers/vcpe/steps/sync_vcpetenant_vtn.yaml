@@ -68,6 +68,7 @@
       downlink_speed: {{ downlink_speed }}
       status: {{ status }}
       enable_uverse: {{ enable_uverse }}
+      url_filter_kind: {{ url_filter_kind }}
 
 
   tasks:
