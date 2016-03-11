@@ -14,10 +14,14 @@
     var _this = this;
 
     this.addNetworks = (nodes) => {
+
+      // clean childs
+      nodes.selectAll('*').remove();
+
       nodes.append('path')
       .attr({
         d: shapes.cloud,
-        transform: 'translate(-63, -52), scale(0.5)',
+        transform: 'translate(-100, -72), scale(0.7)',
         class: 'cloud'
       });
 
@@ -45,14 +49,14 @@
           currentNode.append('text')
           .attr({
             'text-anchor': 'middle',
-            y: 40
+            y: 50
           })
           .text(() => `C-Tag: ${n.subscriberTag.cTag}`);
 
           currentNode.append('text')
           .attr({
             'text-anchor': 'middle',
-            y: 60
+            y: 70
           })
           .text(() => `S-Tag: ${n.subscriberTag.sTag}`);
         }
@@ -61,7 +65,7 @@
           currentNode.append('text')
           .attr({
             'text-anchor': 'middle',
-            y: 40
+            y: 50
           })
           .text(() => `Public IP: ${n.subscriberIP}`);
         }
@@ -164,7 +168,7 @@
       nodeContainer.append('text')
       .attr({
         'text-anchor': 'start',
-        y: 15, //FIXME
+        y: 17, //FIXME
         x: 10, //FIXME
         opacity: 0
       })
