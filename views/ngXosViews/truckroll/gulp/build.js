@@ -22,6 +22,10 @@ var eslint = require('gulp-eslint');
 var inject = require('gulp-inject');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
+var postcss = require('gulp-postcss');
+var autoprefixer = require('autoprefixer');
+var mqpacker = require('css-mqpacker');
+var csswring = require('csswring');
 
 var TEMPLATE_FOOTER = `}]);
 angular.module('xos.truckroll').run(function($location){$location.path('/')});
@@ -44,7 +48,7 @@ module.exports = function(options){
       mqpacker,
       csswring
     ];
-    console.log(options.css);
+
     gulp.src([
       `${options.css}**/*.css`,
       `!${options.css}dev.css`
@@ -55,7 +59,7 @@ module.exports = function(options){
 
   gulp.task('copyCss', ['css'], function(){
     return gulp.src([`${options.tmp}/css/*.css`])
-    .pipe(concat('xosDiagnostic.css'))
+    .pipe(concat('xosTruckroll.css'))
     .pipe(gulp.dest(options.static + 'css/'))
   });
 
