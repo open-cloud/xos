@@ -362,6 +362,8 @@ def model_policy_volt(pk):
 class VSGService(Service):
     KIND = VCPE_KIND
 
+    URL_FILTER_KIND_CHOICES = ( (None, "None"), ("safebrowsing", "Safe Browsing") )
+
     simple_attributes = ( ("bbs_api_hostname", None),
                           ("bbs_api_port", None),
                           ("bbs_server", None),
@@ -370,6 +372,7 @@ class VSGService(Service):
                           ("wan_container_gateway_mac", ""),
                           ("wan_container_netbits", "24"),
                           ("dns_servers", "8.8.8.8"),
+                          ("url_filter_kind", None),
                           ("node_label", None) )
 
     def __init__(self, *args, **kwargs):
