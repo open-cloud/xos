@@ -105,6 +105,10 @@ logic-topology .compute-node > rect{
     stroke-width: 1px;
 }
 
+logic-topology .compute-node > text{
+    font-size: 16px;
+}
+
 /* INSTANCE */
 
 logic-topology .instance > rect{
@@ -203,6 +207,10 @@ logic-topology .node .instance .stats-container .container rect {
 }
 
 .node text {
+    font: 18px sans-serif;
+}
+
+.node .instance text {
     font: 12px sans-serif;
 }
 

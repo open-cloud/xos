@@ -81,6 +81,10 @@
         serviceTopologyConfig.elWidths.pop();
       }
 
+      //remove tags and ip
+      delete this.logicTopologyData.children[0].children[0].children[0].subscriberTag;
+      delete this.logicTopologyData.children[0].subscriberIP;
+
       this.highlightInstances([]);
       delete this.logicTopologyData.children[0].children[0].children[0].children[0].children;
     }
