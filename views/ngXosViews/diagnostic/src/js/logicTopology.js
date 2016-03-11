@@ -17,6 +17,7 @@
         var svg;
         this.selectedInstances = [];
         this.hideInstanceStats = true;
+        var _this = this;
 
         const handleSvg = (el) => {
 
@@ -60,6 +61,12 @@
           ChartData.getInstanceStatus(service)
           .then((instances) => {
             LogicTopologyHelper.updateTree(svg);
+          })
+          .catch(e => {
+            _this.error = 'Service statistics are not available at this time. Please try again later.'
+            $timeout(() => {
+              _this.error = null;
+            }, 2000);
           })
         });
 
