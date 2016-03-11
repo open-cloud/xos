@@ -42,6 +42,7 @@ angular.module('xos.truckroll', [
 
         // clean previous tests
         delete this.truckroll.result;
+        delete this.truckroll.is_synced;
 
         const test = new Truckroll(this.truckroll);
         this.loader = true;
@@ -54,11 +55,19 @@ angular.module('xos.truckroll', [
       this.waitForTest = (id) => {
         Truckroll.get({id: id}).$promise
         .then((testResult) => {
-          if(testResult.is_synced){
+          // if error
+          if(testResult.backend_status.indexOf('2') >= 0 || (testResult.result_code && testResult.result_code.indexOf('2') >= 0)){
+            this.truckroll = angular.copy(testResult);
+            this.loader = false;
+            // not deleting failed test for debugging
+          }
+          // if is synced
+          else if(testResult.is_synced){
             this.truckroll = angular.copy(testResult);
             Truckroll.delete({id: id});
             this.loader = false;
           }
+          // else keep polling
           else{
             $timeout(() => {
               this.waitForTest(id);

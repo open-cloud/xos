@@ -8,6 +8,6 @@
 
 module.exports = {
   host: 'http://apt088.apt.emulab.net:9999/',
-  xoscsrftoken: 'wkT4pFidds7J1GqGgDBnwgJladVDAmT2',
-  xossessionid: 'n221mn1l6ncofsnx9zihjlssew2crom6'
+  xoscsrftoken: 'u5DXeMzOmHEQxrkhdJ1YuX3FefBv7Wtx',
+  xossessionid: 'z8wjipgmf90l23bqvij6kuj0nhcbwfpx'
 };
