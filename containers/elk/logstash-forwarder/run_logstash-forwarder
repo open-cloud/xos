@@ -1,0 +1,5 @@
+#!/bin/bash
+
+sed -i "s/logstash:5043/${LOGSTASH_HOST}:5043/g" /opt/logstash-forwarder/config.json
+
+/usr/bin/supervisord -c /etc/supervisor/conf.d/logstash-forwarder.conf
