@@ -363,12 +363,20 @@ border: 0px;
     background-color: #105E9E;
     text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
 }
+
+.ui-state-default a {
+    padding: 20px !important;
+    line-height: 20px !important;
+    transition: all .5s ease-in-out;
+}
+
 .ui-state-active a,
 .ui-state-active a:link{
     color: #ffffff !important;
     background-color: #105E9E !important;
     text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
     font-weight: normal;
+    font-size: 20px;
 }
 
 
