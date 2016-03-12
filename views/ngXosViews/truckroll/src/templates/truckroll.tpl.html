@@ -1,6 +1,8 @@
 <div class="row">
-  <h2>Virtual Truck Roll</h2>
-  <p>Use this page to run test against your subscriber</p>
+  <div class="col-xs-12">
+    <h2>Virtual Truck Roll</h2>
+    <p>Use this page to run test against your subscriber</p>
+  </div>
 </div>
 <form ng-submit="vm.runTest()">
   <div class="row">
@@ -69,7 +71,10 @@
     <div class="col-xs-12" ng-show="!vm.loader">
       <button class="btn btn-success btn-block">Run test</button>
     </div>
-    <div class="col-xs-12" ng-show="vm.loader">
+  </div>
+</form>
+<div class="row">
+    <div class="col-xs-12 animate-vertical" ng-show="vm.loader">
       <div class="loader"></div>
     </div>
   </div>
@@ -93,10 +98,9 @@
   </div>
   <div class="row" ng-hide="!vm.truckroll.backend_status">
     <div class="col-xs-12">
-      <label>Result Code</label>
+      <label>Backend Status</label>
     </div>
     <div class="col-xs-12">
       <pre>{{vm.truckroll.backend_status}}</pre>
     </div>
   </div>
-</form>
