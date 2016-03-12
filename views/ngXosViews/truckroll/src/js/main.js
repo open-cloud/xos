@@ -3,6 +3,7 @@
 angular.module('xos.truckroll', [
   'ngResource',
   'ngCookies',
+  'ngAnimate',
   'ngLodash',
   'ui.router',
   'xos.helpers'
@@ -58,16 +59,16 @@ angular.module('xos.truckroll', [
         Truckroll.get({id: id}).$promise
         .then((testResult) => {
           // if error
-          if(testResult.backend_status.indexOf('2') >= 0 || (testResult.result_code && testResult.result_code.indexOf('2') >= 0)){
-            this.truckroll = angular.copy(testResult);
-            this.loader = false;
-            // not deleting failed test for debugging
-          }
+          // or
           // if is synced
-          else if(testResult.is_synced){
+          if(
+              testResult.backend_status.indexOf('2') >= 0 ||
+              (testResult.result_code && testResult.result_code.indexOf('2') >= 0) ||
+              testResult.is_synced
+            ){
             this.truckroll = angular.copy(testResult);
-            Truckroll.delete({id: id});
             this.loader = false;
+            Truckroll.delete({id: id});
           }
           // else keep polling
           else{
