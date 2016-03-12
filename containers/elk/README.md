@@ -43,7 +43,7 @@ Now that we have elk stack setup we need to start sending it some log files to p
 
 To build the Loststash-forwarder container
 
-...
+```
 $ cd logstash-forwarder; make build && make run
-...
+```
 
