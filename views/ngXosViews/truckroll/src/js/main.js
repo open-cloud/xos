@@ -44,6 +44,7 @@ angular.module('xos.truckroll', [
         delete this.truckroll.result;
         delete this.truckroll.is_synced;
         delete this.truckroll.result_code;
+        delete this.truckroll.backend_status;
 
         const test = new Truckroll(this.truckroll);
         this.loader = true;
