@@ -3,7 +3,6 @@
 angular.module('xos.truckroll', [
   'ngResource',
   'ngCookies',
-  'ngAnimate',
   'ngLodash',
   'ui.router',
   'xos.helpers'
