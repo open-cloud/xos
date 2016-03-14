@@ -1,0 +1,69 @@
+---
+- hosts: cmi
+  connection: ssh
+  user: root
+  vars:
+    eth_device: eth0
+    eth_mac: 02:42:CF:8D:C0:82
+    cmi_password: XOScdn123$
+    cmi_hostname: xos-cloudlab-cmi-vtn.opencloud.us
+    cmi_dns: 8.8.8.8
+    cdn_site: CoBlitz Test
+    cdn_short_name: cobtest
+    cdn_name: CoBlitz
+#    gateway_ip: 10.124.0.1
+#    gateway_mac: 00:8c:fa:5b:09:d8
+    gateway_ip: 207.141.192.129
+    gateway_mac: a4:23:05:45:56:79
+    node_hostname: xos-cloudlab-node1-vtn.opencloud.us
+  tasks:
+  - name: fix the networking
+    shell: "{{ item }}"
+    with_items:
+      - ifconfig {{ eth_device }} hw ether {{ eth_mac }}
+      - ip route del default || true
+      - ip route add default via {{ gateway_ip }}
+      - arp -s {{ gateway_ip }} {{ gateway_mac }}
+
+  - name: copy over setup answers
+    template: src=templates/setup_answers.txt dest=/root/setup_answers.txt
+
+  - name: run the setup script
+    shell: /a/sbin/setup.sh < /root/setup_answers.txt
+    args:
+        creates: /a/var/log/setup.log
+
+  - name: fix onevapi CDNPrefix bug
+    shell: sed -i 's/hostname/str/g' /vservers/coplc/usr/share/cob_api/COB/PublicObjects/CDNPrefix.py
+
+  - name: fix onevapi OriginServer bug
+    shell: sed -i 's/attrToCheck = "edge_hosttype"/attrToCheck = "edge_hosttype_broken"/g' /vservers/coplc/usr/share/cob_api/COB/PublicObjects/OriginServer.py
+
+  - name: copy over cmi setup template
+    template: src=templates/setup_cmi_onevsh.sh dest=/vservers/coplc/root/setup_cmi_onevsh.sh
+
+  - name: run cmi setup script
+    command: vserver coplc exec onevsh /root/setup_cmi_onevsh.sh
+
+  - name: copy over cmi node setup template
+    template: src=templates/setup_cmi_node.sh dest=/vservers/coplc/root/setup_cmi_node.sh
+
+  - name: run node setup script
+    command: vserver coplc exec plcsh /root/setup_cmi_node.sh
+    args:
+        creates: /vservers/coplc/root/takeover-{{ node_hostname }}
+
+  - name: retrieve node takeover script
+    fetch: src=/vservers/coplc/root/takeover-{{ node_hostname }} dest=takeovers/takeover-{{ node_hostname }}
+
+  - name: update all keys script
+    copy: src=private/allkeys.template dest=/vservers/coplc/etc/onevantage/services/HPC/templates/usr/local/CoBlitz/var/allkeys.template
+
+  - name: install keygen
+    copy: src=private/keygen dest=/vservers/coplc/etc/onevantage/services/HPC/templates/usr/local/CoBlitz/var/keygen mode=0755
+
+  - name: download socat
+    get_url: url=http://pkgs.repoforge.org/socat/socat-1.7.2.1-1.el6.rf.x86_64.rpm dest=/root/socat-1.7.2.1-1.el6.rf.x86_64.rpm
+ 
+  - name: install socat
+    yum: name=/root/socat-1.7.2.1-1.el6.rf.x86_64.rpm state=present

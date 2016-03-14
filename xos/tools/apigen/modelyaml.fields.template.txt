@@ -1,0 +1,12 @@
+{% for object in generator.all %}
+{{ object.camel }}:
+fields:
+  {% for f in object.fields %}
+  - name: {{ f.name }}
+    type: {{ f.type }}
+    {% if f.help_text %}
+    help_text: {{ f.help_text }}
+    {% endif %}
+    null: {{ f.null }}
+{% endfor %}
+{% endfor %}

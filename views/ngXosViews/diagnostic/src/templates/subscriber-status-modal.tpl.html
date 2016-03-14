@@ -1,0 +1,87 @@
+<div class="modal fade" ng-class="{in: vm.open}" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button ng-click="vm.close()"  type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Manage subscriber:</h4>
+      </div>
+      <form name="vm.subscriber-detail">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12">
+              <label>Status</label>
+            </div>
+            <div class="col-xs-6">
+              <a ng-click="vm.subscriber.status = 'enabled'"
+                class="btn btn-block"
+                ng-class="{'btn-primary': vm.subscriber.status === 'enabled' ,'btn-default': vm.subscriber.status !== 'enabled'}"
+                >Enabled</a>
+            </div>
+            <div class="col-xs-6">
+              <a ng-click="vm.subscriber.status = 'suspended'"
+                class="btn btn-block"
+                ng-class="{'btn-primary': vm.subscriber.status === 'suspended' ,'btn-default': vm.subscriber.status !== 'suspended'}"
+                >Suspended</a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6">
+              <a ng-click="vm.subscriber.status = 'delinquent'"
+                class="btn btn-block"
+                ng-class="{'btn-primary': vm.subscriber.status === 'delinquent' ,'btn-default': vm.subscriber.status !== 'delinquent'}"
+                >Delinquent <br> payment</a>
+            </div>
+            <div class="col-xs-6">
+              <a ng-click="vm.subscriber.status = 'copyrightviolation'"
+                class="btn btn-block"
+                ng-class="{'btn-primary': vm.subscriber.status === 'copyrightviolation' ,'btn-default': vm.subscriber.status !== 'copyrightviolation'}"
+                >Copyright <br> violation</a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6">
+              <label>Uplink Speed</label>
+              <div class="input-group">
+                <input type="number" class="form-control small-padding" ng-model="vm.subscriber.uplink_speed"/>
+                <span class="input-group-addon">Mbps</span>
+              </div>
+            </div>
+            <div class="col-xs-6">
+              <label>Downlink Speed</label>
+              <div class="input-group">
+                <input type="number" class="form-control small-padding" ng-model="vm.subscriber.downlink_speed"/>
+                <span class="input-group-addon">Mbps</span>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6">
+              <label>Enable Internet</label>
+            </div>
+            <div class="col-xs-6">
+              <a 
+                ng-click="vm.subscriber.enable_uverse = !vm.subscriber.enable_uverse" 
+                ng-class="{'btn-success': vm.subscriber.enable_uverse, 'btn-danger': !vm.subscriber.enable_uverse}"
+                class="btn btn-block">
+                <span ng-show="vm.subscriber.enable_uverse === true">Enabled</span>
+                <span ng-show="vm.subscriber.enable_uverse !== true">Disabled</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" ng-show="vm.success || vm.formError">
+          <div class="alert alert-success" ng-show="vm.success">
+            {{vm.success}}
+          </div>
+          <div class="alert alert-danger" ng-show="vm.formError">
+            {{vm.formError}}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button ng-click="vm.close()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button ng-click="vm.updateSubscriber(vm.subscriber)" type="button" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

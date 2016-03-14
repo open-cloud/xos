@@ -1,18 +1,17 @@
 SETUPDIR:=../setup
 MYIP:=$(shell hostname -i)
 
-cloudlab: common_cloudlab cord
+cloudlab: common_cloudlab cord acord
 
 devstack: upgrade_pkgs common_devstack devstack_net_fix cord
 
-cord: ceilometer_dashboard virtualbng_json vtn_network_cfg_json
+cord: virtualbng_json vtn_network_cfg_json
 	sudo MYIP=$(MYIP) docker-compose up -d
 	bash ../common/wait_for_xos.sh
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/base.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord/cord.yaml
-	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord/ceilometer.yaml
 
 containers:
 	cd ../../../containers/xos; make devel
@@ -24,11 +23,28 @@ common_cloudlab:
 common_devstack:
 	make -C ../common -f Makefile.devstack
 
-ceilometer_dashboard:
-	#NOTE: The below dashboard install scripts assume
-	#clouldlab openstack environment created using "OpenStack" profile
-	#bash install_xos_ceilometer_dashboard.sh
-	bash install_ceilometer_patch.sh
+acord: cloudlab_ceilometer_custom_images ceilometer_cloudlab_cord_plugins
+	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord/ceilometer.yaml
+
+ceilometer_cloudlab_cord_plugins:
+	if [ -d ./ceilometer-plugins ]; then rm -fr ./ceilometer-plugins; fi
+	git clone https://github.com/srikanthvavila/ceilometer-plugins.git
+	sudo cp -r ceilometer-plugins/network/ext_services /usr/lib/python2.7/dist-packages/ceilometer/network/
+	sudo cp -r ceilometer-plugins/network/statistics/onos /usr/lib/python2.7/dist-packages/ceilometer/network/statistics/
+	sudo cp ceilometer-plugins/network/statistics/__init__.py /usr/lib/python2.7/dist-packages/ceilometer/network/statistics/ 
+	sudo cp ceilometer-plugins/entry_points.txt /usr/lib/python2.7/dist-packages/ceilometer-*egg-info/
+	sudo cp ceilometer-plugins/pipeline.yaml /etc/ceilometer/
+	echo "Restarting ceilometer-agent-notification"
+	sudo service ceilometer-agent-notification restart
+	echo "Restarting ceilometer-agent-central"
+	sudo service ceilometer-agent-central restart
+
+ceilometer_pub_sub:
+	if [ -d ./pub-sub ]; then rm -fr ./pub-sub; fi
+	git clone https://github.com/srikanthvavila/pub-sub.git
+	echo "Starting Ceilometer PUB/SUB service...Ensure zookeeper and kafka services are launched (if required)"
+	cd pub-sub/ceilometer_pub_sub/ ; python sub_main.py & 
+	cd ../..
 
 virtualbng_json:
 	export SETUPDIR=$(SETUPDIR); bash make-virtualbng-json.sh
@@ -78,3 +94,6 @@ devstack_net_fix:
 
 upgrade_pkgs:
 	sudo pip install httpie --upgrade
+
+cloudlab_ceilometer_custom_images:
+	bash -c "source ../setup/admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || ! mkdir -p /tmp/images || ! wget http://www.vicci.org/cord/ceilometer-trusty-server-multi-nic.qcow2 -P /tmp/images || glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file /tmp/images/ceilometer-trusty-server-multi-nic.qcow2 --container-format bare"

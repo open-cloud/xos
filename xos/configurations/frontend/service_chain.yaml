@@ -1,0 +1,204 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup two subscriber with related service chain, use for development of serviceTopology view.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    # CORD Subscribers
+    Night's Watch:
+      type: tosca.nodes.CORDSubscriber
+      properties:
+        service_specific_id: 123
+        firewall_enable: false
+        cdn_enable: false
+        url_filter_enable: false
+        url_filter_level: R
+
+    # CORD Users for Night's Watch
+    Jhon Snow:
+      type: tosca.nodes.CORDUser
+      properties:
+        mac: 01:02:03:04:05:06
+        level: PG_13
+      requirements:
+        - household:
+            node: Night's Watch
+            relationship: tosca.relationships.SubscriberDevice
+
+    House Targaryen:
+      type: tosca.nodes.CORDSubscriber
+      properties:
+        service_specific_id: 321
+        firewall_enable: false
+        cdn_enable: false
+        url_filter_enable: false
+        url_filter_level: R
+
+    # CORD Users for House Targaryen
+    Daenerys:
+      type: tosca.nodes.CORDUser
+      properties:
+        mac: 06:05:04:03:02:01
+        level: PG_13
+      requirements:
+        - household:
+            node: House Targaryen
+            relationship: tosca.relationships.SubscriberDevice
+
+    # vOLT Tenants
+    Night's Watch vOLT:
+      type: tosca.nodes.VOLTTenant
+      properties:
+        service_specific_id: 123
+        s_tag: 123
+        c_tag: 456
+      requirements:
+        - provider_service:
+            node: service_volt
+            relationship: tosca.relationships.MemberOfService
+        - subscriber:
+            node: Night's Watch
+            relationship: tosca.relationships.BelongsToSubscriber
+
+    Targaryen vOLT:
+      type: tosca.nodes.VOLTTenant
+      properties:
+        service_specific_id: 321
+        s_tag: 321
+        c_tag: 654
+      requirements:
+        - provider_service:
+            node: service_volt
+            relationship: tosca.relationships.MemberOfService
+        - subscriber:
+            node: House Targaryen
+            relationship: tosca.relationships.BelongsToSubscriber
+
+    # CORD Services
+    service_volt:
+      type: tosca.nodes.Service
+      requirements:
+        - vcpe_tenant:
+            node: service_vcpe
+            relationship: tosca.relationships.TenantOfService
+        - lan_network:
+            node: lan_network
+            relationship: tosca.relationships.UsesNetwork
+        - wan_network:
+            node: wan_network
+            relationship: tosca.relationships.UsesNetwork
+      properties:
+        view_url: /admin/cord/voltservice/$id$/
+        kind: vOLT
+
+    service_vcpe:
+      type: tosca.nodes.VCPEService
+      requirements:
+        - vbng_tenant:
+            node: service_vbng
+            relationship: tosca.relationships.TenantOfService
+      properties:
+        view_url: /admin/cord/vcpeservice/$id$/
+        backend_network_label: hpc_client
+        public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+        private_key_fn: /opt/xos/observers/vcpe/vcpe_private_key
+      artifacts:
+        pubkey: /root/.ssh/id_rsa.pub #is this right?
+
+    service_vbng:
+      type: tosca.nodes.VBNGService
+      properties:
+        view_url: /admin/cord/vbngservice/$id$/
+
+    # Networks required
+    lan_network:
+      type: tosca.nodes.network.Network
+      properties:
+        ip_version: 4
+      requirements:
+        - network_template:
+            node: Private
+            relationship: tosca.relationships.UsesNetworkTemplate
+        - owner:
+            node: mysite_vcpe
+            relationship: tosca.relationships.MemberOfSlice
+        - connection:
+            node: mysite_vcpe
+            relationship: tosca.relationships.ConnectsToSlice
+        - connection:
+            node: mysite_volt
+            relationship: tosca.relationships.ConnectsToSlice
+
+    wan_network:
+      type: tosca.nodes.network.Network
+      properties:
+        ip_version: 4
+      requirements:
+        - network_template:
+            node: Private
+            relationship: tosca.relationships.UsesNetworkTemplate
+        - owner:
+            node: mysite_vcpe
+            relationship: tosca.relationships.MemberOfSlice
+        - connection:
+            node: mysite_vcpe
+            relationship: tosca.relationships.ConnectsToSlice
+        - connection:
+            node: mysite_vbng
+            relationship: tosca.relationships.ConnectsToSlice
+
+    # Network templates
+    Private:
+      type: tosca.nodes.NetworkTemplate
+
+    # Sites
+    mysite:
+      type: tosca.nodes.Site
+
+    # Slices
+    mysite_vcpe:
+      description: vCPE Controller Slice
+      type: tosca.nodes.Slice
+      requirements:
+        - vcpe_service:
+            node: service_vcpe
+            relationship: tosca.relationships.MemberOfService
+        - site:
+            node: mysite
+            relationship: tosca.relationships.MemberOfSite
+        - vcpe_docker_image:
+            node: docker-vcpe
+            relationship: tosca.relationships.UsesImage
+      properties:
+          default_isolation: container
+
+    mysite_vbng:
+      description: slice running OVS controlled by vBNG
+      type: tosca.nodes.Slice
+      requirements:
+        - site:
+            node: mysite
+            relationship: tosca.relationships.MemberOfSite
+
+    mysite_volt:
+      description: OVS controlled by vOLT
+      type: tosca.nodes.Slice
+      requirements:
+        - site:
+            node: mysite
+            relationship: tosca.relationships.MemberOfSite
+
+    # docker image for vcpe containers
+    docker-vcpe:
+      # TODO: need to attach this to mydeployment
+      type: tosca.nodes.Image
+      properties:
+        kind: container
+        container_format: na
+        disk_format: na
+        path: andybavier/docker-vcpe
+        tag: develop
+

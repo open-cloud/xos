@@ -1,0 +1,106 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h2>Virtual Truck Roll</h2>
+    <p>Use this page to run test against your subscriber</p>
+  </div>
+</div>
+<form ng-submit="vm.runTest()">
+  <div class="row">
+    <div class="col-xs-12">
+      <label>Target:</label>
+    </div>
+    <div class="col-xs-12">
+      <select class="form-control" ng-model="vm.truckroll.target_id" ng-options="s.id as s.humanReadableName for s in vm.subscribers"></select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <label>Scope:</label>
+    </div>
+    <div class="col-xs-6">
+      <a 
+      ng-click="vm.truckroll.scope = 'container'"
+      ng-class="{'btn-default': vm.truckroll.scope !== 'container', 'btn-primary': vm.truckroll.scope === 'container'}"
+      class="btn btn-block"
+      >
+        Container
+      </a>
+    </div>
+    <div class="col-xs-6">
+      <a 
+      ng-click="vm.truckroll.scope = 'vm'"
+      ng-class="{'btn-default': vm.truckroll.scope !== 'vm', 'btn-primary': vm.truckroll.scope === 'vm'}"
+      class="btn btn-block"
+      >
+        VM
+      </a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <label>Test:</label>
+    </div>
+    <div class="col-xs-4">
+      <a 
+      ng-click="vm.truckroll.test = 'ping'"
+      ng-class="{'btn-default': vm.truckroll.test !== 'ping', 'btn-primary': vm.truckroll.test === 'ping'}"
+      class="btn btn-block">Ping</a>
+    </div>
+    <div class="col-xs-4">
+      <a 
+      ng-click="vm.truckroll.test = 'traceroute'"
+      ng-class="{'btn-default': vm.truckroll.test !== 'traceroute', 'btn-primary': vm.truckroll.test === 'traceroute'}"
+      class="btn btn-block">Traceroute</a>
+    </div>
+    <div class="col-xs-4">
+      <a 
+      ng-click="vm.truckroll.test = 'tcpdump'"
+      ng-class="{'btn-default': vm.truckroll.test !== 'tcpdump', 'btn-primary': vm.truckroll.test === 'tcpdump'}"
+      class="btn btn-block">Tcp Dump</a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <label>Argument:</label>
+    </div>
+    <div class="col-xs-12">
+      <input type="text" class="form-control" ng-model="vm.truckroll.argument" required />
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12" ng-show="!vm.loader">
+      <button class="btn btn-success btn-block">Run test</button>
+    </div>
+  </div>
+</form>
+<div class="row">
+    <div class="col-xs-12 animate-vertical" ng-show="vm.loader">
+      <div class="loader"></div>
+    </div>
+  </div>
+  <div class="row" ng-hide="!vm.truckroll.result_code">
+    <div class="col-xs-12">
+      <label>Result Code</label>
+    </div>
+    <div class="col-xs-12">
+      <pre>{{vm.truckroll.result_code}}</pre>
+    </div>
+  </div>
+  <div class="row" ng-hide="!vm.truckroll.result">
+    <div class="col-xs-12">
+      <label>
+        Result:
+      </label>
+    </div>
+    <div class="col-xs-12">
+      <pre>{{vm.truckroll.result}}</pre>
+    </div>
+  </div>
+  <div class="row" ng-hide="!vm.truckroll.backend_status">
+    <div class="col-xs-12">
+      <label>Backend Status</label>
+    </div>
+    <div class="col-xs-12">
+      <pre>{{vm.truckroll.backend_status}}</pre>
+    </div>
+  </div>

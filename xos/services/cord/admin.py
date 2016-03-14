@@ -108,6 +108,8 @@ class VSGServiceForm(forms.ModelForm):
     wan_container_gateway_mac = forms.CharField(required=False)
     wan_container_netbits = forms.CharField(required=False)
     dns_servers = forms.CharField(required=False)
+    url_filter_kind = forms.ChoiceField(choices=VSGService.URL_FILTER_KIND_CHOICES, required=False)
+    node_label = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
         super (VSGServiceForm,self ).__init__(*args,**kwargs)
@@ -121,6 +123,8 @@ class VSGServiceForm(forms.ModelForm):
             self.fields['wan_container_gateway_mac'].initial = self.instance.wan_container_gateway_mac
             self.fields['wan_container_netbits'].initial = self.instance.wan_container_netbits
             self.fields['dns_servers'].initial = self.instance.dns_servers
+            self.fields['url_filter_kind']. initial = self.instance.url_filter_kind
+            self.fields['node_label'].initial = self.instance.node_label
 
     def save(self, commit=True):
         self.instance.bbs_api_hostname = self.cleaned_data.get("bbs_api_hostname")
@@ -132,6 +136,8 @@ class VSGServiceForm(forms.ModelForm):
         self.instance.wan_container_gateway_mac = self.cleaned_data.get("wan_container_gateway_mac")
         self.instance.wan_container_netbits = self.cleaned_data.get("wan_container_netbits")
         self.instance.dns_servers = self.cleaned_data.get("dns_servers")
+        self.instance.url_filter_kind = self.cleaned_data.get("url_filter_kind")
+        self.instance.node_label = self.cleaned_data.get("node_label")
         return super(VSGServiceForm, self).save(commit=commit)
 
     class Meta:
@@ -143,9 +149,9 @@ class VSGServiceAdmin(ReadOnlyAwareAdmin):
     verbose_name_plural = "vSG Service"
     list_display = ("backend_status_icon", "name", "enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None,             {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", "service_specific_attribute",],
+    fieldsets = [(None,             {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", "service_specific_attribute", "node_label"],
                                      'classes':['suit-tab suit-tab-general']}),
-                 ("backend config", {'fields': [ "backend_network_label", "bbs_api_hostname", "bbs_api_port", "bbs_server", "bbs_slice"],
+                 ("backend config", {'fields': [ "backend_network_label", "url_filter_kind", "bbs_api_hostname", "bbs_api_port", "bbs_server", "bbs_slice"],
                                      'classes':['suit-tab suit-tab-backend']}),
                  ("vSG config", {'fields': [ "wan_container_gateway_ip", "wan_container_gateway_mac", "wan_container_netbits", "dns_servers"],
                                      'classes':['suit-tab suit-tab-vsg']}) ]
@@ -344,18 +350,38 @@ class VOLTTenantInline(XOSTabularInline):
 
 class CordSubscriberRootForm(forms.ModelForm):
     url_filter_level = forms.CharField(required = False)
+    uplink_speed = forms.CharField(required = False)
+    downlink_speed = forms.CharField(required = False)
+    status = forms.ChoiceField(choices=CordSubscriberRoot.status_choices, required=True)
+    enable_uverse = forms.BooleanField(required=False)
+    cdn_enable = forms.BooleanField(required=False)
 
     def __init__(self,*args,**kwargs):
         super (CordSubscriberRootForm,self ).__init__(*args,**kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
         if self.instance:
             self.fields['url_filter_level'].initial = self.instance.url_filter_level
+            self.fields['uplink_speed'].initial = self.instance.uplink_speed
+            self.fields['downlink_speed'].initial = self.instance.downlink_speed
+            self.fields['status'].initial = self.instance.status
+            self.fields['enable_uverse'].initial = self.instance.enable_uverse
+            self.fields['cdn_enable'].initial = self.instance.cdn_enable
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = CORD_SUBSCRIBER_KIND
+            self.fields['uplink_speed'].initial = CordSubscriberRoot.get_default_attribute("uplink_speed")
+            self.fields['downlink_speed'].initial = CordSubscriberRoot.get_default_attribute("downlink_speed")
+            self.fields['status'].initial = CordSubscriberRoot.get_default_attribute("status")
+            self.fields['enable_uverse'].initial = CordSubscriberRoot.get_default_attribute("enable_uverse")
+            self.fields['cdn_enable'].initial = CordSubscriberRoot.get_default_attribute("cdn_enable")
 
     def save(self, commit=True):
         self.instance.url_filter_level = self.cleaned_data.get("url_filter_level")
+        self.instance.uplink_speed = self.cleaned_data.get("uplink_speed")
+        self.instance.downlink_speed = self.cleaned_data.get("downlink_speed")
+        self.instance.status = self.cleaned_data.get("status")
+        self.instance.enable_uverse = self.cleaned_data.get("enable_uverse")
+        self.instance.cdn_enable = self.cleaned_data.get("cdn_enable")
         return super(CordSubscriberRootForm, self).save(commit=commit)
 
     class Meta:
@@ -365,9 +391,9 @@ class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id',  'name', )
     list_display_links = ('backend_status_icon', 'id', 'name', )
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'name', 'service_specific_id', # 'service_specific_attribute',
-                                     'url_filter_level'],
+                                     'url_filter_level', "uplink_speed", "downlink_speed", "status", "enable_uverse", "cdn_enable"],
                           'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account')
+    readonly_fields = ('backend_status_text', 'service_specific_attribute',)
     form = CordSubscriberRootForm
     inlines = (VOLTTenantInline, TenantRootPrivilegeInline)
 

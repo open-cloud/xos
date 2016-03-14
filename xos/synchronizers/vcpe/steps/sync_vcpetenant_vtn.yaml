@@ -1,10 +1,11 @@
 ---
 - hosts: {{ instance_name }}
-  gather_facts: False
+  #gather_facts: False
   connection: ssh
   user: ubuntu
   sudo: yes
   vars:
+      container_name: {{ container_name }}
       cdn_enable: {{ cdn_enable }}
       dnsdemux_ip: {{ dnsdemux_ip }}
       firewall_enable: {{ firewall_enable }}
@@ -63,8 +64,20 @@
         {% for mac in safe_browsing_macs %}
         - {{ mac }}
         {% endfor %}
+      uplink_speed: {{ uplink_speed }}
+      downlink_speed: {{ downlink_speed }}
+      status: {{ status }}
+      enable_uverse: {{ enable_uverse }}
+      url_filter_kind: {{ url_filter_kind }}
+
 
   tasks:
+  - name: Add hostname to /etc/hosts
+    lineinfile: dest=/etc/hosts
+      regexp='^127\.0\.0\.1'
+      line="127.0.0.1 localhost {{ '{{' }} ansible_hostname {{ '}}' }}"
+      owner=root group=root mode=0644
+
   - name: Check to see if network is setup
     stat: path=/root/network_is_setup
     register: network_is_setup
@@ -72,8 +85,9 @@
   - name: Add eth0.500
     shell: "{{ '{{' }} item {{ '}}' }}"
     with_items:
-      - ip link del link eth0 eth0.500 || true
+      - ifconfig br-wan down || true
       - brctl delbr br-wan || true
+      - ip link del link eth0 eth0.500 || true
       - ip link add link eth0 eth0.500 type vlan id 500
       - ifconfig eth0.500 up
       - ifconfig eth0.500 0.0.0.0
@@ -93,6 +107,7 @@
        - ip link del link eth0 eth0.500
        - ip link add link eth0 eth0.500 type vlan id 500
        - ip link set eth0.500 up
+       - ifconfig br-wan down || true
        - brctl delbr br-wan || true
        - brctl addbr br-wan
        - brctl addif br-wan eth0.500
@@ -108,41 +123,60 @@
     shell: touch /root/network_is_setup
 
 {% if full_setup %}
+  - name: Check to see if environment is setup
+    stat: path=/root/environment_is_setup
+    register: environment_is_setup
+
   - name: Docker repository
     copy: src=/opt/xos/synchronizers/vcpe/files/docker.list
       dest=/etc/apt/sources.list.d/docker.list
+    when: environment_is_setup.stat.exists == False
 
   - name: Import the repository key
     apt_key: keyserver=keyserver.ubuntu.com id=36A1D7869245C8950F966E92D8576A8BA88D21E9
+    when: environment_is_setup.stat.exists == False
+
+  - name: Update cache
+    apt: update_cache=yes
+    when: environment_is_setup.stat.exists == False
 
   - name: install Docker
-    apt: name=lxc-docker state=present update_cache=yes
+    apt: name=lxc-docker state=present
+    when: environment_is_setup.stat.exists == False
 
   - name: install python-setuptools
     apt: name=python-setuptools state=present
+    when: environment_is_setup.stat.exists == False
 
   - name: install pip
     easy_install: name=pip
+    when: environment_is_setup.stat.exists == False
 
   - name: install docker-py
     pip: name=docker-py version=0.5.3
+    when: environment_is_setup.stat.exists == False
 
   - name: install Pipework
     get_url: url=https://raw.githubusercontent.com/jpetazzo/pipework/master/pipework
        dest=/usr/local/bin/pipework
        mode=0755
+    when: environment_is_setup.stat.exists == False
 
-  - name: make sure /etc/dnsmasq.d exists
-    file: path=/etc/dnsmasq.d state=directory owner=root group=root
+  - name: Stop resolvconf service
+    service: name=resolvconf state=stopped
+    when: environment_is_setup.stat.exists == False
 
   - name: Disable resolvconf service
-    shell: service resolvconf stop
-    shell: echo manual > /etc/init/resolvconf.override
-    shell: rm -f /etc/resolv.conf
+    copy: dest=/etc/init/resolvconf.override content="manual"
+    when: environment_is_setup.stat.exists == False
 
   - name: Install resolv.conf
     copy: src=/opt/xos/synchronizers/vcpe/files/vm-resolv.conf
       dest=/etc/resolv.conf
+    when: environment_is_setup.stat.exists == False
+
+  - name: Remember that the environment is setup, so we never do the above again
+    shell: touch /root/environment_is_setup
 
   - name: Verify if vcpe_stats_notifier ([] is to avoid capturing the shell process) cron job is already running
     shell: pgrep -f [v]cpe_stats_notifier | wc -l
@@ -172,46 +206,101 @@
 {% endif %}
 
   - name: vCPE upstart
-    template: src=/opt/xos/synchronizers/vcpe/templates/vcpe.conf.j2 dest=/etc/init/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}.conf
+    template: src=/opt/xos/synchronizers/vcpe/templates/vcpe.conf.j2 dest=/etc/init/{{ container_name }}.conf
 
   - name: vCPE startup script
-    template: src=/opt/xos/synchronizers/vcpe/templates/start-vcpe-vtn.sh.j2 dest=/usr/local/sbin/start-vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}.sh mode=0755
+    template: src=/opt/xos/synchronizers/vcpe/templates/start-vcpe-vtn.sh.j2 dest=/usr/local/sbin/start-{{ container_name }}.sh mode=0755
     notify:
 #    - restart vcpe
      - stop vcpe
      - remove container
      - start vcpe
 
-  - name: create /etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d
-    file: path=/etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d state=directory owner=root group=root
+  - name: create /var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe/
+    file: path=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe state=directory owner=root group=root
 
   - name: vCPE basic dnsmasq config
-    copy: src=/opt/xos/synchronizers/vcpe/files/vcpe.dnsmasq dest=/etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d/vcpe.conf owner=root group=root
+    copy: src=/opt/xos/synchronizers/vcpe/files/vcpe.dnsmasq dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/vcpe.conf owner=root group=root
     notify:
     - restart dnsmasq
 
   - name: dnsmasq config
-    template: src=/opt/xos/synchronizers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d/servers.conf owner=root group=root
+    template: src=/opt/xos/synchronizers/vcpe/templates/dnsmasq_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/servers.conf owner=root group=root
     notify:
     - restart dnsmasq
 
+  - name: dnsmasq "safe" config
+    template: src=/opt/xos/synchronizers/vcpe/templates/dnsmasq_safe_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe/servers.conf owner=root group=root
+    notify:
+    - restart dnsmasq
+
+  - name: create /var/container_volumes/{{ container_name }}/mount/
+    file: path=/var/container_volumes/{{ container_name }}/mount state=directory owner=root group=root
+
+  - name: redirection rules for safe DNS
+    template: src=/opt/xos/synchronizers/vcpe/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/mount/before.rules owner=root group=root mode=0644
+    notify:
+    - reload ufw
+
+  - name: base ufw setup uses /etc/rc.local
+    template: src=/opt/xos/synchronizers/vcpe/templates/rc.local.j2 dest=/var/container_volumes/{{ container_name }}/mount/rc.local owner=root group=root mode=0755
+    notify:
+    - rerun /etc/rc.local
+
+  - name: create directory for local programs
+    file: path=/var/container_volumes/{{ container_name }}/usr/local/sbin state=directory
+
+  - name: bandwidth limit script
+    template: src=/opt/xos/synchronizers/vcpe/templates/bwlimit.sh.j2 dest=/var/container_volumes/{{ container_name }}/usr/local/sbin/bwlimit.sh owner=root group=root mode=0755
+    notify:
+    - reset bwlimits
+
+  - name: create directory for simple webserver
+    file: path=/var/container_volumes/{{ container_name }}/etc/service/message state=directory
+
+  - name: copy simple webserver
+    copy: src=/opt/xos/synchronizers/vcpe/files/etc/service/ dest=/var/container_volumes/{{ container_name }}/etc/service/ owner=root group=root
+    when: status != "enabled"
+
+  - name: make webserver script executable
+    file: path=/var/container_volumes/{{ container_name }}/etc/service/message/run mode=0755
+    when: status != "enabled"
+
+  - name: generate the message page
+    template: src=/opt/xos/synchronizers/vcpe/templates/message.html.j2 dest=/var/container_volumes/{{ container_name }}/etc/service/message/message.html owner=root group=root mode=0644
+    when: status != "enabled"
+    #notify: restart vcpe
+
+  - name: remove simple webserver
+    file: path=/var/container_volumes/{{ container_name }}/etc/service/message/run state=absent
+    when: status == "enabled"
+    #notify: restart vcpe
+
   - name: Make sure vCPE service is running
-    service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=started
+    service: name={{ container_name }} state=started
 
   handlers:
   # Dnsmasq is automatically restarted in the container
   - name: restart dnsmasq
-    shell: docker exec vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} killall dnsmasq
-
-  - name: restart vcpe
-    shell: service vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} stop; sleep 1; service vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} start
+    shell: docker exec {{ container_name }} killall dnsmasq
 
   - name: stop vcpe
-    service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=stopped
+    service: name={{ container_name }} state=stopped
 
   - name: remove container
-    docker: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=absent image=docker-vcpe
+    docker: name={{ container_name }} state=absent image=docker-vcpe
 
   - name: start vcpe
-    service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=started
+    service: name={{ container_name }} state=started
 
+  - name: reload ufw
+    shell: docker exec {{ container_name }} bash -c "/sbin/iptables -t nat -F PREROUTING; /usr/sbin/ufw reload"
+
+  - name: rerun /etc/rc.local
+    shell: docker exec {{ container_name }} bash -c "/etc/rc.local"
+
+  - name: reset bwlimits
+    shell: docker exec {{ container_name }} bash -c "/usr/local/sbin/bwlimit.sh restart"
+
+  - name: restart vcpe
+    shell: service {{ container_name }} stop; sleep 1; service {{ container_name }} start

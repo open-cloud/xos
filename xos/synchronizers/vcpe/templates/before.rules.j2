@@ -26,6 +26,10 @@
 {% endfor %}
 {% endif %}
 
+{% if status != "enabled" %}
+-A PREROUTING -i eth1 -p tcp --dport 80 -j REDIRECT --to-port 8000
+{% endif %}
+
 # don't delete the 'COMMIT' line or these nat table rules won't be processed
 COMMIT
 

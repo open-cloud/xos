@@ -17,8 +17,8 @@ cat >> $FN <<EOF
                 "sshKeyFile": "/root/node_key",
                 "publicGateways": [
                     {
-                        "gatewayIp": "207.141.192.158",
-                        "gatewayMac": "a4:23:05:34:56:78"
+                        "gatewayIp": "10.168.0.1",
+                        "gatewayMac": "02:42:0a:a8:00:01"
                     }
                 ],
                 "nodes" : [
@@ -41,7 +41,7 @@ for NODE in $NODES; do
     echo $NODE
     NODEIP=`getent hosts $NODE | awk '{ print $1 }'`
 
-    PHYPORT=mlx0
+    PHYPORT=veth1
     # How to set LOCALIP?
     LOCALIPNET="192.168.199"
 
@@ -69,8 +69,8 @@ cat >> $FN <<EOF
                 ]
             }
         },
-        "org.onosproject.openstackswitching" : {
-            "openstackswitching" : {
+        "org.onosproject.openstackinterface" : {
+            "openstackinterface" : {
                  "do_not_push_flows" : "true",
                  "neutron_server" : "$NEUTRON_URL/v2.0/",
                  "keystone_server" : "$OS_AUTH_URL/",

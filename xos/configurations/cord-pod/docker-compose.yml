@@ -62,16 +62,29 @@ xos_synchronizer_vtn:
 #    links:
 #        - xos_db
 
-#xos_synchronizer_monitoring_channel:
-#    image: xosproject/xos-synchronizer-openstack
-#    command: bash -c "sleep 120; python /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer.py -C /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer_config"
-#    labels:
-#        org.xosproject.kind: synchronizer
-#        org.xosproject.target: monitoring_channel
-#    links:
-#        - xos_db
-#    volumes:
-#        - ./id_rsa:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key:ro  # private key
+xos_synchronizer_monitoring_channel:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer.py -C /root/setup/files/monitoring_channel_synchronizer_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: monitoring_channel
+    links:
+        - xos_db
+    volumes:
+        - .:/root/setup:ro
+        - ./id_rsa:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key:ro  # private key
+
+xos_synchronizer_vtr:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; cp /root/setup/node_key /opt/xos/synchronizers/vtr/; chmod 0600 /opt/xos/synchronizers/vtr/node_key; python /opt/xos/synchronizers/vtr/vtr-synchronizer.py -C /root/setup/files/vtr_synchronizer_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: vtr
+    links:
+        - xos_db
+    volumes:
+        - .:/root/setup:ro
+        - ./id_rsa:/opt/xos/synchronizers/vtr/vcpe_private_key:ro  # private key
 
 xos:
     command: python /opt/xos/manage.py runserver 0.0.0.0:80 --insecure --makemigrations
@@ -87,3 +100,4 @@ xos:
         - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
         - ./id_rsa.pub:/opt/xos/synchronizers/onos/onos_key.pub:ro
         - ./id_rsa.pub:/opt/xos/synchronizers/vcpe/vcpe_public_key:ro
+        - ./id_rsa.pub:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key:ro

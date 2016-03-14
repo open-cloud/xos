@@ -8,6 +8,12 @@ imports:
 topology_template:
   node_templates:
     # CORD Services
+    service_vtr:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /admin/vtr/vtrservice/$id$/
+          kind: vTR
+
     service_volt:
       type: tosca.nodes.Service
       requirements:
@@ -21,7 +27,7 @@ topology_template:
     public_addresses:
       type: tosca.nodes.AddressPool
       properties:
-          addresses: 207.141.192.128/27
+          addresses: 10.168.0.0/24
 
     service_vsg:
       type: tosca.nodes.VSGService
@@ -34,9 +40,10 @@ topology_template:
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/synchronizers/vcpe/vcpe_private_key
-          wan_container_gateway_ip: 207.141.192.158
-          wan_container_gateway_mac: a4:23:05:34:56:78
-          wan_container_netbits: 27
+          wan_container_gateway_ip: 10.168.0.1
+          wan_container_gateway_mac: 02:42:0a:a8:00:01
+          wan_container_netbits: 24
+#          node_label: label_vsg
       artifacts:
           pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
 
@@ -60,6 +67,9 @@ topology_template:
 
     mysite:
       type: tosca.nodes.Site
+
+    label_vsg:
+      type: tosca.nodes.NodeLabel
 
     # Networks required by the CORD setup
     mysite_vsg-access:

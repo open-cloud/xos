@@ -8,6 +8,12 @@ imports:
 topology_template:
   node_templates:
     # CORD Services
+    service_vtr:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /admin/vtr/vtrservice/$id$/
+          kind: vTR
+
     service_volt:
       type: tosca.nodes.Service
       requirements:
@@ -41,6 +47,7 @@ topology_template:
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/synchronizers/vcpe/vcpe_private_key
+#          node_label: label_vsg
       artifacts:
           pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
 
@@ -270,6 +277,8 @@ topology_template:
     mysite:
       type: tosca.nodes.Site
 
+    label_vsg:
+      type: tosca.nodes.NodeLabel
 
     # CORD Slices
     mysite_vsg:
