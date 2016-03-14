@@ -1,0 +1,44 @@
+[
+  {
+    "url": "cordsubscriber",
+    "base": "xoslib/",
+    "methods": ["GET", "PUT"],
+    "param": "id"
+  },
+  {
+    "url": "users",
+    "base": "xoslib/rs/subscriber/1/",
+    "methods": ["GET"]
+  },
+  {
+    "url": "services",
+    "base": "xos/",
+    "methods": ["GET"]
+  },
+  {
+    "url": "tenants",
+    "base": "xos/",
+    "methods": ["GET"]
+  },
+  {
+    "url": "nodes",
+    "base": "xos/",
+    "methods": ["GET"]
+  },
+  {
+    "url": "instances",
+    "base": "xos/",
+    "methods": ["GET"],
+    "param": "id"
+  },
+  {
+    "url": "meterstatistics",
+    "base": "xoslib/",
+    "methods": ["GET"]
+  },
+  {
+    "url": "xos-instance-statistics",
+    "base": "xoslib/",
+    "methods": ["GET"]
+  }
+]

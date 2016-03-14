@@ -230,6 +230,9 @@ node_types:
             dns_servers:
                 type: string
                 required: false
+            node_label:
+                type: string
+                required: false
 
     tosca.nodes.VBNGService:
         derived_from: tosca.nodes.Root
@@ -715,6 +718,16 @@ node_types:
             node:
                 type: tosca.capabilities.xos.Node
 
+    tosca.nodes.NodeLabel:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS NodeLabel.
+        properties:
+            xos_base_props
+        capabilities:
+            node:
+                type: tosca.capabilities.xos.NodeLabel
+
     tosca.nodes.DashboardView:
         derived_from: tosca.nodes.Root
         description: >
@@ -849,6 +862,13 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.DashboardView ]
 
+    tosca.relationships.HasLabel:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.NodeLabel ]
+
+    tosca.relationships.DependsOn:
+        derived_from: tosca.relationships.Root
+
     tosca.capabilities.xos.Service:
         derived_from: tosca.capabilities.Root
         description: An XOS Service
@@ -892,6 +912,10 @@ node_types:
     tosca.capabilities.xos.Node:
         derived_from: tosca.capabilities.Root
         description: An XOS Node
+
+    tosca.capabilities.xos.NodeLabel:
+        derived_from: tosca.capabilities.Root
+        description: An XOS NodeLabel
 
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root

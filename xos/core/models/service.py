@@ -32,6 +32,17 @@ class AttributeMixin(object):
         return attributes.get(name, default)
 
     @classmethod
+    def get_default_attribute(cls, name):
+        for (attrname, default) in cls.simple_attributes:
+            if attrname==name:
+                return default
+        if hasattr(cls,"default_attributes"):
+            if attrname in cls.default_attributes:
+                return cls.default_attributes[attrname]
+        else:
+            return None
+
+    @classmethod
     def setup_simple_attributes(cls):
         for (attrname, default) in cls.simple_attributes:
             setattr(cls, attrname, property(lambda self, attrname=attrname, default=default: self.get_attribute(attrname, default),
@@ -426,12 +437,21 @@ class Scheduler(object):
 class LeastLoadedNodeScheduler(Scheduler):
     # This scheduler always return the node with the fewest number of instances.
 
-    def __init__(self, slice):
+    def __init__(self, slice, label=None):
         super(LeastLoadedNodeScheduler, self).__init__(slice)
+        self.label = label
 
     def pick(self):
         from core.models import Node
-        nodes = list(Node.objects.all())
+        nodes = Node.objects.all()
+
+        if self.label:
+           nodes = nodes.filter(labels__name=self.label)
+
+        nodes = list(nodes)
+
+        if not nodes:
+            raise Exception("LeastLoadedNodeScheduler: No suitable nodes to pick from")
 
         # TODO: logic to filter nodes by which nodes are up, and which
         #   nodes the slice can instantiate on.

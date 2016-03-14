@@ -1,0 +1,17 @@
+<div class="modal fade" ng-class="{in: vm.open}" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button ng-click="vm.close()"  type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Select a subscriber:</h4>
+      </div>
+      <div class="modal-body">
+        <select class="form-control" ng-options="s as s.humanReadableName for s in vm.subscribers" ng-model="vm.selected"></select>
+      </div>
+      <div class="modal-footer">
+        <button ng-click="vm.close()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button ng-click="vm.select(vm.selected)" type="button" class="btn btn-primary">Select</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

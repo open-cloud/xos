@@ -22,7 +22,6 @@ from broadbandshield import BBS
 
 logger = Logger(level=logging.INFO)
 
-PARENTAL_MECHANISM="dnsmasq"
 ENABLE_QUICK_UPDATE=False
 
 CORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
@@ -66,37 +65,51 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         vcpe_service = self.get_vcpe_service(o)
 
         dnsdemux_ip = None
-        if vcpe_service.backend_network_label:
-            # Connect to dnsdemux using the network specified by
-            #     vcpe_service.backend_network_label
-            for service in HpcService.objects.all():
-                for slice in service.slices.all():
-                    if "dnsdemux" in slice.name:
-                        for instance in slice.instances.all():
-                            for ns in instance.ports.all():
-                                if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
-                                    dnsdemux_ip = ns.ip
-            if not dnsdemux_ip:
-                logger.info("failed to find a dnsdemux on network %s" % vcpe_service.backend_network_label)
+        cdn_prefixes = []
+
+        cdn_config_fn = "/opt/xos/synchronizers/vcpe/cdn_config"
+        if os.path.exists(cdn_config_fn):
+            # manual CDN configuration
+            #   the first line is the address of dnsredir
+            #   the remaining lines are domain names, one per line
+            lines = file(cdn_config_fn).readlines()
+            if len(lines)>=2:
+                dnsdemux_ip = lines[0].strip()
+                cdn_prefixes = [x.strip() for x in lines[1:] if x.strip()]
         else:
-            # Connect to dnsdemux using the instance's public address
-            for service in HpcService.objects.all():
-                for slice in service.slices.all():
-                    if "dnsdemux" in slice.name:
-                        for instance in slice.instances.all():
-                            if dnsdemux_ip=="none":
-                                try:
-                                    dnsdemux_ip = socket.gethostbyname(instance.node.name)
-                                except:
-                                    pass
-            if not dnsdemux_ip:
-                logger.info("failed to find a dnsdemux with a public address")
+            # automatic CDN configuiration
+            #    it learns everything from CDN objects in XOS
+            #    not tested on pod.
+            if vcpe_service.backend_network_label:
+                # Connect to dnsdemux using the network specified by
+                #     vcpe_service.backend_network_label
+                for service in HpcService.objects.all():
+                    for slice in service.slices.all():
+                        if "dnsdemux" in slice.name:
+                            for instance in slice.instances.all():
+                                for ns in instance.ports.all():
+                                    if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
+                                        dnsdemux_ip = ns.ip
+                if not dnsdemux_ip:
+                    logger.info("failed to find a dnsdemux on network %s" % vcpe_service.backend_network_label)
+            else:
+                # Connect to dnsdemux using the instance's public address
+                for service in HpcService.objects.all():
+                    for slice in service.slices.all():
+                        if "dnsdemux" in slice.name:
+                            for instance in slice.instances.all():
+                                if dnsdemux_ip=="none":
+                                    try:
+                                        dnsdemux_ip = socket.gethostbyname(instance.node.name)
+                                    except:
+                                        pass
+                if not dnsdemux_ip:
+                    logger.info("failed to find a dnsdemux with a public address")
+
+            for prefix in CDNPrefix.objects.all():
+                cdn_prefixes.append(prefix.prefix)
 
         dnsdemux_ip = dnsdemux_ip or "none"
-
-        cdn_prefixes = []
-        for prefix in CDNPrefix.objects.all():
-            cdn_prefixes.append(prefix.prefix)
 
         # Broadbandshield can either be set up internally, using vcpe_service.bbs_slice,
         # or it can be setup externally using vcpe_service.bbs_server.
@@ -131,13 +144,14 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
             full_setup = True
 
         safe_macs=[]
-        if o.volt and o.volt.subscriber:
-            for user in o.volt.subscriber.users:
-                level = user.get("level",None)
-                mac = user.get("mac",None)
-                if level in ["G", "PG"]:
-                    if mac:
-                        safe_macs.append(mac)
+        if vcpe_service.url_filter_kind == "safebrowsing":
+            if o.volt and o.volt.subscriber:
+                for user in o.volt.subscriber.users:
+                    level = user.get("level",None)
+                    mac = user.get("mac",None)
+                    if level in ["G", "PG"]:
+                        if mac:
+                            safe_macs.append(mac)
 
         wan_vm_ip=""
         wan_vm_mac=""
@@ -166,7 +180,9 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                 "wan_vm_mac": wan_vm_mac,
                 "wan_vm_ip": wan_vm_ip,
                 "safe_browsing_macs": safe_macs,
-                "dns_servers": [x.strip() for x in vcpe_service.dns_servers.split(",")] }
+                "container_name": "vcpe-%s-%s" % (s_tags[0], c_tags[0]),
+                "dns_servers": [x.strip() for x in vcpe_service.dns_servers.split(",")],
+                "url_filter_kind": vcpe_service.url_filter_kind }
 
         # add in the sync_attributes that come from the SubscriberRoot object
 
@@ -203,7 +219,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
             url_filter_level = o.volt.subscriber.url_filter_level
             url_filter_users = o.volt.subscriber.users
 
-        if PARENTAL_MECHANISM=="broadbandshield":
+        if service.url_filter_kind == "broadbandshield":
             # disable url_filter if there are no bbs_addrs
             if url_filter_enable and (not fields.get("bbs_addrs",[])):
                 logger.info("disabling url_filter because there are no bbs_addrs")

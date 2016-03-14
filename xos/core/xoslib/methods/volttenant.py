@@ -6,7 +6,7 @@ from rest_framework import generics
 from rest_framework import status
 from core.models import *
 from django.forms import widgets
-from services.cord.models import VOLTTenant, VOLTService
+from services.cord.models import VOLTTenant, VOLTService, CordSubscriberRoot
 from plus import PlusSerializerMixin
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
 
@@ -26,10 +26,10 @@ def get_default_volt_service():
 class VOLTTenantIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = ReadOnlyField()
         service_specific_id = serializers.CharField()
-        #vlan_id = serializers.CharField()
         s_tag = serializers.CharField()
         c_tag = serializers.CharField()
         provider_service = serializers.PrimaryKeyRelatedField(queryset=VOLTService.get_service_objects().all(), default=get_default_volt_service)
+        subscriber_root = serializers.PrimaryKeyRelatedField(queryset=CordSubscriberRoot.get_tenant_objects().all(), required=False)
 
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
 
@@ -37,7 +37,7 @@ class VOLTTenantIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
 
         class Meta:
             model = VOLTTenant
-            fields = ('humanReadableName', 'id', 'provider_service', 'service_specific_id', 's_tag', 'c_tag', 'computeNodeName' )
+            fields = ('humanReadableName', 'id', 'provider_service', 'service_specific_id', 's_tag', 'c_tag', 'computeNodeName', 'subscriber_root' )
 
         def getHumanReadableName(self, obj):
             return obj.__unicode__()

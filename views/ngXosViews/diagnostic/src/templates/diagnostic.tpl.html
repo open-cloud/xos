@@ -1,0 +1,31 @@
+<div class="container-fluid">
+  <div ng-hide="vm.error && vm.loader" style="height: 900px">
+    <div class="onethird-height">
+      <div class="well">
+        Services Graph
+      </div>
+      <div class="well pull-right" ng-click="vm.reloadGlobalScope()" ng-show="vm.selectedSubscriber">
+        Reset subscriber
+      </div>
+      <service-topology service-chain="vm.serviceChain"></service-topology>
+    </div>
+    <div class="twothird-height">
+      <div class="well">
+        Logical Resources
+      </div>
+      <logic-topology ng-if="vm.subscribers" subscribers="vm.subscribers" selected="vm.selectedSubscriber"></logic-topology>
+    </div>
+  </div>
+  <div class="row" ng-if="vm.error">
+    <div class="col-xs-12">
+      <div class="alert alert-danger">
+        {{vm.error}}
+      </div>
+    </div>
+  </div>
+  <div class="row" ng-if="vm.loader">
+    <div class="col-xs-12">
+      <div class="loader">Loading</div>
+    </div>
+  </div>
+</div>

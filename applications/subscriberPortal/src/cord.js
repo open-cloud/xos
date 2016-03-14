@@ -76,7 +76,7 @@
         {
           "id": "family",
           "name": "Family Bundle",
-          "desc": "Description for family bundle",
+          "desc": "Description for family bundle and the amazing thing it can do to manage your house device Parent Control.",
           "functions": [
             {
               "id": "internet",

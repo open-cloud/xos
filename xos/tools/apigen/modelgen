@@ -11,9 +11,13 @@ from optparse import OptionParser
 
 # Django set up
 
+import django
 sys.path.append('.')
+sys.path.append('/opt/xos')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.db.models.fields.related import ForeignKey, ManyToManyField
+
+django.setup()
 
 options = None
 
@@ -30,7 +34,9 @@ g = globals()
 
 def enum_classes(apps):
     global app_map
+    global class_map
     app_map = {}
+    class_map = {}
     model_classes = []
     for app in apps:
             orig_app=app
@@ -49,6 +55,16 @@ def enum_classes(apps):
                     if type(c)==type(PlCoreBase) and c.__name__ not in options.blacklist:
                             model_classes.append(c)
                             app_map[c.__name__]=orig_app
+                            c.class_name = c.__name__
+                            file_name = c.__module__.rsplit('.',1)[1]
+                            try:
+                                if (file_name not in class_map[orig_app]):
+                                    class_map[orig_app].append({file_name:[c]})
+                                else:
+                                    class_map[orig_app][file_name].append(c)
+
+                            except KeyError:
+                                class_map[orig_app] = [{file_name:[c]}]
 
 
     return model_classes
@@ -98,6 +114,9 @@ class GenObj(object):
 		return name
 		
 class Generator(dict):
+        def __init__(self):
+            self.apps = {}
+
 	def all(self):
 		return self.values()
 
@@ -117,7 +136,19 @@ class Generator(dict):
                     obj.app = app_map[o.__name__]
                 except KeyError:
                     print "KeyError: %r"%o.__name__
-                    pdb.set_trace()
+                obj.class_name = o.class_name
+
+                file_name = o.__module__.rsplit('.',1)[1]
+
+                try:
+                    if (file_name not in self.apps[obj.app]):
+                        self.apps[obj.app][file_name]=[obj]
+                    else:
+                        self.apps[obj.app][file_name].append(obj)
+
+                except KeyError:
+                    self.apps[obj.app] = {file_name:[obj]}
+
 		self[str(obj).lower()]=obj
 
 	def compute_links(self):
@@ -150,7 +181,8 @@ class Generator(dict):
                                         pass
 				else:
                                         f.type = f.__class__.__name__
-
+                                        if (type(f)==ForeignKey):
+                                            f.related.model.class_name = f.related.model.__name__
                                         if (f.name not in base_props):
                                             obj.fields.append(f) 
                                         obj.props.append(f.name)
@@ -188,6 +220,9 @@ class Generator(dict):
 def main():
         global options
         parser = OptionParser(usage="modelgen [options] <template_fn>", )
+
+        parser.add_option("-d", "--dict", dest="dict",
+             help="dictionary to replace text in output", metavar="DICT", default=[], action="append")
 
         parser.add_option("-a", "--app", dest="apps",
              help="list of applications to parse", metavar="APP", default=[], action="append")
@@ -228,7 +263,31 @@ def main():
 	template_contents = open(template_name).read()
 	template = Template(template_contents)
 	context = Context({'generator':generator})
-	print template.render(context)
+	rendered = template.render(context)
+        lines = rendered.splitlines()
+        current_buffer = []
+        for l in lines:
+            if (l.startswith('+++')):
+                filename = l[4:]
+                fil = open(filename,'w')
+                buf = '\n'.join(current_buffer)
+
+                obuf = buf
+                for d in options.dict:
+                    df = open(d).read()
+                    d = json.loads(df)
+
+                    pattern = re.compile(r'\b(' + '|'.join(d.keys()) + r')\b')
+                    obuf = pattern.sub(lambda x: d[x.group()], buf)
+                fil.write(obuf)
+                fil.close()
+
+                print 'Written to file %s'%filename
+                current_buffer = []
+            else:
+                current_buffer.append(l)
+        if (current_buffer):
+            print '\n'.join(current_buffer)
 
 
 if (__name__=='__main__'):

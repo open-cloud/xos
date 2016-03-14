@@ -23,9 +23,9 @@ body{
   overflow-x: hidden;
 }
 
-/*#wrap {
+#wrap {
   min-height: 100%;
-}*/
+}
 
 /* ************************* LOGIN PAGE ************************* */
 
@@ -44,6 +44,7 @@ body.login img.logo{
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
+    min-height: 900px;
 }
 
 #wrapper.toggled {
@@ -74,6 +75,15 @@ body.login img.logo{
     width: 100%;
     position: absolute;
     padding: 15px;
+    min-height: 900px;
+}
+
+#page-content-wrapper .container-fluid {
+  min-height: 900px;
+}
+
+.ui-tabs-panel {
+    min-height: 700px;
 }
 
 #wrapper.toggled #page-content-wrapper {
@@ -353,12 +363,20 @@ border: 0px;
     background-color: #105E9E;
     text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
 }
+
+.ui-state-default a {
+    padding: 20px !important;
+    line-height: 20px !important;
+    transition: all .5s ease-in-out;
+}
+
 .ui-state-active a,
 .ui-state-active a:link{
     color: #ffffff !important;
     background-color: #105E9E !important;
     text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
     font-weight: normal;
+    font-size: 20px;
 }
 
 
@@ -491,7 +509,9 @@ margin-bottom: 5px;
 background-color: #ffffff;
 }
 
-
+.ui-tabs .ui-tabs-panel {
+  position:relative;
+}
 
 
 .nav-tabs-suit li{

@@ -123,18 +123,18 @@ topology_template:
           view_url: /admin/ceilometer/ceilometerservice/$id$/
           kind: ceilometer
           ceilometer_pub_sub_url: http://10.11.10.1:4455/
-#          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
-#      artifacts:
-#          pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+      artifacts:
+          pubkey: /opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key
 
-    service_sflow:
-      type: tosca.nodes.SFlowService
-      requirements:
-      properties:
-          view_url: /admin/ceilometer/sflowservice/$id$/
-          kind: sflow
-          sflow_port: 6343
-          sflow_api_port: 33333
+#    service_sflow:
+#      type: tosca.nodes.SFlowService
+#      requirements:
+#      properties:
+#          view_url: /admin/ceilometer/sflowservice/$id$/
+#          kind: sflow
+#          sflow_port: 6343
+#          sflow_api_port: 33333
 
     Private:
       type: tosca.nodes.NetworkTemplate
@@ -161,6 +161,9 @@ topology_template:
     trusty-server-multi-nic:
       type: tosca.nodes.Image
 
+    ceilometer-trusty-server-multi-nic:
+      type: tosca.nodes.Image
+
     mysite_ceilometer:
       description: Ceilometer Proxy Slice
       type: tosca.nodes.Slice
@@ -172,21 +175,21 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
           - default_image:
-                node: trusty-server-multi-nic
+                node: ceilometer-trusty-server-multi-nic
                 relationship: tosca.relationships.DefaultImage
       properties:
           default_flavor: m1.small
 
-    mysite_sflow:
-      description: Slice for sFlow service
-      type: tosca.nodes.Slice
-      requirements:
-          - sflow_service:
-              node: service_sflow
-              relationship: tosca.relationships.MemberOfService
-          - site:
-              node: mysite
-              relationship: tosca.relationships.MemberOfSite
+#    mysite_sflow:
+#      description: Slice for sFlow service
+#      type: tosca.nodes.Slice
+#      requirements:
+#          - sflow_service:
+#              node: service_sflow
+#              relationship: tosca.relationships.MemberOfService
+#          - site:
+#              node: mysite
+#              relationship: tosca.relationships.MemberOfSite
 
     my_ceilometer_tenant:
       description: Ceilometer Service default Tenant
@@ -197,32 +200,44 @@ topology_template:
               relationship: tosca.relationships.MemberOfService
        
     # Virtual machines
-    sflow_service_instance:
-      type: tosca.nodes.Compute
-      capabilities:
-        # Host container properties
-        host:
-         properties:
-           num_cpus: 1
-           disk_size: 10 GB
-           mem_size: 4 MB
-        # Guest Operating System properties
-        os:
-          properties:
-            # host Operating System image properties
-            architecture: x86_64
-            type: linux
-            distribution: Ubuntu
-            version: 14.10
-      requirements:
-          - slice:
-                node: mysite_sflow
-                relationship: tosca.relationships.MemberOfSlice
+#    sflow_service_instance:
+#      type: tosca.nodes.Compute
+#      capabilities:
+#        # Host container properties
+#        host:
+#         properties:
+#           num_cpus: 1
+#           disk_size: 10 GB
+#           mem_size: 4 MB
+#        # Guest Operating System properties
+#        os:
+#          properties:
+#            # host Operating System image properties
+#            architecture: x86_64
+#            type: linux
+#            distribution: Ubuntu
+#            version: 14.10
+#      requirements:
+#          - slice:
+#                node: mysite_sflow
+#                relationship: tosca.relationships.MemberOfSlice
+
+    Customer Care:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosDiagnostic
+
+    TruckRoll:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosTruckroll
 
     Ceilometer:
       type: tosca.nodes.DashboardView
       properties:
           url: template:xosCeilometerDashboard
+
+
     Tenant:
       type: tosca.nodes.DashboardView
       properties:
@@ -237,9 +252,15 @@ topology_template:
           lastname: admin
           is_admin: true
       requirements:
-          - tenant_dashboard:
-              node: Tenant
+          - customer_care_dashboard:
+              node: Customer Care
+              relationship: tosca.relationships.UsesDashboard
+          - truckroll_dashboard:
+              node: TruckRoll
               relationship: tosca.relationships.UsesDashboard
           - ceilometer_dashboard:
               node: Ceilometer
+              relationship: tosca.relationships.UsesDashboard
+          - tenant_dashboard:
+              node: Tenant
               relationship: tosca.relationships.UsesDashboard

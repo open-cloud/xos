@@ -1266,12 +1266,45 @@ class ImageAdmin(XOSBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
 
 class NodeForm(forms.ModelForm):
+    labels = forms.ModelMultipleChoiceField(
+        queryset=NodeLabel.objects.all(),
+        required=False,
+        help_text="Select which labels apply to this node",
+        widget=FilteredSelectMultiple(
+            verbose_name=('Labels'), is_stacked=False
+        )
+    )
     class Meta:
         model = Node
         widgets = {
             'site': LinkedSelect,
             'deployment': LinkedSelect
         }
+
+    def __init__(self, *args, **kwargs):
+      request = kwargs.pop('request', None)
+      super(NodeForm, self).__init__(*args, **kwargs)
+
+      if self.instance and self.instance.pk:
+        self.fields['labels'].initial = self.instance.labels.all()
+
+    def save(self, commit=True):
+      node = super(NodeForm, self).save(commit=False)
+
+      node.labels = self.cleaned_data['labels']
+
+      if commit:
+        node.save()
+
+      return node
+
+
+class NodeLabelAdmin(XOSBaseAdmin):
+    list_display = ('name',)
+    list_display_links = ('name', )
+
+    fields = ('name', )
+
 
 class NodeAdmin(XOSBaseAdmin):
     form = NodeForm
@@ -1280,13 +1313,14 @@ class NodeAdmin(XOSBaseAdmin):
     list_filter = ('site_deployment',)
 
     inlines = [TagInline,InstanceInline]
-    fieldsets = [('Node Details', {'fields': ['backend_status_text', 'name', 'site_deployment'], 'classes':['suit-tab suit-tab-details']})]
+    fieldsets = [('Node Details', {'fields': ['backend_status_text', 'name', 'site_deployment'], 'classes':['suit-tab suit-tab-details']}),
+                 ('Labels', {'fields': ['labels'], 'classes':['suit-tab suit-tab-labels']})]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = ['name','site_deployment']
     user_readonly_inlines = [TagInline,InstanceInline]
 
-    suit_form_tabs =(('details','Node Details'),('instances','Instances'))
+    suit_form_tabs =(('details','Node Details'),('instances','Instances'), ('labels', 'Labels'))
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -1520,7 +1554,6 @@ class ControllerUserInline(XOSTabularInline):
     extra = 0
     suit_classes = 'suit-tab suit-tab-admin-only'
     fields = ['controller', 'user', 'kuser_id']
-    readonly_fields=['controller']
 
 
 class UserAdmin(XOSAdminMixin, UserAdmin):
@@ -2107,6 +2140,7 @@ if True:
     admin.site.register(SiteRole)
     admin.site.register(SliceRole)
     admin.site.register(Node, NodeAdmin)
+    admin.site.register(NodeLabel, NodeLabelAdmin)
     #admin.site.register(SlicePrivilege, SlicePrivilegeAdmin)
     #admin.site.register(SitePrivilege, SitePrivilegeAdmin)
     admin.site.register(Instance, InstanceAdmin)

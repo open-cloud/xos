@@ -36,7 +36,8 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
 
     KIND = CEILOMETER_KIND
     LOOK_FOR_IMAGES=[ #"trusty-server-multi-nic-docker", # CloudLab
-                      "trusty-server-multi-nic",
+                      "ceilometer-trusty-server-multi-nic",
+                      #"trusty-server-multi-nic",
                     ]
 
 
@@ -87,10 +88,11 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
         for ns in self.instance.ports.all():
             if "private" in ns.network.name.lower():
                 addresses["private"] = (ns.ip, ns.mac)
-            elif "nat" in ns.network.name.lower():
+            elif ("nat" in ns.network.name.lower()) or ("management" in ns.network.name.lower()):
                 addresses["nat"] = (ns.ip, ns.mac)
-            elif "ceilometer_client_access" in ns.network.labels.lower():
-                addresses["ceilometer"] = (ns.ip, ns.mac)
+            #TODO: Do we need this client_access_network. Revisit in VTN context
+            #elif "ceilometer_client_access" in ns.network.labels.lower():
+            #    addresses["ceilometer"] = (ns.ip, ns.mac)
         return addresses
 
     @property
@@ -164,7 +166,7 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
 
     @property
     def ceilometer_url(self):
-        if not self.ceilometer_ip:
+        if not self.private_ip:
             return None
         return "http://" + self.private_ip + ":" + str(self.ceilometer_port) + "/"
 
