@@ -1,6 +1,6 @@
 import time
 
-from core.admin import ReadOnlyAwareAdmin, SliceInline
+from core.admin import ReadOnlyAwareAdmin, SliceInline, TenantPrivilegeInline
 from core.middleware import get_request
 from core.models import User
 from django import forms
@@ -126,11 +126,38 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
                          'classes': ['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'instance')
     form = VPNTenantForm
+    inlines = [TenantPrivilegeInline]
 
-    suit_form_tabs = (('general', 'Details'),)
+    suit_form_tabs = (('general', 'Details'),
+        ('tenantprivileges','Privileges')
+    )
 
     def queryset(self, request):
         return VPNTenant.get_tenant_objects_by_user(request.user)
+
+    def certificate_name(self, tenant_privilege):
+        return str(tenant_privilege.user.email) + "-" + str(tenant_privilege.tenant.id)
+
+    def save_formset(self, request, form, formset, change):
+        super(VPNTenantAdmin, self).save_formset(request, form, formset, change)
+        for obj in formset.deleted_objects:
+            # If anything deleated was a TenantPrivilege then revoke the certificate
+            if type(obj) is TenantPrivilege:
+                certificate = self.certificate_name(obj)
+                # revoke the cert
+                pass
+            # TODO(jermowery): determine if this is necessary.
+            # if type(obj) is VPNTenant:
+                # if the tenant was deleted revoke all certs assoicated
+                # pass
+
+        for obj in formset.new_objects:
+            # If there were any new TenantPrivlege objects then create certs
+            if type(obj) is TenantPrivilege:
+                certificate = self.certificate_name(obj)
+                # create the cert
+                pass
+
 
 # Associate the admin forms with the models.
 admin.site.register(VPNService, VPNServiceAdmin)

@@ -1,7 +1,7 @@
 from .plcorebase import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager,PlModelMixIn
 from .project import Project
 from .singletonmodel import SingletonModel
-from .service import Service, Tenant, TenantWithContainer, CoarseTenant, ServicePrivilege, TenantRoot, TenantRootPrivilege, TenantRootRole, Subscriber, Provider
+from .service import Service, Tenant, TenantWithContainer, CoarseTenant, ServicePrivilege, TenantRoot, TenantRootPrivilege, TenantRootRole, TenantPrivilege, TenantRole, Subscriber, Provider
 from .service import ServiceAttribute, TenantAttribute, ServiceRole
 from .tag import Tag
 from .role import Role
@@ -29,4 +29,3 @@ from .reservation import Reservation
 from .network import Network, NetworkParameterType, NetworkParameter, Port, NetworkTemplate, Router, NetworkSlice, ControllerNetwork, AddressPool
 from .billing import Account, Invoice, Charge, UsableObject, Payment
 from .program import Program
-
