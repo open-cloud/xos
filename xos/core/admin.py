@@ -879,6 +879,16 @@ class TenantRootPrivilegeInline(XOSTabularInline):
     def queryset(self, request):
         return TenantRootPrivilege.select_by_user(request.user)
 
+class TenantPrivilegeInline(XOSTabularInline):
+    model = TenantPrivilege
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-tenantprivileges'
+    fields = ['backend_status_icon', 'user', 'role', 'tenant']
+    readonly_fields = ('backend_status_icon', )
+
+    def queryset(self, request):
+        return TenantPrivilege.select_by_user(request.user)
+
 class TenantRootAdmin(XOSBaseAdmin):
     model = TenantRoot
     list_display = ('backend_status_icon', 'name', 'kind')

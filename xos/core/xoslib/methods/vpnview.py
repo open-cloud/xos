@@ -62,6 +62,7 @@ class VPNTenantList(XOSListCreateAPIView):
 
     def get_queryset(self):
         queryset = VPNTenant.get_tenant_objects().all()
+        queryset = [ tenant for tenant in queryset if self.request.user.can_update_tenant(tenant, ['access','Access'])]
         for tenant in queryset:
             tenant.script_text = tenant.create_client_script()
         return queryset
