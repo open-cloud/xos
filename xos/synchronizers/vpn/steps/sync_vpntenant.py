@@ -42,7 +42,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
 
     def run_playbook(self, o, fields):
         # Generate the server files
-        (stdout, stderr) = Popen("/opt/openvpn/easyrsa3/easyrsa --batch build-server-full server" + o.instance.instance_id + " nopass",shell=True, stdout=PIPE).communicate()
+        (stdout, stderr) = Popen("/opt/openvpn/easyrsa3/easyrsa --batch build-server-full server-" + o.id + " nopass",shell=True, stdout=PIPE).communicate()
         print(str(stdout))
         print(str(stderr))
         super(SyncVPNTenant, self).run_playbook(o, fields)
