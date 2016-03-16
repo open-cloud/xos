@@ -41,58 +41,8 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
                 }
 
     def run_playbook(self, o, fields):
-        self.create_client_script(o)
         # Generate the server files
         (stdout, stderr) = Popen("/opt/openvpn/easyrsa3/easyrsa --batch build-server-full server" + o.instance.instance_id + " nopass",shell=True, stdout=PIPE).communicate()
         print(str(stdout))
         print(str(stderr))
         super(SyncVPNTenant, self).run_playbook(o, fields)
-
-    def create_client_script(self, tenant):
-        script = open("/opt/xos/core/static/vpn/" + str(tenant.script), 'w')
-        # write the configuration portion
-        script.write("printf \"%b\" \"")
-        for line in self.generate_client_conf(tenant).splitlines():
-            script.write(line + r"\n")
-        script.write("\" > client.conf\n")
-        script.write("printf \"%b\" \"")
-        for line in self.generate_login().splitlines():
-            script.write(line + r"\n")
-        script.write("\" > login.up\n")
-        script.write("printf \"%b\" \"")
-        for line in tenant.ca_crt:
-            script.write(line.rstrip() + r"\n")
-        script.write("\" > ca.crt\n")
-        # make sure openvpn is installed
-        script.write("apt-get update\n")
-        script.write("apt-get install openvpn\n")
-        script.write("openvpn client.conf &\n")
-        # close the script
-        script.close()
-
-    def generate_login(self):
-        return str(time.time()) + "\npassword\n"
-
-    def generate_client_conf(self, tenant):
-        """str: Generates the client configuration to use to connect to this VPN server.
-
-        Args:
-            tenant (VPNTenant): The tenant to generate the client configuration for.
-
-        """
-        conf = ("client\n" +
-            "auth-user-pass login.up\n" +
-            "dev tun\n" +
-            "proto udp\n" +
-            "remote " + str(tenant.nat_ip) + " 1194\n" +
-            "resolv-retry infinite\n" +
-            "nobind\n" +
-            "ca ca.crt\n" +
-            "comp-lzo\n" +
-            "verb 3\n")
-
-        if tenant.is_persistent:
-            conf += "persist-tun\n"
-            conf += "persist-key\n"
-
-        return conf
