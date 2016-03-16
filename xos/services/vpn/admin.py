@@ -6,7 +6,7 @@ from core.models import User
 from django import forms
 from django.contrib import admin
 from services.vpn.models import VPN_KIND, VPNService, VPNTenant
-
+from subprocess import Popen, PIPE
 
 class VPNServiceAdmin(ReadOnlyAwareAdmin):
     """Defines the admin for the VPNService."""
@@ -144,8 +144,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
             # If anything deleated was a TenantPrivilege then revoke the certificate
             if type(obj) is TenantPrivilege:
                 certificate = self.certificate_name(obj)
-                # revoke the cert
-                pass
+                Popen("/opt/openvpn/easyrsa3/easyrsa --batch revoke " + certificate, shell=True, stdout=PIPE).communicate()
             # TODO(jermowery): determine if this is necessary.
             # if type(obj) is VPNTenant:
                 # if the tenant was deleted revoke all certs assoicated
@@ -155,8 +154,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
             # If there were any new TenantPrivlege objects then create certs
             if type(obj) is TenantPrivilege:
                 certificate = self.certificate_name(obj)
-                # create the cert
-                pass
+                Popen("/opt/openvpn/easyrsa3/easyrsa --batch build-client-full " + certificate + " nopass", shell=True, stdout=PIPE).communicate()
 
 
 # Associate the admin forms with the models.
