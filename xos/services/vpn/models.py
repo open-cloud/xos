@@ -34,7 +34,8 @@ class VPNTenant(TenantWithContainer):
                           'is_persistent': True,
                           'ca_crt': None,
                           'port': None,
-                          'script_text': None}
+                          'script_text': None,
+                          'failover_servers': []}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()
@@ -110,6 +111,14 @@ class VPNTenant(TenantWithContainer):
     @is_persistent.setter
     def is_persistent(self, value):
         self.set_attribute("is_persistent", value)
+
+    @property
+    def failover_servers(self):
+        self.get_attribute("failover_servers", self.default_attributes["failover_servers"])
+
+    @failover_servers.setter
+    def failover_servers(self, value):
+        self.set_attribute("failover_servers", value)
 
     @property
     def clients_can_see_each_other(self):
