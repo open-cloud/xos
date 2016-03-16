@@ -59,7 +59,7 @@ class VPNTenantForm(forms.ModelForm):
     vpn_subnet = forms.GenericIPAddressField(protocol="IPv4", required=True)
     is_persistent = forms.BooleanField(required=False)
     clients_can_see_each_other = forms.BooleanField(required=False)
-    failover_servers = forms.ModelMultipleChoiceField(queryset=VPNTenant.objects.all(), required=False)
+    failover_servers = forms.ModelMultipleChoiceField(queryset=VPNTenant.get_tenant_objects(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
@@ -100,7 +100,7 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.failover_servers = self.cleaned_data.get('failover_servers')
 
         prev = 1000
-        for (tenant : VPNTenant.objects.order_by('port_number')):
+        for (tenant : VPNTenant.get_tenant_objects().order_by('port_number')):
             if (tenant.port_number != prev):
                 break
             prev++
