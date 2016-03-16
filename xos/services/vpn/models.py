@@ -1,5 +1,3 @@
-import time
-
 from core.models import Service, TenantWithContainer
 from django.db import transaction
 
