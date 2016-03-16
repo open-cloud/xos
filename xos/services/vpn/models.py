@@ -148,19 +148,23 @@ class VPNTenant(TenantWithContainer):
     def script_text(self, value):
         self.set_attribute("script_text", value)
 
-    def create_client_script(self):
+    def create_client_script(self, client_certificate):
         script = ""
         # write the configuration portion
         script += ("printf \"%b\" \"")
-        script += self.generate_client_conf()
+        script += self.generate_client_conf(client_certificate)
         script += ("\" > client.conf\n")
-        script += ("printf \"%b\" \"")
-        script += self.generate_login()
-        script += ("\" > login.up\n")
         script += ("printf \"%b\" \"")
         for line in self.ca_crt:
             script += (line.rstrip() + r"\n")
         script += ("\" > ca.crt\n")
+        script += ("printf \"%b\" \"")
+        for line in self.generate_client_cert(client_certificate):
+            script += (line.rstrip() + r"\n")
+        script += ("\" > " + client_certificate + ".crt\n")
+        for line in self.generate_client_key(client_certificate):
+            script += (line.rstrip() + r"\n")
+        script += ("\" > " + client_certificate + ".key\n")
         # make sure openvpn is installed
         script += ("apt-get update\n")
         script += ("apt-get install openvpn\n")
@@ -168,20 +172,24 @@ class VPNTenant(TenantWithContainer):
         # close the script
         return script;
 
-    def generate_login(self):
-        return str(time.time()) + "\npassword\n"
+    def generate_client_cert(self, client_certificate):
+        return open("/opt/openvpn/easyrsa3/pki/issued/" + client_certificate + ".crt").readlines()
 
-    def generate_client_conf(self):
+    def generate_client_key(self, client_certificate):
+        return open("/opt/openvpn/easyrsa3/pki/private/" + client_certificate + ".key").readlines()
+
+    def generate_client_conf(self, client_certificate):
         """str: Generates the client configuration to use to connect to this VPN server.
         """
         conf = ("client\n" +
-            "auth-user-pass login.up\n" +
             "dev tun\n" +
             "proto udp\n" +
             "remote " + str(self.nat_ip) + " " + str(self.port_number) + "\n" +
             "resolv-retry infinite\n" +
             "nobind\n" +
             "ca ca.crt\n" +
+            "cert " + client_certificate + ".crt\n" +
+            "key " + client_certificate + ".key\n" +
             "comp-lzo\n" +
             "verb 3\n")
 
