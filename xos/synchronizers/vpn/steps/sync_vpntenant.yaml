@@ -9,26 +9,26 @@
     is_persistent: {{ is_persistent }}
     vpn_subnet: {{ vpn_subnet }}
     clients_can_see_each_other: {{ clients_can_see_each_other }}
-    instance_id: {{ instance_id }}
+    tenant_id: {{ tenant_id }}
 
   tasks:
   - name: install openvpn
     apt: name=openvpn state=present update_cache=yes
 
   - name: stop openvpn
-    shell: kill -9 $(cat /opt/openvpn/server{{ instance_id }}/pid) || true
+    shell: kill -9 $(cat /opt/openvpn/server-{{ tenant_id }}/pid) || true
 
   - name: make sure /opt/openvpn exists
     file: path=/opt/openvpn state=directory
 
   - name: make sure directory for this server exists
-    file: path=/opt/openvpn/server{{ instance_id }} state=directory
+    file: path=/opt/openvpn/server-{{ tenant_id }} state=directory
 
   - name: get server key
-    copy: src=/opt/openvpn/easyrsa3/pki/private/server{{ instance_id }}.key dest=/opt/openvpn/server{{ instance_id }}/server.key
+    copy: src=/opt/openvpn/easyrsa3/pki/private/server-{{ tenant_id }}.key dest=/opt/openvpn/server-{{ tenant_id }}/server.key
 
   - name: get server crt
-    copy: src=/opt/openvpn/easyrsa3/pki/issued/server{{ instance_id }}.crt dest=/opt/openvpn/server{{ instance_id }}/server.crt
+    copy: src=/opt/openvpn/easyrsa3/pki/issued/server-{{ tenant_id }}.crt dest=/opt/openvpn/server-{{ tenant_id }}/server.crt
 
   - name: get ca crt
     copy: src=/opt/openvpn/easyrsa3/pki/ca.crt dest=/opt/openvpn/ca.crt
@@ -37,16 +37,16 @@
     copy: src=/opt/openvpn/easyrsa3/pki/dh.pem dest=/opt/openvpn/dh.pem
 
   - name: erase config
-    shell: rm -f /opt/openvpn/server{{ instance_id }}/server.conf
+    shell: rm -f /opt/openvpn/server-{{ tenant_id }}/server.conf
 
   - name: erase auth script
-    shell: rm -f /opt/openvpn/server{{ instance_id }}/auth.sh
+    shell: rm -f /opt/openvpn/server-{{ tenant_id }}/auth.sh
 
   - name: write auth script
-    shell: printf "%b" "#!/bin/bash\nexit 0" > /opt/openvpn/server{{ instance_id }}/auth.sh
+    shell: printf "%b" "#!/bin/bash\nexit 0" > /opt/openvpn/server-{{ tenant_id }}/auth.sh
 
   - name: make auth script executable
-    shell: chmod 777 /opt/openvpn/server{{ instance_id }}/auth.sh
+    shell: chmod 777 /opt/openvpn/server-{{ tenant_id }}/auth.sh
 
   - name: write base config
     shell:
@@ -56,18 +56,18 @@
        proto udp
        dev tun
        ca /opt/openvpn/ca.crt
-       cert /opt/openvpn/server{{ instance_id }}/server.crt
-       key /opt/openvpn/server{{ instance_id }}/server.key
+       cert /opt/openvpn/server-{{ tenant_id }}/server.crt
+       key /opt/openvpn/server-{{ tenant_id }}/server.key
        dh /opt/openvpn/dh.pem
        server {{ server_network }} {{ vpn_subnet }}
-       ifconfig-pool-persist /opt/openvpn/server{{ instance_id }}/ipp.txt
+       ifconfig-pool-persist /opt/openvpn/server-{{ tenant_id }}/ipp.txt
        comp-lzo
-       status /opt/openvpn/server{{ instance_id }}/openvpn-status.log
+       status /opt/openvpn/server-{{ tenant_id }}/openvpn-status.log
        verb 3
-       auth-user-pass-verify /opt/openvpn/server{{ instance_id }}/auth.sh via-file
+       auth-user-pass-verify /opt/openvpn/server-{{ tenant_id }}/auth.sh via-file
        client-cert-not-required
        username-as-common-name
-       " > /opt/openvpn/server{{ instance_id }}/server.conf
+       " > /opt/openvpn/server-{{ tenant_id }}/server.conf
 
   - name: write persistent config
     shell:
@@ -75,12 +75,12 @@
       printf "keepalive 10 60
       persist-tun
       persist-key
-      " >> /opt/openvpn/server{{ instance_id }}/server.conf
+      " >> /opt/openvpn/server-{{ tenant_id }}/server.conf
     when: {{ is_persistent }}
 
   - name: write client-to-client config
-    shell: printf "client-to-client\n" >> /opt/openvpn/server{{ instance_id }}/server.conf
+    shell: printf "client-to-client\n" >> /opt/openvpn/server{{ tenant_id }}/server.conf
     when: {{ clients_can_see_each_other }}
 
   - name: start openvpn
-    shell: openvpn --writepid /opt/openvpn/server{{ instance_id }}/pid /opt/openvpn/server{{ instance_id }}/server.conf &
+    shell: openvpn --writepid /opt/openvpn/server{{ tenant_id }}/pid /opt/openvpn/server{{ tenant_id }}/server.conf &
