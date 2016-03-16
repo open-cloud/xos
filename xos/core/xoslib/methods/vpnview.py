@@ -29,6 +29,7 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         clients_can_see_each_other = ReadOnlyField()
         ca_crt = ReadOnlyField()
         port_number = ReadOnlyField()
+        failover_servers = ReadOnlyField()
         creator = ReadOnlyField()
         instance = ReadOnlyField()
         script_text = ReadOnlyField()
@@ -44,7 +45,7 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
                       'service_specific_attribute', 'vpn_subnet',
                       'server_network', 'creator', 'instance',
                       'computeNodeName', 'is_persistent', 'clients_can_see_each_other',
-                      'ca_crt', 'port_number', 'script_text')
+                      'ca_crt', 'port_number', 'script_text', 'failover_servers')
 
         def getHumanReadableName(self, obj):
             return obj.__unicode__()

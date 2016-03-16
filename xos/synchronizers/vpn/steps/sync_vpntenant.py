@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 
 from django.db.models import F, Q
 from services.vpn.models import VPNTenant
