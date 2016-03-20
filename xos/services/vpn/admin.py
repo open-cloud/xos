@@ -77,7 +77,8 @@ class VPNTenantForm(forms.ModelForm):
             self.fields[
                 'clients_can_see_each_other'].initial = self.instance.clients_can_see_each_other
             self.fields['is_persistent'].initial = self.instance.is_persistent
-            self.fields['failover_servers'].initial = serializers.deserialize('json', self.instance.failover_servers)
+            if (self.instance.failover_servers):
+                self.fields['failover_servers'].initial = [model.pk for model in list(serializers.deserialize('json', self.instance.failover_servers))]
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
