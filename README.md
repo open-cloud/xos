@@ -4,7 +4,7 @@ For a general introduction to XOS and how it is used in CORD, see
 http://guide.xosproject.org. The "Developer Guide" at that URL is
 especially helpful, although it isn't perfectly sync'ed with master. 
 Additional design notes, presentations, and other collateral are 
-also available at http://xosproject.org and http://cord.onosproject.org.
+also available at http://xosproject.org and http://opencord.org.
 
 The best way to get started is to look at the collection of
 canned configurations in `xos/configurations/`. The `cord` 
