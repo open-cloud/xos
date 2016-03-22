@@ -1,9 +1,5 @@
-from django.core.exceptions import PermissionDenied
 from plus import PlusSerializerMixin
 from rest_framework import serializers
-from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK
-from rest_framework.views import APIView
 from services.vpn.models import VPNService, VPNTenant
 from xos.apibase import XOSListCreateAPIView
 
@@ -14,11 +10,13 @@ else:
     # rest_framework 2.x
     ReadOnlyField = serializers.Field
 
+
 def get_default_vpn_service():
     vpn_services = VPNService.get_service_objects().all()
     if vpn_services:
         return vpn_services[0].id
     return None
+
 
 class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = ReadOnlyField()
@@ -56,6 +54,7 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
                 return None
             return instance.node.name
 
+
 class VPNTenantList(XOSListCreateAPIView):
     serializer_class = VPNTenantSerializer
     method_kind = "list"
@@ -63,7 +62,7 @@ class VPNTenantList(XOSListCreateAPIView):
 
     def get_queryset(self):
         queryset = VPNTenant.get_tenant_objects().all()
-        queryset = [ tenant for tenant in queryset if self.request.user.can_update_tenant(tenant, ['access','Access'])]
+        queryset = [ tenant for tenant in queryset if self.request.user.can_update_tenant(tenant, ['access', 'Access'])]
         for tenant in queryset:
-            tenant.script_text = tenant.create_client_script()
+            tenant.script_text = tenant.create_client_script(self.request.user.email + "-" + tenant.id)
         return queryset

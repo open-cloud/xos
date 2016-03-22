@@ -36,12 +36,14 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
                 "vpn_subnet": tenant.vpn_subnet,
                 "server_network": tenant.server_network,
                 "clients_can_see_each_other": tenant.clients_can_see_each_other,
-                "tenant_id": tenant.id
+                "tenant_id": tenant.id,
+                "port_number": tenant.port_number,
+                "protocol": tenant.protocol
                 }
 
     def run_playbook(self, o, fields):
         # Generate the server files
-        (stdout, stderr) = Popen("/opt/openvpn/easyrsa3/easyrsa --batch build-server-full server-" + o.id + " nopass",shell=True, stdout=PIPE).communicate()
+        (stdout, stderr) = Popen("/opt/openvpn/easyrsa3/easyrsa --batch build-server-full server-" + o.id + " nopass", shell=True, stdout=PIPE).communicate()
         print(str(stdout))
         print(str(stderr))
         super(SyncVPNTenant, self).run_playbook(o, fields)
