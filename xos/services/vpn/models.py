@@ -1,5 +1,6 @@
 from core.models import Service, TenantWithContainer
 from django.db import transaction
+from xos.exceptions import XOSConfigurationError, XOSValidationError
 
 VPN_KIND = "vpn"
 
@@ -13,6 +14,28 @@ class VPNService(Service):
         # The name used to find this service, all directories are named this
         app_label = "vpn"
         verbose_name = "VPN Service"
+
+    default_attributes = {'exposed_ports': None}
+
+    @property
+    def exposed_ports(self):
+        return self.get_attribute("exposed_ports",
+                                    self.default_attributes["exposed_ports"])
+
+    @exposed_ports.setter
+    def exposed_ports(self, value):
+        self.set_attribute("exposed_ports", value)
+
+    def get_next_available_port(self, protocol):
+        if protocol != "udp" and protocol != "tcp":
+            raise XOSConfigurationError("Port protocol must be udp or tcp")
+        if not self.ports[protocol]:
+            raise XOSValidationError("No availble ports for protocol: " + protocol)
+        tenants = [tenant for tenant in VPNTenant.get_tenant_objects.all() if tenant.protocol == protocol]
+        port_numbers = self.exposed_ports[protocol]
+        for port_number in port_numbers:
+            if [tenant for tenant in tenants if tenant.port_number == port_number].count() == 0:
+                return port_number
 
 
 class VPNTenant(TenantWithContainer):
@@ -33,7 +56,8 @@ class VPNTenant(TenantWithContainer):
                           'ca_crt': None,
                           'port': None,
                           'script_text': None,
-                          'failover_servers': []}
+                          'failover_servers': [],
+                          'protocol': None}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()
@@ -49,6 +73,14 @@ class VPNTenant(TenantWithContainer):
     def delete(self, *args, **kwargs):
         self.cleanup_container()
         super(VPNTenant, self).delete(*args, **kwargs)
+
+    @property
+    def protocol(self):
+        return self.get_attribute("protocol", self.default_attributes["protocol"])
+
+    @protocol.setter
+    def protocol(self, value):
+        self.set_attribute("protocol", value)
 
     @property
     def addresses(self):
@@ -155,57 +187,56 @@ class VPNTenant(TenantWithContainer):
     def script_text(self, value):
         self.set_attribute("script_text", value)
 
-    def create_client_script(self, client_certificate):
+    def create_client_script(self, client_name):
         script = ""
         # write the configuration portion
         script += ("printf \"%b\" \"")
-        script += self.generate_client_conf(client_certificate)
+        script += self.generate_client_conf(client_name)
         script += ("\" > client.conf\n")
         script += ("printf \"%b\" \"")
         for line in self.ca_crt:
             script += (line.rstrip() + r"\n")
         script += ("\" > ca.crt\n")
         script += ("printf \"%b\" \"")
-        for line in self.generate_client_cert(client_certificate):
+        for line in self.generate_client_cert(client_name):
             script += (line.rstrip() + r"\n")
-        script += ("\" > " + client_certificate + ".crt\n")
-        for line in self.generate_client_key(client_certificate):
+        script += ("\" > " + client_name + ".crt\n")
+        for line in self.generate_client_key(client_name):
             script += (line.rstrip() + r"\n")
-        script += ("\" > " + client_certificate + ".key\n")
+        script += ("\" > " + client_name + ".key\n")
         # make sure openvpn is installed
         script += ("apt-get update\n")
         script += ("apt-get install openvpn\n")
         script += ("openvpn client.conf &\n")
         # close the script
-        return script;
+        return script
 
-    def generate_client_cert(self, client_certificate):
-        return open("/opt/openvpn/easyrsa3/pki/issued/" + client_certificate + ".crt").readlines()
+    def generate_client_cert(self, client_name):
+        return open("/opt/openvpn/easyrsa3/pki/issued/" + client_name + ".crt").readlines()
 
-    def generate_client_key(self, client_certificate):
-        return open("/opt/openvpn/easyrsa3/pki/private/" + client_certificate + ".key").readlines()
+    def generate_client_key(self, client_name):
+        return open("/opt/openvpn/easyrsa3/pki/private/" + client_name + ".key").readlines()
 
-    def generate_client_conf(self, client_certificate):
+    def generate_client_conf(self, client_name):
         """str: Generates the client configuration to use to connect to this VPN server.
         """
         conf = ("client\n" +
-            "dev tun\n" +
-            "proto udp\n" +
-            "remote " + str(self.nat_ip) + " " + str(self.port_number) + "\n" +
-            "resolv-retry infinite\n" +
-            "nobind\n" +
-            "ca ca.crt\n" +
-            "cert " + client_certificate + ".crt\n" +
-            "key " + client_certificate + ".key\n" +
-            "comp-lzo\n" +
-            "verb 3\n")
+                "dev tun\n" +
+                "proto " + self.protocol + "\n" +
+                "remote " + str(self.nat_ip) + " " + str(self.port_number) + "\n" +
+                "resolv-retry infinite\n" +
+                "nobind\n" +
+                "ca ca.crt\n" +
+                "cert " + client_name + ".crt\n" +
+                "key " + client_name + ".key\n" +
+                "comp-lzo\n" +
+                "verb 3\n")
 
         if self.is_persistent:
             conf += "persist-tun\n"
             conf += "persist-key\n"
 
         return conf
-
 
 
 def model_policy_vpn_tenant(pk):

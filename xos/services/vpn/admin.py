@@ -6,10 +6,60 @@ from django.contrib import admin
 from django.core import serializers
 from services.vpn.models import VPN_KIND, VPNService, VPNTenant
 from subprocess import Popen, PIPE
+from xos.exceptions import XOSValidationError
+
+
+class VPNServiceForm(forms.ModelForm):
+
+    def save(self, commit=True):
+        if self.instance.slices.all().count() == 0:
+            raise XOSValidationError("Service must have a slice.")
+        if not self.instance.slices.all()[0].exposed_ports:
+            raise XOSValidationError("Slice assoicated with service must have at least one exposed port.")
+        self.instance.exposed_ports = self.parse_ports(self.instance.slices.all()[0].exposed_ports)
+        return super(VPNServiceForm, self).save(commit=commit)
+
+    def parse_ports(self, exposed_ports):
+        port_mapping = {"udp": [], "tcp": []}
+        parts = exposed_ports.split(",")
+        for part in parts:
+            part = part.strip()
+            if "/" in part:
+                (protocol, ports) = part.split("/", 1)
+            elif " " in part:
+                (protocol, ports) = part.split(None, 1)
+            else:
+                raise XOSValidationError('malformed port specifier %s, format example: "tcp 123, tcp 201:206, udp 333"' % part)
+
+            protocol = protocol.strip()
+            ports = ports.strip()
+
+            if not (protocol in ["udp", "tcp"]):
+                raise XOSValidationError('unknown protocol %s' % protocol)
+
+            if "-" in ports:
+                port_mapping[protocol].extend(self.parse_port_range(ports, "-"))
+            elif ":" in ports:
+                port_mapping[protocol].extend(self.parse_port_range(ports, ":"))
+            else:
+                port_mapping[protocol].append(int(ports))
+
+        return port_mapping
+
+    def parse_port_range(self, port_str, split_str):
+        (first, last) = port_str.split(split_str)
+        first = int(first.strip())
+        last = int(last.strip())
+        return list(range(first, last))
+
+    class Meta:
+        model = VPNService
+
 
 class VPNServiceAdmin(ReadOnlyAwareAdmin):
     """Defines the admin for the VPNService."""
     model = VPNService
+    form = VPNServiceForm
     verbose_name = "VPN Service"
 
     list_display = ("backend_status_icon", "name", "enabled")
@@ -49,8 +99,6 @@ class VPNTenantForm(forms.ModelForm):
         server_address (forms.GenericIPAddressField): The ip address on the VPN of this Tenant.
         client_address (forms.GenericIPAddressField): The ip address on the VPN of the client.
         is_persistent (forms.BooleanField): Determines if this Tenant keeps this connection alive through failures.
-        can_view_subnet (forms.BooleanField): Determines if this Tenant makes it's subnet available to the client.
-        port_number (forms.IntegerField): The port to use for this Tenant.
     """
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     server_network = forms.GenericIPAddressField(
@@ -59,6 +107,7 @@ class VPNTenantForm(forms.ModelForm):
     is_persistent = forms.BooleanField(required=False)
     clients_can_see_each_other = forms.BooleanField(required=False)
     failover_servers = forms.ModelMultipleChoiceField(queryset=VPNTenant.get_tenant_objects(), required=False)
+    protocol = forms.ChoiceField(required=True, choices=[("udp", "udp"), ("tcp", "tcp")])
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
@@ -77,8 +126,9 @@ class VPNTenantForm(forms.ModelForm):
             self.fields[
                 'clients_can_see_each_other'].initial = self.instance.clients_can_see_each_other
             self.fields['is_persistent'].initial = self.instance.is_persistent
+            self.fields['protocol'].initial = self.instance.protocol
             if (self.instance.failover_servers):
-                self.fields['failover_servers'].initial = [model.pk for model in list(serializers.deserialize('json', self.instance.failover_servers))]
+                self.initial['failover_servers'] = [model.pk for model in list(serializers.deserialize('json', self.instance.failover_servers))]
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
@@ -99,13 +149,8 @@ class VPNTenantForm(forms.ModelForm):
             'clients_can_see_each_other')
         self.instance.failover_servers = serializers.serialize("json", self.cleaned_data.get('failover_servers'))
 
-        sorted_tenants = sorted(VPNTenant.get_tenant_objects().all(), key=lambda tenant: tenant.port_number)
-        prev = 1000
-        for tenant in sorted_tenants:
-            if (tenant.port_number != prev):
-                break
-            prev += 1
-        self.instance.port_number = prev
+        self.instance.port_number = self.instance.provider_service.get_next_available_port(self.instance.protocol)
+        self.instance.protocol = self.cleaned_data.get("protocol")
 
         if (not self.instance.ca_crt):
             self.instance.ca_crt = self.generate_ca_crt()
@@ -130,15 +175,13 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
     fieldsets = [(None, {'fields': ['backend_status_text', 'kind',
                                     'provider_service', 'instance', 'creator',
                                     'server_network', 'vpn_subnet', 'is_persistent',
-                                    'clients_can_see_each_other', 'failover_servers'],
+                                    'clients_can_see_each_other', 'failover_servers', "protocol"],
                          'classes': ['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'instance')
     form = VPNTenantForm
     inlines = [TenantPrivilegeInline]
 
-    suit_form_tabs = (('general', 'Details'),
-        ('tenantprivileges','Privileges')
-    )
+    suit_form_tabs = (('general', 'Details'), ('tenantprivileges', 'Privileges'))
 
     def queryset(self, request):
         return VPNTenant.get_tenant_objects_by_user(request.user)

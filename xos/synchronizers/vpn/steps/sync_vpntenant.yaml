@@ -10,6 +10,8 @@
     vpn_subnet: {{ vpn_subnet }}
     clients_can_see_each_other: {{ clients_can_see_each_other }}
     tenant_id: {{ tenant_id }}
+    port_number: {{ port_number }}
+    protocol: {{ protocol }}
 
   tasks:
   - name: install openvpn
@@ -52,8 +54,8 @@
     shell:
        |
        printf "script-security 3 system
-       port 1194
-       proto udp
+       port {{ port_number }}
+       proto {{ protocol }}
        dev tun
        ca /opt/openvpn/ca.crt
        cert /opt/openvpn/server-{{ tenant_id }}/server.crt
@@ -64,9 +66,6 @@
        comp-lzo
        status /opt/openvpn/server-{{ tenant_id }}/openvpn-status.log
        verb 3
-       auth-user-pass-verify /opt/openvpn/server-{{ tenant_id }}/auth.sh via-file
-       client-cert-not-required
-       username-as-common-name
        " > /opt/openvpn/server-{{ tenant_id }}/server.conf
 
   - name: write persistent config
