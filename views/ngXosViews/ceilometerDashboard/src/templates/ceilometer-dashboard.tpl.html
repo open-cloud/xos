@@ -99,7 +99,8 @@
                     {{meter.unit}}
                   </div>
                   <div class="col-xs-3">
-                    <a ui-sref="samples({name: meter.name, tenant: meter.project_id})" class="btn btn-primary">
+                    <!-- tenant: meter.resource_id -->
+                    <a ui-sref="samples({name: meter.name, tenant: meter.resource_id})" class="btn btn-primary">
                       <i class="glyphicon glyphicon-search"></i>
                     </a>
                   </div>
