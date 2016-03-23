@@ -52,7 +52,7 @@ def delete_if_inactive(d, o):
     return
 
 
-@atomic
+#@atomic
 def execute_model_policy(instance, deleted):
     # Automatic dirtying
     if (instance in bad_instances):
