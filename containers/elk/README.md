@@ -41,6 +41,10 @@ Now that we have elk stack setup we need to start sending it some log files to p
 
 #### Logstash-forwarder
 
+The logstash-forwarder container is configured to mount the /var/log/ directory of the host machine, which means all files in /var/log are visible to the container. Modify the "files" section conf/config.json to include the files you want logstash-forwarder to handle. 
+
+You can modify the mount options in the Makefile if you need to access files that live in a directory other than /var/log/.
+
 To build the Loststash-forwarder container
 
 ```

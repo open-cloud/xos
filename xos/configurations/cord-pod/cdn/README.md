@@ -61,6 +61,7 @@
 * Second, make sure cdn_enable bit is set in CordSubscriber object for your vSG.
 * curl -L -vvvv http://downloads.onosproject.org/vm/onos-tutorial-1.1.0r220-ovf.zip > /dev/null
 * curl -L -vvvv http://onlab.vicci.org/onos-videos/Nov-planning-day1/Day1+00+Bill+-+Community+Growth.mp4 > /dev/null
+* curl -L -vvvv http://downloads.onosproject.org/release/onos-1.2.0.zip > /dev/null
 
 ## Restart CDN after power-down
 
