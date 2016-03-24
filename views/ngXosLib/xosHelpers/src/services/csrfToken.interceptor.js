@@ -1,8 +1,6 @@
 (function() {
     'use strict';
 
-    console.log('SetCSRFToken');
-
     angular
         .module('xos.helpers')
         .factory('SetCSRFToken', setCSRFToken);
