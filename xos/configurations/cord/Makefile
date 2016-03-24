@@ -96,4 +96,4 @@ upgrade_pkgs:
 	sudo pip install httpie --upgrade
 
 cloudlab_ceilometer_custom_images:
-	bash -c "source ../setup/admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || ! mkdir -p /tmp/images || ! wget http://www.vicci.org/cord/ceilometer-trusty-server-multi-nic.qcow2 -P /tmp/images || glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file /tmp/images/ceilometer-trusty-server-multi-nic.qcow2 --container-format bare"
+	bash -c "source ../setup/admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || if test -f /proj/xos-PG0/images/ceilometer-trusty-server-multi-nic.compressed.qcow2 ; then glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file /proj/xos-PG0/images/ceilometer-trusty-server-multi-nic.compressed.qcow2 --container-format bare ; else mkdir -p /tmp/images && wget http://www.vicci.org/cord/ceilometer-trusty-server-multi-nic.compressed.qcow2 -P /tmp/images && glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file /tmp/images/ceilometer-trusty-server-multi-nic.compressed.qcow2 --container-format bare ; fi "

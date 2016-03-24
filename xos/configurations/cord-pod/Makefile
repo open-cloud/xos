@@ -43,7 +43,7 @@ cleanup: stop rm
 	bash -c "source ./admin-openrc.sh; nova list --all-tenants; neutron net-list"
 
 ceilometer_custom_images:
-	bash -c "source ./admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || ! mkdir -p ./images || ! wget http://www.vicci.org/cord/ceilometer-trusty-server-multi-nic.qcow2 -P ./images || glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file ./images/ceilometer-trusty-server-multi-nic.qcow2 --container-format bare"
+	bash -c "source ./admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || ! mkdir -p ./images || ! wget http://www.vicci.org/cord/ceilometer-trusty-server-multi-nic.compressed.qcow2 -P ./images || glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file ./images/ceilometer-trusty-server-multi-nic.compressed.qcow2 --container-format bare"
 
 .PHONY: local_containers
 local_containers:
