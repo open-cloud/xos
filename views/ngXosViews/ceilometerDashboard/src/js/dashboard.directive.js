@@ -134,7 +134,7 @@
                   return this.ceilometerError = err.data.detail.specific_error;
                 }
 
-                this.error = (err.data && err.data.detail && err.data.detail.specific_error) ? err.data.detail.specific_error : 'An Error occurred. Please try again later.';
+                this.ceilometerError = (err.data && err.data.detail && err.data.detail.specific_error) ? err.data.detail.specific_error : 'An Error occurred. Please try again later.';
               })
               .finally(() => {
                 this.loader = false;
