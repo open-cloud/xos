@@ -44,7 +44,7 @@
         if($stateParams.name && $stateParams.tenant){
           this.name = $stateParams.name;
           this.tenant = $stateParams.tenant;
-          // TODO rename tenant in project_id
+          // TODO rename tenant in resource_id
         }
         else{
           throw new Error('Missing Name and Tenant Params!');
