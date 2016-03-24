@@ -71,7 +71,7 @@ module.exports = function(options){
     .pipe(ngAnnotate())
     .pipe(angularFilesort())
     .pipe(concat('xosCeilometerDashboard.js'))
-    .pipe(uglify())
+    //.pipe(uglify())
     .pipe(gulp.dest(options.static + 'js/'));
   });
 
