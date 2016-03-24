@@ -6,7 +6,12 @@ import os
 import time
 
 def Observer(request):
-    diag = Diag.objects.filter(name=Config().observer_name).first()
+    try:
+        observer_name = Config().observer_name
+    except AttributeError:
+        observer_name = ''
+
+    diag = Diag.objects.filter(name=observer_name).first()
     if not diag:
         return HttpResponse(json.dumps({"health": ":-X", "time": time.time(), "comp": 0}))
 
