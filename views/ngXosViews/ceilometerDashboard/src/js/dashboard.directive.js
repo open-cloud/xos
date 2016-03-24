@@ -45,7 +45,6 @@
           /**
            * Load the list of service and slices
            */
-
           this.loadMappings = () => {
             this.loader = true;
             Ceilometer.getMappings()
@@ -92,7 +91,6 @@
           /**
            * Load the list of a single slice
            */
-
           this.loadSliceMeter = (slice, service_name) => {
 
             Ceilometer.selectedSlice = null;

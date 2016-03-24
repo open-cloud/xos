@@ -1,22 +1,24 @@
 'use strict';
-
 describe('The xos.helper module', function(){
-  
-  var app, httpProvider;
+  var SetCSRFToken, httpProviderObj;
 
   beforeEach(module('xos.helpers'));
 
-  beforeEach(function(){
-    module(function(_$httpProvider_){
-      console.log('beforeEach');
-      httpProvider = _$httpProvider_;
-    });
-  });
-
-  it('should set SetCSRFToken interceptor', inject(function($http){
-    console.log('httpProvider',httpProvider);
-    expect(true).toBeTrue();
-    // expect(httpProvider.interceptors).toContain('SetCSRFToken');
+  beforeEach(module(function(_$httpProvider_){
+    httpProviderObj = _$httpProvider_;
   }));
+
+  beforeEach(angular.mock.inject(function(_SetCSRFToken_){
+    SetCSRFToken = _SetCSRFToken_;
+  }));
+
+  it('should exist', () => {
+    expect(SetCSRFToken).toBeDefined();
+  });
+  
+  xit('should set SetCSRFToken interceptor', () => {
+    expect(httpProviderObj).toBeDefined();
+    expect(httpProviderObj.interceptors).toContain('SetCSRFToken');
+  });
 
 });
