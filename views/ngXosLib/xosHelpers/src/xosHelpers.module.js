@@ -15,6 +15,7 @@
     angular
         .module('xos.helpers',[
           'ngCookies',
+          'ngResource',
           'xos.xos',
           'xos.hpcapi',
           'xos.xoslib',
@@ -23,7 +24,6 @@
         .config(config);
 
     function config($httpProvider, $interpolateProvider, $resourceProvider) {
-      console.log('xos.helpers config')
       $httpProvider.interceptors.push('SetCSRFToken');
 
       $interpolateProvider.startSymbol('{$');
