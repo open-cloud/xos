@@ -48,7 +48,7 @@
         </div>
       </fieldset>
     </form>
-    <div class="alert alert-danger" ng-show="vm.result" ng-class="{'alert-success': vm.result.status === 1,'alert-error': vm.result.status === 0}">
+    <div class="alert" ng-show="vm.result" ng-class="{'alert-success': vm.result.status === 1,'alert-danger': vm.result.status === 0}">
       {$ vm.result.msg $}
     </div>
   </div>
