@@ -1,0 +1,7 @@
+<ul>
+    {% for dashboard in dashboards %}
+        <li>
+            <a href="/admin/dashboard/{{ dashboard.name|lower }}">{{ dashboard.name }}</a>
+        </li>
+    {% endfor %}
+</ul>

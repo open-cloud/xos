@@ -246,9 +246,6 @@ XOS_BRANDING_ICON = getattr(config, "gui_branding_icon", "/static/logo.png")
 XOS_BRANDING_FAVICON = getattr(config, "gui_branding_favicon", "/static/favicon.png")
 XOS_BRANDING_BG = getattr(config, "gui_branding_bg", "/static/bg.png")
 
-XOS_DASHBOARDS = ['uno', 'due', 'tre']
-
-
 DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)
 ENCRYPTED_FIELDS_KEYDIR = XOS_DIR + '/private_keys'
 ENCRYPTED_FIELD_MODE = 'ENCRYPT'
