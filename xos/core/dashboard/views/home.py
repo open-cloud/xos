@@ -29,7 +29,7 @@ class DashboardDynamicView(TemplateView):
         if name=="root":
             # maybe it is a bit hacky, didn't want to mess up everything @teone
             user_dashboards = request.user.get_dashboards()
-            first_dasboard_name = user_dashboards[0].name.lower();
+            first_dasboard_name = user_dashboards[0].id;
             return self.singleDashboardView(request, first_dasboard_name, context)
             # return self.multiDashboardView(request, context)
         elif kwargs.get("wholePage",None):
@@ -41,8 +41,12 @@ class DashboardDynamicView(TemplateView):
         TEMPLATE_DIRS = [XOS_DIR + "/templates/admin/dashboard/",
                          XOS_DIR + "/core/xoslib/dashboards/"]
 
+        # starting from the ID loading the template name
+        current_dasboard = DashboardView.objects.filter(id=fn)
+        template_url = current_dasboard[0].url.replace("template:",'')
+
         for template_dir in TEMPLATE_DIRS:
-            pathname = os.path.join(template_dir, fn) + ".html"
+            pathname = os.path.join(template_dir, template_url) + ".html"
             if os.path.exists(pathname):
                 break
         else:
@@ -160,6 +164,8 @@ class DashboardDynamicView(TemplateView):
     def singleDashboardView(self, request, name, context):
         head_template = self.head_template
         tail_template = self.tail_template
+
+        print >>sys.stderr, name
 
         t = template.Template(head_template + self.readTemplate(name) + self.tail_template)
 
