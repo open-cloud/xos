@@ -1,5 +1,5 @@
 from django import template
-import sys
+# import sys
 from core.models import DashboardView
 from itertools import chain
 
@@ -10,7 +10,6 @@ def dashboard_list(context):
     request = context['request']
     dashboards = request.user.get_dashboards()
     customize = DashboardView.objects.filter(name="Customize")
-    # debug = DashboardView.objects.filter(name="Customize").values()
-    print >>sys.stderr, request.user.get_dashboards()
+    # print >>sys.stderr, request.user.get_dashboards()
     result_list = list(chain(dashboards, customize))
     return {'dashboards': result_list}

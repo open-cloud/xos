@@ -1,5 +1,6 @@
 from view_common import *
 from django.http import HttpResponseRedirect
+import sys
 
 class LoggedInView(TemplateView):
     def get(self, request, name="root", *args, **kwargs):
@@ -26,7 +27,11 @@ class DashboardDynamicView(TemplateView):
         context = getDashboardContext(request.user, context)
 
         if name=="root":
-            return self.multiDashboardView(request, context)
+            # maybe it is a bit hacky, didn't want to mess up everything @teone
+            user_dashboards = request.user.get_dashboards()
+            first_dasboard_name = user_dashboards[0].name.lower();
+            return self.singleDashboardView(request, first_dasboard_name, context)
+            # return self.multiDashboardView(request, context)
         elif kwargs.get("wholePage",None):
             return self.singleFullView(request, name, context)
         else:
