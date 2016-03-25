@@ -29,23 +29,27 @@ class PlusSerializerMixin():
         return obj.getBackendHtml()
 
 class XOSViewSet(viewsets.ModelViewSet):
+    api_path=""
+
     @classmethod
     def detail_url(self, pattern, viewdict, name):
-        return url(r'^' + self.method_name + r'/(?P<pk>[a-zA-Z0-9\-]+)/' + pattern,
+        return url(r'^' + self.api_path + self.method_name + r'/(?P<pk>[a-zA-Z0-9\-]+)/' + pattern,
                    self.as_view(viewdict),
                    name=self.base_name+"_"+name)
 
     @classmethod
     def list_url(self, pattern, viewdict, name):
-        return url(r'^' + self.method_name + r'/' + pattern,
+        return url(r'^' + self.api_path + self.method_name + r'/' + pattern,
                    self.as_view(viewdict),
                    name=self.base_name+"_"+name)
 
     @classmethod
-    def get_urlpatterns(self):
+    def get_urlpatterns(self, api_path=""):
+        self.api_path = api_path
+
         patterns = []
 
-        patterns.append(url(r'^' + self.method_name + '/$', self.as_view({'get': 'list'}), name=self.base_name+'_list'))
-        patterns.append(url(r'^' + self.method_name + '/(?P<pk>[a-zA-Z0-9\-]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
+        patterns.append(url(r'^' + self.api_path + self.method_name + '/$', self.as_view({'get': 'list'}), name=self.base_name+'_list'))
+        patterns.append(url(r'^' + self.api_path + self.method_name + '/(?P<pk>[a-zA-Z0-9\-]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
 
         return patterns

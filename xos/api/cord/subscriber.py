@@ -11,7 +11,7 @@ from django.forms import widgets
 from django.conf.urls import patterns, url
 from services.cord.models import VOLTTenant, VBNGTenant, CordSubscriberRoot
 from core.xoslib.objects.cordsubscriber import CordSubscriber
-from plus import PlusSerializerMixin, XOSViewSet
+from api.xosapi_helpers import PlusSerializerMixin, XOSViewSet
 from django.shortcuts import get_object_or_404
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
 from xos.exceptions import *
@@ -101,70 +101,6 @@ class CordSubscriberDetail(XOSRetrieveUpdateDestroyAPIView):
     method_kind = "detail"
     method_name = "cordsubscriber"
 
-# We fake a user object by pulling the user data struct out of the
-# subscriber object...
-
-def serialize_user(subscriber, user):
-    return {"id": "%d-%d" % (subscriber.id, user["id"]),
-            "name": user["name"],
-            "level": user.get("level",""),
-            "mac": user.get("mac", ""),
-            "subscriber": subscriber.id }
-
-class CordUserList(APIView):
-    method_kind = "list"
-    method_name = "corduser"
-
-    def get(self, request, format=None):
-        instances=[]
-        for subscriber in CordSubscriber.get_tenant_objects().all():
-            for user in subscriber.users:
-                instances.append( serialize_user(subscriber, user) )
-
-        return Response(instances)
-
-    def post(self, request, format=None):
-        data = request.DATA
-        subscriber = CordSubscriber.get_tenant_objects().get(id=int(data["subscriber"]))
-        user = subscriber.create_user(name=data["name"],
-                                    level=data["level"],
-                                    mac=data["mac"])
-        subscriber.save()
-
-        return Response(serialize_user(subscriber,user))
-
-class CordUserDetail(APIView):
-    method_kind = "detail"
-    method_name = "corduser"
-
-    def get(self, request, format=None, pk=0):
-        parts = pk.split("-")
-        subscriber = CordSubscriber.get_tenant_objects().filter(id=parts[0])
-        for user in subscriber.users:
-            return Response( [ serialize_user(subscriber, user) ] )
-        raise XOSNotFound("Failed to find user %s" % pk)
-
-    def delete(self, request, pk):
-        parts = pk.split("-")
-        subscriber = CordSubscriber.get_tenant_objects().get(id=int(parts[0]))
-        subscriber.delete_user(parts[1])
-        subscriber.save()
-        return Response("okay")
-
-    def put(self, request, pk):
-        kwargs={}
-        if "name" in request.DATA:
-             kwargs["name"] = request.DATA["name"]
-        if "level" in request.DATA:
-             kwargs["level"] = request.DATA["level"]
-        if "mac" in request.DATA:
-             kwargs["mac"] = request.DATA["mac"]
-
-        parts = pk.split("-")
-        subscriber = CordSubscriber.get_tenant_objects().get(id=int(parts[0]))
-        user = subscriber.update_user(parts[1], **kwargs)
-        subscriber.save()
-        return Response(serialize_user(subscriber,user))
 
 #------------------------------------------------------------------------------
 # The "new" API with many more REST endpoints.
@@ -173,7 +109,7 @@ class CordUserDetail(APIView):
 
 class CordSubscriberViewSet(XOSViewSet):
     base_name = "subscriber"
-    method_name = "rs/subscriber"
+    method_name = "subscriber"
     method_kind = "viewset"
     queryset = CordSubscriber.get_tenant_objects().select_related().all()
     serializer_class = CordSubscriberIdSerializer
@@ -185,8 +121,8 @@ class CordSubscriberViewSet(XOSViewSet):
         return subscriber.vcpe
 
     @classmethod
-    def get_urlpatterns(self):
-        patterns = super(CordSubscriberViewSet, self).get_urlpatterns()
+    def get_urlpatterns(self, api_path=""):
+        patterns = super(CordSubscriberViewSet, self).get_urlpatterns(api_path=api_path)
         patterns.append( self.detail_url("vcpe_synced/$", {"get": "get_vcpe_synced"}, "vcpe_synced") )
         patterns.append( self.detail_url("url_filter/$", {"get": "get_url_filter"}, "url_filter") )
         patterns.append( self.detail_url("url_filter/(?P<level>[a-zA-Z0-9\-_]+)/$", {"put": "set_url_filter"}, "url_filter") )
@@ -204,12 +140,8 @@ class CordSubscriberViewSet(XOSViewSet):
 
         patterns.append( self.detail_url("bbsdump/$", {"get": "get_bbsdump"}, "bbsdump") )
 
-        patterns.append( url("^rs/initdemo/$", self.as_view({"put": "initdemo", "get": "initdemo"}), name="initdemo") )
-
-        patterns.append( url("^rs/subidlookup/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
-        patterns.append( url("^rs/subidlookup/$", self.as_view({"get": "ssidlist"}), name="ssidlist") )
-
-        patterns.append( url("^rs/vbng_mapping/$", self.as_view({"get": "get_vbng_mapping"}), name="vbng_mapping") )
+        patterns.append( url(self.api_path + "subidlookup/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
+        patterns.append( url(self.api_path + "subidlookup/$", self.as_view({"get": "ssidlist"}), name="ssidlist") )
 
         return patterns
 
@@ -368,47 +300,3 @@ class CordSubscriberViewSet(XOSViewSet):
 
         return Response( ssidmap[0] )
 
-    def get_vbng_mapping(self, request):
-        object_list = VBNGTenant.get_tenant_objects().all()
-
-        mappings = []
-        for vbng in object_list:
-            if vbng.mapped_ip and vbng.routeable_subnet:
-                mappings.append( {"private_ip": vbng.mapped_ip, "routeable_subnet": vbng.routeable_subnet, "mac": vbng.mapped_mac, "hostname": vbng.mapped_hostname} )
-
-        return Response( {"vbng_mapping": mappings} )
-
-class CordDebugIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
-    # Swagger is failing because CordDebugViewSet has neither a model nor
-    # a serializer_class. Stuck this in here as a placeholder for now.
-    id = ReadOnlyField()
-    class Meta:
-        model = CordSubscriber
-
-class CordDebugViewSet(XOSViewSet):
-    base_name = "cord_debug"
-    method_name = "rs/cord_debug"
-    method_kind = "viewset"
-    serializer_class = CordDebugIdSerializer
-
-    @classmethod
-    def get_urlpatterns(self):
-        patterns = []
-        patterns.append( url("^rs/cord_debug/vbng_dump/$", self.as_view({"get": "get_vbng_dump"}), name="vbng_dump"))
-        return patterns
-
-    # contact vBNG service and dump current list of mappings
-    def get_vbng_dump(self, request, pk=None):
-        result=subprocess.check_output(["curl", "http://10.0.3.136:8181/onos/virtualbng/privateip/map"])
-        if request.GET.get("theformat",None)=="text":
-            from django.http import HttpResponse
-            result = json.loads(result)["map"]
-
-            lines = []
-            for row in result:
-                for k in row.keys():
-                     lines.append( "%s %s" % (k, row[k]) )
-
-            return HttpResponse("\n".join(lines), content_type="text/plain")
-        else:
-            return Response( {"vbng_dump": json.loads(result)["map"] } )
