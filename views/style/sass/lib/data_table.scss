@@ -1,0 +1,24 @@
+table.dataTable thead{
+  th div.DataTables_sort_wrapper{
+    font-weight: normal !important;
+  }
+  tr {
+    background-color: $thead-background;
+
+    th.ui-state-default {
+      background: transparent !important;
+      color: #fff !important;
+    }
+  }
+}
+
+table.dataTable tr.odd,
+table.dataTable tr.odd td.sorting_1{
+  background-color: $gray-lighter !important;
+}
+table.dataTable tr.even td.sorting_1{
+  background-color: #fff;
+}
+table.dataTable thead th div.DataTables_sort_wrapper {
+  font-weight: bold;
+}

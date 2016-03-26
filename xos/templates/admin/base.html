@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>
       {% block title %}
           {%if title %}
@@ -11,7 +12,7 @@
       {% endblock %}
   </title>
   <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% endblock %}"/>
-  <link rel="stylesheet" type="text/css" href="{% static 'suit/bootstrap/dist/css/bootstrap.min.css' %}" media="all"/>
+  <!--<link rel="stylesheet" type="text/css" href="{% static 'suit/bootstrap/dist/css/bootstrap.min.css' %}" media="all"/>-->
   <link rel="stylesheet" type="text/css" href="{% static 'suit/css/suit.css' %}" media="all">
   <link rel="stylesheet" type="text/css" href="{% static 'xos.css' %}" media="all">
   {% if XOS_BRANDING_CSS %}
