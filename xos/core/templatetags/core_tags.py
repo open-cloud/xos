@@ -10,6 +10,6 @@ def dashboard_list(context):
     request = context['request']
     dashboards = request.user.get_dashboards()
     customize = DashboardView.objects.filter(name="Customize")
-    # print >>sys.stderr, request.user.get_dashboards()
+    #print >>sys.stderr, request.path
     result_list = list(chain(dashboards, customize))
-    return {'dashboards': result_list}
+    return {'dashboards': result_list, 'path': request.path}

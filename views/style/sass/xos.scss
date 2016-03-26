@@ -174,30 +174,7 @@ border-bottom-right-radius: 0px !important;
   float: right;
   border: 2px darkGrey;
 }
-.ui-state-default #hometabs, .ui-widget-content .ui-state-default #hometabs, .ui-widget-header .ui-state-default {
-background: none !important;
-border-top: 0px !important;
-border-left: 0px !important;
-border-right: 0px !important;
-}
-.ui-widget-header {
-background: none !important;
-border-top: 0px !important;
-border-left: 0px !important;
-border-right: 0px !important;
-}
-#suit_form_tabs {
-/*border-bottom: 1px solid #B5D1EA;*/
-border-bottom: 1px solid #105E9E !important;
-border-bottom-width: 5px !important;
-border-bottom-style: solid;
-/*border-bottom-color: rgb(181, 209, 234);*/
-border-bottom-color: #448CCA;
-//color:#105E9E;
-}
-.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
-color: #105E9E ;
-}
+
 .save-box {
   background-color: #ffffff;
   margin: 2px;
@@ -206,12 +183,8 @@ color: #105E9E ;
   font-size: 14px;
   padding: 10px 20px 10px 20px;
 }
-.btn-success {
-  font-size: 12px;
-  font-weight: normal;
-  padding: 5px 10px 5px 10px;
-}
-.btn-success, .save-box .btn-info {
+
+.save-box .btn-info {
   background: #27AE5F;
   background-image: -webkit-linear-gradient(top, #27AE5F, #27ae60);
   background-image: -moz-linear-gradient(top, #27AE5F, #27ae60);
@@ -816,30 +789,17 @@ font-size: medium;
     border-top: 1px solid #cccccc;
 }
 
-.form-buttons a.deletelink {
-  color: #fff;
-  background-color: #d9534f;
-  border-color: #d43f3a;
+.form-horizontal .selector .selector-chooser li .selector-remove,
+.form-horizontal .selector .selector-chooser li .selector-remove:hover{
+  @include button-size($padding-base-vertical, $padding-base-horizontal, $font-size-base, $line-height-base, $btn-border-radius-base);
+  @include button-variant($btn-danger-color, $btn-danger-bg, $btn-danger-border);
+}
 
-  display: inline-block;
-  margin-bottom: 0;
-  font-weight: normal;
-  text-align: center;
-  vertical-align: middle;
-  -ms-touch-action: manipulation;
-  touch-action: manipulation;
-  cursor: pointer;
-  background-image: none;
-  border: 1px solid transparent;
-  white-space: nowrap;
-  padding: 5px 12px;
-  font-size: 12px;
-  line-height: 1.42857143;
-  border-radius: 4px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+.form-horizontal .selector .selector-chooser li .selector-add,
+.form-horizontal .selector .selector-chooser li .selector-add:hover{
+  margin-bottom: $form-group-margin-bottom;
+  @include button-size($padding-base-vertical, $padding-base-horizontal, $font-size-base, $line-height-base, $btn-border-radius-base);
+  @include button-variant($btn-success-color, $btn-success-bg, $btn-success-border);
 }
 
 /* MODAL */
