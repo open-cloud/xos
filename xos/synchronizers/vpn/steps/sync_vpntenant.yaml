@@ -35,6 +35,9 @@
   - name: get ca crt
     copy: src=/opt/openvpn/easyrsa3/pki/ca.crt dest=/opt/openvpn/ca.crt
 
+  - name: get crl
+    copy: src=/opt/openvpn/easyrsa3/pki/crl.pem desk=/opt/openvpn/crl.pem
+
   - name: get dh
     copy: src=/opt/openvpn/easyrsa3/pki/dh.pem dest=/opt/openvpn/dh.pem
 
@@ -61,6 +64,7 @@
        cert /opt/openvpn/server-{{ tenant_id }}/server.crt
        key /opt/openvpn/server-{{ tenant_id }}/server.key
        dh /opt/openvpn/dh.pem
+       crl-verify /opt/openvpn/crl.pem
        server {{ server_network }} {{ vpn_subnet }}
        ifconfig-pool-persist /opt/openvpn/server-{{ tenant_id }}/ipp.txt
        comp-lzo
