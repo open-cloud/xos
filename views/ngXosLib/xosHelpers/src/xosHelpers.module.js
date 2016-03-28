@@ -1,6 +1,6 @@
 (function() {
     'use strict';
-
+    console.log('XOS Helpers Module')
     angular.module('bugSnag', []).factory('$exceptionHandler', function () {
       return function (exception, cause) {
         if( window.Bugsnag ){
@@ -15,14 +15,15 @@
     angular
         .module('xos.helpers',[
           'ngCookies',
+          'ngResource',
           'xos.xos',
           'xos.hpcapi',
           'xos.xoslib',
-          'bugSnag'
+          'bugSnag',
         ])
         .config(config);
 
-    function config($httpProvider, $interpolateProvider, $resourceProvider) { 
+    function config($httpProvider, $interpolateProvider, $resourceProvider) {
       $httpProvider.interceptors.push('SetCSRFToken');
 
       $interpolateProvider.startSymbol('{$');

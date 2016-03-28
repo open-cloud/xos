@@ -7,12 +7,11 @@ function updateObserverStatus() {
              success: function(newData) {
                   console.log(newData);
                   if (newData.health==":-)") {
-                      tooltip = 'last observer run time = ' + Math.floor(newData.last_duration) + ' seconds';
+                      tooltip = 'last synchronizer run time = ' + Math.floor(newData.last_duration) + ' seconds';
                       icon = "/static/img/green-cloud.gif";
                   } else {
-                      tooltip = "observer is offline";
-                      // icon = "/static/img/red-cloud.gif";
-                      icon = "/static/img/green-cloud.gif";
+                      tooltip = "synchronizer is offline";
+                      icon = "/static/img/red-cloud.gif";
                   }
 
                   html = '<span style="margin-left: 16px; cursor: pointer;" title="' + tooltip + '"><img src="' + icon +

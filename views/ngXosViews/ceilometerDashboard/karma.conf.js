@@ -26,8 +26,10 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: bowerComponents.concat([
       'src/css/**/*.css',
-      '../../../xos/core/xoslib/static/js/xosApi.js',
+      '../../../xos/core/xoslib/static/js/vendor/ngXosVendor.js',
       '../../../xos/core/xoslib/static/js/vendor/ngXosHelpers.js',
+      '../../../xos/core/xoslib/static/js/xosApi.js',
+      'src/js/main.js',
       'src/js/**/*.js',
       'spec/**/*.mock.js',
       'spec/**/*.test.js',

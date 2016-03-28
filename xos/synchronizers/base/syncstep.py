@@ -227,8 +227,9 @@ class SyncStep(object):
                         self.delete_record(o)
                         o.delete(purge=True)
                     else:
+                        new_enacted = datetime.now() # Is this the same timezone? XXX
                         self.sync_record(o)
-                        o.enacted = datetime.now() # Is this the same timezone? XXX
+                        o.enacted = new_enacted
                         scratchpad = {'next_run':0, 'exponent':0, 'last_success':time.time()}
                         o.backend_register = json.dumps(scratchpad)
                         o.backend_status = "1 - OK"

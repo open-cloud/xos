@@ -312,9 +312,19 @@ class ControllerSite(PlCoreBase):
     tenant_id = StrippedCharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone tenant id")
 
     def delete(self, *args, **kwds):
-        pdb.set_trace()
         super(ControllerSite, self).delete(*args, **kwds)
 
     
     class Meta:
         unique_together = ('site', 'controller') 
+
+class Diag(PlCoreBase):
+    name = StrippedCharField(max_length=200, help_text="Name of the synchronizer")
+    
+    @property
+    def enacted(self):
+        return None
+
+    @enacted.setter
+    def enacted(self, value):
+        pass # Ignore sets, Diag objects are always pending.
