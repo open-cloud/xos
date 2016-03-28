@@ -51,6 +51,8 @@ It will automatically ad a `token` to all your request, eventually you can take 
 
 >_NOTE: for the API related service, check documentation in [Apigen](#apigen) section._
 
+When some changes are applied to this common library it should be rebuilt with: `npm run build`
+
 ### Yo Xos
 
 We have created a [yeoman](http://yeoman.io/) generator to help you scaffolding views.

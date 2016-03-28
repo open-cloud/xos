@@ -29,7 +29,7 @@ var csswring = require('csswring');
 
 var TEMPLATE_FOOTER = `}]);
 angular.module('xos.ceilometerDashboard').run(function($location){$location.path('/')});
-angular.bootstrap(angular.element('#xosCeilometerDashboard'), ['xos.ceilometerDashboard']);`;
+angular.element(document).ready(function() {angular.bootstrap(angular.element('#xosCeilometerDashboard'), ['xos.ceilometerDashboard']);});`;
 
 module.exports = function(options){
   
@@ -71,7 +71,7 @@ module.exports = function(options){
     .pipe(ngAnnotate())
     .pipe(angularFilesort())
     .pipe(concat('xosCeilometerDashboard.js'))
-    .pipe(uglify())
+    //.pipe(uglify())
     .pipe(gulp.dest(options.static + 'js/'));
   });
 

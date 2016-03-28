@@ -1416,7 +1416,8 @@ class InstanceAdmin(XOSBaseAdmin):
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         deployment_nodes = []
-        for node in Node.objects.all():
+#        for node in Node.objects.all():
+        for node in Node.objects.order_by("name"):
             deployment_nodes.append( (node.site_deployment.deployment.id, node.id, node.name) )
 
         deployment_flavors = []
