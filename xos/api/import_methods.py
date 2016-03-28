@@ -32,7 +32,7 @@ def import_api_methods(dirname=None, api_path="api"):
     view_urls = []
     for fn in os.listdir(dirname):
         pathname = os.path.join(dirname,fn)
-        if os.path.isfile(pathname) and fn.endswith(".py") and (fn!="__init__.py"):
+        if os.path.isfile(pathname) and fn.endswith(".py") and (fn!="__init__.py") and (fn!="import_methods.py"):
             module = import_module_from_filename(dirname, fn)
             for classname in dir(module):
                 c = getattr(module, classname, None)
