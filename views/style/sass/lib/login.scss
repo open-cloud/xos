@@ -4,7 +4,19 @@ body.login img.logo{
    margin: 20px auto;
    padding-top: 20px;
 }
+.login {
+  background-image: url('bg.jpg');
+  background-size: cover;
+  background-position: center; 
+  background-repeat: no-repeat;
+}
 
+.login #content-main {
+  float: none;
+    height: 330px;
+    margin: 100px auto 0;
+    width: 265px;
+}
 .login{
   #content-main {
     background: rgba(255,255,255,0.82);
