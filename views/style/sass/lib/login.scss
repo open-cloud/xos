@@ -1,3 +1,10 @@
+body.login img.logo{
+   width: 250px;
+   display: block;
+   margin: 20px auto;
+   padding-top: 20px;
+}
+
 .login{
   #content-main {
     background: rgba(255,255,255,0.82);
@@ -8,18 +15,19 @@
   .requestDialog.ui-widget input{
     background-color: rgb(250, 255, 189);
   }
-  //#forgot_pwd{
-  //  font-size: 11px;
-  //  font-style: normal;
-  //  text-decoration: none;
-  //}
-  //
-  //#create_acct{
-  //  font-size: 11px;
-  //  font-style: normal;
-  //  text-decoration: none;
-  //  padding-left: 45px;
-  //}
+  
+  /*#forgot_pwd{
+    font-size: 11px;
+    font-style: normal;
+    text-decoration: none;
+  }
+  
+  #create_acct{
+    font-size: 11px;
+    font-style: normal;
+    text-decoration: none;
+    padding-left: 45px;
+  }*/
 
   .row + .row {
     margin-top: 10px;
