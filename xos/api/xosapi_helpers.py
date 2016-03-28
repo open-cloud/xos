@@ -6,6 +6,13 @@ from xos.apibase import XOSRetrieveUpdateDestroyAPIView, XOSListCreateAPIView
 from rest_framework import viewsets
 from django.conf.urls import patterns, url
 
+if hasattr(serializers, "ReadOnlyField"):
+    # rest_framework 3.x
+    ReadOnlyField = serializers.ReadOnlyField
+else:
+    # rest_framework 2.x
+    ReadOnlyField = serializers.Field
+
 """ PlusSerializerMixin
 
     Implements Serializer fields that are common to all OpenCloud objects. For
@@ -33,23 +40,23 @@ class XOSViewSet(viewsets.ModelViewSet):
 
     @classmethod
     def detail_url(self, pattern, viewdict, name):
-        return url(r'^' + self.api_path + self.method_name + r'/(?P<pk>[a-zA-Z0-9\-]+)/' + pattern,
+        return url(self.api_path + self.method_name + r'/(?P<pk>[a-zA-Z0-9\-]+)/' + pattern,
                    self.as_view(viewdict),
                    name=self.base_name+"_"+name)
 
     @classmethod
     def list_url(self, pattern, viewdict, name):
-        return url(r'^' + self.api_path + self.method_name + r'/' + pattern,
+        return url(self.api_path + self.method_name + r'/' + pattern,
                    self.as_view(viewdict),
                    name=self.base_name+"_"+name)
 
     @classmethod
-    def get_urlpatterns(self, api_path=""):
+    def get_urlpatterns(self, api_path="^"):
         self.api_path = api_path
 
         patterns = []
 
-        patterns.append(url(r'^' + self.api_path + self.method_name + '/$', self.as_view({'get': 'list'}), name=self.base_name+'_list'))
-        patterns.append(url(r'^' + self.api_path + self.method_name + '/(?P<pk>[a-zA-Z0-9\-]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
+        patterns.append(url(self.api_path + self.method_name + '/$', self.as_view({'get': 'list'}), name=self.base_name+'_list'))
+        patterns.append(url(self.api_path + self.method_name + '/(?P<pk>[a-zA-Z0-9\-]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
 
         return patterns
