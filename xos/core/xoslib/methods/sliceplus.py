@@ -12,25 +12,27 @@ from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, X
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
     IdField = serializers.ReadOnlyField
+    WritableField = serializers.Field
 else:
     # rest_framework 2.x
     IdField = serializers.Field
+    WritableField = serializers.WritableField
 
-class NetworkPortsField(serializers.WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
+class NetworkPortsField(WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
     def to_representation(self, obj):
         return obj
 
     def to_internal_value(self, data):
         return data
 
-class DictionaryField(serializers.WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
+class DictionaryField(WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
     def to_representation(self, obj):
         return json.dumps(obj)
 
     def to_internal_value(self, data):
         return json.loads(data)
 
-class ListField(serializers.WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
+class ListField(WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
     def to_representation(self, obj):
         return json.dumps(obj)
 
