@@ -13,6 +13,12 @@ class VPNServiceForm(forms.ModelForm):
 
     exposed_ports = forms.CharField(required=True)
 
+    def __init__(self, *args, **kwargs):
+        super(VPNServiceForm, self).__init__(*args, **kwargs)
+
+        if self.instance:
+            self.fields['exposed_ports'].initial = self.instance.exposed_ports
+
     def save(self, commit=True):
         self.instance.exposed_ports = self.cleaned_data['exposed_ports']
         return super(VPNServiceForm, self).save(commit=commit)
@@ -148,8 +154,8 @@ class VPNTenantForm(forms.ModelForm):
             'clients_can_see_each_other')
         self.instance.failover_servers = serializers.serialize("json", self.cleaned_data.get('failover_servers'))
 
-        self.instance.port_number = self.instance.provider_service.get_next_available_port(self.instance.protocol)
         self.instance.protocol = self.cleaned_data.get("protocol")
+        self.instance.port_number = self.instance.provider_service.get_next_available_port(self.instance.protocol)
 
         if (not self.instance.ca_crt):
             self.instance.ca_crt = self.generate_ca_crt()
