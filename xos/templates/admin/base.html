@@ -174,7 +174,7 @@
               {% endblock %}
             </div>
           </div>
-          <div class="row">
+          <div class="row content-wrapper">
             <div class="col-lg-12">
               <div class="suit-columns {{ is_popup|yesno:'one-column,two-columns' }}">
                 {% block content-center %}
@@ -213,7 +213,7 @@
                   {% endblock messages %}
 
                   <!-- Content -->
-                  <div id="content" class="{% block coltype %}colM{% endblock %} row-fluid">
+                  <div id="content" class="{% block coltype %}colM{% endblock %} row">
                     {% block pretitle %}
                     {% endblock %}
                     {% block content_title %}
