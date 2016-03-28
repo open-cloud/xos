@@ -11,15 +11,14 @@ from xos.exceptions import XOSValidationError
 
 class VPNServiceForm(forms.ModelForm):
 
+    exposed_ports = forms.CharField(required=True)
+
     def save(self, commit=True):
-        if self.instance.slices.all().count() == 0:
-            raise XOSValidationError("Service must have a slice.")
-        if not self.instance.slices.all()[0].exposed_ports:
-            raise XOSValidationError("Slice assoicated with service must have at least one exposed port.")
-        self.instance.exposed_ports = self.parse_ports(self.instance.slices.all()[0].exposed_ports)
+        self.instance.exposed_ports = self.cleaned_data['exposed_ports']
         return super(VPNServiceForm, self).save(commit=commit)
 
-    def parse_ports(self, exposed_ports):
+    def clean_exposed_ports(self):
+        exposed_ports = self.cleaned_data['exposed_ports']
         port_mapping = {"udp": [], "tcp": []}
         parts = exposed_ports.split(",")
         for part in parts:
@@ -67,7 +66,7 @@ class VPNServiceAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('backend_status_icon', 'name', )
 
     fieldsets = [(None, {'fields': ['backend_status_text', 'name', 'enabled',
-                                    'versionNumber', 'description', "view_url"],
+                                    'versionNumber', 'description', "view_url", 'exposed_ports'],
                          'classes':['suit-tab suit-tab-general']})]
 
     readonly_fields = ('backend_status_text', )
