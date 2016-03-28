@@ -8,6 +8,7 @@ import importlib
 urlpatterns = []
 
 def import_module_from_filename(dirname, fn):
+    print "importing", dirname, fn
     sys_path_save = sys.path
     try:
         # __import__() and importlib.import_module() both import modules from
@@ -55,7 +56,7 @@ def import_api_methods(dirname=None, api_path="api"):
            urlpatterns.append(url(r'^' + view_url[1] + '/(?P<pk>[a-zA-Z0-9\-]+)/$',  view_url[3].as_view(), name=view_url[1]+'detail'))
         elif view_url[0] == "viewset":
            viewset = view_url[3]
-           urlpatterns.extend(viewset.get_urlpatterns(api_path=api_path+"/"))
+           urlpatterns.extend(viewset.get_urlpatterns(api_path="^"+api_path+"/"))
 
     return urlpatterns
 
