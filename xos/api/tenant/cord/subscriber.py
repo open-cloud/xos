@@ -122,6 +122,8 @@ class CordSubscriberViewSet(XOSViewSet):
         patterns = super(CordSubscriberViewSet, self).get_urlpatterns(api_path=api_path)
         patterns.append( self.detail_url("features/$", {"get": "get_features", "put": "set_features"}, "features") )
         patterns.append( self.detail_url("features/(?P<feature>[a-zA-Z0-9\-_]+)/$", {"get": "get_feature", "put": "set_feature"}, "get_feature") )
+        patterns.append( self.detail_url("identity/$", {"get": "get_identities", "put": "set_identities"}, "identities") )
+        patterns.append( self.detail_url("identity/(?P<identity>[a-zA-Z0-9\-_]+)/$", {"get": "get_identity", "put": "set_identity"}, "get_identity") )
 
         patterns.append( url(self.api_path + "subidlookup/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
         patterns.append( url(self.api_path + "subidlookup/$", self.as_view({"get": "ssidlist"}), name="ssidlist") )
@@ -139,6 +141,14 @@ class CordSubscriberViewSet(XOSViewSet):
         subscriber = self.get_object()
         return Response(FeatureSerializer(subscriber.features).data)
 
+    def set_features(self, request, pk=None):
+        subscriber = self.get_object()
+        ser = FeatureSerializer(subscriber.features, data=request.data)
+        ser.is_valid(raise_exception = True)
+        subscriber.update_features(ser.validated_data)
+        subscriber.save()
+        return Response(FeatureSerializer(subscriber.features).data)
+
     def get_feature(self, request, pk=None, feature=None):
         subscriber = self.get_object()
         return Response({feature: FeatureSerializer(subscriber.features).data[feature]})
@@ -150,15 +160,34 @@ class CordSubscriberViewSet(XOSViewSet):
         ser = FeatureSerializer(subscriber.features, data=request.data)
         ser.is_valid(raise_exception = True)
         subscriber.update_features(ser.validated_data)
+        subscriber.save()
         return Response({feature: FeatureSerializer(subscriber.features).data[feature]})
 
-    def set_features(self, request, pk=None):
+    def get_identities(self, request, pk=None):
         subscriber = self.get_object()
-        ser = FeatureSerializer(subscriber.features, data=request.data)
+        return Response(IdentitySerializer(subscriber.identity).data)
+
+    def set_identities(self, request, pk=None):
+        subscriber = self.get_object()
+        ser = IdentitySerializer(subscriber.identity, data=request.data)
         ser.is_valid(raise_exception = True)
-        subscriber.update_features(ser.validated_data)
+        subscriber.update_identity(ser.validated_data)
         subscriber.save()
-        return Response(FeatureSerializer(subscriber.features).data)
+        return Response(IdentitySerializer(subscriber.identity).data)
+
+    def get_identity(self, request, pk=None, identity=None):
+        subscriber = self.get_object()
+        return Response({identity: IdentitySerializer(subscriber.identity).data[identity]})
+
+    def set_identity(self, request, pk=None, identity=None):
+        subscriber = self.get_object()
+        if [identity] != request.data.keys():
+             raise serializers.ValidationError("identity %s does not match keys in request body (%s)" % (identity, ",".join(request.data.keys())))
+        ser = IdentitySerializer(subscriber.identity, data=request.data)
+        ser.is_valid(raise_exception = True)
+        subscriber.update_identity(ser.validated_data)
+        subscriber.save()
+        return Response({identity: IdentitySerializer(subscriber.identity).data[identity]})
 
     def ssidlist(self, request):
         object_list = CordSubscriberNew.get_tenant_objects().all()
