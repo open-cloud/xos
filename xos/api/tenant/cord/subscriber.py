@@ -121,7 +121,7 @@ class CordSubscriberViewSet(XOSViewSet):
         return subscriber.vcpe
 
     @classmethod
-    def get_urlpatterns(self, api_path=""):
+    def get_urlpatterns(self, api_path="^"):
         patterns = super(CordSubscriberViewSet, self).get_urlpatterns(api_path=api_path)
         patterns.append( self.detail_url("vcpe_synced/$", {"get": "get_vcpe_synced"}, "vcpe_synced") )
         patterns.append( self.detail_url("url_filter/$", {"get": "get_url_filter"}, "url_filter") )

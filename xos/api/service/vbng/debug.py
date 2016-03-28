@@ -39,9 +39,9 @@ class CordDebugViewSet(XOSViewSet):
     serializer_class = CordDebugIdSerializer
 
     @classmethod
-    def get_urlpatterns(self, api_path=""):
+    def get_urlpatterns(self, api_path="^"):
         patterns = []
-        patterns.append( url("^" + api_path + "debug/vbng_dump/$", self.as_view({"get": "get_vbng_dump"}), name="vbng_dump"))
+        patterns.append( url(api_path + "debug/vbng_dump/$", self.as_view({"get": "get_vbng_dump"}), name="vbng_dump"))
         return patterns
 
     # contact vBNG service and dump current list of mappings
