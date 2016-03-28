@@ -20,3 +20,8 @@
   border-bottom-style: solid;
   border-bottom-color: $brand-primary;
 }
+
+.ui-widget-header {
+  background: none !important;
+  border: none !important;
+}
