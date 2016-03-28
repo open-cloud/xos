@@ -45,21 +45,26 @@ class CordSubscriberNew(CordSubscriberRoot):
         self.enable_uverse = value.get("uverse", self.get_default_attribute("enable_uverse"))
         self.status = value.get("status", self.get_default_attribute("status"))
 
+    def update_features(self, value):
+        d=self.features
+        d.update(value)
+        self.features = d
+
     def save(self, *args, **kwargs):
         super(CordSubscriberNew, self).save(*args, **kwargs)
 
-#class FeatureSerializer(serializers.Serializer):
-#    cdn = serializers.BooleanField()
-#    uplink_speed = serializers.IntegerField()
-#    downlink_speed = serializers.IntegerField()
-#    uverse = serializers.BooleanField()
-#    status = serializers.CharField()
+class FeatureSerializer(serializers.Serializer):
+    cdn = serializers.BooleanField(required=False)
+    uplink_speed = serializers.IntegerField(required=False)
+    downlink_speed = serializers.IntegerField(required=False)
+    uverse = serializers.BooleanField(required=False)
+    status = serializers.CharField(required=False)
 
 class CordSubscriberSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = ReadOnlyField()
         service_specific_id = ReadOnlyField()
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-        features = serializers.DictField()
+        features = FeatureSerializer() # serializers.DictField()
 
         class Meta:
             model = CordSubscriberNew
@@ -95,27 +100,32 @@ class CordSubscriberViewSet(XOSViewSet):
 
         serializer = self.get_serializer(object_list, many=True)
 
-        return Response({"subscribers": serializer.data})
+        return Response(serializer.data)
 
     def get_features(self, request, pk=None):
         subscriber = self.get_object()
-        return Response(subscriber.features)
+        return Response(FeatureSerializer(subscriber.features).data)
 
     def get_feature(self, request, pk=None, feature=None):
         subscriber = self.get_object()
-        return Response(subscriber.features[feature])
+        return Response({feature: FeatureSerializer(subscriber.features).data[feature]})
 
     def set_feature(self, request, pk=None, feature=None):
         subscriber = self.get_object()
-        subscriber.features[feature] = request.data
-        print "XXX", request.DATA
+        if [feature] != request.data.keys():
+             raise serializers.ValidationError("feature %s does not match keys in request body (%s)" % (feature, ",".join(request.data.keys())))
+        ser = FeatureSerializer(subscriber.features, data=request.data)
+        ser.is_valid(raise_exception = True)
+        subscriber.update_features(ser.validated_data)
         return Response(subscriber.features[feature])
 
     def set_features(self, request, pk=None):
         subscriber = self.get_object()
-        for k in subscriber.features:
-            subscriber.features[k] = request.data.get(k, subscriber.features[k])
-        return Response(subscriber.features[feature])
+        ser = FeatureSerializer(subscriber.features, data=request.data)
+        ser.is_valid(raise_exception = True)
+        subscriber.update_features(ser.validated_data)
+        subscriber.save()
+        return Response(FeatureSerializer(subscriber.features).data)
 
     def ssidlist(self, request):
         object_list = CordSubscriberNew.get_tenant_objects().all()
