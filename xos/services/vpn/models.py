@@ -29,7 +29,7 @@ class VPNService(Service):
     def get_next_available_port(self, protocol):
         if protocol != "udp" and protocol != "tcp":
             raise XOSConfigurationError("Port protocol must be udp or tcp")
-        if not self.ports[protocol]:
+        if not self.exposed_ports[protocol]:
             raise XOSValidationError("No availble ports for protocol: " + protocol)
         tenants = [tenant for tenant in VPNTenant.get_tenant_objects.all() if tenant.protocol == protocol]
         port_numbers = self.exposed_ports[protocol]
