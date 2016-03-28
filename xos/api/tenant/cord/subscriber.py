@@ -50,6 +50,34 @@ class CordSubscriberNew(CordSubscriberRoot):
         d.update(value)
         self.features = d
 
+    @property
+    def identity(self):
+        return {"account_num": self.service_specific_id}
+
+    @identity.setter
+    def identity(self, value):
+        self.service_specific_id = value.get("account_num", "")
+
+    def update_identity(self, value):
+        d=self.identity
+        d.update(value)
+        self.identity = d
+
+    @property
+    def related(self):
+        related = {}
+        if self.volt:
+            related["volt_id"] = self.volt.id
+            related["s_tag"] = self.volt.s_tag
+            related["c_tag"] = self.volt.c_tag
+            if self.volt.vcpe:
+                related["vsg_id"] = self.volt.vcpe.id
+                if self.volt.vcpe.instance:
+                    related["instance_id"] = self.volt.vcpe.instance.id
+                    related["instance_name"] = self.volt.vcpe.instance.name
+                    related["wan_container_ip"] = self.volt.vcpe.wan_container_ip
+        return related
+
     def save(self, *args, **kwargs):
         super(CordSubscriberNew, self).save(*args, **kwargs)
 
@@ -60,18 +88,23 @@ class FeatureSerializer(serializers.Serializer):
     uverse = serializers.BooleanField(required=False)
     status = serializers.CharField(required=False)
 
+class IdentitySerializer(serializers.Serializer):
+    account_num = serializers.CharField(required=False)
+
 class CordSubscriberSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = ReadOnlyField()
-        service_specific_id = ReadOnlyField()
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-        features = FeatureSerializer() # serializers.DictField()
+        features = FeatureSerializer()
+        identity = IdentitySerializer()
+        related = serializers.DictField(required=False)
 
         class Meta:
             model = CordSubscriberNew
             fields = ('humanReadableName',
                       'id',
-                      'service_specific_id',
-                      'features')
+                      'features',
+                      'identity',
+                      'related')
 
         def getHumanReadableName(self, obj):
             return obj.__unicode__()
@@ -117,7 +150,7 @@ class CordSubscriberViewSet(XOSViewSet):
         ser = FeatureSerializer(subscriber.features, data=request.data)
         ser.is_valid(raise_exception = True)
         subscriber.update_features(ser.validated_data)
-        return Response(subscriber.features[feature])
+        return Response({feature: FeatureSerializer(subscriber.features).data[feature]})
 
     def set_features(self, request, pk=None):
         subscriber = self.get_object()
