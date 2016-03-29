@@ -14,38 +14,33 @@ if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
     IdField = serializers.ReadOnlyField
     WritableField = serializers.Field
+    DictionaryField = serializers.DictField
+    ListField = serializers.ListField
 else:
     # rest_framework 2.x
     IdField = serializers.Field
     WritableField = serializers.WritableField
 
-class NetworkPortsField(WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
-    def to_representation(self, obj):
-        return obj
+    class DictionaryField(WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
+        def to_representation(self, obj):
+            return json.dumps(obj)
 
-    def to_internal_value(self, data):
-        return data
+        def to_internal_value(self, data):
+            return json.loads(data)
 
-class DictionaryField(WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
-    def to_representation(self, obj):
-        return json.dumps(obj)
+    class ListField(WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
+        def to_representation(self, obj):
+            return json.dumps(obj)
 
-    def to_internal_value(self, data):
-        return json.loads(data)
-
-class ListField(WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
-    def to_representation(self, obj):
-        return json.dumps(obj)
-
-    def to_internal_value(self, data):
-        return json.loads(data)
+        def to_internal_value(self, data):
+            return json.loads(data)
 
 class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = IdField()
 
         sliceInfo = serializers.SerializerMethodField("getSliceInfo")
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-        network_ports = NetworkPortsField(required=False)
+        network_ports = serializers.CharField(required=False)
         site_allocation = DictionaryField(required=False)
         site_ready = DictionaryField(required=False)
         users = ListField(required=False)
