@@ -45,7 +45,7 @@ module.exports = function(options){
       mqpacker,
       csswring
     ];
-    console.log(options.css);
+
     gulp.src([
       `${options.css}**/*.css`,
       `!${options.css}dev.css`
@@ -133,12 +133,28 @@ module.exports = function(options){
       .pipe(eslint.failAfterError());
   });
 
+  // inject CSS
+  gulp.task('injectCss', function(){
+    return gulp.src(options.src + 'index.html')
+      .pipe(
+        inject(
+          gulp.src(options.src + 'css/*.css'),
+          {
+            ignorePath: [options.src]
+          }
+          )
+        )
+      .pipe(gulp.dest(options.src));
+  });
+
   gulp.task('build', function() {
     runSequence(
+      'lint',
       'templates',
       'babel',
       'scripts',
       'wiredep',
+      'injectCss',
       'copyHtml',
       'copyCss'
     );
