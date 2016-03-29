@@ -5,6 +5,11 @@ import os, sys
 import inspect
 import importlib
 
+try:
+    from rest_framework.serializers import DictField
+except:
+    raise Exception("Failed check for django-rest-framework >= 3.3.3")
+
 urlpatterns = []
 
 def import_module_from_filename(dirname, fn):
