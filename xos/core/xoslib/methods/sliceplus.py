@@ -8,6 +8,7 @@ from django.forms import widgets
 from core.xoslib.objects.sliceplus import SlicePlus
 from plus import PlusSerializerMixin
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
+import json
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -80,7 +81,7 @@ class SlicePlusList(XOSListCreateAPIView):
     method_name = "slicesplus"
 
     def get_queryset(self):
-        current_user_can_see = self.request.QUERY_PARAMS.get('current_user_can_see', False)
+        current_user_can_see = self.request.query_params.get('current_user_can_see', False)
 
         if (not self.request.user.is_authenticated()):
             raise XOSPermissionDenied("You must be authenticated in order to use this API")
