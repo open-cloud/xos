@@ -17,21 +17,21 @@
           data: '=',
           columns: '='
         },
-        template: `
-          <!--<pre>{{vm.data | json}}</pre>-->
-          <table class="table table-striped" ng-show="vm.data.length > 0">
-            <thead>
-              <tr>
-                <th ng-repeat="col in vm.columns">{{col}}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr ng-repeat="item in vm.data">
-                <td ng-repeat="col in vm.columns">{{item[col]}}</td>
-              </tr>
-            </tbody>
-          </table>
-        `,
+        template: [
+          '<!--<pre>{{vm.data | json}}</pre>-->',
+          '<table class="table table-striped" ng-show="vm.data.length > 0">',
+            '<thead>',
+              '<tr>',
+                '<th ng-repeat="col in vm.columns">{{col}}</th>',
+              '</tr>',
+            '</thead>',
+            '<tbody>',
+              '<tr ng-repeat="item in vm.data">',
+                '<td ng-repeat="col in vm.columns">{{item[col]}}</td>',
+              '</tr>',
+            '</tbody>',
+          '</table>'
+        ].join(),
         bindToController: true,
         controllerAs: 'vm',
         controller: function(){

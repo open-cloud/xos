@@ -23,10 +23,6 @@ var inject = require('gulp-inject');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
 
-var TEMPLATE_FOOTER = `}]);
-angular.module('xos.<%= name %>').run(function($location){$location.path('/')});
-angular.bootstrap(angular.element('#xos<%= fileName %>'), ['xos.<%= name %>']);`;
-
 module.exports = function(options){
   
   // delete previous builded file
@@ -35,6 +31,43 @@ module.exports = function(options){
       [options.dashboards + 'xos<%= fileName %>.html'],
       {force: true}
     );
+  });
+
+  // inject CSS
+  gulp.task('injectCss', function(){
+    return gulp.src(options.src + 'index.html')
+      .pipe(
+        inject(
+          gulp.src(options.src + 'css/*.css'),
+          {
+            ignorePath: [options.src]
+          }
+          )
+        )
+      .pipe(gulp.dest(options.src));
+  });
+
+  // minify css
+  gulp.task('css', function () {
+    var processors = [
+      autoprefixer({browsers: ['last 1 version']}),
+      mqpacker,
+      csswring
+    ];
+
+    gulp.src([
+      `${options.css}**/*.css`,
+      `!${options.css}dev.css`
+    ])
+    .pipe(postcss(processors))
+    .pipe(gulp.dest(options.tmp + '/css/'));
+  });
+
+  // copy css in correct folder
+  gulp.task('copyCss', ['css'], function(){
+    return gulp.src([`${options.tmp}/css/*.css`])
+    .pipe(concat('xosDiagnostic.css'))
+    .pipe(gulp.dest(options.static + 'css/'))
   });
 
   // compile and minify scripts
@@ -54,8 +87,7 @@ module.exports = function(options){
     return gulp.src('./src/templates/*.html')
       .pipe(templateCache({
         module: 'xos.<%= name %>',
-        root: 'templates/',
-        templateFooter: TEMPLATE_FOOTER
+        root: 'templates/'
       }))
       .pipe(gulp.dest(options.tmp));
   });
@@ -66,7 +98,6 @@ module.exports = function(options){
       // remove dev dependencies from html
       .pipe(replace(/<!-- bower:css -->(\n.*)*\n<!-- endbower --><!-- endcss -->/, ''))
       .pipe(replace(/<!-- bower:js -->(\n.*)*\n<!-- endbower --><!-- endjs -->/, ''))
-      .pipe(replace(/ng-app=".*"\s/, ''))
       // injecting minified files
       .pipe(
         inject(
@@ -112,6 +143,7 @@ module.exports = function(options){
       'babel',
       'scripts',
       'wiredep',
+      'injectCss',
       'copyHtml',
       'cleanTmp'
     );

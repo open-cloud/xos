@@ -26,7 +26,6 @@ var postcss = require('gulp-postcss');
 var autoprefixer = require('autoprefixer');
 var mqpacker = require('css-mqpacker');
 var csswring = require('csswring');
-var sass = require('gulp-sass');
 
 module.exports = function(options){
   
