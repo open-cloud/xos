@@ -319,7 +319,9 @@ class VOLTTenant(Tenant):
                 vcpe.delete()
 
     def save(self, *args, **kwargs):
-        self.validate_unique_service_specific_id()
+        # VOLTTenant probably doesn't need a SSID anymore; that will be handled
+        # by CORDSubscriberRoot...
+        # self.validate_unique_service_specific_id()
 
         if (self.subscriber_root is not None):
             subs = self.subscriber_root.get_subscribed_tenants(VOLTTenant)
