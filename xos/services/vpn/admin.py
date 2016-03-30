@@ -1,3 +1,6 @@
+import os
+import shutil
+
 from core.admin import ReadOnlyAwareAdmin, SliceInline, TenantPrivilegeInline
 from core.middleware import get_request
 from core.models import TenantPrivilege, User
@@ -131,7 +134,7 @@ class VPNTenantForm(forms.ModelForm):
             self.fields[
                 'clients_can_see_each_other'].initial = self.instance.clients_can_see_each_other
             self.fields['is_persistent'].initial = self.instance.is_persistent
-            self.fields['protocol'].initial = self.instance.protocol
+            self.initial['protocol'] = self.instance.protocol
             if (self.instance.failover_servers):
                 self.initial['failover_servers'] = [model.pk for model in list(serializers.deserialize('json', self.instance.failover_servers))]
 
@@ -160,11 +163,18 @@ class VPNTenantForm(forms.ModelForm):
         if (not self.instance.ca_crt):
             self.instance.ca_crt = self.generate_ca_crt()
 
-        return super(VPNTenantForm, self).save(commit=commit)
+        result = super(VPNTenantForm, self).save(commit=commit)
+        pki_dir = "/opt/openvpn/easyrsa3/server-" + self.instance.id
+        if (not os.path.isdir(pki_dir)):
+            os.makedirs(pki_dir)
+            shutil.copy2("/opt/openvpn/easyrsa3/", pki_dir)
+            Popen(pki_dir + "/easyrsa --batch --req-cn=XOS build-ca nopass", shell=True, stdout=PIPE).communicate()
+            self.instance.ca_crt = self.generate_ca_crt(self.instance.id)
+        return result
 
-    def generate_ca_crt(self):
+    def generate_ca_crt(self, server_id):
         """str: Generates the ca cert by reading from the ca file"""
-        with open("/opt/openvpn/easyrsa3/pki/ca.crt") as crt:
+        with open("/opt/openvpn/easyrsa3/server-" + server_id + "/ca.crt") as crt:
             return crt.readlines()
 
     class Meta:
@@ -200,7 +210,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
             # If anything deleated was a TenantPrivilege then revoke the certificate
             if type(obj) is TenantPrivilege:
                 certificate = self.certificate_name(obj)
-                Popen("/opt/openvpn/easyrsa3/easyrsa --batch revoke " + certificate, shell=True, stdout=PIPE).communicate()
+                Popen("/opt/openvpn/easyrsa3/server-" + obj.tenant.id + "/easyrsa --batch revoke " + certificate, shell=True, stdout=PIPE).communicate()
             # TODO(jermowery): determine if this is necessary.
             # if type(obj) is VPNTenant:
                 # if the tenant was deleted revoke all certs assoicated
@@ -210,7 +220,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
             # If there were any new TenantPrivlege objects then create certs
             if type(obj) is TenantPrivilege:
                 certificate = self.certificate_name(obj)
-                Popen("/opt/openvpn/easyrsa3/easyrsa --batch build-client-full " + certificate + " nopass", shell=True, stdout=PIPE).communicate()
+                Popen("/opt/openvpn/easyrsa3/server-" + obj.tenant.id + "/easyrsa --batch build-client-full " + certificate + " nopass", shell=True, stdout=PIPE).communicate()
 
 
 # Associate the admin forms with the models.

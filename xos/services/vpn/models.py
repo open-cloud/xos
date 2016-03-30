@@ -1,6 +1,6 @@
 from core.models import Service, TenantWithContainer
 from django.db import transaction
-from xos.exceptions import XOSConfigurationError, XOSValidationError
+from xos.exceptions import XOSValidationError
 
 VPN_KIND = "vpn"
 
@@ -28,7 +28,7 @@ class VPNService(Service):
 
     def get_next_available_port(self, protocol):
         if protocol != "udp" and protocol != "tcp":
-            raise XOSConfigurationError("Port protocol must be udp or tcp")
+            raise XOSValidationError("Port protocol must be udp or tcp")
         if not self.exposed_ports[protocol]:
             raise XOSValidationError("No availble ports for protocol: " + protocol)
         tenants = [tenant for tenant in VPNTenant.get_tenant_objects.all() if tenant.protocol == protocol]
@@ -198,10 +198,10 @@ class VPNTenant(TenantWithContainer):
             script += (line.rstrip() + r"\n")
         script += ("\" > ca.crt\n")
         script += ("printf \"%b\" \"")
-        for line in self.generate_client_cert(client_name):
+        for line in self.get_client_cert(client_name):
             script += (line.rstrip() + r"\n")
         script += ("\" > " + client_name + ".crt\n")
-        for line in self.generate_client_key(client_name):
+        for line in self.get_client_key(client_name):
             script += (line.rstrip() + r"\n")
         script += ("\" > " + client_name + ".key\n")
         # make sure openvpn is installed
@@ -211,11 +211,11 @@ class VPNTenant(TenantWithContainer):
         # close the script
         return script
 
-    def generate_client_cert(self, client_name):
-        return open("/opt/openvpn/easyrsa3/pki/issued/" + client_name + ".crt").readlines()
+    def get_client_cert(self, client_name):
+        return open("/opt/openvpn/easyrsa3/server-" + self.id + "/issued/" + client_name + ".crt").readlines()
 
-    def generate_client_key(self, client_name):
-        return open("/opt/openvpn/easyrsa3/pki/private/" + client_name + ".key").readlines()
+    def get_client_key(self, client_name):
+        return open("/opt/openvpn/easyrsa3/server-" + self.id + "/private/" + client_name + ".key").readlines()
 
     def generate_client_conf(self, client_name):
         """str: Generates the client configuration to use to connect to this VPN server.
