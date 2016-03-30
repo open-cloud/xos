@@ -252,38 +252,38 @@
     {% block footer %}
       {% if not is_popup %}
         <div id="footer" class="footer">
-          <div class="content">
-            <div class="tools">
-              {% block footer_links %}
-                <a href="http://djangosuit.com/support/" target="_blank" class="icon">
-                  <i class="icon-question-sign"></i>
-                  Support
-                </a>
-                <a href="http://djangosuit.com/pricing/" target="_blank" class="icon">
-                  <i class="icon-bookmark"></i>
-                  Licence
-                </a>
-                <a href="http://github.com/darklow/django-suit/issues" target="_blank" class="icon">
-                  <i class="icon-comment"></i>
-                  Report a bug
-                </a>
-              {% endblock %}
-            </div>
+          <div class="container-fluid">
+            <div class="row">
+              <div class="tools col-xs-4">
+                {% block footer_links %}
+                  <a href="http://djangosuit.com/support/" target="_blank" class="icon">
+                    <i class="icon-question-sign"></i>
+                    Support
+                  </a>
+                  <a href="http://djangosuit.com/pricing/" target="_blank" class="icon">
+                    <i class="icon-bookmark"></i>
+                    Licence
+                  </a>
+                  <a href="http://github.com/darklow/django-suit/issues" target="_blank" class="icon">
+                    <i class="icon-comment"></i>
+                    Report a bug
+                  </a>
+                {% endblock %}
+              </div>
 
-            <div class="statusMsg" id="statusMsg">
-              <!-- this is a placeholder for xoslib views to display status messages -->
+              <div class="branding col-xs-4">
+                {% block footer_branding %}
+                  {% with 'ADMIN_NAME'|suit_conf as admin_name %}
+                    {{XOS_BRANDING_NAME}}
+                    <!-- {{ admin_name }} -->
+                  {% endwith %}
+                {% endblock %}
+              </div>
             </div>
-
-            <div class="branding">
-              {% block footer_branding %}
-                {% with 'ADMIN_NAME'|suit_conf as admin_name %}
-                  {{XOS_BRANDING_NAME}}
-                  <!-- {{ admin_name }} -->
-                  {% if admin_name == 'Django Suit' %}
-                    {{ 'VERSION'|suit_conf }}
-                  {% endif %}
-                {% endwith %}
-              {% endblock %}
+            <div class="row">
+              <div class="statusMsg col-xs-12" id="statusMsg">
+                <!-- this is a placeholder for xoslib views to display status messages -->
+              </div>
             </div>
           </div>
         </div>
