@@ -76,6 +76,8 @@ class CordSubscriberNew(CordSubscriberRoot):
                     related["instance_id"] = self.volt.vcpe.instance.id
                     related["instance_name"] = self.volt.vcpe.instance.name
                     related["wan_container_ip"] = self.volt.vcpe.wan_container_ip
+                    if self.volt.vcpe.instance.node:
+                         related["compute_node_name"] = self.volt.vcpe.instance.node.name
         return related
 
     def save(self, *args, **kwargs):
