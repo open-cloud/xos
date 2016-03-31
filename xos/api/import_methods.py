@@ -48,7 +48,7 @@ def import_api_methods(dirname=None, api_path="api", api_module="api"):
             #module = import_module_from_filename(dirname, fn)
             module = import_module_by_dotted_name(api_module + "." + fn[:-3])
             for classname in dir(module):
-                print "  ",classname
+#                print "  ",classname
                 c = getattr(module, classname, None)
 
                 if inspect.isclass(c) and issubclass(c, View) and (classname not in globals()):
