@@ -45,6 +45,7 @@ class CordSubscriberNew(CordSubscriberRoot):
         self.enable_uverse = value.get("uverse", self.get_default_attribute("enable_uverse"))
         self.status = value.get("status", self.get_default_attribute("status"))
 
+
     def update_features(self, value):
         d=self.features
         d.update(value)
@@ -96,8 +97,8 @@ class IdentitySerializer(serializers.Serializer):
 class CordSubscriberSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = ReadOnlyField()
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-        features = FeatureSerializer()
-        identity = IdentitySerializer()
+        features = FeatureSerializer(required=False)
+        identity = IdentitySerializer(required=False)
         related = serializers.DictField(required=False)
 
         class Meta:
@@ -110,6 +111,10 @@ class CordSubscriberSerializer(serializers.ModelSerializer, PlusSerializerMixin)
 
         def getHumanReadableName(self, obj):
             return obj.__unicode__()
+
+        def create(self, validated_data):
+            obj = self.Meta.model(**validated_data)
+            return obj
 
 # @ensure_csrf_cookie
 class CordSubscriberViewSet(XOSViewSet):
