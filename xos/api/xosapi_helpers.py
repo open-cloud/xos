@@ -56,7 +56,7 @@ class XOSViewSet(viewsets.ModelViewSet):
 
         patterns = []
 
-        patterns.append(url(self.api_path + self.method_name + '/$', self.as_view({'get': 'list'}), name=self.base_name+'_list'))
+        patterns.append(url(self.api_path + self.method_name + '/$', self.as_view({'get': 'list', 'post': 'create'}), name=self.base_name+'_list'))
         patterns.append(url(self.api_path + self.method_name + '/(?P<pk>[a-zA-Z0-9\-]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
 
         return patterns
