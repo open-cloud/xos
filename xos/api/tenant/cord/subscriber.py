@@ -101,6 +101,8 @@ class CordSubscriberSerializer(serializers.ModelSerializer, PlusSerializerMixin)
         identity = IdentitySerializer(required=False)
         related = serializers.DictField(required=False)
 
+        nested_fields = ["features", "identity"]
+
         class Meta:
             model = CordSubscriberNew
             fields = ('humanReadableName',
@@ -115,6 +117,17 @@ class CordSubscriberSerializer(serializers.ModelSerializer, PlusSerializerMixin)
         def create(self, validated_data):
             obj = self.Meta.model(**validated_data)
             return obj
+
+        def update(self, instance, validated_data):
+            for k in validated_data.keys():
+                v = validated_data[k]
+                if k in self.nested_fields:
+                    d = getattr(instance,k)
+                    d.update(v)
+                    setattr(instance,k,d)
+                else:
+                    setattr(instance, k, v)
+            return instance
 
 # @ensure_csrf_cookie
 class CordSubscriberViewSet(XOSViewSet):
