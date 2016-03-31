@@ -37,10 +37,10 @@ class AttributeMixin(object):
             if attrname==name:
                 return default
         if hasattr(cls,"default_attributes"):
-            if attrname in cls.default_attributes:
-                return cls.default_attributes[attrname]
-        else:
-            return None
+            if name in cls.default_attributes:
+                return cls.default_attributes[name]
+
+        return None
 
     @classmethod
     def setup_simple_attributes(cls):
