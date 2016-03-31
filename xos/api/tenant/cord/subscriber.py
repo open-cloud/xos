@@ -4,13 +4,14 @@ from rest_framework.reverse import reverse
 from rest_framework import serializers
 from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.views import APIView
 from core.models import *
 from django.forms import widgets
 from django.conf.urls import patterns, url
 from services.cord.models import VOLTTenant, VBNGTenant, CordSubscriberRoot
-from api.xosapi_helpers import PlusSerializerMixin, XOSViewSet, ReadOnlyField
+from api.xosapi_helpers import PlusModelSerializer, XOSViewSet, ReadOnlyField
 from django.shortcuts import get_object_or_404
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
 from xos.exceptions import *
@@ -94,7 +95,7 @@ class FeatureSerializer(serializers.Serializer):
 class IdentitySerializer(serializers.Serializer):
     account_num = serializers.CharField(required=False)
 
-class CordSubscriberSerializer(serializers.ModelSerializer, PlusSerializerMixin):
+class CordSubscriberSerializer(PlusModelSerializer):
         id = ReadOnlyField()
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
         features = FeatureSerializer(required=False)
@@ -114,21 +115,6 @@ class CordSubscriberSerializer(serializers.ModelSerializer, PlusSerializerMixin)
         def getHumanReadableName(self, obj):
             return obj.__unicode__()
 
-        def create(self, validated_data):
-            obj = self.Meta.model(**validated_data)
-            return obj
-
-        def update(self, instance, validated_data):
-            for k in validated_data.keys():
-                v = validated_data[k]
-                if k in self.nested_fields:
-                    d = getattr(instance,k)
-                    d.update(v)
-                    setattr(instance,k,d)
-                else:
-                    setattr(instance, k, v)
-            return instance
-
 # @ensure_csrf_cookie
 class CordSubscriberViewSet(XOSViewSet):
     base_name = "subscriber"
@@ -145,8 +131,10 @@ class CordSubscriberViewSet(XOSViewSet):
         patterns.append( self.detail_url("identity/$", {"get": "get_identities", "put": "set_identities"}, "identities") )
         patterns.append( self.detail_url("identity/(?P<identity>[a-zA-Z0-9\-_]+)/$", {"get": "get_identity", "put": "set_identity"}, "get_identity") )
 
-        patterns.append( url(self.api_path + "subidlookup/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
-        patterns.append( url(self.api_path + "subidlookup/$", self.as_view({"get": "ssidlist"}), name="ssidlist") )
+        patterns.append( url(self.api_path + "account_num_lookup/(?P<account_num>[0-9\-]+)/$", self.as_view({"get": "account_num_detail"}), name="account_num_detail") )
+
+        patterns.append( url(self.api_path + "ssidmap/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
+        patterns.append( url(self.api_path + "ssidmap/$", self.as_view({"get": "ssidlist"}), name="ssidlist") )
 
         return patterns
 
@@ -208,6 +196,14 @@ class CordSubscriberViewSet(XOSViewSet):
         subscriber.update_identity(ser.validated_data)
         subscriber.save()
         return Response({identity: IdentitySerializer(subscriber.identity).data[identity]})
+
+    def account_num_detail(self, pk=None, account_num=None):
+        object_list = CordSubscriberNew.get_tenant_objects().all()
+        object_list = [x for x in object_list if x.service_specific_id == account_num]
+        if not object_list:
+            return Response("Failed to find account_num %s" % account_num, status=status.HTTP_404_NOT_FOUND)
+
+        return Response( object_list[0].id )
 
     def ssidlist(self, request):
         object_list = CordSubscriberNew.get_tenant_objects().all()

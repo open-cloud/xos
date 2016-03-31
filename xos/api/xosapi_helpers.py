@@ -19,7 +19,7 @@ else:
     example, stuff related to backend fields.
 """
 
-class PlusSerializerMixin():
+class PlusModelSerializer(serializers.ModelSerializer):
     backendIcon = serializers.SerializerMethodField("getBackendIcon")
     backendHtml = serializers.SerializerMethodField("getBackendHtml")
 
@@ -34,6 +34,36 @@ class PlusSerializerMixin():
 
     def getBackendHtml(self, obj):
         return obj.getBackendHtml()
+
+    def create(self, validated_data):
+        property_fields = getattr(self, "property_fields", [])
+        create_fields = {}
+        for k in validated_data:
+            if not k in property_fields:
+                create_fields[k] = validated_data[k]
+        obj = self.Meta.model(**create_fields)
+
+        for k in validated_data:
+            if k in property_fields:
+                setattr(obj, k, validated_data[k])
+
+        obj.caller = self.context['request'].user
+        obj.save()
+        return obj
+
+    def update(self, instance, validated_data):
+        nested_fields = getattr(self, "nested_fields", [])
+        for k in validated_data.keys():
+            v = validated_data[k]
+            if k in nested_fields:
+                d = getattr(instance,k)
+                d.update(v)
+                setattr(instance,k,d)
+            else:
+                setattr(instance, k, v)
+        instance.caller = self.context['request'].user
+        instance.save()
+        return instance
 
 class XOSViewSet(viewsets.ModelViewSet):
     api_path=""
