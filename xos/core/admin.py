@@ -1320,7 +1320,7 @@ class NodeAdmin(XOSBaseAdmin):
     user_readonly_fields = ['name','site_deployment']
     user_readonly_inlines = [TagInline,InstanceInline]
 
-    suit_form_tabs =(('details','Node Details'),('instances','Instances'), ('labels', 'Labels'))
+    suit_form_tabs =(('details','Node Details'),('instances','Instances'), ('labels', 'Labels'), ('tags','Tags'))
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
