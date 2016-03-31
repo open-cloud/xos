@@ -3,8 +3,6 @@
 source ./config.sh
 
 ACCOUNT_NUM=1238
-C_TAG=133
-S_TAG=33
 
 DATA=$(cat <<EOF
 {"identity": {"account_num": "$ACCOUNT_NUM"},
