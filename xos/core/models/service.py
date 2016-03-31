@@ -332,6 +332,18 @@ class TenantRoot(PlCoreBase, AttributeMixin):
             tr_ids = [trp.tenant_root.id for trp in TenantRootPrivilege.objects.filter(user=user)]
             return cls.objects.filter(id__in=tr_ids)
 
+    # helper function to be used in subclasses that want to ensure service_specific_id is unique
+    def validate_unique_service_specific_id(self, none_okay=False):
+        if not none_okay and (self.service_specific_id is None):
+            raise XOSMissingField("subscriber_specific_id is None, and it's a required field", fields={"service_specific_id": "cannot be none"})
+
+        if self.service_specific_id:
+            conflicts = self.get_tenant_objects().filter(service_specific_id=self.service_specific_id)
+            if self.pk:
+                conflicts = conflicts.exclude(self.pk)
+            if conflicts:
+                raise XOSDuplicateKey("service_specific_id %s already exists" % self.service_specific_id, fields={"service_specific_id": "duplicate key"})
+
 class Tenant(PlCoreBase, AttributeMixin):
     """ A tenant is a relationship between two entities, a subscriber and a
         provider. This object represents an edge.
