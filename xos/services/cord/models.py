@@ -158,6 +158,7 @@ class CordSubscriberRoot(Subscriber):
         pass
 
     def save(self, *args, **kwargs):
+        self.validate_unique_service_specific_id(none_okay=True)
         if (not hasattr(self, 'caller') or not self.caller.is_admin):
             if (self.has_field_changed("service_specific_id")):
                 raise XOSPermissionDenied("You do not have permission to change service_specific_id")
