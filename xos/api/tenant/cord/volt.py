@@ -8,7 +8,7 @@ from core.models import *
 from django.forms import widgets
 from services.cord.models import VOLTTenant, VOLTService, CordSubscriberRoot
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
-from api.xosapi_helpers import PlusSerializerMixin, XOSViewSet, ReadOnlyField
+from api.xosapi_helpers import PlusModelSerializer, XOSViewSet, ReadOnlyField
 
 def get_default_volt_service():
     volt_services = VOLTService.get_service_objects().all()
@@ -27,7 +27,7 @@ class VOLTTenantForAPI(VOLTTenant):
 
     @subscriber.setter
     def subscriber(self, value):
-        self.subscriber_root = subscriber.id
+        self.subscriber_root = value # CordSubscriberRoot.get_tenant_objects().get(id=value)
 
     @property
     def related(self):
@@ -42,14 +42,15 @@ class VOLTTenantForAPI(VOLTTenant):
                     related["compute_node_name"] = self.vcpe.instance.node.name
         return related
 
-
-class VOLTTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
+class VOLTTenantSerializer(PlusModelSerializer):
     id = ReadOnlyField()
-    service_specific_id = serializers.CharField()
+    service_specific_id = serializers.CharField(required=False)
     s_tag = serializers.CharField()
     c_tag = serializers.CharField()
     subscriber = serializers.PrimaryKeyRelatedField(queryset=CordSubscriberRoot.get_tenant_objects().all(), required=False)
     related = serializers.DictField(required=False)
+
+    property_fields=["subscriber"]
 
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     class Meta:
