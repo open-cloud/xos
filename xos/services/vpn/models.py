@@ -34,7 +34,7 @@ class VPNService(Service):
         tenants = [tenant for tenant in VPNTenant.get_tenant_objects().all() if tenant.protocol == protocol]
         port_numbers = self.exposed_ports[protocol]
         for port_number in port_numbers:
-            if [tenant for tenant in tenants if tenant.port_number == port_number].count() == 0:
+            if count([tenant for tenant in tenants if tenant.port_number == port_number]) == 0:
                 return port_number
 
 
