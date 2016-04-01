@@ -20,6 +20,7 @@
           'xos.hpcapi',
           'xos.xoslib',
           'bugSnag',
+          'xos.uiComponents'
         ])
         .config(config);
 

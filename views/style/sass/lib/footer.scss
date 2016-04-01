@@ -1,0 +1,24 @@
+/************************* FOOTER *************************/
+
+.footer{
+  z-index: 99;
+  position: fixed;
+}
+
+/* FIXME */
+@media(max-width:768px) {
+  .footer{
+    display: none;
+  }
+
+  #page-content-wrapper{
+    padding-bottom: 60px;
+  }
+}
+
+.footer .content .statusMsg {
+  float: right;
+  padding: 15px 20px 0 0;
+  display: block;
+}
+/************************* END FOOTER *************************/

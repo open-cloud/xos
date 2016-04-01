@@ -1,0 +1,14 @@
+{
+  "name": "xos-styling",
+  "version": "0.0.1",
+  "scripts": {
+    "server": "browser-sync start --config bs-config.js",
+    "styles": "node-sass -w -r --include-path --source-map-embed -o ../../xos/core/static/ ./sass/xos.scss",
+    "start": "concurrently \"npm run styles\" \"npm run server\""
+  },
+  "devDependencies": {
+    "browser-sync": "^2.11.2",
+    "concurrently": "^2.0.0",
+    "node-sass": "^3.4.2"
+  }
+}

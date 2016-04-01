@@ -1,0 +1,12 @@
+<ul>
+
+    {% for dashboard in dashboards %}
+        <li
+            {% if dashboard.id in path %}
+                class="active"
+            {% endif %}
+        >
+            <a href="/admin/dashboard/{{ dashboard.id}}">{{ dashboard.name }}</a>
+        </li>
+    {% endfor %}
+</ul>

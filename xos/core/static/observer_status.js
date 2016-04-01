@@ -1,6 +1,5 @@
 function updateObserverStatus() {
     var url="/observer";
-    console.log("fetching observer status url " + url);
     $.ajax({ url: url,
              dataType : 'json',
              type : 'GET',

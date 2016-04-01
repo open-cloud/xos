@@ -7,7 +7,7 @@
 // (works only for local environment as both application are served on the same domain)
 
 module.exports = {
-  host: 'http://xos.local:9999/',
-  xoscsrftoken: 'lu7LFTapqkGQqrqjupArNvyfd5LUoOk5',
-  xossessionid: 'mjzzv7u1q68tfsp8s807h0qzv0qdriaj'
+  host: 'http://xos.dev:9999/',
+  xoscsrftoken: 'oPSbkruovBQoKcAOUVdX39Ncxt9E93MO',
+  xossessionid: 'cy1kwat93lomok0d180c4c0cwvi5fpnn'
 };
