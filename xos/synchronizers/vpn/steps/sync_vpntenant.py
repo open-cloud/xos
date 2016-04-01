@@ -6,6 +6,7 @@ from services.vpn.models import VPNTenant
 from subprocess import Popen, PIPE
 from synchronizers.base.SyncInstanceUsingAnsible import \
     SyncInstanceUsingAnsible
+from xos.exceptions import XOSConfigurationError
 
 parentdir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, parentdir)
@@ -43,10 +44,10 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
 
     def run_playbook(self, o, fields):
         # Generate the server files
-        (stdout, stderr) = Popen("/opt/openvpn/easyrsa3/server-" + o.id + "/easyrsa --batch build-server-full server nopass", shell=True, stdout=PIPE).communicate()
-        print(str(stdout))
-        print(str(stderr))
-        (stdout, stderr) = Popen("/opt/openvpn/easyrsa3/server-" + o.id + "/easyrsa --batch gen-crl", shell=True, stdout=PIPE).communicate()
-        print(str(stdout))
-        print(str(stderr))
+        (stdout, stderr) = Popen("/opt/openvpn/easyrsa3/server-" + o.id + "/easyrsa --batch build-server-full server nopass", shell=True, stdout=PIPE, stderr=PIPE).communicate()
+        if (stderr):
+            raise XOSConfigurationError("build-server-full failed with standard out:" + str(stdout) + " and stderr: " + str(stderr))
+        (stdout, stderr) = Popen("/opt/openvpn/easyrsa3/server-" + o.id + "/easyrsa --batch gen-crl", shell=True, stdout=PIPE, stderr=PIPE).communicate()
+        if (stderr):
+            raise XOSConfigurationError("gen-crl failed with standard out:" + str(stdout) + " and stderr: " + str(stderr))
         super(SyncVPNTenant, self).run_playbook(o, fields)

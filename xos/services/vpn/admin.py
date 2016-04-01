@@ -9,7 +9,7 @@ from django.contrib import admin
 from django.core import serializers
 from services.vpn.models import VPN_KIND, VPNService, VPNTenant
 from subprocess import Popen, PIPE
-from xos.exceptions import XOSValidationError
+from xos.exceptions import XOSConfigurationError, XOSValidationError
 
 
 class VPNServiceForm(forms.ModelForm):
@@ -170,8 +170,12 @@ class VPNTenantForm(forms.ModelForm):
             shutil.copy2("/opt/openvpn/easyrsa3/openssl-1.0.cnf", pki_dir)
             shutil.copy2("/opt/openvpn/easyrsa3/easyrsa", pki_dir)
             shutil.copytree("/opt/openvpn/easyrsa3/x509-types", pki_dir + "/x509-types")
-            Popen(pki_dir + "/easyrsa --batch init-pki nopass", shell=True, stdout=PIPE).communicate()
-            Popen(pki_dir + "/easyrsa --batch --req-cn=XOS build-ca nopass", shell=True, stdout=PIPE).communicate()
+            (stdout, stderr) = Popen(pki_dir + "/easyrsa --batch init-pki nopass", shell=True, stdout=PIPE, stderr=PIPE).communicate()
+            if (stderr):
+                raise XOSConfigurationError("init-pki failed with standard out:" + str(stdout) + " and stderr: " + str(stderr))
+            (stdout, stderr) = Popen(pki_dir + "/easyrsa --batch --req-cn=XOS build-ca nopass", shell=True, stdout=PIPE, stderr=PIPE).communicate()
+            if (stderr):
+                raise XOSConfigurationError("build-ca failed with standard out:" + str(stdout) + " and stderr: " + str(stderr))
 
             self.instance.ca_crt = self.generate_ca_crt(self.instance.id)
         return result
@@ -214,7 +218,9 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
             # If anything deleated was a TenantPrivilege then revoke the certificate
             if type(obj) is TenantPrivilege:
                 certificate = self.certificate_name(obj)
-                Popen("/opt/openvpn/easyrsa3/server-" + obj.tenant.id + "/easyrsa --batch revoke " + certificate, shell=True, stdout=PIPE).communicate()
+                (stdout, stderr) = Popen("/opt/openvpn/easyrsa3/server-" + obj.tenant.id + "/easyrsa --batch revoke " + certificate, shell=True, stdout=PIPE, stderr=PIPE).communicate()
+                if (stderr):
+                    raise XOSConfigurationError("revoke failed with standard out:" + str(stdout) + " and stderr: " + str(stderr))
             # TODO(jermowery): determine if this is necessary.
             # if type(obj) is VPNTenant:
                 # if the tenant was deleted revoke all certs assoicated
@@ -224,8 +230,9 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
             # If there were any new TenantPrivlege objects then create certs
             if type(obj) is TenantPrivilege:
                 certificate = self.certificate_name(obj)
-                Popen("/opt/openvpn/easyrsa3/server-" + obj.tenant.id + "/easyrsa --batch build-client-full " + certificate + " nopass", shell=True, stdout=PIPE).communicate()
-
+                (stdout, stderr) = Popen("/opt/openvpn/easyrsa3/server-" + obj.tenant.id + "/easyrsa --batch build-client-full " + certificate + " nopass", shell=True, stdout=PIPE, stderr=PIPE).communicate()
+                if (stderr):
+                    raise XOSConfigurationError("build-client-full failed with standard out:" + str(stdout) + " and stderr: " + str(stderr))
 
 # Associate the admin forms with the models.
 admin.site.register(VPNService, VPNServiceAdmin)
