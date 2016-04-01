@@ -15,5 +15,29 @@ images.yaml:
 
 .PHONY: local_containers
 local_containers:
-	cd containers/xos; make devel
-	cd containers/synchronizer; make
+	cd xos; make devel
+	cd synchronizer; make
+enter-xos:
+	sudo docker exec -it containers_xos_1 bash
+
+enter-os:
+	sudo docker exec -it containers_xos_synchronizer_openstack_1 bash
+
+enter-mc:
+	sudo docker exec -it containers_xos_synchronizer_mcordservice1 bash
+
+upgrade_pkgs:
+	sudo pip install httpie --upgrade
+
+rebuild_xos:
+	make -C xos devel
+
+rebuild_synchronizer:
+	make -C synchronizer
+
+stop:
+	docker-compose stop
+
+rm:
+	docker-compose stop; docker-compose rm
+

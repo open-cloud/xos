@@ -37,6 +37,9 @@ backoff_disabled=False
 images_directory=/opt/xos/images
 dependency_graph=/opt/xos/model-deps
 logfile=/var/log/xos_backend.log
+proxy_ssh=True
+proxy_ssh_key=/root/setup/node_key
+proxy_ssh_user=root
 
 [gui]
 disable_minidashboard=True
