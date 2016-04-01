@@ -89,5 +89,6 @@ ENV HOME /root
 # Define working directory.
 WORKDIR /opt/xos
 
+# RUN python /opt/xos/manage.py makemigrations mcordservice 
 # Define default command.
 CMD update-ca-certificates && python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations

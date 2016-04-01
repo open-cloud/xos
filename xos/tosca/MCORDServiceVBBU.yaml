@@ -1,0 +1,162 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup MCORD-related services.
+
+imports:
+   - custom_types/xos.yaml
+
+node_types:
+    tosca.nodes.MCORDComponent:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: A Service Component of MCORD Service.
+        properties:
+            kind:
+                type: string
+                default: generic
+                description: Kind of component
+            s_tag:
+                type: string
+                required: false
+                default: 200
+                description: VTN stag port-name
+            display_message:
+                type: string
+                required: false
+                default: MCORD Component ready
+                description: Component message
+
+topology_template:
+  node_templates:
+
+    Stanford_Deployment:
+      type: tosca.nodes.Deployment
+
+    computeBBU1:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: Stanford_University
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: Stanford_Deployment
+            relationship: tosca.relationships.MemberOfDeployment
+
+    Topology:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosMcordTopology
+
+    padmin@vicci.org:
+      type: tosca.nodes.User
+      properties:
+          firstname: XOS
+          lastname: admin
+          is_admin: true
+      requirements:
+          - mcord_dashboard:
+              node: Topology
+              relationship: tosca.relationships.UsesDashboard
+
+    # SERIVCES
+    vBBU:
+      type: tosca.nodes.Service
+      requirements:
+      properties:
+          view_url: /admin/mcordservice/
+          kind: RAN 
+
+    # Network Templates
+    Private:
+      type: tosca.nodes.NetworkTemplate
+
+    management_template:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: private
+          translation: none
+
+    # Network
+    Stanford_University_vBBU_network:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: mcord_service_internal_net
+          cidr: 172.16.16.0/24
+          start_ip: 172.16.16.2
+          end_ip: 172.16.16.5
+          gateway_ip: 172.16.16.1
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: Stanford_University_vBBU_slice
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: Stanford_University_vBBU_slice
+              relationship: tosca.relationships.ConnectsToSlice
+
+    management:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+          cidr: 10.102.90.0/24
+      requirements:
+          - network_template:
+              node: management_template
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+#              node: Stanford_University_vBBU_slice
+              node: Stanford_University_management
+              relationship: tosca.relationships.MemberOfSlice
+#          - connection:
+#              node: Stanford_University_vBBU_slice
+#              relationship: tosca.relationships.ConnectsToSlice
+
+
+    Stanford_University:
+      type: tosca.nodes.Site
+
+    ubuntu-14.04-server-cloudimg-amd64-disk1:
+      type: tosca.nodes.Image
+              
+    Stanford_University_management:
+      description: This slice exists solely to own the management network
+      type: tosca.nodes.Slice
+      properties:
+          network: noauto
+      requirements:
+          - site:
+              node: Stanford_University
+              relationship: tosca.relationships.MemberOfSite
+
+    Stanford_University_vBBU_slice:
+      description: vBBU Service Slice
+      type: tosca.nodes.Slice
+#      properties:
+#          network: noauto
+      requirements:
+          - mcord_service:
+              node: vBBU 
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: Stanford_University
+              relationship: tosca.relationships.MemberOfSite
+          - default_image:
+                node: ubuntu-14.04-server-cloudimg-amd64-disk1 
+                relationship: tosca.relationships.DefaultImage
+      properties:
+          default_flavor: m1.medium
+          default_node: computeBBU2
+
+    Stanford_University_vBBU_component:
+      description: vBBU Service Component
+      type: tosca.nodes.MCORDComponent
+      requirements:
+          - provider_service:
+              node: vBBU
+              relationship: tosca.relationships.MemberOfService
+          - Stanford_University_vBBU_slice:
+              node: Stanford_University_vBBU_slice
+              relationship: tosca.relationships.MemberOfSlice
