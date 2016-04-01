@@ -20,7 +20,7 @@ class VPNServiceForm(forms.ModelForm):
         super(VPNServiceForm, self).__init__(*args, **kwargs)
 
         if self.instance:
-            self.fields['exposed_ports'].initial = self.instance.exposed_ports
+            self.fields['exposed_ports'].initial = self.instance.exposed_ports[self.instance.protocol]
 
     def save(self, commit=True):
         self.instance.exposed_ports = self.cleaned_data['exposed_ports']
