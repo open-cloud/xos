@@ -340,7 +340,7 @@ class TenantRoot(PlCoreBase, AttributeMixin):
         if self.service_specific_id:
             conflicts = self.get_tenant_objects().filter(service_specific_id=self.service_specific_id)
             if self.pk:
-                conflicts = conflicts.exclude(self.pk)
+                conflicts = conflicts.exclude(pk=self.pk)
             if conflicts:
                 raise XOSDuplicateKey("service_specific_id %s already exists" % self.service_specific_id, fields={"service_specific_id": "duplicate key"})
 
