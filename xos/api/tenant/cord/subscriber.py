@@ -54,11 +54,13 @@ class CordSubscriberNew(CordSubscriberRoot):
 
     @property
     def identity(self):
-        return {"account_num": self.service_specific_id}
+        return {"account_num": self.service_specific_id,
+                "name": self.name}
 
     @identity.setter
     def identity(self, value):
-        self.service_specific_id = value.get("account_num", "")
+        self.service_specific_id = value.get("account_num", self.service_specific_id)
+        self.name = value.get("name", self.name)
 
     def update_identity(self, value):
         d=self.identity
@@ -85,6 +87,9 @@ class CordSubscriberNew(CordSubscriberRoot):
     def save(self, *args, **kwargs):
         super(CordSubscriberNew, self).save(*args, **kwargs)
 
+# Add some structure to the REST API by subdividing the object into
+# features, identity, and related.
+
 class FeatureSerializer(serializers.Serializer):
     cdn = serializers.BooleanField(required=False)
     uplink_speed = serializers.IntegerField(required=False)
@@ -94,6 +99,7 @@ class FeatureSerializer(serializers.Serializer):
 
 class IdentitySerializer(serializers.Serializer):
     account_num = serializers.CharField(required=False)
+    name = serializers.CharField(required=False)
 
 class CordSubscriberSerializer(PlusModelSerializer):
         id = ReadOnlyField()
