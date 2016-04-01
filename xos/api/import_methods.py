@@ -56,8 +56,11 @@ def import_api_methods(dirname=None, api_path="api", api_module="api"):
 
                     method_kind = getattr(c, "method_kind", None)
                     method_name = getattr(c, "method_name", None)
-                    if method_kind and method_name:
-                        method_name = os.path.join(api_path, method_name)
+                    if method_kind:
+                        if method_name:
+                            method_name = os.path.join(api_path, method_name)
+                        else:
+                            method_name = api_path
                         view_urls.append( (method_kind, method_name, classname, c) )
 
         elif os.path.isdir(pathname):
