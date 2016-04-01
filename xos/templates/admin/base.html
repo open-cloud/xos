@@ -2,9 +2,17 @@
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
-  <title>{% block title %}  {%if title %} {{ title }} | {% endif %} {{ 'ADMIN_NAME'|suit_conf }}{% endblock %}</title> 
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>
+      {% block title %}
+          {%if title %}
+              {{ title }} |
+          {% endif %}
+          {{XOS_BRANDING_NAME}}
+      {% endblock %}
+  </title>
   <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% endblock %}"/>
-  <link rel="stylesheet" type="text/css" href="{% static 'suit/bootstrap/dist/css/bootstrap.min.css' %}" media="all"/>
+  <!--<link rel="stylesheet" type="text/css" href="{% static 'suit/bootstrap/dist/css/bootstrap.min.css' %}" media="all"/>-->
   <link rel="stylesheet" type="text/css" href="{% static 'suit/css/suit.css' %}" media="all">
   <link rel="stylesheet" type="text/css" href="{% static 'xos.css' %}" media="all">
   {% if XOS_BRANDING_CSS %}
@@ -71,7 +79,9 @@
         <a href="{% url 'admin:index' %}" class="hidden-xs">
           <img class="logo" src="{% static XOS_BRANDING_ICON %}"/>
         </a>
-        <!--{% include 'suit/menu.html' %}-->
+            {% comment %}
+            <!--{% include 'suit/menu.html' %}-->
+            {% endcomment %}
         {% include 'admin/menu.html' %}
         <button class="navbar-toggle collapsed visible-xs" type="button">
           <i class="glyphicon glyphicon-arrow-left"></i>
@@ -164,7 +174,7 @@
               {% endblock %}
             </div>
           </div>
-          <div class="row">
+          <div class="row content-wrapper">
             <div class="col-lg-12">
               <div class="suit-columns {{ is_popup|yesno:'one-column,two-columns' }}">
                 {% block content-center %}
@@ -203,7 +213,7 @@
                   {% endblock messages %}
 
                   <!-- Content -->
-                  <div id="content" class="{% block coltype %}colM{% endblock %} row-fluid">
+                  <div id="content" class="{% block coltype %}colM{% endblock %} row">
                     {% block pretitle %}
                     {% endblock %}
                     {% block content_title %}
@@ -242,38 +252,38 @@
     {% block footer %}
       {% if not is_popup %}
         <div id="footer" class="footer">
-          <div class="content">
-            <div class="tools">
-              {% block footer_links %}
-                <a href="http://djangosuit.com/support/" target="_blank" class="icon">
-                  <i class="icon-question-sign"></i>
-                  Support
-                </a>
-                <a href="http://djangosuit.com/pricing/" target="_blank" class="icon">
-                  <i class="icon-bookmark"></i>
-                  Licence
-                </a>
-                <a href="http://github.com/darklow/django-suit/issues" target="_blank" class="icon">
-                  <i class="icon-comment"></i>
-                  Report a bug
-                </a>
-              {% endblock %}
-            </div>
+          <div class="container-fluid">
+            <div class="row">
+              <div class="tools col-xs-4">
+                {% block footer_links %}
+                  <a href="http://djangosuit.com/support/" target="_blank" class="icon">
+                    <i class="icon-question-sign"></i>
+                    Support
+                  </a>
+                  <a href="http://djangosuit.com/pricing/" target="_blank" class="icon">
+                    <i class="icon-bookmark"></i>
+                    Licence
+                  </a>
+                  <a href="http://github.com/darklow/django-suit/issues" target="_blank" class="icon">
+                    <i class="icon-comment"></i>
+                    Report a bug
+                  </a>
+                {% endblock %}
+              </div>
 
-            <div class="statusMsg" id="statusMsg">
-              <!-- this is a placeholder for xoslib views to display status messages -->
+              <div class="branding col-xs-4">
+                {% block footer_branding %}
+                  {% with 'ADMIN_NAME'|suit_conf as admin_name %}
+                    {{XOS_BRANDING_NAME}}
+                    <!-- {{ admin_name }} -->
+                  {% endwith %}
+                {% endblock %}
+              </div>
             </div>
-
-            <div class="branding">
-              {% block footer_branding %}
-                {% with 'ADMIN_NAME'|suit_conf as admin_name %}
-                  {{XOS_BRANDING_NAME}}
-                  <!-- {{ admin_name }} -->
-                  {% if admin_name == 'Django Suit' %}
-                    {{ 'VERSION'|suit_conf }}
-                  {% endif %}
-                {% endwith %}
-              {% endblock %}
+            <div class="row">
+              <div class="statusMsg col-xs-12" id="statusMsg">
+                <!-- this is a placeholder for xoslib views to display status messages -->
+              </div>
             </div>
           </div>
         </div>

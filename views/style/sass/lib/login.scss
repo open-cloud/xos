@@ -1,0 +1,74 @@
+body.login img.logo{
+   width: 250px;
+   display: block;
+   margin: 20px auto;
+   padding-top: 20px;
+}
+.login {
+  background-image: url('bg.jpg');
+  background-size: cover;
+  background-position: center; 
+  background-repeat: no-repeat;
+}
+
+.login #content-main {
+  float: none;
+    height: 330px;
+    margin: 100px auto 0;
+    width: 265px;
+}
+.login{
+  #content-main {
+    background: rgba(255,255,255,0.82);
+  }
+
+  #content-main form input[type=text],
+  #content-main form input[type=password],
+  .requestDialog.ui-widget input{
+    background-color: rgb(250, 255, 189);
+  }
+  
+  /*#forgot_pwd{
+    font-size: 11px;
+    font-style: normal;
+    text-decoration: none;
+  }
+  
+  #create_acct{
+    font-size: 11px;
+    font-style: normal;
+    text-decoration: none;
+    padding-left: 45px;
+  }*/
+
+  .row + .row {
+    margin-top: 10px;
+  }
+
+  #content-main form {
+    margin: 5px 15px 0;
+  }
+
+  .btn-primary {
+    @include button-variant($btn-primary-color, $btn-primary-bg, $btn-primary-border);
+    background: $btn-primary-bg;
+  }
+
+  .forgotLink {
+    width: 45%;
+    text-align: left;
+    float: left;
+  }
+
+  #request-account-form{
+    display:none;
+  }
+
+  #requestAccountLink {
+    margin-top: 10px;
+    cursor: pointer;
+    color: $brand-primary;
+    text-decoration: underline;
+  }
+}
+

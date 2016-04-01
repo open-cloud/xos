@@ -1,0 +1,81 @@
+/************************* NAV *************************/
+
+#sidebar-wrapper {
+  -webkit-box-shadow: 3px 0px 5px 0px rgba(50, 50, 50, 0.75);
+  -moz-box-shadow:    3px 0px 5px 0px rgba(50, 50, 50, 0.75);
+  box-shadow:         3px 0px 5px 0px rgba(50, 50, 50, 0.75);
+
+  .logo{
+    max-width: 100%;
+  }
+
+  a {
+    font-weight: bold;
+  }
+
+  // ICONS
+  .icon-app {
+    background-image: url("opencloudApp.png");
+  }
+  .icon-home {
+    /*  Going with darker standard color nav -- so using over png's background-image: url("Home.png"); */
+    background-image: url("Home.png");
+  }
+  .icon-deployment{
+    background-image: url("Deployments.png");
+  }
+  .icon-site{
+    background-image: url("Sites.png");
+  }
+  .icon-slice{
+    background-image: url("Slices.png");
+  }
+  .icon-user{
+    background-image: url("Users.png");
+  }
+  .icon-reservation{
+    background-image: url("Reservations.png");
+  }
+  .icon-cog{
+    background-image: url("Services.png");
+  }
+
+  // ACTIVE ICONS
+  li.active a,
+  li.focus a {
+    .icon-home{
+      background-image: url("Home_over.png");
+    }
+    .icon-deployment{
+      background-image: url("Deployments_over.png");
+    }
+    .icon-site{
+      background-image: url("Sites_over.png");
+    }
+    .icon-slice{
+      background-image: url("Slices_over.png");
+    }
+    .icon-user{
+      background-image: url("Users_over.png");
+    }
+    .icon-reservation{
+      background-image: url("Reservations_over.png");
+    }
+    .icon-cog{
+      background-image: url("Services_over.png");
+    }
+  }
+
+  [class^="icon-"]{
+    background-position: left center;
+    width:22px;
+    height:22px;
+    display: inline-block;
+    margin-right: 10px;
+    position: relative;
+    top: 5px;
+  }
+
+}
+
+/************************* END NAV *************************/

@@ -1,0 +1,31 @@
+/* ************************* HEADER STYLE ************************* */
+
+.header{
+  background-color: #ffffff !important;
+  border-bottom: 3px solid #C5CCD4;
+  margin-bottom: 14px;
+  height: 85px;
+
+  .logo{
+    max-height: 80px;
+  }
+
+  a {
+    font-weight: bold;
+  }
+
+  #user-tools {
+    padding: 12px 20px 0px 0px;
+    float: right;
+    margin-top: -5px;
+
+    // hiding links on mobile
+    @media (max-width: $screen-sm-max) {
+      .user-links *:not(:last-child){
+        display: none;
+      }
+    }
+  }
+}
+
+/************************* END HEADER *************************/
