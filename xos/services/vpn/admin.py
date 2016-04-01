@@ -167,14 +167,18 @@ class VPNTenantForm(forms.ModelForm):
         pki_dir = "/opt/openvpn/easyrsa3/server-" + self.instance.id
         if (not os.path.isdir(pki_dir)):
             os.makedirs(pki_dir)
-            shutil.copy2("/opt/openvpn/easyrsa3/", pki_dir)
+            shutil.copy2("/opt/openvpn/easyrsa3/openssl-1.0.cnf", pki_dir)
+            shutil.copy2("/opt/openvpn/easyrsa3/easyrsa", pki_dir)
+            shutil.copytree("/opt/openvpn/easyrsa3/x509-types", pki_dir + "/x509-types")
+            Popen(pki_dir + "/easyrsa --batch init-pki nopass", shell=True, stdout=PIPE).communicate()
             Popen(pki_dir + "/easyrsa --batch --req-cn=XOS build-ca nopass", shell=True, stdout=PIPE).communicate()
+
             self.instance.ca_crt = self.generate_ca_crt(self.instance.id)
         return result
 
     def generate_ca_crt(self, server_id):
         """str: Generates the ca cert by reading from the ca file"""
-        with open("/opt/openvpn/easyrsa3/server-" + server_id + "/ca.crt") as crt:
+        with open("/opt/openvpn/easyrsa3/server-" + server_id + "/pki/ca.crt") as crt:
             return crt.readlines()
 
     class Meta:

@@ -212,10 +212,10 @@ class VPNTenant(TenantWithContainer):
         return script
 
     def get_client_cert(self, client_name):
-        return open("/opt/openvpn/easyrsa3/server-" + self.id + "/issued/" + client_name + ".crt").readlines()
+        return open("/opt/openvpn/easyrsa3/server-" + self.id + "/pki/issued/" + client_name + ".crt").readlines()
 
     def get_client_key(self, client_name):
-        return open("/opt/openvpn/easyrsa3/server-" + self.id + "/private/" + client_name + ".key").readlines()
+        return open("/opt/openvpn/easyrsa3/server-" + self.id + "/pki/private/" + client_name + ".key").readlines()
 
     def generate_client_conf(self, client_name):
         """str: Generates the client configuration to use to connect to this VPN server.

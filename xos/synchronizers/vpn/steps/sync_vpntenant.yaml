@@ -27,16 +27,16 @@
     file: path=/opt/openvpn/server-{{ tenant_id }} state=directory
 
   - name: get server key
-    copy: src=/opt/openvpn/easyrsa3/pki/private/server-{{ tenant_id }}.key dest=/opt/openvpn/server-{{ tenant_id }}/server.key
+    copy: src=/opt/openvpn/easyrsa3/server-{{ tenant_id }}/pki/private/server.key dest=/opt/openvpn/server-{{ tenant_id }}/server.key
 
   - name: get server crt
-    copy: src=/opt/openvpn/easyrsa3/pki/issued/server-{{ tenant_id }}.crt dest=/opt/openvpn/server-{{ tenant_id }}/server.crt
+    copy: src=/opt/openvpn/easyrsa3/server-{{ tenant_id }}/pki/issued/server.crt dest=/opt/openvpn/server-{{ tenant_id }}/server.crt
 
   - name: get ca crt
-    copy: src=/opt/openvpn/easyrsa3/pki/ca.crt dest=/opt/openvpn/ca.crt
+    copy: src=/opt/openvpn/easyrsa3/server-{{ tenant_id }}/pki/ca.crt dest=/opt/openvpn/ca.crt
 
   - name: get crl
-    copy: src=/opt/openvpn/easyrsa3/pki/crl.pem desk=/opt/openvpn/crl.pem
+    copy: src=/opt/openvpn/easyrsa3/server-{{ tenant_id }}/pki/crl.pem dest=/opt/openvpn/crl.pem
 
   - name: get dh
     copy: src=/opt/openvpn/easyrsa3/pki/dh.pem dest=/opt/openvpn/dh.pem
@@ -63,8 +63,8 @@
        ca /opt/openvpn/ca.crt
        cert /opt/openvpn/server-{{ tenant_id }}/server.crt
        key /opt/openvpn/server-{{ tenant_id }}/server.key
-       dh /opt/openvpn/dh.pem
-       crl-verify /opt/openvpn/crl.pem
+       dh /opt/openvpn/server-{{ tenant_id }}/dh.pem
+       crl-verify /opt/openvpn/server-{{ tenant_id }}/crl.pem
        server {{ server_network }} {{ vpn_subnet }}
        ifconfig-pool-persist /opt/openvpn/server-{{ tenant_id }}/ipp.txt
        comp-lzo

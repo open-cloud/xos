@@ -29,7 +29,7 @@ xos_synchronizer_vpn:
         - ctl:${MYIP}
     volumes:
         - ../setup/id_rsa:/opt/xos/synchronizers/vpn/vpn_private_key:ro  # private key
-
+        - /opt/openvpn:/opt/openvpn:rw
 # FUTURE
 #xos_swarm_synchronizer:
 #    image: xosproject/xos-swarm-synchronizer
@@ -48,3 +48,4 @@ xos:
       - ../setup:/root/setup:ro
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
       - ../../core/static/vpn:/opt/xos/core/static/vpn:rw
+      - /opt/openvpn:/opt/openvpn:rw
