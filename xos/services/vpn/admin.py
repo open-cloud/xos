@@ -1,5 +1,4 @@
 import os
-import shutil
 
 from core.admin import ReadOnlyAwareAdmin, SliceInline, TenantPrivilegeInline
 from core.middleware import get_request
@@ -8,8 +7,7 @@ from django import forms
 from django.contrib import admin
 from django.core import serializers
 from services.vpn.models import VPN_KIND, VPNService, VPNTenant
-from subprocess import Popen, PIPE
-from xos.exceptions import XOSConfigurationError, XOSValidationError
+from xos.exceptions import XOSValidationError
 
 
 class VPNServiceForm(forms.ModelForm):
@@ -185,39 +183,18 @@ class VPNTenantForm(forms.ModelForm):
 
         result = super(VPNTenantForm, self).save(commit=commit)
         result.save()
-        pki_dir = "/opt/openvpn/easyrsa3/server-" + str(result.id)
+        pki_dir = VPNService.OPENVPN_PREFIX + "server-" + str(result.id)
         if (not os.path.isdir(pki_dir)):
-            os.makedirs(pki_dir)
-            shutil.copy2("/opt/openvpn/easyrsa3/openssl-1.0.cnf", pki_dir)
-            shutil.copy2("/opt/openvpn/easyrsa3/easyrsa", pki_dir)
-            shutil.copytree("/opt/openvpn/easyrsa3/x509-types",
-                            pki_dir + "/x509-types")
-            (stdout, stderr) = Popen(
-                pki_dir + "/easyrsa --batch init-pki nopass",
-                shell=True,
-                stdout=PIPE,
-                stderr=PIPE).communicate()
-            if (stderr):
-                raise XOSConfigurationError(
-                    "init-pki failed with standard out:" + str(stdout) +
-                    " and stderr: " + str(stderr))
-            (stdout, stderr) = Popen(
-                pki_dir + "/easyrsa --batch --req-cn=XOS build-ca nopass",
-                shell=True,
-                stdout=PIPE,
-                stderr=PIPE).communicate()
-            if (stderr):
-                raise XOSConfigurationError(
-                    "build-ca failed with standard out:" + str(stdout) +
-                    " and stderr: " + str(stderr))
-            result.ca_crt = self.generate_ca_crt(result.id)
+            VPNService.execute_easyrsa_command(pki_dir, "init-pki")
+            VPNService.execute_easyrsa_command(
+                pki_dir, "--req-cn=XOS build-ca nopass")
+            result.ca_crt = self.generate_ca_crt(pki_dir)
+            result.save()
         return result
 
-    def generate_ca_crt(self, server_id):
+    def generate_ca_crt(self, pki_dir):
         """str: Generates the ca cert by reading from the ca file"""
-        with open(
-                "/opt/openvpn/easyrsa3/server-" + server_id + "/pki/ca.crt"
-                ) as crt:
+        with open(pki_dir + "/ca.crt") as crt:
             return crt.readlines()
 
     class Meta:
@@ -259,16 +236,10 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
             # certificate
             if type(obj) is TenantPrivilege:
                 certificate = self.certificate_name(obj)
-                (stdout, stderr) = Popen(
-                    "/opt/openvpn/easyrsa3/server-" + obj.tenant.id +
-                    "/easyrsa --batch revoke " + certificate,
-                    shell=True,
-                    stdout=PIPE,
-                    stderr=PIPE).communicate()
-                if (stderr):
-                    raise XOSConfigurationError(
-                        "revoke failed with standard out:" + str(stdout) +
-                        " and stderr: " + str(stderr))
+                pki_dir = (
+                    VPNService.OPENVPN_PREFIX + "server-" + str(obj.id))
+                VPNService.execute_easyrsa_command(
+                    pki_dir, "revoke " + certificate)
             # TODO(jermowery): determine if this is necessary.
             # if type(obj) is VPNTenant:
                 # if the tenant was deleted revoke all certs assoicated
@@ -278,17 +249,10 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
             # If there were any new TenantPrivlege objects then create certs
             if type(obj) is TenantPrivilege:
                 certificate = self.certificate_name(obj)
-                (stdout, stderr) = Popen(
-                    "/opt/openvpn/easyrsa3/server-" + obj.tenant.id +
-                    "/easyrsa --batch build-client-full " + certificate +
-                    " nopass",
-                    shell=True,
-                    stdout=PIPE,
-                    stderr=PIPE).communicate()
-                if (stderr):
-                    raise XOSConfigurationError(
-                        "build-client-full failed with standard out:" +
-                        str(stdout) + " and stderr: " + str(stderr))
+                pki_dir = (
+                    VPNService.OPENVPN_PREFIX + "server-" + str(obj.id))
+                VPNService.execute_easyrsa_command(
+                    pki_dir, "build-client-full " + certificate + " nopass")
 
 # Associate the admin forms with the models.
 admin.site.register(VPNService, VPNServiceAdmin)

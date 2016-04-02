@@ -12,46 +12,38 @@
     tenant_id: {{ tenant_id }}
     port_number: {{ port_number }}
     protocol: {{ protocol }}
+    pki_dir: {{ pki_dir }}
 
   tasks:
   - name: install openvpn
     apt: name=openvpn state=present update_cache=yes
 
   - name: stop openvpn
-    shell: kill -9 $(cat /opt/openvpn/server-{{ tenant_id }}/pid) || true
+    shell: kill -9 $(cat {{ pki_dir }}/pid) || true
 
   - name: make sure /opt/openvpn exists
     file: path=/opt/openvpn state=directory
 
   - name: make sure directory for this server exists
-    file: path=/opt/openvpn/server-{{ tenant_id }} state=directory
+    file: path={{ pki_dir }} state=directory
 
   - name: get server key
-    copy: src=/opt/openvpn/easyrsa3/server-{{ tenant_id }}/pki/private/server.key dest=/opt/openvpn/server-{{ tenant_id }}/server.key
+    copy: src={{ pki_dir }}/private/server.key dest={{ pki_dir }}/server.key
 
   - name: get server crt
-    copy: src=/opt/openvpn/easyrsa3/server-{{ tenant_id }}/pki/issued/server.crt dest=/opt/openvpn/server-{{ tenant_id }}/server.crt
+    copy: src={{ pki_dir }}/issued/server.crt dest={{ pki_dir }}/server.crt
 
   - name: get ca crt
-    copy: src=/opt/openvpn/easyrsa3/server-{{ tenant_id }}/pki/ca.crt dest=/opt/openvpn/ca.crt
+    copy: src={{ pki_dir }}/ca.crt dest={{ pki_dir }}/ca.crt
 
   - name: get crl
-    copy: src=/opt/openvpn/easyrsa3/server-{{ tenant_id }}/pki/crl.pem dest=/opt/openvpn/crl.pem
+    copy: src={{ pki_dir }}/crl.pem dest={{ pki_dir }}/crl.pem
 
   - name: get dh
-    copy: src=/opt/openvpn/easyrsa3/pki/dh.pem dest=/opt/openvpn/dh.pem
+    copy: src=/opt/openvpn/init_pki/dh.pem dest={{ pki_dir }}/dh.pem
 
   - name: erase config
-    shell: rm -f /opt/openvpn/server-{{ tenant_id }}/server.conf
-
-  - name: erase auth script
-    shell: rm -f /opt/openvpn/server-{{ tenant_id }}/auth.sh
-
-  - name: write auth script
-    shell: printf "%b" "#!/bin/bash\nexit 0" > /opt/openvpn/server-{{ tenant_id }}/auth.sh
-
-  - name: make auth script executable
-    shell: chmod 777 /opt/openvpn/server-{{ tenant_id }}/auth.sh
+    shell: rm -f {{ pki_dir }}/server.conf
 
   - name: write base config
     shell:
@@ -60,17 +52,17 @@
        port {{ port_number }}
        proto {{ protocol }}
        dev tun
-       ca /opt/openvpn/ca.crt
-       cert /opt/openvpn/server-{{ tenant_id }}/server.crt
-       key /opt/openvpn/server-{{ tenant_id }}/server.key
-       dh /opt/openvpn/server-{{ tenant_id }}/dh.pem
-       crl-verify /opt/openvpn/server-{{ tenant_id }}/crl.pem
+       ca {{ pki_dir }}/ca.crt
+       cert {{ pki_dir }}/server.crt
+       key {{ pki_dir }}/server.key
+       dh {{ pki_dir }}/dh.pem
+       crl-verify {{ pki_dir }}/crl.pem
        server {{ server_network }} {{ vpn_subnet }}
-       ifconfig-pool-persist /opt/openvpn/server-{{ tenant_id }}/ipp.txt
+       ifconfig-pool-persist {{ pki_dir }}/ipp.txt
        comp-lzo
-       status /opt/openvpn/server-{{ tenant_id }}/openvpn-status.log
+       status {{ pki_dir }}/openvpn-status.log
        verb 3
-       " > /opt/openvpn/server-{{ tenant_id }}/server.conf
+       " > {{ pki_dir }}/server.conf
 
   - name: write persistent config
     shell:
@@ -78,12 +70,12 @@
       printf "keepalive 10 60
       persist-tun
       persist-key
-      " >> /opt/openvpn/server-{{ tenant_id }}/server.conf
+      " >> {{ pki_dir }}/server.conf
     when: {{ is_persistent }}
 
   - name: write client-to-client config
-    shell: printf "client-to-client\n" >> /opt/openvpn/server{{ tenant_id }}/server.conf
+    shell: printf "client-to-client\n" >> {{ pki_dir }}/server.conf
     when: {{ clients_can_see_each_other }}
 
   - name: start openvpn
-    shell: openvpn --writepid /opt/openvpn/server{{ tenant_id }}/pid /opt/openvpn/server{{ tenant_id }}/server.conf &
+    shell: openvpn --writepid {{ pki_dir }}/pid {{ pki_dir }}/server.conf &

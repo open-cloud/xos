@@ -1,6 +1,7 @@
 from core.models import Service, TenantWithContainer
 from django.db import transaction
-from xos.exceptions import XOSValidationError
+from subprocess import Popen, PIPE
+from xos.exceptions import XOSConfigurationError, XOSValidationError
 
 VPN_KIND = "vpn"
 
@@ -8,6 +9,25 @@ VPN_KIND = "vpn"
 class VPNService(Service):
     """Defines the Service for creating VPN servers."""
     KIND = VPN_KIND
+    OPENVPN_PREFIX = "/opt/openvpn/"
+    VARS = OPENVPN_PREFIX + "vars"
+    EASYRSA_LOC = OPENVPN_PREFIX + "easyrsa3/easyrsa"
+    EASYRSA_COMMAND = EASYRSA_LOC + " --vars=" + VARS
+
+    @classmethod
+    def execute_easyrsa_command(pki_dir, command):
+        full_command = (
+            VPNService.EASYRSA_COMMAND + " --pki-dir=" +
+            pki_dir + " " + command)
+        (stdout, stderr) = (
+            Popen(
+                full_command, shell=True, stdout=PIPE, stderr=PIPE
+            ).communicate()
+        )
+        if (stderr):
+            raise XOSConfigurationError(
+                full_command + " failed with standard out:" + str(stdout) +
+                " and stderr: " + str(stderr))
 
     class Meta:
         proxy = True
@@ -234,12 +254,12 @@ class VPNTenant(TenantWithContainer):
 
     def get_client_cert(self, client_name):
         return open(
-            "/opt/openvpn/easyrsa3/server-" + self.id + "/pki/issued/" +
+            VPNService.OPENVPN_PREFIX + "server-" + self.id + "/issued/" +
             client_name + ".crt").readlines()
 
     def get_client_key(self, client_name):
         return open(
-            "/opt/openvpn/easyrsa3/server-" + self.id + "/pki/private/" +
+            VPNService.OPENVPN_PREFIX + "server-" + self.id + "/private/" +
             client_name + ".key").readlines()
 
     def generate_client_conf(self, client_name):
