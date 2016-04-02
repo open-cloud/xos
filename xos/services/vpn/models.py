@@ -16,7 +16,7 @@ class VPNService(Service):
     EASYRSA_COMMAND = EASYRSA_LOC + " --vars=" + VARS
 
     @classmethod
-    def execute_easyrsa_command(pki_dir, command):
+    def execute_easyrsa_command(cls, pki_dir, command):
         full_command = (
             VPNService.EASYRSA_COMMAND + " --pki-dir=" +
             pki_dir + " " + command)
