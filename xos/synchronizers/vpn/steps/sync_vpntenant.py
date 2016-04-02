@@ -37,7 +37,6 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
                 "server_network": tenant.server_network,
                 "clients_can_see_each_other": (
                     tenant.clients_can_see_each_other),
-                "tenant_id": tenant.id,
                 "port_number": tenant.port_number,
                 "protocol": tenant.protocol,
                 "pki_dir": (
