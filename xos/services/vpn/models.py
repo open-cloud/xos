@@ -20,12 +20,11 @@ class VPNService(Service):
         full_command = (
             VPNService.EASYRSA_COMMAND + " --pki-dir=" +
             pki_dir + " " + command)
-        (stdout, stderr) = (
-            Popen(
-                full_command, shell=True, stdout=PIPE, stderr=PIPE
-            ).communicate()
+        proc = Popen(
+            full_command, shell=True, stdout=PIPE, stderr=PIPE
         )
-        if (stderr):
+        (stdout, stderr) = proc.communicate()
+        if (proc.returncode != 0):
             raise XOSConfigurationError(
                 full_command + " failed with standard out:" + str(stdout) +
                 " and stderr: " + str(stderr))
