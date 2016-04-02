@@ -9,7 +9,6 @@
     is_persistent: {{ is_persistent }}
     vpn_subnet: {{ vpn_subnet }}
     clients_can_see_each_other: {{ clients_can_see_each_other }}
-    tenant_id: {{ tenant_id }}
     port_number: {{ port_number }}
     protocol: {{ protocol }}
     pki_dir: {{ pki_dir }}
