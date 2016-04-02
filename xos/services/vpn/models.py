@@ -1,6 +1,7 @@
+from subprocess import PIPE, Popen
+
 from core.models import Service, TenantWithContainer
 from django.db import transaction
-from subprocess import Popen, PIPE
 from xos.exceptions import XOSConfigurationError, XOSValidationError
 
 VPN_KIND = "vpn"
