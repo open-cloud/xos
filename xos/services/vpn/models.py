@@ -15,26 +15,42 @@ class VPNService(Service):
         app_label = "vpn"
         verbose_name = "VPN Service"
 
-    default_attributes = {'exposed_ports': None}
+    default_attributes = {'exposed_ports': None,
+                          'exposed_ports_str': None}
 
     @property
     def exposed_ports(self):
         return self.get_attribute("exposed_ports",
-                                    self.default_attributes["exposed_ports"])
+                                  self.default_attributes["exposed_ports"])
 
     @exposed_ports.setter
     def exposed_ports(self, value):
         self.set_attribute("exposed_ports", value)
 
+    @property
+    def exposed_ports_str(self):
+        return self.get_attribute("exposed_ports_str",
+                                  self.default_attributes["exposed_ports_str"])
+
+    @exposed_ports_str.setter
+    def exposed_ports_str(self, value):
+        self.set_attribute("exposed_ports_str", value)
+
     def get_next_available_port(self, protocol):
         if protocol != "udp" and protocol != "tcp":
             raise XOSValidationError("Port protocol must be udp or tcp")
         if not self.exposed_ports[protocol]:
-            raise XOSValidationError("No availble ports for protocol: " + protocol)
-        tenants = [tenant for tenant in VPNTenant.get_tenant_objects().all() if tenant.protocol == protocol]
+            raise XOSValidationError(
+                "No availble ports for protocol: " + protocol)
+        tenants = [
+            tenant for tenant in VPNTenant.get_tenant_objects().all()
+            if tenant.protocol == protocol]
         port_numbers = self.exposed_ports[protocol]
         for port_number in port_numbers:
-            if count([tenant for tenant in tenants if tenant.port_number == port_number]) == 0:
+            if (
+                len([
+                    tenant for tenant in tenants
+                    if tenant.port_number == port_number]) == 0):
                 return port_number
 
 
@@ -76,7 +92,8 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def protocol(self):
-        return self.get_attribute("protocol", self.default_attributes["protocol"])
+        return self.get_attribute(
+            "protocol", self.default_attributes["protocol"])
 
     @protocol.setter
     def protocol(self, value):
@@ -84,7 +101,8 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def addresses(self):
-        """Mapping[str, str]: The ip, mac address, and subnet of the NAT network of this Tenant."""
+        """Mapping[str, str]: The ip, mac address, and subnet of the NAT
+            network of this Tenant."""
         if (not self.id) or (not self.instance):
             return {}
 
@@ -144,7 +162,8 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def failover_servers(self):
-        self.get_attribute("failover_servers", self.default_attributes["failover_servers"])
+        self.get_attribute(
+            "failover_servers", self.default_attributes["failover_servers"])
 
     @failover_servers.setter
     def failover_servers(self, value):
@@ -152,7 +171,8 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def clients_can_see_each_other(self):
-        """bool: True if the client can see the subnet of the server, false otherwise."""
+        """bool: True if the client can see the subnet of the server, false
+            otherwise."""
         return self.get_attribute(
             "clients_can_see_each_other",
             self.default_attributes['clients_can_see_each_other'])
@@ -181,7 +201,8 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def script_text(self):
-        return self.get_attribute("script_text", self.default_attributes['script_text'])
+        return self.get_attribute(
+            "script_text", self.default_attributes['script_text'])
 
     @script_text.setter
     def script_text(self, value):
@@ -212,18 +233,24 @@ class VPNTenant(TenantWithContainer):
         return script
 
     def get_client_cert(self, client_name):
-        return open("/opt/openvpn/easyrsa3/server-" + self.id + "/pki/issued/" + client_name + ".crt").readlines()
+        return open(
+            "/opt/openvpn/easyrsa3/server-" + self.id + "/pki/issued/" +
+            client_name + ".crt").readlines()
 
     def get_client_key(self, client_name):
-        return open("/opt/openvpn/easyrsa3/server-" + self.id + "/pki/private/" + client_name + ".key").readlines()
+        return open(
+            "/opt/openvpn/easyrsa3/server-" + self.id + "/pki/private/" +
+            client_name + ".key").readlines()
 
     def generate_client_conf(self, client_name):
-        """str: Generates the client configuration to use to connect to this VPN server.
+        """str: Generates the client configuration to use to connect to this
+            VPN server.
         """
         conf = ("client\n" +
                 "dev tun\n" +
                 "proto " + self.protocol + "\n" +
-                "remote " + str(self.nat_ip) + " " + str(self.port_number) + "\n" +
+                "remote " + str(self.nat_ip) + " " + str(self.port_number) +
+                "\n" +
                 "resolv-retry infinite\n" +
                 "nobind\n" +
                 "ca ca.crt\n" +
