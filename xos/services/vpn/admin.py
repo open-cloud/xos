@@ -184,7 +184,8 @@ class VPNTenantForm(forms.ModelForm):
                 self.instance.protocol))
 
         result = super(VPNTenantForm, self).save(commit=commit)
-        pki_dir = "/opt/openvpn/easyrsa3/server-" + result.id
+        result.save()
+        pki_dir = "/opt/openvpn/easyrsa3/server-" + str(result.id)
         if (not os.path.isdir(pki_dir)):
             os.makedirs(pki_dir)
             shutil.copy2("/opt/openvpn/easyrsa3/openssl-1.0.cnf", pki_dir)
@@ -209,8 +210,7 @@ class VPNTenantForm(forms.ModelForm):
                 raise XOSConfigurationError(
                     "build-ca failed with standard out:" + str(stdout) +
                     " and stderr: " + str(stderr))
-            self.instance.ca_crt = self.generate_ca_crt(result.id)
-            return super(VPNTenantForm, self).save(commit=commit)
+            result.ca_crt = self.generate_ca_crt(result.id)
         return result
 
     def generate_ca_crt(self, server_id):
