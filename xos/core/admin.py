@@ -2163,5 +2163,6 @@ if True:
     admin.site.register(Flavor, FlavorAdmin)
     admin.site.register(TenantRoot, TenantRootAdmin)
     admin.site.register(TenantRootRole, TenantRootRoleAdmin)
+    admin.site.register(TenantRole, TenantRoleAdmin)
     admin.site.register(TenantAttribute, TenantAttributeAdmin)
 #    admin.site.register(Container, ContainerAdmin)
