@@ -2178,6 +2178,5 @@ if True:
     admin.site.register(TenantRootRole, TenantRootRoleAdmin)
     admin.site.register(Tenant, TenantAdmin)
     admin.site.register(TenantRole)
-    admin.site.register(TenantRole, TenantRoleAdmin)
     admin.site.register(TenantAttribute, TenantAttributeAdmin)
 #    admin.site.register(Container, ContainerAdmin)
