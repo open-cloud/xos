@@ -125,7 +125,9 @@ class VPNTenantForm(forms.ModelForm):
     is_persistent = forms.BooleanField(required=False)
     clients_can_see_each_other = forms.BooleanField(required=False)
     failover_servers = forms.ModelMultipleChoiceField(
-        queryset=VPNTenant.get_tenant_objects(), required=False)
+        queryset=VPNTenant.get_tenant_objects(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple())
     protocol = forms.ChoiceField(required=True, choices=[
         ("udp", "udp"), ("tcp", "tcp")])
 
