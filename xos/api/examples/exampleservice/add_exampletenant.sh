@@ -2,8 +2,6 @@
 
 source ./config.sh
 
-ACCOUNT_NUM=1238
-
 DATA=$(cat <<EOF
 {"tenant_message": "This is a test"}
 EOF
