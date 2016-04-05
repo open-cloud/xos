@@ -1,0 +1,99 @@
+from rest_framework import generics
+from rest_framework import serializers
+from rest_framework.response import Response
+from rest_framework import status
+from xos.apibase import XOSRetrieveUpdateDestroyAPIView, XOSListCreateAPIView
+from rest_framework import viewsets
+from django.conf.urls import patterns, url
+
+if hasattr(serializers, "ReadOnlyField"):
+    # rest_framework 3.x
+    ReadOnlyField = serializers.ReadOnlyField
+else:
+    # rest_framework 2.x
+    ReadOnlyField = serializers.Field
+
+""" PlusSerializerMixin
+
+    Implements Serializer fields that are common to all OpenCloud objects. For
+    example, stuff related to backend fields.
+"""
+
+class PlusModelSerializer(serializers.ModelSerializer):
+    backendIcon = serializers.SerializerMethodField("getBackendIcon")
+    backendHtml = serializers.SerializerMethodField("getBackendHtml")
+
+    # This will cause a descendant class to pull in the methods defined
+    # above. See rest_framework/serializers.py: _get_declared_fields().
+    base_fields = {"backendIcon": backendIcon, "backendHtml": backendHtml}
+    # Rest_framework 3.0 uses _declared_fields instead of base_fields
+    _declared_fields = {"backendIcon": backendIcon, "backendHtml": backendHtml}
+
+    def getBackendIcon(self, obj):
+        return obj.getBackendIcon()
+
+    def getBackendHtml(self, obj):
+        return obj.getBackendHtml()
+
+    def create(self, validated_data):
+        property_fields = getattr(self, "property_fields", [])
+        create_fields = {}
+        for k in validated_data:
+            if not k in property_fields:
+                create_fields[k] = validated_data[k]
+        obj = self.Meta.model(**create_fields)
+
+        for k in validated_data:
+            if k in property_fields:
+                setattr(obj, k, validated_data[k])
+
+        obj.caller = self.context['request'].user
+        obj.save()
+        return obj
+
+    def update(self, instance, validated_data):
+        nested_fields = getattr(self, "nested_fields", [])
+        for k in validated_data.keys():
+            v = validated_data[k]
+            if k in nested_fields:
+                d = getattr(instance,k)
+                d.update(v)
+                setattr(instance,k,d)
+            else:
+                setattr(instance, k, v)
+        instance.caller = self.context['request'].user
+        instance.save()
+        return instance
+
+class XOSViewSet(viewsets.ModelViewSet):
+    api_path=""
+
+    @classmethod
+    def get_api_method_path(self):
+        if self.method_name:
+            return self.api_path + self.method_name + "/"
+        else:
+            return self.api_path
+
+    @classmethod
+    def detail_url(self, pattern, viewdict, name):
+        return url(self.get_api_method_path() + r'(?P<pk>[a-zA-Z0-9\-]+)/' + pattern,
+                   self.as_view(viewdict),
+                   name=self.base_name+"_"+name)
+
+    @classmethod
+    def list_url(self, pattern, viewdict, name):
+        return url(self.get_api_method_path() + pattern,
+                   self.as_view(viewdict),
+                   name=self.base_name+"_"+name)
+
+    @classmethod
+    def get_urlpatterns(self, api_path="^"):
+        self.api_path = api_path
+
+        patterns = []
+
+        patterns.append(url(self.get_api_method_path() + '$', self.as_view({'get': 'list', 'post': 'create'}), name=self.base_name+'_list'))
+        patterns.append(url(self.get_api_method_path() + '(?P<pk>[a-zA-Z0-9\-]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
+
+        return patterns
