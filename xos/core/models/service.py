@@ -1,9 +1,10 @@
-from django.db import models
-from core.models import PlCoreBase,SingletonModel,PlCoreBaseManager
-from core.models.plcorebase import StrippedCharField
-from xos.exceptions import *
-from operator import attrgetter
 import json
+from operator import attrgetter
+
+from core.models import PlCoreBase, PlCoreBaseManager, SingletonModel
+from core.models.plcorebase import StrippedCharField
+from django.db import models
+from xos.exceptions import *
 
 COARSE_KIND="coarse"
 
@@ -813,9 +814,9 @@ class TenantRole(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.role)
 
 class TenantPrivilege(PlCoreBase):
-    user = models.ForeignKey('User', related_name="tenant_privileges")
-    tenant = models.ForeignKey('Tenant', related_name="tenant_privileges")
-    role = models.ForeignKey('TenantRole', related_name="tenant_privileges")
+    user = models.ForeignKey('User', related_name="tenantprivileges")
+    tenant = models.ForeignKey('Tenant', related_name="tenantprivileges")
+    role = models.ForeignKey('TenantRole', related_name="tenantprivileges")
 
     class Meta:
         unique_together = ('user', 'tenant', 'role')

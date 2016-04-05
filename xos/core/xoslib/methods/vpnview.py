@@ -27,23 +27,29 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         clients_can_see_each_other = ReadOnlyField()
         ca_crt = ReadOnlyField()
         port_number = ReadOnlyField()
+        protocol = ReadOnlyField()
         failover_servers = ReadOnlyField()
         creator = ReadOnlyField()
         instance = ReadOnlyField()
         script_text = ReadOnlyField()
-        provider_service = serializers.PrimaryKeyRelatedField(queryset=VPNService.get_service_objects().all(), default=get_default_vpn_service)
+        provider_service = serializers.PrimaryKeyRelatedField(
+            queryset=VPNService.get_service_objects().all(),
+            default=get_default_vpn_service)
 
-        humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+        humanReadableName = serializers.SerializerMethodField(
+                "getHumanReadableName")
 
-        computeNodeName = serializers.SerializerMethodField("getComputeNodeName")
+        computeNodeName = serializers.SerializerMethodField(
+                "getComputeNodeName")
 
         class Meta:
             model = VPNTenant
             fields = ('humanReadableName', 'id', 'provider_service',
                       'service_specific_attribute', 'vpn_subnet',
-                      'server_network', 'creator', 'instance',
-                      'computeNodeName', 'is_persistent', 'clients_can_see_each_other',
-                      'ca_crt', 'port_number', 'script_text', 'failover_servers')
+                      'server_network', 'creator', 'instance', 'protocol',
+                      'computeNodeName', 'is_persistent',
+                      'clients_can_see_each_other', 'ca_crt', 'port_number',
+                      'script_text', 'failover_servers')
 
         def getHumanReadableName(self, obj):
             return obj.__unicode__()
@@ -62,7 +68,13 @@ class VPNTenantList(XOSListCreateAPIView):
 
     def get_queryset(self):
         queryset = VPNTenant.get_tenant_objects().all()
-        queryset = [ tenant for tenant in queryset if self.request.user.can_update_tenant(tenant, ['access', 'Access'])]
+        queryset = [
+            tenant
+            for tenant in queryset
+            if self.request.user.can_update_tenant(tenant,
+                                                   ['access', 'Access'])]
         for tenant in queryset:
-            tenant.script_text = tenant.create_client_script(self.request.user.email + "-" + tenant.id)
+            tenant.script_text = (
+                tenant.create_client_script(
+                    self.request.user.email + "-" + str(tenant.id)))
         return queryset

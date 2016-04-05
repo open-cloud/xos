@@ -894,7 +894,7 @@ class TenantRootAdmin(XOSBaseAdmin):
 
 class TenantRoleAdmin(XOSBaseAdmin):
     model = TenantRole
-    pass
+    fields = ('role',)
 
 class TenantPrivilegeInline(XOSTabularInline):
     model = TenantPrivilege
@@ -2177,6 +2177,6 @@ if True:
     admin.site.register(TenantRoot, TenantRootAdmin)
     admin.site.register(TenantRootRole, TenantRootRoleAdmin)
     admin.site.register(Tenant, TenantAdmin)
-    admin.site.register(TenantRole)
+    admin.site.register(TenantRole, TenantRootRoleAdmin)
     admin.site.register(TenantAttribute, TenantAttributeAdmin)
 #    admin.site.register(Container, ContainerAdmin)

@@ -5,7 +5,6 @@ from core.middleware import get_request
 from core.models import TenantPrivilege, User
 from django import forms
 from django.contrib import admin
-from django.core import serializers
 from services.vpn.models import VPN_KIND, VPNService, VPNTenant
 from xos.exceptions import XOSValidationError
 
@@ -124,16 +123,14 @@ class VPNTenantForm(forms.ModelForm):
     vpn_subnet = forms.GenericIPAddressField(protocol="IPv4", required=True)
     is_persistent = forms.BooleanField(required=False)
     clients_can_see_each_other = forms.BooleanField(required=False)
-    failover_servers = forms.ModelMultipleChoiceField(
-        queryset=VPNTenant.get_tenant_objects(),
-        required=False,
-        widget=forms.CheckboxSelectMultiple())
+    failover_servers = forms.ModelMultipleChoiceField(required=False)
     protocol = forms.ChoiceField(required=True, choices=[
-        ("udp", "udp"), ("tcp", "tcp")])
+        ("tcp", "tcp"), ("udp", "udp")])
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
+        self.fields['failover_servers'].widget.attrs['rows'] = 100
         # self.fields['script_name'].widget.attrs['readonly'] = True
         self.fields[
             'provider_service'].queryset = (
@@ -151,11 +148,9 @@ class VPNTenantForm(forms.ModelForm):
                     self.instance.clients_can_see_each_other)
             self.fields['is_persistent'].initial = self.instance.is_persistent
             self.initial['protocol'] = self.instance.protocol
-            if (self.instance.failover_servers):
-                self.initial['failover_servers'] = [
-                    model.pk for model in list(
-                        serializers.deserialize(
-                            'json', self.instance.failover_servers))]
+            self.initial['failover_servers'] = self.instance.failover_servers
+            self.fields['failover_servers'].queryset = (
+                VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
@@ -163,6 +158,8 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['server_network'].initial = "10.66.77.0"
             self.fields['clients_can_see_each_other'].initial = True
             self.fields['is_persistent'].initial = True
+            self.fields['failover_servers'].queryset = (
+                VPNTenant.get_tenant_objects())
             if VPNService.get_service_objects().exists():
                 self.fields["provider_service"].initial = (
                     VPNService.get_service_objects().all()[0])
@@ -174,9 +171,9 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.server_network = self.cleaned_data.get('server_network')
         self.instance.clients_can_see_each_other = self.cleaned_data.get(
             'clients_can_see_each_other')
-        self.instance.failover_servers = (
-            serializers.serialize(
-                "json", self.cleaned_data.get('failover_servers')))
+
+        for tenant in self.cleaned_data['failover_servers']:
+            self.instance.failover_servers.add(tenant)
 
         self.instance.protocol = self.cleaned_data.get("protocol")
         self.instance.port_number = (
