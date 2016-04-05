@@ -27,7 +27,14 @@ def import_module_from_filename(dirname, fn):
 
     return module
 
-def import_api_methods(dirname=None, api_path="api"):
+def import_module_by_dotted_name(name):
+    print "import", name
+    module = __import__(name)
+    for part in name.split(".")[1:]:
+        module = getattr(module, part)
+    return module
+
+def import_api_methods(dirname=None, api_path="api", api_module="api"):
     subdirs=[]
     urlpatterns=[]
 
@@ -38,8 +45,10 @@ def import_api_methods(dirname=None, api_path="api"):
     for fn in os.listdir(dirname):
         pathname = os.path.join(dirname,fn)
         if os.path.isfile(pathname) and fn.endswith(".py") and (fn!="__init__.py") and (fn!="import_methods.py"):
-            module = import_module_from_filename(dirname, fn)
+            #module = import_module_from_filename(dirname, fn)
+            module = import_module_by_dotted_name(api_module + "." + fn[:-3])
             for classname in dir(module):
+#                print "  ",classname
                 c = getattr(module, classname, None)
 
                 if inspect.isclass(c) and issubclass(c, View) and (classname not in globals()):
@@ -47,12 +56,15 @@ def import_api_methods(dirname=None, api_path="api"):
 
                     method_kind = getattr(c, "method_kind", None)
                     method_name = getattr(c, "method_name", None)
-                    if method_kind and method_name:
-                        method_name = os.path.join(api_path, method_name)
+                    if method_kind:
+                        if method_name:
+                            method_name = os.path.join(api_path, method_name)
+                        else:
+                            method_name = api_path
                         view_urls.append( (method_kind, method_name, classname, c) )
 
         elif os.path.isdir(pathname):
-            urlpatterns.extend(import_api_methods(pathname, os.path.join(api_path, fn)))
+            urlpatterns.extend(import_api_methods(pathname, os.path.join(api_path, fn), api_module+"." + fn))
 
     for view_url in view_urls:
         if view_url[0] == "list":

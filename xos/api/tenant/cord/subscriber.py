@@ -4,13 +4,14 @@ from rest_framework.reverse import reverse
 from rest_framework import serializers
 from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.views import APIView
 from core.models import *
 from django.forms import widgets
 from django.conf.urls import patterns, url
 from services.cord.models import VOLTTenant, VBNGTenant, CordSubscriberRoot
-from api.xosapi_helpers import PlusSerializerMixin, XOSViewSet, ReadOnlyField
+from api.xosapi_helpers import PlusModelSerializer, XOSViewSet, ReadOnlyField
 from django.shortcuts import get_object_or_404
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
 from xos.exceptions import *
@@ -45,6 +46,7 @@ class CordSubscriberNew(CordSubscriberRoot):
         self.enable_uverse = value.get("uverse", self.get_default_attribute("enable_uverse"))
         self.status = value.get("status", self.get_default_attribute("status"))
 
+
     def update_features(self, value):
         d=self.features
         d.update(value)
@@ -52,11 +54,13 @@ class CordSubscriberNew(CordSubscriberRoot):
 
     @property
     def identity(self):
-        return {"account_num": self.service_specific_id}
+        return {"account_num": self.service_specific_id,
+                "name": self.name}
 
     @identity.setter
     def identity(self, value):
-        self.service_specific_id = value.get("account_num", "")
+        self.service_specific_id = value.get("account_num", self.service_specific_id)
+        self.name = value.get("name", self.name)
 
     def update_identity(self, value):
         d=self.identity
@@ -76,10 +80,15 @@ class CordSubscriberNew(CordSubscriberRoot):
                     related["instance_id"] = self.volt.vcpe.instance.id
                     related["instance_name"] = self.volt.vcpe.instance.name
                     related["wan_container_ip"] = self.volt.vcpe.wan_container_ip
+                    if self.volt.vcpe.instance.node:
+                         related["compute_node_name"] = self.volt.vcpe.instance.node.name
         return related
 
     def save(self, *args, **kwargs):
         super(CordSubscriberNew, self).save(*args, **kwargs)
+
+# Add some structure to the REST API by subdividing the object into
+# features, identity, and related.
 
 class FeatureSerializer(serializers.Serializer):
     cdn = serializers.BooleanField(required=False)
@@ -90,13 +99,16 @@ class FeatureSerializer(serializers.Serializer):
 
 class IdentitySerializer(serializers.Serializer):
     account_num = serializers.CharField(required=False)
+    name = serializers.CharField(required=False)
 
-class CordSubscriberSerializer(serializers.ModelSerializer, PlusSerializerMixin):
+class CordSubscriberSerializer(PlusModelSerializer):
         id = ReadOnlyField()
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-        features = FeatureSerializer()
-        identity = IdentitySerializer()
+        features = FeatureSerializer(required=False)
+        identity = IdentitySerializer(required=False)
         related = serializers.DictField(required=False)
+
+        nested_fields = ["features", "identity"]
 
         class Meta:
             model = CordSubscriberNew
@@ -125,8 +137,10 @@ class CordSubscriberViewSet(XOSViewSet):
         patterns.append( self.detail_url("identity/$", {"get": "get_identities", "put": "set_identities"}, "identities") )
         patterns.append( self.detail_url("identity/(?P<identity>[a-zA-Z0-9\-_]+)/$", {"get": "get_identity", "put": "set_identity"}, "get_identity") )
 
-        patterns.append( url(self.api_path + "subidlookup/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
-        patterns.append( url(self.api_path + "subidlookup/$", self.as_view({"get": "ssidlist"}), name="ssidlist") )
+        patterns.append( url(self.api_path + "account_num_lookup/(?P<account_num>[0-9\-]+)/$", self.as_view({"get": "account_num_detail"}), name="account_num_detail") )
+
+        patterns.append( url(self.api_path + "ssidmap/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
+        patterns.append( url(self.api_path + "ssidmap/$", self.as_view({"get": "ssidlist"}), name="ssidlist") )
 
         return patterns
 
@@ -188,6 +202,14 @@ class CordSubscriberViewSet(XOSViewSet):
         subscriber.update_identity(ser.validated_data)
         subscriber.save()
         return Response({identity: IdentitySerializer(subscriber.identity).data[identity]})
+
+    def account_num_detail(self, pk=None, account_num=None):
+        object_list = CordSubscriberNew.get_tenant_objects().all()
+        object_list = [x for x in object_list if x.service_specific_id == account_num]
+        if not object_list:
+            return Response("Failed to find account_num %s" % account_num, status=status.HTTP_404_NOT_FOUND)
+
+        return Response( object_list[0].id )
 
     def ssidlist(self, request):
         object_list = CordSubscriberNew.get_tenant_objects().all()
