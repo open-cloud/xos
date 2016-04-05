@@ -11,7 +11,7 @@ from django.forms import widgets
 from django.conf.urls import patterns, url
 from services.cord.models import VOLTTenant, VBNGTenant, CordSubscriberRoot
 from core.xoslib.objects.cordsubscriber import CordSubscriber
-from api.xosapi_helpers import PlusSerializerMixin, XOSViewSet
+from api.xosapi_helpers import PlusModelSerializer, XOSViewSet
 from django.shortcuts import get_object_or_404
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
 from xos.exceptions import *
@@ -25,7 +25,7 @@ else:
     # rest_framework 2.x
     ReadOnlyField = serializers.Field
 
-class CordDebugIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
+class CordDebugIdSerializer(PlusModelSerializer):
     # Swagger is failing because CordDebugViewSet has neither a model nor
     # a serializer_class. Stuck this in here as a placeholder for now.
     id = ReadOnlyField()
