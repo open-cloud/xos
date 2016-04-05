@@ -92,7 +92,7 @@ class VPNTenant(TenantWithContainer):
                           'ca_crt': None,
                           'port': None,
                           'script_text': None,
-                          'failover_servers': [],
+                          'failover_servers': set(),
                           'protocol': None}
 
     def __init__(self, *args, **kwargs):
@@ -182,7 +182,7 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def failover_servers(self):
-        self.get_attribute(
+        return self.get_attribute(
             "failover_servers", self.default_attributes["failover_servers"])
 
     @failover_servers.setter
@@ -253,14 +253,14 @@ class VPNTenant(TenantWithContainer):
         return script
 
     def get_client_cert(self, client_name):
-        return open(
-            VPNService.OPENVPN_PREFIX + "server-" + self.id + "/issued/" +
-            client_name + ".crt").readlines()
+        with open(VPNService.OPENVPN_PREFIX + "server-" + str(self.id) +
+                  "/issued/" + client_name + ".crt", 'r') as f:
+                    return f.readlines()
 
     def get_client_key(self, client_name):
-        return open(
-            VPNService.OPENVPN_PREFIX + "server-" + self.id + "/private/" +
-            client_name + ".key").readlines()
+        with open(VPNService.OPENVPN_PREFIX + "server-" + str(self.id) +
+                  "/private/" + client_name + ".key", 'r') as f:
+                    return f.readlines()
 
     def generate_client_conf(self, client_name):
         """str: Generates the client configuration to use to connect to this
@@ -268,22 +268,29 @@ class VPNTenant(TenantWithContainer):
         """
         conf = ("client\n" +
                 "dev tun\n" +
-                "proto " + self.protocol + "\n" +
-                "remote " + str(self.nat_ip) + " " + str(self.port_number) +
-                "\n" +
-                "resolv-retry infinite\n" +
-                "nobind\n" +
-                "ca ca.crt\n" +
-                "cert " + client_name + ".crt\n" +
-                "key " + client_name + ".key\n" +
-                "comp-lzo\n" +
-                "verb 3\n")
+                self.get_remote_line(
+                        self.nat_ip, self.port_number, self.protocol))
+        for remote in self.failover_servers:
+            conf += self.get_remote_line(
+                    remote.nat_ip, remote.port_number, remote.protocol)
+
+        conf += ("resolv-retry 60\n" +
+                 "nobind\n" +
+                 "ca ca.crt\n" +
+                 "cert " + client_name + ".crt\n" +
+                 "key " + client_name + ".key\n" +
+                 "comp-lzo\n" +
+                 "verb 3\n")
 
         if self.is_persistent:
             conf += "persist-tun\n"
             conf += "persist-key\n"
 
         return conf
+
+    def get_remote_line(self, host, port_number, protocol):
+        return ("remote " + str(host) + " " + str(port_number) + " " +
+                str(protocol) + "\n")
 
 
 def model_policy_vpn_tenant(pk):
