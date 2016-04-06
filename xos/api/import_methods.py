@@ -1,6 +1,7 @@
 from django.views.generic import View
 from django.conf.urls import patterns, url, include
 from rest_framework.routers import DefaultRouter
+from xosapi_helpers import XOSIndexViewSet
 import os, sys
 import inspect
 import importlib
@@ -35,6 +36,7 @@ def import_module_by_dotted_name(name):
     return module
 
 def import_api_methods(dirname=None, api_path="api", api_module="api"):
+    has_index_view = False
     subdirs=[]
     urlpatterns=[]
 
@@ -61,10 +63,12 @@ def import_api_methods(dirname=None, api_path="api", api_module="api"):
                             method_name = os.path.join(api_path, method_name)
                         else:
                             method_name = api_path
+                            has_index_view = True
                         view_urls.append( (method_kind, method_name, classname, c) )
 
         elif os.path.isdir(pathname):
             urlpatterns.extend(import_api_methods(pathname, os.path.join(api_path, fn), api_module+"." + fn))
+            subdirs.append(fn)
 
     for view_url in view_urls:
         if view_url[0] == "list":
@@ -74,6 +78,9 @@ def import_api_methods(dirname=None, api_path="api", api_module="api"):
         elif view_url[0] == "viewset":
            viewset = view_url[3]
            urlpatterns.extend(viewset.get_urlpatterns(api_path="^"+api_path+"/"))
+
+    if not has_index_view:
+        urlpatterns.append(url('^' + api_path + '/$', XOSIndexViewSet.as_view({'get': 'list'}, view_urls=view_urls, subdirs=subdirs), name="api_path"+"_index"))
 
     return urlpatterns
 
