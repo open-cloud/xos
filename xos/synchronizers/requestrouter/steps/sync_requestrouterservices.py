@@ -35,7 +35,7 @@ class SyncRequestRouterService(SyncStep, RequestRouterLibrary):
     def sync_record(self, rr_service):
 	try:
         	print "syncing service!"
-        	logger.info("sync'ing rr_service %s" % str(rr_service))
+        	logger.info("sync'ing rr_service %s" % str(rr_service),extra=rr_service.tologdict())
         	self.gen_slice_file(rr_service)
         	rr_service.save()
 		return True

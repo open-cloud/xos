@@ -91,7 +91,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                                     if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
                                         dnsdemux_ip = ns.ip
                 if not dnsdemux_ip:
-                    logger.info("failed to find a dnsdemux on network %s" % vcpe_service.backend_network_label)
+                    logger.info("failed to find a dnsdemux on network %s" % vcpe_service.backend_network_label,extra=o.tologdict())
             else:
                 # Connect to dnsdemux using the instance's public address
                 for service in HpcService.objects.all():
@@ -104,7 +104,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                                     except:
                                         pass
                 if not dnsdemux_ip:
-                    logger.info("failed to find a dnsdemux with a public address")
+                    logger.info("failed to find a dnsdemux with a public address",extra=o.tologdict())
 
             for prefix in CDNPrefix.objects.all():
                 cdn_prefixes.append(prefix.prefix)
@@ -122,13 +122,13 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                         if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
                             bbs_addrs.append(ns.ip)
             else:
-                logger.info("unsupported configuration -- bbs_slice is set, but backend_network_label is not")
+                logger.info("unsupported configuration -- bbs_slice is set, but backend_network_label is not",extra=o.tologdict())
             if not bbs_addrs:
-                logger.info("failed to find any usable addresses on bbs_slice")
+                logger.info("failed to find any usable addresses on bbs_slice",extra=o.tologdict())
         elif vcpe_service.bbs_server:
             bbs_addrs.append(vcpe_service.bbs_server)
         else:
-            logger.info("neither bbs_slice nor bbs_server is configured in the vCPE")
+            logger.info("neither bbs_slice nor bbs_server is configured in the vCPE",extra=o.tologdict())
 
         vlan_ids = []
         s_tags = []
@@ -222,7 +222,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         if service.url_filter_kind == "broadbandshield":
             # disable url_filter if there are no bbs_addrs
             if url_filter_enable and (not fields.get("bbs_addrs",[])):
-                logger.info("disabling url_filter because there are no bbs_addrs")
+                logger.info("disabling url_filter because there are no bbs_addrs",extra=o.tologdict())
                 url_filter_enable = False
 
             if url_filter_enable:
@@ -239,19 +239,19 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                     bbs_port = 8018
 
                 if not bbs_hostname:
-                    logger.info("broadbandshield is not configured")
+                    logger.info("broadbandshield is not configured",extra=o.tologdict())
                 else:
                     tStart = time.time()
                     bbs = BBS(o.bbs_account, "123", bbs_hostname, bbs_port)
                     bbs.sync(url_filter_level, url_filter_users)
 
                     if o.hpc_client_ip:
-                        logger.info("associate account %s with ip %s" % (o.bbs_account, o.hpc_client_ip))
+                        logger.info("associate account %s with ip %s" % (o.bbs_account, o.hpc_client_ip),extra=o.tologdict())
                         bbs.associate(o.hpc_client_ip)
                     else:
-                        logger.info("no hpc_client_ip to associate")
+                        logger.info("no hpc_client_ip to associate",extra=o.tologdict())
 
-                    logger.info("bbs update time %d" % int(time.time()-tStart))
+                    logger.info("bbs update time %d" % int(time.time()-tStart),extra=o.tologdict())
 
 
     def run_playbook(self, o, fields):
@@ -259,7 +259,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         quick_update = (o.last_ansible_hash == ansible_hash)
 
         if ENABLE_QUICK_UPDATE and quick_update:
-            logger.info("quick_update triggered; skipping ansible recipe")
+            logger.info("quick_update triggered; skipping ansible recipe",extra=o.tologdict())
         else:
             if o.instance.isolation in ["container", "container_vm"]:
                 super(SyncVSGTenant, self).run_playbook(o, fields, "sync_vcpetenant_new.yaml")
