@@ -43,12 +43,6 @@ class ONOSAppViewSet(XOSViewSet):
 
     custom_serializers = {"set_attribute": TenantAttributeSerializer}
 
-    def get_serializer_class(self):
-        if self.action in self.custom_serializers:
-            return self.custom_serializers[self.action]
-        else:
-            return super(ONOSAppViewSet, self).get_serializer_class()
-
     @classmethod
     def get_urlpatterns(self, api_path="^"):
         patterns = super(ONOSAppViewSet, self).get_urlpatterns(api_path=api_path)
