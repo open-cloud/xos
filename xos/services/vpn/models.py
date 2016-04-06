@@ -94,7 +94,7 @@ class VPNTenant(TenantWithContainer):
                           'script_text': None,
                           'pki_dir': None,
                           'use_ca_from': list(),
-                          'failover_servers': set(),
+                          'failover_servers': list(),
                           'protocol': None}
 
     def __init__(self, *args, **kwargs):
