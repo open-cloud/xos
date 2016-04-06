@@ -202,7 +202,7 @@ class VPNTenantForm(forms.ModelForm):
                 self.instance.pki_dir, "init-pki")
             if (len(self.instance.use_ca_from) > 0):
                 shutil.copy2(
-                    self.instance.use_ca_fromp[0].pki_dir + "/ca.crt",
+                    self.instance.use_ca_from[0].pki_dir + "/ca.crt",
                     self.instance.pki_dir)
             else:
                 VPNService.execute_easyrsa_command(
