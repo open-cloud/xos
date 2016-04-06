@@ -32,4 +32,4 @@ hooks-worker-term-retry: 500
 hooks-worker-handler-host: localhost
 hooks-worker-handler-port: 61321
 blueprint: apiary.apib
-endpoint: 'http://xos.dev:9999/'
+endpoint: 'http://127.0.0.1:8000/'
