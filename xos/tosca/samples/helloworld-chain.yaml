@@ -19,8 +19,8 @@ topology_template:
     trusty-server-multi-nic:
       type: tosca.nodes.Image
 
-    service_vcpe:
-      type: tosca.nodes.VCPEService
+    service_vsg:
+      type: tosca.nodes.VSGService
       requirements:
           - helloworld_tenant:
               node: service_helloworld
