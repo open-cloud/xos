@@ -97,3 +97,30 @@ class XOSViewSet(viewsets.ModelViewSet):
         patterns.append(url(self.get_api_method_path() + '(?P<pk>[a-zA-Z0-9\-]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
 
         return patterns
+
+    def get_serializer_class(self):
+        if hasattr(self, "custom_serializers") and hasattr(self, "action") and (self.action in self.custom_serializers):
+            return self.custom_serializers[self.action]
+        else:
+            return super(XOSViewSet, self).get_serializer_class()
+
+class XOSIndexViewSet(viewsets.ViewSet):
+    view_urls=[]
+    subdirs=[]
+
+    def __init__(self, view_urls, subdirs):
+        self.view_urls = view_urls
+        self.subdirs = subdirs
+        super(XOSIndexViewSet, self).__init__()
+
+    def list(self, request):
+        endpoints = []
+        for view_url in self.view_urls:
+            method_name = view_url[1].split("/")[-1]
+            endpoints.append(method_name)
+
+        for subdir in self.subdirs:
+            endpoints.append(subdir)
+
+        return Response({"endpoints": endpoints})
+
