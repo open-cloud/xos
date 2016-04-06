@@ -58,6 +58,7 @@ RUN pip install \
     python-ceilometerclient \
     python-dateutil \
     python-keyczar \
+    python-logstash \
     pygraphviz \
     pytz \
     pyyaml \
