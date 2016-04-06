@@ -1,0 +1,401 @@
+FORMAT: 1A
+
+# XOS
+ 
+ 
+# Group Subscribers
+
+Resource related to the CORD Subscribers.
+
+## Subscribers Collection [/api/tenant/cord/subscriber/]
+
+### List All Subscribers [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "humanReadableName": "cordSubscriber-1",
+                "id": 1,
+                "features": {
+                    "cdn": false,
+                    "uplink_speed": 1000000000,
+                    "downlink_speed": 1000000000,
+                    "uverse": false,
+                    "status": "enabled"
+                },
+                "identity": {
+                    "account_num": "123",
+                    "name": "My House"
+                },
+                "related": {
+                    "instance_name": "mysite_vcpe",
+                    "vsg_id": 4,
+                    "compute_node_name": "node2.opencloud.us",
+                    "c_tag": "432",
+                    "instance_id": 1,
+                    "wan_container_ip": null,
+                    "volt_id": 3,
+                    "s_tag": "222"
+                }
+            }
+        ]
+
+## Subscriber Detail [/api/tenant/cord/subscriber/{subscriber_id}/]
+
++ Parameters
+    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+
+### View a Subscriber Detail [GET]
+
++ Response 200 (application/json)
+ 
+        {
+            "humanReadableName": "cordSubscriber-1", 
+            "id": 1, 
+            "features": { 
+                "cdn": false, 
+                "uplink_speed": 1000000000, 
+                "downlink_speed": 1000000000, 
+                "uverse": false, 
+                "status": "enabled" 
+            }, 
+            "identity": { 
+                "account_num": "123",
+                "name": "My House"
+            }, 
+            "related": { 
+                "instance_name": "mysite_vcpe", 
+                "vsg_id": 4, 
+                "compute_node_name": "node2.opencloud.us",
+                "c_tag": "432", 
+                "instance_id": 1, 
+                "wan_container_ip": null, 
+                "volt_id": 3, 
+                "s_tag": "222" 
+            } 
+        }
+
+### Delete a Subscriber [DELETE]
+
++ Response 204
+
+### Subscriber features [/api/tenant/cord/subscriber/{subscriber_id}/features/]
+
++ Parameters
+    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+
+### View a Subscriber Features Detail [GET]
+
++ Response 200 (application/json)
+
+        {
+            "cdn": false, 
+            "uplink_speed": 1000000000, 
+            "downlink_speed": 1000000000, 
+            "uverse": true, 
+            "status": "enabled"
+        }
+
+#### Subscriber features uplink_speed [/api/tenant/cord/subscriber/{subscriber_id}/features/uplink_speed/]
+
++ Parameters
+    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+
+#### Read Subscriber uplink_speed [GET]
+
++ Response 200 (application/json)
+
+        {
+            "uplink_speed": 1000000000
+        }
+
+#### Update Subscriber uplink_speed [PUT]
+
++ Request 200 (application/json)
+
+        {
+            "uplink_speed": 1000000000
+        }
+
++ Response 200 (application/json)
+
+        {
+            "uplink_speed": 1000000000
+        }
+
+#### Subscriber features downlink_speed [/api/tenant/cord/subscriber/{subscriber_id}/features/downlink_speed/]
+
++ Parameters
+    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+
+#### Read Subscriber downlink_speed [GET]
+
++ Response 200 (application/json)
+
+        {
+            "downlink_speed": 1000000000
+        }
+
+#### Update Subscriber downlink_speed [PUT]
+
++ Request 200 (application/json)
+
+        {
+            "downlink_speed": 1000000000
+        }
+
++ Response 200 (application/json)
+
+        {
+            "downlink_speed": 1000000000
+        }
+
+#### Subscriber features cdn [/api/tenant/cord/subscriber/{subscriber_id}/features/cdn/]
+
++ Parameters
+    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+
+#### Read Subscriber cdn [GET]
+
++ Response 200 (application/json)
+
+        {
+            "cdn": false
+        }
+
+#### Update Subscriber cdn [PUT]
+
++ Request 200 (application/json)
+
+        {
+            "cdn": false
+        }
+
++ Response 200 (application/json)
+
+        {
+            "cdn": false
+        }
+
+#### Subscriber features uverse [/api/tenant/cord/subscriber/{subscriber_id}/features/uverse/]
+
++ Parameters
+    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+
+#### Read Subscriber uverse [GET]
+
++ Response 200 (application/json)
+
+        {
+            "uverse": false
+        }
+
+#### Update Subscriber uverse [PUT]
+
++ Request 200 (application/json)
+
+        {
+            "uverse": false
+        }
+
++ Response 200 (application/json)
+
+        {
+            "uverse": false
+        }
+
+#### Subscriber features status [/api/tenant/cord/subscriber/{subscriber_id}/features/status/]
+
++ Parameters
+    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+
+#### Read Subscriber status [GET]
+
++ Response 200 (application/json)
+
+        {
+            "status": "enabled"
+        }
+
+#### Update Subscriber status [PUT]
+
++ Request 200 (application/json)
+
+        {
+            "status": "enabled"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "status": "enabled"
+        }
+ 
+ 
+# Group Truckroll
+
+Virtual Truckroll, enable to perform basic test on user connectivity such as ping, traceroute and tcpdump.
+
+## Truckroll Collection [/api/tenant/truckroll/]
+
+### List all Truckroll [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "humanReadableName": "vTR-tenant-9",
+                "id": 9,
+                "provider_service": 6,
+                "target_id": 2,
+                "scope": "container",
+                "test": "ping",
+                "argument": "8.8.8.8",
+                "result": "",
+                "result_code": "",
+                "is_synced": false,
+                "backend_status": "2 - Exception('Unreachable results in ansible recipe',)"
+            }
+        ]
+
+### Create a Truckroll [POST]
+
++ Request 200 (application/json)
+
+        {
+            "target_id": 2,
+            "scope": "container",
+            "test": "ping",
+            "argument": "8.8.8.8"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "humanReadableName": "vTR-tenant-10",
+            "id": 10,
+            "provider_service": 6,
+            "target_id": 2,
+            "scope": "container",
+            "test": "ping",
+            "argument": "8.8.8.8",
+            "result": null,
+            "result_code": null,
+            "is_synced": false,
+            "backend_status": "0 - Provisioning in progress"
+        }
+
+## Truckroll Detail [/api/tenant/truckroll/{truckroll_id}/]
+
+A virtual truckroll is complete once is_synced equal true
+
++ Parameters
+    + truckroll_id: 1 (number) - ID of the Truckroll in the form of an integer
+
+### View a Truckroll Detail [GET]
+
++ Response 200 (application/json)
+
+        {
+            "humanReadableName": "vTR-tenant-10",
+            "id": 10,
+            "provider_service": 6,
+            "target_id": 2,
+            "scope": "container",
+            "test": "ping",
+            "argument": "8.8.8.8",
+            "result": null,
+            "result_code": null,
+            "is_synced": false,
+            "backend_status": "0 - Provisioning in progress"
+        }
+
+### Delete a Truckroll Detail [DELETE]
+
++ Response 204
+
+ 
+ 
+# Group vOLT
+
+OLT devices aggregate a set of subscriber connections
+
+## vOLT Collection [/api/tenant/cord/volt/]
+
+### List all vOLT [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "humanReadableName": "vOLT-tenant-3",
+                "id": 3,
+                "service_specific_id": "123",
+                "s_tag": "222",
+                "c_tag": "432",
+                "subscriber": 1,
+                "related": {
+                    "instance_id": 1,
+                    "instance_name": "mysite_vcpe",
+                    "vsg_id": 4,
+                    "wan_container_ip": null,
+                    "compute_node_name": "node2.opencloud.us"
+                }
+            }
+        ]
+
+### Create a vOLT [POST]
+
++ Request 200 (application/json)
+
+        {
+            "s_tag": "222",
+            "c_tag": "432",
+            "subscriber": "1"
+        }
+
++ Response 200 (application/json)
+
+        {
+                "humanReadableName": "vOLT-tenant-3",
+                "id": 1,
+                "service_specific_id": "123",
+                "s_tag": "222",
+                "c_tag": "432",
+                "subscriber": 1,
+                "related": {
+                    "instance_id": 1,
+                    "instance_name": "mysite_vcpe",
+                    "vsg_id": 4,
+                    "wan_container_ip": null,
+                    "compute_node_name": "node2.opencloud.us"
+                }
+            }
+
+## vOLT Detail [/api/tenant/cord/volt/{volt_id}/]
+
+A virtual volt is complete once is_synced equal true
+
++ Parameters
+    + volt_id: 3 (number) - ID of the vOLT in the form of an integer
+
+### View a vOLT Detail [GET]
+
++ Response 200 (application/json)
+
+        {
+            "humanReadableName": "vOLT-tenant-3",
+            "id": 3,
+            "service_specific_id": "123",
+            "s_tag": "222",
+            "c_tag": "432",
+            "subscriber": 1,
+            "related": {
+                "instance_id": 1,
+                "instance_name": "mysite_vcpe",
+                "vsg_id": 4,
+                "wan_container_ip": null,
+                "compute_node_name": "node2.opencloud.us"
+            }
+        }
