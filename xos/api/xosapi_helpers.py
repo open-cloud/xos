@@ -98,6 +98,12 @@ class XOSViewSet(viewsets.ModelViewSet):
 
         return patterns
 
+    def get_serializer_class(self):
+        if hasattr(self, "custom_serializers") and hasattr(self, "action") and (self.action in self.custom_serializers):
+            return self.custom_serializers[self.action]
+        else:
+            return super(XOSViewSet, self).get_serializer_class()
+
 class XOSIndexViewSet(viewsets.ViewSet):
     view_urls=[]
     subdirs=[]
