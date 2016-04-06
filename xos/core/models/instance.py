@@ -104,6 +104,15 @@ class Instance(PlCoreBase):
     def get_controller (self):
         return self.node.site_deployment.controller
 
+    def tologdict(self):
+        d=super(Instance,self).tologdict()
+        try:
+            d['slice_name']=self.slice.name
+            d['controller_name']=self.get_controller().name
+        except:
+            pass
+        return d
+
     def __unicode__(self):
         if self.name and Slice.objects.filter(id=self.slice_id) and (self.name != self.slice.name):
             # NOTE: The weird check on self.slice_id was due to a problem when
