@@ -12,5 +12,5 @@ git clone https://github.com/open-cloud/xos.git
 git clone https://git.openstack.org/openstack-dev/devstack
 cd ~/devstack
 git checkout stable/kilo
-cp ~/xos/xos/configurations/common/local.conf .
+cp ~/xos/xos/configurations/common/devstack/local.conf .
 ./stack.sh
