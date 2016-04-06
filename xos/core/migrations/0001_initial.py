@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
-import timezones.fields
 import core.models.instance
 import core.models.network
-import geoposition.fields
-import encrypted_fields.fields
 import core.models.serviceclass
 import django.utils.timezone
+import encrypted_fields.fields
+import geoposition.fields
+import timezones.fields
 from django.conf import settings
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -1139,6 +1139,39 @@ class Migration(migrations.Migration):
                 ('order', models.IntegerField(default=0)),
                 ('dashboardView', models.ForeignKey(related_name=b'userdashboardviews', to='core.DashboardView')),
                 ('user', models.ForeignKey(related_name=b'userdashboardviews', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='TenantPrivilege',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
+                ('enacted', models.DateTimeField(default=None, null=True, blank=True)),
+                ('policed', models.DateTimeField(default=None, null=True, blank=True)),
+                ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
+                ('deleted', models.BooleanField(default=False)),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='TenantRole',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
+                ('enacted', models.DateTimeField(default=None, null=True, blank=True)),
+                ('policed', models.DateTimeField(default=None, null=True, blank=True)),
+                ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
+                ('deleted', models.BooleanField(default=False)),
+                ('role', models.CharField(unique=True, max_length=30, choices=[(b'admin', b'Admin'), (b'access', b'Access')])),
             ],
             options={
                 'abstract': False,

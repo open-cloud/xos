@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from core.admin import ReadOnlyAwareAdmin, SliceInline, TenantPrivilegeInline
 from core.middleware import get_request
@@ -123,9 +124,11 @@ class VPNTenantForm(forms.ModelForm):
     vpn_subnet = forms.GenericIPAddressField(protocol="IPv4", required=True)
     is_persistent = forms.BooleanField(required=False)
     clients_can_see_each_other = forms.BooleanField(required=False)
-    failover_servers = forms.ModelMultipleChoiceField(required=False)
+    failover_servers = forms.ModelMultipleChoiceField(required=False, queryset=VPNTenant.get_tenant_objects())
     protocol = forms.ChoiceField(required=True, choices=[
         ("tcp", "tcp"), ("udp", "udp")])
+    use_ca_from = forms.ModelChoiceField(
+        queryset=VPNTenant.get_tenant_objects(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
@@ -151,6 +154,11 @@ class VPNTenantForm(forms.ModelForm):
             self.initial['failover_servers'] = self.instance.failover_servers
             self.fields['failover_servers'].queryset = (
                 VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
+            self.fields['use_ca_from'].queryset = (
+                VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
+            if (self.instance.use_ca_from):
+                self.fields['use_ca_from'].initial = (
+                    self.instance.use_ca_from[0])
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
@@ -165,6 +173,7 @@ class VPNTenantForm(forms.ModelForm):
                     VPNService.get_service_objects().all()[0])
 
     def save(self, commit=True):
+        result = super(VPNTenantForm, self).save(commit=commit)
         self.instance.creator = self.cleaned_data.get("creator")
         self.instance.is_persistent = self.cleaned_data.get('is_persistent')
         self.instance.vpn_subnet = self.cleaned_data.get("vpn_subnet")
@@ -172,6 +181,7 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.clients_can_see_each_other = self.cleaned_data.get(
             'clients_can_see_each_other')
 
+        self.instance.failover_servers.clear()
         for tenant in self.cleaned_data['failover_servers']:
             self.instance.failover_servers.add(tenant)
 
@@ -180,20 +190,35 @@ class VPNTenantForm(forms.ModelForm):
             self.instance.provider_service.get_next_available_port(
                 self.instance.protocol))
 
-        result = super(VPNTenantForm, self).save(commit=commit)
-        result.save()
-        pki_dir = VPNService.OPENVPN_PREFIX + "server-" + str(result.id)
-        if (not os.path.isdir(pki_dir)):
-            VPNService.execute_easyrsa_command(pki_dir, "init-pki")
+        self.instance.use_ca_from.clear()
+        self.instance.use_ca_from.append(self.cleaned_data.get('use_ca_from'))
+        result.save()  # Need to do this so that we know the ID
+
+        self.instance.pki_dir = (
+            VPNService.OPENVPN_PREFIX + "server-" + str(result.id))
+
+        if (not os.path.isdir(self.instance.pki_dir)):
             VPNService.execute_easyrsa_command(
-                pki_dir, "--req-cn=XOS build-ca nopass")
-            result.ca_crt = self.generate_ca_crt(pki_dir)
-            result.save()
+                self.instance.pki_dir, "init-pki")
+            if (self.instance.use_ca_from):
+                shutil.copy2(
+                    self.instance.use_ca_from.pki_dir + "/ca.crt",
+                    self.instance.pki_dir)
+            else:
+                VPNService.execute_easyrsa_command(
+                    self.instance.pki_dir, "--req-cn=XOS build-ca nopass")
+        elif (self.instance.use_ca_from):
+            shutil.copy2(
+                self.instance.use_ca_from.pki_dir + "/ca.crt",
+                self.instance.pki_dir)
+
+        result.ca_crt = self.generate_ca_crt()
+
         return result
 
-    def generate_ca_crt(self, pki_dir):
+    def generate_ca_crt(self):
         """str: Generates the ca cert by reading from the ca file"""
-        with open(pki_dir + "/ca.crt") as crt:
+        with open(self.instance.pki_dir + "/ca.crt") as crt:
             return crt.readlines()
 
     class Meta:
@@ -209,7 +234,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
     fieldsets = [(None, {'fields': ['backend_status_text', 'kind',
                                     'provider_service', 'instance', 'creator',
                                     'server_network', 'vpn_subnet',
-                                    'is_persistent',
+                                    'is_persistent', 'use_ca_from',
                                     'clients_can_see_each_other',
                                     'failover_servers', "protocol"],
                          'classes': ['suit-tab suit-tab-general']})]
@@ -235,10 +260,8 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
             # certificate
             if type(obj) is TenantPrivilege:
                 certificate = self.certificate_name(obj)
-                pki_dir = (
-                    VPNService.OPENVPN_PREFIX + "server-" + str(obj.id))
                 VPNService.execute_easyrsa_command(
-                    pki_dir, "revoke " + certificate)
+                    obj.tenant.pki_dir, "revoke " + certificate)
             # TODO(jermowery): determine if this is necessary.
             # if type(obj) is VPNTenant:
                 # if the tenant was deleted revoke all certs assoicated
@@ -248,10 +271,9 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
             # If there were any new TenantPrivlege objects then create certs
             if type(obj) is TenantPrivilege:
                 certificate = self.certificate_name(obj)
-                pki_dir = (
-                    VPNService.OPENVPN_PREFIX + "server-" + str(obj.id))
                 VPNService.execute_easyrsa_command(
-                    pki_dir, "build-client-full " + certificate + " nopass")
+                    obj.tenant.pki_dir,
+                    "build-client-full " + certificate + " nopass")
 
 # Associate the admin forms with the models.
 admin.site.register(VPNService, VPNServiceAdmin)

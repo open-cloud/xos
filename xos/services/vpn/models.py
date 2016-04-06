@@ -92,6 +92,8 @@ class VPNTenant(TenantWithContainer):
                           'ca_crt': None,
                           'port': None,
                           'script_text': None,
+                          'pki_dir': None,
+                          'use_ca_from': list(),
                           'failover_servers': set(),
                           'protocol': None}
 
@@ -118,6 +120,24 @@ class VPNTenant(TenantWithContainer):
     @protocol.setter
     def protocol(self, value):
         self.set_attribute("protocol", value)
+
+    @property
+    def use_ca_from(self):
+        return self.get_attribute(
+            "use_ca_from", self.default_attributes["use_ca_from"])
+
+    @use_ca_from.setter
+    def use_ca_from(self, value):
+        self.set_attribute("use_ca_from", value)
+
+    @property
+    def pki_dir(self):
+        return self.get_attribute(
+            "pki_dir", self.default_attributes["pki_dir"])
+
+    @pki_dir.setter
+    def pki_dir(self, value):
+        self.set_attribute("pki_dir", value)
 
     @property
     def addresses(self):
@@ -253,14 +273,12 @@ class VPNTenant(TenantWithContainer):
         return script
 
     def get_client_cert(self, client_name):
-        with open(VPNService.OPENVPN_PREFIX + "server-" + str(self.id) +
-                  "/issued/" + client_name + ".crt", 'r') as f:
-                    return f.readlines()
+        with open(self.pki_dir + "/issued/" + client_name + ".crt", 'r') as f:
+            return f.readlines()
 
     def get_client_key(self, client_name):
-        with open(VPNService.OPENVPN_PREFIX + "server-" + str(self.id) +
-                  "/private/" + client_name + ".key", 'r') as f:
-                    return f.readlines()
+        with open(self.pki_dir + "/private/" + client_name + ".key", 'r') as f:
+            return f.readlines()
 
     def generate_client_conf(self, client_name):
         """str: Generates the client configuration to use to connect to this

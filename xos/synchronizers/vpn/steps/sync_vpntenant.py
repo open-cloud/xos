@@ -39,15 +39,13 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
                     tenant.clients_can_see_each_other),
                 "port_number": tenant.port_number,
                 "protocol": tenant.protocol,
-                "pki_dir": (
-                    VPNService.OPENVPN_PREFIX + "server-" + str(tenant.id))
+                "pki_dir": tenant.pki_dir
                 }
 
     def run_playbook(self, o, fields):
         # Generate the server files
-        pki_dir = VPNService.OPENVPN_PREFIX + "server-" + str(o.id)
-        if (not os.path.isfile(pki_dir + "/issued/server.crt")):
+        if (not os.path.isfile(o.pki_dir + "/issued/server.crt")):
             VPNService.execute_easyrsa_command(
-                pki_dir, "build-server-full server nopass")
-            VPNService.execute_easyrsa_command(pki_dir, "gen-crl")
+                o.pki_dir, "build-server-full server nopass")
+            VPNService.execute_easyrsa_command(o.pki_dir, "gen-crl")
         super(SyncVPNTenant, self).run_playbook(o, fields)

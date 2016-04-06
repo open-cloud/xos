@@ -808,9 +808,7 @@ class TenantRootPrivilege(PlCoreBase):
 
 class TenantRole(PlCoreBase):
     ROLE_CHOICES = (('admin','Admin'), ('access','Access'))
-
     role = StrippedCharField(choices=ROLE_CHOICES, unique=True, max_length=30)
-
     def __unicode__(self):  return u'%s' % (self.role)
 
 class TenantPrivilege(PlCoreBase):
