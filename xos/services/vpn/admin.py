@@ -262,6 +262,8 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
                 certificate = self.certificate_name(obj)
                 VPNService.execute_easyrsa_command(
                     obj.tenant.pki_dir, "revoke " + certificate)
+                obj.tenant.enacted = None
+                obj.tenant.save()
             # TODO(jermowery): determine if this is necessary.
             # if type(obj) is VPNTenant:
                 # if the tenant was deleted revoke all certs assoicated
@@ -274,6 +276,8 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
                 VPNService.execute_easyrsa_command(
                     obj.tenant.pki_dir,
                     "build-client-full " + certificate + " nopass")
+                obj.tenant.enacted = None
+                obj.tenant.save()
 
 # Associate the admin forms with the models.
 admin.site.register(VPNService, VPNServiceAdmin)
