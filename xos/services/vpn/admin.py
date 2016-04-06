@@ -181,16 +181,16 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.clients_can_see_each_other = self.cleaned_data.get(
             'clients_can_see_each_other')
 
-        self.instance.failover_servers.clear()
+        self.instance.failover_servers[:] = []
         for tenant in self.cleaned_data['failover_servers']:
-            self.instance.failover_servers.add(tenant)
+            self.instance.failover_servers.append(tenant)
 
         self.instance.protocol = self.cleaned_data.get("protocol")
         self.instance.port_number = (
             self.instance.provider_service.get_next_available_port(
                 self.instance.protocol))
 
-        self.instance.use_ca_from.clear()
+        self.instance.use_ca_from[:] = []
         self.instance.use_ca_from.append(self.cleaned_data.get('use_ca_from'))
         result.save()  # Need to do this so that we know the ID
 
