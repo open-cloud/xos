@@ -119,7 +119,7 @@ class SyncContainer(SyncInstanceUsingAnsible):
         return fields
 
     def sync_record(self, o):
-        logger.info("sync'ing object %s" % str(o))
+        logger.info("sync'ing object %s" % str(o),extra=o.tologdict())
 
         fields = self.get_ansible_fields(o)
 
@@ -139,7 +139,7 @@ class SyncContainer(SyncInstanceUsingAnsible):
         o.save()
 
     def delete_record(self, o):
-        logger.info("delete'ing object %s" % str(o))
+        logger.info("delete'ing object %s" % str(o),extra=o.tologdict())
 
         fields = self.get_ansible_fields(o)
 
@@ -158,6 +158,6 @@ class SyncContainer(SyncInstanceUsingAnsible):
             template_name = self.template_name
         tStart = time.time()
         run_template_ssh(template_name, fields, path="container")
-        logger.info("playbook execution time %d" % int(time.time()-tStart))
+        logger.info("playbook execution time %d" % int(time.time()-tStart),extra=o.tologdict())
 
 
