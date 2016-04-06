@@ -31,8 +31,8 @@ class ONOSAppSerializer(PlusModelSerializer):
 
 class TenantAttributeSerializer(serializers.Serializer):
     id = ReadOnlyField()
-    name = serializers.CharField()
-    value = serializers.CharField()
+    name = serializers.CharField(required=False)
+    value = serializers.CharField(required=False)
 
 class ONOSAppViewSet(XOSViewSet):
     base_name = "app"
@@ -41,9 +41,11 @@ class ONOSAppViewSet(XOSViewSet):
     queryset = ONOSApp.get_tenant_objects().all()
     serializer_class = ONOSAppSerializer
 
+    custom_serializers = {"set_attribute": TenantAttributeSerializer}
+
     def get_serializer_class(self):
-        if self.action == "set_attribute":
-            return TenantAttributeSerializer
+        if self.action in self.custom_serializers:
+            return self.custom_serializers[self.action]
         else:
             return super(ONOSAppViewSet, self).get_serializer_class()
 
@@ -52,28 +54,41 @@ class ONOSAppViewSet(XOSViewSet):
         patterns = super(ONOSAppViewSet, self).get_urlpatterns(api_path=api_path)
 
         patterns.append( self.detail_url("attributes/$", {"get": "get_attributes", "post": "add_attribute"}, "attributes") )
-        patterns.append( self.detail_url("attributes/(?P<attribute>[0-9]+)/$", {"get": "get_attribute", "put": "set_attribute"}, "attribute") )
+        patterns.append( self.detail_url("attributes/(?P<attribute>[0-9]+)/$", {"get": "get_attribute", "put": "set_attribute", "delete": "delete_attribute"}, "attribute") )
 
         return patterns
 
     def get_attributes(self, request, pk=None):
-        subscriber = self.get_object()
-        return Response(TenantAttributeSerializer(subscriber.tenantattributes.all(), many=True).data)
+        app = self.get_object()
+        return Response(TenantAttributeSerializer(app.tenantattributes.all(), many=True).data)
 
     def add_attribute(self, request, pk=None):
-        pass
+        app = self.get_object()
+        ser = TenantAttributeSerializer(data=request.data)
+        ser.is_valid(raise_exception = True)
+        att = TenantAttribute(tenant=app, **ser.validated_data)
+        att.save()
+        return Response(TenantAttributeSerializer(att).data)
 
     def get_attribute(self, request, pk=None, attribute=None):
-        subscriber = self.get_object()
+        app = self.get_object()
         att = TenantAttribute.objects.get(pk=attribute)
         return Response(TenantAttributeSerializer(att).data)
 
     def set_attribute(self, request, pk=None, attribute=None):
-        subscriber = self.get_object()
+        app = self.get_object()
         att = TenantAttribute.objects.get(pk=attribute)
         ser = TenantAttributeSerializer(att, data=request.data)
         ser.is_valid(raise_exception = True)
-        return Response(TenantAttributeSerializer(attribute).data)
+        att.name = ser.validated_data.get("name", att.name)
+        att.value = ser.validated_data.get("value", att.value)
+        att.save()
+        return Response(TenantAttributeSerializer(att).data)
+
+    def delete_attribute(self, request, pk=None, attribute=None):
+        att = TenantAttribute.objects.get(pk=attribute)
+        att.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 
