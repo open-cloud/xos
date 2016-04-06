@@ -15,5 +15,5 @@ class SliceDeleter(Deleter):
             try:
                 slice_deployment_deleter(slice_deployment.id)
             except:
-                logger.log_exc("Failed to delete slice_deployment %s" % slice_deployment) 
+                logger.log_exc("Failed to delete slice_deployment %s" % slice_deployment,extra=slice.tologdict()) 
         slice.delete()

@@ -41,7 +41,7 @@ def update_dep(d, o):
     except AttributeError,e:
         raise e
     except Exception,e:
-            logger.info('Could not save %r. Exception: %r'%(d,e))
+            logger.info('Could not save %r. Exception: %r'%(d,e), extra=d.tologdict())
 
 def delete_if_inactive(d, o):
     try:

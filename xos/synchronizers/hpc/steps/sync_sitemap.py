@@ -49,7 +49,7 @@ class SyncSiteMap(SyncStep, HpcLibrary):
         all_map_ids = [x["map_id"] for x in self.client.onev.ListAll("Map")]
         for map in SiteMap.objects.all():
             if (map.map_id is not None) and (map.map_id not in all_map_ids):
-                logger.info("Map %s was not found on CMI" % map.map_id)
+                logger.info("Map %s was not found on CMI" % map.map_id,extra=map.tologdict())
                 map.map_id=None
                 map.save()
                 result = True
@@ -68,7 +68,7 @@ class SyncSiteMap(SyncStep, HpcLibrary):
                 self.client.onev.UnBind("map", map.map_id, to_name, id)
 
     def sync_record(self, map):
-        logger.info("sync'ing SiteMap %s" % str(map))
+        logger.info("sync'ing SiteMap %s" % str(map),extra=map.tologdict())
 
         if not map.map:
             # no contents

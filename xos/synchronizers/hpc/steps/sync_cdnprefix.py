@@ -67,7 +67,7 @@ class SyncCDNPrefix(SyncStep, HpcLibrary):
         return result
 
     def sync_record(self, cp):
-        logger.info("sync'ing cdn prefix %s" % str(cp))
+        logger.info("sync'ing cdn prefix %s" % str(cp),extra=cp.tologdict())
 
         if (not cp.contentProvider) or (not cp.contentProvider.content_provider_id):
             raise Exception("CDN Prefix %s is linked to a contentProvider without an id" % str(cp))

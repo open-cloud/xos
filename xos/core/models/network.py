@@ -207,6 +207,15 @@ class ControllerNetwork(PlCoreBase):
     class Meta:
         unique_together = ('network', 'controller')
 
+    def tologdict(self):
+        d=super(ControllerNetwork,self).tologdict()
+        try:
+            d['network_name']=self.network.name
+            d['controller_name']=self.controller.name
+        except:
+            pass
+        return d
+ 
     @staticmethod
     def select_by_user(user):
         if user.is_admin:

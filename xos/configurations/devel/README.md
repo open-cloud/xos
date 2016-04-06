@@ -25,28 +25,24 @@ ctl:~/xos/xos/configurations/devel$ make cloudlab
 
 ### DevStack
 
-The following instructions can be used to install DevStack and XOS together
-on a single node.  This setup has been run successfully in a VirtualBox VM
-with 2 CPUs and 4096 GB RAM.
-
-First, if you happen to be installing DevStack on a CloudLab node, you can
-configure about 1TB of unallocated disk space for DevStack as follows:
+On a server with a fresh Ubuntu 14.04 install, 
+[this script](https://raw.githubusercontent.com/open-cloud/xos/master/xos/configurations/common/devstack/setup-devstack.sh)
+can be used to bootstrap a single-node DevStack environment that can be used
+for basic XOS development.
+The script installs DevStack and checks out the XOS repository.  Run the script
+and then invoke the XOS configuration for DevStack as follows:
 ```
-~$ sudo mkdir -p /opt/stack
-~$ sudo /usr/testbed/bin/mkextrafs /opt/stack
-```
-
-To install DevStack and XOS:
-
-```
-~$ git clone https://github.com/open-cloud/xos.git
-~$ git clone https://git.openstack.org/openstack-dev/devstack
-~$ cd devstack
-~/devstack$ cp ../xos/xos/configurations/common/devstack/local.conf .
-~/devstack$ ./stack.sh
-~/devstack$ cd ../xos/xos/configurations/devel/
+~$ wget https://raw.githubusercontent.com/open-cloud/xos/master/xos/configurations/common/devstack/setup-devstack.sh
+~$ bash ./setup-devstack.sh
+~$ cd ../xos/xos/configurations/devel/
 ~/xos/xos/configurations/devel$ make devstack
 ```
+
+This setup has been run successfully in a VirtualBox VM with 2 CPUs and 4096 GB RAM.
+However it is recommended to use a dedicated server with more resources.
+
+**NOTE: If your goal is to create a development environment for [CORD](http://opencord.org/), 
+DevStack is not what you want.  Look at the [cord-pod](../cord-pod) configuration instead!**
 
 ## What you get
 
