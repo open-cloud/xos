@@ -1,21 +1,22 @@
-import os
 import datetime
-import sys
 import hashlib
+import os
+import sys
 from collections import defaultdict
-from django.forms.models import model_to_dict
+from operator import attrgetter, itemgetter
+
+import synchronizers.model_policy
+from core.middleware import get_request
+from core.models import DashboardView, PlCoreBase, PlModelMixIn, Site
+from core.models.plcorebase import StrippedCharField
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.core.exceptions import PermissionDenied
+from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.db.models import F, Q
+from django.forms.models import model_to_dict
 from django.utils import timezone
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.core.mail import EmailMultiAlternatives
-from django.core.exceptions import PermissionDenied
-from core.models import PlCoreBase,Site, DashboardView, PlModelMixIn
-from core.models.plcorebase import StrippedCharField
 from timezones.fields import TimeZoneField
-from operator import itemgetter, attrgetter
-from core.middleware import get_request
-import synchronizers.model_policy
 
 # ------ from plcorebase.py ------
 try:
