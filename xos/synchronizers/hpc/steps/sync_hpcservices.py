@@ -39,5 +39,5 @@ class SyncHpcService(SyncStep, HpcLibrary):
             return self.filter_hpc_service(HpcService.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)))
 
     def sync_record(self, hpc_service):
-        logger.info("sync'ing hpc_service %s" % str(hpc_service))
+        logger.info("sync'ing hpc_service %s" % str(hpc_service),extra=hpc_service.tologdict())
         hpc_service.save()
