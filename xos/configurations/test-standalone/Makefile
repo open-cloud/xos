@@ -2,6 +2,7 @@ MYIP:=$(shell hostname -i)
 
 test: frontend
 	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm install --production"
+	sudo docker exec teststandalone_xos_1 pip install dredd_hooks
 	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm test"
 
 frontend:
