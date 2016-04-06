@@ -207,9 +207,9 @@ class VPNTenantForm(forms.ModelForm):
             else:
                 VPNService.execute_easyrsa_command(
                     self.instance.pki_dir, "--req-cn=XOS build-ca nopass")
-        elif (self.instance.use_ca_from):
+        elif (self.instance.use_ca_from[0]):
             shutil.copy2(
-                self.instance.use_ca_from.pki_dir + "/ca.crt",
+                self.instance.use_ca_from[0].pki_dir + "/ca.crt",
                 self.instance.pki_dir)
 
         result.ca_crt = self.generate_ca_crt()
