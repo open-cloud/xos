@@ -1,6 +1,7 @@
+from core.models import TenantPrivilege
 from plus import PlusSerializerMixin
 from rest_framework import serializers
-from services.vpn.models import VPNService, VPNTenant
+from services.vpn.models import VPNService, VPNTenant, VPN_KIND
 from xos.apibase import XOSListCreateAPIView
 
 if hasattr(serializers, "ReadOnlyField"):
@@ -67,12 +68,10 @@ class VPNTenantList(XOSListCreateAPIView):
     method_name = "vpntenant"
 
     def get_queryset(self):
-        queryset = VPNTenant.get_tenant_objects().all()
+        # Get every privilege for this user
+        queryset = TenantPrivilege.objects.all().filter(user=self.request.user)
         queryset = [
-            tenant
-            for tenant in queryset
-            if self.request.user.can_update_tenant(tenant,
-                                                   ['access', 'Access'])]
+            priv.tenant for priv in queryset if priv.tenant.KIND == VPN_KIND]
         for tenant in queryset:
             tenant.script_text = (
                 tenant.create_client_script(
