@@ -73,7 +73,7 @@ class VPNTenantList(XOSListCreateAPIView):
         vpn_tenants = []
         for priv in tenants_privs:
             vpn_tenants.append(
-                VPNTenant.get_tenant_objects().filter(pk=priv.tenant.pk))
+                VPNTenant.get_tenant_objects().filter(pk=priv.tenant.pk)[0])
 
         for tenant in vpn_tenants:
             tenant.script_text = (
