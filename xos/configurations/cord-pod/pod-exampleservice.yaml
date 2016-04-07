@@ -49,4 +49,17 @@ topology_template:
           - management:
               node: management
               relationship: tosca.relationships.ConnectsToNetwork
+          - exmapleserver:
+              node: service_exampleservice
+              relationship: tosca.relationships.MemberOfService
+
+    service_exampleservice:
+      type: tosca.nodes.ExampleService
+      requirements:
+          - management:
+              node: management
+              relationship: tosca.relationships.UsesNetwork
+      properties:
+          view_url: /admin/exampleservice/exampleservice/$id$/
+          kind: exampleservice
 
