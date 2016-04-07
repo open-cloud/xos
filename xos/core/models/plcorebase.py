@@ -300,3 +300,11 @@ class PlCoreBase(models.Model, PlModelMixIn):
     @classmethod
     def is_ephemeral(cls):
         return cls in ephemeral_models
+
+    def tologdict(self):
+        try:
+            d = {'model_name':self.__class__.__name__, 'pk': self.pk}
+        except:
+            d = {}
+
+        return d

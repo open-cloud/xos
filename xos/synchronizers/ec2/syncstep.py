@@ -92,7 +92,7 @@ class SyncStep:
                 if (o.pk):
                     o.save(update_fields=['backend_status'])
 
-                logger.log_exc("sync step failed!")
+                logger.log_exc("sync step failed!",extra=o.tologdict())
                 failed.append(o)
 
         return failed

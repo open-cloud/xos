@@ -14,7 +14,7 @@ stop: ; docker stop ${CONTAINER_NAME}
 .PHONY: rm
 rm: ; docker rm ${CONTAINER_NAME}
 
-.PHONE: rmi
+.PHONY: rmi
 rmi: ; docker rmi ${IMAGE_NAME}
 
 .PHONY: backup

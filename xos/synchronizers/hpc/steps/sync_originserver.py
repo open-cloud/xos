@@ -55,7 +55,7 @@ class SyncOriginServer(SyncStep, HpcLibrary):
         return result
 
     def sync_record(self, ors):
-        logger.info("sync'ing origin server %s" % str(ors))
+        logger.info("sync'ing origin server %s" % str(ors),extra=ors.tologdict())
 
         if (not ors.contentProvider) or (not ors.contentProvider.content_provider_id):
             raise Exception("Origin Server %s is linked to a contentProvider with no id" % str(ors))
