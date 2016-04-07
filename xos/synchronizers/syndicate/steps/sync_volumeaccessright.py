@@ -23,7 +23,7 @@ import logging
 from logging import Logger
 logging.basicConfig( format='[%(levelname)s] [%(module)s:%(lineno)d] %(message)s' )
 logger = logging.getLogger()
-logger.setLevel( logging.INFO )
+logger.setLevel( logging.INFO ,extra=o.tologdict())
 
 # point to planetstack 
 if __name__ != "__main__":
@@ -57,7 +57,7 @@ class SyncVolumeAccessRight(SyncStep):
         volume_name = vac.volume.name
         syndicate_caps = syndicatelib.opencloud_caps_to_syndicate_caps( vac.cap_read_data, vac.cap_write_data, vac.cap_host_data ) 
         
-        logger.info( "Sync VolumeAccessRight for (%s, %s)" % (user_email, volume_name) )
+        logger.info( "Sync VolumeAccessRight for (%s, %s)" % (user_email, volume_name) ,extra=vac.tologdict())
         
         # validate config
         try:
@@ -65,7 +65,7 @@ class SyncVolumeAccessRight(SyncStep):
            observer_secret = config.SYNDICATE_OPENCLOUD_SECRET
         except Exception, e:
            traceback.print_exc()
-           logger.error("syndicatelib config is missing SYNDICATE_RG_DEFAULT_PORT, SYNDICATE_OPENCLOUD_SECRET")
+           logger.error("syndicatelib config is missing SYNDICATE_RG_DEFAULT_PORT, SYNDICATE_OPENCLOUD_SECRET",extra=vac.tologdict())
            raise e
             
         # ensure the user exists and has credentials
@@ -74,7 +74,7 @@ class SyncVolumeAccessRight(SyncStep):
             assert rc is True, "Failed to ensure principal %s exists (rc = %s,%s)" % (user_email, rc, user)
         except Exception, e:
             traceback.print_exc()
-            logger.error("Failed to ensure user '%s' exists" % user_email )
+            logger.error("Failed to ensure user '%s' exists" % user_email ,extra=vac.tologdict())
             raise e
  
         # make the access right for the user to create their own UGs, and provision an RG for this user that will listen on localhost.
@@ -85,7 +85,7 @@ class SyncVolumeAccessRight(SyncStep):
 
         except Exception, e:
             traceback.print_exc()
-            logger.error("Faoed to ensure user %s can access Volume %s with rights %s" % (user_email, volume_name, syndicate_caps))
+            logger.error("Faoed to ensure user %s can access Volume %s with rights %s" % (user_email, volume_name, syndicate_caps),extra=vac.tologdict())
             raise e
 
         return True
