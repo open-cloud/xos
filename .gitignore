@@ -15,3 +15,4 @@ xos/xos_configuration/*
 npm-debug.log
 xos/core/static/*.css
 !xos/core/static/xos.css
+.DS_Store

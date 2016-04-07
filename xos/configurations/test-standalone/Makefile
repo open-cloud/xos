@@ -1,23 +1,22 @@
 MYIP:=$(shell hostname -i)
 
-test: frontend
-	# MOCK CORD
-	# MOVE THIS TO FIXTURES inside dredd hooks
-	#sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
-	#sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/mocks/cord.yaml
-	
-	# INSTALL DEPS
-	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm install --production"
-	sudo docker exec teststandalone_xos_1 pip install dredd_hooks
-	
-	# RUN TESTS
-	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm test"
-
-frontend:
+xos:
 	sudo make -f ../common/Makefile.prereqs
 	sudo docker-compose up -d
 	bash ../common/wait_for_xos.sh
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
+
+prepare:
+	# INSTALL DEPS
+	# RUN ONCE BEFORE RUNNING TESTS
+	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm install --production"
+	sudo docker exec teststandalone_xos_1 pip install dredd_hooks
+
+
+test: 
+	# RUN TESTS
+	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm test"
 
 base-container: 
 	cd ../../../containers/xos; make devel
