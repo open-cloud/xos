@@ -69,7 +69,7 @@ class VPNTenantList(XOSListCreateAPIView):
 
     def get_queryset(self):
         # Get every privilege for this user
-        queryset = TenantPrivlege.objects.all().filter(user=self.request.user)
+        queryset = TenantPrivilege.objects.all().filter(user=self.request.user)
         queryset = [
             priv.tenant for priv in queryset if priv.tenant.KIND == VPN_KIND]
         for tenant in queryset:
