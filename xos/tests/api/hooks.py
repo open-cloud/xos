@@ -1,15 +1,16 @@
 import dredd_hooks as hooks
 import sys
-import commands
 
+# HELPERS
+from helpers import subscriber
 
-restoreSubscriber = "ssh xos 'sudo docker exec frontend_xos_db_1 psql -U postgres -d xos -c \"UPDATE core_tenantroot SET deleted=false WHERE id=1;\"'"
-
+restoreSubscriber = "sudo docker exec teststandalone_xos_1_db psql -U postgres -d xos -c \"UPDATE core_tenantroot SET deleted=false WHERE id=1;\""
 
 @hooks.before_each
 def my_before_each_hook(transaction):
     # print('before each restore', transaction['name'])
-    commands.getstatusoutput(restoreSubscriber)
+    # commands.getstatusoutput(restoreSubscriber)
+    Subs.createTestSubscriber()
     sys.stdout.flush()
 
 

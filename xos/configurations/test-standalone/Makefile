@@ -1,8 +1,16 @@
 MYIP:=$(shell hostname -i)
 
 test: frontend
+	# MOCK CORD
+	# MOVE THIS TO FIXTURES inside dredd hooks
+	#sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
+	#sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/mocks/cord.yaml
+	
+	# INSTALL DEPS
 	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm install --production"
 	sudo docker exec teststandalone_xos_1 pip install dredd_hooks
+	
+	# RUN TESTS
 	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm test"
 
 frontend:
@@ -28,3 +36,6 @@ rm: stop
 
 enter-xos:
 	sudo docker exec -ti teststandalone_xos_1 bash
+
+enter-xos-db:
+	sudo docker exec -ti teststandalone_xos_db_1 bash
