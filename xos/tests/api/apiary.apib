@@ -3,6 +3,47 @@ FORMAT: 1A
 # XOS
  
  
+# Group ONOS Services
+
+## ONOS Services Collection [/api/service/onos/]
+
+### List all ONOS Services [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "humanReadableName": "service_ONOS_vBNG",
+                "id": 5,
+                "rest_hostname": "",
+                "rest_port": "8181",
+                "no_container": false,
+                "node_key": ""
+            }
+        ]
+ 
+ 
+# Group vSG
+
+## vSG Collection [/api/service/vsg/]
+
+### List all vSGs [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "humanReadableName": "service_vsg",
+                "id": 2,
+                "wan_container_gateway_ip": "",
+                "wan_container_gateway_mac": "",
+                "dns_servers": "8.8.8.8",
+                "url_filter_kind": null,
+                "node_label": null
+            }
+        ]
+ 
+ 
 # Group Subscribers
 
 Resource related to the CORD Subscribers.
@@ -261,7 +302,7 @@ Virtual Truckroll, enable to perform basic test on user connectivity such as pin
 
 ### Create a Truckroll [POST]
 
-+ Request 200 (application/json)
++ Request (application/json)
 
         {
             "target_id": 2,
@@ -270,11 +311,11 @@ Virtual Truckroll, enable to perform basic test on user connectivity such as pin
             "argument": "8.8.8.8"
         }
 
-+ Response 200 (application/json)
++ Response 201 (application/json)
 
         {
-            "humanReadableName": "vTR-tenant-10",
-            "id": 10,
+            "humanReadableName": "vTR-tenant-1",
+            "id": 1,
             "provider_service": 6,
             "target_id": 2,
             "scope": "container",
@@ -352,7 +393,7 @@ OLT devices aggregate a set of subscriber connections
         {
             "s_tag": "222",
             "c_tag": "432",
-            "subscriber": "1"
+            "subscriber": 1
         }
 
 + Response 200 (application/json)
@@ -399,3 +440,22 @@ A virtual volt is complete once is_synced equal true
                 "compute_node_name": "node2.opencloud.us"
             }
         }
+
+ 
+ 
+# Group ONOS Apps
+
+## app Collection [/api/tenant/onos/app/]
+
+### List all apps [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "humanReadableName": "onos-tenant-7",
+                "id": 7,
+                "name": "vBNG_ONOS_app",
+                "dependencies": "org.onosproject.proxyarp, org.onosproject.virtualbng, org.onosproject.openflow, org.onosproject.fwd"
+            }
+        ]

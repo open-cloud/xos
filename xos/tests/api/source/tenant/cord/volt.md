@@ -33,7 +33,7 @@ OLT devices aggregate a set of subscriber connections
         {
             "s_tag": "222",
             "c_tag": "432",
-            "subscriber": "1"
+            "subscriber": 1
         }
 
 + Response 200 (application/json)

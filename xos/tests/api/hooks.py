@@ -10,6 +10,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import django
 from core.models import *
 from services.cord.models import *
+from services.vtr.models import *
 django.setup()
 
 
@@ -124,29 +125,47 @@ def createTestSubscriber():
     # print "Subscriber Created"
 
 
+def deleteTruckrolls():
+    for s in VTRTenant.objects.all():
+        s.delete(purge=True)
+
+
+def setUpTruckroll():
+    service_vtr = VTRService()
+    service_vtr.name = 'service_vtr'
+    service_vtr.save()
+
+
+def createTruckroll():
+    setUpTruckroll()
+    tn = VTRTenant(id=1)
+    tn.save()
+
+
 @hooks.before_each
 def my_before_each_hook(transaction):
-    # print('before each restore', transaction['name'])
-    # commands.getstatusoutput(restoreSubscriber)
     createTestSubscriber()
     sys.stdout.flush()
 
 
 @hooks.before("Truckroll > Truckroll Collection > Create a Truckroll")
-def skip_test1(transaction):
-    transaction['skip'] = True
+def test1(transaction):
+    setUpTruckroll()
 
 
 @hooks.before("Truckroll > Truckroll Detail > View a Truckroll Detail")
-def skip_test2(transaction):
-    transaction['skip'] = True
+def test2(transaction):
+    deleteTruckrolls()
+    createTruckroll()
 
 
 @hooks.before("Truckroll > Truckroll Detail > Delete a Truckroll Detail")
-def skip_test3(transaction):
-    transaction['skip'] = True
+def test3(transaction):
+    deleteTruckrolls()
+    createTruckroll()
 
 
 @hooks.before("vOLT > vOLT Collection > Create a vOLT")
-def skip_test4(transaction):
+def test4(transaction):
     transaction['skip'] = True
+    # VOLTTenant.objects.get(kind='vOLT').delete()

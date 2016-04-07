@@ -1,13 +1,11 @@
 # xos-api-docs
 
-To execute the test:
+These folder contain the XOS API definition and specs. To run tests visit `configurations/test-standalone` folder.
 
+To document new API:
 - run `npm install`
-- run `pip install dredd_hooks`
-- open `dredd.yml` and change `endpoint: 'http://xos.dev:9999'` to your experiment url
-- open `hooks.py` and change `restoreSubscriber` to ssh into your experiment
+- run `npm start`
+- add the appropriate endpont under `source` folder.
 
-# TODO
-
-Define helper to setup the DB in a consistent shape for tests.
+_API are documented using (Api BluePrint)[https://apiblueprint.org/] syntax and the documentation is published on (Apiary)[http://docs.xos.apiary.io/#]_
 
