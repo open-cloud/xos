@@ -7,7 +7,7 @@ from translator.toscalib.tosca_template import ToscaTemplate
 import pdb
 
 from core.models import Service,User,CoarseTenant
-from services.exampleservice import ExampleService
+from services.exampleservice.models import ExampleService
 
 from xosresource import XOSResource
 
