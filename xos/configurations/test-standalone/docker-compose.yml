@@ -25,3 +25,4 @@ xos:
       - ../../templates/admin:/opt/xos/templates/admin
       - ../../configurations:/opt/xos/configurations
       - ../../tests:/opt/xos/tests
+      - ../../api:/opt/xos/api
