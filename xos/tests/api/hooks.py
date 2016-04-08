@@ -11,7 +11,16 @@ import django
 from core.models import *
 from services.cord.models import *
 from services.vtr.models import *
+import urllib2
+import json
 django.setup()
+
+
+def doLogin(username, password):
+    url = "http://127.0.0.1:8000/xoslib/login?username=%s&password=%s" % (username, password)
+    res = urllib2.urlopen(url).read()
+    parsed = json.loads(res)
+    return {'token': parsed['xoscsrftoken'], 'sessionid': parsed['xossessionid']}
 
 
 def cleanDB():
@@ -41,6 +50,8 @@ def cleanDB():
 
     for s in NetworkSlice.objects.all():
         s.delete(purge=True)
+
+    # print 'DB Cleaned'
 
 
 def createTestSubscriber():
@@ -144,6 +155,9 @@ def createTruckroll():
 
 @hooks.before_each
 def my_before_each_hook(transaction):
+    auth = doLogin('padmin@vicci.org', 'letmein')
+    transaction['request']['headers']['X-CSRFToken'] = auth['token']
+    transaction['request']['headers']['Cookie'] = "xossessionid=%s; xoscsrftoken=%s" % (auth['sessionid'], auth['token'])
     createTestSubscriber()
     sys.stdout.flush()
 
@@ -167,5 +181,5 @@ def test3(transaction):
 
 @hooks.before("vOLT > vOLT Collection > Create a vOLT")
 def test4(transaction):
-    transaction['skip'] = True
-    # VOLTTenant.objects.get(kind='vOLT').delete()
+    # transaction['skip'] = True
+    VOLTTenant.objects.get(kind='vOLT').delete()
