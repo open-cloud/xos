@@ -44,12 +44,12 @@ class PlusModelSerializer(serializers.ModelSerializer):
                 create_fields[k] = validated_data[k]
         instance = self.Meta.model(**create_fields)
 
-#        if instance and hasattr(instance,"can_update") and self.context.get('request',None):
-#            user = self.context['request'].user
-#            if user.__class__.__name__=="AnonymousUser":
-#                raise XOSPermissionDenied()
-#            if not instance.can_update(user):
-#                raise XOSPermissionDenied()
+        if instance and hasattr(instance,"can_update") and self.context.get('request',None):
+            user = self.context['request'].user
+            if user.__class__.__name__=="AnonymousUser":
+                raise XOSPermissionDenied()
+            if not instance.can_update(user):
+                raise XOSPermissionDenied()
 
         for k in validated_data:
             if k in property_fields:
@@ -60,12 +60,6 @@ class PlusModelSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-#        if instance and hasattr(instance,"can_update") and self.context.get('request',None):
-#            user = self.context['request'].user
-#            if user.__class__.__name__=="AnonymousUser":
-#                raise XOSPermissionDenied()
-#            if not instance.can_update(user):
-#                raise XOSPermissionDenied()
         nested_fields = getattr(self, "nested_fields", [])
         for k in validated_data.keys():
             v = validated_data[k]
