@@ -11,7 +11,7 @@ LTS installation on a server with at least 48GB RAM and 12 CPU cores.
 
 For step 1, use the single-node POD setup described at
 https://github.com/open-cloud/openstack-cluster-setup.  If you like, you can run
-[this script](https://raw.githubusercontent.com/open-cloud/openstack-cluster-setup/master/scripts/single-node-pod.sh) to perform steps 1 and 2:
+[this script](https://github.com/open-cloud/openstack-cluster-setup/blob/master/scripts/single-node-pod.sh) to perform steps 1 and 2:
 
 ```
 ubuntu@pod:~$ wget https://raw.githubusercontent.com/open-cloud/openstack-cluster-setup/master/scripts/single-node-pod.sh
@@ -19,13 +19,13 @@ ubuntu@pod:~$ bash single-node-pod.sh
 ```
 
 For step 3, in place of the `compute-ext-net.sh` script, run
-[this script](https://github.com/open-cloud/openstack-cluster-setup/scripts/compute-ext-net-tutorial.sh)
+[this script](https://github.com/open-cloud/openstack-cluster-setup/blob/master/scripts/compute-ext-net-tutorial.sh)
 inside the nova-compute VM.  It enables routing packets between the ExampleService and vSG subnets on a
 single-node POD.
 
 ```
 ubuntu@pod:~$ ssh ubuntu@nova-compute
-ubuntu@nova-compute:~$ wget https://github.com/open-cloud/openstack-cluster-setup/scripts/compute-ext-net-tutorial.sh
+ubuntu@nova-compute:~$ wget https://raw.githubusercontent.com/open-cloud/openstack-cluster-setup/master/scripts/compute-ext-net-tutorial.sh
 ubuntu@nova-compute:~$ sudo bash compute-ext-net-tutorial.sh
 ```
 
