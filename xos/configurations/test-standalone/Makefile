@@ -7,6 +7,13 @@ xos:
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
 
+restore-initial-db-status:
+	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT truncate_tables('postgres');"
+	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "INSERT INTO core_user (id, password, username, email, firstname, lastname, is_admin, last_login, created, updated, is_active, is_staff, is_readonly, is_registering, is_appuser, backend_status) VALUES (1, 'pass', 'padmin@vicci.org', 'padmin@vicci.org', 'xos', 'xos', true, now(), now(), now(), true, true, false, false, false, 'be status');"
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/base.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
+
 prepare:
 	# INSTALL DEPS
 	# RUN ONCE BEFORE RUNNING TESTS

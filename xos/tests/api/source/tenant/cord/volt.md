@@ -28,7 +28,7 @@ OLT devices aggregate a set of subscriber connections
 
 ### Create a vOLT [POST]
 
-+ Request 200 (application/json)
++ Request (application/json)
 
         {
             "s_tag": "222",
@@ -36,7 +36,7 @@ OLT devices aggregate a set of subscriber connections
             "subscriber": 1
         }
 
-+ Response 200 (application/json)
++ Response 201 (application/json)
 
         {
                 "humanReadableName": "vOLT-tenant-1",
