@@ -26,7 +26,7 @@ Virtual Truckroll, enable to perform basic test on user connectivity such as pin
 
 ### Create a Truckroll [POST]
 
-+ Request 200 (application/json)
++ Request (application/json)
 
         {
             "target_id": 2,
@@ -35,11 +35,11 @@ Virtual Truckroll, enable to perform basic test on user connectivity such as pin
             "argument": "8.8.8.8"
         }
 
-+ Response 200 (application/json)
++ Response 201 (application/json)
 
         {
-            "humanReadableName": "vTR-tenant-10",
-            "id": 10,
+            "humanReadableName": "vTR-tenant-1",
+            "id": 1,
             "provider_service": 6,
             "target_id": 2,
             "scope": "container",
