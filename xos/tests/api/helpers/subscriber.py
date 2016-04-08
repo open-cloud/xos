@@ -1,16 +1,13 @@
-import dredd_hooks as hooks
-import sys
+# NOT used, see https://github.com/apiaryio/dredd-hooks-python/issues/17#issuecomment-206950166
 
-# HELPERS
-# NOTE move in separated module
 import os
 import sys
 sys.path.append("/opt/xos")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import django
 from core.models import *
+#from hpc.models import *
 from services.cord.models import *
-from services.vtr.models import *
 django.setup()
 
 
@@ -90,7 +87,7 @@ def createTestSubscriber():
     vcpe_slice.caller = user
     vcpe_slice.save()
 
-    # print 'vcpe_slice created'
+    print 'vcpe_slice created'
 
     # create a lan network
     lan_net = Network()
@@ -99,7 +96,7 @@ def createTestSubscriber():
     lan_net.template = private_template
     lan_net.save()
 
-    # print 'lan_network created'
+    print 'lan_network created'
 
     # add relation between vcpe slice and lan network
     vcpe_network = NetworkSlice()
@@ -107,7 +104,7 @@ def createTestSubscriber():
     vcpe_network.slice = vcpe_slice
     vcpe_network.save()
 
-    # print 'vcpe network relation added'
+    print 'vcpe network relation added'
 
     # vbng service
     vbng_service = VBNGService()
@@ -122,50 +119,6 @@ def createTestSubscriber():
     vt.caller = user
     vt.save()
 
-    # print "Subscriber Created"
+    print "Subscriber Created"
 
-
-def deleteTruckrolls():
-    for s in VTRTenant.objects.all():
-        s.delete(purge=True)
-
-
-def setUpTruckroll():
-    service_vtr = VTRService()
-    service_vtr.name = 'service_vtr'
-    service_vtr.save()
-
-
-def createTruckroll():
-    setUpTruckroll()
-    tn = VTRTenant(id=1)
-    tn.save()
-
-
-@hooks.before_each
-def my_before_each_hook(transaction):
-    createTestSubscriber()
-    sys.stdout.flush()
-
-
-@hooks.before("Truckroll > Truckroll Collection > Create a Truckroll")
-def test1(transaction):
-    setUpTruckroll()
-
-
-@hooks.before("Truckroll > Truckroll Detail > View a Truckroll Detail")
-def test2(transaction):
-    deleteTruckrolls()
-    createTruckroll()
-
-
-@hooks.before("Truckroll > Truckroll Detail > Delete a Truckroll Detail")
-def test3(transaction):
-    deleteTruckrolls()
-    createTruckroll()
-
-
-@hooks.before("vOLT > vOLT Collection > Create a vOLT")
-def test4(transaction):
-    transaction['skip'] = True
-    # VOLTTenant.objects.get(kind='vOLT').delete()
+createTestSubscriber()
