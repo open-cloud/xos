@@ -32,34 +32,25 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         failover_servers = ReadOnlyField()
         creator = ReadOnlyField()
         instance = ReadOnlyField()
-        script_text = ReadOnlyField()
+        use_ca_from = ReadOnlyField()
         provider_service = serializers.PrimaryKeyRelatedField(
             queryset=VPNService.get_service_objects().all(),
             default=get_default_vpn_service)
-
-        humanReadableName = serializers.SerializerMethodField(
-                "getHumanReadableName")
-
-        computeNodeName = serializers.SerializerMethodField(
-                "getComputeNodeName")
+        script_text = serializers.SerializerMethodField(
+                "get_script_text")
 
         class Meta:
             model = VPNTenant
-            fields = ('humanReadableName', 'id', 'provider_service',
+            fields = ('id', 'provider_service', 'use_ca_from',
                       'service_specific_attribute', 'vpn_subnet',
                       'server_network', 'creator', 'instance', 'protocol',
-                      'computeNodeName', 'is_persistent',
+                      'is_persistent',
                       'clients_can_see_each_other', 'ca_crt', 'port_number',
                       'script_text', 'failover_servers')
 
-        def getHumanReadableName(self, obj):
-            return obj.__unicode__()
-
-        def getComputeNodeName(self, obj):
-            instance = obj.instance
-            if not instance:
-                return None
-            return instance.node.name
+        def get_script_text(self, obj):
+            return obj.create_client_script(
+                self.context['request'].user.email + "-" + str(obj.id))
 
 
 class VPNTenantList(XOSListCreateAPIView):
@@ -69,14 +60,10 @@ class VPNTenantList(XOSListCreateAPIView):
 
     def get_queryset(self):
         # Get every privilege for this user
-        tenants_privs = TenantPrivilege.objects.all().filter(user=self.request.user)
+        tenants_privs = TenantPrivilege.objects.all().filter(
+            user=self.request.user)
         vpn_tenants = []
         for priv in tenants_privs:
             vpn_tenants.append(
                 VPNTenant.get_tenant_objects().filter(pk=priv.tenant.pk)[0])
-
-        for tenant in vpn_tenants:
-            tenant.script_text = (
-                tenant.create_client_script(
-                    self.request.user.email + "-" + str(tenant.id)))
         return vpn_tenants
