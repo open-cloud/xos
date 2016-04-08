@@ -110,7 +110,7 @@ def createTestSubscriber():
     vcpe_slice.caller = user
     vcpe_slice.save()
 
-    # print 'vcpe_slice created'
+    print 'vcpe_slice created'
 
     # create a lan network
     lan_net = Network()
@@ -119,7 +119,7 @@ def createTestSubscriber():
     lan_net.template = private_template
     lan_net.save()
 
-    # print 'lan_network created'
+    print 'lan_network created'
 
     # add relation between vcpe slice and lan network
     vcpe_network = NetworkSlice()
@@ -127,12 +127,14 @@ def createTestSubscriber():
     vcpe_network.slice = vcpe_slice
     vcpe_network.save()
 
-    # print 'vcpe network relation added'
+    print 'vcpe network relation added'
 
     # vbng service
     vbng_service = VBNGService()
     vbng_service.name = 'service_vbng'
     vbng_service.save()
+
+    print 'vbng_service creater'
 
     # volt tenant
     vt = VOLTTenant(subscriber=subscriber.id, id=1)
@@ -142,7 +144,7 @@ def createTestSubscriber():
     vt.caller = user
     vt.save()
 
-    # print "Subscriber Created"
+    print "Subscriber Created"
 
 
 def deleteTruckrolls():
@@ -162,4 +164,4 @@ def createTruckroll():
     tn.save()
 
 
-doLogin('padmin@vicci.org', 'letmein')
+createTestSubscriber()
