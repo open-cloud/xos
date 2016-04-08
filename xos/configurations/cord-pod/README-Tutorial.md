@@ -107,10 +107,10 @@ Tell XOS to process it by running:
 ubuntu@xos:~/xos/xos/configurations/cord-pod$ make exampleservice
 ```
 
-In the XOS UI, create an ExampleTenant. Go to the <Services> page,
-select ExampleService, select Administration, select ExampleTenant,
-then add and save a tenant.  This will cause an Instance to be created
-in the ExampleTenant slice.
+In the XOS UI, create an ExampleTenant. Go to *http://xos/admin/exampleservice*
+and add / save an Example Tenant (when creating the tenant, fill in a message that
+this tenant should display).  This will cause an Instance to be created
+in the the *mysite_exampleservice* slice.
 
 ## Set up a Subscriber Device
 
@@ -124,7 +124,7 @@ In the nova-compute VM:
 ubuntu@nova-compute:~$ sudo apt-get install lxc
 ```
 
-Next edit `/etc/lxc/default.conf` and change the default bridge name:
+Next edit `/etc/lxc/default.conf` and change the default bridge name to `databr`:
 
 ```
   lxc.network.link = databr
