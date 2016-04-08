@@ -5,6 +5,7 @@ from rest_framework import status
 from xos.apibase import XOSRetrieveUpdateDestroyAPIView, XOSListCreateAPIView
 from rest_framework import viewsets
 from django.conf.urls import patterns, url
+from xos.exceptions import *
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -41,17 +42,30 @@ class PlusModelSerializer(serializers.ModelSerializer):
         for k in validated_data:
             if not k in property_fields:
                 create_fields[k] = validated_data[k]
-        obj = self.Meta.model(**create_fields)
+        instance = self.Meta.model(**create_fields)
+
+#        if instance and hasattr(instance,"can_update") and self.context.get('request',None):
+#            user = self.context['request'].user
+#            if user.__class__.__name__=="AnonymousUser":
+#                raise XOSPermissionDenied()
+#            if not instance.can_update(user):
+#                raise XOSPermissionDenied()
 
         for k in validated_data:
             if k in property_fields:
-                setattr(obj, k, validated_data[k])
+                setattr(instance, k, validated_data[k])
 
-        obj.caller = self.context['request'].user
-        obj.save()
-        return obj
+        instance.caller = self.context['request'].user
+        instance.save()
+        return instance
 
     def update(self, instance, validated_data):
+#        if instance and hasattr(instance,"can_update") and self.context.get('request',None):
+#            user = self.context['request'].user
+#            if user.__class__.__name__=="AnonymousUser":
+#                raise XOSPermissionDenied()
+#            if not instance.can_update(user):
+#                raise XOSPermissionDenied()
         nested_fields = getattr(self, "nested_fields", [])
         for k in validated_data.keys():
             v = validated_data[k]
@@ -103,6 +117,19 @@ class XOSViewSet(viewsets.ModelViewSet):
             return self.custom_serializers[self.action]
         else:
             return super(XOSViewSet, self).get_serializer_class()
+
+    def get_object(self):
+        obj = super(XOSViewSet, self).get_object()
+
+        if self.action=="update" or self.action=="destroy" or self.action.startswith("set_"):
+            if obj and hasattr(obj,"can_update"):
+                user = self.request.user
+                if user.__class__.__name__=="AnonymousUser":
+                    raise XOSPermissionDenied()
+                if not obj.can_update(user):
+                    raise XOSPermissionDenied()
+
+        return obj
 
 class XOSIndexViewSet(viewsets.ViewSet):
     view_urls=[]
