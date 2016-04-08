@@ -51,7 +51,7 @@ def cleanDB():
     for s in NetworkSlice.objects.all():
         s.delete(purge=True)
 
-    # print 'DB Cleaned'
+    print 'DB Cleaned'
 
 
 def createTestSubscriber():
@@ -101,7 +101,7 @@ def createTestSubscriber():
     vcpe_slice.caller = user
     vcpe_slice.save()
 
-    # print 'vcpe_slice created'
+    print 'vcpe_slice created'
 
     # create a lan network
     lan_net = Network()
@@ -110,7 +110,7 @@ def createTestSubscriber():
     lan_net.template = private_template
     lan_net.save()
 
-    # print 'lan_network created'
+    print 'lan_network created'
 
     # add relation between vcpe slice and lan network
     vcpe_network = NetworkSlice()
@@ -118,12 +118,14 @@ def createTestSubscriber():
     vcpe_network.slice = vcpe_slice
     vcpe_network.save()
 
-    # print 'vcpe network relation added'
+    print 'vcpe network relation added'
 
     # vbng service
     vbng_service = VBNGService()
     vbng_service.name = 'service_vbng'
     vbng_service.save()
+
+    print 'vbng_service creater'
 
     # volt tenant
     vt = VOLTTenant(subscriber=subscriber.id, id=1)
@@ -133,7 +135,7 @@ def createTestSubscriber():
     vt.caller = user
     vt.save()
 
-    # print "Subscriber Created"
+    print "Subscriber Created"
 
 
 def deleteTruckrolls():
@@ -153,8 +155,15 @@ def createTruckroll():
     tn.save()
 
 
+@hooks.before_all
+def my_before_all_hook(transactions):
+    print "-------------------------------- Before All Hook --------------------------------"
+    cleanDB()
+
+
 @hooks.before_each
 def my_before_each_hook(transaction):
+    print "-------------------------------- Before Each Hook --------------------------------"
     auth = doLogin('padmin@vicci.org', 'letmein')
     transaction['request']['headers']['X-CSRFToken'] = auth['token']
     transaction['request']['headers']['Cookie'] = "xossessionid=%s; xoscsrftoken=%s" % (auth['sessionid'], auth['token'])

@@ -1,27 +1,44 @@
 MYIP:=$(shell hostname -i)
 
-xos:
-	sudo make -f ../common/Makefile.prereqs
-	sudo docker-compose up -d
-	bash ../common/wait_for_xos.sh
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
+define TRUNCATE_FN
+	CREATE OR REPLACE FUNCTION truncate_tables(username IN VARCHAR) RETURNS void AS $$$$
+	DECLARE
+			statements CURSOR FOR
+					SELECT tablename FROM pg_tables
+					WHERE tableowner = username AND schemaname = 'public';
+	BEGIN
+			FOR stmt IN statements LOOP
+					EXECUTE 'TRUNCATE TABLE ' || quote_ident(stmt.tablename) || ' CASCADE;';
+			END LOOP;
+	END;
+	$$$$ LANGUAGE plpgsql;
+endef
+export TRUNCATE_FN
 
-restore-initial-db-status:
-	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT truncate_tables('postgres');"
-	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "INSERT INTO core_user (id, password, username, email, firstname, lastname, is_admin, last_login, created, updated, is_active, is_staff, is_readonly, is_registering, is_appuser, backend_status) VALUES (1, 'pass', 'padmin@vicci.org', 'padmin@vicci.org', 'xos', 'xos', true, now(), now(), now(), true, true, false, false, false, 'be status');"
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/base.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
-
-prepare:
+prepare: xos
 	# INSTALL DEPS
 	# RUN ONCE BEFORE RUNNING TESTS
 	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm install --production"
 	sudo docker exec teststandalone_xos_1 pip install dredd_hooks
 
+xos:
+	sudo make -f ../common/Makefile.prereqs
+	sudo docker-compose up -d
+	bash ../common/wait_for_xos.sh
+	# sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
+	# sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
 
-test: 
+restore-initial-db-status:
+	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "$$TRUNCATE_FN"
+	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT truncate_tables('postgres');"
+	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT setval('core_tenant_id_seq', 1)"
+	sudo docker-compose run xos python /opt/xos/manage.py --noobserver --nomodelpolicy loaddata /opt/xos/core/fixtures/core_initial_data.json
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
+
+
+
+test: restore-initial-db-status
 	# RUN TESTS
 	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm test"
 
