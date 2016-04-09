@@ -1,0 +1,65 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup the ExampleService on the pod
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+
+    Private:
+      type: tosca.nodes.NetworkTemplate
+
+    management:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          no-create: true
+          no-delete: true
+          no-update: true
+
+    exampleservice-public:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+          cidr: 10.168.1.0/24
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_exampleservice
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_exampleservice
+              relationship: tosca.relationships.ConnectsToSlice
+
+    mysite:
+      type: tosca.nodes.Site
+
+    mysite_exampleservice:
+      description: This slice holds the ExampleService
+      type: tosca.nodes.Slice
+      properties:
+          network: noauto
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - management:
+              node: management
+              relationship: tosca.relationships.ConnectsToNetwork
+          - exmapleserver:
+              node: service_exampleservice
+              relationship: tosca.relationships.MemberOfService
+
+    service_exampleservice:
+      type: tosca.nodes.ExampleService
+      requirements:
+          - management:
+              node: management
+              relationship: tosca.relationships.UsesNetwork
+      properties:
+          view_url: /admin/exampleservice/exampleservice/$id$/
+          kind: exampleservice
+

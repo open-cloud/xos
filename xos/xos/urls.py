@@ -10,12 +10,11 @@ from hpcapi import *
 from core.views.legacyapi import LegacyXMLRPC
 from core.views.serviceGraph import ServiceGridView, ServiceGraphView
 from services.helloworld.view import *
-#from core.views.analytics import AnalyticsAjaxView
 from core.models import *
 from rest_framework import generics
 from core.dashboard.sites import SitePlus
 from django.http import HttpResponseRedirect
-#from core.xoslib import XOSLibDataView
+#from api import import_api_methods
 
 admin.site = SitePlus()
 admin.autodiscover()
@@ -43,18 +42,17 @@ urlpatterns = patterns('',
     url(r'^', include(admin.site.urls)),
     #url(r'^profile/home', 'core.views.home'),
 
-#    url(r'^admin/xoslib/(?P<name>\w+)/$', XOSLibDataView.as_view(), name="xoslib"),
-
     url(r'^xmlrpc/legacyapi/$', 'core.views.legacyapi.LegacyXMLRPC', name='xmlrpc'),
-
-#    url(r'^analytics/(?P<name>\w+)/$', AnalyticsAjaxView.as_view(), name="analytics"),
 
     url(r'^files/', redirect_to_apache),
 
-    #Adding in rest_framework urls
+    # Adding in rest_framework urls
     url(r'^xos/', include('rest_framework.urls', namespace='rest_framework')),
 
-    # XOSLib rest methods
+    # XOSLib rest methods [deprecated]
     url(r'^xoslib/', include('core.xoslib.methods', namespace='xoslib')),
+
+    url(r'^', include('api.import_methods', namespace='api')),
+
   ) + get_REST_patterns() + get_hpc_REST_patterns()
 

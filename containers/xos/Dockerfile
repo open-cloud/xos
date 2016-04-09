@@ -48,7 +48,7 @@ RUN pip install \
     django_rest_swagger \
     django-suit==0.3a1 \
     django-timezones \
-    djangorestframework==2.4.4 \
+    djangorestframework==3.3.3 \
     dnslib \
     lxml \
     markdown \
@@ -58,6 +58,7 @@ RUN pip install \
     python-ceilometerclient \
     python-dateutil \
     python-keyczar \
+    python-logstash \
     pygraphviz \
     pytz \
     pyyaml \

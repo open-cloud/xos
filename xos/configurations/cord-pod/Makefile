@@ -14,6 +14,9 @@ cord: virtualbng_json
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-vtn-vsg.yaml
 
+exampleservice:
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/pod-exampleservice.yaml 
+
 cord-ceilometer: ceilometer_custom_images cord
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/ceilometer.yaml
 
