@@ -21,32 +21,14 @@ def get_default_vpn_service():
 
 class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = ReadOnlyField()
-        service_specific_attribute = ReadOnlyField()
         server_network = ReadOnlyField()
         vpn_subnet = ReadOnlyField()
-        is_persistent = ReadOnlyField()
-        clients_can_see_each_other = ReadOnlyField()
-        ca_crt = ReadOnlyField()
-        port_number = ReadOnlyField()
-        protocol = ReadOnlyField()
-        failover_servers = ReadOnlyField()
-        creator = ReadOnlyField()
-        instance = ReadOnlyField()
-        use_ca_from = ReadOnlyField()
-        provider_service = serializers.PrimaryKeyRelatedField(
-            queryset=VPNService.get_service_objects().all(),
-            default=get_default_vpn_service)
-        script_text = serializers.SerializerMethodField(
-                "get_script_text")
+        script_text = serializers.SerializerMethodField()
 
         class Meta:
             model = VPNTenant
-            fields = ('id', 'provider_service', 'use_ca_from',
-                      'service_specific_attribute', 'vpn_subnet',
-                      'server_network', 'creator', 'instance', 'protocol',
-                      'is_persistent',
-                      'clients_can_see_each_other', 'ca_crt', 'port_number',
-                      'script_text', 'failover_servers')
+            fields = ('id', 'service_specific_attribute', 'vpn_subnet',
+                      'server_network', 'script_text')
 
         def get_script_text(self, obj):
             return obj.create_client_script(
