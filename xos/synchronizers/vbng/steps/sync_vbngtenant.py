@@ -37,7 +37,7 @@ class SyncVBNGTenant(SyncStep):
         return objs
 
     def defer_sync(self, o, reason):
-        logger.info("defer object %s due to %s" % (str(o), reason))
+        logger.info("defer object %s due to %s" % (str(o), reason),extra=o.tologdict())
         raise Exception("defer object %s due to %s" % (str(o), reason))
 
     def get_vbng_service(self, o):
@@ -77,7 +77,7 @@ class SyncVBNGTenant(SyncStep):
                 if not ip:
                     raise Exception("vBNG service is linked to an ONOSApp, but the App's Service's Slice's first instance does not have an ip")
 
-                logger.info("Using ip %s from ONOS Instance %s" % (ip, instance))
+                logger.info("Using ip %s from ONOS Instance %s" % (ip, instance),extra=o.tologdict())
 
                 return "http://%s:8181/onos/virtualbng/" % ip
 
@@ -107,18 +107,18 @@ class SyncVBNGTenant(SyncStep):
         return (vcpe.wan_ip, vcpe.wan_container_mac, vcpe.instance.node.name)
 
     def sync_record(self, o):
-        logger.info("sync'ing VBNGTenant %s" % str(o))
+        logger.info("sync'ing VBNGTenant %s" % str(o),extra=o.tologdict())
 
         if not o.routeable_subnet:
             (private_ip, private_mac, private_hostname) = self.get_private_interface(o)
-            logger.info("contacting vBNG service to request mapping for private ip %s mac %s host %s" % (private_ip, private_mac, private_hostname) )
+            logger.info("contacting vBNG service to request mapping for private ip %s mac %s host %s" % (private_ip, private_mac, private_hostname) ,extra=o.tologdict())
 
             url = self.get_vbng_url(o) + "privateip/%s/%s/%s" % (private_ip, private_mac, private_hostname)
-            logger.info( "vbng url: %s" % url )
+            logger.info( "vbng url: %s" % url ,extra=o.tologdict())
             r = requests.post(url )
             if (r.status_code != 200):
                 raise Exception("Received error from bng service (%d)" % r.status_code)
-            logger.info("received public IP %s from private IP %s" % (r.text, private_ip))
+            logger.info("received public IP %s from private IP %s" % (r.text, private_ip),extra=o.tologdict())
 
             if r.text == "0":
                 raise Exception("VBNG service failed to return a routeable_subnet (probably ran out)")
@@ -131,11 +131,11 @@ class SyncVBNGTenant(SyncStep):
         o.save()
 
     def delete_record(self, o):
-        logger.info("deleting VBNGTenant %s" % str(o))
+        logger.info("deleting VBNGTenant %s" % str(o),extra=o.tologdict())
 
         if o.mapped_ip:
             private_ip = o.mapped_ip
-            logger.info("contacting vBNG service to delete private ip %s" % private_ip)
+            logger.info("contacting vBNG service to delete private ip %s" % private_ip,extra=o.tologdict())
             r = requests.delete(self.get_vbng_url(o) + "privateip/%s" % private_ip, )
             if (r.status_code != 200):
                 raise Exception("Received error from bng service (%d)" % r.status_code)

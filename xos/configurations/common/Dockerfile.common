@@ -41,6 +41,7 @@ RUN pip install netaddr # IP Addr library
 RUN pip install pytz
 RUN pip install django-timezones
 RUN pip install requests
+RUN pip install python-logstash
 RUN pip install django-crispy-forms
 RUN pip install django-geoposition
 RUN pip install django-extensions
