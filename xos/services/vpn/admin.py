@@ -260,10 +260,23 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
             # certificate
             if type(obj) is TenantPrivilege:
                 certificate = self.certificate_name(obj)
-                VPNService.execute_easyrsa_command(
-                    obj.tenant.pki_dir, "revoke " + certificate)
-                obj.tenant.enacted = None
-                obj.tenant.save()
+                # If the client has already been reovked don't do it again
+                if (os.path.isfile(obj.tenant.pki_dir +
+                    "/issued/" + certificate + ".crt")):
+                    VPNService.execute_easyrsa_command(
+                        obj.tenant.pki_dir, "revoke " + certificate)
+                    # Revoking a client cert does not delete any of the files
+                    # to make sure that we can add this user again we need to
+                    # delete all of the files created by easyrsa
+                    os.remove(obj.tenant.pki_dir +
+                        "/issued/" + certificate + ".crt")
+                    os.remove(obj.tenant.pki_dir +
+                        "/private/" + certificate + ".key")
+                    os.remove(obj.tenant.pki_dir +
+                        "/reqs/" + certificate + ".req")
+
+                    obj.tenant.enacted = None
+                    obj.tenant.save()
             # TODO(jermowery): determine if this is necessary.
             # if type(obj) is VPNTenant:
                 # if the tenant was deleted revoke all certs assoicated
@@ -273,11 +286,14 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
             # If there were any new TenantPrivlege objects then create certs
             if type(obj) is TenantPrivilege:
                 certificate = self.certificate_name(obj)
-                VPNService.execute_easyrsa_command(
-                    obj.tenant.pki_dir,
-                    "build-client-full " + certificate + " nopass")
-                obj.tenant.enacted = None
-                obj.tenant.save()
+                # Only add a certificate if ones does not yet exist
+                if (not os.path.isfile(obj.tenant.pki_dir +
+                    "/issued/" + certificate + ".crt")):
+                    VPNService.execute_easyrsa_command(
+                        obj.tenant.pki_dir,
+                        "build-client-full " + certificate + " nopass")
+                    obj.tenant.enacted = None
+                    obj.tenant.save()
 
 # Associate the admin forms with the models.
 admin.site.register(VPNService, VPNServiceAdmin)
