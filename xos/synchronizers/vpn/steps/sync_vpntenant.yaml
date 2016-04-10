@@ -77,4 +77,4 @@
     when: {{ clients_can_see_each_other }}
 
   - name: start openvpn
-    shell: openvpn {{ pki_dir }}/server.conf
+    shell: openvpn {{ pki_dir }}/server.conf &
