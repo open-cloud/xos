@@ -301,7 +301,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
                         "build-client-full " + certificate + " nopass")
                     obj.tenant.enacted = None
                     obj.tenant.save()
-                    obj.delete()
+                    obj.save()
 
 # Associate the admin forms with the models.
 admin.site.register(VPNService, VPNServiceAdmin)
