@@ -262,6 +262,7 @@ class VPNTenant(TenantWithContainer):
         for line in self.get_client_cert(client_name):
             script += (line.rstrip() + r"\n")
         script += ("\" > " + client_name + ".crt\n")
+        script += ("printf \"%b\" \"")
         for line in self.get_client_key(client_name):
             script += (line.rstrip() + r"\n")
         script += ("\" > " + client_name + ".key\n")
