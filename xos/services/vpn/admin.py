@@ -204,6 +204,9 @@ class VPNTenantForm(forms.ModelForm):
                 shutil.copy2(
                     self.instance.use_ca_from[0].pki_dir + "/ca.crt",
                     self.instance.pki_dir)
+                shutil.copy2(
+                    self.instance.use_ca_from[0].pki_dir + "/private/ca.key",
+                    self.instance.pki_dir + "/private")
             else:
                 VPNService.execute_easyrsa_command(
                     self.instance.pki_dir, "--req-cn=XOS build-ca nopass")
@@ -211,6 +214,9 @@ class VPNTenantForm(forms.ModelForm):
             shutil.copy2(
                 self.instance.use_ca_from[0].pki_dir + "/ca.crt",
                 self.instance.pki_dir)
+            shutil.copy2(
+                self.instance.use_ca_from[0].pki_dir + "/private/ca.key",
+                self.instance.pki_dir + "/private")
 
         result.ca_crt = self.generate_ca_crt()
 
