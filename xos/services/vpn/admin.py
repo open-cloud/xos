@@ -277,6 +277,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
 
                     obj.tenant.enacted = None
                     obj.tenant.save()
+                    obj.delete()
             # TODO(jermowery): determine if this is necessary.
             # if type(obj) is VPNTenant:
                 # if the tenant was deleted revoke all certs assoicated
@@ -294,6 +295,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
                         "build-client-full " + certificate + " nopass")
                     obj.tenant.enacted = None
                     obj.tenant.save()
+                    obj.delete()
 
 # Associate the admin forms with the models.
 admin.site.register(VPNService, VPNServiceAdmin)
