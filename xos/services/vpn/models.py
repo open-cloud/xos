@@ -298,7 +298,6 @@ class VPNTenant(TenantWithContainer):
                  "ca ca.crt\n" +
                  "cert " + client_name + ".crt\n" +
                  "key " + client_name + ".key\n" +
-                 "comp-lzo\n" +
                  "verb 3\n")
 
         if self.is_persistent:
