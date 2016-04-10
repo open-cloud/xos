@@ -51,6 +51,7 @@
        port {{ port_number }}
        proto {{ protocol }}
        dev tun
+       writepid {{ pki_dir }}/pid
        ca {{ pki_dir }}/ca.crt
        cert {{ pki_dir }}/server.crt
        key {{ pki_dir }}/server.key
@@ -77,4 +78,4 @@
     when: {{ clients_can_see_each_other }}
 
   - name: start openvpn
-    shell: openvpn --writepid {{ pki_dir }}/pid {{ pki_dir }}/server.conf &
+    shell: openvpn {{ pki_dir }}/server.conf &
