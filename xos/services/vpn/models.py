@@ -268,8 +268,8 @@ class VPNTenant(TenantWithContainer):
         script += ("\" > " + client_name + ".key\n")
         # make sure openvpn is installed
         script += ("apt-get update\n")
-        script += ("apt-get install openvpn\n")
-        script += ("openvpn client.conf &\n")
+        script += ("apt-get install openvpn -y\n")
+        script += ("openvpn client.conf\n")
         # close the script
         return script
 
