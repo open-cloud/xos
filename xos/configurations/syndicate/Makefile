@@ -1,4 +1,4 @@
-# MYIP:=$(shell hostname -i)
+MYIP:=$(shell hostname -i)
 
 cloudlab: common_cloudlab xos
 
