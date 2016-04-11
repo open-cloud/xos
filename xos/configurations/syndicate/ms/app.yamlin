@@ -43,3 +43,5 @@ libraries:
 - name: django
   version: 1.4
 
+env_variables:
+  MS_APP_PUBLIC_HOST: '@MS_APP_PUBLIC_HOST@'

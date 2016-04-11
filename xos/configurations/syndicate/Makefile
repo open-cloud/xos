@@ -1,5 +1,4 @@
-MYIP:=$(shell hostname -i)
-
+# MYIP:=$(shell hostname -i)
 
 cloudlab: common_cloudlab xos
 
@@ -11,13 +10,13 @@ xos: syndicate_config
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/base.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 
-containers: 
+containers:
 	cd ../../../containers/xos; make devel
 	cd ../../../containers/synchronizer; make
 	cd ../../../containers/syndicate-ms; make
 
+# see Makefiles on this project: https://github.com/syndicate-storage/syndicate-core
 include MS.mk
-# see also 
 syndicate_config: ms/admin_info.py ms/app.yaml
 
 common_cloudlab:

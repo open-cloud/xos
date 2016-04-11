@@ -1,6 +1,7 @@
-# MS build parameters 
+# MS build parameters
 
 MS_APP_ADMIN_EMAIL        ?= sites@opencloud.us
+MS_APP_PUBLIC_HOST				?= localhost
 MS_APP_ADMIN_PUBLIC_KEY   ?= ms/admin.pub
 MS_APP_ADMIN_PRIVATE_KEY  ?= ms/admin.pem
 
@@ -35,4 +36,12 @@ ms/admin_info.py: ms/admin_info.pyin $(MS_APP_ADMIN_PUBLIC_KEY) $(MS_APP_PUBLIC_
 ms/app.yaml: ms/app.yamlin
 	mkdir -p "$(@D)"
 	cat "$<" | \
-		sed -e 's~@MS_APP_NAME@~$(MS_APP_NAME)~g;' > "$@"
+		sed -e 's~@MS_APP_NAME@~$(MS_APP_NAME)~g;' | \
+		sed -e 's~@MS_APP_PUBLIC_HOST@~$(MS_APP_PUBLIC_HOST)~g;' > "$@"
+
+clean: 
+	rm -f ms/admin_info.py ms/app.yaml
+
+clean_certs:
+	rm -f $(MS_APP_ADMIN_PUBLIC_KEY) $(MS_APP_ADMIN_PRIVATE_KEY) $(MS_APP_PUBLIC_KEY) $(MS_APP_PRIVATE_KEY)
+
