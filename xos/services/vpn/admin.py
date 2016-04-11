@@ -173,6 +173,7 @@ class VPNTenantForm(forms.ModelForm):
                     VPNService.get_service_objects().all()[0])
 
     def save(self, commit=True):
+        result = super(VPNTenantForm, self).save(commit=commit)
         self.instance.creator = self.cleaned_data.get("creator")
         self.instance.is_persistent = self.cleaned_data.get('is_persistent')
         self.instance.vpn_subnet = self.cleaned_data.get("vpn_subnet")
@@ -191,8 +192,35 @@ class VPNTenantForm(forms.ModelForm):
 
         self.instance.use_ca_from[:] = []
         self.instance.use_ca_from.append(self.cleaned_data.get('use_ca_from'))
+        result.save()  # Need to do this so that we know the ID
 
-        return super(VPNTenantForm, self).save(commit=commit)
+        self.instance.pki_dir = (
+            VPNService.OPENVPN_PREFIX + "server-" + str(result.id))
+
+        if (not os.path.isdir(self.instance.pki_dir)):
+            VPNService.execute_easyrsa_command(
+                self.instance.pki_dir, "init-pki")
+            if (self.instance.use_ca_from[0]):
+                shutil.copy2(
+                    self.instance.use_ca_from[0].pki_dir + "/ca.crt",
+                    self.instance.pki_dir)
+                shutil.copy2(
+                    self.instance.use_ca_from[0].pki_dir + "/private/ca.key",
+                    self.instance.pki_dir + "/private")
+            else:
+                VPNService.execute_easyrsa_command(
+                    self.instance.pki_dir, "--req-cn=XOS build-ca nopass")
+        elif (self.instance.use_ca_from[0]):
+            shutil.copy2(
+                self.instance.use_ca_from[0].pki_dir + "/ca.crt",
+                self.instance.pki_dir)
+            shutil.copy2(
+                self.instance.use_ca_from[0].pki_dir + "/private/ca.key",
+                self.instance.pki_dir + "/private")
+
+        result.ca_crt = self.generate_ca_crt()
+
+        return result
 
     def generate_ca_crt(self):
         """str: Generates the ca cert by reading from the ca file"""
