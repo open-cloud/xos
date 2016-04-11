@@ -21,7 +21,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
 
     def sync_fields(self, tenant, fields):
         tenant.pki_dir = (
-            VPNService.OPENVPN_PREFIX + "server-" + str(result.id))
+            VPNService.OPENVPN_PREFIX + "server-" + str(tenant.id))
 
         if (not os.path.isdir(tenant.pki_dir)):
             VPNService.execute_easyrsa_command(
