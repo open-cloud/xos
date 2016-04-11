@@ -62,4 +62,8 @@ topology_template:
       properties:
           view_url: /admin/exampleservice/exampleservice/$id$/
           kind: exampleservice
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/synchronizers/exampleservice/exampleservice_private_key
+      artifacts:
+          pubkey: /opt/xos/synchronizers/exampleservice/exampleservice_private_key
 
