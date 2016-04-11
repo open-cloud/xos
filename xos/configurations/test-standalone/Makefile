@@ -42,6 +42,13 @@ test: restore-initial-db-status
 	# RUN TESTS
 	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm test"
 
+test-tosca:
+	sudo docker-compose run xos bash -c "cd /opt/xos/tosca/tests; python ./alltests.py"
+
+test-gui:
+	cd ../../../views/ngXosViews/ceilometerDashboard; npm install
+	cd ../../../views/ngXosViews/ceilometerDashboard; npm run test:ci
+
 base-container: 
 	cd ../../../containers/xos; make devel
 
@@ -56,6 +63,9 @@ showlogs:
 
 rm: stop
 	sudo docker-compose rm
+
+docker-clean:
+	sudo docker rm -f $(sudo docker ps -aq)
 
 enter-xos:
 	sudo docker exec -ti teststandalone_xos_1 bash
