@@ -829,9 +829,6 @@ class TenantPrivilege(PlCoreBase):
     tenant = models.ForeignKey('Tenant', related_name="tenantprivileges")
     role = models.ForeignKey('TenantRole', related_name="tenantprivileges")
 
-    class Meta:
-        unique_together = ('user', 'tenant', 'role')
-
     def __unicode__(self):  return u'%s %s %s' % (self.tenant, self.user, self.role)
 
     def save(self, *args, **kwds):
