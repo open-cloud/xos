@@ -1,5 +1,4 @@
 import os
-import shutil
 import sys
 
 from django.db.models import F, Q
@@ -19,46 +18,8 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
     template_name = "sync_vpntenant.yaml"
     service_key_name = "/opt/xos/synchronizers/vpn/vpn_private_key"
 
-
-    def sync_fields(self, tenant, fields):
-        tenant.pki_dir = (
-            VPNService.OPENVPN_PREFIX + "server-" + str(result.id))
-
-        if (not os.path.isdir(tenant.pki_dir)):
-            VPNService.execute_easyrsa_command(
-                tenant.pki_dir, "init-pki")
-            if (tenant.use_ca_from[0]):
-                shutil.copy2(
-                    tenant.use_ca_from[0].pki_dir + "/ca.crt",
-                    tenant.pki_dir)
-                shutil.copy2(
-                    tenant.use_ca_from[0].pki_dir + "/private/ca.key",
-                    tenant.pki_dir + "/private")
-            else:
-                VPNService.execute_easyrsa_command(
-                    tenant.pki_dir, "--req-cn=XOS build-ca nopass")
-        elif (tenant.use_ca_from[0]):
-            shutil.copy2(
-                tenant.use_ca_from[0].pki_dir + "/ca.crt",
-                tenant.pki_dir)
-            shutil.copy2(
-                tenant.use_ca_from[0].pki_dir + "/private/ca.key",
-                tenant.pki_dir + "/private")
-
-        tenant.ca_crt = tenant.generate_ca_crt()
-
-        if (not os.path.isfile(tenant.pki_dir + "/issued/server.crt")):
-            VPNService.execute_easyrsa_command(
-                tenant.pki_dir, "build-server-full server nopass")
-
-        if (not os.path.isfile(tenant.pki_dir + "crl.pem")):
-            VPNService.execute_easyrsa_command(tenant.pki_dir, "gen-crl")
-
-        if (not os.path.isfile(tenant.pki_dir + "dh.pem")):
-            VPNService.execute_easyrsa_command(tenant.pki_dir, "gen-dh")
-
-        # will call run_playbook
-        super(SyncVPNTenant, self).sync_fields(tenant, fields)
+    def __init__(self, *args, **kwargs):
+        super(SyncVPNTenant, self).__init__(*args, **kwargs)
 
     def fetch_pending(self, deleted):
         if (not deleted):
@@ -80,3 +41,11 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
                 "protocol": tenant.protocol,
                 "pki_dir": tenant.pki_dir
                 }
+
+    def run_playbook(self, o, fields):
+        # Generate the server files
+        if (not os.path.isfile(o.pki_dir + "/issued/server.crt")):
+            VPNService.execute_easyrsa_command(
+                o.pki_dir, "build-server-full server nopass")
+            VPNService.execute_easyrsa_command(o.pki_dir, "gen-crl")
+        super(SyncVPNTenant, self).run_playbook(o, fields)
