@@ -8,4 +8,4 @@ to use it:
 
 Then anytime is needed `make test` (`xos/api` folder is shared with the container)
 
-Added to Jenkins
+Note that this test will be automatically executed by (Jenkins)[https://jenkins.opencord.org/]
