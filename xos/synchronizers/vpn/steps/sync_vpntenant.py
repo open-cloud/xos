@@ -26,7 +26,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         if (not os.path.isdir(tenant.pki_dir)):
             VPNService.execute_easyrsa_command(
                 tenant.pki_dir, "init-pki")
-            if (len(tenant.use_ca_form) > 0 and tenant.use_ca_from[0]):
+            if (tenant.use_ca_from[0]):
                 shutil.copy2(
                     tenant.use_ca_from[0].pki_dir + "/ca.crt",
                     tenant.pki_dir)
@@ -36,7 +36,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
             else:
                 VPNService.execute_easyrsa_command(
                     tenant.pki_dir, "--req-cn=XOS build-ca nopass")
-        elif (len(tenant.use_ca_form) > 0 and tenant.use_ca_from[0]):
+        elif (tenant.use_ca_from[0]):
             shutil.copy2(
                 tenant.use_ca_from[0].pki_dir + "/ca.crt",
                 tenant.pki_dir)
