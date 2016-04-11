@@ -295,10 +295,10 @@ class VPNTenant(TenantWithContainer):
                 "key " + client_name + ".key\n" +
                 "verb 3\n" +
                 self.get_remote_line(
-                        self.nat_ip, self.port_number, self.protocol))
+                    self.nat_ip, self.port_number, self.protocol))
         for remote in self.failover_servers:
             conf += self.get_remote_line(
-                    remote.nat_ip, remote.port_number, remote.protocol)
+                remote.nat_ip, remote.port_number, remote.protocol)
 
         if self.is_persistent:
             conf += "persist-tun\n"
