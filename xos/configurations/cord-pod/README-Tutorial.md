@@ -133,9 +133,9 @@ Next edit `/etc/lxc/default.conf` and change the default bridge name to `databr`
 Create the client container and attach to it:
 
 ```
-ubuntu@nova-compute:~$ lxc-create -t ubuntu -n testclient
-ubuntu@nova-compute:~$ lxc-start -n testclient
-ubuntu@nova-compute:~$ lxc-attach -n testclient
+ubuntu@nova-compute:~$ sudo lxc-create -t ubuntu -n testclient
+ubuntu@nova-compute:~$ sudo lxc-start -n testclient
+ubuntu@nova-compute:~$ sudo lxc-attach -n testclient
 ```
 
 (The lxc-start command may throw an error but it seems to be unimportant.)
