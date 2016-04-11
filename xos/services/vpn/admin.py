@@ -186,10 +186,13 @@ class VPNTenantForm(forms.ModelForm):
         for tenant in self.cleaned_data['failover_servers']:
             self.instance.failover_servers.append(tenant)
 
-        self.instance.protocol = self.cleaned_data.get("protocol")
-        self.instance.port_number = (
-            self.instance.provider_service.get_next_available_port(
-                self.instance.protocol))
+        # Do not aquire a new port number if the protocol hasn't changed
+        if ((not self.instance.protocol) or
+                (self.instance.protocol != self.cleaned_data.get("protocol"))):
+            self.instance.protocol = self.cleaned_data.get("protocol")
+            self.instance.port_number = (
+                self.instance.provider_service.get_next_available_port(
+                    self.instance.protocol))
 
         self.instance.use_ca_from[:] = []
         self.instance.use_ca_from.append(self.cleaned_data.get('use_ca_from'))
