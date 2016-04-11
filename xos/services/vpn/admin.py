@@ -124,8 +124,7 @@ class VPNTenantForm(forms.ModelForm):
     vpn_subnet = forms.GenericIPAddressField(protocol="IPv4", required=True)
     is_persistent = forms.BooleanField(required=False)
     clients_can_see_each_other = forms.BooleanField(required=False)
-    failover_servers = forms.ModelMultipleChoiceField(
-        required=False, queryset=VPNTenant.get_tenant_objects())
+    failover_servers = forms.ModelMultipleChoiceField(required=False, queryset=VPNTenant.get_tenant_objects())
     protocol = forms.ChoiceField(required=True, choices=[
         ("tcp", "tcp"), ("udp", "udp")])
     use_ca_from = forms.ModelChoiceField(
@@ -241,18 +240,18 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
                 certificate = self.certificate_name(obj)
                 # If the client has already been reovked don't do it again
                 if (os.path.isfile(obj.tenant.pki_dir +
-                                   "/issued/" + certificate + ".crt")):
+                    "/issued/" + certificate + ".crt")):
                     VPNService.execute_easyrsa_command(
                         obj.tenant.pki_dir, "revoke " + certificate)
                     # Revoking a client cert does not delete any of the files
                     # to make sure that we can add this user again we need to
                     # delete all of the files created by easyrsa
                     os.remove(obj.tenant.pki_dir +
-                              "/issued/" + certificate + ".crt")
+                        "/issued/" + certificate + ".crt")
                     os.remove(obj.tenant.pki_dir +
-                              "/private/" + certificate + ".key")
+                        "/private/" + certificate + ".key")
                     os.remove(obj.tenant.pki_dir +
-                              "/reqs/" + certificate + ".req")
+                        "/reqs/" + certificate + ".req")
 
                     obj.tenant.enacted = None
                     obj.tenant.save()
@@ -268,7 +267,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
                 certificate = self.certificate_name(obj)
                 # Only add a certificate if ones does not yet exist
                 if (not os.path.isfile(obj.tenant.pki_dir +
-                                       "/issued/" + certificate + ".crt")):
+                    "/issued/" + certificate + ".crt")):
                     VPNService.execute_easyrsa_command(
                         obj.tenant.pki_dir,
                         "build-client-full " + certificate + " nopass")
