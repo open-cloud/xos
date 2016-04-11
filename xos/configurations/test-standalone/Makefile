@@ -62,10 +62,10 @@ showlogs:
 	sudo docker-compose logs
 
 rm: stop
-	sudo docker-compose rm
+	sudo docker-compose rm -f
 
 docker-clean:
-	sudo docker rm -f $(sudo docker ps -aq)
+	sudo docker rm -f $(shell sudo docker ps -aq)
 
 enter-xos:
 	sudo docker exec -ti teststandalone_xos_1 bash
