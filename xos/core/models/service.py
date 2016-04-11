@@ -824,6 +824,7 @@ class TenantRole(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.role)
 
 class TenantPrivilege(PlCoreBase):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey('User', related_name="tenantprivileges")
     tenant = models.ForeignKey('Tenant', related_name="tenantprivileges")
     role = models.ForeignKey('TenantRole', related_name="tenantprivileges")
