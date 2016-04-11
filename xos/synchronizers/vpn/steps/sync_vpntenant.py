@@ -19,7 +19,6 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
     template_name = "sync_vpntenant.yaml"
     service_key_name = "/opt/xos/synchronizers/vpn/vpn_private_key"
 
-
     def sync_fields(self, tenant, fields):
         tenant.pki_dir = (
             VPNService.OPENVPN_PREFIX + "server-" + str(result.id))
