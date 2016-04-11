@@ -65,5 +65,5 @@ topology_template:
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/synchronizers/exampleservice/exampleservice_private_key
       artifacts:
-          pubkey: /opt/xos/synchronizers/exampleservice/exampleservice_private_key
+          pubkey: /opt/xos/synchronizers/exampleservice/exampleservice_public_key
 
