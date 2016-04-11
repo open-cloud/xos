@@ -1,0 +1,35 @@
+reporter: apiary
+custom:
+  apiaryApiKey: f941658c6714ebf58eeda5e0786e937f
+  apiaryApiName: xos
+dry-run: null
+hookfiles: "./hooks.py"
+language: python
+sandbox: false
+server: null
+server-wait: 3
+init: false
+names: false
+only: []
+output: []
+header: []
+sorted: false
+user: null
+inline-errors: false
+details: false
+method: []
+color: true
+level: info
+timestamp: false
+silent: false
+path: []
+hooks-worker-timeout: 5000
+hooks-worker-connect-timeout: 1500
+hooks-worker-connect-retry: 500
+hooks-worker-after-connect-wait: 100
+hooks-worker-term-timeout: 5000
+hooks-worker-term-retry: 500
+hooks-worker-handler-host: localhost
+hooks-worker-handler-port: 61321
+blueprint: apiary.apib
+endpoint: 'http://127.0.0.1:8000/'

@@ -1266,7 +1266,7 @@ class ImageAdmin(XOSBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
 
 class NodeForm(forms.ModelForm):
-    labels = forms.ModelMultipleChoiceField(
+    nodelabels = forms.ModelMultipleChoiceField(
         queryset=NodeLabel.objects.all(),
         required=False,
         help_text="Select which labels apply to this node",
@@ -1286,12 +1286,12 @@ class NodeForm(forms.ModelForm):
       super(NodeForm, self).__init__(*args, **kwargs)
 
       if self.instance and self.instance.pk:
-        self.fields['labels'].initial = self.instance.labels.all()
+        self.fields['nodelabels'].initial = self.instance.nodelabels.all()
 
     def save(self, commit=True):
       node = super(NodeForm, self).save(commit=False)
 
-      node.labels = self.cleaned_data['labels']
+      node.nodelabels = self.cleaned_data['nodelabels']
 
       if commit:
         node.save()
@@ -1314,7 +1314,7 @@ class NodeAdmin(XOSBaseAdmin):
 
     inlines = [TagInline,InstanceInline]
     fieldsets = [('Node Details', {'fields': ['backend_status_text', 'name', 'site_deployment'], 'classes':['suit-tab suit-tab-details']}),
-                 ('Labels', {'fields': ['labels'], 'classes':['suit-tab suit-tab-labels']})]
+                 ('Labels', {'fields': ['nodelabels'], 'classes':['suit-tab suit-tab-labels']})]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = ['name','site_deployment']
