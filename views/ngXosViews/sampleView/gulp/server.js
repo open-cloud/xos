@@ -50,16 +50,14 @@ module.exports = function(options){
       server: {
         baseDir: options.src,
         routes: {
-          '/api': options.api,
           '/xosHelpers/src': options.helpers
         },
         middleware: function(req, res, next){
-          console.log(req.url);
           if(
             req.url.indexOf('/xos/') !== -1 ||
             req.url.indexOf('/xoslib/') !== -1 ||
             req.url.indexOf('/hpcapi/') !== -1 ||
-            req.url.indexOf(`${conf.host}/api/`) !== -1
+            req.url.indexOf('/api/') !== -1
           ){
             if(conf.xoscsrftoken && conf.xossessionid){
               req.headers.cookie = `xoscsrftoken=${conf.xoscsrftoken}; xossessionid=${conf.xossessionid}`;
@@ -110,8 +108,7 @@ module.exports = function(options){
         inject(
           gulp.src([
             options.tmp + '**/*.js',
-            options.api + '*.js',
-            options.helpers + '**/*.js'
+            options.helpers + '**/*.js' // todo add Babel here
           ])
           .pipe(angularFilesort()),
           {

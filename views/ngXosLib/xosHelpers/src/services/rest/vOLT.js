@@ -7,5 +7,5 @@
 
 angular.module('xos.helpers')
 .service('vOLT-Collection', function($resource){
-  return $resource('/api/tenant/cord/volt/:volt_id/', { volt_id: '@id'});
+  return $resource('/api/tenant/cord/volt/:volt_id/', { volt_id: '@id' });
 })
