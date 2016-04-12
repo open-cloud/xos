@@ -14,7 +14,7 @@ from xosresource import XOSResource
 class XOSAddressPool(XOSResource):
     provides = "tosca.nodes.AddressPool"
     xos_model = AddressPool
-    copyin_props = ["addresses"]
+    copyin_props = ["addresses", "gateway_ip", "gateway_mac"]
 
     def expand_cidr(self, cidr):
         (network, bits) = cidr.split("/")
