@@ -188,6 +188,9 @@ class Service(PlCoreBase, AttributeMixin):
 #                if ns.network.template.access in ["direct", "indirect"]:
 #                    # skip access networks; we want to use the private network
 #                    continue
+                if "management" in ns.network.name:
+                    # don't try to connect the management network to anything
+                    continue
                 if ns.network.name in ["wan_network", "lan_network"]:
                     # we don't want to attach to the vCPE's lan or wan network
                     # we only want to attach to its private network
