@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('xos.<%= name %>', [
+angular.module('xos.sampleView', [
   'ngResource',
   'ngCookies',
   'ngLodash',
