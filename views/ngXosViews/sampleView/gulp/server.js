@@ -54,11 +54,12 @@ module.exports = function(options){
           '/xosHelpers/src': options.helpers
         },
         middleware: function(req, res, next){
+          console.log(req.url);
           if(
             req.url.indexOf('/xos/') !== -1 ||
             req.url.indexOf('/xoslib/') !== -1 ||
             req.url.indexOf('/hpcapi/') !== -1 ||
-            req.url.indexOf('/api/') !== -1
+            req.url.indexOf(`${conf.host}/api/`) !== -1
           ){
             if(conf.xoscsrftoken && conf.xossessionid){
               req.headers.cookie = `xoscsrftoken=${conf.xoscsrftoken}; xossessionid=${conf.xossessionid}`;
