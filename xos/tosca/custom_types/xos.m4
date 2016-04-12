@@ -553,12 +553,23 @@ node_types:
         derived_from: tosca.nodes.Root
         description: >
             A pool of addresses
+        capabilities:
+            addresspool:
+                type: tosca.capabilities.xos.AddressPool
         properties:
             xos_base_props
             addresses:
                 type: string
                 required: false
                 description: space-separated list of addresses
+            gateway_ip:
+                type: string
+                required: false
+                description: gateway ip address
+            gateway_mac:
+                type: string
+                required: false
+                description: gateway mac address
 
     tosca.nodes.Image:
         derived_from: tosca.nodes.Root
@@ -877,6 +888,10 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.NodeLabel ]
 
+    tosca.relationships.ProvidesAddresses:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.AddressPool ]
+
     tosca.relationships.DependsOn:
         derived_from: tosca.relationships.Root
 
@@ -939,3 +954,7 @@ node_types:
     tosca.capabilities.xos.NetworkParameterType:
         derived_from: tosca.capabilities.Root
         description: An XOS NetworkParameterType
+
+    tosca.capabilities.xos.AddressPool:
+        derived_from: tosca.capabilities.Root
+        description: An XOS AddressPool
