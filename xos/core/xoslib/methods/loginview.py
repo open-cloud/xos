@@ -62,8 +62,8 @@ class LoginView(APIView):
         return self.do_login(request, username, password)
 
     def post(self, request, format=None):
-        username = request.DATA.get("username", None)
-        password = request.DATA.get("password", None)
+        username = request.data.get("username", None)
+        password = request.data.get("password", None)
 
         return self.do_login(request, username, password)
 
@@ -97,5 +97,5 @@ class LogoutView(APIView):
         return self.do_logout(request, sessionid)
 
     def post(self, request, format=None):
-        sessionid = request.DATA.get("xossessionid", None)
+        sessionid = request.data.get("xossessionid", None)
         return self.do_logout(request, sessionid)
