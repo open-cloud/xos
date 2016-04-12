@@ -1,0 +1,14 @@
+'use strict';
+{{#if description}}
+
+/*
+ * {{description}}
+ */
+{{/if}}
+
+angular.module('{{ngModule}}')
+{{#each resources}}
+.service('{{name}}', function($resource){
+  return $resource('{{param.href}}'{{#if param.name}}, { {{param.name}}: '@id' }{{/if}});
+})
+{{/each}}
