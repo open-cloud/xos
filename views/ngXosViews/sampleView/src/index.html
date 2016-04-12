@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="/css/main.css">
 <!-- endinject -->
 
-<div ng-app="xos.sampleView" id="xosSampleView">
+<div ng-app="xos.sampleView" id="xosSampleView" class="container">
     <div ui-view></div>
 </div>
 
@@ -22,13 +22,17 @@
 <!-- endbower --><!-- endjs -->
 <!-- inject:js -->
 <script src="/xosHelpers/src/xosHelpers.module.js"></script>
+<script src="/xosHelpers/src/services/rest/vSG.js"></script>
+<script src="/xosHelpers/src/services/rest/vOLT.js"></script>
+<script src="/xosHelpers/src/services/rest/Users.js"></script>
+<script src="/xosHelpers/src/services/rest/Truckroll.js"></script>
+<script src="/xosHelpers/src/services/rest/Subscribers.js"></script>
+<script src="/xosHelpers/src/services/rest/ONOS-Services.js"></script>
+<script src="/xosHelpers/src/services/rest/ONOS-Apps.js"></script>
 <script src="/xosHelpers/src/ui_components/table/table.component.js"></script>
 <script src="/xosHelpers/src/ui_components/ui-components.module.js"></script>
 <script src="/xosHelpers/src/services/noHyperlinks.interceptor.js"></script>
 <script src="/xosHelpers/src/services/csrfToken.interceptor.js"></script>
 <script src="/xosHelpers/src/services/api.services.js"></script>
-<script src="/api/ng-xoslib.js"></script>
-<script src="/api/ng-xos.js"></script>
-<script src="/api/ng-hpcapi.js"></script>
 <script src="/.tmp/main.js"></script>
 <!-- endinject -->

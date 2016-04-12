@@ -24,9 +24,9 @@ angular.module('xos.sampleView', [
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/users-list.tpl.html',
-    controller: function($http){
+    controller: function(Users){
       // retrieving user list
-      $http.get('/api/core/users')
+      Users.query().$promise
       .then((users) => {
         this.users = users;
       })

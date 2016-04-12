@@ -50,7 +50,6 @@ module.exports = function(options){
       server: {
         baseDir: options.src,
         routes: {
-          '/api': options.api,
           '/xosHelpers/src': options.helpers
         },
         middleware: function(req, res, next){
@@ -109,8 +108,7 @@ module.exports = function(options){
         inject(
           gulp.src([
             options.tmp + '**/*.js',
-            options.api + '*.js',
-            options.helpers + '**/*.js'
+            options.helpers + '**/*.js' // todo add Babel here
           ])
           .pipe(angularFilesort()),
           {
