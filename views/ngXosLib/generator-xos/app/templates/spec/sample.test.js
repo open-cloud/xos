@@ -11,7 +11,7 @@ describe('The User List', () => {
     
     httpBackend = $httpBackend;
     // Setting up mock request
-    $httpBackend.expectGET('/xos/users/?no_hyperlinks=1').respond([
+    $httpBackend.expectGET('/api/core/users/?no_hyperlinks=1').respond([
       {
         email: '<%= user.email %>',
         firstname: '<%= user.firstname %>',

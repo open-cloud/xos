@@ -1,11 +1,13 @@
-'use strict';
+(function() {
+  'use strict';
 
-/*
- * List of the XOS users
+  /*
+   * List of the XOS users
 
- */
+   */
 
-angular.module('xos.helpers')
-.service('Users', function($resource){
-  return $resource('/api/core/users/');
-})
+  angular.module('xos.helpers')
+  .service('Users', function($resource){
+    return $resource('/api/core/users/');
+  })
+})();

@@ -6,6 +6,8 @@ const P = require('bluebird');
 const _ = require('lodash');
 const chalk = require('chalk');
 const Handlebars = require('handlebars');
+const util = require('util');
+const path = require('path');
 
 P.promisifyAll(fs);
 P.promisifyAll(protagonist);
@@ -49,7 +51,7 @@ const loopApiGroups = (defs) => {
       ngModule: angualarModuleName,
       resources: loopApiEndpoint(d.content)
     };
-    fs.writeFileSync(`../xosHelpers/src/services/rest/${formatTitle(d.meta.title)}.js`, handlebarsTemplate(data));
+    fs.writeFileSync(path.join(__dirname, `../xosHelpers/src/services/rest/${formatTitle(d.meta.title)}.js`), handlebarsTemplate(data));
   });
 
   console.info(chalk.green.bold(`Api Generated`));
@@ -58,16 +60,17 @@ const loopApiGroups = (defs) => {
 
 // Loop the top level definitions
 const loopApiDefinitions = (defs) => {
+  // console.log(util.inspect(defs, false, null));
   _.forEach(defs, d => loopApiGroups(d.content));
 };
 
 let handlebarsTemplate;
 
 // read blueprint docs and parse
-fs.readFileAsync('./ngResourceTemplate.handlebars', 'utf8')
+fs.readFileAsync(path.join(__dirname, './ngResourceTemplate.handlebars'), 'utf8')
 .then((template) => {
   handlebarsTemplate = Handlebars.compile(template);
-  return fs.readFileAsync('../../../xos/tests/api/apiary.apib', 'utf8')
+  return fs.readFileAsync(path.join(__dirname, '../../../xos/tests/api/apiary.apib'), 'utf8')
 })
 .then(data => protagonist.parseAsync(data))
 .then(result => loopApiDefinitions(result.content))
