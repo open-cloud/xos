@@ -55,7 +55,7 @@ class VRouterService(Service):
         if not ip:
             raise Exception("AddressPool '%s' has run out of addresses." % ap.name)
 
-        t = VRouterTenant(**kwargs)
+        t = VRouterTenant(provider_service=self, **kwargs)
         t.public_ip = ip
         t.public_mac = self.ip_to_mac(ip)
         t.address_pool_id = ap.id
@@ -113,7 +113,8 @@ class VRouterTenant(Tenant):
         if self.address_pool_id:
             ap = AddressPool.objects.filter(id=self.address_pool_id)
             if ap:
-                ap[0].put_address(addr)
+                ap[0].put_address(self.public_ip)
+                self.public_ip = None
 
     def delete(self, *args, **kwargs):
         self.cleanup_addresspool()
