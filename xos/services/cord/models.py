@@ -877,8 +877,8 @@ class VSGTenant(TenantWithContainer):
 
     def delete(self, *args, **kwargs):
         self.cleanup_vbng()
+        self.cleanup_vrouter()
         self.cleanup_container()
-        self.cleanup_wan_container_ip()
         super(VSGTenant, self).delete(*args, **kwargs)
 
 def model_policy_vcpe(pk):

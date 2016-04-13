@@ -23,7 +23,7 @@ class VRouterService(Service):
     KIND = VROUTER_KIND
 
     class Meta:
-        app_label = "cord"
+        app_label = "vrouter"
         verbose_name = "vRouter Service"
         proxy = True
 
@@ -58,7 +58,7 @@ class VRouterService(Service):
         t = VRouterTenant(**kwargs)
         t.public_ip = ip
         t.public_mac = self.ip_to_mac(ip)
-        t.address_pool_name = ap.name
+        t.address_pool_id = ap.id
         t.save()
 
         return t
@@ -73,14 +73,51 @@ class VRouterTenant(Tenant):
 
     simple_attributes = ( ("public_ip", None),
                           ("public_mac", None),
-                          ("address_pool_name", None),
+                          ("address_pool_id", None),
                           )
 
     @property
     def gateway_ip(self):
+        if not self.address_pool:
+            return None
         return self.address_pool.gateway_ip
 
     @property
     def gateway_mac(self):
+        if not self.address_pool:
+            return None
         return self.address_pool.gateway_mac
+
+    @property
+    def address_pool(self):
+        if getattr(self, "cached_address_pool", None):
+            return self.cached_address_pool
+        if not self.address_pool_id:
+            return None
+        aps=AddressPool.objects.filter(id=self.address_pool_id)
+        if not aps:
+            return None
+        ap=aps[0]
+        self.cached_address_pool = ap
+        return ap
+
+    @address_pool.setter
+    def address_pool(self, value):
+        if value:
+            value = value.id
+        if (value != self.get_attribute("address_pool_id", None)):
+            self.cached_address_pool=None
+        self.set_attribute("address_pool_id", value)
+
+    def cleanup_addresspool(self):
+        if self.address_pool_id:
+            ap = AddressPool.objects.filter(id=self.address_pool_id)
+            if ap:
+                ap[0].put_address(addr)
+
+    def delete(self, *args, **kwargs):
+        self.cleanup_addresspool()
+        super(VRouterTenant, self).delete(*args, **kwargs)
+
+VRouterTenant.setup_simple_attributes()
 
