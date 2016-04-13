@@ -22,6 +22,10 @@ var eslint = require('gulp-eslint');
 var inject = require('gulp-inject');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
+var postcss = require('gulp-postcss');
+var autoprefixer = require('autoprefixer');
+var mqpacker = require('css-mqpacker');
+var csswring = require('csswring');
 
 const TEMPLATE_FOOTER = `
 angular.module('xos.sampleView')
@@ -35,23 +39,12 @@ module.exports = function(options){
   // delete previous builded file
   gulp.task('clean', function(){
     return del(
-      [options.dashboards + 'xosSampleView.html'],
+      [
+        options.dashboards + 'xosSampleView.html',
+        options.static + 'css/xosSampleView.css'
+      ],
       {force: true}
     );
-  });
-
-  // inject CSS
-  gulp.task('injectCss', function(){
-    return gulp.src(options.src + 'index.html')
-      .pipe(
-        inject(
-          gulp.src(options.src + 'css/*.css'),
-          {
-            ignorePath: [options.src]
-          }
-          )
-        )
-      .pipe(gulp.dest(options.src));
   });
 
   // minify css
@@ -71,7 +64,7 @@ module.exports = function(options){
   });
 
   // copy css in correct folder
-  gulp.task('copyCss', ['css'], function(){
+  gulp.task('copyCss', ['wait'], function(){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xosSampleView.css'))
     .pipe(gulp.dest(options.static + 'css/'))
@@ -102,7 +95,7 @@ module.exports = function(options){
   });
 
   // copy html index to Django Folder
-  gulp.task('copyHtml', ['clean'], function(){
+  gulp.task('copyHtml', function(){
     return gulp.src(options.src + 'index.html')
       // remove dev dependencies from html
       .pipe(replace(/<!-- bower:css -->(\n.*)*\n<!-- endbower --><!-- endcss -->/, ''))
@@ -112,7 +105,8 @@ module.exports = function(options){
         inject(
           gulp.src([
             options.static + 'js/vendor/xosSampleViewVendor.js',
-            options.static + 'js/xosSampleView.js'
+            options.static + 'js/xosSampleView.js',
+            options.static + 'css/xosSampleView.css'
           ]),
           {ignorePath: '/../../../xos/core/xoslib'}
         )
@@ -146,13 +140,22 @@ module.exports = function(options){
       .pipe(eslint.failAfterError());
   });
 
+  gulp.task('wait', function (cb) {
+    // setTimeout could be any async task
+    setTimeout(function () {
+      cb();
+    }, 1000);
+  });
+
   gulp.task('build', function() {
     runSequence(
+      'clean',
       'templates',
       'babel',
       'scripts',
       'wiredep',
-      'injectCss',
+      'css',
+      'copyCss',
       'copyHtml',
       'cleanTmp'
     );
