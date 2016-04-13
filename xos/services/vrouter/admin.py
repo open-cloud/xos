@@ -93,9 +93,9 @@ class VRouterTenantForm(forms.ModelForm):
         model = VRouterTenant
 
 class VRouterTenantAdmin(ReadOnlyAwareAdmin):
-    list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
+    list_display = ('backend_status_icon', 'id', 'subscriber_tenant', 'public_ip' )
     list_display_links = ('backend_status_icon', 'id')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', # 'service_specific_attribute',
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'subscriber_service',
                                      'address_pool', 'public_ip', 'public_mac', 'gateway_ip', 'gateway_mac'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'service_specific_attribute', 'gateway_ip', 'gateway_mac')
