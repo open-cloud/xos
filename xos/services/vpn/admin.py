@@ -153,7 +153,7 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['is_persistent'].initial = self.instance.is_persistent
             self.initial['protocol'] = self.instance.protocol
             self.initial['failover_servers'] = VPNTenant.get_tenant_objects().filter(
-                    pk__in=self.instance.failover_server_ids)
+                pk__in=self.instance.failover_server_ids)
             self.fields['failover_servers'].queryset = (
                 VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
             self.fields['use_ca_from'].queryset = (
@@ -196,7 +196,8 @@ class VPNTenantForm(forms.ModelForm):
                     self.instance.protocol))
 
         if (self.cleaned_data.get('use_ca_from')):
-            self.instance.use_ca_from_id = self.cleaned_data.get('use_ca_from').id
+            self.instance.use_ca_from_id = self.cleaned_data.get(
+                'use_ca_from').id
 
         result.save()  # Need to do this so that we know the ID
 
@@ -209,9 +210,11 @@ class VPNTenantForm(forms.ModelForm):
             VPNService.execute_easyrsa_command(
                 self.instance.pki_dir, "--req-cn=XOS build-ca nopass")
         if (self.instance.use_ca_from_id):
-            tenant = VPNTenant.get_tenant_objects().filter(pk=self.instance.use_ca_from_id)[0]
+            tenant = VPNTenant.get_tenant_objects().filter(
+                pk=self.instance.use_ca_from_id)[0]
             shutil.copy2(tenant.pki_dir + "/ca.crt", self.instance.pki_dir)
-            shutil.copy2(tenant.pki_dir + "/private/ca.key", self.instance.pki_dir + "/private")
+            shutil.copy2(tenant.pki_dir + "/private/ca.key",
+                         self.instance.pki_dir + "/private")
 
         result.ca_crt = self.generate_ca_crt()
 

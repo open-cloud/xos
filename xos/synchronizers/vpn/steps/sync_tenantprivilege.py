@@ -1,7 +1,7 @@
 import os
 import sys
 
-from django.db.models import F, Q
+from core.models import TenantPrivilege
 from services.vpn.models import VPN_KIND, VPNService, VPNTenant
 from synchronizers.base.syncstep import SyncStep
 
@@ -36,7 +36,8 @@ class SyncTenantPrivilege(SyncStep):
         tenant = VPNTenant.get_tenant_objects().filter(pk=record.tenant.id)[0]
         # If the client has already been reovked don't do it again
         if (os.path.isfile(tenant.pki_dir + "/issued/" + certificate + ".crt")):
-            VPNService.execute_easyrsa_command(tenant.pki_dir, "revoke " + certificate)
+            VPNService.execute_easyrsa_command(
+                tenant.pki_dir, "revoke " + certificate)
             # Revoking a client cert does not delete any of the files
             # to make sure that we can add this user again we need to
             # delete all of the files created by easyrsa
