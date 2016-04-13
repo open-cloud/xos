@@ -64,6 +64,7 @@ class VRouterTenantForm(forms.ModelForm):
     public_mac = forms.CharField(required=True)
     gateway_ip = forms.CharField(required=False)
     gateway_mac = forms.CharField(required=False)
+    cidr = forms.CharField(required=False)
     address_pool = forms.ModelChoiceField(queryset=AddressPool.objects.all(),required=False)
 
     def __init__(self,*args,**kwargs):
@@ -77,6 +78,7 @@ class VRouterTenantForm(forms.ModelForm):
             self.fields['public_mac'].initial = self.instance.public_mac
             self.fields['gateway_ip'].initial = self.instance.gateway_ip
             self.fields['gateway_mac'].initial = self.instance.gateway_mac
+            self.fields['cidr'].initial = self.instance.cidr
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = VROUTER_KIND
@@ -96,9 +98,9 @@ class VRouterTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant', 'public_ip' )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'subscriber_service',
-                                     'address_pool', 'public_ip', 'public_mac', 'gateway_ip', 'gateway_mac'],
+                                     'address_pool', 'public_ip', 'public_mac', 'gateway_ip', 'gateway_mac', 'cidr'],
                           'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'service_specific_attribute', 'gateway_ip', 'gateway_mac')
+    readonly_fields = ('backend_status_text', 'service_specific_attribute', 'gateway_ip', 'gateway_mac', 'cidr')
     form = VRouterTenantForm
 
     suit_form_tabs = (('general','Details'),)

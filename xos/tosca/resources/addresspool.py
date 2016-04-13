@@ -31,20 +31,31 @@ class XOSAddressPool(XOSResource):
             ip = ip & netmask | i
             dest.append( socket.inet_ntoa(struct.pack("!L", ip)) )
 
-        return dest
+        return (dest, bits)
 
     def get_xos_args(self):
         args = super(XOSAddressPool, self).get_xos_args()
 
         if "addresses" in args:
-            dest = []
-            for addr in args["addresses"].split():
-                addr=addr.strip()
-                if "/" in addr:
-                    dest.extend(self.expand_cidr(addr))
-                else:
-                    dest.append(addr)
-            args["addresses"] = " ".join(dest)
+            addr = args["addresses"]
+            if "," in addr:
+                raise Exception("Only one cidr per AddressPool")
+            if not "/" in addr:
+                raise Exception("AddressPool addresses must be a cidr")
+            (cidr_addrs, cidr_netbits) = self.expand_cidr(addr)
+            args["addresses"] = " ".join(cidr_addrs)
+            args["cidr"] = addr
+
+#        if "addresses" in args:
+#            dest = []
+#            for addr in args["addresses"].split():
+#                addr=addr.strip()
+#                if "/" in addr:
+#                    (cidr_addrs, cidr_netbits) = self.expand_cidr(addr)
+#                    dest.extend(cidr_addrs)
+#                else:
+#                    dest.append(addr)
+#            args["addresses"] = " ".join(dest)
 
         return args
 

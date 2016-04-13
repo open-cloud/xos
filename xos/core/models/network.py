@@ -352,6 +352,7 @@ class AddressPool(PlCoreBase):
     addresses = models.TextField(blank=True, null=True)
     gateway_ip = models.CharField(max_length=32, null=True)
     gateway_mac = models.CharField(max_length=32, null=True)
+    cidr = models.CharField(max_length=32, null=True)
     inuse = models.TextField(blank=True, null=True)
     service = models.ForeignKey(Service, related_name="addresspools", null=True, blank=True)
 
