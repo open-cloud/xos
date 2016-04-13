@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  console.log('XOS Helpers Module')
+  
   angular.module('bugSnag', []).factory('$exceptionHandler', function () {
     return function (exception, cause) {
       if( window.Bugsnag ){
@@ -11,6 +11,12 @@
       }
     };
   });
+
+  /**
+  * @ngdoc overview
+  * @name xos.helpers
+  * @description this is the module that group all the helpers service and components for XOS
+  **/
 
   angular
       .module('xos.helpers', [
