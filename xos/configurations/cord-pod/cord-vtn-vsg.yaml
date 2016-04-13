@@ -41,8 +41,8 @@ topology_template:
     service_vsg:
       type: tosca.nodes.VSGService
       requirements:
-          - vbng_tenant:
-              node: service_vbng
+          - vrouter_tenant:
+              node: service_vrouter
               relationship: tosca.relationships.TenantOfService
       properties:
           view_url: /admin/cord/vsgservice/$id$/
@@ -61,10 +61,10 @@ topology_template:
       properties:
           view_url: /admin/cord/vrouterservice/$id$/
       requirements:
-          addresses_vsg:
+          - addresses_vsg:
               node: addresses_vsg
               relationship: tosca.relationships.ProvidesAddresses
-          addresses_service1:
+          - addresses_service1:
               node: addresses_service1
               relationship: tosca.relationships.ProvidesAddresses
 

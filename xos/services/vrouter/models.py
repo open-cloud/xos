@@ -63,7 +63,7 @@ class VRouterService(Service):
 
         return t
 
-VRouterService.setup_simple_attributes()
+#VRouterService.setup_simple_attributes()
 
 class VRouterTenant(Tenant):
     class Meta:
