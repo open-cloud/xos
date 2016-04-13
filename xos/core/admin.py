@@ -2117,13 +2117,13 @@ class AddressPoolForm(forms.ModelForm):
         }
 
 class AddressPoolAdmin(XOSBaseAdmin):
-    list_display = ("name",)
+    list_display = ("name", "cidr")
     list_display_links = ('name',)
 
     form=AddressPoolForm
 
     fieldsets = [
-        (None, {'fields': ['name', 'gateway_ip', 'gateway_mac', 'addresses', 'inuse', 'service'],
+        (None, {'fields': ['name', 'cidr', 'gateway_ip', 'gateway_mac', 'addresses', 'inuse', 'service'],
                 'classes':['suit-tab suit-tab-general']}),
                 ]
 

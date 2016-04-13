@@ -89,6 +89,12 @@ class VRouterTenant(Tenant):
         return self.address_pool.gateway_mac
 
     @property
+    def cidr(self):
+        if not self.address_pool:
+            return None
+        return self.address_pool.cidr
+
+    @property
     def address_pool(self):
         if getattr(self, "cached_address_pool", None):
             return self.cached_address_pool
