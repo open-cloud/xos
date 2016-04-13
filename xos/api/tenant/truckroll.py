@@ -14,7 +14,7 @@ from api.xosapi_helpers import PlusModelSerializer, XOSViewSet, ReadOnlyField
 def get_default_vtr_service():
     vtr_services = VTRService.get_service_objects().all()
     if vtr_services:
-        return vtr_services[0].id
+        return vtr_services[0]
     return None
 
 class VTRTenantForAPI(VTRTenant):

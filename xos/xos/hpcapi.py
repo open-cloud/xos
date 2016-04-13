@@ -36,33 +36,75 @@ else:
 
 def get_hpc_REST_patterns():
     return patterns('',
-        url(r'^hpcapi/$', hpc_api_root),
+        url(r'^hpcapi/$', hpc_api_root_legacy),
+    # legacy - deprecated
     
-        url(r'hpcapi/hpchealthchecks/$', HpcHealthCheckList.as_view(), name='hpchealthcheck-list'),
-        url(r'hpcapi/hpchealthchecks/(?P<pk>[a-zA-Z0-9\-]+)/$', HpcHealthCheckDetail.as_view(), name ='hpchealthcheck-detail'),
+        url(r'hpcapi/hpchealthchecks/$', HpcHealthCheckList.as_view(), name='hpchealthcheck-list-legacy'),
+        url(r'hpcapi/hpchealthchecks/(?P<pk>[a-zA-Z0-9\-]+)/$', HpcHealthCheckDetail.as_view(), name ='hpchealthcheck-detail-legacy'),
     
-        url(r'hpcapi/hpcservices/$', HpcServiceList.as_view(), name='hpcservice-list'),
-        url(r'hpcapi/hpcservices/(?P<pk>[a-zA-Z0-9\-]+)/$', HpcServiceDetail.as_view(), name ='hpcservice-detail'),
+        url(r'hpcapi/hpcservices/$', HpcServiceList.as_view(), name='hpcservice-list-legacy'),
+        url(r'hpcapi/hpcservices/(?P<pk>[a-zA-Z0-9\-]+)/$', HpcServiceDetail.as_view(), name ='hpcservice-detail-legacy'),
     
-        url(r'hpcapi/originservers/$', OriginServerList.as_view(), name='originserver-list'),
-        url(r'hpcapi/originservers/(?P<pk>[a-zA-Z0-9\-]+)/$', OriginServerDetail.as_view(), name ='originserver-detail'),
+        url(r'hpcapi/originservers/$', OriginServerList.as_view(), name='originserver-list-legacy'),
+        url(r'hpcapi/originservers/(?P<pk>[a-zA-Z0-9\-]+)/$', OriginServerDetail.as_view(), name ='originserver-detail-legacy'),
     
-        url(r'hpcapi/cdnprefixs/$', CDNPrefixList.as_view(), name='cdnprefix-list'),
-        url(r'hpcapi/cdnprefixs/(?P<pk>[a-zA-Z0-9\-]+)/$', CDNPrefixDetail.as_view(), name ='cdnprefix-detail'),
+        url(r'hpcapi/cdnprefixs/$', CDNPrefixList.as_view(), name='cdnprefix-list-legacy'),
+        url(r'hpcapi/cdnprefixs/(?P<pk>[a-zA-Z0-9\-]+)/$', CDNPrefixDetail.as_view(), name ='cdnprefix-detail-legacy'),
     
-        url(r'hpcapi/serviceproviders/$', ServiceProviderList.as_view(), name='serviceprovider-list'),
-        url(r'hpcapi/serviceproviders/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceProviderDetail.as_view(), name ='serviceprovider-detail'),
+        url(r'hpcapi/serviceproviders/$', ServiceProviderList.as_view(), name='serviceprovider-list-legacy'),
+        url(r'hpcapi/serviceproviders/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceProviderDetail.as_view(), name ='serviceprovider-detail-legacy'),
     
-        url(r'hpcapi/contentproviders/$', ContentProviderList.as_view(), name='contentprovider-list'),
-        url(r'hpcapi/contentproviders/(?P<pk>[a-zA-Z0-9\-]+)/$', ContentProviderDetail.as_view(), name ='contentprovider-detail'),
+        url(r'hpcapi/contentproviders/$', ContentProviderList.as_view(), name='contentprovider-list-legacy'),
+        url(r'hpcapi/contentproviders/(?P<pk>[a-zA-Z0-9\-]+)/$', ContentProviderDetail.as_view(), name ='contentprovider-detail-legacy'),
     
-        url(r'hpcapi/accessmaps/$', AccessMapList.as_view(), name='accessmap-list'),
-        url(r'hpcapi/accessmaps/(?P<pk>[a-zA-Z0-9\-]+)/$', AccessMapDetail.as_view(), name ='accessmap-detail'),
+        url(r'hpcapi/accessmaps/$', AccessMapList.as_view(), name='accessmap-list-legacy'),
+        url(r'hpcapi/accessmaps/(?P<pk>[a-zA-Z0-9\-]+)/$', AccessMapDetail.as_view(), name ='accessmap-detail-legacy'),
     
-        url(r'hpcapi/sitemaps/$', SiteMapList.as_view(), name='sitemap-list'),
-        url(r'hpcapi/sitemaps/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteMapDetail.as_view(), name ='sitemap-detail'),
+        url(r'hpcapi/sitemaps/$', SiteMapList.as_view(), name='sitemap-list-legacy'),
+        url(r'hpcapi/sitemaps/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteMapDetail.as_view(), name ='sitemap-detail-legacy'),
+    
+    # new api - use these
+        url(r'^api/service/hpc/$', hpc_api_root),
+    
+        url(r'api/service/hpc/hpchealthchecks/$', HpcHealthCheckList.as_view(), name='hpchealthcheck-list'),
+        url(r'api/service/hpc/hpchealthchecks/(?P<pk>[a-zA-Z0-9\-]+)/$', HpcHealthCheckDetail.as_view(), name ='hpchealthcheck-detail'),
+    
+        url(r'api/service/hpc/hpcservices/$', HpcServiceList.as_view(), name='hpcservice-list'),
+        url(r'api/service/hpc/hpcservices/(?P<pk>[a-zA-Z0-9\-]+)/$', HpcServiceDetail.as_view(), name ='hpcservice-detail'),
+    
+        url(r'api/service/hpc/originservers/$', OriginServerList.as_view(), name='originserver-list'),
+        url(r'api/service/hpc/originservers/(?P<pk>[a-zA-Z0-9\-]+)/$', OriginServerDetail.as_view(), name ='originserver-detail'),
+    
+        url(r'api/service/hpc/cdnprefixs/$', CDNPrefixList.as_view(), name='cdnprefix-list'),
+        url(r'api/service/hpc/cdnprefixs/(?P<pk>[a-zA-Z0-9\-]+)/$', CDNPrefixDetail.as_view(), name ='cdnprefix-detail'),
+    
+        url(r'api/service/hpc/serviceproviders/$', ServiceProviderList.as_view(), name='serviceprovider-list'),
+        url(r'api/service/hpc/serviceproviders/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceProviderDetail.as_view(), name ='serviceprovider-detail'),
+    
+        url(r'api/service/hpc/contentproviders/$', ContentProviderList.as_view(), name='contentprovider-list'),
+        url(r'api/service/hpc/contentproviders/(?P<pk>[a-zA-Z0-9\-]+)/$', ContentProviderDetail.as_view(), name ='contentprovider-detail'),
+    
+        url(r'api/service/hpc/accessmaps/$', AccessMapList.as_view(), name='accessmap-list'),
+        url(r'api/service/hpc/accessmaps/(?P<pk>[a-zA-Z0-9\-]+)/$', AccessMapDetail.as_view(), name ='accessmap-detail'),
+    
+        url(r'api/service/hpc/sitemaps/$', SiteMapList.as_view(), name='sitemap-list'),
+        url(r'api/service/hpc/sitemaps/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteMapDetail.as_view(), name ='sitemap-detail'),
     
     )
+
+@api_view(['GET'])
+def hpc_api_root_legacy(request, format=None):
+    return Response({
+        'hpchealthchecks': reverse('hpchealthcheck-list-legacy', request=request, format=format),
+        'hpcservices': reverse('hpcservice-list-legacy', request=request, format=format),
+        'originservers': reverse('originserver-list-legacy', request=request, format=format),
+        'cdnprefixs': reverse('cdnprefix-list-legacy', request=request, format=format),
+        'serviceproviders': reverse('serviceprovider-list-legacy', request=request, format=format),
+        'contentproviders': reverse('contentprovider-list-legacy', request=request, format=format),
+        'accessmaps': reverse('accessmap-list-legacy', request=request, format=format),
+        'sitemaps': reverse('sitemap-list-legacy', request=request, format=format),
+        
+    })
 
 @api_view(['GET'])
 def hpc_api_root(request, format=None):
@@ -183,7 +225,7 @@ class HpcServiceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = HpcService
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
 
 class HpcServiceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -199,7 +241,7 @@ class HpcServiceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = HpcService
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
 
 
 
@@ -312,10 +354,6 @@ class ServiceProviderIdSerializer(XOSModelSerializer):
 class ContentProviderSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
-    
-    users = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='user-detail')
-    
-    
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
     def getHumanReadableName(self, obj):
@@ -327,15 +365,11 @@ class ContentProviderSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ContentProvider
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','content_provider_id','name','enabled','description','serviceProvider','users',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','content_provider_id','name','enabled','description','serviceProvider',)
 
 class ContentProviderIdSerializer(XOSModelSerializer):
     id = IdField()
     
-    
-    users = serializers.PrimaryKeyRelatedField(many=True,  queryset = User.objects.all())
-    
-    
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
     def getHumanReadableName(self, obj):
@@ -347,7 +381,7 @@ class ContentProviderIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ContentProvider
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','content_provider_id','name','enabled','description','serviceProvider','users',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','content_provider_id','name','enabled','description','serviceProvider',)
 
 
 
@@ -455,8 +489,8 @@ class HpcHealthCheckList(XOSListCreateAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -475,8 +509,8 @@ class HpcHealthCheckDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -498,12 +532,12 @@ class HpcServiceList(XOSListCreateAPIView):
     serializer_class = HpcServiceSerializer
     id_serializer_class = HpcServiceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -522,8 +556,8 @@ class HpcServiceDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -549,8 +583,8 @@ class OriginServerList(XOSListCreateAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -569,8 +603,8 @@ class OriginServerDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -596,8 +630,8 @@ class CDNPrefixList(XOSListCreateAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -616,8 +650,8 @@ class CDNPrefixDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -643,8 +677,8 @@ class ServiceProviderList(XOSListCreateAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -663,8 +697,8 @@ class ServiceProviderDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -686,12 +720,12 @@ class ContentProviderList(XOSListCreateAPIView):
     serializer_class = ContentProviderSerializer
     id_serializer_class = ContentProviderIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','content_provider_id','name','enabled','description','serviceProvider','users',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','content_provider_id','name','enabled','description','serviceProvider',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -710,8 +744,8 @@ class ContentProviderDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -737,8 +771,8 @@ class AccessMapList(XOSListCreateAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -757,8 +791,8 @@ class AccessMapDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -784,8 +818,8 @@ class SiteMapList(XOSListCreateAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -804,8 +838,8 @@ class SiteMapDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -819,6 +853,3 @@ class SiteMapDetail(XOSRetrieveUpdateDestroyAPIView):
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
-
-
-

@@ -44,6 +44,9 @@ class ExampleTenantViewSet(XOSViewSet):
     def get_urlpatterns(self, api_path="^"):
         patterns = super(ExampleTenantViewSet, self).get_urlpatterns(api_path=api_path)
 
+        # example to demonstrate adding a custom endpoint
+        patterns.append( self.detail_url("message/$", {"get": "get_message", "put": "set_message"}, "message") )
+
         return patterns
 
     def list(self, request):
@@ -52,4 +55,14 @@ class ExampleTenantViewSet(XOSViewSet):
         serializer = self.get_serializer(queryset, many=True)
 
         return Response(serializer.data)
+
+    def get_message(self, request, pk=None):
+        example_tenant = self.get_object()
+        return Response({"tenant_message": example_tenant.tenant_message})
+
+    def set_message(self, request, pk=None):
+        example_tenant = self.get_object()
+        example_tenant.tenant_message = request.data["tenant_message"]
+        example_tenant.save()
+        return Response({"tenant_message": example_tenant.tenant_message})
 

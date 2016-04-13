@@ -63,6 +63,16 @@ xos_synchronizer_exampleservice:
         - ./id_rsa:/opt/xos/synchronizers/exampleservice/exampleservice_private_key:ro
 ```
 
+Also, add ExampleService's public key to the `volumes` section of the `xos` docker container:
+
+```
+xos:
+    ...
+    volumes:
+        ...
+        - ./id_rsa.pub:/opt/xos/synchronizers/exampleservice/exampleservice_public_key:ro 
+```
+
 ## Bring up XOS
 
 Under the `cord-pod` configuration, edit file `make-vtn-networkconfig-json.sh`.
@@ -133,9 +143,9 @@ Next edit `/etc/lxc/default.conf` and change the default bridge name to `databr`
 Create the client container and attach to it:
 
 ```
-ubuntu@nova-compute:~$ lxc-create -t ubuntu -n testclient
-ubuntu@nova-compute:~$ lxc-start -n testclient
-ubuntu@nova-compute:~$ lxc-attach -n testclient
+ubuntu@nova-compute:~$ sudo lxc-create -t ubuntu -n testclient
+ubuntu@nova-compute:~$ sudo lxc-start -n testclient
+ubuntu@nova-compute:~$ sudo lxc-attach -n testclient
 ```
 
 (The lxc-start command may throw an error but it seems to be unimportant.)

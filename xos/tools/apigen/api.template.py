@@ -36,12 +36,27 @@ else:
 
 def get_REST_patterns():
     return patterns('',
+    # legacy - deprecated
         url(r'^xos/$', api_root),
     {% for object in generator.all %}
-        url(r'xos/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list'),
-        url(r'xos/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail'),
+        url(r'xos/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list-legacy'),
+        url(r'xos/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail-legacy'),
+    {% endfor %}
+    ) + patterns('',
+    # new - use these instead of the above
+        url(r'^api/core/$', api_root),
+    {% for object in generator.all %}
+        url(r'api/core/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list'),
+        url(r'api/core/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail'),
     {% endfor %}
     )
+
+@api_view(['GET'])
+def api_root_legacy(request, format=None):
+    return Response({
+        {% for object in generator.all %}'{{ object.plural }}': reverse('{{ object }}-list-legacy', request=request, format=format),
+        {% endfor %}
+    })
 
 @api_view(['GET'])
 def api_root(request, format=None):
@@ -172,8 +187,8 @@ class {{ object.camel }}List(XOSListCreateAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -192,8 +207,8 @@ class {{ object.camel }}Detail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:

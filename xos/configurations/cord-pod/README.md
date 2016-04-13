@@ -92,7 +92,7 @@ And in `cord-vtn-vsg.yml`:
 
 If you're not using the fabric then the default values should be OK.  
 
-XOS can then be brought up for CORD by running a few 'make' commands:
+XOS can then be brought up for CORD by running a few `make` commands:
 ```
 ubuntu@xos:~/xos/xos/configurations/cord-pod$ make
 ubuntu@xos:~/xos/xos/configurations/cord-pod$ make vtn
@@ -101,3 +101,37 @@ ubuntu@xos:~/xos/xos/configurations/cord-pod$ make cord
 
 After the first 'make' command above, you will be able to login to XOS at
 *http://xos/* using username/password `padmin@vicci.org/letmein`.
+
+### Inspecting the vSG
+
+The above series of `make` commands will spin up a vSG for a sample subscriber.  The 
+vSG is implemented as a Docker container (using the 
+[andybavier/docker-vcpe](https://hub.docker.com/r/andybavier/docker-vcpe/) image 
+hosted on Docker Hub) running inside an Ubuntu VM.  Once the VM is created, you
+can login as the `ubuntu` user at the management network IP (172.27.0.x) on the compute node
+hosting the VM, using the private key generated on the head node by the install process.
+For example, in the single-node development POD configuration, you can login to the VM 
+with management IP 172.27.0.2 using a ProxyCommand as follows:
+
+```
+ubuntu@pod:~$ ssh -o ProxyCommand="ssh -W %h:%p ubuntu@nova-compute" ubuntu@172.27.0.2
+```
+
+Alternatively, you could copy the generated private key to the compute node 
+and login from there:
+
+```
+ubuntu@pod:~$ scp ~/.ssh/id_rsa ubuntu@nova-compute:~/.ssh
+ubuntu@pod:~$ ssh ubuntu@nova-compute
+ubuntu@nova-compute:~$ ssh ubuntu@172.27.0.2
+```
+
+Once logged in to the VM, you can run `sudo docker ps` to see the running 
+vSG containers:
+
+```
+ubuntu@mysite-vsg-1:~$ sudo docker ps
+CONTAINER ID        IMAGE                    COMMAND             CREATED             STATUS              PORTS               NAMES
+2b0bfb3662c7        andybavier/docker-vcpe   "/sbin/my_init"     5 days ago          Up 5 days                               vcpe-222-111
+```
+

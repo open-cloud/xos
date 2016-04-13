@@ -189,6 +189,9 @@ class Service(PlCoreBase, AttributeMixin):
 #                if ns.network.template.access in ["direct", "indirect"]:
 #                    # skip access networks; we want to use the private network
 #                    continue
+                if "management" in ns.network.name:
+                    # don't try to connect the management network to anything
+                    continue
                 if ns.network.name in ["wan_network", "lan_network"]:
                     # we don't want to attach to the vCPE's lan or wan network
                     # we only want to attach to its private network
@@ -459,7 +462,7 @@ class LeastLoadedNodeScheduler(Scheduler):
         nodes = Node.objects.all()
 
         if self.label:
-           nodes = nodes.filter(labels__name=self.label)
+           nodes = nodes.filter(nodelabels__name=self.label)
 
         nodes = list(nodes)
 
@@ -778,6 +781,8 @@ class TenantAttribute(PlCoreBase):
     name = models.CharField(help_text="Attribute Name", max_length=128)
     value = models.TextField(help_text="Attribute Value")
     tenant = models.ForeignKey(Tenant, related_name='tenantattributes', help_text="The Tenant this attribute is associated with")
+
+    def __unicode__(self): return u'%s-%s' % (self.name, self.id)
 
 class TenantRootRole(PlCoreBase):
     ROLE_CHOICES = (('admin','Admin'), ('access','Access'))

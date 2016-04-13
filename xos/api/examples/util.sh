@@ -30,3 +30,23 @@ function lookup_subscriber_volt {
 
     echo $ID
 }
+
+function lookup_subscriber_vsg {
+    JSON=`curl -f -s -u $AUTH -X GET $HOST/api/tenant/cord/subscriber/$1/`
+    if [[ $? != 0 ]]; then
+        echo "function lookup_subscriber_vsg failed to read subscriber with arg $1" >&2
+        echo "See CURL output below:" >&2
+        curl -s -u $AUTH -X GET $HOST/api/tenant/cord/account_num_lookup/$1/ >&2
+        exit -1
+    fi
+    ID=`echo $JSON | python -c "import json,sys; print json.load(sys.stdin)['related'].get('vsg_id','')"`
+    if [[ $ID == "" ]]; then
+        echo "there is no volt for this subscriber" >&2
+        exit -1
+    fi
+
+    # echo "(found vsg id %1)" >&2
+
+    echo $ID
+}
+

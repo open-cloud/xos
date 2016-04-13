@@ -36,12 +36,26 @@ else:
 
 def get_hpc_REST_patterns():
     return patterns('',
-        url(r'^hpcapi/$', hpc_api_root),
+        url(r'^hpcapi/$', hpc_api_root_legacy),
+    # legacy - deprecated
     {% for object in generator.rest_models %}
-        url(r'hpcapi/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list'),
-        url(r'hpcapi/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail'),
+        url(r'hpcapi/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list-legacy'),
+        url(r'hpcapi/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail-legacy'),
+    {% endfor %}
+    # new api - use these
+        url(r'^api/service/hpc/$', hpc_api_root),
+    {% for object in generator.rest_models %}
+        url(r'api/service/hpc/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list'),
+        url(r'api/service/hpc/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail'),
     {% endfor %}
     )
+
+@api_view(['GET'])
+def hpc_api_root_legacy(request, format=None):
+    return Response({
+        {% for object in generator.rest_models %}'{{ object.plural }}': reverse('{{ object }}-list-legacy', request=request, format=format),
+        {% endfor %}
+    })
 
 @api_view(['GET'])
 def hpc_api_root(request, format=None):
@@ -172,8 +186,8 @@ class {{ object.camel }}List(XOSListCreateAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -192,8 +206,8 @@ class {{ object.camel }}Detail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:

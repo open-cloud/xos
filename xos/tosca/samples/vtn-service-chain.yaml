@@ -1,0 +1,157 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Two services "service_one" and "service_two" with a tenancy relationship.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+
+    Private-Indirect:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          access: indirect
+
+    management:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          no-create: true
+          no-delete: true
+          no-update: true
+
+    mysite:
+      type: tosca.nodes.Site
+
+    trusty-server-multi-nic:
+      type: tosca.nodes.Image
+
+    service_vsg:
+      type: tosca.nodes.VSGService
+      requirements:
+          - one_tenant:
+              node: service_one
+              relationship: tosca.relationships.TenantOfService
+      properties:
+          no-create: true
+          no-delete: true
+
+    service_one:
+      type: tosca.nodes.Service
+      requirements:
+          - two_tenant:
+              node: service_two
+              relationship: tosca.relationships.TenantOfService
+      properties:
+          kind: one
+
+    service_two:
+      type: tosca.nodes.Service
+      properties:
+          kind: two
+
+    mysite_one:
+      type: tosca.nodes.Slice
+      properties:
+          network: noauto
+      requirements:
+          - service:
+              node: service_one
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - management:
+              node: management
+              relationship: tosca.relationships.ConnectsToNetwork
+
+    mysite_two:
+      type: tosca.nodes.Slice
+      properties:
+          network: noauto
+      requirements:
+          - service:
+              node: service_two
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - management:
+              node: management
+              relationship: tosca.relationships.ConnectsToNetwork
+
+    one_access:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+      requirements:
+          - network_template:
+              node: Private-Indirect
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_one
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_one
+              relationship: tosca.relationships.ConnectsToSlice
+
+    two_access:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+      requirements:
+          - network_template:
+              node: Private-Indirect
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_two
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_two
+              relationship: tosca.relationships.ConnectsToSlice
+
+    # Virtual machines
+    one_instance:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: Ubuntu
+            version: 14.10
+      requirements:
+          - slice:
+                node: mysite_one
+                relationship: tosca.relationships.MemberOfSlice
+
+    # Virtual machines
+    two_instance:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: Ubuntu
+            version: 14.10
+      requirements:
+          - slice:
+                node: mysite_two
+                relationship: tosca.relationships.MemberOfSlice
