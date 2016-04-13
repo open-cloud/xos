@@ -129,6 +129,11 @@ class CordSubscriberViewSet(XOSViewSet):
     queryset = CordSubscriberNew.get_tenant_objects().select_related().all()
     serializer_class = CordSubscriberSerializer
 
+    custom_serializers = {"set_features": FeatureSerializer,
+                          "set_feature": FeatureSerializer,
+                          "set_identities": IdentitySerializer,
+                          "set_identity": IdentitySerializer}
+
     @classmethod
     def get_urlpatterns(self, api_path="^"):
         patterns = super(CordSubscriberViewSet, self).get_urlpatterns(api_path=api_path)

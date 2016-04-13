@@ -1,0 +1,9 @@
+FROM       xosproject/xos
+
+# install nodejs
+RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+RUN sudo apt-get install -y nodejs
+RUN node -v
+
+# install node modules
+# RUN cd /opt/xos/tests/api; npm install

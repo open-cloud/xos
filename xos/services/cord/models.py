@@ -647,6 +647,7 @@ class VSGTenant(TenantWithContainer):
 
     def get_slice(self):
         if not self.provider_service.slices.count():
+            print self, "dio porco"
             raise XOSConfigurationError("The service has no slices")
         slice = self.provider_service.slices.all()[0]
         return slice
