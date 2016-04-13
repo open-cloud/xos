@@ -248,6 +248,16 @@ node_types:
                 required: false
                 description: URL of REST API endpoint for vBNG Service.
 
+    tosca.nodes.VRouterService:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: The vRouter Service.
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_props
+            xos_base_service_props
+
     tosca.nodes.CDNService:
         derived_from: tosca.nodes.Root
         description: >
