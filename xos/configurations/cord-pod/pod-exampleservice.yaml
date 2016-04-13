@@ -18,6 +18,13 @@ topology_template:
           no-delete: true
           no-update: true
 
+    service_vrouter:
+      type: tosca.nodes.Service
+      properties:
+          no-create: true
+          no-delete: true
+          no-update: true
+
     exampleservice-public:
       type: tosca.nodes.network.Network
       properties:
@@ -33,6 +40,9 @@ topology_template:
           - connection:
               node: mysite_exampleservice
               relationship: tosca.relationships.ConnectsToSlice
+          - vrouter_tenant:
+              node: service_vrouter
+              relationship: tosca.relationships.TenantOfService
 
     mysite:
       type: tosca.nodes.Site
