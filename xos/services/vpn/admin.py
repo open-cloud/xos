@@ -152,7 +152,7 @@ class VPNTenantForm(forms.ModelForm):
                     self.instance.clients_can_see_each_other)
             self.fields['is_persistent'].initial = self.instance.is_persistent
             self.initial['protocol'] = self.instance.protocol
-            self.initial['failover_servers'] = VPNTenant.get_tenant_objects.all().filter(
+            self.initial['failover_servers'] = VPNTenant.get_tenant_objects().filter(
                     pk__in=self.instance.failover_server_ids)
             self.fields['failover_servers'].queryset = (
                 VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))

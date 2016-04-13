@@ -18,9 +18,6 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
     template_name = "sync_vpntenant.yaml"
     service_key_name = "/opt/xos/synchronizers/vpn/vpn_private_key"
 
-    def __init__(self, *args, **kwargs):
-        super(SyncVPNTenant, self).__init__(*args, **kwargs)
-
     def fetch_pending(self, deleted):
         if (not deleted):
             objs = VPNTenant.get_tenant_objects().filter(
