@@ -195,7 +195,9 @@ class VPNTenantForm(forms.ModelForm):
                 self.instance.provider_service.get_next_available_port(
                     self.instance.protocol))
 
-        self.instance.use_ca_from_id = self.cleaned_data.get('use_ca_from').id
+        if (self.cleaned_data.get('use_ca_from')):
+            self.instance.use_ca_from_id = self.cleaned_data.get('use_ca_from').id
+
         result.save()  # Need to do this so that we know the ID
 
         self.instance.pki_dir = (
