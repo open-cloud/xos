@@ -8,6 +8,7 @@ from django.db.models import Q
 from operator import itemgetter, attrgetter, methodcaller
 from core.models import Tag
 from core.models.service import LeastLoadedNodeScheduler
+from services.vrouter import VRouterService, VRouterTenant
 import traceback
 from xos.exceptions import *
 from xos.config import Config
@@ -448,6 +449,7 @@ class VSGTenant(TenantWithContainer):
     def __init__(self, *args, **kwargs):
         super(VSGTenant, self).__init__(*args, **kwargs)
         self.cached_vbng=None
+        self.cached_vrouter=None
 
     @property
     def vbng(self):
@@ -466,6 +468,24 @@ class VSGTenant(TenantWithContainer):
     @vbng.setter
     def vbng(self, value):
         raise XOSConfigurationError("vCPE.vBNG cannot be set this way -- create a new vBNG object and set it's subscriber_tenant instead")
+
+    @property
+    def vrouter(self):
+        vrouter = self.get_newest_subscribed_tenant(VRouterTenant)
+        if not vrouter:
+            return None
+
+        # always return the same object when possible
+        if (self.cached_vrouter) and (self.cached_vrouter.id == vrouter.id):
+            return self.cached_vrouter
+
+        vrouter.caller = self.creator
+        self.cached_vrouter = vrouter
+        return vrouter
+
+    @vrouter.setter
+    def vrouter(self, value):
+        raise XOSConfigurationError("vCPE.vRouter cannot be set this way -- create a new vRuter object and set its subscriber_tenant instead")
 
     @property
     def volt(self):
@@ -631,6 +651,26 @@ class VSGTenant(TenantWithContainer):
             # print "XXX cleanup vnbg", self.vbng
             self.vbng.delete()
 
+    def manage_vrouter(self):
+        # Each vCPE object owns exactly one vRouterTenant object
+
+        if self.deleted:
+            return
+
+        if self.vrouter is None:
+            vrouterServices = VRouterService.get_service_objects().all()
+            if not vrouterServices:
+                raise XOSConfigurationError("No VROUTER Services available")
+
+            vrouter = vrouterService.get_tenant(name="addresses_vsg", subscriber_tenant = self)
+            vrouter.caller = self.creator
+            vrouter.save()
+
+    def cleanup_vrouter(self):
+        if self.vrouter:
+            # print "XXX cleanup vrouter", self.vrouter
+            self.vrouter.delete()
+
     def cleanup_orphans(self):
         # ensure vCPE only has one vBNG
         cur_vbng = self.vbng
@@ -638,6 +678,13 @@ class VSGTenant(TenantWithContainer):
             if (not cur_vbng) or (vbng.id != cur_vbng.id):
                 # print "XXX clean up orphaned vbng", vbng
                 vbng.delete()
+
+        # ensure vCPE only has one vRouter
+        cur_vrouter = self.vrouter
+        for vrouter in list(self.get_subscribed_tenants(VRouterTenant)):
+            if (not cur_vrouter) or (vrouter.id != cur_vrouter.id):
+                # print "XXX clean up orphaned vrouter", vrouter
+                vrouter.delete()
 
         if self.orig_instance_id and (self.orig_instance_id != self.get_attribute("instance_id")):
             instances=Instance.objects.filter(id=self.orig_instance_id)
@@ -862,7 +909,8 @@ def model_policy_vcpe(pk):
         vcpe = vcpe[0]
         vcpe.manage_wan_container_ip()
         vcpe.manage_container()
-        vcpe.manage_vbng()
+        vcpe.manage_vrouter()
+        #vcpe.manage_vbng()
         vcpe.manage_bbs_account()
         vcpe.cleanup_orphans()
 
