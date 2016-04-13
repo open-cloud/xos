@@ -10,6 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
+from core.models import AddressPool
 from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, TenantRootTenantInline, TenantRootPrivilegeInline
 from core.middleware import get_request
 
@@ -63,7 +64,7 @@ class VRouterTenantForm(forms.ModelForm):
     public_mac = forms.CharField(required=True)
     gateway_ip = forms.CharField(required=False)
     gateway_mac = forms.CharField(required=False)
-    address_pool_name = forms.CharField(required=True)
+    address_pool = forms.ModelChoiceField(queryset=AddressPool.objects.all(),required=False)
 
     def __init__(self,*args,**kwargs):
         super (VRouterTenantForm,self ).__init__(*args,**kwargs)
@@ -71,7 +72,7 @@ class VRouterTenantForm(forms.ModelForm):
         self.fields['provider_service'].queryset = VRouterService.get_service_objects().all()
         if self.instance:
             # fields for the attributes
-            self.fields['address_pool_name'].initial = self.instance.address_pool_name
+            self.fields['address_pool'].initial = self.instance.address_pool
             self.fields['public_ip'].initial = self.instance.public_ip
             self.fields['public_mac'].initial = self.instance.public_mac
             self.fields['gateway_ip'].initial = self.instance.gateway_ip
@@ -85,7 +86,7 @@ class VRouterTenantForm(forms.ModelForm):
     def save(self, commit=True):
         self.instance.public_ip = self.cleaned_data.get("public_ip")
         self.instance.public_mac = self.cleaned_data.get("public_mac")
-        self.instance.address_pool_name = self.cleaned_data.get("address_pool_name")
+        self.instance.address_pool = self.cleaned_data.get("address_pool")
         return super(VRouterTenantForm, self).save(commit=commit)
 
     class Meta:
@@ -95,7 +96,7 @@ class VRouterTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', # 'service_specific_attribute',
-                                     'address_pool_name', 'public_ip', 'public_mac', 'gateway_ip', 'gateway_mac'],
+                                     'address_pool', 'public_ip', 'public_mac', 'gateway_ip', 'gateway_mac'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'service_specific_attribute', 'gateway_ip', 'gateway_mac')
     form = VRouterTenantForm
