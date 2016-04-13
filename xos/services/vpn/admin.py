@@ -152,7 +152,7 @@ class VPNTenantForm(forms.ModelForm):
                     self.instance.clients_can_see_each_other)
             self.fields['is_persistent'].initial = self.instance.is_persistent
             self.initial['protocol'] = self.instance.protocol
-            self.initial['failover_servers'] = VPNTenant.get_tenant_objects.filter(
+            self.initial['failover_servers'] = VPNTenant.get_tenant_objects.all().filter(
                     pk__in=self.instance.failover_server_ids)
             self.fields['failover_servers'].queryset = (
                 VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
@@ -160,7 +160,7 @@ class VPNTenantForm(forms.ModelForm):
                 VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
             if (self.instance.use_ca_from_id):
                 self.fields['use_ca_from'].initial = (
-                    VPNTenant.get_tenant_objects.filter(pk=self.instnace.use_ca_from_id))
+                    VPNTenant.get_tenant_objects.all().filter(pk=self.instnace.use_ca_from_id))
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
@@ -274,7 +274,6 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
                     os.remove(obj.tenant.pki_dir +
                               "/reqs/" + certificate + ".req")
 
-                    obj.tenant.enacted = None
                     obj.tenant.save()
                     obj.delete()
             # TODO(jermowery): determine if this is necessary.
@@ -292,7 +291,6 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
                     VPNService.execute_easyrsa_command(
                         obj.tenant.pki_dir,
                         "build-client-full " + certificate + " nopass")
-                    obj.tenant.enacted = None
                     obj.tenant.save()
                     obj.save()
 
