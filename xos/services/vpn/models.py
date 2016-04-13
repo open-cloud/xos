@@ -93,8 +93,8 @@ class VPNTenant(TenantWithContainer):
                           'port': None,
                           'script_text': None,
                           'pki_dir': None,
-                          'use_ca_from': list(),
-                          'failover_servers': list(),
+                          'use_ca_from_id': None,
+                          'failover_server_ids': list(),
                           'protocol': None}
 
     def __init__(self, *args, **kwargs):
@@ -122,13 +122,13 @@ class VPNTenant(TenantWithContainer):
         self.set_attribute("protocol", value)
 
     @property
-    def use_ca_from(self):
+    def use_ca_from_id(self):
         return self.get_attribute(
-            "use_ca_from", self.default_attributes["use_ca_from"])
+            "use_ca_from_id", self.default_attributes["use_ca_from_id"])
 
-    @use_ca_from.setter
-    def use_ca_from(self, value):
-        self.set_attribute("use_ca_from", value)
+    @use_ca_from_id.setter
+    def use_ca_from_id(self, value):
+        self.set_attribute("use_ca_from_id", value)
 
     @property
     def pki_dir(self):
@@ -201,13 +201,13 @@ class VPNTenant(TenantWithContainer):
         self.set_attribute("is_persistent", value)
 
     @property
-    def failover_servers(self):
+    def failover_server_ids(self):
         return self.get_attribute(
-            "failover_servers", self.default_attributes["failover_servers"])
+            "failover_server_ids", self.default_attributes["failover_server_ids"])
 
-    @failover_servers.setter
-    def failover_servers(self, value):
-        self.set_attribute("failover_servers", value)
+    @failover_server_ids.setter
+    def failover_server_ids(self, value):
+        self.set_attribute("failover_server_ids", value)
 
     @property
     def clients_can_see_each_other(self):
@@ -296,9 +296,10 @@ class VPNTenant(TenantWithContainer):
                 "verb 3\n" +
                 self.get_remote_line(
                     self.nat_ip, self.port_number, self.protocol))
-        for remote in self.failover_servers:
+        for remote in self.failover_server_ids:
+            tenant = VPNTenant.get_tenant_objects().filter(pk=remote)[0]
             conf += self.get_remote_line(
-                remote.nat_ip, remote.port_number, remote.protocol)
+                tenant.nat_ip, tenant.port_number, tenant.protocol)
 
         if self.is_persistent:
             conf += "persist-tun\n"

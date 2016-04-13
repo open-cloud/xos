@@ -152,14 +152,15 @@ class VPNTenantForm(forms.ModelForm):
                     self.instance.clients_can_see_each_other)
             self.fields['is_persistent'].initial = self.instance.is_persistent
             self.initial['protocol'] = self.instance.protocol
-            self.initial['failover_servers'] = self.instance.failover_servers
+            self.initial['failover_servers'] = VPNTenant.get_tenant_objects.filter(
+                    pk__in=self.instance.failover_server_ids)
             self.fields['failover_servers'].queryset = (
                 VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
             self.fields['use_ca_from'].queryset = (
                 VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
-            if (self.instance.use_ca_from):
+            if (self.instance.use_ca_from_id):
                 self.fields['use_ca_from'].initial = (
-                    self.instance.use_ca_from[0])
+                    VPNTenant.get_tenant_objects.filter(pk=self.instnace.use_ca_from_id))
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
@@ -182,9 +183,9 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.clients_can_see_each_other = self.cleaned_data.get(
             'clients_can_see_each_other')
 
-        self.instance.failover_servers[:] = []
+        self.instance.failover_server_ids = list()
         for tenant in self.cleaned_data['failover_servers']:
-            self.instance.failover_servers.append(tenant)
+            self.instance.failover_server_ids.append(tenant.id)
 
         # Do not aquire a new port number if the protocol hasn't changed
         if ((not self.instance.protocol) or
@@ -194,8 +195,7 @@ class VPNTenantForm(forms.ModelForm):
                 self.instance.provider_service.get_next_available_port(
                     self.instance.protocol))
 
-        self.instance.use_ca_from[:] = []
-        self.instance.use_ca_from.append(self.cleaned_data.get('use_ca_from'))
+        self.instance.use_ca_from_id = self.cleaned_data.get('use_ca_from').id
         result.save()  # Need to do this so that we know the ID
 
         self.instance.pki_dir = (
@@ -206,13 +206,10 @@ class VPNTenantForm(forms.ModelForm):
                 self.instance.pki_dir, "init-pki")
             VPNService.execute_easyrsa_command(
                 self.instance.pki_dir, "--req-cn=XOS build-ca nopass")
-        if (self.instance.use_ca_from[0]):
-            shutil.copy2(
-                self.instance.use_ca_from[0].pki_dir + "/ca.crt",
-                self.instance.pki_dir)
-            shutil.copy2(
-                self.instance.use_ca_from[0].pki_dir + "/private/ca.key",
-                self.instance.pki_dir + "/private")
+        if (self.instance.use_ca_from_id):
+            tenant = VPNTenant.get_tenant_objects().filter(pk=self.instance.use_ca_from_id)[0]
+            shutil.copy2(tenant.pki_dir + "/ca.crt", self.instance.pki_dir)
+            shutil.copy2(tenant.pki_dir + "/private/ca.key", self.instance.pki_dir + "/private")
 
         result.ca_crt = self.generate_ca_crt()
 
