@@ -239,15 +239,6 @@ class VPNTenant(TenantWithContainer):
     def port_number(self, value):
         self.set_attribute("port", value)
 
-    @property
-    def script_text(self):
-        return self.get_attribute(
-            "script_text", self.default_attributes['script_text'])
-
-    @script_text.setter
-    def script_text(self, value):
-        self.set_attribute("script_text", value)
-
     def create_client_script(self, client_name):
         script = ""
         # write the configuration portion

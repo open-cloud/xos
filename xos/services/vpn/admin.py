@@ -175,7 +175,6 @@ class VPNTenantForm(forms.ModelForm):
                     VPNService.get_service_objects().all()[0])
 
     def save(self, commit=True):
-        result = super(VPNTenantForm, self).save(commit=commit)
         self.instance.creator = self.cleaned_data.get("creator")
         self.instance.is_persistent = self.cleaned_data.get('is_persistent')
         self.instance.vpn_subnet = self.cleaned_data.get("vpn_subnet")
@@ -199,31 +198,7 @@ class VPNTenantForm(forms.ModelForm):
             self.instance.use_ca_from_id = self.cleaned_data.get(
                 'use_ca_from').id
 
-        result.save()  # Need to do this so that we know the ID
-
-        self.instance.pki_dir = (
-            VPNService.OPENVPN_PREFIX + "server-" + str(result.id))
-
-        if (not os.path.isdir(self.instance.pki_dir)):
-            VPNService.execute_easyrsa_command(
-                self.instance.pki_dir, "init-pki")
-            VPNService.execute_easyrsa_command(
-                self.instance.pki_dir, "--req-cn=XOS build-ca nopass")
-        if (self.instance.use_ca_from_id):
-            tenant = VPNTenant.get_tenant_objects().filter(
-                pk=self.instance.use_ca_from_id)[0]
-            shutil.copy2(tenant.pki_dir + "/ca.crt", self.instance.pki_dir)
-            shutil.copy2(tenant.pki_dir + "/private/ca.key",
-                         self.instance.pki_dir + "/private")
-
-        result.ca_crt = self.generate_ca_crt()
-
-        return result
-
-    def generate_ca_crt(self):
-        """str: Generates the ca cert by reading from the ca file"""
-        with open(self.instance.pki_dir + "/ca.crt") as crt:
-            return crt.readlines()
+        return super(VPNTenantForm, self).save(commit=commit)
 
     class Meta:
         model = VPNTenant
@@ -252,52 +227,6 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
     def queryset(self, request):
         return VPNTenant.get_tenant_objects_by_user(request.user)
 
-    def certificate_name(self, tenant_privilege):
-        return (str(tenant_privilege.user.email) +
-                "-" + str(tenant_privilege.tenant.id))
-
-    def save_formset(self, request, form, formset, change):
-        super(VPNTenantAdmin, self).save_formset(
-            request, form, formset, change)
-        for obj in formset.deleted_objects:
-            # If anything deleated was a TenantPrivilege then revoke the
-            # certificate
-            if type(obj) is TenantPrivilege:
-                certificate = self.certificate_name(obj)
-                # If the client has already been reovked don't do it again
-                if (os.path.isfile(obj.tenant.pki_dir +
-                                   "/issued/" + certificate + ".crt")):
-                    VPNService.execute_easyrsa_command(
-                        obj.tenant.pki_dir, "revoke " + certificate)
-                    # Revoking a client cert does not delete any of the files
-                    # to make sure that we can add this user again we need to
-                    # delete all of the files created by easyrsa
-                    os.remove(obj.tenant.pki_dir +
-                              "/issued/" + certificate + ".crt")
-                    os.remove(obj.tenant.pki_dir +
-                              "/private/" + certificate + ".key")
-                    os.remove(obj.tenant.pki_dir +
-                              "/reqs/" + certificate + ".req")
-
-                    obj.tenant.save()
-                    obj.delete()
-            # TODO(jermowery): determine if this is necessary.
-            # if type(obj) is VPNTenant:
-                # if the tenant was deleted revoke all certs assoicated
-                # pass
-
-        for obj in formset.new_objects:
-            # If there were any new TenantPrivlege objects then create certs
-            if type(obj) is TenantPrivilege:
-                certificate = self.certificate_name(obj)
-                # Only add a certificate if ones does not yet exist
-                if (not os.path.isfile(obj.tenant.pki_dir +
-                                       "/issued/" + certificate + ".crt")):
-                    VPNService.execute_easyrsa_command(
-                        obj.tenant.pki_dir,
-                        "build-client-full " + certificate + " nopass")
-                    obj.tenant.save()
-                    obj.save()
 
 # Associate the admin forms with the models.
 admin.site.register(VPNService, VPNServiceAdmin)
