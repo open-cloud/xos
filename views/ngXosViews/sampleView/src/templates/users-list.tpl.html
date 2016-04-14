@@ -1,6 +1,8 @@
 <div class="row">
-  <h1>Users List</h1>
-  <p>This is only an example view.</p>
+  <div class="col-xs-12">
+    <h1>Users List</h1>
+    <p>This is only an example view.</p>
+  </div>
 </div>
 <div class="row">
   <div class="col-xs-4">Email</div>
@@ -14,5 +16,7 @@
 </div>  
 
 <div class="row">
-  <xos-table></xos-table>
+  <div class="col-xs-12">
+    <xos-table data="vm.users" config="vm.tableConfig"></xos-table>
+  </div>
 </div>
