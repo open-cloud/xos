@@ -22,6 +22,29 @@
     * @name xos.uiComponents.table.directive:xosTable
     * @restrict E
     * @description The xos-table directive
+    * @param {Object} config The configuration for the component.
+    * ```
+    * {
+    *   columns: [
+    *     {
+    *       label: 'Human readable name',
+    *       prop: 'Property to read in the model object'
+    *     }
+    *   ],
+    *   classes: 'table table-striped table-bordered',
+    *   actions: [ // if defined add an action column
+          {
+            label: 'delete',
+            icon: 'remove', // refers to bootstraps glyphicon
+            cb: (user) => { // receive the model
+              console.log(user);
+            },
+            color: 'red'
+          }
+        ]
+    * }
+    * ```
+    * @param {Array} data The data that should be rendered
     * @element ANY
     * @scope
     * @example
@@ -30,7 +53,6 @@
     <file name="index.html">
       <div ng-controller="SampleCtrl1 as vm">
         <xos-table data="vm.data" config="vm.config"></xos-table>
-        </xos-table>
       </div>
     </file>
     <file name="script.js">
@@ -39,8 +61,8 @@
         this.config = {
           columns: [
             {
-              label: 'First Name',
-              prop: 'name'
+              label: 'First Name', // column title
+              prop: 'name' // property to read in the data array
             },
             {
               label: 'Last Name',
@@ -63,11 +85,10 @@
     </file>
   </example>
 
-    <example module="sampleModule2">
+  <example module="sampleModule2">
     <file name="index.html">
       <div ng-controller="SampleCtrl2 as vm">
         <xos-table data="vm.data" config="vm.config"></xos-table>
-        </xos-table>
       </div>
     </file>
     <file name="script.js">
@@ -76,23 +97,23 @@
         this.config = {
           columns: [
             {
-              label: 'First Name',
-              prop: 'name'
+              label: 'First Name', // column title
+              prop: 'name' // property to read in the data array
             },
             {
               label: 'Last Name',
               prop: 'lastname'
             }
           ],
-          classes: 'table table-striped table-condensed',
-          actions: [
+          classes: 'table table-striped table-condensed', // table classes, default to `table table-striped table-bordered`
+          actions: [ // if defined add an action column
             {
-              label: 'delete',
-              icon: 'remove',
-              cb: (user) => {
+              label: 'delete', // label
+              icon: 'remove', // icons, refers to bootstraps glyphicon
+              cb: (user) => { // callback, get feeded with the full object
                 console.log(user);
               },
-              color: 'red'
+              color: 'red' // icon color
             }
           ]
         };
@@ -122,6 +143,15 @@
         },
         template: `
           <!-- <pre>{{vm.data | json}}</pre> -->
+          <div class="row" ng-if="vm.config.filter == 'fulltext'">
+            <div class="col-xs-12">
+              <input
+                class="form-control"
+                placeholder="Type to search.."
+                type="text"
+                ng-model="vm.query"/>
+            </div>
+          </div>
           <table ng-class="vm.classes" ng-show="vm.data.length > 0">
             <thead>
               <tr>
@@ -129,15 +159,30 @@
                 <th ng-if="vm.config.actions">Actions</th>
               </tr>
             </thead>
+            <tbody ng-if="vm.config.filter == 'field'">
+              <tr>
+                <td ng-repeat="col in vm.columns">
+                  <input
+                    class="form-control"
+                    placeholder="Type to search by {{col.label}}"
+                    type="text"
+                    ng-model="vm.query[col.prop]"/>
+                </td>
+                <td ng-if="vm.config.actions"></td>
+              </tr>
+            </tbody>
             <tbody>
-              <tr ng-repeat="item in vm.data">
+              <tr ng-repeat="item in vm.data | filter:vm.query">
                 <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>
                 <td ng-if="vm.config.actions">
-                  <i
+                  <a href=""
                     ng-repeat="action in vm.config.actions"
                     ng-click="action.cb(item)"
-                    class="glyphicon glyphicon-{{action.icon}}"
-                    style="color: {{action.color}};"></i>
+                    title="{{action.label}}">
+                    <i
+                      class="glyphicon glyphicon-{{action.icon}}"
+                      style="color: {{action.color}};"></i>
+                  </a>
                 </td>
               </tr>
             </tbody>

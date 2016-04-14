@@ -31,51 +31,129 @@
         expect(errorFunctionWrapper).toThrow(new Error('[xosTable] Please provide a columns list in the configuration'));
       }));
 
-    });
+      describe('when basicly configured', function() {
+        var scope, element, isolatedScope;
 
-    describe('when correctly configured', function() {
-      var scope, element, isolatedScope;
+        beforeEach(inject(function ($compile, $rootScope) {
+          scope = $rootScope.$new();
 
-      beforeEach(inject(function ($compile, $rootScope) {
-        scope = $rootScope.$new();
+          scope.config = {
+            columns: [
+              {
+                label: 'Label 1',
+                prop: 'label-1'
+              },
+              {
+                label: 'Label 2',
+                prop: 'label-2'
+              }
+            ]
+          };
 
-        scope.config = {
-          columns: [
+          scope.data = [
             {
-              label: 'Label 1',
-              prop: 'label-1'
+              'label-1': 'Sample 1.1',
+              'label-2': 'Sample 1.2'
             },
             {
-              label: 'Label 2',
-              prop: 'label-2'
+              'label-1': 'Sample 2.1',
+              'label-2': 'Sample 2.2'
             }
           ]
-        };
 
-        scope.data = [
-          {
-            'label-1': 'Sample 1.1',
-            'label-2': 'Sample 1.2'
-          },
-          {
-            'label-1': 'Sample 2.1',
-            'label-2': 'Sample 2.2'
-          }
-        ]
+          element = angular.element('<xos-table config="config" data="data"></xos-table>');
+          $compile(element)(scope);
+          scope.$digest();
+          isolatedScope = element.isolateScope().vm;
+        }));
 
-        element = angular.element('<xos-table config="config" data="data"></xos-table>');
-        $compile(element)(scope);
-        // scope.$apply();
-        element.scope().$apply();
-        isolatedScope = element.isolateScope();
-        console.log(element, isolatedScope);
-      }));
+        it('should contain 2 columns', function() {
+          var th = element[0].getElementsByTagName('th');
+          expect(th.length).toEqual(2);
+          expect(isolatedScope.columns.length).toEqual(2);
+        });
 
-      xit('should contain 2 columns', function() {
-        console.log('aaa', isolatedScope);
-        
-        // one is the filter, the other two are the products, one is the pagination
-        expect(isolatedScope.columns).toEqual(2);
+        it('should contain 3 rows', function() {
+          var tr = element[0].getElementsByTagName('tr');
+          expect(tr.length).toEqual(3);
+        });
+
+        describe('when actions are passed', () => {
+
+          let cb = jasmine.createSpy('callback')
+
+          beforeEach(() => {
+            isolatedScope.config.actions = [
+              {
+                label: 'delete',
+                icon: 'remove',
+                cb: cb,
+                color: 'red'
+              }
+            ];
+            scope.$digest();
+          });
+
+          it('should have 3 columns', () => {
+            var th = element[0].getElementsByTagName('th');
+            expect(th.length).toEqual(3);
+            expect(isolatedScope.columns.length).toEqual(2);
+          });
+
+          it('when clicking on action should invoke callback', () => {
+            var link = element[0].getElementsByTagName('a')[0];
+            link.click();
+            expect(cb).toHaveBeenCalledWith(scope.data[0]);
+          });
+        });
+
+        describe('when filter is fulltext', () => {
+          beforeEach(() => {
+            isolatedScope.config.filter = 'fulltext';
+            scope.$digest();
+          });
+
+          it('should render a text field', () => {
+            var textField = element[0].getElementsByTagName('input');
+            expect(textField.length).toEqual(1);
+          });
+
+          describe('and a value is enterd', () => {
+            beforeEach(() => {
+              isolatedScope.query = '2.2';
+              scope.$digest();
+            });
+
+            it('should contain 2 rows', function() {
+              var tr = element[0].getElementsByTagName('tr');
+              expect(tr.length).toEqual(2);
+            });
+          });
+        });
+
+        describe('when filter is field', () => {
+          beforeEach(() => {
+            isolatedScope.config.filter = 'field';
+            scope.$digest();
+          });
+
+          it('should render a text field for each column', () => {
+            var textField = element[0].getElementsByTagName('input');
+            expect(textField.length).toEqual(2);
+          });
+
+          describe('and a value is enterd', () => {
+            beforeEach(() => {
+              isolatedScope.query = {'label-1': '2.1'};
+              scope.$digest();
+            });
+
+            it('should contain 3 rows', function() {
+              var tr = element[0].getElementsByTagName('tr');
+              expect(tr.length).toEqual(3);
+            });
+          });
+        });
       });
     });
   });
