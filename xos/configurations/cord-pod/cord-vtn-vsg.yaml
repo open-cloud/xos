@@ -59,7 +59,7 @@ topology_template:
     service_vrouter:
       type: tosca.nodes.VRouterService
       properties:
-          view_url: /admin/cord/vrouterservice/$id$/
+          view_url: /admin/vrouter/vrouterservice/$id$/
       requirements:
           - addresses_vsg:
               node: addresses_vsg
