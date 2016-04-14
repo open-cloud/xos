@@ -9,6 +9,7 @@
 (function () {
   'use strict';
 
+
   angular.module('xos.uiComponents.table', [])
     .directive('xosTable', function(){
       return {
@@ -17,25 +18,26 @@
           data: '=',
           columns: '='
         },
-        template: [
-          '<!--<pre>{{vm.data | json}}</pre>-->',
-          '<table class="table table-striped" ng-show="vm.data.length > 0">',
-            '<thead>',
-              '<tr>',
-                '<th ng-repeat="col in vm.columns">{{col}}</th>',
-              '</tr>',
-            '</thead>',
-            '<tbody>',
-              '<tr ng-repeat="item in vm.data">',
-                '<td ng-repeat="col in vm.columns">{{item[col]}}</td>',
-              '</tr>',
-            '</tbody>',
-          '</table>'
-        ].join(),
+        template: `
+          <!--<pre>{{vm.data | json}}</pre>-->
+          <table class="table table-striped" ng-show="vm.data.length > 0">
+            <thead>
+              <tr>
+                <th ng-repeat="col in vm.columns">{{col}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="item in vm.data">
+                <td ng-repeat="col in vm.columns">{{item[col]}}</td>
+              </tr>
+            </tbody>
+          </table>
+        `,
         bindToController: true,
         controllerAs: 'vm',
         controller: function(){
           console.log(this.data, this.columns);
+          console.log('Bella dello zio, RELOAD');
         }
       }
     })

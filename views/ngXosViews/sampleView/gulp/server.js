@@ -3,6 +3,7 @@
 var gulp = require('gulp');
 var browserSync = require('browser-sync').create();
 var inject = require('gulp-inject');
+var es = require('event-stream');
 var runSequence = require('run-sequence');
 var angularFilesort = require('gulp-angular-filesort');
 var babel = require('gulp-babel');
@@ -10,6 +11,7 @@ var wiredep = require('wiredep').stream;
 var httpProxy = require('http-proxy');
 var del = require('del');
 var sass = require('gulp-sass');
+var debug = require('gulp-debug');
 
 const environment = process.env.NODE_ENV;
 
@@ -60,7 +62,6 @@ module.exports = function(options){
             // req.url.indexOf('/hpcapi/') !== -1 ||
             req.url.indexOf('/api/') !== -1
           ){
-            console.log('proxyed' + req.url);
             if(conf.xoscsrftoken && conf.xossessionid){
               req.headers.cookie = `xoscsrftoken=${conf.xoscsrftoken}; xossessionid=${conf.xossessionid}`;
               req.headers['x-csrftoken'] = conf.xoscsrftoken;
@@ -84,6 +85,11 @@ module.exports = function(options){
     gulp.watch(options.css + '**/*.css', function(){
       browserSync.reload();
     });
+
+    gulp.watch(options.helpers + 'ngXosHelpers.js', function(){
+      browserSync.reload();
+    });
+    
     gulp.watch(`${options.sass}/**/*.scss`, ['sass'], function(){
       browserSync.reload();
     });
@@ -103,16 +109,40 @@ module.exports = function(options){
       .pipe(gulp.dest(options.tmp));
   });
 
+  // // inject sourceMap
+  // gulp.task('injectMaps', function(){
+  //   return gulp.src(options.src + 'index.html')
+  //     .pipe(
+  //       inject(
+  //         gulp.src([
+  //           options.helpersSourceMaps + '**/*.js.map'
+  //         ], {read: false}).pipe(debug()),
+  //         {
+  //           starttag: '<!-- inject:maps -->',
+  //           // ignorePath: [options.src, '/../../ngXosLib']
+  //         }
+  //       )
+  //     )
+  //     .pipe(gulp.dest(options.src));
+  // });
+
   // inject scripts
   gulp.task('injectScript', ['cleanTmp', 'babel'], function(){
+
+    var appScripts = gulp.src([
+      options.tmp + '**/*.js',
+      options.helpers + 'ngXosHelpers.js'
+    ])
+    .pipe(angularFilesort()).pipe(debug());
+
+    var helpersSourceMaps = gulp.src([
+      options.helpersSourceMaps + '**/*.js.map'
+    ]).pipe(debug());
+
     return gulp.src(options.src + 'index.html')
       .pipe(
         inject(
-          gulp.src([
-            options.tmp + '**/*.js',
-            options.helpers + 'ngXosHelpers.js'
-          ])
-          .pipe(angularFilesort()),
+          es.merge(appScripts, helpersSourceMaps),
           {
             ignorePath: [options.src, '/../../ngXosLib']
           }
