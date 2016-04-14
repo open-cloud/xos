@@ -8,7 +8,7 @@ It does the following:
 * Configures XOS with the CORD services: vCPE, vBNG, vOLT
 
 **NOTE: This configuration is stale and likely not working at present.  If you are looking to evaluate 
-and/or contribute to [the CORD project](http://opencord.org/), 
+and/or contribute to [CORD](http://opencord.org/), 
 you should look instead at the [cord-pod](../cord-pod) configuration. Almost
 all CORD developers have transitioned to [cord-pod](../cord-pod).**
 
