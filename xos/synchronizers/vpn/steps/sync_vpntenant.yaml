@@ -39,7 +39,7 @@
     copy: src={{ pki_dir }}/crl.pem dest={{ pki_dir }}/crl.pem
 
   - name: get dh
-    copy: src=/opt/openvpn/init_pki/dh.pem dest={{ pki_dir }}/dh.pem
+    copy: src={{ pki_dir }}/dh.pem dest={{ pki_dir }}/dh.pem
 
   - name: erase config
     shell: rm -f {{ pki_dir }}/server.conf

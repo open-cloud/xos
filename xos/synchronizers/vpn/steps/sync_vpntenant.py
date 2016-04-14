@@ -63,6 +63,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         if (not os.path.isfile(o.pki_dir + "/issued/server.crt")):
             VPNService.execute_easyrsa_command(
                 o.pki_dir, "build-server-full server nopass")
+            VPNService.execute_easyrsa_command(o.pki_dir, "gen-dh")
         # Get the most recent list of revoked clients
         VPNService.execute_easyrsa_command(o.pki_dir, "gen-crl")
         # Super runs the playbook
