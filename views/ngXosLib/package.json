@@ -7,7 +7,7 @@
     "test": "karma start",
     "apigen": "node apigen/blueprintToNgResource.js",
     "swagger": "node xos-swagger-def.js",
-    "doc": "gulp docs; cd ./docs; http-server -o -c-1",
+    "doc": "gulp docs; cd ./docs",
     "build": "gulp vendor && gulp helpers",
     "dev": "gulp dev"
   },
@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.6.0",
+    "browser-sync": "^2.12.3",
     "concat": "^2.0.0",
     "del": "^2.2.0",
     "gulp": "^3.9.0",
@@ -35,7 +36,6 @@
     "gulp-ngdocs": "^0.2.13",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.4.2",
-    "http-server": "^0.9.0",
     "jasmine-core": "^2.4.1",
     "karma": "^0.13.19",
     "karma-babel-preprocessor": "^6.0.1",
