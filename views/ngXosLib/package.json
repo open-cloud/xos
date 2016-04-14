@@ -8,7 +8,8 @@
     "apigen": "node apigen/blueprintToNgResource.js",
     "swagger": "node xos-swagger-def.js",
     "doc": "gulp docs; cd ./docs; http-server -o -c-1",
-    "build": "gulp vendor && gulp helpers"
+    "build": "gulp vendor && gulp helpers",
+    "dev": "gulp dev"
   },
   "author": "Matteo Scandolo",
   "license": "ISC",
