@@ -41,7 +41,17 @@ angular.module('xos.sampleView', [
             prop: 'lastname'
           }
         ],
-        classes: 'table table-striped table-condensed'
+        classes: 'table table-striped table-condensed',
+        actions: [
+          {
+            label: 'delete',
+            icon: 'remove',
+            cb: (user) => {
+              console.log(user);
+            },
+            color: 'red'
+          }
+        ]
       };
 
       // retrieving user list

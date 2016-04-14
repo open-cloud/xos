@@ -24,11 +24,19 @@
             <thead>
               <tr>
                 <th ng-repeat="col in vm.columns">{{col.label}}</th>
+                <th ng-if="vm.config.actions">Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr ng-repeat="item in vm.data">
                 <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>
+                <td ng-if="vm.config.actions">
+                  <i
+                    ng-repeat="action in vm.config.actions"
+                    ng-click="action.cb(item)"
+                    class="glyphicon glyphicon-{{action.icon}}"
+                    style="color: {{action.color}};"></i>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -48,7 +56,10 @@
           this.columns = this.config.columns;
           this.classes = this.config.classes || 'table table-striped table-bordered';
 
-          console.log('Bella dello zio, RELOAD');
+          if(this.config.actions){
+
+          }
+
         }
       }
     })
