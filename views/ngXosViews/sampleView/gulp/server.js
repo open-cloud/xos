@@ -34,9 +34,9 @@ proxy.on('error', function(error, req, res) {
 });
 
 module.exports = function(options){
-
   // open in browser with sync and proxy to 0.0.0.0
   gulp.task('browser', function() {
+    console.log(options.helpers);
     browserSync.init({
       // reloadDelay: 500,
       // logLevel: 'debug',
@@ -50,15 +50,17 @@ module.exports = function(options){
       server: {
         baseDir: options.src,
         routes: {
-          '/xosHelpers/src': options.helpers
+          // '/xosHelpers/src': options.helpers,
+          '/xos/core/xoslib/static/js/vendor': options.helpers
         },
         middleware: function(req, res, next){
           if(
-            req.url.indexOf('/xos/') !== -1 ||
-            req.url.indexOf('/xoslib/') !== -1 ||
-            req.url.indexOf('/hpcapi/') !== -1 ||
+            // req.url.indexOf('/xos/') !== -1 ||
+            // req.url.indexOf('/xoslib/') !== -1 ||
+            // req.url.indexOf('/hpcapi/') !== -1 ||
             req.url.indexOf('/api/') !== -1
           ){
+            console.log('proxyed' + req.url);
             if(conf.xoscsrftoken && conf.xossessionid){
               req.headers.cookie = `xoscsrftoken=${conf.xoscsrftoken}; xossessionid=${conf.xossessionid}`;
               req.headers['x-csrftoken'] = conf.xoscsrftoken;
@@ -108,7 +110,7 @@ module.exports = function(options){
         inject(
           gulp.src([
             options.tmp + '**/*.js',
-            options.helpers + '**/*.js' // todo add Babel here
+            options.helpers + 'ngXosHelpers.js'
           ])
           .pipe(angularFilesort()),
           {
