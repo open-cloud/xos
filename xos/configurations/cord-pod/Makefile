@@ -6,7 +6,7 @@ xos: nodes.yaml images.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/images.yaml
 
-vtn: vtn_network_cfg_json
+vtn:
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/vtn-external.yaml
 
 cord: virtualbng_json
@@ -15,7 +15,7 @@ cord: virtualbng_json
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-vtn-vsg.yaml
 
 exampleservice:
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/pod-exampleservice.yaml 
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/pod-exampleservice.yaml
 
 cord-ceilometer: ceilometer_custom_images cord
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/ceilometer.yaml
