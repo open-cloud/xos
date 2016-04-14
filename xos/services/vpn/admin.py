@@ -1,9 +1,8 @@
-from django import forms
-from django.contrib import admin
-
 from core.admin import ReadOnlyAwareAdmin, SliceInline, TenantPrivilegeInline
 from core.middleware import get_request
 from core.models import User
+from django import forms
+from django.contrib import admin
 from services.vpn.models import VPN_KIND, VPNService, VPNTenant
 from xos.exceptions import XOSValidationError
 
@@ -132,8 +131,7 @@ class VPNTenantForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
-        self.fields['failover_servers'].widget.attrs['rows'] = 100
-        # self.fields['script_name'].widget.attrs['readonly'] = True
+        self.fields['failover_servers'].widget.attrs['rows'] = 300
         self.fields[
             'provider_service'].queryset = (
                 VPNService.get_service_objects().all())
@@ -150,15 +148,15 @@ class VPNTenantForm(forms.ModelForm):
                     self.instance.clients_can_see_each_other)
             self.fields['is_persistent'].initial = self.instance.is_persistent
             self.initial['protocol'] = self.instance.protocol
-            self.initial['failover_servers'] = VPNTenant.get_tenant_objects().filter(
-                pk__in=self.instance.failover_server_ids)
             self.fields['failover_servers'].queryset = (
                 VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
+            self.initial['failover_servers'] = VPNTenant.get_tenant_objects().filter(
+                pk__in=self.instance.failover_server_ids)
             self.fields['use_ca_from'].queryset = (
                 VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
             if (self.instance.use_ca_from_id):
-                self.fields['use_ca_from'].initial = (
-                    VPNTenant.get_tenant_objects.all().filter(pk=self.instnace.use_ca_from_id))
+                self.initial['use_ca_from'] = (
+                    VPNTenant.get_tenant_objects().filter(pk=self.instance.use_ca_from_id)[0])
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
@@ -180,9 +178,8 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.clients_can_see_each_other = self.cleaned_data.get(
             'clients_can_see_each_other')
 
-        self.instance.failover_server_ids = list()
-        for tenant in self.cleaned_data['failover_servers']:
-            self.instance.failover_server_ids.append(tenant.id)
+        self.instance.failover_server_ids = [
+            tenant.id for tenant in self.cleaned_data.get('failover_servers')]
 
         # Do not aquire a new port number if the protocol hasn't changed
         if ((not self.instance.protocol) or
@@ -195,6 +192,8 @@ class VPNTenantForm(forms.ModelForm):
         if (self.cleaned_data.get('use_ca_from')):
             self.instance.use_ca_from_id = self.cleaned_data.get(
                 'use_ca_from').id
+        else:
+            self.instance.use_ca_from_id = None
 
         return super(VPNTenantForm, self).save(commit=commit)
 

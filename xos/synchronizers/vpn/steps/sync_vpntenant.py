@@ -64,8 +64,10 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
             VPNService.execute_easyrsa_command(
                 o.pki_dir, "build-server-full server nopass")
             VPNService.execute_easyrsa_command(o.pki_dir, "gen-dh")
+
         # Get the most recent list of revoked clients
         VPNService.execute_easyrsa_command(o.pki_dir, "gen-crl")
+
         # Super runs the playbook
         super(SyncVPNTenant, self).sync_fields(o, fields)
 
