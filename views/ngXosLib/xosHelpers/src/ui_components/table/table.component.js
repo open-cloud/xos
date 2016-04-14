@@ -9,8 +9,110 @@
 (function () {
   'use strict';
 
+  /**
+  * @ngdoc overview
+  * @name xos.uiComponents.table
+  * @description A table component
+  **/
 
   angular.module('xos.uiComponents.table', [])
+
+    /**
+    * @ngdoc directive
+    * @name xos.uiComponents.table.directive:xosTable
+    * @restrict E
+    * @description The xos-table directive
+    * @element ANY
+    * @scope
+    * @example
+
+  <example module="sampleModule1">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl1 as vm">
+        <xos-table data="vm.data" config="vm.config"></xos-table>
+        </xos-table>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleModule1', ['xos.uiComponents.table'])
+      .controller('SampleCtrl1', function(){
+        this.config = {
+          columns: [
+            {
+              label: 'First Name',
+              prop: 'name'
+            },
+            {
+              label: 'Last Name',
+              prop: 'lastname'
+            }
+          ]
+        };
+
+        this.data = [
+          {
+            name: 'John',
+            lastname: 'Doe'
+          },
+          {
+            name: 'Gili',
+            lastname: 'Fereydoun'
+          }
+        ]
+      });
+    </file>
+  </example>
+
+    <example module="sampleModule2">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl2 as vm">
+        <xos-table data="vm.data" config="vm.config"></xos-table>
+        </xos-table>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleModule2', ['xos.uiComponents.table'])
+      .controller('SampleCtrl2', function(){
+        this.config = {
+          columns: [
+            {
+              label: 'First Name',
+              prop: 'name'
+            },
+            {
+              label: 'Last Name',
+              prop: 'lastname'
+            }
+          ],
+          classes: 'table table-striped table-condensed',
+          actions: [
+            {
+              label: 'delete',
+              icon: 'remove',
+              cb: (user) => {
+                console.log(user);
+              },
+              color: 'red'
+            }
+          ]
+        };
+
+        this.data = [
+          {
+            name: 'John',
+            lastname: 'Doe'
+          },
+          {
+            name: 'Gili',
+            lastname: 'Fereydoun'
+          }
+        ]
+      });
+    </file>
+  </example>
+
+    **/
+
     .directive('xosTable', function(){
       return {
         restrict: 'E',

@@ -7,6 +7,7 @@ var gulpDocs = require('gulp-ngdocs');
 var del = require('del');
 var babel = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
+var browserSync = require('browser-sync').create();
 
 module.exports = function(options){
 
@@ -49,15 +50,18 @@ module.exports = function(options){
   });
 
   gulp.task('cleanDocs', function(){
-    console.log(options);
     return del([options.docs + '**/*']);
   });
 
-  gulp.task('docs', ['cleanDocs'], function(){
+  gulp.task('makeDocs', ['cleanDocs'], function(){
     var ngOptions = {
       scripts: [
         'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js',
-        'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js'
+        'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js',
+        `${options.ngXosVendor}ngXosHelpers.js`
+      ],
+      styles: [
+        'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',
       ],
       html5Mode: true,
       title: 'XOS Helpers documentation',
@@ -68,7 +72,8 @@ module.exports = function(options){
       module: {
         glob: [
           options.xosHelperSource + '*.js',
-          options.xosHelperSource + 'services/*.js'
+          options.xosHelperSource + 'services/*.js',
+          options.xosHelperSource + 'ui_components/**/*.js'
         ],
         title: 'Module Documentation',
       },
@@ -81,6 +86,33 @@ module.exports = function(options){
       }
     }).pipe(gulpDocs.process(ngOptions)).pipe(gulp.dest('./docs'));
   });
+
+  gulp.task('serveDocs', function(){
+    browserSync.init({
+      server: {
+        baseDir: './docs',
+        routes: {
+          '/xos/core/xoslib/static/js/vendor': options.ngXosVendor
+        }
+      }
+    });
+  });
+
+  gulp.task('docs', ['makeDocs', 'serveDocs'], function(){
+    
+    var files = [
+      options.xosHelperSource + '*.js',
+      options.xosHelperSource + 'services/*.js',
+      options.xosHelperSource + 'ui_components/**/*.js'
+    ];
+
+    gulp.watch(files, ['makeDocs']);
+
+    gulp.watch(files, function(){
+      console.log('Reload');
+      browserSync.reload();
+    });
+  })
 
   gulp.task('dev', function(){
     gulp.watch(options.xosHelperSource + '**/*.js', ['helpersDev']);
