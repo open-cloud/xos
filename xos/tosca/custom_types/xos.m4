@@ -204,6 +204,9 @@ node_types:
             rest_onos/v1/network/configuration/:
                 type: string
                 required: false
+            autogenerate:
+                type: string
+                required: false
 
     tosca.nodes.VSGService:
         description: >
