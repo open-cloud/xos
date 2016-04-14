@@ -63,7 +63,7 @@ module.exports = function(options){
       styles: [
         'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',
       ],
-      html5Mode: true,
+      html5Mode: false,
       title: 'XOS Helpers documentation',
       startPage: '/module',
     }
@@ -109,7 +109,6 @@ module.exports = function(options){
     gulp.watch(files, ['makeDocs']);
 
     gulp.watch(files, function(){
-      console.log('Reload');
       browserSync.reload();
     });
   })

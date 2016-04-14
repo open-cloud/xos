@@ -33,11 +33,11 @@ angular.module('xos.sampleView', [
             prop: 'email'
           },
           {
-            label: 'E-Mail',
+            label: 'First Name',
             prop: 'firstname'
           },
           {
-            label: 'E-Mail',
+            label: 'Last Name',
             prop: 'lastname'
           }
         ],
@@ -51,7 +51,8 @@ angular.module('xos.sampleView', [
             },
             color: 'red'
           }
-        ]
+        ],
+        filter: 'field'
       };
 
       // retrieving user list
