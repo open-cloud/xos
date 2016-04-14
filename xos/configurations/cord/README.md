@@ -7,8 +7,10 @@ It does the following:
 * Brings up ONOS apps for controlling the dataplane: virtualbng, olt
 * Configures XOS with the CORD services: vCPE, vBNG, vOLT
 
-**NOTE:** This configuration is under **active development** and is not yet finished!  Some features are not
-fully working yet.
+**NOTE: This configuration is stale and likely not working at present.  If you are looking to evaluate 
+and/or contribute to [the CORD project](http://opencord.org/), 
+you should look instead at the [cord-pod](../cord-pod) configuration. Almost
+all CORD developers have transitioned to [cord-pod](../cord-pod).**
 
 ## End-to-end dataplane
 
