@@ -75,24 +75,7 @@ xos:
 
 ## Bring up XOS
 
-Under the `cord-pod` configuration, edit file `make-vtn-networkconfig-json.sh`.
-Change the definition of `"publicGateways"` so that it looks like this (adding
-  a second gatewayIp and gatewayMac):
-
-```
-"publicGateways": [
-    {
-        "gatewayIp": "10.168.0.1",
-        "gatewayMac": "02:42:0a:a8:00:01"
-    },
-    {
-        "gatewayIp": "10.168.1.1",
-        "gatewayMac": "02:42:0a:a8:00:01"
-    }
-],
-```
-
-Now run the `make` commands described in the [README.md](./README.md) file:
+Run the `make` commands described in the [README.md](./README.md) file:
 
 ```
 ubuntu@xos:~/xos/xos/configurations/cord-pod$ make
