@@ -110,7 +110,7 @@ def run_policy_once():
         deleted_objects = []
 
         for m in models:
-            res = m.objects.filter(Q(policed__lt=F('updated')) | Q(policed=None))
+            res = m.objects.filter((Q(policed__lt=F('updated')) | Q(policed=None)) & Q(no_policy=False))
             objects.extend(res)
             res = m.deleted_objects.filter(Q(policed__lt=F('updated')) | Q(policed=None))
             deleted_objects.extend(res)
