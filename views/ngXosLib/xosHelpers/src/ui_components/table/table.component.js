@@ -41,7 +41,9 @@
             },
             color: 'red'
           }
-        ]
+        ],
+        filter: 'field', // can be by `field` or `fulltext`
+        order: true // whether to show ordering arrows
     * }
     * ```
     * @param {Array} data The data that should be rendered
@@ -115,7 +117,9 @@
               },
               color: 'red' // icon color
             }
-          ]
+          ],
+          filter: 'field', // can be by `field` or `fulltext`
+          order: true
         };
 
         this.data = [
