@@ -231,8 +231,8 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         vrouters = VRouterService.get_service_objects().all()
         if vrouters:
             for gateway in vrouters[0].get_gateways():
-                gatewayIp = gateway.gateway_ip.split('/',1)[0]
-                gatewayMac = gateway.gateway_mac
+                gatewayIp = gateway['gateway_ip'].split('/',1)[0]
+                gatewayMac = gateway['gateway_mac']
                 gateway_dict = {
                     "gatewayIp": gatewayIp,
                     "gatewayMac": gatewayMac
