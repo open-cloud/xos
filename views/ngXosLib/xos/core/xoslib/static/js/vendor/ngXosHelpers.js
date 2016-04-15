@@ -43,7 +43,9 @@
           },
           color: 'red'
         }
-      ]
+      ],
+      filter: 'field', // can be by `field` or `fulltext`
+      order: true // whether to show ordering arrows
   * }
   * ```
   * @param {Array} data The data that should be rendered
@@ -114,7 +116,9 @@
             },
             color: 'red' // icon color
           }
-        ]
+        ],
+        filter: 'field', // can be by `field` or `fulltext`
+        order: true
       };
        this.data = [
         {
@@ -138,7 +142,7 @@
         data: '=',
         config: '='
       },
-      template: '\n          <!-- <pre>{{vm.data | json}}</pre> -->\n          <table ng-class="vm.classes" ng-show="vm.data.length > 0">\n            <thead>\n              <tr>\n                <th ng-repeat="col in vm.columns">{{col.label}}</th>\n                <th ng-if="vm.config.actions">Actions</th>\n              </tr>\n            </thead>\n            <tbody>\n              <tr ng-repeat="item in vm.data">\n                <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>\n                <td ng-if="vm.config.actions">\n                  <a href=""\n                    ng-repeat="action in vm.config.actions"\n                    ng-click="action.cb(item)"\n                    title="action.label">\n                    <i\n                      class="glyphicon glyphicon-{{action.icon}}"\n                      style="color: {{action.color}};"></i>\n                  </a>\n                </td>\n              </tr>\n            </tbody>\n          </table>\n        ',
+      template: '\n          <!-- <pre>{{vm.data | json}}</pre> -->\n          <div class="row" ng-if="vm.config.filter == \'fulltext\'">\n            <div class="col-xs-12">\n              <input\n                class="form-control"\n                placeholder="Type to search.."\n                type="text"\n                ng-model="vm.query"/>\n            </div>\n          </div>\n          <table ng-class="vm.classes" ng-show="vm.data.length > 0">\n            <thead>\n              <tr>\n                <th ng-repeat="col in vm.columns">\n                  {{col.label}}\n                  <span ng-if="vm.config.order">\n                    <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = false">\n                      <i class="glyphicon glyphicon-chevron-up"></i>\n                    </a>\n                    <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = true">\n                      <i class="glyphicon glyphicon-chevron-down"></i>\n                    </a>\n                  </span>\n                </th>\n                <th ng-if="vm.config.actions">Actions</th>\n              </tr>\n            </thead>\n            <tbody ng-if="vm.config.filter == \'field\'">\n              <tr>\n                <td ng-repeat="col in vm.columns">\n                  <input\n                    class="form-control"\n                    placeholder="Type to search by {{col.label}}"\n                    type="text"\n                    ng-model="vm.query[col.prop]"/>\n                </td>\n                <td ng-if="vm.config.actions"></td>\n              </tr>\n            </tbody>\n            <tbody>\n              <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse">\n                <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>\n                <td ng-if="vm.config.actions">\n                  <a href=""\n                    ng-repeat="action in vm.config.actions"\n                    ng-click="action.cb(item)"\n                    title="{{action.label}}">\n                    <i\n                      class="glyphicon glyphicon-{{action.icon}}"\n                      style="color: {{action.color}};"></i>\n                  </a>\n                </td>\n              </tr>\n            </tbody>\n          </table>\n        ',
       bindToController: true,
       controllerAs: 'vm',
       controller: function controller() {
