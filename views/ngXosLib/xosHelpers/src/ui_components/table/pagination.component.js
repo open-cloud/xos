@@ -106,7 +106,6 @@
             this.pages = Math.ceil(this.totalElements / this.pageSize);
             this.pageList = this.createPages(this.pages);
           }
-          // scope.getPages();
         });
       }
     }
