@@ -155,7 +155,17 @@
           <table ng-class="vm.classes" ng-show="vm.data.length > 0">
             <thead>
               <tr>
-                <th ng-repeat="col in vm.columns">{{col.label}}</th>
+                <th ng-repeat="col in vm.columns">
+                  {{col.label}}
+                  <span ng-if="vm.config.order">
+                    <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = false">
+                      <i class="glyphicon glyphicon-chevron-up"></i>
+                    </a>
+                    <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = true">
+                      <i class="glyphicon glyphicon-chevron-down"></i>
+                    </a>
+                  </span>
+                </th>
                 <th ng-if="vm.config.actions">Actions</th>
               </tr>
             </thead>
@@ -172,7 +182,7 @@
               </tr>
             </tbody>
             <tbody>
-              <tr ng-repeat="item in vm.data | filter:vm.query">
+              <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse">
                 <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>
                 <td ng-if="vm.config.actions">
                   <a href=""

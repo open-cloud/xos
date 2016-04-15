@@ -52,7 +52,8 @@ angular.module('xos.sampleView', [
             color: 'red'
           }
         ],
-        filter: 'field'
+        filter: 'field',
+        order: true
       };
 
       // retrieving user list
