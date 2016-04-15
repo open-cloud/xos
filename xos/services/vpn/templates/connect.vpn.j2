@@ -1,0 +1,36 @@
+printf "%b" "
+client\n
+dev tun\n
+remote-cert-tls server\n
+resolv-retry 60\n
+nobind\n
+ca ca.crt\n
+cert {{ client_name }}.crt\n
+key {{ client_name }}.key\n
+verb 3
+{% for tenant in remotes %}
+remote {{ tenant.nat_ip }} {{ tenant.port_number }} {{ tenant.protocol }}\n
+{% endfor %}
+{% if is_persistent %}
+persist-tun\n
+persist-key\n
+{% endif %}
+" > client.conf
+printf "%b" "
+{% for line in ca_crt %}
+{{ line }}\n
+{% endfor %}
+" > ca.crt
+printf "%b" "
+{% for line in client_crt %}
+{{ line }}\n
+{% endfor %}
+" > {{ client_name }}.crt
+printf "%b" "
+{% for line in client_key %}
+{{ line }}\n
+{% endfor %}
+" > {{ client_name }}.key
+apt-get update
+apt-get install openvpn -y
+openvpn client.conf
