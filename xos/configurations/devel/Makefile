@@ -46,10 +46,3 @@ rebuild_xos:
 
 rebuild_synchronizer:
 	make -C ../../../containers/synchronizer
-
-cleanup_docker: rm
-	sudo docker rm -v $(docker ps -a -q -f status=exited) || true
-	docker rm -v $(docker ps -a -q -f status=exited) || true
-	sudo docker rmi $(docker images -qf "dangling=true") || true
-	docker rmi $(docker images -qf "dangling=true") || true
-	sudo docker run -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker:/var/lib/docker --rm martin/docker-cleanup-volumes || true

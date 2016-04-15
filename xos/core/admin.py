@@ -893,10 +893,12 @@ class TenantRootAdmin(XOSBaseAdmin):
     )
 
 class TenantRoleAdmin(XOSBaseAdmin):
+    """Admin for TenantRoles."""
     model = TenantRole
     fields = ('role',)
 
 class TenantPrivilegeInline(XOSTabularInline):
+    """Inline for adding a TenantPrivilege to a Tenant.""";
     model = TenantPrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-tenantprivileges'

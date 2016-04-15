@@ -824,11 +824,20 @@ class TenantRootPrivilege(PlCoreBase):
             return cls.objects.filter(id__in=trp_ids)
 
 class TenantRole(PlCoreBase):
+    """A TenantRole option."""
     ROLE_CHOICES = (('admin','Admin'), ('access','Access'))
     role = StrippedCharField(choices=ROLE_CHOICES, unique=True, max_length=30)
     def __unicode__(self):  return u'%s' % (self.role)
 
 class TenantPrivilege(PlCoreBase):
+    """"A TenantPrivilege which defines how users can access a particular Tenant.
+
+    Attributes:
+        id (models.AutoField): The ID of the privilege.
+        user (models.ForeignKey): A Foreign Key to the a User.
+        tenant (models.ForeignKey): A ForeignKey to the Tenant.
+        role (models.ForeignKey): A ForeignKey to the TenantRole.
+    """
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey('User', related_name="tenantprivileges")
     tenant = models.ForeignKey('Tenant', related_name="tenantprivileges")
