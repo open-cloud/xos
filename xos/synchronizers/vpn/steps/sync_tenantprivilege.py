@@ -74,6 +74,6 @@ class SyncTenantPrivilege(SyncStep):
 
         Returns:
             str: The certificate name.
-        """"
+        """
         return (str(tenant_privilege.user.email) +
                 "-" + str(tenant_privilege.tenant.id))
