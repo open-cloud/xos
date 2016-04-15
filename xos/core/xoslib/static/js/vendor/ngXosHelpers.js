@@ -11,19 +11,154 @@
 (function () {
   'use strict';
 
-  angular.module('xos.uiComponents.table', []).directive('xosTable', function () {
+  /**
+  * @ngdoc overview
+  * @name xos.uiComponents.table
+  * @description A table component
+  **/
+
+  angular.module('xos.uiComponents.table', [])
+
+  /**
+  * @ngdoc directive
+  * @name xos.uiComponents.table.directive:xosTable
+  * @restrict E
+  * @description The xos-table directive
+  * @param {Object} config The configuration for the component.
+  * ```
+  * {
+  *   columns: [
+  *     {
+  *       label: 'Human readable name',
+  *       prop: 'Property to read in the model object'
+  *     }
+  *   ],
+  *   classes: 'table table-striped table-bordered',
+  *   actions: [ // if defined add an action column
+        {
+          label: 'delete',
+          icon: 'remove', // refers to bootstraps glyphicon
+          cb: (user) => { // receive the model
+            console.log(user);
+          },
+          color: 'red'
+        }
+      ],
+      filter: 'field', // can be by `field` or `fulltext`
+      order: true // whether to show ordering arrows
+  * }
+  * ```
+  * @param {Array} data The data that should be rendered
+  * @element ANY
+  * @scope
+  * @example
+  <example module="sampleModule1">
+  <file name="index.html">
+    <div ng-controller="SampleCtrl1 as vm">
+      <xos-table data="vm.data" config="vm.config"></xos-table>
+    </div>
+  </file>
+  <file name="script.js">
+    angular.module('sampleModule1', ['xos.uiComponents.table'])
+    .controller('SampleCtrl1', function(){
+      this.config = {
+        columns: [
+          {
+            label: 'First Name', // column title
+            prop: 'name' // property to read in the data array
+          },
+          {
+            label: 'Last Name',
+            prop: 'lastname'
+          }
+        ]
+      };
+       this.data = [
+        {
+          name: 'John',
+          lastname: 'Doe'
+        },
+        {
+          name: 'Gili',
+          lastname: 'Fereydoun'
+        }
+      ]
+    });
+  </file>
+  </example>
+  <example module="sampleModule2">
+  <file name="index.html">
+    <div ng-controller="SampleCtrl2 as vm">
+      <xos-table data="vm.data" config="vm.config"></xos-table>
+    </div>
+  </file>
+  <file name="script.js">
+    angular.module('sampleModule2', ['xos.uiComponents.table'])
+    .controller('SampleCtrl2', function(){
+      this.config = {
+        columns: [
+          {
+            label: 'First Name', // column title
+            prop: 'name' // property to read in the data array
+          },
+          {
+            label: 'Last Name',
+            prop: 'lastname'
+          }
+        ],
+        classes: 'table table-striped table-condensed', // table classes, default to `table table-striped table-bordered`
+        actions: [ // if defined add an action column
+          {
+            label: 'delete', // label
+            icon: 'remove', // icons, refers to bootstraps glyphicon
+            cb: (user) => { // callback, get feeded with the full object
+              console.log(user);
+            },
+            color: 'red' // icon color
+          }
+        ],
+        filter: 'field', // can be by `field` or `fulltext`
+        order: true
+      };
+       this.data = [
+        {
+          name: 'John',
+          lastname: 'Doe'
+        },
+        {
+          name: 'Gili',
+          lastname: 'Fereydoun'
+        }
+      ]
+    });
+  </file>
+  </example>
+   **/
+
+  .directive('xosTable', function () {
     return {
       restrict: 'E',
       scope: {
         data: '=',
-        columns: '='
+        config: '='
       },
-      template: '\n          <!--<pre>{{vm.data | json}}</pre>-->\n          <table class="table table-striped" ng-show="vm.data.length > 0">\n            <thead>\n              <tr>\n                <th ng-repeat="col in vm.columns">{{col}}</th>\n              </tr>\n            </thead>\n            <tbody>\n              <tr ng-repeat="item in vm.data">\n                <td ng-repeat="col in vm.columns">{{item[col]}}</td>\n              </tr>\n            </tbody>\n          </table>\n        ',
+      template: '\n          <!-- <pre>{{vm.data | json}}</pre> -->\n          <div class="row" ng-if="vm.config.filter == \'fulltext\'">\n            <div class="col-xs-12">\n              <input\n                class="form-control"\n                placeholder="Type to search.."\n                type="text"\n                ng-model="vm.query"/>\n            </div>\n          </div>\n          <table ng-class="vm.classes" ng-show="vm.data.length > 0">\n            <thead>\n              <tr>\n                <th ng-repeat="col in vm.columns">\n                  {{col.label}}\n                  <span ng-if="vm.config.order">\n                    <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = false">\n                      <i class="glyphicon glyphicon-chevron-up"></i>\n                    </a>\n                    <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = true">\n                      <i class="glyphicon glyphicon-chevron-down"></i>\n                    </a>\n                  </span>\n                </th>\n                <th ng-if="vm.config.actions">Actions</th>\n              </tr>\n            </thead>\n            <tbody ng-if="vm.config.filter == \'field\'">\n              <tr>\n                <td ng-repeat="col in vm.columns">\n                  <input\n                    class="form-control"\n                    placeholder="Type to search by {{col.label}}"\n                    type="text"\n                    ng-model="vm.query[col.prop]"/>\n                </td>\n                <td ng-if="vm.config.actions"></td>\n              </tr>\n            </tbody>\n            <tbody>\n              <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse">\n                <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>\n                <td ng-if="vm.config.actions">\n                  <a href=""\n                    ng-repeat="action in vm.config.actions"\n                    ng-click="action.cb(item)"\n                    title="{{action.label}}">\n                    <i\n                      class="glyphicon glyphicon-{{action.icon}}"\n                      style="color: {{action.color}};"></i>\n                  </a>\n                </td>\n              </tr>\n            </tbody>\n          </table>\n        ',
       bindToController: true,
       controllerAs: 'vm',
       controller: function controller() {
-        console.log(this.data, this.columns);
-        console.log('Bella dello zio, RELOAD');
+
+        if (!this.config) {
+          throw new Error('[xosTable] Please provide a configuration via the "config" attribute');
+        }
+
+        if (!this.config.columns) {
+          throw new Error('[xosTable] Please provide a columns list in the configuration');
+        }
+
+        this.columns = this.config.columns;
+        this.classes = this.config.classes || 'table table-striped table-bordered';
+
+        if (this.config.actions) {}
       }
     };
   });
@@ -245,6 +380,13 @@
 
 (function () {
   'use strict';
+
+  /**
+  * @ngdoc overview
+  * @name xos.uiComponents
+  * @description A collection of UI components useful for Dashboard development
+  * @requires xos.uiComponents.table
+  **/
 
   angular.module('xos.uiComponents', ['xos.uiComponents.table']);
 })();
