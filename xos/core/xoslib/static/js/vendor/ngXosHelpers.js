@@ -13,11 +13,35 @@
 
   /**
   * @ngdoc overview
+  * @name xos.uiComponents
+  * @description A collection of UI components useful for Dashboard development
+  * @requires xos.uiComponents.table
+  **/
+
+  angular.module('xos.uiComponents', []);
+})();
+//# sourceMappingURL=../maps/ui_components/ui-components.module.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 3/24/16.
+ */
+
+(function () {
+  'use strict';
+
+  /**
+  * @ngdoc overview
   * @name xos.uiComponents.table
   * @description A table component
   **/
 
-  angular.module('xos.uiComponents.table', [])
+  angular.module('xos.uiComponents')
 
   /**
   * @ngdoc directive
@@ -142,10 +166,11 @@
         data: '=',
         config: '='
       },
-      template: '\n          <!-- <pre>{{vm.data | json}}</pre> -->\n          <div class="row" ng-if="vm.config.filter == \'fulltext\'">\n            <div class="col-xs-12">\n              <input\n                class="form-control"\n                placeholder="Type to search.."\n                type="text"\n                ng-model="vm.query"/>\n            </div>\n          </div>\n          <table ng-class="vm.classes" ng-show="vm.data.length > 0">\n            <thead>\n              <tr>\n                <th ng-repeat="col in vm.columns">\n                  {{col.label}}\n                  <span ng-if="vm.config.order">\n                    <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = false">\n                      <i class="glyphicon glyphicon-chevron-up"></i>\n                    </a>\n                    <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = true">\n                      <i class="glyphicon glyphicon-chevron-down"></i>\n                    </a>\n                  </span>\n                </th>\n                <th ng-if="vm.config.actions">Actions</th>\n              </tr>\n            </thead>\n            <tbody ng-if="vm.config.filter == \'field\'">\n              <tr>\n                <td ng-repeat="col in vm.columns">\n                  <input\n                    class="form-control"\n                    placeholder="Type to search by {{col.label}}"\n                    type="text"\n                    ng-model="vm.query[col.prop]"/>\n                </td>\n                <td ng-if="vm.config.actions"></td>\n              </tr>\n            </tbody>\n            <tbody>\n              <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse">\n                <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>\n                <td ng-if="vm.config.actions">\n                  <a href=""\n                    ng-repeat="action in vm.config.actions"\n                    ng-click="action.cb(item)"\n                    title="{{action.label}}">\n                    <i\n                      class="glyphicon glyphicon-{{action.icon}}"\n                      style="color: {{action.color}};"></i>\n                  </a>\n                </td>\n              </tr>\n            </tbody>\n          </table>\n        ',
+      template: '\n          <!-- <pre>{{vm.data | json}}</pre> -->\n          <div class="row" ng-if="vm.config.filter == \'fulltext\'">\n            <div class="col-xs-12">\n              <input\n                class="form-control"\n                placeholder="Type to search.."\n                type="text"\n                ng-model="vm.query"/>\n            </div>\n          </div>\n          <table ng-class="vm.classes" ng-show="vm.data.length > 0">\n            <thead>\n              <tr>\n                <th ng-repeat="col in vm.columns">\n                  {{col.label}}\n                  <span ng-if="vm.config.order">\n                    <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = false">\n                      <i class="glyphicon glyphicon-chevron-up"></i>\n                    </a>\n                    <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = true">\n                      <i class="glyphicon glyphicon-chevron-down"></i>\n                    </a>\n                  </span>\n                </th>\n                <th ng-if="vm.config.actions">Actions</th>\n              </tr>\n            </thead>\n            <tbody ng-if="vm.config.filter == \'field\'">\n              <tr>\n                <td ng-repeat="col in vm.columns">\n                  <input\n                    class="form-control"\n                    placeholder="Type to search by {{col.label}}"\n                    type="text"\n                    ng-model="vm.query[col.prop]"/>\n                </td>\n                <td ng-if="vm.config.actions"></td>\n              </tr>\n            </tbody>\n            <tbody>\n              <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: vm.config.pagination.pageSize track by $index">\n                <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>\n                <td ng-if="vm.config.actions">\n                  <a href=""\n                    ng-repeat="action in vm.config.actions"\n                    ng-click="action.cb(item)"\n                    title="{{action.label}}">\n                    <i\n                      class="glyphicon glyphicon-{{action.icon}}"\n                      style="color: {{action.color}};"></i>\n                  </a>\n                </td>\n              </tr>\n            </tbody>\n          </table>\n          <xos-pagination\n            ng-if="vm.config.pagination"\n            page-size="vm.config.pagination.pageSize"\n            total-elements="vm.data.length"\n            change="vm.goToPage">\n            </xos-pagination>\n        ',
       bindToController: true,
       controllerAs: 'vm',
       controller: function controller() {
+        var _this = this;
 
         if (!this.config) {
           throw new Error('[xosTable] Please provide a configuration via the "config" attribute');
@@ -158,12 +183,89 @@
         this.columns = this.config.columns;
         this.classes = this.config.classes || 'table table-striped table-bordered';
 
-        if (this.config.actions) {}
+        if (this.config.actions) {
+          // TODO validate action format
+        }
+        if (this.config.pagination) {
+          this.currentPage = 0;
+          this.goToPage = function (n) {
+            _this.currentPage = n;
+          };
+        }
       }
     };
   });
 })();
 //# sourceMappingURL=../../maps/ui_components/table/table.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 4/15/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents').directive('xosPagination', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        pageSize: '=',
+        totalElements: '=',
+        change: '='
+      },
+      template: '\n        <div class="row">\n          <div class="col-xs-12 text-center">\n            <ul class="pagination">\n              <li\n                ng-click="vm.goToPage(vm.currentPage - 1)"\n                ng-class="{disabled: vm.currentPage == 0}">\n                <a href="" aria-label="Previous">\n                    <span aria-hidden="true">&laquo;</span>\n                </a>\n              </li>\n              <li ng-repeat="i in vm.pageList" ng-class="{active: i === vm.currentPage}">\n                <a href="" ng-click="vm.goToPage(i)">{{i + 1}}</a>\n              </li>\n              <li\n                ng-click="vm.goToPage(vm.currentPage + 1)"\n                ng-class="{disabled: vm.currentPage == vm.pages - 1}">\n                <a href="" aria-label="Next">\n                    <span aria-hidden="true">&raquo;</span>\n                </a>\n              </li>\n            </ul>\n          </div>\n        </div>\n      ',
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$scope", function controller($scope) {
+        var _this = this;
+
+        this.currentPage = 0;
+
+        this.goToPage = function (n) {
+          if (n < 0 || n === _this.pages) {
+            return;
+          }
+          _this.currentPage = n;
+          _this.change(n);
+        };
+
+        this.createPages = function (pages) {
+          var arr = [];
+          for (var i = 0; i < pages; i++) {
+            arr.push(i);
+          }
+          return arr;
+        };
+
+        // watch for data changes
+        $scope.$watch(function () {
+          return _this.totalElements;
+        }, function () {
+          if (_this.totalElements) {
+            _this.pages = Math.round(_this.totalElements / _this.pageSize);
+            _this.pageList = _this.createPages(_this.pages);
+          }
+          // scope.getPages();
+        });
+      }]
+    };
+  }).filter('pagination', function () {
+    return function (input, start) {
+      if (!input || !angular.isArray(input)) {
+        return input;
+      }
+      start = parseInt(start, 10);
+      return input.slice(start);
+    };
+  });
+})();
+//# sourceMappingURL=../../maps/ui_components/table/pagination.component.js.map
 
 'use strict';
 
@@ -367,30 +469,6 @@
   }]);
 })();
 //# sourceMappingURL=../../maps/services/rest/ONOS-Apps.js.map
-
-'use strict';
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
- * Created by teone on 3/24/16.
- */
-
-(function () {
-  'use strict';
-
-  /**
-  * @ngdoc overview
-  * @name xos.uiComponents
-  * @description A collection of UI components useful for Dashboard development
-  * @requires xos.uiComponents.table
-  **/
-
-  angular.module('xos.uiComponents', ['xos.uiComponents.table']);
-})();
-//# sourceMappingURL=../maps/ui_components/ui-components.module.js.map
 
 'use strict';
 

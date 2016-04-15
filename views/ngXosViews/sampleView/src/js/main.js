@@ -53,13 +53,16 @@ angular.module('xos.sampleView', [
           }
         ],
         filter: 'field',
-        order: true
+        order: true,
+        pagination: {
+          pageSize: 3
+        }
       };
 
       // retrieving user list
       Users.query().$promise
       .then((users) => {
-        this.users = users;
+        this.users = users.concat(users, users, users);
       })
       .catch((e) => {
         throw new Error(e);
