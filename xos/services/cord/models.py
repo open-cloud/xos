@@ -602,7 +602,7 @@ class VSGTenant(TenantWithContainer):
     @property
     def wan_container_mac(self):
         if self.vrouter:
-            return self.vrouter.public_ip
+            return self.vrouter.public_mac
         else:
             if (CORD_USE_VTN):
                 # Should this be an error?
