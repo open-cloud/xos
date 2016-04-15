@@ -3,7 +3,7 @@ IMAGE_NAME:=xosproject/xos
 TOSCA_CONFIG_PATH:=/opt/xos/configurations/opencloud/opencloud.yaml
 XOS_GIT_REPO?=git://github.com/open-cloud/xos.git
 XOS_GIT_BRANCH?=master
-NO_DOCKER_CACHE?=false
+NO_DOCKER_CACHE?=true
 
 .PHONY: build
 build: ; sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} .
