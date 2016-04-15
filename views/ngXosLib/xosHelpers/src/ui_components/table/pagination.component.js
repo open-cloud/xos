@@ -19,7 +19,7 @@
         change: '='
       },
       template: `
-        <div class="row">
+        <div class="row" ng-if="vm.pageList.length > 1">
           <div class="col-xs-12 text-center">
             <ul class="pagination">
               <li
@@ -68,7 +68,7 @@
         // watch for data changes
         $scope.$watch(() => this.totalElements, () => {
           if(this.totalElements){
-            this.pages = Math.round(this.totalElements / this.pageSize);
+            this.pages = Math.ceil(this.totalElements / this.pageSize);
             this.pageList = this.createPages(this.pages);
           }
           // scope.getPages();

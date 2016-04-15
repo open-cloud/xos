@@ -12,7 +12,7 @@
   describe('The xos.helper module', function(){
     describe('The NoHyperlinks factory', () => {
 
-      let httpProviderObj, httpBackend, http, noHyperlinks;
+      let httpProviderObj, noHyperlinks;
 
       beforeEach(() => {
         module(
@@ -23,9 +23,7 @@
           }
         );
 
-        inject(function (_$httpBackend_, _$http_, _NoHyperlinks_) {
-          httpBackend = _$httpBackend_;
-          http = _$http_;
+        inject(function (_NoHyperlinks_) {
           noHyperlinks = _NoHyperlinks_
         });
 

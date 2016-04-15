@@ -55,7 +55,7 @@ angular.module('xos.sampleView', [
         filter: 'field',
         order: true,
         pagination: {
-          pageSize: 3
+          pageSize: 6
         }
       };
 
