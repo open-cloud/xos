@@ -12,7 +12,11 @@ sys.path.insert(0, parentdir)
 
 
 class SyncVPNTenant(SyncInstanceUsingAnsible):
-    """Class for syncing a VPNTenant using Ansible."""
+    """Class for syncing a VPNTenant using Ansible.
+
+    This SyncStep creates any necessary files for the VPNTenant using ESAY RSA and then runs the
+    Ansible template to start the server on an instance.
+    """
     provides = [VPNTenant]
     observes = VPNTenant
     requested_interval = 0

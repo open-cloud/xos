@@ -1,7 +1,7 @@
 from core.models import TenantPrivilege
 from plus import PlusSerializerMixin
 from rest_framework import serializers
-from services.vpn.models import VPNService, VPNTenant, VPN_KIND
+from services.vpn.models import VPNService, VPNTenant
 from xos.apibase import XOSListCreateAPIView
 
 if hasattr(serializers, "ReadOnlyField"):
@@ -20,22 +20,40 @@ def get_default_vpn_service():
 
 
 class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
-        id = ReadOnlyField()
-        server_network = ReadOnlyField()
-        vpn_subnet = ReadOnlyField()
-        script_text = serializers.SerializerMethodField()
+    """A Serializer for the VPNTenant that has the minimum information required for clients.
 
-        class Meta:
-            model = VPNTenant
-            fields = ('id', 'service_specific_attribute', 'vpn_subnet',
-                      'server_network', 'script_text')
+    Attributes:
+        id (ReadOnlyField): The ID of VPNTenant.
+        server_network (ReadOnlyField): The network of the VPN.
+        vpn_subnet (ReadOnlyField): The subnet of the VPN.
+        script_text (SerializerMethodField): The text of the script for the client to use to
+            connect.
+    """
+    id = ReadOnlyField()
+    server_network = ReadOnlyField()
+    vpn_subnet = ReadOnlyField()
+    script_text = serializers.SerializerMethodField()
 
-        def get_script_text(self, obj):
-            return obj.create_client_script(
-                self.context['request'].user.email + "-" + str(obj.id))
+    class Meta:
+        model = VPNTenant
+        fields = ('id', 'service_specific_attribute', 'vpn_subnet',
+                  'server_network', 'script_text')
+
+    def get_script_text(self, obj):
+        """Gets the text of the client script for the requesting user.
+
+        Parameters:
+            obj (services.vpn.models.VPNTenant): The VPNTenant to connect to.
+
+        Returns:
+            str: The client script as a str.
+        """
+        return obj.create_client_script(
+            self.context['request'].user.email + "-" + str(obj.id))
 
 
 class VPNTenantList(XOSListCreateAPIView):
+    """Class that provides a list of VPNTenants that the user has permission to access."""
     serializer_class = VPNTenantSerializer
     method_kind = "list"
     method_name = "vpntenant"

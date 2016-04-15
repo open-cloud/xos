@@ -10,7 +10,14 @@ sys.path.insert(0, parentdir)
 
 
 class SyncTenantPrivilege(SyncStep):
-    """Class for syncing a TenantPrivilege."""
+    """Class for syncing a TenantPrivilege for a VPNTenant.
+
+    This SyncStep isolates the updated TenantPrivileges that are for VPNTenants and performs
+    actions if the TenantPrivilege has been added or deleted. For added privileges a new client
+    certificate and key are made, signed with the ca.crt file used by this VPNTenant. For deleted
+    privileges the client certificate is revoked and the files associated are deleted. In both
+    cases the associated VPNTenant is saved causing the VPNTenant synchronizer to run.
+    """
     provides = [TenantPrivilege]
     observes = TenantPrivilege
     requested_interval = 0
@@ -59,5 +66,14 @@ class SyncTenantPrivilege(SyncStep):
         record.delete()
 
     def get_certificate_name(self, tenant_privilege):
+        """Gets the name of a certificate for the given TenantPrivilege
+
+        Parameters:
+            tenant_privilege (core.models.TenantPrivilege): The TenantPrivilege to use to generate
+                the certificate name.
+
+        Returns:
+            str: The certificate name.
+        """"
         return (str(tenant_privilege.user.email) +
                 "-" + str(tenant_privilege.tenant.id))

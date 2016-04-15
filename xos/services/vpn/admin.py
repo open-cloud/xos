@@ -106,14 +106,17 @@ class VPNTenantForm(forms.ModelForm):
     Attributes:
         creator (forms.ModelChoiceField): The XOS user that created this
             tenant.
-        client_conf (forms.CharField): The readonly configuration used on the
-            client to connect to this Tenant.
-        server_address (forms.GenericIPAddressField): The ip address on the VPN
-            of this Tenant.
-        client_address (forms.GenericIPAddressField): The ip address on the VPN
-            of the client.
+        server_network (forms.GenericIPAddressField): The IP address of the VPN network.
+        vpn_subnet (forms.GenericIPAddressField): The subnet used by the VPN network.
         is_persistent (forms.BooleanField): Determines if this Tenant keeps
             this connection alive through failures.
+        clients_can_see_each_other (forms.BooleanField): Determines if the clients on the VPN can
+            communicate with each other.
+        failover_servers (forms.ModelMultipleChoiceField): The other VPNTenants to use as failover
+            servers.
+        protocol (forms.ChoiceField): The protocol to use.
+        use_ca_from (forms.ModelChoiceField): Another VPNTenant to use the CA of, this is a very
+            hacky way to let VPNs have the same clients.
     """
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     server_network = forms.GenericIPAddressField(
