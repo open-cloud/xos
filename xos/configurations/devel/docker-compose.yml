@@ -32,7 +32,7 @@ xos_synchronizer_vpn:
     volumes_from:
         - xos_synchronizer_vpn_data:rw
 
- xos_synchronizer_vpn_data:
+xos_synchronizer_vpn_data:
     image: xosproject/xos-synchronizer-openstack
     labels:
         org.xosproject.kind: synchronizer
