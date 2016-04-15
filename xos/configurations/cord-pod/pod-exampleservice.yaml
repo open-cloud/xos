@@ -29,7 +29,6 @@ topology_template:
       type: tosca.nodes.network.Network
       properties:
           ip_version: 4
-          cidr: 10.168.1.0/24
       requirements:
           - network_template:
               node: Private
