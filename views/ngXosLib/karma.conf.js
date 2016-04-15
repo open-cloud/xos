@@ -13,7 +13,7 @@ var bowerComponents = wiredep({devDependencies: true})[ 'js' ].map(function( fil
 
 var files = bowerComponents.concat([
   'api/**/*.js',
-  'xosHelpers/src/*.module.js',
+  'xosHelpers/src/**/*.module.js',
   'xosHelpers/src/**/*.js',
   'xosHelpers/spec/**/*.test.js'
 ]);

@@ -15,7 +15,7 @@
   * @description A table component
   **/
 
-  angular.module('xos.uiComponents.table', [])
+  angular.module('xos.uiComponents')
 
     /**
     * @ngdoc directive
@@ -186,7 +186,7 @@
               </tr>
             </tbody>
             <tbody>
-              <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse">
+              <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: vm.config.pagination.pageSize track by $index">
                 <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>
                 <td ng-if="vm.config.actions">
                   <a href=""
@@ -201,6 +201,12 @@
               </tr>
             </tbody>
           </table>
+          <xos-pagination
+            ng-if="vm.config.pagination"
+            page-size="vm.config.pagination.pageSize"
+            total-elements="vm.data.length"
+            change="vm.goToPage">
+            </xos-pagination>
         `,
         bindToController: true,
         controllerAs: 'vm',
@@ -218,7 +224,13 @@
           this.classes = this.config.classes || 'table table-striped table-bordered';
 
           if(this.config.actions){
-
+            // TODO validate action format
+          }
+          if(this.config.pagination){
+            this.currentPage = 0;
+            this.goToPage = (n) => {
+              this.currentPage = n;
+            };
           }
 
         }

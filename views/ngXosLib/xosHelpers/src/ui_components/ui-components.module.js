@@ -17,6 +17,5 @@
   **/
 
   angular.module('xos.uiComponents', [
-    'xos.uiComponents.table'
   ])
 })();
