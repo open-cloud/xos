@@ -153,18 +153,8 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                         if mac:
                             safe_macs.append(mac)
 
-        wan_vm_ip=""
-        wan_vm_mac=""
-        tags = Tag.select_by_content_object(o.instance).filter(name="vm_wan_addr")
-        if tags:
-            parts=tags[0].value.split(",")
-            if len(parts)!=3:
-                raise Exception("vm_wan_addr tag is malformed: %s" % value)
-            wan_vm_ip = parts[1]
-            wan_vm_mac = parts[2]
-        else:
-            if CORD_USE_VTN:
-                raise Exception("no vm_wan_addr tag for instance %s" % o.instance)
+        wan_vm_ip=o.wan_vm_ip
+        wan_vm_mac=o.wan_vm_mac
 
         fields = {"vlan_ids": vlan_ids,   # XXX remove this
                 "s_tags": s_tags,

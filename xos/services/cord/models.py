@@ -611,6 +611,30 @@ class VSGTenant(TenantWithContainer):
                 return self.ip_to_mac(self.wan_container_ip)
 
     @property
+    def wan_vm_ip(self):
+        tags = Tag.select_by_content_object(self.instance).filter(name="vm_vrouter_tenant")
+        if tags:
+            tenant = VRouterTenant.objects.get(id=tags[0].value)
+            return tenant.public_ip
+        else:
+            if CORD_USE_VTN:
+                raise Exception("no vm_vrouter_tenant tag for instance %s" % o.instance)
+            else:
+                return ""
+
+    @property
+    def wan_vm_mac(self):
+        tags = Tag.select_by_content_object(self.instance).filter(name="vm_vrouter_tenant")
+        if tags:
+            tenant = VRouterTenant.objects.get(id=tags[0].value)
+            return tenant.public_mac
+        else:
+            if CORD_USE_VTN:
+                raise Exception("no vm_vrouter_tenant tag for instance %s" % o.instance)
+            else:
+                return ""
+
+    @property
     def private_ip(self):
         return self.addresses.get("private", (None, None) )[0]
 
