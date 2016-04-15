@@ -11,6 +11,7 @@ class VPNService(Service):
     """Defines the Service for creating VPN servers."""
     KIND = VPN_KIND
     OPENVPN_PREFIX = "/opt/openvpn/"
+    SERVER_PREFIX = OPENVPN_PREFIX + "server-"
     VARS = OPENVPN_PREFIX + "vars"
     EASYRSA_LOC = OPENVPN_PREFIX + "easyrsa3/easyrsa"
     EASYRSA_COMMAND = EASYRSA_LOC + " --vars=" + VARS
@@ -28,6 +29,10 @@ class VPNService(Service):
             raise XOSConfigurationError(
                 full_command + " failed with standard out:" + str(stdout) +
                 " and stderr: " + str(stderr))
+
+    @classmethod
+    def get_pki_dir(cls, tenant):
+        return VPNService.SERVER_PREFIX + str(tenant.id)
 
     class Meta:
         proxy = True
@@ -89,10 +94,7 @@ class VPNTenant(TenantWithContainer):
                           'server_network': None,
                           'clients_can_see_each_other': True,
                           'is_persistent': True,
-                          'ca_crt': None,
                           'port': None,
-                          'script_text': None,
-                          'pki_dir': None,
                           'use_ca_from_id': None,
                           'failover_server_ids': list(),
                           'protocol': None}
@@ -129,15 +131,6 @@ class VPNTenant(TenantWithContainer):
     @use_ca_from_id.setter
     def use_ca_from_id(self, value):
         self.set_attribute("use_ca_from_id", value)
-
-    @property
-    def pki_dir(self):
-        return self.get_attribute(
-            "pki_dir", self.default_attributes["pki_dir"])
-
-    @pki_dir.setter
-    def pki_dir(self, value):
-        self.set_attribute("pki_dir", value)
 
     @property
     def addresses(self):
@@ -222,15 +215,6 @@ class VPNTenant(TenantWithContainer):
         self.set_attribute("clients_can_see_each_other", value)
 
     @property
-    def ca_crt(self):
-        """str: the string for the ca certificate"""
-        return self.get_attribute("ca_crt", self.default_attributes['ca_crt'])
-
-    @ca_crt.setter
-    def ca_crt(self, value):
-        self.set_attribute("ca_crt", value)
-
-    @property
     def port_number(self):
         """int: the integer representing the port number for this server"""
         return self.get_attribute("port", self.default_attributes['port'])
@@ -240,21 +224,22 @@ class VPNTenant(TenantWithContainer):
         self.set_attribute("port", value)
 
     def create_client_script(self, client_name):
+        pki_dir = VPNService.get_pki_dir(self)
         script = ""
         # write the configuration portion
         script += ("printf \"%b\" \"")
         script += self.generate_client_conf(client_name)
         script += ("\" > client.conf\n")
         script += ("printf \"%b\" \"")
-        for line in self.ca_crt:
+        for line in self.get_ca_crt(pki_dir):
             script += (line.rstrip() + r"\n")
         script += ("\" > ca.crt\n")
         script += ("printf \"%b\" \"")
-        for line in self.get_client_cert(client_name):
+        for line in self.get_client_cert(client_name, pki_dir):
             script += (line.rstrip() + r"\n")
         script += ("\" > " + client_name + ".crt\n")
         script += ("printf \"%b\" \"")
-        for line in self.get_client_key(client_name):
+        for line in self.get_client_key(client_name, pki_dir):
             script += (line.rstrip() + r"\n")
         script += ("\" > " + client_name + ".key\n")
         # make sure openvpn is installed
@@ -264,12 +249,16 @@ class VPNTenant(TenantWithContainer):
         # close the script
         return script
 
-    def get_client_cert(self, client_name):
-        with open(self.pki_dir + "/issued/" + client_name + ".crt", 'r') as f:
+    def get_ca_crt(self, pki_dir):
+        with open(pki_dir + "/ca.crt", 'r') as f:
             return f.readlines()
 
-    def get_client_key(self, client_name):
-        with open(self.pki_dir + "/private/" + client_name + ".key", 'r') as f:
+    def get_client_cert(self, client_name, pki_dir):
+        with open(pki_dir + "/issued/" + client_name + ".crt", 'r') as f:
+            return f.readlines()
+
+    def get_client_key(self, client_name, pki_dir):
+        with open(pki_dir + "/private/" + client_name + ".key", 'r') as f:
             return f.readlines()
 
     def generate_client_conf(self, client_name):
