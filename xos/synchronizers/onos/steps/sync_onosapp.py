@@ -1,7 +1,6 @@
 import hashlib
 import os
 import socket
-import socket
 import sys
 import base64
 import time
@@ -14,7 +13,7 @@ from synchronizers.base.ansible import run_template
 from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
 from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
-from core.models import Service, Slice, ControllerSlice, ControllerUser
+from core.models import Service, Slice, Controller, ControllerSlice, ControllerUser, Node, TenantAttribute, Tag
 from services.onos.models import ONOSService, ONOSApp
 from xos.logger import Logger, logging
 
@@ -117,6 +116,127 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                 raise Exception("Controller user object for %s does not exist" % instance.creator)
             return cuser.kuser_id
 
+
+    def node_tag_default(self, o, node, tagname, default):
+        tags = Tag.select_by_content_object(node).filter(name=tagname)
+        if tags:
+            value = tags[0].value
+        else:
+            value = default
+            logger.info("node %s: saving default value %s for tag %s" % (node.name, value, tagname))
+            service = self.get_onos_service(o)
+            tag = Tag(service=service, content_object=node, name=tagname, value=value)
+            tag.save()
+        return value
+
+    # Scan attrs for attribute name
+    # If it's not present, save it as a TenantAttribute
+    def attribute_default(self, tenant, attrs, name, default):
+        if name in attrs:
+            value = attrs[name]
+        else:
+            value = default
+            logger.info("saving default value %s for attribute %s" % (value, name))
+            ta = TenantAttribute(tenant=tenant, name=name, value=value)
+            ta.save()
+        return value
+
+    # This function currently assumes a single Deployment and Site
+    def get_vtn_config(self, o, attrs):
+
+        # The "attrs" argument contains a list of all service and tenant attributes
+        # If an attribute is present, use it in the configuration
+        # Otherwise save the attriute with a reasonable (for a CORD devel pod) default value
+        # The admin will see all possible configuration values and the assigned defaults
+        privateGatewayMac = self.attribute_default(o, attrs, "privateGatewayMac", "00:00:00:00:00:01")
+        localManagementIp = self.attribute_default(o, attrs, "localManagementIp", "172.27.0.1/24")
+        ovsdbPort = self.attribute_default(o, attrs, "ovsdbPort", "6641")
+        sshPort = self.attribute_default(o, attrs, "sshPort", "22")
+        sshUser = self.attribute_default(o, attrs, "sshUser", "root")
+        sshKeyFile = self.attribute_default(o, attrs, "sshKeyFile", "/root/node_key")
+
+        # OpenStack endpoints and credentials
+        keystone_server = "http://keystone:5000/v2.0/"
+        user_name = "admin"
+        password = "ADMIN_PASS"
+        controllers = Controller.objects.all()
+        if controllers:
+            controller = controllers[0]
+            keystone_server = controller.auth_url
+            user_name = controller.admin_user
+            password = controller.admin_password
+
+        # Put this in the controller object?  Or fetch it from Keystone?
+        # Seems like VTN should be pulling it from Keystone
+        # For now let it be specified by a service / tenant attribute
+        neutron_server = self.attribute_default(o, attrs, "neutron_server", "http://neutron-api:9696/v2.0/")
+
+        data = {
+            "apps" : {
+                "org.onosproject.cordvtn" : {
+                    "cordvtn" : {
+                        "privateGatewayMac" : privateGatewayMac,
+                        "localManagementIp": localManagementIp,
+                        "ovsdbPort": ovsdbPort,
+                        "sshPort": sshPort,
+                        "sshUser": sshUser,
+                        "sshKeyFile": sshKeyFile,
+                        "publicGateways": [],
+                        "nodes" : []
+                    }
+                },
+                "org.onosproject.openstackinterface" : {
+                    "openstackinterface" : {
+                        "do_not_push_flows" : "true",
+                        "neutron_server" : neutron_server,
+                        "keystone_server" : keystone_server,
+                        "user_name" : user_name,
+                        "password" : password
+                    }
+                }
+            }
+        }
+
+        # Generate apps->org.onosproject.cordvtn->cordvtn->nodes
+
+        # We need to generate a CIDR address for the physical node's
+        # address on the management network
+        mgmtSubnetBits = self.attribute_default(o, attrs, "mgmtSubnetBits", "24")
+
+        nodes = Node.objects.all()
+        for node in nodes:
+            nodeip = socket.gethostbyname(node.name)
+
+            try:
+                bridgeId = self.node_tag_default(o, node, "bridgeId", "of:0000000000000001")
+                dataPlaneIntf = self.node_tag_default(o, node, "dataPlaneIntf", "veth1")
+                # This should be generated from the AddressPool if not present
+                dataPlaneIp = self.node_tag_default(o, node, "dataPlaneIp", "192.168.199.1/24")
+            except:
+                logger.error("not adding node %s to the VTN configuration" % node.name)
+                continue
+
+            node_dict = {
+                "hostname": node.name,
+                "hostManagementIp": "%s/%s" % (nodeip, mgmtSubnetBits),
+                "bridgeId": bridgeId,
+                "dataPlaneIntf": dataPlaneIntf,
+                "dataPlaneIp": dataPlaneIp
+            }
+            data["apps"]["org.onosproject.cordvtn"]["cordvtn"]["nodes"].append(node_dict)
+
+        # Generate apps->org.onosproject.cordvtn->cordvtn->publicGateways
+        # This should come from the vRouter service, but stick it in an attribute for now
+        gatewayIp = self.attribute_default(o, attrs, "gatewayIp", "10.168.0.1")
+        gatewayMac = self.attribute_default(o, attrs, "gatewayMac", "02:42:0a:a8:00:01")
+        gateway_dict = {
+            "gatewayIp": gatewayIp,
+            "gatewayMac": gatewayMac
+        }
+        data["apps"]["org.onosproject.cordvtn"]["cordvtn"]["publicGateways"].append(gateway_dict)
+
+        return json.dumps(data, indent=4, sort_keys=True)
+
     def write_configs(self, o):
         o.config_fns = []
         o.rest_configs = []
@@ -152,6 +272,33 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             endpoint = name[5:]
             file(os.path.join(o.files_dir, fn),"w").write(" " +value)
             o.early_rest_configs.append( {"endpoint": endpoint, "fn": fn} )
+
+        # Generate config files and save them to the appropriate tenant attributes
+        autogen = []
+        for key, value in attrs.iteritems():
+            if key == "autogenerate" and value:
+                autogen.append(value)
+        for label in autogen:
+            config = None
+            value = None
+            if label == "vtn-network-cfg":
+            # Generate the VTN config file... where should this live?
+                config = "rest_onos/v1/network/configuration/"
+                value = self.get_vtn_config(o, attrs)
+            if config:
+                tas = TenantAttribute.objects.filter(tenant=o, name=config)
+                if tas:
+                    ta = tas[0]
+                    if ta.value != value:
+                        logger.info("updating %s with autogenerated config" % config)
+                        ta.value = value
+                        ta.save()
+                        attrs[config] = value
+                else:
+                    logger.info("saving autogenerated config %s" % config)
+                    ta = TenantAttribute(tenant=o, name=config, value=value)
+                    ta.save()
+                    attrs[config] = value
 
         for name in attrs.keys():
             value = attrs[name]

@@ -127,6 +127,9 @@ class User(AbstractBaseUser, PlModelMixIn):
                                       default="Provisioning in progress")
     deleted = models.BooleanField(default=False)
     write_protect = models.BooleanField(default=False)
+    lazy_blocked = models.BooleanField(default=False)
+    no_sync = models.BooleanField(default=False)     # prevent object sync
+    no_policy = models.BooleanField(default=False)   # prevent model_policy run
 
     timezone = TimeZoneField()
 
