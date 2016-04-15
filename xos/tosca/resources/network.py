@@ -58,7 +58,7 @@ class XOSNetwork(XOSResource):
         for provider_service_name in self.get_requirements("tosca.relationships.TenantOfService"):
             provider_service = self.get_xos_object(Service, name=provider_service_name)
 
-            existing_tenancy = Tenant.objects.filter(provider_service = provider_service, subscriber_service = obj)
+            existing_tenancy = Tenant.objects.filter(provider_service = provider_service, subscriber_network = obj)
             if existing_tenancy:
                 self.info("Tenancy relationship from %s to %s already exists" % (str(obj), str(provider_service)))
             else:
@@ -66,7 +66,7 @@ class XOSNetwork(XOSResource):
                 if provider_service.kind == VROUTER_KIND:
                     tenancy = VRouterService.objects.get(id=provider_service.id).get_tenant(address_pool_name="addresses_"+obj.name, subscriber_network=obj)
                     tenancy.save()
-                    self.cidr = tenancy.cidr
+                    obj.subnet = tenancy.cidr
                 else:
                     raise Exception("The only network tenancy relationships that are allowed are to vRouter services")
 
