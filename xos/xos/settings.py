@@ -182,6 +182,7 @@ INSTALLED_APPS = (
     'services.syndicate_storage',
     'services.vpn',
     'services.vtr',
+    'services.vrouter',
     'geoposition',
     'rest_framework_swagger',
 )

@@ -148,6 +148,7 @@ function makemigrations {
     python ./manage.py makemigrations vpn
     python ./manage.py makemigrations onos
     python ./manage.py makemigrations vtr
+    python ./manage.py makemigrations vrouter
     #python ./manage.py makemigrations servcomp
 }
 

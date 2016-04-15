@@ -369,10 +369,12 @@ class Tenant(PlCoreBase, AttributeMixin):
 
     # The next four things are the various type of objects that can be subscribers of this Tenancy
     # relationship. One and only one can be used at a time.
+    # XXX these should really be changed to GenericForeignKey
     subscriber_service = models.ForeignKey(Service, related_name='subscribed_tenants', blank=True, null=True)
     subscriber_tenant = models.ForeignKey("Tenant", related_name='subscribed_tenants', blank=True, null=True)
     subscriber_user = models.ForeignKey("User", related_name='subscribed_tenants', blank=True, null=True)
     subscriber_root = models.ForeignKey("TenantRoot", related_name="subscribed_tenants", blank=True, null=True)
+    subscriber_network = models.ForeignKey("Network", related_name="subscribed_tenants", blank=True, null=True)
 
     # Service_specific_attribute and service_specific_id are opaque to XOS
     service_specific_id = StrippedCharField(max_length=30, blank=True, null=True)

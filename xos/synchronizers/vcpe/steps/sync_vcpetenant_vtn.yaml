@@ -294,7 +294,7 @@
     service: name={{ container_name }} state=started
 
   - name: reload ufw
-    shell: docker exec {{ container_name }} bash -c "/sbin/iptables -t nat -F PREROUTING; /usr/sbin/ufw reload"
+    shell: docker exec {{ container_name }} bash -c "/sbin/iptables -t nat -F PREROUTING; /sbin/iptables -t nat -F POSTROUTING; /usr/sbin/ufw reload"
 
   - name: rerun /etc/rc.local
     shell: docker exec {{ container_name }} bash -c "/etc/rc.local"
