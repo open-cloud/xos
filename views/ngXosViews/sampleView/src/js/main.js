@@ -59,6 +59,12 @@ angular.module('xos.sampleView', [
         // }
       };
 
+      this.alertConfig = {
+        type: 'danger',
+        closeBtn: true
+      }
+
+
       // retrieving user list
       Users.query().$promise
       .then((users) => {
