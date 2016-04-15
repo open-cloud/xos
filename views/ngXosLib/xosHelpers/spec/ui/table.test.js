@@ -154,6 +154,32 @@
             });
           });
         });
+
+        describe('when order is true', () => {
+          beforeEach(() => {
+            isolatedScope.config.order = true;
+            scope.$digest();
+          });
+
+          it('should render a arrows beside', () => {
+            var arrows = element[0].getElementsByTagName('i');
+            expect(arrows.length).toEqual(4);
+          });
+
+          describe('and an order is set', () => {
+            beforeEach(() => {
+              isolatedScope.orderBy = 'label-1';
+              isolatedScope.reverse = true;
+              scope.$digest();
+            });
+
+            it('should orderBy', function() {
+              var tr = element[0].getElementsByTagName('tr');
+              expect(angular.element(tr[1]).text()).toContain('Sample 2.2');
+              expect(angular.element(tr[2]).text()).toContain('Sample 1.1');
+            });
+          });
+        });
       });
     });
   });
