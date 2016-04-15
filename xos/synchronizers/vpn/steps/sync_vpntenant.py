@@ -3,6 +3,7 @@ import shutil
 import sys
 
 from django.db.models import F, Q
+
 from services.vpn.models import VPNService, VPNTenant
 from synchronizers.base.SyncInstanceUsingAnsible import \
     SyncInstanceUsingAnsible

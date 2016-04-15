@@ -1,8 +1,9 @@
+from django import forms
+from django.contrib import admin
+
 from core.admin import ReadOnlyAwareAdmin, SliceInline, TenantPrivilegeInline
 from core.middleware import get_request
 from core.models import User
-from django import forms
-from django.contrib import admin
 from services.vpn.models import VPN_KIND, VPNService, VPNTenant
 from xos.exceptions import XOSValidationError
 
