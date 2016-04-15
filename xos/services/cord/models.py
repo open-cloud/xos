@@ -8,6 +8,7 @@ from django.db.models import Q
 from operator import itemgetter, attrgetter, methodcaller
 from core.models import Tag
 from core.models.service import LeastLoadedNodeScheduler
+from services.vrouter.models import VRouterService, VRouterTenant
 import traceback
 from xos.exceptions import *
 from xos.config import Config
@@ -448,6 +449,7 @@ class VSGTenant(TenantWithContainer):
     def __init__(self, *args, **kwargs):
         super(VSGTenant, self).__init__(*args, **kwargs)
         self.cached_vbng=None
+        self.cached_vrouter=None
 
     @property
     def vbng(self):
@@ -466,6 +468,24 @@ class VSGTenant(TenantWithContainer):
     @vbng.setter
     def vbng(self, value):
         raise XOSConfigurationError("vCPE.vBNG cannot be set this way -- create a new vBNG object and set it's subscriber_tenant instead")
+
+    @property
+    def vrouter(self):
+        vrouter = self.get_newest_subscribed_tenant(VRouterTenant)
+        if not vrouter:
+            return None
+
+        # always return the same object when possible
+        if (self.cached_vrouter) and (self.cached_vrouter.id == vrouter.id):
+            return self.cached_vrouter
+
+        vrouter.caller = self.creator
+        self.cached_vrouter = vrouter
+        return vrouter
+
+    @vrouter.setter
+    def vrouter(self, value):
+        raise XOSConfigurationError("vCPE.vRouter cannot be set this way -- create a new vRuter object and set its subscriber_tenant instead")
 
     @property
     def volt(self):
@@ -559,21 +579,20 @@ class VSGTenant(TenantWithContainer):
 
     @property
     def wan_container_ip(self):
-        if CORD_USE_VTN:
-            # When using VTN, wan_container_ip is stored and maintained inside
-            # of the vSG object.
-            return self.get_attribute("wan_container_ip", self.default_attributes["wan_container_ip"])
+        if self.vrouter:
+            return self.vrouter.public_ip
         else:
-            # When not using VTN, wan_container_ip is the same as wan_ip.
-            # XXX Is this broken for multiple-containers-per-VM?
-            return self.wan_ip
+            if  (CORD_USE_VTN):
+                # Should this be an error?
+                return None
+            else:
+                # When not using VTN, wan_container_ip is the same as wan_ip.
+                # XXX Is this broken for multiple-containers-per-VM?
+                return self.wan_ip
 
     @wan_container_ip.setter
     def wan_container_ip(self, value):
-        if CORD_USE_VTN:
-            self.set_attribute("wan_container_ip", value)
-        else:
-            raise Exception("wan_container_ip.setter called on non-VTN CORD")
+        raise Exception("wan_container_ip is not settable")
 
     def ip_to_mac(self, ip):
         (a, b, c, d) = ip.split('.')
@@ -582,9 +601,38 @@ class VSGTenant(TenantWithContainer):
     # Generate the MAC for the container interface connected to WAN
     @property
     def wan_container_mac(self):
-        if not self.wan_container_ip:
-            return None
-        return self.ip_to_mac(self.wan_container_ip)
+        if self.vrouter:
+            return self.vrouter.public_mac
+        else:
+            if (CORD_USE_VTN):
+                # Should this be an error?
+                return None
+            else:
+                return self.ip_to_mac(self.wan_container_ip)
+
+    @property
+    def wan_vm_ip(self):
+        tags = Tag.select_by_content_object(self.instance).filter(name="vm_vrouter_tenant")
+        if tags:
+            tenant = VRouterTenant.objects.get(id=tags[0].value)
+            return tenant.public_ip
+        else:
+            if CORD_USE_VTN:
+                raise Exception("no vm_vrouter_tenant tag for instance %s" % o.instance)
+            else:
+                return ""
+
+    @property
+    def wan_vm_mac(self):
+        tags = Tag.select_by_content_object(self.instance).filter(name="vm_vrouter_tenant")
+        if tags:
+            tenant = VRouterTenant.objects.get(id=tags[0].value)
+            return tenant.public_mac
+        else:
+            if CORD_USE_VTN:
+                raise Exception("no vm_vrouter_tenant tag for instance %s" % o.instance)
+            else:
+                return ""
 
     @property
     def private_ip(self):
@@ -631,6 +679,28 @@ class VSGTenant(TenantWithContainer):
             # print "XXX cleanup vnbg", self.vbng
             self.vbng.delete()
 
+    def get_vrouter_service(self):
+        vrouterServices = VRouterService.get_service_objects().all()
+        if not vrouterServices:
+            raise XOSConfigurationError("No VROUTER Services available")
+        return vrouterServices[0]
+
+    def manage_vrouter(self):
+        # Each vCPE object owns exactly one vRouterTenant object
+
+        if self.deleted:
+            return
+
+        if self.vrouter is None:
+            vrouter = self.get_vrouter_service().get_tenant(address_pool_name="addresses_vsg", subscriber_tenant = self)
+            vrouter.caller = self.creator
+            vrouter.save()
+
+    def cleanup_vrouter(self):
+        if self.vrouter:
+            # print "XXX cleanup vrouter", self.vrouter
+            self.vrouter.delete()
+
     def cleanup_orphans(self):
         # ensure vCPE only has one vBNG
         cur_vbng = self.vbng
@@ -638,6 +708,13 @@ class VSGTenant(TenantWithContainer):
             if (not cur_vbng) or (vbng.id != cur_vbng.id):
                 # print "XXX clean up orphaned vbng", vbng
                 vbng.delete()
+
+        # ensure vCPE only has one vRouter
+        cur_vrouter = self.vrouter
+        for vrouter in list(self.get_subscribed_tenants(VRouterTenant)):
+            if (not cur_vrouter) or (vrouter.id != cur_vrouter.id):
+                # print "XXX clean up orphaned vrouter", vrouter
+                vrouter.delete()
 
         if self.orig_instance_id and (self.orig_instance_id != self.get_attribute("instance_id")):
             instances=Instance.objects.filter(id=self.orig_instance_id)
@@ -741,33 +818,6 @@ class VSGTenant(TenantWithContainer):
                 self.bbs_account = None
                 super(VSGTenant, self).save()
 
-    def get_wan_address_from_pool(self):
-        ap = AddressPool.objects.filter(name="public_addresses")
-        if not ap:
-            raise Exception("AddressPool 'public_addresses' does not exist. Please configure it.")
-        ap = ap[0]
-
-        addr = ap.get_address()
-        if not addr:
-            raise Exception("AddressPool 'public_addresses' has run out of addresses.")
-        return addr
-
-    def put_wan_address_to_pool(self, addr):
-        AddressPool.objects.filter(name="public_addresses")[0].put_address(addr)
-
-    def manage_wan_container_ip(self):
-        if CORD_USE_VTN:
-            if not self.wan_container_ip:
-                addr = self.get_wan_address_from_pool()
-
-                self.wan_container_ip = addr
-                super(TenantWithContainer, self).save()
-
-    def cleanup_wan_container_ip(self):
-        if CORD_USE_VTN and self.wan_container_ip:
-            self.put_wan_address_to_pool(self.wan_container_ip)
-            self.wan_container_ip = None
-
     def find_or_make_port(self, instance, network, **kwargs):
         port = Port.objects.filter(instance=instance, network=network)
         if port:
@@ -829,10 +879,12 @@ class VSGTenant(TenantWithContainer):
             # VTN-CORD needs a WAN address for the VM, so that the VM can
             # be configured.
             if CORD_USE_VTN:
-                tags = Tag.select_by_content_object(instance).filter(name="vm_wan_addr")
+                tags = Tag.select_by_content_object(instance).filter(name="vm_vrouter_tenant")
                 if not tags:
-                    address = self.get_wan_address_from_pool()
-                    tag = Tag(service=self.provider_service, content_object=instance, name="vm_wan_addr", value="%s,%s,%s" % ("public_addresses", address, self.ip_to_mac(address)))
+                    vrouter = self.get_vrouter_service().get_tenant(address_pool_name="addresses_vsg", subscriber_service = self.provider_service)
+                    vrouter.set_attribute("tenant_for_instance_id", instance.id)
+                    vrouter.save()
+                    tag = Tag(service=self.provider_service, content_object=instance, name="vm_vrouter_tenant", value="%d" % vrouter.id)
                     tag.save()
 
     def save(self, *args, **kwargs):
@@ -849,8 +901,8 @@ class VSGTenant(TenantWithContainer):
 
     def delete(self, *args, **kwargs):
         self.cleanup_vbng()
+        self.cleanup_vrouter()
         self.cleanup_container()
-        self.cleanup_wan_container_ip()
         super(VSGTenant, self).delete(*args, **kwargs)
 
 def model_policy_vcpe(pk):
@@ -860,9 +912,9 @@ def model_policy_vcpe(pk):
         if not vcpe:
             return
         vcpe = vcpe[0]
-        vcpe.manage_wan_container_ip()
         vcpe.manage_container()
-        vcpe.manage_vbng()
+        vcpe.manage_vrouter()
+        #vcpe.manage_vbng()
         vcpe.manage_bbs_account()
         vcpe.cleanup_orphans()
 

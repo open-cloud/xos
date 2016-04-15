@@ -181,6 +181,7 @@ INSTALLED_APPS = (
     'services.requestrouter',
     'services.syndicate_storage',
     'services.vtr',
+    'services.vrouter',
     'geoposition',
     'rest_framework_swagger',
 )
