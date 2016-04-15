@@ -10,6 +10,41 @@
   'use strict';
 
   angular.module('xos.uiComponents')
+
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosPagination
+    * @restrict E
+    * @description The xos-table directive
+    * @param {Number} pageSize Number of elements per page
+    * @param {Number} totalElements Number of total elements in the collection
+    * @param {Function} change The callback to be triggered on page change.
+    * * @element ANY
+    * @scope
+    * @example
+  <example module="samplePagination">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl1 as vm">
+        <xos-pagination
+          page-size="vm.pageSize"
+          total-elements="vm.totalElements"
+          change="vm.change">
+        </xos-pagination>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('samplePagination', ['xos.uiComponents'])
+      .controller('SampleCtrl1', function(){
+        this.pageSize = 10;
+        this.totalElements = 35;
+        this.change = (pageNumber) => {
+          console.log(pageNumber);
+        }
+      });
+    </file>
+  </example>
+  **/
+
   .directive('xosPagination', function(){
     return {
       restrict: 'E',

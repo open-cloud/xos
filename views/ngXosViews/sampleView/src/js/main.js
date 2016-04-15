@@ -54,15 +54,15 @@ angular.module('xos.sampleView', [
         ],
         filter: 'field',
         order: true,
-        pagination: {
-          pageSize: 6
-        }
+        // pagination: {
+        //   pageSize: 6
+        // }
       };
 
       // retrieving user list
       Users.query().$promise
       .then((users) => {
-        this.users = users.concat(users, users, users);
+        this.users = users;
       })
       .catch((e) => {
         throw new Error(e);

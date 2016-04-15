@@ -13,7 +13,6 @@
   * @ngdoc overview
   * @name xos.uiComponents
   * @description A collection of UI components useful for Dashboard development
-  * @requires xos.uiComponents.table
   **/
 
   angular.module('xos.uiComponents', [

@@ -15,7 +15,6 @@
   * @ngdoc overview
   * @name xos.uiComponents
   * @description A collection of UI components useful for Dashboard development
-  * @requires xos.uiComponents.table
   **/
 
   angular.module('xos.uiComponents', []);
@@ -35,17 +34,11 @@
 (function () {
   'use strict';
 
-  /**
-  * @ngdoc overview
-  * @name xos.uiComponents.table
-  * @description A table component
-  **/
-
   angular.module('xos.uiComponents')
 
   /**
   * @ngdoc directive
-  * @name xos.uiComponents.table.directive:xosTable
+  * @name xos.uiComponents.directive:xosTable
   * @restrict E
   * @description The xos-table directive
   * @param {Object} config The configuration for the component.
@@ -76,14 +69,14 @@
   * @element ANY
   * @scope
   * @example
-  <example module="sampleModule1">
+  <example module="sampleTable1">
   <file name="index.html">
     <div ng-controller="SampleCtrl1 as vm">
       <xos-table data="vm.data" config="vm.config"></xos-table>
     </div>
   </file>
   <file name="script.js">
-    angular.module('sampleModule1', ['xos.uiComponents.table'])
+    angular.module('sampleTable1', ['xos.uiComponents'])
     .controller('SampleCtrl1', function(){
       this.config = {
         columns: [
@@ -110,14 +103,14 @@
     });
   </file>
   </example>
-  <example module="sampleModule2">
+  <example module="sampleTable2">
   <file name="index.html">
     <div ng-controller="SampleCtrl2 as vm">
       <xos-table data="vm.data" config="vm.config"></xos-table>
     </div>
   </file>
   <file name="script.js">
-    angular.module('sampleModule2', ['xos.uiComponents.table'])
+    angular.module('sampleTable2', ['xos.uiComponents'])
     .controller('SampleCtrl2', function(){
       this.config = {
         columns: [
@@ -157,7 +150,52 @@
     });
   </file>
   </example>
-   **/
+  <example module="sampleTable3">
+  <file name="index.html">
+    <div ng-controller="SampleCtrl3 as vm">
+      <xos-table data="vm.data" config="vm.config"></xos-table>
+    </div>
+  </file>
+  <file name="script.js">
+    angular.module('sampleTable3', ['xos.uiComponents'])
+    .controller('SampleCtrl3', function(){
+      this.config = {
+        columns: [
+          {
+            label: 'First Name', // column title
+            prop: 'name' // property to read in the data array
+          },
+          {
+            label: 'Last Name',
+            prop: 'lastname'
+          }
+        ],
+        pagination: {
+          pageSize: 2
+        }
+      };
+       this.data = [
+        {
+          name: 'John',
+          lastname: 'Doe'
+        },
+        {
+          name: 'Gili',
+          lastname: 'Fereydoun'
+        },
+        {
+          name: 'Lucky',
+          lastname: 'Clarkson'
+        },
+        {
+          name: 'Tate',
+          lastname: 'Spalding'
+        }
+      ]
+    });
+  </file>
+  </example>
+  **/
 
   .directive('xosTable', function () {
     return {
@@ -166,7 +204,7 @@
         data: '=',
         config: '='
       },
-      template: '\n          <!-- <pre>{{vm.data | json}}</pre> -->\n          <div class="row" ng-if="vm.config.filter == \'fulltext\'">\n            <div class="col-xs-12">\n              <input\n                class="form-control"\n                placeholder="Type to search.."\n                type="text"\n                ng-model="vm.query"/>\n            </div>\n          </div>\n          <table ng-class="vm.classes" ng-show="vm.data.length > 0">\n            <thead>\n              <tr>\n                <th ng-repeat="col in vm.columns">\n                  {{col.label}}\n                  <span ng-if="vm.config.order">\n                    <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = false">\n                      <i class="glyphicon glyphicon-chevron-up"></i>\n                    </a>\n                    <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = true">\n                      <i class="glyphicon glyphicon-chevron-down"></i>\n                    </a>\n                  </span>\n                </th>\n                <th ng-if="vm.config.actions">Actions</th>\n              </tr>\n            </thead>\n            <tbody ng-if="vm.config.filter == \'field\'">\n              <tr>\n                <td ng-repeat="col in vm.columns">\n                  <input\n                    class="form-control"\n                    placeholder="Type to search by {{col.label}}"\n                    type="text"\n                    ng-model="vm.query[col.prop]"/>\n                </td>\n                <td ng-if="vm.config.actions"></td>\n              </tr>\n            </tbody>\n            <tbody>\n              <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: vm.config.pagination.pageSize track by $index">\n                <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>\n                <td ng-if="vm.config.actions">\n                  <a href=""\n                    ng-repeat="action in vm.config.actions"\n                    ng-click="action.cb(item)"\n                    title="{{action.label}}">\n                    <i\n                      class="glyphicon glyphicon-{{action.icon}}"\n                      style="color: {{action.color}};"></i>\n                  </a>\n                </td>\n              </tr>\n            </tbody>\n          </table>\n          <xos-pagination\n            ng-if="vm.config.pagination"\n            page-size="vm.config.pagination.pageSize"\n            total-elements="vm.data.length"\n            change="vm.goToPage">\n            </xos-pagination>\n        ',
+      template: '\n          <div ng-show="vm.data.length > 0">\n            <div class="row" ng-if="vm.config.filter == \'fulltext\'">\n              <div class="col-xs-12">\n                <input\n                  class="form-control"\n                  placeholder="Type to search.."\n                  type="text"\n                  ng-model="vm.query"/>\n              </div>\n            </div>\n            <table ng-class="vm.classes" ng-show="vm.data.length > 0">\n              <thead>\n                <tr>\n                  <th ng-repeat="col in vm.columns">\n                    {{col.label}}\n                    <span ng-if="vm.config.order">\n                      <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = false">\n                        <i class="glyphicon glyphicon-chevron-up"></i>\n                      </a>\n                      <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = true">\n                        <i class="glyphicon glyphicon-chevron-down"></i>\n                      </a>\n                    </span>\n                  </th>\n                  <th ng-if="vm.config.actions">Actions</th>\n                </tr>\n              </thead>\n              <tbody ng-if="vm.config.filter == \'field\'">\n                <tr>\n                  <td ng-repeat="col in vm.columns">\n                    <input\n                      class="form-control"\n                      placeholder="Type to search by {{col.label}}"\n                      type="text"\n                      ng-model="vm.query[col.prop]"/>\n                  </td>\n                  <td ng-if="vm.config.actions"></td>\n                </tr>\n              </tbody>\n              <tbody>\n                <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">\n                  <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>\n                  <td ng-if="vm.config.actions">\n                    <a href=""\n                      ng-repeat="action in vm.config.actions"\n                      ng-click="action.cb(item)"\n                      title="{{action.label}}">\n                      <i\n                        class="glyphicon glyphicon-{{action.icon}}"\n                        style="color: {{action.color}};"></i>\n                    </a>\n                  </td>\n                </tr>\n              </tbody>\n            </table>\n            <xos-pagination\n              ng-if="vm.config.pagination"\n              page-size="vm.config.pagination.pageSize"\n              total-elements="vm.data.length"\n              change="vm.goToPage">\n              </xos-pagination>\n          </div>\n          <div ng-show="vm.data.length == 0 || !vm.data">\n            <div class="alert alert-info">\n              No data to show.\n            </div>\n          </div>\n        ',
       bindToController: true,
       controllerAs: 'vm',
       controller: function controller() {
@@ -211,7 +249,43 @@
 (function () {
   'use strict';
 
-  angular.module('xos.uiComponents').directive('xosPagination', function () {
+  angular.module('xos.uiComponents')
+
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosPagination
+    * @restrict E
+    * @description The xos-table directive
+    * @param {Number} pageSize Number of elements per page
+    * @param {Number} totalElements Number of total elements in the collection
+    * @param {Function} change The callback to be triggered on page change.
+    * * @element ANY
+    * @scope
+    * @example
+  <example module="samplePagination">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl1 as vm">
+        <xos-pagination
+          page-size="vm.pageSize"
+          total-elements="vm.totalElements"
+          change="vm.change">
+        </xos-pagination>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('samplePagination', ['xos.uiComponents'])
+      .controller('SampleCtrl1', function(){
+        this.pageSize = 10;
+        this.totalElements = 35;
+        this.change = (pageNumber) => {
+          console.log(pageNumber);
+        }
+      });
+    </file>
+  </example>
+  **/
+
+  .directive('xosPagination', function () {
     return {
       restrict: 'E',
       scope: {

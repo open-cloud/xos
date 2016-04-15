@@ -78,6 +78,19 @@
           expect(tr.length).toEqual(3);
         });
 
+        describe('when no data are provided', () => {
+          beforeEach(() => {
+            isolatedScope.data = [];
+            scope.$digest();
+          });
+          it('should render an alert', () => {
+            let alert = element[0].getElementsByClassName('alert');
+            let table = element[0].getElementsByTagName('table');
+            expect(alert.length).toEqual(1);
+            expect(table.length).toEqual(1);
+          });
+        });
+
         describe('when actions are passed', () => {
 
           let cb = jasmine.createSpy('callback')
