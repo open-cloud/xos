@@ -6,7 +6,7 @@ sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 import pdb
 
-from core.models import Slice,User,Network,NetworkTemplate,NetworkSlice
+from core.models import Slice,User,Network,NetworkTemplate,NetworkSlice,Service,Tenant
 
 from xosresource import XOSResource
 
@@ -35,7 +35,7 @@ class XOSNetwork(XOSResource):
                 if v:
                     args[prop] = v
         else:
-            # tosca.nodes.network.Netwrok is not as rich as an XOS network. So
+            # tosca.nodes.network.Network is not as rich as an XOS network. So
             # we have to manually fill in some defaults.
             args["permit_all_slices"] = True
 
@@ -53,6 +53,24 @@ class XOSNetwork(XOSResource):
                 self.info("Attached Network %s to Slice %s" % (obj, slice))
                 ns = NetworkSlice(network = obj, slice=slice)
                 ns.save()
+
+        # this is really for vRouter
+        for provider_service_name in self.get_requirements("tosca.relationships.TenantOfService"):
+            provider_service = self.get_xos_object(Service, name=provider_service_name)
+
+            existing_tenancy = Tenant.objects.filter(provider_service = provider_service, subscriber_network = obj)
+            if existing_tenancy:
+                self.info("Tenancy relationship from %s to %s already exists" % (str(obj), str(provider_service)))
+            else:
+                from services.vrouter.models import VROUTER_KIND, VRouterService
+                if provider_service.kind == VROUTER_KIND:
+                    tenancy = VRouterService.objects.get(id=provider_service.id).get_tenant(address_pool_name="addresses_"+obj.name, subscriber_network=obj)
+                    tenancy.save()
+                    obj.subnet = tenancy.cidr
+                else:
+                    raise Exception("The only network tenancy relationships that are allowed are to vRouter services")
+
+                self.info("Created Tenancy relationship from %s to %s" % (str(obj), str(provider_service)))
 
 #        v = self.get_property("permitted_slices")
 #        if v:
@@ -74,9 +92,13 @@ class XOSNetwork(XOSResource):
 
         network = Network(**xos_args)
         network.caller = self.user
+        network.no_sync = True        # postprocess might set the cidr
         network.save()
 
         self.postprocess(network)
+
+        network.no_sync = False
+        network.save()
 
         self.info("Created Network '%s' owned by Slice '%s'" % (str(network), str(network.owner)))
 
