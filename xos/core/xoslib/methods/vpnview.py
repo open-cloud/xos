@@ -1,3 +1,4 @@
+import jinja2
 from core.models import TenantPrivilege
 from plus import PlusSerializerMixin
 from rest_framework import serializers
@@ -48,8 +49,20 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         Returns:
             str: The client script as a str.
         """
-        return obj.create_client_script(
-            self.context['request'].user.email + "-" + str(obj.id))
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader("/opt/xos/services/vpn/templates"))
+        template = env.get_template("connect.vpn.j2")
+        client_name = self.context['request'].user.email + "-" + str(obj.id)
+        remotes = VPNTenant.get_tenant_objects().filter(pk__in=obj.failover_server_ids)
+        remotes.insert(0, obj)
+        pki_dir = VPNService.get_pki_dir(obj)
+        fields = {"client_name": client_name,
+                  "remotes": remotes,
+                  "is_persistent": obj.is_persistent,
+                  "ca_crt": obj.get_ca_crt(pki_dir),
+                  "client_crt": obj.get_client_cert(client_name, pki_dir),
+                  "client_key": obj.get_client_key(client_name, pki_dir)
+                 }
+        return template.render(fields)
 
 
 class VPNTenantList(XOSListCreateAPIView):

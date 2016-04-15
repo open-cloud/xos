@@ -41,40 +41,8 @@
   - name: get dh
     copy: src={{ pki_dir }}/dh.pem dest={{ pki_dir }}/dh.pem
 
-  - name: erase config
-    shell: rm -f {{ pki_dir }}/server.conf
-
-  - name: write base config
-    shell:
-       |
-       printf "script-security 3 system
-       port {{ port_number }}
-       proto {{ protocol }}
-       dev tun
-       writepid {{ pki_dir }}/pid
-       ca {{ pki_dir }}/ca.crt
-       cert {{ pki_dir }}/server.crt
-       key {{ pki_dir }}/server.key
-       dh {{ pki_dir }}/dh.pem
-       crl-verify {{ pki_dir }}/crl.pem
-       server {{ server_network }} {{ vpn_subnet }}
-       ifconfig-pool-persist {{ pki_dir }}/ipp.txt
-       status {{ pki_dir }}/openvpn-status.log
-       verb 3
-       " > {{ pki_dir }}/server.conf
-
-  - name: write persistent config
-    shell:
-      |
-      printf "keepalive 10 60
-      persist-tun
-      persist-key
-      " >> {{ pki_dir }}/server.conf
-    when: {{ is_persistent }}
-
-  - name: write client-to-client config
-    shell: printf "client-to-client\n" >> {{ pki_dir }}/server.conf
-    when: {{ clients_can_see_each_other }}
+  - name: write config
+    template: src=/opt/xos/synchronizers/vpn/templates/server.conf.j2 dest={{ pki_dir }}/server.conf owner=root group=root
 
   - name: start openvpn
     shell: openvpn {{ pki_dir }}/server.conf &

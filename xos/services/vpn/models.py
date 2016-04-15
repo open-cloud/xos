@@ -259,40 +259,6 @@ class VPNTenant(TenantWithContainer):
     def port_number(self, value):
         self.set_attribute("port", value)
 
-    def create_client_script(self, client_name):
-        """Create a script that a client can use to access this VPNTenant.
-
-        Parameters:
-            client_name (str): The name of the client to use when creating the cerificate.
-
-        Returns:
-            str: A str representing the client script.
-        """
-        pki_dir = VPNService.get_pki_dir(self)
-        script = ""
-        # write the configuration portion
-        script += ("printf \"%b\" \"")
-        script += self.generate_client_conf(client_name)
-        script += ("\" > client.conf\n")
-        script += ("printf \"%b\" \"")
-        for line in self.get_ca_crt(pki_dir):
-            script += (line.rstrip() + r"\n")
-        script += ("\" > ca.crt\n")
-        script += ("printf \"%b\" \"")
-        for line in self.get_client_cert(client_name, pki_dir):
-            script += (line.rstrip() + r"\n")
-        script += ("\" > " + client_name + ".crt\n")
-        script += ("printf \"%b\" \"")
-        for line in self.get_client_key(client_name, pki_dir):
-            script += (line.rstrip() + r"\n")
-        script += ("\" > " + client_name + ".key\n")
-        # make sure openvpn is installed
-        script += ("apt-get update\n")
-        script += ("apt-get install openvpn -y\n")
-        script += ("openvpn client.conf\n")
-        # close the script
-        return script
-
     def get_ca_crt(self, pki_dir):
         """Gets the lines fo the ca.crt file for this VPNTenant.
 
@@ -330,41 +296,6 @@ class VPNTenant(TenantWithContainer):
         """
         with open(pki_dir + "/private/" + client_name + ".key", 'r') as f:
             return f.readlines()
-
-    def generate_client_conf(self, client_name):
-        """Returns the conf file for the given client.
-
-        Parameters:
-            client_name (str): The client name to use.
-
-        Returns:
-            str: Generates the client configuration to use to connect to this VPN server.
-        """
-        conf = ("client\n" +
-                "dev tun\n" +
-                "remote-cert-tls server\n" +
-                "resolv-retry 60\n" +
-                "nobind\n" +
-                "ca ca.crt\n" +
-                "cert " + client_name + ".crt\n" +
-                "key " + client_name + ".key\n" +
-                "verb 3\n" +
-                self.get_remote_line(
-                    self.nat_ip, self.port_number, self.protocol))
-        for remote in self.failover_server_ids:
-            tenant = VPNTenant.get_tenant_objects().filter(pk=remote)[0]
-            conf += self.get_remote_line(
-                tenant.nat_ip, tenant.port_number, tenant.protocol)
-
-        if self.is_persistent:
-            conf += "persist-tun\n"
-            conf += "persist-key\n"
-
-        return conf
-
-    def get_remote_line(self, host, port_number, protocol):
-        return ("remote " + str(host) + " " + str(port_number) + " " +
-                str(protocol) + "\n")
 
 
 def model_policy_vpn_tenant(pk):
