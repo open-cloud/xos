@@ -34,5 +34,3 @@ xos:
     volumes:
       - ../setup:/root/setup:ro
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
-    volumes_from:
-        - xos_synchronizer_vpn_data:rw

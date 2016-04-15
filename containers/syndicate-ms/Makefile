@@ -1,6 +1,6 @@
 IMAGE_NAME:=xosproject/syndicate-ms
 CONTAINER_NAME:=xos-syndicate-ms
-NO_DOCKER_CACHE?=false
+NO_DOCKER_CACHE?=true
 
 .PHONY: build
 build: ; docker build --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} .
@@ -16,4 +16,3 @@ rm: ; docker rm ${CONTAINER_NAME}
 
 .PHONY: rmi
 rmi: ; docker rmi ${IMAGE_NAME}
-
