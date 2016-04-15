@@ -90,14 +90,19 @@ class XOSNetwork(XOSResource):
         if not xos_args.get("template", None):
             raise Exception("Must specify network template when creating network")
 
+        # XXX TODO: investigate using transaction.atomic instead of setting
+        #   no_sync and no_policy
+
         network = Network(**xos_args)
         network.caller = self.user
         network.no_sync = True        # postprocess might set the cidr
+        network.no_policy = True
         network.save()
 
         self.postprocess(network)
 
         network.no_sync = False
+        network.no_policy = False
         network.save()
 
         self.info("Created Network '%s' owned by Slice '%s'" % (str(network), str(network.owner)))
