@@ -70,14 +70,11 @@ class SyncPortAddresses(SyncStep):
 
             # now do the VM_WAN_IP from the instance
             if vsg.instance:
-                tags=Tag.select_by_content_object(vsg.instance).filter(name="vm_wan_addr")
-                if tags:
-                    parts=tags[0].value.split(",")
-                    if len(parts)!=3:
-                        raise Exception("vm_wan_addr tag is malformed: %s" % value)
-                    entry = {"mac_address": parts[2], "ip_address": parts[1]}
-                    if not entry in addr_pairs:
-                        addr_pairs.append(entry)
+                wan_vm_ip = vsg.wan_vm_ip
+                wan_vm_mac = vsg.wan_vm_mac
+                entry = {"mac_address": wan_vm_mac, "ip_address": wan_vm_ip}
+                if not entry in addr_pairs:
+                    addr_pairs.append(entry)
 
         # Get all ports in all controllers
         ports_by_id = {}

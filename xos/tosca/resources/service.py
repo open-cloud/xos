@@ -6,7 +6,7 @@ sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 import pdb
 
-from core.models import Service,User,CoarseTenant
+from core.models import Service,User,CoarseTenant,AddressPool
 
 from xosresource import XOSResource
 
@@ -28,6 +28,11 @@ class XOSService(XOSResource):
                 tenancy.save()
 
                 self.info("Created Tenancy relationship  from %s to %s" % (str(obj), str(provider_service)))
+
+        for ap_name in self.get_requirements("tosca.relationships.ProvidesAddresses"):
+            ap = self.get_xos_object(AddressPool, name=ap_name)
+            ap.service = obj
+            ap.save()
 
     def can_delete(self, obj):
         if obj.slices.exists():

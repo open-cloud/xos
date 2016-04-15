@@ -2124,6 +2124,39 @@ class ProgramAdmin(XOSBaseAdmin):
 
         return tabs
 
+class AddressPoolForm(forms.ModelForm):
+    class Meta:
+        model = Program
+        widgets = {
+            'addresses': UploadTextareaWidget(attrs={'rows': 20, 'cols': 80, 'class': "input-xxlarge"}),
+        }
+
+class AddressPoolAdmin(XOSBaseAdmin):
+    list_display = ("name", "cidr")
+    list_display_links = ('name',)
+
+    form=AddressPoolForm
+
+    fieldsets = [
+        (None, {'fields': ['name', 'cidr', 'gateway_ip', 'gateway_mac', 'addresses', 'inuse', 'service'],
+                'classes':['suit-tab suit-tab-general']}),
+                ]
+
+    readonly_fields = ("status",)
+
+    @property
+    def suit_form_tabs(self):
+        tabs=[('general','Program Details'),
+              ('contents','Program Source'),
+              ('messages','Messages'),
+        ]
+
+#        request=getattr(_thread_locals, "request", None)
+#        if request and request.user.is_admin:
+#            tabs.append( ('admin-only', 'Admin-Only') )
+
+        return tabs
+
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)
 # ... and, since we're not using Django's builtin permissions,
@@ -2167,4 +2200,4 @@ if True:
     admin.site.register(TenantRootRole, TenantRootRoleAdmin)
     admin.site.register(TenantRole, TenantRoleAdmin)
     admin.site.register(TenantAttribute, TenantAttributeAdmin)
-#    admin.site.register(Container, ContainerAdmin)
+    admin.site.register(AddressPool, AddressPoolAdmin)

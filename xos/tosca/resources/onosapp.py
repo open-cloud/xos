@@ -61,7 +61,8 @@ class XOSONOSApp(XOSResource):
                 self.set_tenant_attr(obj, k, v)
             elif k.startswith("component_config"):
                 self.set_tenant_attr(obj, k, v)
+            elif k == "autogenerate":
+                self.set_tenant_attr(obj, k, v)
 
     def can_delete(self, obj):
         return super(XOSONOSApp, self).can_delete(obj)
-
