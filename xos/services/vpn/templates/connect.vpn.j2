@@ -11,8 +11,10 @@ cert {{ client_name }}.crt
 key {{ client_name }}.key
 verb 3
 {% for tenant in remotes %}remote {{ tenant.nat_ip }} {{ tenant.port_number }} {{ tenant.protocol }}{% endfor %}
-{% if is_persistent %}persist-tun
-persist-key{% endif %}
+{% if is_persistent %}
+persist-tun
+persist-key
+{% endif %}
 " > client.conf
 printf "%b" "{% for line in ca_crt %}{{ line }}{% endfor %}
 " > ca.crt
