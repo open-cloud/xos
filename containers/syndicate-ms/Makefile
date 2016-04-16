@@ -1,6 +1,6 @@
 IMAGE_NAME:=xosproject/syndicate-ms
 CONTAINER_NAME:=xos-syndicate-ms
-NO_DOCKER_CACHE?=true
+NO_DOCKER_CACHE?=false
 
 .PHONY: build
 build: ; docker build --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} .
