@@ -52,8 +52,9 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         env = jinja2.Environment(loader=jinja2.FileSystemLoader("/opt/xos/services/vpn/templates"))
         template = env.get_template("connect.vpn.j2")
         client_name = self.context['request'].user.email + "-" + str(obj.id)
-        remotes = VPNTenant.get_tenant_objects().filter(pk__in=obj.failover_server_ids)
-        remotes.insert(0, obj)
+        remote_ids = list(obj.failover_server_ids)
+        remote_ids.insert(0, obj.id)
+        remotes = VPNTenant.get_tenant_objects().filter(pk__in=remote_ids)
         pki_dir = VPNService.get_pki_dir(obj)
         fields = {"client_name": client_name,
                   "remotes": remotes,
