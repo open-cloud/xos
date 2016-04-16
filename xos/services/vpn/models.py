@@ -31,7 +31,7 @@ class VPNService(Service):
             command (str): The command to execute using ESAY RSA.
         """
         full_command = (
-            VPNService.EASYRSA_COMMAND_PREIX + " --pki-dir=" +
+            VPNService.EASYRSA_COMMAND_PREFIX + " --pki-dir=" +
             pki_dir + " " + command)
         proc = Popen(
             full_command, shell=True, stdout=PIPE, stderr=PIPE
