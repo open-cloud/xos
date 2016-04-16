@@ -13,6 +13,7 @@ xos:
 containers:
 	cd ../../../containers/xos; make devel
 	cd ../../../containers/synchronizer; make
+	cd ../../../containers/vpn; make
 
 common_cloudlab:
 	make -C ../common -f Makefile.cloudlab
@@ -46,3 +47,10 @@ rebuild_xos:
 
 rebuild_synchronizer:
 	make -C ../../../containers/synchronizer
+
+cleanup_docker: rm
+	sudo docker rm -v $(docker ps -a -q -f status=exited) || true
+	docker rm -v $(docker ps -a -q -f status=exited) || true
+	sudo docker rmi $(docker images -qf "dangling=true") || true
+	socker rmi $(docker images -qf "dangling=true") || true
+	sudo docker run -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker:/var/lib/docker --rm martin/docker-cleanup-volumes || true
