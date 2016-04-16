@@ -10,18 +10,21 @@ ca ca.crt
 cert {{ client_name }}.crt
 key {{ client_name }}.key
 verb 3
-{% for tenant in remotes %}remote {{ tenant.nat_ip }} {{ tenant.port_number }} {{ tenant.protocol }}{% endfor %}
+{% for tenant in remotes %}
+remote {{ tenant.nat_ip }} {{ tenant.port_number }} {{ tenant.protocol }}
+{% endfor %}
 {% if is_persistent %}
 persist-tun
 persist-key
 {% endif %}
 " > client.conf
-printf "%b" "{% for line in ca_crt %}{{ line }}{% endfor %}
-" > ca.crt
-printf "%b" "{% for line in client_crt %}{{ line }}{% endfor %}
-" > {{ client_name }}.crt
-printf "%b" "{% for line in client_key %}{{ line }}{% endfor %}
-" > {{ client_name }}.key
+printf "%b" "{% for line in ca_crt %}
+{{ line }}
+{% endfor %}" > ca.crt
+printf "%b" "{% for line in client_crt %}
+{{ line }}{% endfor %}" > {{ client_name }}.crt
+printf "%b" "{% for line in client_key %}
+{{ line }}{% endfor %}" > {{ client_name }}.key
 apt-get update
 apt-get install openvpn -y
 openvpn client.conf
