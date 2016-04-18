@@ -70,6 +70,13 @@ def createTestSubscriber():
     subscriber = CordSubscriberRoot(name='Test Subscriber 1', id=1)
     subscriber.save()
 
+    # address pools
+    ap_vsg = AddressPool()
+    ap_vsg.addresses = '10.168.0.0/24'
+    ap_vsg.gateway_ip = '10.168.0.1'
+    ap_vsg.gateway_mac = '02:42:0a:a8:00:01'
+    ap_vsg.save()
+
     # Site
     site = Site.objects.get(name='MySite')
 
