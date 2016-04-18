@@ -22,19 +22,45 @@ var eslint = require('gulp-eslint');
 var inject = require('gulp-inject');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
+var postcss = require('gulp-postcss');
+var autoprefixer = require('autoprefixer');
+var mqpacker = require('css-mqpacker');
+var csswring = require('csswring');
 
 var TEMPLATE_FOOTER = `}]);
 angular.module('xos.vpnDashboard').run(function($location){$location.path('/')});
 angular.bootstrap(angular.element('#xosVpnDashboard'), ['xos.vpnDashboard']);`;
 
 module.exports = function(options){
-  
+
   // delete previous builded file
   gulp.task('clean', function(){
     return del(
       [options.dashboards + 'xosVpnDashboard.html'],
       {force: true}
     );
+  });
+
+  // minify css
+  gulp.task('css', function () {
+    var processors = [
+      autoprefixer({browsers: ['last 1 version']}),
+      mqpacker,
+      csswring
+    ];
+
+    gulp.src([
+      `${options.css}**/*.css`,
+      `!${options.css}dev.css`
+    ])
+    .pipe(postcss(processors))
+    .pipe(gulp.dest(options.tmp + '/css/'));
+  });
+
+  gulp.task('copyCss', ['css'], function(){
+    return gulp.src([`${options.tmp}/css/*.css`])
+    .pipe(concat('xosVpnDashboard.css'))
+    .pipe(gulp.dest(options.static + 'css/'))
   });
 
   // compile and minify scripts
@@ -67,12 +93,15 @@ module.exports = function(options){
       .pipe(replace(/<!-- bower:css -->(\n.*)*\n<!-- endbower --><!-- endcss -->/, ''))
       .pipe(replace(/<!-- bower:js -->(\n.*)*\n<!-- endbower --><!-- endjs -->/, ''))
       .pipe(replace(/ng-app=".*"\s/, ''))
+      // rewriting css path
+      // .pipe(replace(/(<link.*">)/, ''))
       // injecting minified files
       .pipe(
         inject(
           gulp.src([
             options.static + 'js/vendor/xosVpnDashboardVendor.js',
-            options.static + 'js/xosVpnDashboard.js'
+            options.static + 'js/xosVpnDashboard.js',
+            options.static + 'css/xosVpnDashboard.css'
           ]),
           {ignorePath: '/../../../xos/core/xoslib'}
         )
@@ -108,11 +137,13 @@ module.exports = function(options){
 
   gulp.task('build', function() {
     runSequence(
+      'lint',
       'templates',
       'babel',
       'scripts',
       'wiredep',
       'copyHtml',
+      'copyCss',
       'cleanTmp'
     );
   });
