@@ -16,6 +16,7 @@ from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice, Controller, ControllerSlice, ControllerUser, Node, TenantAttribute, Tag
 from services.onos.models import ONOSService, ONOSApp
 from xos.logger import Logger, logging
+from services.vrouter.models import VRouterService
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")
@@ -226,14 +227,17 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             data["apps"]["org.onosproject.cordvtn"]["cordvtn"]["nodes"].append(node_dict)
 
         # Generate apps->org.onosproject.cordvtn->cordvtn->publicGateways
-        # This should come from the vRouter service, but stick it in an attribute for now
-        gatewayIp = self.attribute_default(o, attrs, "gatewayIp", "10.168.0.1")
-        gatewayMac = self.attribute_default(o, attrs, "gatewayMac", "02:42:0a:a8:00:01")
-        gateway_dict = {
-            "gatewayIp": gatewayIp,
-            "gatewayMac": gatewayMac
-        }
-        data["apps"]["org.onosproject.cordvtn"]["cordvtn"]["publicGateways"].append(gateway_dict)
+        # Pull the gateway information from vRouter
+        vrouters = VRouterService.get_service_objects().all()
+        if vrouters:
+            for gateway in vrouters[0].get_gateways():
+                gatewayIp = gateway['gateway_ip'].split('/',1)[0]
+                gatewayMac = gateway['gateway_mac']
+                gateway_dict = {
+                    "gatewayIp": gatewayIp,
+                    "gatewayMac": gatewayMac
+                }
+                data["apps"]["org.onosproject.cordvtn"]["cordvtn"]["publicGateways"].append(gateway_dict)
 
         return json.dumps(data, indent=4, sort_keys=True)
 
