@@ -99,9 +99,11 @@ to get XOS to regenerate it.
 
  3. Modify `cord-vtn-vsg.yml` and set these parameters to the
 appropriate values for the fabric:
-  * `public_addresses:properties:addresses` (IP address block of fabric)
-  * `service_vsg:properties:wan_container_gateway_ip` (same as `publicGateway:gatewayIp` from VTN configuration)
-  * `service_vsg:properties:wan_container_gateway_mac` (same as `publicGateway:gatewayMac` from VTN configuration)
+  * `addresses_vsg:properties:addresses` (IP address block of fabric)
+  * `addresses_vsg:properties:gateway_ip` 
+  * `addresses_vsg:properties:gateway_mac`
+  * `service_vsg:properties:wan_container_gateway_ip` (same as `gateway_ip` above and same as `publicGateway:gatewayIp` from VTN configuration)
+  * `service_vsg:properties:wan_container_gateway_mac` (same as `gateway_mac` above and same as `publicGateway:gatewayMac` from VTN configuration)
   * `service_vsg:properties:wan_container_netbits` (bits in fabric IP address block netmask)
 
 
