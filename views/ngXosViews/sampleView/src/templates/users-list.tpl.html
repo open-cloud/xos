@@ -1,14 +1,14 @@
 <div class="row">
-  <h1>Users List</h1>
-  <p>This is only an example view.</p>
+  <div class="col-xs-12">
+    <h1>Users List</h1>
+    <p>This is only an example view.</p>
+  </div>
 </div>
+
+  <xos-alert config="vm.alertConfig">Alert message Here</xos-alert>
+
 <div class="row">
-  <div class="col-xs-4">Email</div>
-  <div class="col-xs-4">First Name</div>
-  <div class="col-xs-4">Last Name</div>
-</div>  
-<div class="row" ng-repeat="user in vm.users">
-  <div class="col-xs-4">{{user.email}}</div>
-  <div class="col-xs-4">{{user.firstname}}</div>
-  <div class="col-xs-4">{{user.lastname}}</div>
-</div>  
+  <div class="col-xs-12">
+    <xos-table data="vm.users" config="vm.tableConfig"></xos-table>
+  </div>
+</div>

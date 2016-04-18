@@ -9,7 +9,12 @@
 (function () {
   'use strict';
 
+  /**
+  * @ngdoc overview
+  * @name xos.uiComponents
+  * @description A collection of UI components useful for Dashboard development
+  **/
+
   angular.module('xos.uiComponents', [
-    'xos.uiComponents.table'
   ])
 })();
