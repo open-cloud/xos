@@ -1,0 +1,14 @@
+#xosVpnDashboard{
+  width: 70%;
+  margin: auto;
+}
+.vpn-row {
+    display: table-row;
+}
+.vpn-cell {
+    display: table-cell;
+    padding: 5px;
+}
+.vpn-header {
+    font-weight: bold;
+}
