@@ -51,6 +51,9 @@ def cleanDB():
     for s in NetworkSlice.objects.all():
         s.delete(purge=True)
 
+    for s in AddressPool.objects.all():
+        s.delete(purge=True)
+
     # print 'DB Cleaned'
 
 
@@ -70,12 +73,21 @@ def createTestSubscriber():
     subscriber = CordSubscriberRoot(name='Test Subscriber 1', id=1)
     subscriber.save()
 
+    # vRouter service
+    vrouter_service = VRouterService()
+    vrouter_service.name = 'service_vrouter'
+    vrouter_service.save()
+
     # address pools
     ap_vsg = AddressPool()
-    ap_vsg.addresses = '10.168.0.0/24'
+    ap_vsg.service = vrouter_service
+    ap_vsg.name = 'addresses_vsg'
+    ap_vsg.addresses = '10.168.0.0'
     ap_vsg.gateway_ip = '10.168.0.1'
     ap_vsg.gateway_mac = '02:42:0a:a8:00:01'
     ap_vsg.save()
+
+    print 'vRouter created'
 
     # Site
     site = Site.objects.get(name='MySite')
