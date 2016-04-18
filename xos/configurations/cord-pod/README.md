@@ -28,9 +28,13 @@ Installing a CORD POD involves these steps:
 
 ### Install OpenStack
 
-Follow the instructions in the [README.md](https://github.com/open-cloud/openstack-cluster-setup/blob/master/README.md)
+To set up OpenStack, follow the instructions in the
+[README.md](https://github.com/open-cloud/openstack-cluster-setup/blob/master/README.md)
 file of the [open-cloud/openstack-cluster-setup](https://github.com/open-cloud/openstack-cluster-setup/)
-repository.
+repository.  If you're just getting started with CORD, it's probably best to begin with the 
+single-node CORD test environment to familiarize yourself with the overall setup.
+
+**NOTE: In order to use the cord-pod configuration, you must set up OpenStack using the above recipe.**
 
 ### Set up ONOS VTN
 
