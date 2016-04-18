@@ -10,9 +10,9 @@ This tools are designed to help you developing UI for XOS. As they born for this
 
 Usage: `npm run apigen`
 
-This tool will automatically generate an angular resource file for each endpoint available in Swagger.
+This tool will automatically generate an angular resource file for each endpoint available in Apiary.
 
->You can generate api related documentation with: `npm run apidoc`. The output is locate in `api/docs`. You can have a list of available method also trough Swagger at `http://localhost:9999/docs/`
+>You can generate api related documentation with: `npm run doc`. The output is locate in `api/docs`. You can have a list of available method also trough Apiary at `http://docs.xos.apiary.io/#`
 
 ### Vendors
 
@@ -21,9 +21,10 @@ Xos comes with a preset of common libraries, as listed in `bower.json`:
 - angular-route
 - angular-resource
 - angular-cookie
+- angular-animate
 - ng-lodash
 
-This libraries are server through Django, so they will not be included in your minified vendor file. To add a library and generate a new file (that will override the old one), you should:
+This libraries are served through Django, so they will not be included in your minified vendor file. To add a library and generate a new file (that will override the old one), you should:
 - enter `ngXosLib` folder
 - run `bower install [myPackage] --save`
 - rebuild the file with `gulp vendor`
@@ -45,9 +46,6 @@ angular.module('xos.myView', [
 It will automatically ad a `token` to all your request, eventually you can take advantage of some other services:
 
 - **NoHyperlinks Interceptor**: will add a `?no_hyperlinks=1` to your request, to tell Django to return ids instead of links.
-- **XosApi** wrapper for `/xos` endpoints.
-- **XoslibApi** wrapper for `/xoslib` endpoints.
-- **HpcApi** wrapper for `/hpcapi` endpoints.
 
 >_NOTE: for the API related service, check documentation in [Apigen](#apigen) section._
 
@@ -85,7 +83,7 @@ At this point you can enter: `http://localhost:9999/admin/core/dashboardview/add
 
 To install a local dependency use bower with `--save`. Common modules are saved in `devDependencies` as they already loaded in the Django template.
 
-The `npm start` command is watching your dependencies and will automatically inject it in your `index.html`.
+The `npm start` command is watching your dependencies and will automatically inject them in your `index.html`.
 
 #### Linting
 
@@ -98,6 +96,4 @@ To run it execute: `npm test`
 
 ## TODO
 
-- Use Angular $resource instead of $http
-- Use ngDoc instead of jsDoc
 - Define styleguide (both visual and js) and if needed define some UI components
