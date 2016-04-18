@@ -60,6 +60,9 @@ def cleanDB():
     for s in NetworkSlice.objects.all():
         s.delete(purge=True)
 
+    for s in AddressPool.objects.all():
+        s.delete(purge=True)
+
     print 'DB Cleaned'
 
 
@@ -78,6 +81,27 @@ def createTestSubscriber():
     # creating the test subscriber
     subscriber = CordSubscriberRoot(name='Test Subscriber 1', id=1)
     subscriber.save()
+
+    # address pools
+    ap_vsg = AddressPool()
+    ap_vsg.name = 'addresses_vsg'
+    ap_vsg.addresses = '10.168.0.0/24'
+    ap_vsg.gateway_ip = '10.168.0.1'
+    ap_vsg.gateway_mac = '02:42:0a:a8:00:01'
+    ap_vsg.save()
+
+    # vRouter service
+    vrouter_service = VRouterService()
+    vrouter_service.name = 'service_vrouter'
+    vrouter_service.save()
+
+    # vRouter tenant
+    vrouter_tenant = VRouterTenant()
+    vrouter_tenant.name = 'vrouter_tenant'
+    vrouter_tenant.provider_service_id = 1
+    vrouter_tenant.save()
+
+    print 'vRouter created'
 
     # Site
     site = Site.objects.get(name='MySite')
@@ -102,6 +126,7 @@ def createTestSubscriber():
     volt_service.name = 'service_volt'
     volt_service.save()
 
+
     # vcpe slice
     vcpe_slice = Slice()
     vcpe_slice.name = site.login_base + "_testVcpe"
@@ -110,7 +135,7 @@ def createTestSubscriber():
     vcpe_slice.caller = user
     vcpe_slice.save()
 
-    print 'vcpe_slice created'
+    # print 'vcpe_slice created'
 
     # create a lan network
     lan_net = Network()
@@ -119,7 +144,7 @@ def createTestSubscriber():
     lan_net.template = private_template
     lan_net.save()
 
-    print 'lan_network created'
+    # print 'lan_network created'
 
     # add relation between vcpe slice and lan network
     vcpe_network = NetworkSlice()
@@ -127,14 +152,14 @@ def createTestSubscriber():
     vcpe_network.slice = vcpe_slice
     vcpe_network.save()
 
-    print 'vcpe network relation added'
+    # print 'vcpe network relation added'
 
     # vbng service
     vbng_service = VBNGService()
     vbng_service.name = 'service_vbng'
     vbng_service.save()
 
-    print 'vbng_service creater'
+    # print 'vbng_service creater'
 
     # volt tenant
     vt = VOLTTenant(subscriber=subscriber.id, id=1)
