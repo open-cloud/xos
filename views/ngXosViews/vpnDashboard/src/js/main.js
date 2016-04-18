@@ -49,7 +49,7 @@ angular.module('xos.vpnDashboard', [
       .then((vpns) => {
         this.vpns = vpns;
         for (var i = 0; i < this.vpns.length; i++) {
-          var blob = new Blob([ this.vpns[i].script_text ], { type : 'text/plain' });
+          var blob = new Blob([this.vpns[i].script_text], {type: 'text/plain'});
           this.vpns[i].script_text = (window.URL || window.webkitURL).createObjectURL( blob );
         }
       })

@@ -1,18 +1,18 @@
 <div style="display: table;">
-  <div class="row">
-    <h1 class="cell">VPN List</h1>
+  <div class="vpn-row">
+    <h1 class="vpn-cell">VPN List</h1>
   </div>
-  <div class="row">
-    <div class="cell header">ID</div>
-    <div class="cell header">VPN Network</div>
-    <div class="cell header">VPN Subnet</div>
-    <div class="cell header">Script Link</div>
+  <div class="vpn-row">
+    <div class="vpn-cell vpn-header">ID</div>
+    <div class="vpn-cell vpn-header">VPN Network</div>
+    <div class="vpn-cell vpn-header">VPN Subnet</div>
+    <div class="vpn-cell vpn-header">Script Link</div>
   </div>
-  <div class="row" ng-repeat="vpn in vm.vpns">
-    <div class="cell">{{ vpn.id }}</div>
-    <div class="cell">{{ vpn.server_network }}</div>
-    <div class="cell">{{ vpn.vpn_subnet }}</div>
-    <div class="cell">
+  <div class="vpn-row" ng-repeat="vpn in vm.vpns">
+    <div class="vpn-cell">{{ vpn.id }}</div>
+    <div class="vpn-cell">{{ vpn.server_network }}</div>
+    <div class="vpn-cell">{{ vpn.vpn_subnet }}</div>
+    <div class="vpn-cell">
       <a download="connect-{{ vpn.id }}.vpn" ng-href="{{ vpn.script_text }}">Script</a>
     </div>
   </div>
