@@ -25,6 +25,46 @@ angular.module('xos.sampleView', [
     controllerAs: 'vm',
     templateUrl: 'templates/users-list.tpl.html',
     controller: function(Users){
+
+      this.tableConfig = {
+        columns: [
+          {
+            label: 'E-Mail',
+            prop: 'email'
+          },
+          {
+            label: 'First Name',
+            prop: 'firstname'
+          },
+          {
+            label: 'Last Name',
+            prop: 'lastname'
+          }
+        ],
+        classes: 'table table-striped table-condensed',
+        actions: [
+          {
+            label: 'delete',
+            icon: 'remove',
+            cb: (user) => {
+              console.log(user);
+            },
+            color: 'red'
+          }
+        ],
+        filter: 'field',
+        order: true,
+        // pagination: {
+        //   pageSize: 6
+        // }
+      };
+
+      this.alertConfig = {
+        type: 'danger',
+        closeBtn: true
+      }
+
+
       // retrieving user list
       Users.query().$promise
       .then((users) => {
