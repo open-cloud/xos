@@ -95,12 +95,6 @@ def createTestSubscriber():
     vrouter_service.name = 'service_vrouter'
     vrouter_service.save()
 
-    # vRouter tenant
-    vrouter_tenant = VRouterTenant()
-    vrouter_tenant.name = 'vrouter_tenant'
-    vrouter_tenant.provider_service_id = 1
-    vrouter_tenant.save()
-
     print 'vRouter created'
 
     # Site
