@@ -87,7 +87,7 @@ def createTestSubscriber():
     ap_vsg.gateway_mac = '02:42:0a:a8:00:01'
     ap_vsg.save()
 
-    print 'vRouter created'
+    # print 'vRouter created'
 
     # Site
     site = Site.objects.get(name='MySite')
@@ -183,6 +183,7 @@ def my_before_all_hook(transactions):
 @hooks.before_each
 def my_before_each_hook(transaction):
     # print "-------------------------------- Before Each Hook --------------------------------"
+    # print transaction['name']
     auth = doLogin('padmin@vicci.org', 'letmein')
     transaction['request']['headers']['X-CSRFToken'] = auth['token']
     transaction['request']['headers']['Cookie'] = "xossessionid=%s; xoscsrftoken=%s" % (auth['sessionid'], auth['token'])
@@ -211,3 +212,8 @@ def test3(transaction):
 def test4(transaction):
     # transaction['skip'] = True
     VOLTTenant.objects.get(kind='vOLT').delete()
+
+
+@hooks.before("Example > Example Services Collection > List all Example Services")
+def exampleTest(transaction):
+    transaction['skip'] = True
