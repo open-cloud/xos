@@ -1,4 +1,4 @@
-FROM       ubuntu:14.04.3
+FROM       ubuntu:14.04.4
 
 # XXX Workaround for docker bug:
 # https://github.com/docker/docker/issues/6345
