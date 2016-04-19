@@ -28,9 +28,13 @@ Installing a CORD POD involves these steps:
 
 ### Install OpenStack
 
-Follow the instructions in the [README.md](https://github.com/open-cloud/openstack-cluster-setup/blob/master/README.md)
+To set up OpenStack, follow the instructions in the
+[README.md](https://github.com/open-cloud/openstack-cluster-setup/blob/master/README.md)
 file of the [open-cloud/openstack-cluster-setup](https://github.com/open-cloud/openstack-cluster-setup/)
-repository.
+repository.  If you're just getting started with CORD, it's probably best to begin with the 
+single-node CORD test environment to familiarize yourself with the overall setup.
+
+**NOTE: In order to use the cord-pod configuration, you must set up OpenStack using the above recipe.**
 
 ### Set up ONOS VTN
 
@@ -99,9 +103,11 @@ to get XOS to regenerate it.
 
  3. Modify `cord-vtn-vsg.yml` and set these parameters to the
 appropriate values for the fabric:
-  * `public_addresses:properties:addresses` (IP address block of fabric)
-  * `service_vsg:properties:wan_container_gateway_ip` (same as `publicGateway:gatewayIp` from VTN configuration)
-  * `service_vsg:properties:wan_container_gateway_mac` (same as `publicGateway:gatewayMac` from VTN configuration)
+  * `addresses_vsg:properties:addresses` (IP address block of fabric)
+  * `addresses_vsg:properties:gateway_ip` 
+  * `addresses_vsg:properties:gateway_mac`
+  * `service_vsg:properties:wan_container_gateway_ip` (same as `gateway_ip` above and same as `publicGateway:gatewayIp` from VTN configuration)
+  * `service_vsg:properties:wan_container_gateway_mac` (same as `gateway_mac` above and same as `publicGateway:gatewayMac` from VTN configuration)
   * `service_vsg:properties:wan_container_netbits` (bits in fabric IP address block netmask)
 
 
