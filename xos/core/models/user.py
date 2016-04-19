@@ -294,7 +294,7 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     def can_update_root(self):
         """
-        Return True if user has root (global) write access. 
+        Return True if user has root (global) write access.
         """
         if self.is_readonly:
             return False
@@ -386,15 +386,15 @@ class User(AbstractBaseUser, PlModelMixIn):
         return readable_objects
 
     def get_permissions(self, filter_by=None):
-        """ Return a list of objects for which the user has read or read/write
-        access. The object will be an instance of a django model object.
+        """ Return a list of objects for which the user has read or read/write 
+        access. The object will be an instance of a django model object.  
         Permissions will be either 'r' or 'rw'.
 
         e.g.
         [{'object': django_object_instance, 'permissions': 'rw'}, ...]
 
         Returns:
-          list of dicts
+          list of dicts  
 
         """
         from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Instance, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege
