@@ -294,7 +294,7 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     def can_update_root(self):
         """
-        Return True if user has root (global) write access.
+        Return True if user has root (global) write access. 
         """
         if self.is_readonly:
             return False
@@ -387,7 +387,7 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     def get_permissions(self, filter_by=None):
         """ Return a list of objects for which the user has read or read/write 
-        access. The object will be an instance of a django model object.  
+        access. The object will be an instance of a django model object. 
         Permissions will be either 'r' or 'rw'.
 
         e.g.
