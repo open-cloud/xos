@@ -5,6 +5,10 @@ import sys
 from collections import defaultdict
 from operator import attrgetter, itemgetter
 
+import synchronizers.model_policy
+from core.middleware import get_request
+from core.models import DashboardView, PlCoreBase, PlModelMixIn, Site
+from core.models.plcorebase import StrippedCharField
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives
@@ -12,11 +16,6 @@ from django.db import models
 from django.db.models import F, Q
 from django.forms.models import model_to_dict
 from django.utils import timezone
-
-import synchronizers.model_policy
-from core.middleware import get_request
-from core.models import DashboardView, PlCoreBase, PlModelMixIn, Site
-from core.models.plcorebase import StrippedCharField
 from timezones.fields import TimeZoneField
 
 # ------ from plcorebase.py ------
@@ -395,7 +394,7 @@ class User(AbstractBaseUser, PlModelMixIn):
         [{'object': django_object_instance, 'permissions': 'rw'}, ...]
 
         Returns:
-          list of dicts
+          list of dicts  
 
         """
         from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Instance, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege
