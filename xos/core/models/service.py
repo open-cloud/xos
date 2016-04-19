@@ -1,10 +1,9 @@
 import json
 from operator import attrgetter
 
-from django.db import models
-
 from core.models import PlCoreBase, PlCoreBaseManager, SingletonModel
 from core.models.plcorebase import StrippedCharField
+from django.db import models
 from xos.exceptions import *
 
 COARSE_KIND = "coarse"
