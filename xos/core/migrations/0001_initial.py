@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import django.utils.timezone
-from django.conf import settings
-from django.db import migrations, models
-
 import core.models.instance
 import core.models.network
 import core.models.serviceclass
+import django.utils.timezone
 import encrypted_fields.fields
 import geoposition.fields
 import timezones.fields
+from django.conf import settings
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
