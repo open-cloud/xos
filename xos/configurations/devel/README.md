@@ -4,6 +4,9 @@ This configuration can be used to do basic end-to-end development of XOS.  It la
 XOS in three Docker containers (development GUI, Synchronizer, database) and configures XOS
 to talk to an OpenStack backend.  *docker-compose* is used to manage the containers.
 
+**NOTE: If your goal is to create a development environment for [CORD](http://opencord.org/), 
+this configuration is not what you want.  Look at the [cord-pod](../cord-pod) configuration instead!**
+
 ## How to run it
 
 The configuration can be either run on [CloudLab](http://cloudlab.us) (controlling
@@ -41,8 +44,6 @@ and then invoke the XOS configuration for DevStack as follows:
 This setup has been run successfully in a VirtualBox VM with 2 CPUs and 4096 GB RAM.
 However it is recommended to use a dedicated server with more resources.
 
-**NOTE: If your goal is to create a development environment for [CORD](http://opencord.org/), 
-DevStack is not what you want.  Look at the [cord-pod](../cord-pod) configuration instead!**
 
 ## What you get
 
