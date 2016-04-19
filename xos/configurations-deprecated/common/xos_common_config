@@ -29,7 +29,7 @@ url=http://localhost:5000/v2.0/
 default_image=None
 default_flavor=m1.small
 default_security_group=default
-ca_ssl_cert=/etc/ssl/certs/ca-certificates.crt
+ca_ssl_cert=/usr/local/share/ca-certificates/local_certs.crt
 
 [observer]
 pretend=False

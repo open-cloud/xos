@@ -113,6 +113,7 @@ class VBBUComponentForm(forms.ModelForm):
 
     class Meta:
         model = VBBUComponent
+        fields = '__all__'
 
 # Class to represent the form to add and edit tenants.
 # We need to define this instead of just using an admin like we did for the
@@ -160,12 +161,11 @@ class VPGWCComponentForm(forms.ModelForm):
 
     class Meta:
         model = VPGWCComponent
-
+        fields = '__all__'
 
 
 # Define the admin form for the tenant. This uses a similar structure as the
 # service but uses HelloWorldTenantCompleteForm to change the python behavior.
-
 
 class VBBUComponentAdmin(ReadOnlyAwareAdmin):
     verbose_name = "vBBU Component"

@@ -2,15 +2,49 @@
 - hosts: 127.0.0.1
   connection: local
   tasks:
-  - keystone_user:
-       endpoint={{ endpoint }}
-       login_user={{ admin_user }} 
-       login_password={{ admin_password }} 
-       login_tenant_name={{ admin_tenant }} 
-       user="{{ name }}"
-       email={{ email }}
-       password={{ password }}
-       tenant={{ tenant }}
-  {% for role in roles %}
-  - keystone_user: endpoint={{ endpoint}}  login_user={{ admin_user }} login_password={{ admin_password }} login_tenant_name={{ admin_tenant }} user="{{ name }}" role={{ role }} tenant={{ tenant }}
-  {% endfor %}
+
+  - name: Create user account for "{{ name }}"
+    os_user:
+      name: "{{ name }}"
+      email: "{{ email }}"
+      password: "{{ password }}"
+      auth:
+        auth_url: {{ endpoint }}
+        username: {{ admin_user }}
+        password: {{ admin_password }}
+        project_name: {{ admin_project }}
+
+  - name: Create project for "{{ project }}"
+    os_project:
+      name: "{{ project }}"
+      auth:
+        auth_url: {{ endpoint }}
+        username: {{ admin_user }}
+        password: {{ admin_password }}
+        project_name: {{ admin_project }}
+
+{% for role in roles %}
+  - name: Creating role "{{ role }}" for "{{ name }}" on "{{ project }}"
+    keystone_user:
+      user: "{{ name }}"
+      role: "{{ role }}"
+      tenant: "{{ project }}"
+      endpoint: {{ endpoint }}
+      login_user: {{ admin_user }}
+      login_password: {{ admin_password }}
+      login_tenant_name: {{ admin_project }}
+{% endfor %}
+
+# FIXME: the below should work in Ansible 2.1, once we get the Admin/admin and
+# Member/user role name issues straightened out.
+#
+#  - name: Creating role "{{ role }}" for "{{ name }}" on "{{ project }}"
+#    os_user_role:
+#      user: "{{ name }}"
+#      role: "{{ role }}"
+#      project: "{{ project }}"
+#      auth:
+#        auth_url: {{ endpoint }}
+#        username: {{ admin_user }}
+#        password: {{ admin_password }}
+#        project_name: {{ admin_project }}

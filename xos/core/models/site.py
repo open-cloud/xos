@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from django.db.models import Q
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import PermissionDenied
 from geoposition.fields import GeopositionField
 from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
@@ -110,7 +110,7 @@ class Site(PlCoreBase):
 
     #deployments = models.ManyToManyField('Deployment', blank=True, related_name='sites')
     deployments = models.ManyToManyField('Deployment', through='SiteDeployment', blank=True, help_text="Select which sites are allowed to host nodes in this deployment", related_name='sites')
-    tags = generic.GenericRelation(Tag)
+    tags = GenericRelation(Tag)
 
     def __unicode__(self):  return u'%s' % (self.name)
 

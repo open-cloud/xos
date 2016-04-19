@@ -204,6 +204,7 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     f.write('pipelining = True\n')
     f.write('\n[defaults]\n')
     f.write('host_key_checking = False\n')
+    f.write('timeout = 30\n')
     f.close()
 
     f = open(hosts_pathname, "w")

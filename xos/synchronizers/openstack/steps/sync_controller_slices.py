@@ -8,7 +8,7 @@ from synchronizers.base.openstacksyncstep import OpenStackSyncStep
 from synchronizers.base.syncstep import *
 from core.models import *
 from synchronizers.base.ansible import *
-from openstack.driver import OpenStackDriver
+from openstack_xos.driver import OpenStackDriver
 from xos.logger import observer_logger as logger
 import json
 
@@ -31,7 +31,8 @@ class SyncControllerSlices(OpenStackSyncStep):
             raise Exception("slice createor %s has not accout at controller %s" % (controller_slice.slice.creator, controller_slice.controller.name))
         else:
             controller_user = controller_users[0]
-            roles = ['admin']
+            driver = OpenStackDriver().admin_driver(controller=controller_slice.controller)
+            roles = [driver.get_admin_role().name]
 
         max_instances=int(controller_slice.slice.max_instances)
         tenant_fields = {'endpoint':controller_slice.controller.auth_url,

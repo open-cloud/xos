@@ -4,7 +4,7 @@ from xos.config import Config
 from core.models import Controller
 
 try:
-    from openstack.client import OpenStackClient
+    from openstack_xos.client import OpenStackClient
     has_openstack = True
 except:
     has_openstack = False
@@ -51,7 +51,7 @@ class OpenStackDriver:
         driver = OpenStackDriver(client=client)
         driver.admin_user = client.keystone.users.find(name=controller.admin_user)
         driver.controller = controller
-        return driver    
+        return driver
 
     def create_role(self, name):
         roles = self.shell.keystone.roles.findall(name=name)
@@ -70,17 +70,17 @@ class OpenStackDriver:
         return 1
 
     def create_tenant(self, tenant_name, enabled, description):
-        """Create keystone tenant. Suggested fields: name, description, enabled"""  
+        """Create keystone tenant. Suggested fields: name, description, enabled"""
         tenants = self.shell.keystone.tenants.findall(name=tenant_name)
         if not tenants:
-            fields = {'tenant_name': tenant_name, 'enabled': enabled, 
-                      'description': description}  
+            fields = {'tenant_name': tenant_name, 'enabled': enabled,
+                      'description': description}
             tenant = self.shell.keystone.tenants.create(**fields)
         else:
             tenant = tenants[0]
 
-        # always give the admin user the admin role to any tenant created 
-        # by the driver. 
+        # always give the admin user the admin role to any tenant created
+        # by the driver.
         self.add_user_role(self.admin_user.id, tenant.id, 'admin')
         return tenant
 
@@ -88,17 +88,20 @@ class OpenStackDriver:
         return self.shell.keystone.tenants.update(id, **kwds)
 
     def delete_tenant(self, id):
-        ctx = self.shell.nova_db.ctx
+        # FIXME: nova_db is commented out in clients.py, throws errors.
+        # Commenting this out for the time being until actually fixed
+
+        #ctx = self.shell.nova_db.ctx
         tenants = self.shell.keystone.tenants.findall(id=id)
         for tenant in tenants:
             # nova does not automatically delete the tenant's instances
-            # so we manually delete instances before deleteing the tenant   
-            instances = self.shell.nova_db.instance_get_all_by_filters(ctx,
-                       {'project_id': tenant.id}, 'id', 'asc')
-            client = OpenStackClient(tenant=tenant.name)
-            driver = OpenStackDriver(client=client)
-            for instance in instances:
-                driver.destroy_instance(instance.id)
+            # so we manually delete instances before deleting the tenant
+            #instances = self.shell.nova_db.instance_get_all_by_filters(ctx,
+            #          {'project_id': tenant.id}, 'id', 'asc')
+            #client = OpenStackClient(tenant=tenant.name)
+            #driver = OpenStackDriver(client=client)
+            #for instance in instances:
+            #    driver.destroy_instance(instance.id)
             self.shell.keystone.tenants.delete(tenant)
         return 1
 
@@ -108,7 +111,7 @@ class OpenStackDriver:
             fields = {'name': name, 'email': email, 'password': password,
                       'enabled': enabled}
             user = self.shell.keystone.users.create(**fields)
-        else: 
+        else:
             user = users[0]
         return user
 
@@ -129,7 +132,7 @@ class OpenStackDriver:
             if roles:
                 role = roles[0]
                 break
-        return role 
+        return role
 
     def add_user_role(self, kuser_id, tenant_id, role_name):
         user = self.shell.keystone.users.find(id=kuser_id)
@@ -139,8 +142,8 @@ class OpenStackDriver:
         if role_name.lower() == 'admin':
             role = self.get_admin_role()
         else:
-            # look up non admin role or force exception when admin role isnt found 
-            role = self.shell.keystone.roles.find(name=role_name)                   
+            # look up non admin role or force exception when admin role isnt found
+            role = self.shell.keystone.roles.find(name=role_name)
 
         role_found = False
         user_roles = user.list_roles(tenant.id)
@@ -171,63 +174,63 @@ class OpenStackDriver:
         if role_found:
             tenant.remove_user(user, role)
 
-        return 1 
+        return 1
 
     def update_user(self, id, fields):
         if 'password' in fields:
             self.shell.keystone.users.update_password(id, fields['password'])
         if 'enabled' in fields:
-            self.shell.keystone.users.update_enabled(id, fields['enabled']) 
-        return 1 
+            self.shell.keystone.users.update_enabled(id, fields['enabled'])
+        return 1
 
     def create_router(self, name, set_gateway=True):
-        routers = self.shell.quantum.list_routers(name=name)['routers']
+        routers = self.shell.neutron.list_routers(name=name)['routers']
         if routers:
             router = routers[0]
         else:
-            router = self.shell.quantum.create_router({'router': {'name': name}})['router']
+            router = self.shell.neutron.create_router({'router': {'name': name}})['router']
         # add router to external network
         if set_gateway:
-            nets = self.shell.quantum.list_networks()['networks']
+            nets = self.shell.neutron.list_networks()['networks']
             for net in nets:
-                if net['router:external'] == True: 
-                    self.shell.quantum.add_gateway_router(router['id'],
+                if net['router:external'] == True:
+                    self.shell.neutron.add_gateway_router(router['id'],
                                                           {'network_id': net['id']})
-        
+
         return router
 
     def delete_router(self, id):
-        routers = self.shell.quantum.list_routers(id=id)['routers']
+        routers = self.shell.neutron.list_routers(id=id)['routers']
         for router in routers:
-            self.shell.quantum.delete_router(router['id'])
+            self.shell.neutron.delete_router(router['id'])
             # remove router form external network
-            #nets = self.shell.quantum.list_networks()['networks']
+            #nets = self.shell.neutron.list_networks()['networks']
             #for net in nets:
             #    if net['router:external'] == True:
-            #        self.shell.quantum.remove_gateway_router(router['id'])
+            #        self.shell.neutron.remove_gateway_router(router['id'])
 
     def add_router_interface(self, router_id, subnet_id):
-        router = self.shell.quantum.show_router(router_id)['router']
-        subnet = self.shell.quantum.show_subnet(subnet_id)['subnet']
+        router = self.shell.neutron.show_router(router_id)['router']
+        subnet = self.shell.neutron.show_subnet(subnet_id)['subnet']
         if router and subnet:
-            self.shell.quantum.add_interface_router(router_id, {'subnet_id': subnet_id})
+            self.shell.neutron.add_interface_router(router_id, {'subnet_id': subnet_id})
 
     def delete_router_interface(self, router_id, subnet_id):
-        router = self.shell.quantum.show_router(router_id)
-        subnet = self.shell.quantum.show_subnet(subnet_id)
+        router = self.shell.neutron.show_router(router_id)
+        subnet = self.shell.neutron.show_subnet(subnet_id)
         if router and subnet:
-            self.shell.quantum.remove_interface_router(router_id, {'subnet_id': subnet_id})
- 
+            self.shell.neutron.remove_interface_router(router_id, {'subnet_id': subnet_id})
+
     def create_network(self, name, shared=False):
-        nets = self.shell.quantum.list_networks(name=name)['networks']
-        if nets: 
+        nets = self.shell.neutron.list_networks(name=name)['networks']
+        if nets:
             net = nets[0]
         else:
-            net = self.shell.quantum.create_network({'network': {'name': name, 'shared': shared}})['network']
+            net = self.shell.neutron.create_network({'network': {'name': name, 'shared': shared}})['network']
         return net
- 
+
     def delete_network(self, id):
-        nets = self.shell.quantum.list_networks()['networks']
+        nets = self.shell.neutron.list_networks()['networks']
         for net in nets:
             if net['id'] == id:
                 # delete_all ports
@@ -235,18 +238,18 @@ class OpenStackDriver:
                 # delete all subnets:
                 for subnet_id in net['subnets']:
                     self.delete_subnet(subnet_id)
-                self.shell.quantum.delete_network(net['id'])
+                self.shell.neutron.delete_network(net['id'])
         return 1
 
     def delete_network_ports(self, network_id):
-        ports = self.shell.quantum.list_ports()['ports']
+        ports = self.shell.neutron.list_ports()['ports']
         for port in ports:
             if port['network_id'] == network_id:
-                self.shell.quantum.delete_port(port['id'])
-        return 1         
+                self.shell.neutron.delete_port(port['id'])
+        return 1
 
     def delete_subnet_ports(self, subnet_id):
-        ports = self.shell.quantum.list_ports()['ports']
+        ports = self.shell.neutron.list_ports()['ports']
         for port in ports:
             delete = False
             for fixed_ip in port['fixed_ips']:
@@ -254,17 +257,17 @@ class OpenStackDriver:
                     delete=True
                     break
             if delete:
-                self.shell.quantum.delete_port(port['id'])
+                self.shell.neutron.delete_port(port['id'])
         return 1
- 
+
     def create_subnet(self, name, network_id, cidr_ip, ip_version, start, end):
-        #nets = self.shell.quantum.list_networks(name=network_name)['networks']
+        #nets = self.shell.neutron.list_networks(name=network_name)['networks']
         #if not nets:
-        #    raise Exception, "No such network: %s" % network_name   
+        #    raise Exception, "No such network: %s" % network_name
         #net = nets[0]
 
-        subnet = None 
-        subnets = self.shell.quantum.list_subnets()['subnets']
+        subnet = None
+        subnets = self.shell.neutron.list_subnets()['subnets']
         for snet in subnets:
             if snet['cidr'] == cidr_ip and snet['network_id'] == network_id:
                 subnet = snet
@@ -282,22 +285,22 @@ class OpenStackDriver:
                                  'host_routes': [{'destination':'169.254.169.254/32','nexthop':metadata_ip}],
                                  'gateway_ip': None,
                                  'allocation_pools': allocation_pools}}
-            subnet = self.shell.quantum.create_subnet(subnet)['subnet']
+            subnet = self.shell.neutron.create_subnet(subnet)['subnet']
             # self.add_external_route(subnet)
 
         return subnet
 
     def update_subnet(self, id, fields):
-        return self.shell.quantum.update_subnet(id, fields)
+        return self.shell.neutron.update_subnet(id, fields)
 
     def delete_subnet(self, id):
-        #return self.shell.quantum.delete_subnet(id=id)
+        #return self.shell.neutron.delete_subnet(id=id)
         # inefficient but fault tolerant
-        subnets = self.shell.quantum.list_subnets()['subnets']
+        subnets = self.shell.neutron.list_subnets()['subnets']
         for subnet in subnets:
             if subnet['id'] == id:
                 self.delete_subnet_ports(subnet['id'])
-                self.shell.quantum.delete_subnet(id)
+                self.shell.neutron.delete_subnet(id)
                 self.delete_external_route(subnet)
         return 1
 
@@ -309,8 +312,8 @@ class OpenStackDriver:
     def add_external_route(self, subnet, routes=[]):
         if not routes:
             routes = self.get_external_routes()
- 
-        ports = self.shell.quantum.list_ports()['ports']
+
+        ports = self.shell.neutron.list_ports()['ports']
 
         gw_ip = subnet['gateway_ip']
         subnet_id = subnet['id']
@@ -325,7 +328,7 @@ class OpenStackDriver:
                 if fixed_ip['subnet_id'] == subnet_id and fixed_ip['ip_address'] == gw_ip:
                     gw_port = port
                     router_id = gw_port['device_id']
-                    router = self.shell.quantum.show_router(router_id)['router']
+                    router = self.shell.neutron.show_router(router_id)['router']
                     if router and router.get('external_gateway_info'):
                         ext_net = router['external_gateway_info']['network_id']
                         for port in ports:
@@ -347,7 +350,7 @@ class OpenStackDriver:
         return 1
 
     def delete_external_route(self, subnet):
-        ports = self.shell.quantum.list_ports()['ports']
+        ports = self.shell.neutron.list_ports()['ports']
 
         gw_ip = subnet['gateway_ip']
         subnet_id = subnet['id']
@@ -362,7 +365,7 @@ class OpenStackDriver:
                 if fixed_ip['subnet_id'] == subnet_id and fixed_ip['ip_address'] == gw_ip:
                     gw_port = port
                     router_id = gw_port['device_id']
-                    router = self.shell.quantum.show_router(router_id)['router']
+                    router = self.shell.neutron.show_router(router_id)['router']
                     ext_net = router['external_gateway_info']['network_id']
                     for port in ports:
                         if port['device_id'] == router_id and port['network_id'] == ext_net:
@@ -371,14 +374,14 @@ class OpenStackDriver:
         if ip_address:
             cmd = "route delete -net %s" % (subnet['cidr'])
             commands.getstatusoutput(cmd)
-             
+
         return 1
-    
+
     def create_keypair(self, name, public_key):
         keys = self.shell.nova.keypairs.findall(name=name)
         if keys:
             key = keys[0]
-            # update key     
+            # update key
             if key.public_key != public_key:
                 self.delete_keypair(key.id)
                 key = self.shell.nova.keypairs.create(name=name, public_key=public_key)
@@ -389,7 +392,7 @@ class OpenStackDriver:
     def delete_keypair(self, id):
         keys = self.shell.nova.keypairs.findall(id=id)
         for key in keys:
-            self.shell.nova.keypairs.delete(key) 
+            self.shell.nova.keypairs.delete(key)
         return 1
 
     def get_private_networks(self, tenant=None):
@@ -397,24 +400,24 @@ class OpenStackDriver:
             tenant = self.shell.nova.tenant
         tenant = self.shell.keystone.tenants.find(name=tenant)
         search_opts = {"tenant_id": tenant.id, "shared": False}
-        private_networks = self.shell.quantum.list_networks(**search_opts)
+        private_networks = self.shell.neutron.list_networks(**search_opts)
         return private_networks
 
     def get_shared_networks(self):
         search_opts = {"shared": True}
-        shared_networks = self.shell.quantum.list_networks(**search_opts)
+        shared_networks = self.shell.neutron.list_networks(**search_opts)
         return shared_networks
 
     def get_network_subnet(self, network_id):
         subnet_id = None
         subnet = None
         if network_id:
-            os_networks = self.shell.quantum.list_networks(id=network_id)["networks"]
+            os_networks = self.shell.neutron.list_networks(id=network_id)["networks"]
             if os_networks:
                 os_network = os_networks[0]
                 if os_network['subnets']:
                     subnet_id = os_network['subnets'][0]
-                    os_subnets = self.shell.quantum.list_subnets(id=subnet_id)['subnets']
+                    os_subnets = self.shell.neutron.list_subnets(id=subnet_id)['subnets']
                     if os_subnets:
                         subnet = os_subnets[0]['cidr']
 
@@ -433,12 +436,12 @@ class OpenStackDriver:
         #if pubkeys:
         #    files["/root/.ssh/authorized_keys"] = "\n".join(pubkeys).encode('base64')
         hints = {}
-        
-        # determine availability zone and compute host 
+
+        # determine availability zone and compute host
         availability_zone_filter = None
         if availability_zone is None or not availability_zone:
             availability_zone_filter = 'nova'
-        else: 
+        else:
             availability_zone_filter = availability_zone
         if hostname:
             availability_zone_filter += ':%s' % hostname

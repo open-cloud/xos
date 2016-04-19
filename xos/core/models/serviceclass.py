@@ -16,7 +16,7 @@ class ServiceClass(PlCoreBase):
     membershipFee = models.IntegerField(default=0)
     membershipFeeMonths = models.IntegerField(default=12)
     upgradeRequiresApproval = models.BooleanField(default=False)
-    upgradeFrom = models.ManyToManyField('self', blank=True, null=True)
+    upgradeFrom = models.ManyToManyField('self', blank=True)
 
     class Meta(PlCoreBase.Meta):
        verbose_name_plural = "Service classes"

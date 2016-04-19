@@ -1,17 +1,18 @@
+from core.models import *
+from datetime import datetime
+from django.db import reset_queries
+from django.db.models import F, Q
 from django.db.models.signals import post_save
+from django.db.transaction import atomic
 from django.dispatch import receiver
-import pdb
+from django.utils import timezone
 from generate.dependency_walker import *
 from synchronizers.openstack import model_policies
 from xos.logger import Logger, logging
-from datetime import datetime
-from django.utils import timezone
+
+import pdb
 import time
 import traceback
-from core.models import *
-from django.db import reset_queries
-from django.db.transaction import atomic
-from django.db.models import F, Q
 
 modelPolicyEnabled = True
 bad_instances=[]
@@ -75,8 +76,6 @@ def execute_model_policy(instance, deleted):
     elif (sender_name in delete_policy_models):
         walk_inv_deps(delete_if_inactive, instance)
 
-
-
     try:
         policy_handler = getattr(model_policies, policy_name, None)
         logger.info("MODEL POLICY: handler %s %s" % (policy_name, policy_handler))
@@ -114,7 +113,7 @@ def check_db_connection_okay():
            try:
 #               if db.connection:
 #                   db.connection.close()
-               db.close_connection()
+               db.close_old_connections()
            except:
                 logger.log_exc("XXX we failed to fix the failure")
         else:

@@ -8,7 +8,6 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
-from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.admin import ReadOnlyAwareAdmin,ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline,XOSBaseAdmin, XOSTabularInline
 from suit.widgets import LinkedSelect

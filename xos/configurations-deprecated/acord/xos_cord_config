@@ -4,3 +4,7 @@ branding_name=CORD
 branding_icon=/static/cord-logo.png
 branding_favicon=/static/cord-favicon.png
 branding_bg=/static/cord-bg.jpg
+
+[nova]
+admin_role=Admin
+

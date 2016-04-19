@@ -2,22 +2,24 @@
 - hosts: 127.0.0.1
   connection: local
   tasks:
-  - nova_compute:
-      auth_url: {{ endpoint }}
-      login_username: {{ admin_user }}
-      login_password: {{ admin_password }}
-      login_tenant_name: {{ admin_tenant }}
+  - os_server:
       name: {{ name }}
+      auth:
+        auth_url: {{ endpoint }}
+        username: {{ admin_user }}
+        password: {{ admin_password }}
+        project_name: {{ project_name }}
       {% if delete -%}
       state: absent
       {% else -%}
       state: present
-      availability_zone: {{ availability_zone }}
-      image_name: {{ image_name }}
-      wait_for: 200
-      flavor_name: {{ flavor_name }}
-      user_data: "{{ user_data }}"
+      availability_zone: "{{ availability_zone }}"
+      image: {{ image_name }}
+      flavor: {{ flavor_name }}
+      timeout: 200
+      userdata: "{{ user_data }}"
       config_drive: yes
+      auto_ip: no
       nics:
       {% for nic in nics %}
           - {{ nic.kind }}-id: {{ nic.value }}
@@ -30,3 +32,4 @@
       {% endfor %}
       {% endif %}
       {% endif %}
+

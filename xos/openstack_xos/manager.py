@@ -12,8 +12,8 @@ from django.core import management
 from core.models import *
 from xos.config import Config
 try:
-    from openstack.client import OpenStackClient
-    from openstack.driver import OpenStackDriver
+    from openstack_xos.client import OpenStackClient
+    from openstack_xos.driver import OpenStackDriver
     has_openstack = True
 except:
     has_openstack = False
@@ -240,7 +240,7 @@ class OpenStackManager:
         self.driver.delete_tenant(slice.tenant_id)
         # delete external route
         subnet = None
-        subnets = self.driver.shell.quantum.list_subnets()['subnets']
+        subnets = self.driver.shell.neutron.list_subnets()['subnets']
         for snet in subnets:
             if snet['id'] == slice.subnet_id:
                 subnet = snet
@@ -269,7 +269,7 @@ class OpenStackManager:
     def get_next_subnet(self):
         # limit ourself to 10.0.x.x for now
         valid_subnet = lambda net: net.startswith('10.0')  
-        subnets = self.driver.shell.quantum.list_subnets()['subnets']
+        subnets = self.driver.shell.neutron.list_subnets()['subnets']
         ints = [int(IPNetwork(subnet['cidr']).ip) for subnet in subnets \
                 if valid_subnet(subnet['cidr'])] 
         ints.sort()
@@ -281,13 +281,13 @@ class OpenStackManager:
     @require_enabled
     def save_subnet(self, subnet):    
         if not subnet.subnet_id:
-            quantum_subnet = self.driver.create_subnet(name= subnet.slice.name,
+            neutron_subnet = self.driver.create_subnet(name= subnet.slice.name,
                                           network_id=subnet.slice.network_id,
                                           cidr_ip = subnet.cidr,
                                           ip_version=subnet.ip_version,
                                           start = subnet.start,
                                           end = subnet.end)
-            subnet.subnet_id = quantum_subnet['id']
+            subnet.subnet_id = neutron_subnet['id']
             # add subnet as interface to slice's router
             self.driver.add_router_interface(subnet.slice.router_id, subnet.subnet_id)
             #add_route = 'route add -net %s dev br-ex gw 10.100.0.5' % self.cidr
@@ -473,7 +473,7 @@ class OpenStackManager:
 
     def save_network_template(self, template):
         if (template.shared_network_name) and (not template.shared_network_id):
-            os_networks = self.driver.shell.quantum.list_networks(name=template.shared_network_name)['networks']
+            os_networks = self.driver.shell.neutron.list_networks(name=template.shared_network_name)['networks']
             if os_networks:
                 template.shared_network_id = os_networks[0]["id"]
 
@@ -522,7 +522,7 @@ class OpenStackManager:
 
         # Get a list of all shared networks in OS
 
-        os_networks = self.driver.shell.quantum.list_networks()['networks']
+        os_networks = self.driver.shell.neutron.list_networks()['networks']
         os_networks_by_name = {}
         os_networks_by_id = {}
         for os_network in os_networks:

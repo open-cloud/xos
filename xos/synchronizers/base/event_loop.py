@@ -18,8 +18,8 @@ from core.models import *
 from django.db.models import F, Q
 from django.db import connection
 from django.db import reset_queries
-#from openstack.manager import OpenStackManager
-from openstack.driver import OpenStackDriver
+#from openstack_xos.manager import OpenStackManager
+from openstack_xos.driver import OpenStackDriver
 from xos.logger import Logger, logging, logger
 #from timeout import timeout
 from xos.config import Config, XOS_DIR
@@ -477,7 +477,7 @@ class XOSObserver:
                    try:
 #                       if db.connection:
 #                           db.connection.close()
-                       db.close_connection()
+                       db.close_old_connections()
                    except:
                         logger.log_exc("XXX we failed to fix the failure")
                 else:

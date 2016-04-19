@@ -85,7 +85,11 @@ class UserManager(BaseUserManager):
 class DeletedUserManager(UserManager):
 
     def get_queryset(self):
-        return super(UserManager, self).get_query_set().filter(deleted=True)
+        parent = super(UserManager, self)
+        if hasattr(parent, "get_queryset"):
+            return parent.get_queryset().filter(deleted=True)
+        else:
+            return parent.get_query_set().filter(deleted=True)
 
     # deprecated in django 1.7 in favor of get_queryset()
     def get_query_set(self):
@@ -294,7 +298,7 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     def can_update_root(self):
         """
-        Return True if user has root (global) write access. 
+        Return True if user has root (global) write access.
         """
         if self.is_readonly:
             return False
@@ -386,15 +390,15 @@ class User(AbstractBaseUser, PlModelMixIn):
         return readable_objects
 
     def get_permissions(self, filter_by=None):
-        """ Return a list of objects for which the user has read or read/write 
-        access. The object will be an instance of a django model object. 
+        """ Return a list of objects for which the user has read or read/write
+        access. The object will be an instance of a django model object.
         Permissions will be either 'r' or 'rw'.
 
         e.g.
         [{'object': django_object_instance, 'permissions': 'rw'}, ...]
 
         Returns:
-          list of dicts  
+          list of dicts
 
         """
         from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Instance, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege

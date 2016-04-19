@@ -3,7 +3,7 @@ import sys
 #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import time
 from core.models.instance import Instance
-from openstack.manager import OpenStackManager
+from openstack_xos.manager import OpenStackManager
 
 class InstanceAgent:
 
