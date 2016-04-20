@@ -28,15 +28,15 @@ var mqpacker = require('css-mqpacker');
 var csswring = require('csswring');
 
 var TEMPLATE_FOOTER = `}]);
-angular.module('xos.vpnDashboard').run(function($location){$location.path('/')});
-angular.bootstrap(angular.element('#xosVpnDashboard'), ['xos.vpnDashboard']);`;
+angular.module('xos.openVPNDashboard').run(function($location){$location.path('/')});
+angular.bootstrap(angular.element('#xosOpenVPNDashboard'), ['xos.openVPNDashboard']);`;
 
 module.exports = function(options){
 
   // delete previous builded file
   gulp.task('clean', function(){
     return del(
-      [options.dashboards + 'xosVpnDashboard.html'],
+      [options.dashboards + 'xosOpenVPNDashboard.html'],
       {force: true}
     );
   });
@@ -59,7 +59,7 @@ module.exports = function(options){
 
   gulp.task('copyCss', ['css'], function(){
     return gulp.src([`${options.tmp}/css/*.css`])
-    .pipe(concat('xosVpnDashboard.css'))
+    .pipe(concat('xosOpenVPNDashboard.css'))
     .pipe(gulp.dest(options.static + 'css/'))
   });
 
@@ -70,7 +70,7 @@ module.exports = function(options){
     ])
     .pipe(ngAnnotate())
     .pipe(angularFilesort())
-    .pipe(concat('xosVpnDashboard.js'))
+    .pipe(concat('xosOpenVPNDashboard.js'))
     .pipe(uglify())
     .pipe(gulp.dest(options.static + 'js/'));
   });
@@ -79,7 +79,7 @@ module.exports = function(options){
   gulp.task('templates', function(){
     return gulp.src('./src/templates/*.html')
       .pipe(templateCache({
-        module: 'xos.vpnDashboard',
+        module: 'xos.openVPNDashboard',
         root: 'templates/',
         templateFooter: TEMPLATE_FOOTER
       }))
@@ -99,14 +99,14 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosVpnDashboardVendor.js',
-            options.static + 'js/xosVpnDashboard.js',
-            options.static + 'css/xosVpnDashboard.css'
+            options.static + 'js/vendor/xosOpenVPNDashboardVendor.js',
+            options.static + 'js/xosOpenVPNDashboard.js',
+            options.static + 'css/xosOpenVPNDashboard.css'
           ]),
           {ignorePath: '/../../../xos/core/xoslib'}
         )
       )
-      .pipe(rename('xosVpnDashboard.html'))
+      .pipe(rename('xosOpenVPNDashboard.html'))
       .pipe(gulp.dest(options.dashboards));
   });
 
@@ -123,7 +123,7 @@ module.exports = function(options){
     });
 
     return gulp.src(bowerDeps)
-      .pipe(concat('xosVpnDashboardVendor.js'))
+      .pipe(concat('xosOpenVPNDashboardVendor.js'))
       .pipe(uglify())
       .pipe(gulp.dest(options.static + 'js/vendor/'));
   });

@@ -1,5 +1,5 @@
 {
-  "name": "xos-vpnDashboard",
+  "name": "xos-openVPNDashboard",
   "version": "1.0.0",
   "description": "Angular Application for XOS, created with generator-xos",
   "scripts": {

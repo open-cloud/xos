@@ -1,10 +1,10 @@
 {
-  "name": "xos-vpnDashboard",
+  "name": "xos-openVPNDashboard",
   "version": "0.0.0",
   "authors": [
     "Jeremy Mowery <jermowery@email.arizona.edu>"
   ],
-  "description": "The vpnDashboard view",
+  "description": "The OpenVPN Dashboard",
   "license": "MIT",
   "ignore": [
     "**/.*",

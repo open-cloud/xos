@@ -180,7 +180,7 @@ INSTALLED_APPS = (
     'services.ceilometer',
     'services.requestrouter',
     'services.syndicate_storage',
-    'services.vpn',
+    'services.openvpn',
     'services.vtr',
     'services.vrouter',
     'geoposition',
