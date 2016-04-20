@@ -30,7 +30,7 @@ for key, ofunc in env_to_config_dict.items():
 GEOIP_PATH = "/usr/share/GeoIP"
 XOS_DIR = "/opt/xos"
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
