@@ -62,9 +62,9 @@
       },
       template: `
         <ng-form name="vm.config.formName || 'form'">
-          <div class="form-group" ng-repeat="field in vm.formField">
+          <div class="form-group" ng-repeat="(name, field) in vm.formField">
             <label>{{field.label}}</label>
-            <input type="text" name="" class="form-control" ng-model="vm.ngModel[field]"/>
+            <input type="{{field.type}}" name="{{name}}" class="form-control" ng-model="vm.ngModel[name]"/>
           </div>
           <div class="form-group" ng-if="vm.config.actions">
             <button href=""
@@ -109,6 +109,11 @@
   })
   .service('XosFormHelpers', function(_, LabelFormatter){
 
+    this._isEmail = (text) => {
+      var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+      return re.test(text);
+    };
+
     this._getFieldFormat = (value) => {
 
       // check if is date
@@ -127,6 +132,11 @@
         return 'number';
       }
 
+      // check if a string is an email
+      if(this._isEmail(value)){
+        return 'email';
+      }
+
       return typeof value;
     };
 
@@ -137,6 +147,11 @@
           type: (customField[f] && customField[f].type) ? customField[f].type : this._getFieldFormat(model[f]),
           validators: {}
         };
+
+        if(form[f].type === 'date'){
+          model[f] = new Date(model[f]);
+        }
+
         return form;
       }, {});
     };

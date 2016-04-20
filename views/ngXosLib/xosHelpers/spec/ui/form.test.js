@@ -15,6 +15,7 @@
       let fields = [
         'id',
         'name',
+        'mail',
         'active',
         'created',
         'custom'
@@ -23,6 +24,7 @@
       let modelField = {
         id: {},
         name: {},
+        mail: {},
         active: {},
         created: {},
         custom: {}
@@ -31,6 +33,7 @@
       let model = {
         id: 1,
         name: 'test',
+        mail: 'test@onlab.us',
         active: true,
         created: '2016-04-18T23:44:16.883181Z',
         custom: 'MyCustomValue'
@@ -53,6 +56,11 @@
         name: {
           label: 'Name:',
           type: 'string',
+          validators: {}
+        },
+        mail: {
+          label: 'Mail:',
+          type: 'email',
           validators: {}
         },
         active: {
@@ -81,9 +89,22 @@
         service = _XosFormHelpers_;
       }));
 
+      describe('the _isEmail method', () => {
+        it('should return true', () => {
+          expect(service._isEmail('test@onlab.us')).toEqual(true);
+        });
+        it('should return false', () => {
+          expect(service._isEmail('testonlab.us')).toEqual(false);
+          expect(service._isEmail('test@onlab')).toEqual(false);
+        });
+      });
+
       describe('the _getFieldFormat method', () => {
         it('should return string', () => {
           expect(service._getFieldFormat('string')).toEqual('string');
+        });
+        it('should return mail', () => {
+          expect(service._getFieldFormat('test@onlab.us')).toEqual('email');
         });
         it('should return number', () => {
           expect(service._getFieldFormat(1)).toEqual('number');
@@ -204,8 +225,13 @@
           let label = angular.element(nameField.getElementsByTagName('label')[0]).text()
           expect(label).toEqual('Custom Label:');
         });
-      });
 
+        it('should use the correct input type', () => {
+          expect($(element).find('[name="age"]')).toHaveAttr('type', 'number');
+          expect($(element).find('[name="birthDate"]')).toHaveAttr('type', 'date');
+          expect($(element).find('[name="enabled"]')).toHaveAttr('type', 'boolean');
+        });
+      });
     });
   });
 })();
