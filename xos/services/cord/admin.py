@@ -104,9 +104,6 @@ class VSGServiceForm(forms.ModelForm):
     bbs_server = forms.CharField(required=False)
     backend_network_label = forms.CharField(required=False)
     bbs_slice = forms.ModelChoiceField(queryset=Slice.objects.all(), required=False)
-    wan_container_gateway_ip = forms.CharField(required=False)
-    wan_container_gateway_mac = forms.CharField(required=False)
-    wan_container_netbits = forms.CharField(required=False)
     dns_servers = forms.CharField(required=False)
     url_filter_kind = forms.ChoiceField(choices=VSGService.URL_FILTER_KIND_CHOICES, required=False)
     node_label = forms.CharField(required=False)
@@ -119,9 +116,6 @@ class VSGServiceForm(forms.ModelForm):
             self.fields['bbs_server'].initial = self.instance.bbs_server
             self.fields['backend_network_label'].initial = self.instance.backend_network_label
             self.fields['bbs_slice'].initial = self.instance.bbs_slice
-            self.fields['wan_container_gateway_ip'].initial = self.instance.wan_container_gateway_ip
-            self.fields['wan_container_gateway_mac'].initial = self.instance.wan_container_gateway_mac
-            self.fields['wan_container_netbits'].initial = self.instance.wan_container_netbits
             self.fields['dns_servers'].initial = self.instance.dns_servers
             self.fields['url_filter_kind']. initial = self.instance.url_filter_kind
             self.fields['node_label'].initial = self.instance.node_label
@@ -132,9 +126,6 @@ class VSGServiceForm(forms.ModelForm):
         self.instance.bbs_server = self.cleaned_data.get("bbs_server")
         self.instance.backend_network_label = self.cleaned_data.get("backend_network_label")
         self.instance.bbs_slice = self.cleaned_data.get("bbs_slice")
-        self.instance.wan_container_gateway_ip = self.cleaned_data.get("wan_container_gateway_ip")
-        self.instance.wan_container_gateway_mac = self.cleaned_data.get("wan_container_gateway_mac")
-        self.instance.wan_container_netbits = self.cleaned_data.get("wan_container_netbits")
         self.instance.dns_servers = self.cleaned_data.get("dns_servers")
         self.instance.url_filter_kind = self.cleaned_data.get("url_filter_kind")
         self.instance.node_label = self.cleaned_data.get("node_label")
@@ -153,7 +144,7 @@ class VSGServiceAdmin(ReadOnlyAwareAdmin):
                                      'classes':['suit-tab suit-tab-general']}),
                  ("backend config", {'fields': [ "backend_network_label", "url_filter_kind", "bbs_api_hostname", "bbs_api_port", "bbs_server", "bbs_slice"],
                                      'classes':['suit-tab suit-tab-backend']}),
-                 ("vSG config", {'fields': [ "wan_container_gateway_ip", "wan_container_gateway_mac", "wan_container_netbits", "dns_servers"],
+                 ("vSG config", {'fields': ["dns_servers"],
                                      'classes':['suit-tab suit-tab-vsg']}) ]
     readonly_fields = ('backend_status_text', "service_specific_attribute")
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
