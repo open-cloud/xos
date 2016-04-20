@@ -1,2 +1,2 @@
 export XOS_DIR=/opt/xos
-python vpn-synchronizer.py  -C $XOS_DIR/synchronizers/vpn/vpn_config
+python openvpn-synchronizer.py  -C $XOS_DIR/synchronizers/openvpn/openvpn_config

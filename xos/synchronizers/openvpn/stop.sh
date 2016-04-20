@@ -1,2 +1,2 @@
 # Kill the observer
-pkill -9 -f vpn-synchronizer.py
+pkill -9 -f openvpn-synchronizer.py
