@@ -82,14 +82,14 @@
       }));
 
       describe('the _getFieldFormat method', () => {
-        xit('should return string', () => {
+        it('should return string', () => {
           expect(service._getFieldFormat('string')).toEqual('string');
         });
         it('should return number', () => {
           expect(service._getFieldFormat(1)).toEqual('number');
           expect(service._getFieldFormat('1')).toEqual('number');
         });
-        xit('should return boolean', () => {
+        it('should return boolean', () => {
           expect(service._getFieldFormat(false)).toEqual('boolean');
           expect(service._getFieldFormat(true)).toEqual('boolean');
         });
@@ -101,16 +101,16 @@
         });
       });
 
-      xit('should convert the fields array in an empty form object', () => {
+      it('should convert the fields array in an empty form object', () => {
         expect(service.parseModelField(fields)).toEqual(modelField);
       });
 
-      xit('should combine modelField and customField in a form object', () => {
+      it('should combine modelField and customField in a form object', () => {
         expect(service.buildFormStructure(modelField, customField, model)).toEqual(formObject);
       });
     });
 
-    xdescribe('The xos-form component', () => {
+    describe('The xos-form component', () => {
 
       let element, scope, isolatedScope;
 
@@ -153,13 +153,11 @@
                 class: 'success'
               }
             ],
-            fields: [
-              {
-                first_name: {
-                  label: 'Custom Label'
-                }
+            fields: {
+              first_name: {
+                label: 'Custom Label'
               }
-            ]
+            }
           };
 
           scope.model = {
@@ -190,7 +188,7 @@
         });
 
         it('should render 8 field', () => {
-          expect(isolatedScope.formField.length).toEqual(8);
+          expect(Object.keys(isolatedScope.formField).length).toEqual(8);
           var field = element[0].getElementsByTagName('input');
           expect(field.length).toEqual(8);
         });
