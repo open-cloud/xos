@@ -186,6 +186,7 @@
             first_name: 'Jhon',
             last_name: 'Snow',
             age: 25,
+            email: 'test@onlab.us',
             birthDate: '2016-04-18T23:44:16.883181Z',
             enabled: true,
             role: 'user', //select
@@ -208,14 +209,19 @@
           expect(isolatedScope.excludedField).toEqual(expected);
         });
 
-        it('should render 8 field', () => {
-          expect(Object.keys(isolatedScope.formField).length).toEqual(8);
+        it('should render 8 input field', () => {
+          // boolean are in the form model, but are not input
+          expect(Object.keys(isolatedScope.formField).length).toEqual(9);
           var field = element[0].getElementsByTagName('input');
           expect(field.length).toEqual(8);
         });
 
+        it('should render 1 boolean field', () => {
+          expect($(element).find('.boolean-field > button').length).toEqual(2)
+        });
+
         it('when clicking on action should invoke callback', () => {
-          var link = element[0].getElementsByTagName('button')[0];
+          var link = $(element).find('[role="button"]');
           link.click();
           expect(cb).toHaveBeenCalledWith(scope.model);
         });
@@ -229,7 +235,31 @@
         it('should use the correct input type', () => {
           expect($(element).find('[name="age"]')).toHaveAttr('type', 'number');
           expect($(element).find('[name="birthDate"]')).toHaveAttr('type', 'date');
-          expect($(element).find('[name="enabled"]')).toHaveAttr('type', 'boolean');
+          expect($(element).find('[name="email"]')).toHaveAttr('type', 'email');
+        });
+
+        describe('the boolean field', () => {
+
+          let setFalse, setTrue;
+
+          beforeEach(() => {
+            setFalse= $(element).find('.boolean-field > button:first-child');
+            setTrue = $(element).find('.boolean-field > button:last-child');
+          });
+
+          it('should change value to false', () => {
+            expect(isolatedScope.ngModel.enabled).toEqual(true);
+            setFalse.click()
+            expect(isolatedScope.ngModel.enabled).toEqual(false);
+          });
+
+          it('should change value to false', () => {
+            isolatedScope.ngModel.enabled = false;
+            scope.$apply();
+            expect(isolatedScope.ngModel.enabled).toEqual(false);
+            setTrue.click()
+            expect(isolatedScope.ngModel.enabled).toEqual(true);
+          });
         });
       });
     });

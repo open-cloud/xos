@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "karma start",
+    "test:ci": "karma start --single-run",
     "apigen": "node apigen/blueprintToNgResource.js",
     "swagger": "node xos-swagger-def.js",
     "doc": "gulp docs; cd ./docs",

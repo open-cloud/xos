@@ -61,13 +61,28 @@
         ngModel: '='
       },
       template: `
-        <ng-form name="vm.config.formName || 'form'">
+        <ng-form name="vm.{{vm.config.formName || 'form'}}">
           <div class="form-group" ng-repeat="(name, field) in vm.formField">
             <label>{{field.label}}</label>
-            <input type="{{field.type}}" name="{{name}}" class="form-control" ng-model="vm.ngModel[name]"/>
+            <input ng-if="field.type !== 'boolean'" type="{{field.type}}" name="{{name}}" class="form-control" ng-model="vm.ngModel[name]"/>
+            <span class="boolean-field" ng-if="field.type === 'boolean'">
+              <button
+                class="btn btn-success"
+                ng-show="vm.ngModel[name]"
+                ng-click="vm.ngModel[name] = false">
+                <i class="glyphicon glyphicon-ok"></i>
+              </button>
+              <button
+                class="btn btn-danger"
+                ng-show="!vm.ngModel[name]"
+                ng-click="vm.ngModel[name] = true">
+                <i class="glyphicon glyphicon-remove"></i>
+              </button>
+            </span>
+            <xos-validation errors="vm[vm.config.formName || 'form'][name].$error"></xos-validation>
           </div>
           <div class="form-group" ng-if="vm.config.actions">
-            <button href=""
+            <button role="button" href=""
               ng-repeat="action in vm.config.actions"
               ng-click="action.cb(vm.ngModel)"
               class="btn btn-{{action.class}}"
@@ -150,6 +165,10 @@
 
         if(form[f].type === 'date'){
           model[f] = new Date(model[f]);
+        }
+
+        if(form[f].type === 'number'){
+          model[f] = parseInt(model[f], 10);
         }
 
         return form;
