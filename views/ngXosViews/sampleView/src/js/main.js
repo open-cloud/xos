@@ -3,7 +3,6 @@
 angular.module('xos.sampleView', [
   'ngResource',
   'ngCookies',
-  'ngLodash',
   'ui.router',
   'xos.helpers'
 ])
@@ -54,9 +53,9 @@ angular.module('xos.sampleView', [
         ],
         filter: 'field',
         order: true,
-        // pagination: {
-        //   pageSize: 6
-        // }
+        pagination: {
+          pageSize: 3
+        }
       };
 
       this.alertConfig = {
@@ -64,11 +63,29 @@ angular.module('xos.sampleView', [
         closeBtn: true
       }
 
+      this.formConfig = {
+        exclude: ['password'],
+        fields: {
+          last_login: {
+            type: 'date'
+          }
+        },
+        actions: [
+          {
+            label: 'Save',
+            icon: 'ok', // refers to bootstraps glyphicon
+            cb: (user) => { // receive the model
+              console.log(user);
+            },
+            class: 'success'
+          }
+        ]
+      }
 
       // retrieving user list
       Users.query().$promise
       .then((users) => {
-        this.users = users;
+        this.users = users.concat(users).concat(users);
       })
       .catch((e) => {
         throw new Error(e);

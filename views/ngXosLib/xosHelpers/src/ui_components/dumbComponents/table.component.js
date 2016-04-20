@@ -249,9 +249,9 @@
               </xos-pagination>
           </div>
           <div ng-show="vm.data.length == 0 || !vm.data">
-            <div class="alert alert-info">
+             <xos-alert config="{type: 'info'}">
               No data to show.
-            </div>
+            </xos-alert>
           </div>
         `,
         bindToController: true,
