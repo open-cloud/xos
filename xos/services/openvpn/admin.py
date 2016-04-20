@@ -4,16 +4,16 @@ from django.contrib import admin
 from core.admin import ReadOnlyAwareAdmin, SliceInline, TenantPrivilegeInline
 from core.middleware import get_request
 from core.models import User
-from services.vpn.models import VPN_KIND, VPNService, VPNTenant
+from services.openvpn.models import OPENVPN_KIND, OpenVPNService, OpenVPNTenant
 from xos.exceptions import XOSValidationError
 
 
-class VPNServiceForm(forms.ModelForm):
+class OpenVPNServiceForm(forms.ModelForm):
 
     exposed_ports = forms.CharField(required=True)
 
     def __init__(self, *args, **kwargs):
-        super(VPNServiceForm, self).__init__(*args, **kwargs)
+        super(OpenVPNServiceForm, self).__init__(*args, **kwargs)
 
         if self.instance:
             self.fields['exposed_ports'].initial = (
@@ -21,7 +21,7 @@ class VPNServiceForm(forms.ModelForm):
 
     def save(self, commit=True):
         self.instance.exposed_ports = self.cleaned_data['exposed_ports']
-        return super(VPNServiceForm, self).save(commit=commit)
+        return super(OpenVPNServiceForm, self).save(commit=commit)
 
     def clean_exposed_ports(self):
         exposed_ports = self.cleaned_data['exposed_ports']
@@ -63,14 +63,14 @@ class VPNServiceForm(forms.ModelForm):
         return list(range(first, last))
 
     class Meta:
-        model = VPNService
+        model = OpenVPNService
 
 
-class VPNServiceAdmin(ReadOnlyAwareAdmin):
-    """Defines the admin for the VPNService."""
-    model = VPNService
-    form = VPNServiceForm
-    verbose_name = "VPN Service"
+class OpenVPNServiceAdmin(ReadOnlyAwareAdmin):
+    """Defines the admin for the OpenVPNService."""
+    model = OpenVPNService
+    form = OpenVPNServiceForm
+    verbose_name = "OpenVPN Service"
 
     list_display = ("backend_status_icon", "name", "enabled")
 
@@ -90,19 +90,14 @@ class VPNServiceAdmin(ReadOnlyAwareAdmin):
     user_readonly_fields = ["name", "enabled", "versionNumber", "description"]
 
     suit_form_tabs = (('general', 'VPN Service Details'),
-                      ('administration', 'Tenants'),
                       ('slices', 'Slices'),)
 
-    suit_form_includes = (('vpnserviceadmin.html',
-                           'top',
-                           'administration'),)
-
     def queryset(self, request):
-        return VPNService.get_service_objects_by_user(request.user)
+        return OpenVPNService.get_service_objects_by_user(request.user)
 
 
-class VPNTenantForm(forms.ModelForm):
-    """The form used to create and edit a VPNTenant.
+class OpenVPNTenantForm(forms.ModelForm):
+    """The form used to create and edit a OpenVPNTenant.
 
     Attributes:
         creator (forms.ModelChoiceField): The XOS user that created this
@@ -113,10 +108,10 @@ class VPNTenantForm(forms.ModelForm):
             this connection alive through failures.
         clients_can_see_each_other (forms.BooleanField): Determines if the clients on the VPN can
             communicate with each other.
-        failover_servers (forms.ModelMultipleChoiceField): The other VPNTenants to use as failover
+        failover_servers (forms.ModelMultipleChoiceField): The other OpenVPNTenants to use as failover
             servers.
         protocol (forms.ChoiceField): The protocol to use.
-        use_ca_from (forms.ModelChoiceField): Another VPNTenant to use the CA of, this is a very
+        use_ca_from (forms.ModelChoiceField): Another OpenVPNTenant to use the CA of, this is a very
             hacky way to let VPNs have the same clients.
     """
     creator = forms.ModelChoiceField(queryset=User.objects.all())
@@ -126,21 +121,21 @@ class VPNTenantForm(forms.ModelForm):
     is_persistent = forms.BooleanField(required=False)
     clients_can_see_each_other = forms.BooleanField(required=False)
     failover_servers = forms.ModelMultipleChoiceField(
-        required=False, queryset=VPNTenant.get_tenant_objects())
+        required=False, queryset=OpenVPNTenant.get_tenant_objects())
     protocol = forms.ChoiceField(required=True, choices=[
         ("tcp", "tcp"), ("udp", "udp")])
     use_ca_from = forms.ModelChoiceField(
-        queryset=VPNTenant.get_tenant_objects(), required=False)
+        queryset=OpenVPNTenant.get_tenant_objects(), required=False)
 
     def __init__(self, *args, **kwargs):
-        super(VPNTenantForm, self).__init__(*args, **kwargs)
+        super(OpenVPNTenantForm, self).__init__(*args, **kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['failover_servers'].widget.attrs['rows'] = 300
         self.fields[
             'provider_service'].queryset = (
-                VPNService.get_service_objects().all())
+                OpenVPNService.get_service_objects().all())
 
-        self.fields['kind'].initial = VPN_KIND
+        self.fields['kind'].initial = OPENVPN_KIND
 
         if self.instance:
             self.fields['creator'].initial = self.instance.creator
@@ -153,14 +148,14 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['is_persistent'].initial = self.instance.is_persistent
             self.initial['protocol'] = self.instance.protocol
             self.fields['failover_servers'].queryset = (
-                VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
-            self.initial['failover_servers'] = VPNTenant.get_tenant_objects().filter(
+                OpenVPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
+            self.initial['failover_servers'] = OpenVPNTenant.get_tenant_objects().filter(
                 pk__in=self.instance.failover_server_ids)
             self.fields['use_ca_from'].queryset = (
-                VPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
+                OpenVPNTenant.get_tenant_objects().exclude(pk=self.instance.pk))
             if (self.instance.use_ca_from_id):
                 self.initial['use_ca_from'] = (
-                    VPNTenant.get_tenant_objects().filter(pk=self.instance.use_ca_from_id)[0])
+                    OpenVPNTenant.get_tenant_objects().filter(pk=self.instance.use_ca_from_id)[0])
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
@@ -169,10 +164,10 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['clients_can_see_each_other'].initial = True
             self.fields['is_persistent'].initial = True
             self.fields['failover_servers'].queryset = (
-                VPNTenant.get_tenant_objects())
-            if VPNService.get_service_objects().exists():
+                OpenVPNTenant.get_tenant_objects())
+            if OpenVPNService.get_service_objects().exists():
                 self.fields["provider_service"].initial = (
-                    VPNService.get_service_objects().all()[0])
+                    OpenVPNService.get_service_objects().all()[0])
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
@@ -199,14 +194,14 @@ class VPNTenantForm(forms.ModelForm):
         else:
             self.instance.use_ca_from_id = None
 
-        return super(VPNTenantForm, self).save(commit=commit)
+        return super(OpenVPNTenantForm, self).save(commit=commit)
 
     class Meta:
-        model = VPNTenant
+        model = OpenVPNTenant
 
 
-class VPNTenantAdmin(ReadOnlyAwareAdmin):
-    verbose_name = "VPN Tenant Admin"
+class OpenVPNTenantAdmin(ReadOnlyAwareAdmin):
+    verbose_name = "OpenVPN Tenant Admin"
     list_display = ('id', 'backend_status_icon', 'instance',
                     'server_network', 'vpn_subnet')
     list_display_links = ('id', 'backend_status_icon',
@@ -219,16 +214,16 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
                                     'failover_servers', "protocol"],
                          'classes': ['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'instance')
-    form = VPNTenantForm
+    form = OpenVPNTenantForm
     inlines = [TenantPrivilegeInline]
 
     suit_form_tabs = (('general', 'Details'),
                       ('tenantprivileges', 'Privileges'))
 
     def queryset(self, request):
-        return VPNTenant.get_tenant_objects_by_user(request.user)
+        return OpenVPNTenant.get_tenant_objects_by_user(request.user)
 
 
 # Associate the admin forms with the models.
-admin.site.register(VPNService, VPNServiceAdmin)
-admin.site.register(VPNTenant, VPNTenantAdmin)
+admin.site.register(OpenVPNService, OpenVPNServiceAdmin)
+admin.site.register(OpenVPNTenant, OpenVPNTenantAdmin)

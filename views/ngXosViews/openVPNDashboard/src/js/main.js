@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('xos.vpnDashboard', [
+angular.module('xos.openVPNDashboard', [
   'ngResource',
   'ngCookies',
   'ngLodash',
@@ -9,9 +9,9 @@ angular.module('xos.vpnDashboard', [
 ])
 .config(($stateProvider) => {
   $stateProvider
-  .state('vpnList', {
+  .state('openVPNList', {
     url: '/',
-    template: '<vpn-list></vpn-list>'
+    template: '<openvpn-list></openvpn-list>'
   });
 })
 .config(($compileProvider) => {
@@ -20,10 +20,10 @@ angular.module('xos.vpnDashboard', [
 })
 .service('Vpn', function($http, $q){
 
-  this.getVpnTenants = () => {
+  this.getOpenVPNTenants = () => {
     let deferred = $q.defer();
 
-    $http.get('/xoslib/vpntenant/')
+    $http.get('/xoslib/openvpntenant/')
     .then((res) => {
       deferred.resolve(res.data)
     })
@@ -37,15 +37,15 @@ angular.module('xos.vpnDashboard', [
 .config(function($httpProvider){
   $httpProvider.interceptors.push('NoHyperlinks');
 })
-.directive('vpnList', function(){
+.directive('openVPNList', function(){
   return {
     restrict: 'E',
     scope: {},
     bindToController: true,
     controllerAs: 'vm',
-    templateUrl: 'templates/vpn-list.tpl.html',
+    templateUrl: 'templates/openvpn-list.tpl.html',
     controller: function(Vpn){
-      Vpn.getVpnTenants()
+      Vpn.getOpenVPNTenants()
       .then((vpns) => {
         this.vpns = vpns;
         for (var i = 0; i < this.vpns.length; i++) {

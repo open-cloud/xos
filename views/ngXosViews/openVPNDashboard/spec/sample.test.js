@@ -4,7 +4,7 @@ describe('The User List', () => {
   
   var scope, element, isolatedScope, httpBackend;
 
-  beforeEach(module('xos.vpnDashboard'));
+  beforeEach(module('xos.openVPNDashboard'));
   beforeEach(module('templates'));
 
   beforeEach(inject(function($httpBackend, $compile, $rootScope){

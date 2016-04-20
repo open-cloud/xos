@@ -2,7 +2,7 @@ import jinja2
 from core.models import TenantPrivilege
 from plus import PlusSerializerMixin
 from rest_framework import serializers
-from services.vpn.models import VPNService, VPNTenant
+from services.openvpn.models import OpenVPNService, OpenVPNTenant
 from xos.apibase import XOSListCreateAPIView
 
 if hasattr(serializers, "ReadOnlyField"):
@@ -13,18 +13,18 @@ else:
     ReadOnlyField = serializers.Field
 
 
-def get_default_vpn_service():
-    vpn_services = VPNService.get_service_objects().all()
-    if vpn_services:
-        return vpn_services[0].id
+def get_default_openvpn_service():
+    openvpn_services = OpenVPNService.get_service_objects().all()
+    if openvpn_services:
+        return openvpn_services[0].id
     return None
 
 
-class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
-    """A Serializer for the VPNTenant that has the minimum information required for clients.
+class OpenVPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
+    """A Serializer for the OpenVPNTenant that has the minimum information required for clients.
 
     Attributes:
-        id (ReadOnlyField): The ID of VPNTenant.
+        id (ReadOnlyField): The ID of OpenVPNTenant.
         server_network (ReadOnlyField): The network of the VPN.
         vpn_subnet (ReadOnlyField): The subnet of the VPN.
         script_text (SerializerMethodField): The text of the script for the client to use to
@@ -36,7 +36,7 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
     script_text = serializers.SerializerMethodField()
 
     class Meta:
-        model = VPNTenant
+        model = OpenVPNTenant
         fields = ('id', 'service_specific_attribute', 'vpn_subnet',
                   'server_network', 'script_text')
 
@@ -44,18 +44,19 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         """Gets the text of the client script for the requesting user.
 
         Parameters:
-            obj (services.vpn.models.VPNTenant): The VPNTenant to connect to.
+            obj (services.openvpn.models.OpenVPNTenant): The OpenVPNTenant to connect to.
 
         Returns:
             str: The client script as a str.
         """
-        env = jinja2.Environment(loader=jinja2.FileSystemLoader("/opt/xos/services/vpn/templates"))
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader("/opt/xos/services/openvpn/templates"))
         template = env.get_template("connect.vpn.j2")
         client_name = self.context['request'].user.email + "-" + str(obj.id)
         remote_ids = list(obj.failover_server_ids)
         remote_ids.insert(0, obj.id)
-        remotes = VPNTenant.get_tenant_objects().filter(pk__in=remote_ids)
-        pki_dir = VPNService.get_pki_dir(obj)
+        remotes = OpenVPNTenant.get_tenant_objects().filter(pk__in=remote_ids)
+        pki_dir = OpenVPNService.get_pki_dir(obj)
         fields = {"client_name": client_name,
                   "remotes": remotes,
                   "is_persistent": obj.is_persistent,
@@ -66,11 +67,11 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         return template.render(fields)
 
 
-class VPNTenantList(XOSListCreateAPIView):
-    """Class that provides a list of VPNTenants that the user has permission to access."""
-    serializer_class = VPNTenantSerializer
+class OpenVPNTenantList(XOSListCreateAPIView):
+    """Class that provides a list of OpenVPNTenants that the user has permission to access."""
+    serializer_class = OpenVPNTenantSerializer
     method_kind = "list"
-    method_name = "vpntenant"
+    method_name = "openvpntenant"
 
     def get_queryset(self):
         # Get every privilege for this user
@@ -79,5 +80,5 @@ class VPNTenantList(XOSListCreateAPIView):
         vpn_tenants = []
         for priv in tenants_privs:
             vpn_tenants.append(
-                VPNTenant.get_tenant_objects().filter(pk=priv.tenant.pk)[0])
+                OpenVPNTenant.get_tenant_objects().filter(pk=priv.tenant.pk)[0])
         return vpn_tenants

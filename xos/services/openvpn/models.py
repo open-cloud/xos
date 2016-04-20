@@ -5,12 +5,12 @@ from django.db import transaction
 from core.models import Service, TenantWithContainer
 from xos.exceptions import XOSConfigurationError, XOSValidationError
 
-VPN_KIND = "vpn"
+OPENVPN_KIND = "openvpn"
 
 
-class VPNService(Service):
+class OpenVPNService(Service):
     """Defines the Service for creating VPN servers."""
-    KIND = VPN_KIND
+    KIND = OPENVPN_KIND
     OPENVPN_PREFIX = "/opt/openvpn/"
     """The location of the openvpn EASY RSA files and PKIs."""
     SERVER_PREFIX = OPENVPN_PREFIX + "server-"
@@ -31,7 +31,7 @@ class VPNService(Service):
             command (str): The command to execute using ESAY RSA.
         """
         full_command = (
-            VPNService.EASYRSA_COMMAND_PREFIX + " --pki-dir=" +
+            OpenVPNService.EASYRSA_COMMAND_PREFIX + " --pki-dir=" +
             pki_dir + " " + command)
         proc = Popen(
             full_command, shell=True, stdout=PIPE, stderr=PIPE
@@ -47,12 +47,12 @@ class VPNService(Service):
         """Gets the directory of the PKI for the given tenant.
 
         Parameters:
-            tenant (services.vpn.models.VPNTenant): The tenant to get the PKI directory for.
+            tenant (services.openvpn.models.OpenVPNTenant): The tenant to get the PKI directory for.
 
         Returns:
             str: The pki directory for the tenant.
         """
-        return VPNService.SERVER_PREFIX + str(tenant.id)
+        return OpenVPNService.SERVER_PREFIX + str(tenant.id)
 
     class Meta:
         proxy = True
@@ -102,7 +102,7 @@ class VPNService(Service):
             raise XOSValidationError(
                 "No availble ports for protocol: " + protocol)
         tenants = [
-            tenant for tenant in VPNTenant.get_tenant_objects().all()
+            tenant for tenant in OpenVPNTenant.get_tenant_objects().all()
             if tenant.protocol == protocol]
         port_numbers = self.exposed_ports[protocol]
         for port_number in port_numbers:
@@ -113,14 +113,14 @@ class VPNService(Service):
                 return port_number
 
 
-class VPNTenant(TenantWithContainer):
+class OpenVPNTenant(TenantWithContainer):
     """Defines the Tenant for creating VPN servers."""
 
     class Meta:
         proxy = True
         verbose_name = "VPN Tenant"
 
-    KIND = VPN_KIND
+    KIND = OPENVPN_KIND
 
     sync_attributes = ("nat_ip", "nat_mac",)
 
@@ -134,19 +134,19 @@ class VPNTenant(TenantWithContainer):
                           'protocol': None}
 
     def __init__(self, *args, **kwargs):
-        vpn_services = VPNService.get_service_objects().all()
+        vpn_services = OpenVPNService.get_service_objects().all()
         if vpn_services:
             self._meta.get_field(
                 "provider_service").default = vpn_services[0].id
-        super(VPNTenant, self).__init__(*args, **kwargs)
+        super(OpenVPNTenant, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        super(VPNTenant, self).save(*args, **kwargs)
+        super(OpenVPNTenant, self).save(*args, **kwargs)
         model_policy_vpn_tenant(self.pk)
 
     def delete(self, *args, **kwargs):
         self.cleanup_container()
-        super(VPNTenant, self).delete(*args, **kwargs)
+        super(OpenVPNTenant, self).delete(*args, **kwargs)
 
     @property
     def protocol(self):
@@ -160,7 +160,7 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def use_ca_from_id(self):
-        """int: The ID of VPNTenant to use to obtain a CA."""
+        """int: The ID of OpenVPNTenant to use to obtain a CA."""
         return self.get_attribute(
             "use_ca_from_id", self.default_attributes["use_ca_from_id"])
 
@@ -231,7 +231,7 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def failover_server_ids(self):
-        """list(int): The IDs of the VPNTenants to use as failover servers."""
+        """list(int): The IDs of the OpenVPNTenants to use as failover servers."""
         return self.get_attribute(
             "failover_server_ids", self.default_attributes["failover_server_ids"])
 
@@ -261,13 +261,13 @@ class VPNTenant(TenantWithContainer):
         self.set_attribute("port", value)
 
     def get_ca_crt(self, pki_dir):
-        """Gets the lines fo the ca.crt file for this VPNTenant.
+        """Gets the lines fo the ca.crt file for this OpenVPNTenant.
 
         Parameters:
             pki_dir (str): The PKI directory to look in.
 
         Returns:
-            list(str): The lines of the ca.crt file for this VPNTenant.
+            list(str): The lines of the ca.crt file for this OpenVPNTenant.
         """
         with open(pki_dir + "/ca.crt", 'r') as f:
             return f.readlines()
@@ -303,12 +303,12 @@ def model_policy_vpn_tenant(pk):
     """Manages the container for the VPN Tenant.
 
     Parameters
-        pk (int): The ID of this VPNTenant.
+        pk (int): The ID of this OpenVPNTenant.
     """
     # This section of code is atomic to prevent race conditions
     with transaction.atomic():
         # We find all of the tenants that are waiting to update
-        tenant = VPNTenant.objects.select_for_update().filter(pk=pk)
+        tenant = OpenVPNTenant.objects.select_for_update().filter(pk=pk)
         if not tenant:
             return
         # Since this code is atomic it is safe to always use the first tenant
