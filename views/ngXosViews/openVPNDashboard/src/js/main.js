@@ -11,7 +11,7 @@ angular.module('xos.openVPNDashboard', [
   $stateProvider
   .state('openVPNList', {
     url: '/',
-    template: '<openvpn-list></openvpn-list>'
+    template: '<vpn-list></vpn-list>'
   });
 })
 .config(($compileProvider) => {
@@ -20,7 +20,7 @@ angular.module('xos.openVPNDashboard', [
 })
 .service('Vpn', function($http, $q){
 
-  this.getOpenVPNTenants = () => {
+  this.getOpenVpnTenants = () => {
     let deferred = $q.defer();
 
     $http.get('/xoslib/openvpntenant/')
@@ -37,7 +37,7 @@ angular.module('xos.openVPNDashboard', [
 .config(function($httpProvider){
   $httpProvider.interceptors.push('NoHyperlinks');
 })
-.directive('openVPNList', function(){
+.directive('vpnList', function(){
   return {
     restrict: 'E',
     scope: {},
@@ -45,7 +45,7 @@ angular.module('xos.openVPNDashboard', [
     controllerAs: 'vm',
     templateUrl: 'templates/openvpn-list.tpl.html',
     controller: function(Vpn){
-      Vpn.getOpenVPNTenants()
+      Vpn.getOpenVpnTenants()
       .then((vpns) => {
         this.vpns = vpns;
         for (var i = 0; i < this.vpns.length; i++) {
