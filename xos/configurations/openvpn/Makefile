@@ -44,7 +44,7 @@ upgrade_pkgs:
 	sudo pip install httpie --upgrade
 
 rebuild_xos:
-	make -C ../../../containers/xos openvpn
+	make -C ../../../containers/xos devel
 
 rebuild_synchronizer:
 	make -C ../../../containers/synchronizer
