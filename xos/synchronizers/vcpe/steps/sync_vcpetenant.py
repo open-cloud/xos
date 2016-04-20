@@ -153,9 +153,6 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                         if mac:
                             safe_macs.append(mac)
 
-        wan_vm_ip=o.wan_vm_ip
-        wan_vm_mac=o.wan_vm_mac
-
         fields = {"vlan_ids": vlan_ids,   # XXX remove this
                 "s_tags": s_tags,
                 "c_tags": c_tags,
@@ -164,11 +161,6 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                 "bbs_addrs": bbs_addrs,
                 "full_setup": full_setup,
                 "isolation": o.instance.isolation,
-                "wan_container_gateway_mac": vcpe_service.wan_container_gateway_mac,
-                "wan_container_gateway_ip": vcpe_service.wan_container_gateway_ip,
-                "wan_container_netbits": vcpe_service.wan_container_netbits,
-                "wan_vm_mac": wan_vm_mac,
-                "wan_vm_ip": wan_vm_ip,
                 "safe_browsing_macs": safe_macs,
                 "container_name": "vcpe-%s-%s" % (s_tags[0], c_tags[0]),
                 "dns_servers": [x.strip() for x in vcpe_service.dns_servers.split(",")],
