@@ -17,8 +17,8 @@ xos_synchronizer_openstack:
         - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
         - ./images:/opt/xos/images:ro
 
-xos_synchronizer_vpn:
-    image: xosproject/xos-vpn
+xos_synchronizer_openvpn:
+    image: xosproject/xos-openvpn
     command: bash -c "sleep 120 ; python /opt/xos/synchronizers/vpn/vpn-synchronizer.py -C /opt/xos/synchronizers/vpn/vpn_config"
     labels:
         org.xosproject.kind: synchronizer
@@ -28,12 +28,12 @@ xos_synchronizer_vpn:
     extra_hosts:
         - ctl:${MYIP}
     volumes:
-        - ../setup/id_rsa:/opt/xos/synchronizers/vpn/vpn_private_key:ro  # private key
+        - ../setup/id_rsa:/opt/xos/synchronizers/openvpn/openvpn_private_key:ro  # private key
     volumes_from:
-        - xos_synchronizer_vpn_data:rw
+        - xos_openvpn_data:rw
 
-xos_synchronizer_vpn_data:
-    image: xosproject/xos-vpn
+xos_openvpn_data:
+    image: xosproject/xos-openvpn
     links:
         - xos_db
     extra_hosts:
@@ -49,7 +49,7 @@ xos_synchronizer_vpn_data:
 #        org.xosproject.target: swarm
 
 xos:
-    image: xosproject/xos-vpn
+    image: xosproject/xos-openvpn
     command: python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
     ports:
         - "9999:8000"
@@ -59,4 +59,4 @@ xos:
       - ../setup:/root/setup:ro
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
     volumes_from:
-      - xos_synchronizer_vpn_data:rw
+      - xos_openvpn_data:rw
