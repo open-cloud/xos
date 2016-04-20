@@ -2,8 +2,6 @@ MYIP:=$(shell hostname -i)
 
 cloudlab: common_cloudlab xos
 
-devstack: upgrade_pkgs common_devstack xos
-
 xos:
 	sudo MYIP=$(MYIP) docker-compose up -d
 	bash ../common/wait_for_xos.sh
@@ -24,9 +22,6 @@ containers:
 common_cloudlab:
 	make -C ../common -f Makefile.cloudlab
 
-common_devstack:
-	make -C ../common -f Makefile.devstack
-
 stop:
 	sudo MYIP=$(MYIP) docker-compose stop
 
@@ -40,16 +35,16 @@ ps:
 	sudo MYIP=$(MYIP) docker-compose ps
 
 enter-xos:
-	sudo docker exec -it devel_xos_1 bash
+	sudo docker exec -it openvpn_xos_1 bash
 
 enter-synchronizer:
-	sudo docker exec -it devel_xos_synchronizer_openstack_1 bash
+	sudo docker exec -it openvpn_xos_synchronizer_openvpn_1 bash
 
 upgrade_pkgs:
 	sudo pip install httpie --upgrade
 
 rebuild_xos:
-	make -C ../../../containers/xos devel
+	make -C ../../../containers/xos openvpn
 
 rebuild_synchronizer:
 	make -C ../../../containers/synchronizer
