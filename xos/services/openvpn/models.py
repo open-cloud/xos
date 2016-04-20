@@ -57,7 +57,7 @@ class OpenVPNService(Service):
     class Meta:
         proxy = True
         # The name used to find this service, all directories are named this
-        app_label = "vpn"
+        app_label = "openvpn"
         verbose_name = "VPN Service"
 
     default_attributes = {'exposed_ports': None,
