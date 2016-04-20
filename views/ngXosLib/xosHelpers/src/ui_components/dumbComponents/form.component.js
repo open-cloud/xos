@@ -63,7 +63,7 @@
       template: `
         <ng-form name="vm.config.formName || 'form'">
           <div class="form-group" ng-repeat="field in vm.formField">
-            <label>{{vm.formatLabel(field.label)}}</label>
+            <label>{{field.label}}</label>
             <input type="text" name="" class="form-control" ng-model="vm.ngModel[field]"/>
           </div>
           <div class="form-group" ng-if="vm.config.actions">
@@ -80,7 +80,7 @@
       `,
       bindToController: true,
       controllerAs: 'vm',
-      controller: function($scope, $log, _, LabelFormatter, XosFormHelpers){
+      controller: function($scope, $log, _, XosFormHelpers){
 
         if(!this.config){
           throw new Error('[xosForm] Please provide a configuration via the "config" attribute');
@@ -89,8 +89,6 @@
         if(!this.config.actions){
           throw new Error('[xosForm] Please provide an action list in the configuration');
         }
-
-        this.formatLabel = LabelFormatter.format;
 
         this.excludedField = ['id', 'validators', 'created', 'updated', 'deleted', 'backend_status'];
         if(this.config && this.config.exclude){
@@ -103,7 +101,7 @@
           if(!model){
             return;
           }
-          this.formField = XosFormHelpers.buildFormStructure(_.difference(Object.keys(model), this.excludedField));
+          this.formField = XosFormHelpers.buildFormStructure(XosFormHelpers.parseModelField(_.difference(Object.keys(model), this.excludedField)), this.config.fields, model);
         });
 
       }
@@ -114,7 +112,7 @@
     this._getFieldFormat = (value) => {
 
       // check if is date
-      if (_.isDate(value)){
+      if (_.isDate(value) || (!Number.isNaN(Date.parse(value)) && Date.parse(value) > 0)){
         return 'date';
       }
 
