@@ -10,10 +10,16 @@ xos:
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/base.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 
+frontend:
+	sudo make -f ../common/Makefile.prereqs
+	sudo docker-compose up -d
+	bash ../common/wait_for_xos.sh
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
+
 containers:
 	cd ../../../containers/xos; make devel
 	cd ../../../containers/synchronizer; make
-	cd ../../../containers/vpn; make
+	cd ../../../containers/openvpn; make
 
 common_cloudlab:
 	make -C ../common -f Makefile.cloudlab
