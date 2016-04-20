@@ -19,10 +19,10 @@ xos_synchronizer_openstack:
 
 xos_synchronizer_openvpn:
     image: xosproject/xos-openvpn
-    command: bash -c "sleep 120 ; python /opt/xos/synchronizers/vpn/vpn-synchronizer.py -C /opt/xos/synchronizers/vpn/vpn_config"
+    command: bash -c "sleep 120 ; python /opt/xos/synchronizers/openvpn/openvpn-synchronizer.py -C /opt/xos/synchronizers/openvpn/openvpn_config"
     labels:
         org.xosproject.kind: synchronizer
-        org.xosproject.target: vpn
+        org.xosproject.target: openvpn
     links:
         - xos_db
     extra_hosts:
