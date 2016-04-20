@@ -165,12 +165,8 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             controller = controllers[0]
             keystone_server = controller.auth_url
             user_name = controller.admin_user
+            tenant_name = controller.admin_tenant
             password = controller.admin_password
-
-        # Put this in the controller object?  Or fetch it from Keystone?
-        # Seems like VTN should be pulling it from Keystone
-        # For now let it be specified by a service / tenant attribute
-        neutron_server = self.attribute_default(o, attrs, "neutron_server", "http://neutron-api:9696/v2.0/")
 
         data = {
             "apps" : {
@@ -179,20 +175,19 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                         "privateGatewayMac" : privateGatewayMac,
                         "localManagementIp": localManagementIp,
                         "ovsdbPort": ovsdbPort,
-                        "sshPort": sshPort,
-                        "sshUser": sshUser,
-                        "sshKeyFile": sshKeyFile,
+                        "ssh": {
+                            "sshPort": sshPort,
+                            "sshUser": sshUser,
+                            "sshKeyFile": sshKeyFile
+                        },
+                        "openstack": {
+                            "endpoint": keystone_server,
+                            "tenant": tenant_name,
+                            "user": user_name,
+                            "password": password
+                        },
                         "publicGateways": [],
                         "nodes" : []
-                    }
-                },
-                "org.onosproject.openstackinterface" : {
-                    "openstackinterface" : {
-                        "do_not_push_flows" : "true",
-                        "neutron_server" : neutron_server,
-                        "keystone_server" : keystone_server,
-                        "user_name" : user_name,
-                        "password" : password
                     }
                 }
             }
