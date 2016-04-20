@@ -3,7 +3,6 @@
 angular.module('xos.<%= name %>', [
   'ngResource',
   'ngCookies',
-  'ngLodash',
   'ui.router',
   'xos.helpers'
 ])
