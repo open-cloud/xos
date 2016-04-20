@@ -58,7 +58,7 @@ class OpenVPNService(Service):
         proxy = True
         # The name used to find this service, all directories are named this
         app_label = "openvpn"
-        verbose_name = "VPN Service"
+        verbose_name = "OpenVPN Service"
 
     default_attributes = {'exposed_ports': None,
                           'exposed_ports_str': None}
@@ -118,7 +118,7 @@ class OpenVPNTenant(TenantWithContainer):
 
     class Meta:
         proxy = True
-        verbose_name = "VPN Tenant"
+        verbose_name = "OpenVPN Tenant"
 
     KIND = OPENVPN_KIND
 
