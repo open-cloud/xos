@@ -510,8 +510,14 @@ class LeastLoadedNodeScheduler(Scheduler):
 
     def pick(self):
         from core.models import Node
-        nodes = Node.objects.all()
-
+#        nodes = Node.objects.all()
+#MCORD        
+        if not self.slice.default_node:
+            nodes = list(Node.objects.all())
+            nodes = sorted(nodes, key=lambda node: node.instances.all().count())
+        else:
+            nodes = list(Node.objects.filter(name = self.slice.default_node))
+#MCORD
         if self.label:
             nodes = nodes.filter(nodelabels__name=self.label)
 
@@ -703,6 +709,10 @@ class TenantWithContainer(Tenant):
             images = Image.objects.filter(name=image_name)
             if images:
                 return images[0]
+            else:
+                images = Image.objects.filter(name = slice.default_image)
+                if images:
+                    return images[0]
 
         raise XOSProgrammingError(
             "No VPCE image (looked for %s)" % str(look_for_images))
@@ -754,6 +764,7 @@ class TenantWithContainer(Tenant):
 
             if not instance:
                 slice = self.provider_service.slices.all()[0]
+                flavors = Flavor.objects.filter(name=slice.default_flavor) #MCORD
 
                 flavor = slice.default_flavor
                 if not flavor:
@@ -761,6 +772,8 @@ class TenantWithContainer(Tenant):
                     if not flavors:
                         raise XOSConfigurationError("No m1.small flavor")
                     flavor = flavors[0]
+#                default_flavor = slice.default_flavor #MCORD
+
 
                 if slice.default_isolation == "container_vm":
                     (node, parent) = ContainerVmScheduler(slice).pick()

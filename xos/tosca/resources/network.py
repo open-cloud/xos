@@ -43,6 +43,19 @@ class XOSNetwork(XOSResource):
         if cidr:
             args["subnet"] = cidr
 
+        start_ip = self.get_property_default("start_ip", None)
+        if start_ip:
+            args["start_ip"] = start_ip 
+        print "DEF_RES_IP", start_ip 
+
+        end_ip = self.get_property_default("end_ip", None)
+        if end_ip:
+            args["end_ip"] = end_ip 
+
+#        default_ = self.get_property_default("gateway_ip", None)
+#        if gateway_ip:
+#            args["gateway_ip"] = gateway_ip
+
         return args
 
     def postprocess(self, obj):
