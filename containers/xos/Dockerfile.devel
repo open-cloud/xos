@@ -38,7 +38,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
 
 RUN pip install \
     ca-certs-locater \
-    django>=1.8,<1.8.99 \
+    "django>=1.8,<1.8.99" \
     django-bitfield \
     django-crispy-forms \
     django-encrypted-fields \
@@ -51,7 +51,7 @@ RUN pip install \
     django-timezones \
     djangorestframework==3.3.3 \
     dnslib \
-    google-api-python-client \ 
+    google-api-python-client \
     httplib2 \
     lxml \
     markdown \
@@ -60,7 +60,7 @@ RUN pip install \
     psycopg2 \
     python-ceilometerclient \
     python-dateutil \
-    python-gflags \ 
+    python-gflags \
     python-keyczar \
     python-logstash \
     pygraphviz \
