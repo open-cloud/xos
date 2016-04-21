@@ -45,6 +45,7 @@ class ONOSServiceForm(forms.ModelForm):
 
     class Meta:
         model = ONOSService
+        fields = '__all__'
 
 class ONOSServiceAdmin(ReadOnlyAwareAdmin):
     model = ONOSService
@@ -103,6 +104,7 @@ class ONOSAppForm(forms.ModelForm):
 
     class Meta:
         model = ONOSApp
+        fields = '__all__'
 
 class ONOSAppAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'name', )

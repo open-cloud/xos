@@ -79,6 +79,7 @@ class VOLTTenantForm(forms.ModelForm):
 
     class Meta:
         model = VOLTTenant
+        fields = '__all__'
 
 class VOLTTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'service_specific_id', 's_tag', 'c_tag', 'subscriber_root' )
@@ -133,6 +134,7 @@ class VSGServiceForm(forms.ModelForm):
 
     class Meta:
         model = VSGService
+        fields = '__all__'
 
 class VSGServiceAdmin(ReadOnlyAwareAdmin):
     model = VSGService
@@ -205,6 +207,8 @@ class VSGTenantForm(forms.ModelForm):
 
     class Meta:
         model = VSGTenant
+        fields = '__all__'
+
 
 class VSGTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
@@ -238,6 +242,8 @@ class VBNGServiceForm(forms.ModelForm):
 
     class Meta:
         model = VBNGService
+        fields = '__all__'
+
 
 class VBNGServiceAdmin(ReadOnlyAwareAdmin):
     model = VBNGService
@@ -301,6 +307,7 @@ class VBNGTenantForm(forms.ModelForm):
 
     class Meta:
         model = VBNGTenant
+        fields = '__all__'
 
 class VBNGTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
@@ -377,6 +384,8 @@ class CordSubscriberRootForm(forms.ModelForm):
 
     class Meta:
         model = CordSubscriberRoot
+        fields = '__all__'
+
 
 class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id',  'name', )

@@ -89,6 +89,7 @@ class VTRTenantForm(forms.ModelForm):
 
     class Meta:
         model = VTRTenant
+        fields = '__all__'
 
 class VTRTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'target', 'test', 'argument' )

@@ -33,6 +33,7 @@ class CeilometerServiceForm(forms.ModelForm):
 
     class Meta:
         model = CeilometerService
+        fields = '__all__'
 
 class CeilometerServiceAdmin(ReadOnlyAwareAdmin):
     model = CeilometerService
@@ -136,6 +137,7 @@ class SFlowServiceForm(forms.ModelForm):
 
     class Meta:
         model = SFlowService
+        fields = '__all__'
 
 class SFlowServiceAdmin(ReadOnlyAwareAdmin):
     model = SFlowService
@@ -191,6 +193,7 @@ class SFlowTenantForm(forms.ModelForm):
 
     class Meta:
         model = SFlowTenant
+        fields = '__all__'
 
 class SFlowTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'creator', 'listening_endpoint' )

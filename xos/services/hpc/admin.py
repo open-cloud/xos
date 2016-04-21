@@ -125,6 +125,7 @@ class ContentProviderForm(forms.ModelForm):
         widgets = {
             'serviceProvider' : LinkedSelect
         }
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
       request = kwargs.pop('request', None)
@@ -180,6 +181,7 @@ class CDNPrefixForm(forms.ModelForm):
         widgets = {
             'contentProvider' : LinkedSelect
         }
+        fields = '__all__'
 
 class CDNPrefixAdmin(HPCAdmin):
     form = CDNPrefixForm

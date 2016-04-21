@@ -53,6 +53,7 @@ class VTNServiceForm(forms.ModelForm):
 
     class Meta:
         model = VTNService
+        fields = '__all__'
 
 class VTNServiceAdmin(ReadOnlyAwareAdmin):
     model = VTNService

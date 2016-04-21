@@ -13,6 +13,7 @@ class ExampleServiceForm(forms.ModelForm):
 
     class Meta:
         model = ExampleService
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(ExampleServiceForm, self).__init__(*args, **kwargs)
@@ -64,6 +65,7 @@ class ExampleTenantForm(forms.ModelForm):
 
     class Meta:
         model = ExampleTenant
+        fields = '__all__'
 
     creator = forms.ModelChoiceField(queryset=User.objects.all())
 
