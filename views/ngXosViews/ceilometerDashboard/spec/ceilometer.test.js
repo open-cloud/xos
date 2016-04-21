@@ -21,31 +21,17 @@ describe('In Ceilometer View', () => {
       httpBackend.flush();
     }));
 
-    xdescribe('when loading meters', () => {
-      it('should group meters by services', () => {
-        expect(Object.keys(vm.projects).length).toBe(2);
-      });
-
-      it('should group services by slices', () => {
-        expect(Object.keys(vm.projects.service_2).length).toBe(2);
-      });
-
-      it('should group slices by resources', () => {
-        expect(Object.keys(vm.projects.service_2.slice_2).length).toBe(2);
-      });
-    });
-
     describe('when loading service list', () => {
       it('should append the list to the scope', () => {
         expect(vm.services.length).toBe(2);
-        expect(vm.services[0].slice.length).toBe(2);
-        expect(vm.services[1].slice.length).toBe(2);
+        expect(vm.services[0].slices.length).toBe(2);
+        expect(vm.services[1].slices.length).toBe(2);
       });
     });
 
     describe('when a slice is selected', () => {
       it('should load corresponding meters', () => {
-        vm.loadSliceMeter(vm.services[0].slice[0]);
+        vm.loadSliceMeter(vm.services[0].slices[0]);
 
         httpBackend.flush();
 
@@ -89,7 +75,7 @@ describe('In Ceilometer View', () => {
       expect(vm.chart.data[0].length).toBe(2);
       expect(vm.chart.data[0][0]).toBe(110);
       expect(vm.chart.data[0][1]).toBe(120);
-      expect(vm.chartMeters[0].project_id).toBe('fakeTenant')
+      expect(vm.chartMeters[0].resource_id).toBe('fakeTenant')
       expect(vm.chartMeters[0].resource_name).toBe('fakeName')
     });
 
@@ -100,7 +86,7 @@ describe('In Ceilometer View', () => {
       expect(vm.chart.data[1][0]).toBe(210);
       expect(vm.chart.data[1][1]).toBe(220);
       expect(vm.chart.data[1][2]).toBe(230);
-      expect(vm.chartMeters[1].project_id).toBe('anotherTenant')
+      expect(vm.chartMeters[1].resource_id).toBe('anotherTenant')
       expect(vm.chartMeters[1].resource_name).toBe('anotherName')
     });
 
@@ -112,7 +98,7 @@ describe('In Ceilometer View', () => {
       expect(vm.chart.data[0][0]).toBe(210);
       expect(vm.chart.data[0][1]).toBe(220);
       expect(vm.chart.data[0][2]).toBe(230);
-      expect(vm.chartMeters[0].project_id).toBe('anotherTenant')
+      expect(vm.chartMeters[0].resource_id).toBe('anotherTenant')
       expect(vm.chartMeters[0].resource_name).toBe('anotherName')
     });
 
@@ -120,10 +106,10 @@ describe('In Ceilometer View', () => {
       it('should create an array of unique labels', () => {
         // unique because every resource has multiple samples (time-series)
         const samples = [
-          {project_id: 1, resource_name: 'fakeName'},
-          {project_id: 1, resource_name: 'fakeName'},
-          {project_id: 2, resource_name: 'anotherName'},
-          {project_id: 2, resource_name: 'anotherName'}
+          {resource_id: 1, resource_name: 'fakeName'},
+          {resource_id: 1, resource_name: 'fakeName'},
+          {resource_id: 2, resource_name: 'anotherName'},
+          {resource_id: 2, resource_name: 'anotherName'}
         ];
 
         const result = vm.formatSamplesLabels(samples);

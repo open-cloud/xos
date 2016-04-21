@@ -1,0 +1,21 @@
+{% for app,files in generator.apps.items %}
+{% for file,m in files.items %}
+module xos-{{ app }}-{{ file }} {
+    namespace "urn:xos:{{app}}.{{ file }}";
+    prefix xos-cs;
+
+    import complex-types {prefix ct;}
+    revision 2016-2-24 {
+        description "Initial";
+    }   
+
+    complex-type {{ m.class_name }} {
+      {% for f in m.fields %}
+
+      leaf {{ f.name }} { type {{ f.type }}{% ifequal f.type "ForeignKey" %} { ct:instance-type {{f.related.model.class_name}};{% if f.null%}{%else%}require-instance true{% endif %}{% endifequal %};{% if f.max_length %} { length {{ f.max_length }};{% endif %}{% if None %}default "{{ f.default }}";{% endif %}}
+      {% endfor %}
+    }
+}
++++ {{ app }}-{{ file}}.yang
+{% endfor %}
+{% endfor %}

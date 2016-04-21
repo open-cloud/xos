@@ -17,8 +17,11 @@
         var svg;
         this.selectedInstances = [];
         this.hideInstanceStats = true;
+        var _this = this;
 
         const handleSvg = (el) => {
+
+          d3.select($element[0]).select('svg').remove();
 
           svg = d3.select(el)
           .append('svg')
@@ -26,14 +29,21 @@
           .style('height', `${el.clientHeight}px`);
         }
 
-        ChartData.getLogicTree()
-        .then((tree) => {
-          LogicTopologyHelper.updateTree(svg);
-        });
+        const loadGlobalScope = () => {
+          ChartData.getLogicTree()
+          .then((tree) => {
+            LogicTopologyHelper.updateTree(svg);
+          });
+        }
+        loadGlobalScope();
 
         $scope.$watch(() => this.selected, (selected) => {
           if(selected){
             ChartData.selectSubscriber(selected);
+            LogicTopologyHelper.updateTree(svg);
+          }
+          else{
+            ChartData.removeSubscriber();
             LogicTopologyHelper.updateTree(svg);
           }
         });
@@ -50,32 +60,57 @@
         $rootScope.$on('instance.detail', (evt, service) => {
           ChartData.getInstanceStatus(service)
           .then((instances) => {
-            // this.hideInstanceStats = false;
-            // // HACK if array is empty wait for animation
-            // if(instances.length === 0){
-            //   this.hideInstanceStats = true;
-            //   $timeout(() => {
-            //     this.selectedInstances = instances;
-            //   }, 500);
-            // }
-            // else{
-            //   this.selectedInstances = instances;
-            // }
             LogicTopologyHelper.updateTree(svg);
           })
-        })
+          .catch(e => {
+            _this.error = 'Service statistics are not available at this time. Please try again later.'
+            $timeout(() => {
+              _this.error = null;
+            }, 2000);
+          })
+        });
+
+        d3.select(window)
+        .on('resize.logic', () => {
+          handleSvg($element[0]);
+          LogicTopologyHelper.setupTree(svg);
+          LogicTopologyHelper.updateTree(svg);
+        });
 
         handleSvg($element[0]);
         LogicTopologyHelper.setupTree(svg);
 
-        this.openSubscriberModal = () => {
-          this.subscriberModal = true;
+        this.selectSubscriberModal = () => {
+          this.openSelectSubscriberModal = true;
+          $scope.$apply();
+        };
+
+        this.subscriberStatusModal = () => {
+          this.openSubscriberStatusModal = true;
           $scope.$apply();
         };
 
         // listen for subscriber modal event
         $rootScope.$on('subscriber.modal.open', () => {
-          this.openSubscriberModal();
+
+          if(ChartData.currentSubscriber){
+            this.subscriberStatusModal();
+          }
+          else{
+            this.selectSubscriberModal();
+          }
+        });
+
+        // listen for subscriber modal event
+        $rootScope.$on('subscriber.modal.open', () => {
+
+          if(ChartData.currentSubscriber){
+            this.currentSubscriber = ChartData.currentSubscriber;
+            this.subscriberStatusModal();
+          }
+          else{
+            this.selectSubscriberModal();
+          }
         });
 
       }

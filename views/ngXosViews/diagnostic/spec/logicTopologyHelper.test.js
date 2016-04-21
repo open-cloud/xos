@@ -9,7 +9,7 @@
 
     var svgWidth = 900;
 
-    beforeEach(module('xos.serviceTopology'));
+    beforeEach(module('xos.diagnostic'));
 
     // inject the rackHelper service
     beforeEach(inject(function (_LogicTopologyHelper_, _serviceTopologyConfig_) {

@@ -22,7 +22,6 @@ from broadbandshield import BBS
 
 logger = Logger(level=logging.INFO)
 
-PARENTAL_MECHANISM="dnsmasq"
 ENABLE_QUICK_UPDATE=False
 
 CORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
@@ -66,37 +65,51 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         vcpe_service = self.get_vcpe_service(o)
 
         dnsdemux_ip = None
-        if vcpe_service.backend_network_label:
-            # Connect to dnsdemux using the network specified by
-            #     vcpe_service.backend_network_label
-            for service in HpcService.objects.all():
-                for slice in service.slices.all():
-                    if "dnsdemux" in slice.name:
-                        for instance in slice.instances.all():
-                            for ns in instance.ports.all():
-                                if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
-                                    dnsdemux_ip = ns.ip
-            if not dnsdemux_ip:
-                logger.info("failed to find a dnsdemux on network %s" % vcpe_service.backend_network_label)
+        cdn_prefixes = []
+
+        cdn_config_fn = "/opt/xos/synchronizers/vcpe/cdn_config"
+        if os.path.exists(cdn_config_fn):
+            # manual CDN configuration
+            #   the first line is the address of dnsredir
+            #   the remaining lines are domain names, one per line
+            lines = file(cdn_config_fn).readlines()
+            if len(lines)>=2:
+                dnsdemux_ip = lines[0].strip()
+                cdn_prefixes = [x.strip() for x in lines[1:] if x.strip()]
         else:
-            # Connect to dnsdemux using the instance's public address
-            for service in HpcService.objects.all():
-                for slice in service.slices.all():
-                    if "dnsdemux" in slice.name:
-                        for instance in slice.instances.all():
-                            if dnsdemux_ip=="none":
-                                try:
-                                    dnsdemux_ip = socket.gethostbyname(instance.node.name)
-                                except:
-                                    pass
-            if not dnsdemux_ip:
-                logger.info("failed to find a dnsdemux with a public address")
+            # automatic CDN configuiration
+            #    it learns everything from CDN objects in XOS
+            #    not tested on pod.
+            if vcpe_service.backend_network_label:
+                # Connect to dnsdemux using the network specified by
+                #     vcpe_service.backend_network_label
+                for service in HpcService.objects.all():
+                    for slice in service.slices.all():
+                        if "dnsdemux" in slice.name:
+                            for instance in slice.instances.all():
+                                for ns in instance.ports.all():
+                                    if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
+                                        dnsdemux_ip = ns.ip
+                if not dnsdemux_ip:
+                    logger.info("failed to find a dnsdemux on network %s" % vcpe_service.backend_network_label,extra=o.tologdict())
+            else:
+                # Connect to dnsdemux using the instance's public address
+                for service in HpcService.objects.all():
+                    for slice in service.slices.all():
+                        if "dnsdemux" in slice.name:
+                            for instance in slice.instances.all():
+                                if dnsdemux_ip=="none":
+                                    try:
+                                        dnsdemux_ip = socket.gethostbyname(instance.node.name)
+                                    except:
+                                        pass
+                if not dnsdemux_ip:
+                    logger.info("failed to find a dnsdemux with a public address",extra=o.tologdict())
+
+            for prefix in CDNPrefix.objects.all():
+                cdn_prefixes.append(prefix.prefix)
 
         dnsdemux_ip = dnsdemux_ip or "none"
-
-        cdn_prefixes = []
-        for prefix in CDNPrefix.objects.all():
-            cdn_prefixes.append(prefix.prefix)
 
         # Broadbandshield can either be set up internally, using vcpe_service.bbs_slice,
         # or it can be setup externally using vcpe_service.bbs_server.
@@ -109,13 +122,13 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                         if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
                             bbs_addrs.append(ns.ip)
             else:
-                logger.info("unsupported configuration -- bbs_slice is set, but backend_network_label is not")
+                logger.info("unsupported configuration -- bbs_slice is set, but backend_network_label is not",extra=o.tologdict())
             if not bbs_addrs:
-                logger.info("failed to find any usable addresses on bbs_slice")
+                logger.info("failed to find any usable addresses on bbs_slice",extra=o.tologdict())
         elif vcpe_service.bbs_server:
             bbs_addrs.append(vcpe_service.bbs_server)
         else:
-            logger.info("neither bbs_slice nor bbs_server is configured in the vCPE")
+            logger.info("neither bbs_slice nor bbs_server is configured in the vCPE",extra=o.tologdict())
 
         vlan_ids = []
         s_tags = []
@@ -131,26 +144,14 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
             full_setup = True
 
         safe_macs=[]
-        if o.volt and o.volt.subscriber:
-            for user in o.volt.subscriber.users:
-                level = user.get("level",None)
-                mac = user.get("mac",None)
-                if level in ["G", "PG"]:
-                    if mac:
-                        safe_macs.append(mac)
-
-        wan_vm_ip=""
-        wan_vm_mac=""
-        tags = Tag.select_by_content_object(o.instance).filter(name="vm_wan_addr")
-        if tags:
-            parts=tags[0].value.split(",")
-            if len(parts)!=3:
-                raise Exception("vm_wan_addr tag is malformed: %s" % value)
-            wan_vm_ip = parts[1]
-            wan_vm_mac = parts[2]
-        else:
-            if CORD_USE_VTN:
-                raise Exception("no vm_wan_addr tag for instance %s" % o.instance)
+        if vcpe_service.url_filter_kind == "safebrowsing":
+            if o.volt and o.volt.subscriber:
+                for user in o.volt.subscriber.users:
+                    level = user.get("level",None)
+                    mac = user.get("mac",None)
+                    if level in ["G", "PG"]:
+                        if mac:
+                            safe_macs.append(mac)
 
         fields = {"vlan_ids": vlan_ids,   # XXX remove this
                 "s_tags": s_tags,
@@ -160,13 +161,10 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                 "bbs_addrs": bbs_addrs,
                 "full_setup": full_setup,
                 "isolation": o.instance.isolation,
-                "wan_container_gateway_mac": vcpe_service.wan_container_gateway_mac,
-                "wan_container_gateway_ip": vcpe_service.wan_container_gateway_ip,
-                "wan_container_netbits": vcpe_service.wan_container_netbits,
-                "wan_vm_mac": wan_vm_mac,
-                "wan_vm_ip": wan_vm_ip,
                 "safe_browsing_macs": safe_macs,
-                "dns_servers": [x.strip() for x in vcpe_service.dns_servers.split(",")] }
+                "container_name": "vcpe-%s-%s" % (s_tags[0], c_tags[0]),
+                "dns_servers": [x.strip() for x in vcpe_service.dns_servers.split(",")],
+                "url_filter_kind": vcpe_service.url_filter_kind }
 
         # add in the sync_attributes that come from the SubscriberRoot object
 
@@ -203,10 +201,10 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
             url_filter_level = o.volt.subscriber.url_filter_level
             url_filter_users = o.volt.subscriber.users
 
-        if PARENTAL_MECHANISM=="broadbandshield":
+        if service.url_filter_kind == "broadbandshield":
             # disable url_filter if there are no bbs_addrs
             if url_filter_enable and (not fields.get("bbs_addrs",[])):
-                logger.info("disabling url_filter because there are no bbs_addrs")
+                logger.info("disabling url_filter because there are no bbs_addrs",extra=o.tologdict())
                 url_filter_enable = False
 
             if url_filter_enable:
@@ -223,19 +221,19 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                     bbs_port = 8018
 
                 if not bbs_hostname:
-                    logger.info("broadbandshield is not configured")
+                    logger.info("broadbandshield is not configured",extra=o.tologdict())
                 else:
                     tStart = time.time()
                     bbs = BBS(o.bbs_account, "123", bbs_hostname, bbs_port)
                     bbs.sync(url_filter_level, url_filter_users)
 
                     if o.hpc_client_ip:
-                        logger.info("associate account %s with ip %s" % (o.bbs_account, o.hpc_client_ip))
+                        logger.info("associate account %s with ip %s" % (o.bbs_account, o.hpc_client_ip),extra=o.tologdict())
                         bbs.associate(o.hpc_client_ip)
                     else:
-                        logger.info("no hpc_client_ip to associate")
+                        logger.info("no hpc_client_ip to associate",extra=o.tologdict())
 
-                    logger.info("bbs update time %d" % int(time.time()-tStart))
+                    logger.info("bbs update time %d" % int(time.time()-tStart),extra=o.tologdict())
 
 
     def run_playbook(self, o, fields):
@@ -243,7 +241,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         quick_update = (o.last_ansible_hash == ansible_hash)
 
         if ENABLE_QUICK_UPDATE and quick_update:
-            logger.info("quick_update triggered; skipping ansible recipe")
+            logger.info("quick_update triggered; skipping ansible recipe",extra=o.tologdict())
         else:
             if o.instance.isolation in ["container", "container_vm"]:
                 super(SyncVSGTenant, self).run_playbook(o, fields, "sync_vcpetenant_new.yaml")

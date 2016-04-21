@@ -1,22 +1,51 @@
 'use strict';
-
 describe('The xos.helper module', function(){
-  
-  var app, httpProvider;
+  var SetCSRFToken, httpProviderObj, httpBackend, http, cookies;
 
-  beforeEach(module('xos.helpers'));
+  const fakeToken = 'aiuhsnds98234ndASd';
 
-  beforeEach(function(){
-    module(function(_$httpProvider_){
-      console.log('beforeEach');
-      httpProvider = _$httpProvider_;
+  beforeEach(function() {
+    module(
+      'xos.helpers',
+      function ($httpProvider) {
+        //save our interceptor
+        httpProviderObj = $httpProvider;
+      }
+    );
+
+    inject(function (_SetCSRFToken_, _$httpBackend_, _$http_, _$cookies_) {
+      SetCSRFToken = _SetCSRFToken_;
+      httpBackend = _$httpBackend_;
+      http = _$http_;
+      cookies = _$cookies_
+
+      // mocking $cookie service
+      spyOn(cookies, 'get').and.returnValue(fakeToken);
     });
+
   });
 
-  it('should set SetCSRFToken interceptor', inject(function($http){
-    console.log('httpProvider',httpProvider);
-    expect(true).toBeTrue();
-    // expect(httpProvider.interceptors).toContain('SetCSRFToken');
-  }));
+  describe('the SetCSRFToken', () => {
+    it('should exist', () => {
+      expect(SetCSRFToken).toBeDefined();
+    });
+
+    it('should attach token the request', (done) => {
+      httpBackend.when('POST', 'http://example.com', null, function(headers) {
+        expect(headers['X-CSRFToken']).toBe(fakeToken);
+        done();
+        return headers;
+      }).respond(200, {name: 'example' });
+
+      http.post('http://example.com');
+
+      httpBackend.flush();
+    });
+  });
+  
+  it('should set SetCSRFToken interceptor', () => {
+    expect(httpProviderObj).toBeDefined();
+    expect(httpProviderObj.interceptors).toContain('SetCSRFToken');
+  });
 
 });

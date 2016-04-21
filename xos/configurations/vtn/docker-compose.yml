@@ -17,7 +17,7 @@ xos_synchronizer_openstack:
         - ../setup:/root/setup:ro
         - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
         - ./files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
-
+        - ./images:/opt/xos/images:ro
 
 xos_synchronizer_onos:
     image: xosproject/xos-synchronizer-openstack

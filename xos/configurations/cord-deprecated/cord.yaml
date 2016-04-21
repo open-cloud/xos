@@ -1,0 +1,550 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup CORD-related services -- vOLT, vCPE, vBNG.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    # CORD Services
+    service_vtr:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /admin/vtr/vtrservice/$id$/
+          kind: vTR
+
+    service_volt:
+      type: tosca.nodes.Service
+      requirements:
+          - vsg_tenant:
+              node: service_vsg
+              relationship: tosca.relationships.TenantOfService
+          - lan_network:
+              node: lan_network
+              relationship: tosca.relationships.UsesNetwork
+          - wan_network:
+              node: wan_network
+              relationship: tosca.relationships.UsesNetwork
+      properties:
+          view_url: /admin/cord/voltservice/$id$/
+          kind: vOLT
+
+    # set a pool of addresses that we can hand out for the VSG Wan.
+    public_addresses:
+      type: tosca.nodes.AddressPool
+      properties:
+          addresses: 10.123.0.0/24 10.124.0.0/24
+
+    service_vsg:
+      type: tosca.nodes.VSGService
+      requirements:
+          - vbng_tenant:
+              node: service_vbng
+              relationship: tosca.relationships.TenantOfService
+      properties:
+          view_url: /admin/cord/vsgservice/$id$/
+          backend_network_label: hpc_client
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/synchronizers/vcpe/vcpe_private_key
+#          node_label: label_vsg
+      artifacts:
+          pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
+
+    service_vbng:
+      type: tosca.nodes.VBNGService
+      properties:
+          view_url: /admin/cord/vbngservice/$id$/
+# if unspecified, vbng observer will look for an ONOSApp Tenant and
+# generate a URL from its IP address
+#          vbng_url: http://10.11.10.24:8181/onos/virtualbng/
+
+    service_ONOS_vBNG:
+      type: tosca.nodes.ONOSService
+      requirements:
+      properties:
+          kind: onos
+          view_url: /admin/onos/onosservice/$id$/
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+      artifacts:
+          pubkey: /opt/xos/synchronizers/onos/onos_key.pub
+
+#
+# To actually bring up the vBNG app
+# - Set up the dataplane using the ansible script
+# - Log into the vBNG ONOS and run 'devices' to get switch dpID
+# - Change the dpID values in vBNG ONOS app in XOS GUI
+# - (Synchronizer should copy the files to ONOS container immediately)
+# - Log into service_ONOS_vBNG VM and restart ONOS Docker container
+#   (Should roll this step into a Synchronizer)
+#f
+    vBNG_ONOS_app:
+      type: tosca.nodes.ONOSvBNGApp
+      requirements:
+          - onos_tenant:
+              node: service_ONOS_vBNG
+              relationship: tosca.relationships.TenantOfService
+          - vbng_service:
+              node: service_vbng
+              relationship: tosca.relationships.UsedByService
+      properties:
+          dependencies: org.onosproject.proxyarp, org.onosproject.virtualbng, org.onosproject.openflow, org.onosproject.fwd
+          config_network-cfg.json: >
+            {
+              "ports" : {
+                "of:0000000000000001/1" : {
+                  "interfaces" : [
+                    {
+                      "ips"  : [ "10.0.1.253/24" ],
+                      "mac"  : "00:00:00:00:00:99"
+                    }
+                  ]
+                },
+                "of:0000000000000001/2" : {
+                  "interfaces" : [
+                    {
+                      "ips"  : [ "10.254.0.2/24" ],
+                      "mac"  : "00:00:00:00:00:98"
+                    }
+                  ]
+                }
+              }
+            }
+          config_virtualbng.json: { get_artifact: [ SELF, virtualbng_json, LOCAL_FILE] }
+      artifacts:
+          virtualbng_json: /root/setup/virtualbng.json
+
+    service_ONOS_vOLT:
+      type: tosca.nodes.ONOSService
+      requirements:
+      properties:
+          kind: onos
+          view_url: /admin/onos/onosservice/$id$/
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          rest_onos/v1/network/configuration/: >
+            {
+              "devices" : {
+                "of:0000000000000001" : {
+                  "accessDevice" : {
+                    "uplink" : "2",
+                    "vlan"   : "222",
+                    "defaultVlan" : "1"
+                  },
+                  "basic" : {
+                    "driver" : "pmc-olt"
+                  }
+                }
+              }
+            }
+      artifacts:
+          pubkey: /opt/xos/synchronizers/onos/onos_key.pub
+
+
+    vOLT_ONOS_app:
+      type: tosca.nodes.ONOSvOLTApp
+      requirements:
+          - onos_tenant:
+              node: service_ONOS_vOLT
+              relationship: tosca.relationships.TenantOfService
+          - volt_service:
+              node: service_volt
+              relationship: tosca.relationships.UsedByService
+      properties:
+          install_dependencies: onos-ext-notifier-1.0-SNAPSHOT.oar, onos-ext-volt-event-publisher-1.0-SNAPSHOT.oar
+          dependencies: org.onosproject.openflow-base, org.onosproject.olt, org.ciena.onos.ext_notifier, org.ciena.onos.volt_event_publisher
+          component_config: >
+             {
+                "org.ciena.onos.ext_notifier.KafkaNotificationBridge":{
+                   "rabbit.user": "<rabbit_user>",
+                   "rabbit.password": "<rabbit_password>",
+                   "rabbit.host": "<rabbit_host>",
+                   "publish.kafka": "false",
+                   "publish.rabbit": "true",
+                   "volt.events.rabbit.topic": "notifications.info",
+                   "volt.events.rabbit.exchange": "voltlistener",
+                   "volt.events.opaque.info": "{project_id: <keystone_tenant_id>, user_id: <keystone_user_id>}",
+                   "publish.volt.events": "true"
+                }
+             }
+#          config_network-cfg.json: >
+#            {
+#              "devices" : {
+#                "of:0000000000000001" : {
+#                  "accessDevice" : {
+#                    "uplink" : "2",
+#                    "vlan"   : "222",
+#                    "defaultVlan" : "1"
+#                  },
+#                  "basic" : {
+#                    "driver" : "default"
+#                  }
+#                }
+#              }
+#            }
+
+    # Network templates
+    Private:
+      type: tosca.nodes.NetworkTemplate
+
+    Public network hack:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: private
+          translation: NAT
+          shared_network_name: tun0-net
+
+
+    # Networks required by the CORD setup
+    lan_network:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_vsg
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vsg
+              relationship: tosca.relationships.ConnectsToSlice
+          - connection:
+              node: mysite_vsg
+              relationship: tosca.relationships.ConnectsToSlice
+
+    wan_network:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_vsg
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vsg
+              relationship: tosca.relationships.ConnectsToSlice
+          - connection:
+              node: mysite_vsg
+              relationship: tosca.relationships.ConnectsToSlice
+
+    Private-Direct:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          access: direct
+
+    Private-Indirect:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          access: indirect
+
+    subscriber_network:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_volt
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_volt
+              relationship: tosca.relationships.ConnectsToSlice
+          - connection:
+              node: mysite_clients
+              relationship: tosca.relationships.ConnectsToSlice
+
+    public_network:
+      type: tosca.nodes.network.Network
+      properties:
+      requirements:
+          - network_template:
+              node: Public network hack
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_vbng
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vbng
+              relationship: tosca.relationships.ConnectsToSlice
+
+
+    mysite:
+      type: tosca.nodes.Site
+
+    label_vsg:
+      type: tosca.nodes.NodeLabel
+
+    # CORD Slices
+    mysite_vsg:
+      description: vSG Controller Slice
+      type: tosca.nodes.Slice
+      requirements:
+          - vsg_service:
+              node: service_vsg
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - vsg_docker_image:
+              node: docker-vsg
+              relationship: tosca.relationships.UsesImage
+#      properties:
+#          default_isolation: container
+
+    mysite_onos_vbng:
+      description: ONOS Controller Slice for vBNG
+      type: tosca.nodes.Slice
+      requirements:
+          - ONOS:
+              node: service_ONOS_vBNG
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_onos_volt:
+      description: ONOS Controller Slice for vOLT
+      type: tosca.nodes.Slice
+      requirements:
+          - ONOS:
+              node: service_ONOS_vOLT
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_vbng:
+      description: slice running OVS controlled by vBNG
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_volt:
+      description: OVS controlled by vOLT
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_clients:
+      description: slice for clients at the subscriber
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+
+    # Virtual machines
+    onos_app_1:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: Ubuntu
+            version: 14.10
+      requirements:
+          - slice:
+                node: mysite_onos_vbng
+                relationship: tosca.relationships.MemberOfSlice
+
+    onos_app_2:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: Ubuntu
+            version: 14.10
+      requirements:
+          - slice:
+                node: mysite_onos_volt
+                relationship: tosca.relationships.MemberOfSlice
+
+    # VM for running the OVS controlled by vBNG
+    ovs_vbng:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: ubuntu
+            version: 14.04
+      requirements:
+          - slice:
+                node: mysite_vbng
+                relationship: tosca.relationships.MemberOfSlice
+
+    # VM for running the OVS controlled by vOLT
+    ovs_volt:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: ubuntu
+            version: 14.04
+      requirements:
+          - slice:
+                node: mysite_volt
+                relationship: tosca.relationships.MemberOfSlice
+
+    # A subscriber client VM
+    client1:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: ubuntu
+            version: 14.04
+      requirements:
+          - slice:
+                node: mysite_clients
+                relationship: tosca.relationships.MemberOfSlice
+
+    # docker image for vsg containers
+    docker-vsg:
+      # TODO: need to attach this to mydeployment
+      type: tosca.nodes.Image
+      properties:
+        kind: container
+        container_format: na
+        disk_format: na
+        path: andybavier/docker-vcpe
+        tag: develop
+
+    # Let's add a user who can be administrator of the household
+    johndoe@myhouse.com:
+      type: tosca.nodes.User
+      properties:
+          password: letmein
+          firstname: john
+          lastname: doe
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    # A subscriber
+    My House:
+       type: tosca.nodes.CORDSubscriber
+       properties:
+           service_specific_id: 123
+           firewall_enable: false
+           cdn_enable: false
+           url_filter_enable: false
+           url_filter_level: R
+       requirements:
+          - house_admin:
+              node: johndoe@myhouse.com
+              relationship: tosca.relationships.AdminPrivilege
+
+    Mom's PC:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 01:02:03:04:05:06
+           level: PG_13
+       requirements:
+           - household:
+               node: My House
+               relationship: tosca.relationships.SubscriberDevice
+
+    Dad's PC:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 90:E2:BA:82:F9:75
+           level: PG_13
+       requirements:
+           - household:
+               node: My House
+               relationship: tosca.relationships.SubscriberDevice
+
+    Jack's Laptop:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 68:5B:35:9D:91:D5
+           level: PG_13
+       requirements:
+           - household:
+               node: My House
+               relationship: tosca.relationships.SubscriberDevice
+
+    Jill's Laptop:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 34:36:3B:C9:B6:A6
+           level: PG_13
+       requirements:
+           - household:
+               node: My House
+               relationship: tosca.relationships.SubscriberDevice
+
+    My Volt:
+        type: tosca.nodes.VOLTTenant
+        properties:
+            service_specific_id: 123
+            s_tag: 222
+            c_tag: 432
+        requirements:
+            - provider_service:
+                node: service_volt
+                relationship: tosca.relationships.MemberOfService
+            - subscriber:
+                node: My House
+                relationship: tosca.relationships.BelongsToSubscriber

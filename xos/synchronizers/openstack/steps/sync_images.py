@@ -27,7 +27,7 @@ class SyncImages(OpenStackSyncStep):
         if os.path.exists(images_path):
             for f in os.listdir(images_path):
                 filename = os.path.join(images_path, f)
-                if os.path.isfile(filename):
+                if os.path.isfile(filename) and filename.endswith(".img"):
                     available_images[f] = filename
 
         logger.info("SyncImages: available_images = %s" % str(available_images))

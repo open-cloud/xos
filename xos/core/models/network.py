@@ -2,7 +2,7 @@ import os
 import socket
 import sys
 from django.db import models, transaction
-from core.models import PlCoreBase, Site, Slice, Instance, Controller
+from core.models import PlCoreBase, Site, Slice, Instance, Controller, Service
 from core.models import ControllerLinkManager,ControllerLinkDeletionManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
@@ -212,6 +212,15 @@ class ControllerNetwork(PlCoreBase):
     class Meta:
         unique_together = ('network', 'controller')
 
+    def tologdict(self):
+        d=super(ControllerNetwork,self).tologdict()
+        try:
+            d['network_name']=self.network.name
+            d['controller_name']=self.controller.name
+        except:
+            pass
+        return d
+ 
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
@@ -346,7 +355,11 @@ class NetworkParameter(PlCoreBase):
 class AddressPool(PlCoreBase):
     name = models.CharField(max_length=32)
     addresses = models.TextField(blank=True, null=True)
+    gateway_ip = models.CharField(max_length=32, null=True)
+    gateway_mac = models.CharField(max_length=32, null=True)
+    cidr = models.CharField(max_length=32, null=True)
     inuse = models.TextField(blank=True, null=True)
+    service = models.ForeignKey(Service, related_name="addresspools", null=True, blank=True)
 
     def __unicode__(self): return u'%s' % (self.name)
 

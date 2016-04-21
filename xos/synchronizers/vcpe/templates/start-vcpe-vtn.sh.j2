@@ -16,7 +16,12 @@ docker inspect $VCPE > /dev/null 2>&1
 if [ "$?" == 1 ]
 then
     docker pull andybavier/docker-vcpe
-    docker run -d --name=$VCPE --privileged=true --net=none -v /etc/$VCPE/dnsmasq.d:/etc/dnsmasq.d andybavier/docker-vcpe
+    docker run -d --name=$VCPE --privileged=true --net=none \
+    -v /var/container_volumes/$VCPE/mount:/mount:ro \
+    -v /var/container_volumes/$VCPE/etc/dnsmasq.d:/etc/dnsmasq.d:ro \
+    -v /var/container_volumes/$VCPE/etc/service/message:/etc/service/message \
+    -v /var/container_volumes/$VCPE/usr/local/sbin:/usr/local/sbin:ro \
+    andybavier/docker-vcpe
 else
     docker start $VCPE
 fi
@@ -39,9 +44,6 @@ fi
 
 # Make sure VM's eth0 (hpc_client) has no IP address
 #ifconfig $HPC_IFACE 0.0.0.0
-
-# Now can start up dnsmasq
-docker exec $VCPE service dnsmasq start
 
 # Attach to container
 docker start -a $VCPE

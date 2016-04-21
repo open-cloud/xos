@@ -23,7 +23,7 @@ import logging
 from logging import Logger
 logging.basicConfig( format='[%(levelname)s] [%(module)s:%(lineno)d] %(message)s' )
 logger = logging.getLogger()
-logger.setLevel( logging.INFO )
+logger.setLevel( logging.INFO ,extra=o.tologdict())
 
 # point to planetstack 
 if __name__ != "__main__":
@@ -50,7 +50,7 @@ class SyncVolumeSlice(SyncStep):
 
     def sync_record(self, vs):
         
-        logger.info("Sync VolumeSlice for (%s, %s)" % (vs.volume_id.name, vs.slice_id.name))
+        logger.info("Sync VolumeSlice for (%s, %s)" % (vs.volume_id.name, vs.slice_id.name),extra=vs.tologdict())
         
         # extract arguments...
         user_email = vs.slice_id.creator.email
@@ -70,7 +70,7 @@ class SyncVolumeSlice(SyncStep):
            
         except Exception, e:
            traceback.print_exc()
-           logger.error("syndicatelib config is missing one or more of the following: SYNDICATE_OPENCLOUD_SECRET, SYNDICATE_RG_CLOSURE, SYNDICATE_PRIVATE_KEY, SYNDICATE_SMI_URL")
+           logger.error("syndicatelib config is missing one or more of the following: SYNDICATE_OPENCLOUD_SECRET, SYNDICATE_RG_CLOSURE, SYNDICATE_PRIVATE_KEY, SYNDICATE_SMI_URL",extra=vs.tologdict())
            raise e
             
         # get secrets...
@@ -84,7 +84,7 @@ class SyncVolumeSlice(SyncStep):
            
         except Exception, e:
            traceback.print_exc()
-           logger.error("Failed to load secret credentials")
+           logger.error("Failed to load secret credentials",extra=vs.tologdict())
            raise e
         
         # make sure there's a slice-controlled Syndicate user account for the slice owner
@@ -95,7 +95,7 @@ class SyncVolumeSlice(SyncStep):
             assert rc is True, "Failed to ensure principal %s exists (rc = %s,%s)" % (slice_principal_id, rc, user)
         except Exception, e:
             traceback.print_exc()
-            logger.error('Failed to ensure slice user %s exists' % slice_principal_id)
+            logger.error('Failed to ensure slice user %s exists' % slice_principal_id,extra=vs.tologdict())
             raise e
             
         # grant the slice-owning user the ability to provision UGs in this Volume, and also provision for the user the (single) RG the slice will instantiate in each VM.
@@ -105,7 +105,7 @@ class SyncVolumeSlice(SyncStep):
             
         except Exception, e:
             traceback.print_exc()
-            logger.error("Failed to set up Volume access for slice %s in %s" % (slice_principal_id, volume_name))
+            logger.error("Failed to set up Volume access for slice %s in %s" % (slice_principal_id, volume_name),extra=vs.tologdict())
             raise e
             
         # generate and save slice credentials....
@@ -115,7 +115,7 @@ class SyncVolumeSlice(SyncStep):
                 
         except Exception, e:
             traceback.print_exc()
-            logger.error("Failed to generate slice credential for %s in %s" % (slice_principal_id, volume_name))
+            logger.error("Failed to generate slice credential for %s in %s" % (slice_principal_id, volume_name),extra=vs.tologdict())
             raise e
              
         # ... and push them all out.
@@ -125,7 +125,7 @@ class SyncVolumeSlice(SyncStep):
                
         except Exception, e:
             traceback.print_exc()
-            logger.error("Failed to push slice credentials to %s for volume %s" % (slice_name, volume_name))
+            logger.error("Failed to push slice credentials to %s for volume %s" % (slice_name, volume_name),extra=vs.tologdict())
             raise e
         
         return True

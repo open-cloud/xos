@@ -3,11 +3,21 @@
 no-resolv
 
 {% if cdn_enable %}
+{% if cdn_prefixes %}
 # CDN
 {% for prefix in cdn_prefixes %}
 server=/{{ prefix }}/{{ dnsdemux_ip }}
 {% endfor %}
 {% endif %}
+{% endif %}
+
+{% if url_filter_kind=="answerx" %}
+cache-size=0
+add-mac
+{% endif %}
+
+# temporary for ONS demo
+address=/z.cdn.turner.com/207.141.192.134
 
 # use google's DNS service
 {% for dns_server in dns_servers %}

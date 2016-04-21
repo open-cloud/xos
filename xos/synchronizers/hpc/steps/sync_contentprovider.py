@@ -51,7 +51,7 @@ class SyncContentProvider(SyncStep, HpcLibrary):
         return result
 
     def sync_record(self, cp):
-        logger.info("sync'ing content provider %s" % str(cp))
+        logger.info("sync'ing content provider %s" % str(cp), extra=cp.tologdict())
         account_name = self.make_account_name(cp.name)
 
         if (not cp.serviceProvider) or (not cp.serviceProvider.service_provider_id):

@@ -1,0 +1,61 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: >
+    * Adds OpenCloud Sites, Deployments, and Controllers.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+
+    MyDeployment:
+      type: tosca.nodes.Deployment
+      properties:
+          flavors: m1.large, m1.medium, m1.small
+
+    MyOpenStack:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: MyDeployment
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Kilo
+          auth_url: { get_script_env: [ SELF, adminrc, OS_AUTH_URL, LOCAL_FILE] }
+          admin_user: { get_script_env: [ SELF, adminrc, OS_USERNAME, LOCAL_FILE] }
+          admin_password: { get_script_env: [ SELF, adminrc, OS_PASSWORD, LOCAL_FILE] }
+          admin_tenant: { get_script_env: [ SELF, adminrc, OS_TENANT_NAME, LOCAL_FILE] }
+          domain: Default
+      artifacts:
+          adminrc: /root/setup/admin-openrc.sh
+
+    mysite:
+      type: tosca.nodes.Site
+      properties:
+          display_name: MySite
+          site_url: http://xosproject.org/
+      requirements:
+          - deployment:
+               node: MyDeployment
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: MyOpenStack
+                       relationship: tosca.relationships.UsesController
+
+    # This user already exists in XOS with this password
+    # It's an example of how to create new users
+    padmin@vicci.org:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: XOS
+          lastname: admin
+          password: letmein

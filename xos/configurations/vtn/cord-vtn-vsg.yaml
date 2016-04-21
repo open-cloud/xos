@@ -21,7 +21,7 @@ topology_template:
     public_addresses:
       type: tosca.nodes.AddressPool
       properties:
-          addresses: 10.123.0.0/24 10.124.0.0/24
+          addresses: 10.123.0.128/25
 
     service_vsg:
       type: tosca.nodes.VSGService
@@ -38,6 +38,7 @@ topology_template:
           wan_container_gateway_mac: 00:8c:fa:5b:09:d8
           wan_container_netbits: 24
           dns_servers: 8.8.8.8, 8.8.4.4
+#          node_label: label_vsg
       artifacts:
           pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
 
@@ -61,6 +62,9 @@ topology_template:
 
     mysite:
       type: tosca.nodes.Site
+
+    label_vsg:
+      type: tosca.nodes.NodeLabel
 
     # Networks required by the CORD setup
     mysite_vsg-access:

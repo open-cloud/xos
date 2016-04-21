@@ -5,7 +5,7 @@ from .service import Service, Tenant, TenantWithContainer, CoarseTenant, Service
 from .service import ServiceAttribute, TenantAttribute, ServiceRole
 from .tag import Tag
 from .role import Role
-from .site import Site, Deployment, DeploymentRole, DeploymentPrivilege, Controller, ControllerRole, ControllerSite, SiteDeployment
+from .site import Site, Deployment, DeploymentRole, DeploymentPrivilege, Controller, ControllerRole, ControllerSite, SiteDeployment,Diag
 from .dashboard import DashboardView, ControllerDashboardView
 from .user import User, UserDashboardView
 from .serviceclass import ServiceClass
@@ -21,7 +21,7 @@ from .slice import SlicePrivilege
 from .credential import UserCredential,SiteCredential,SliceCredential
 from .site import SiteRole
 from .site import SitePrivilege
-from .node import Node
+from .node import Node, NodeLabel
 from .slicetag import SliceTag
 from .instance import Instance
 from .reservation import ReservedResource

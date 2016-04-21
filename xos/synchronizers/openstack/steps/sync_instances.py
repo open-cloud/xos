@@ -56,8 +56,9 @@ class SyncInstances(OpenStackSyncStep):
             if network:
                 tem = network.template
                 if (tem.visibility == "private") and (tem.translation=="none") and ("management" in tem.name):
-                    if len(result)!=1:
-                        raise Exception("Management network needs to be inserted in slot 1, but there are %d private nics" % len(result))
+#MCORD
+#                    if len(result)!=1:
+#                        raise Exception("Management network needs to be inserted in slot 1, but there are %d private nics" % len(result))
                     result.append(nic)
                     nics.remove(nic)
 
@@ -97,7 +98,7 @@ class SyncInstances(OpenStackSyncStep):
             nics.append({"kind": "port", "value": port.port_id, "network": port.network})
 
         # we want to exclude from 'nics' any network that already has a Port
-        existing_port_networks = [port.network for network in Port.objects.filter(instance=instance)]
+        existing_port_networks = [port.network for port in Port.objects.filter(instance=instance)]
 
         networks = [ns.network for ns in NetworkSlice.objects.filter(slice=instance.slice) if ns.network not in existing_port_networks]
         controller_networks = ControllerNetwork.objects.filter(network__in=networks,

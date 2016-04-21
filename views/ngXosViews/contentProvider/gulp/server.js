@@ -10,8 +10,17 @@ var wiredep = require('wiredep').stream;
 var httpProxy = require('http-proxy');
 var del = require('del');
 
+const environment = process.env.NODE_ENV;
+
+if (environment){
+  var conf = require(`../env/${environment}.js`);
+}
+else{
+  var conf = require('../env/default.js')
+}
+
 var proxy = httpProxy.createProxyServer({
-  target: 'http://0.0.0.0:9999'
+  target: conf.host || 'http://0.0.0.0:9999'
 });
 
 
@@ -49,6 +58,10 @@ module.exports = function(options){
             req.url.indexOf('/xoslib/') !== -1 ||
             req.url.indexOf('/hpcapi/') !== -1
           ){
+            if(conf.xoscsrftoken && conf.xossessionid){
+              req.headers.cookie = `xoscsrftoken=${conf.xoscsrftoken}; xossessionid=${conf.xossessionid}`;
+              req.headers['x-csrftoken'] = conf.xoscsrftoken;
+            }
             proxy.web(req, res);
           }
           else{

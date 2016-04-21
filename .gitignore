@@ -4,6 +4,7 @@
 profile
 *.moved-aside
 .idea
+setup/*
 xos/configurations/frontend/Dockerfile
 xos/core/xoslib/karma-*
 xos/core/xoslib/docs
@@ -13,3 +14,7 @@ xos/xos_configuration/*
 .idea/*
 *.iml
 npm-debug.log
+xos/core/static/*.css
+!xos/core/static/xos.css
+.DS_Store
+xos/configurations/setup

@@ -1,3 +1,4 @@
 views/
 applications/
 containers/
+xos/tests/api/node_modules

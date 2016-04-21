@@ -8,6 +8,6 @@
 
 module.exports = {
   host: 'http://10.90.0.132/',
-  xoscsrftoken: 'bDZaZNRDU6BwUanvjfcGfKJHohG3mlqb',
-  xossessionid: '3nww58wgrlscs7boy2xzw11tji8ywal5'
+  xoscsrftoken: 'JmfZETFs72GiVGxIJkCPSrybZvTtJLwF',
+  xossessionid: 'jmf3z9wat049cmrh91ppg37pn4yj3830'
 };

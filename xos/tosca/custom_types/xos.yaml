@@ -259,6 +259,9 @@ node_types:
             rest_onos/v1/network/configuration/:
                 type: string
                 required: false
+            autogenerate:
+                type: string
+                required: false
 
     tosca.nodes.VCPEService:
         description: >
@@ -317,16 +320,10 @@ node_types:
                 type: string
                 required: false
                 description: Label that matches network used to connect HPC and BBS services.
-            wan_container_gateway_ip:
-                type: string
-                required: false
-            wan_container_gateway_mac:
-                type: string
-                required: false
-            wan_container_netbits:
-                type: string
-                required: false
             dns_servers:
+                type: string
+                required: false
+            node_label:
                 type: string
                 required: false
 
@@ -388,6 +385,135 @@ node_types:
                 required: false
                 description: URL of REST API endpoint for vBNG Service.
 
+    tosca.nodes.VRouterService:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: The vRouter Service.
+        capabilities:
+            scalable:
+                type: tosca.capabilities.Scalable
+            service:
+                type: tosca.capabilities.xos.Service
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+            kind:
+                type: string
+                default: generic
+                description: Type of service.
+            view_url:
+                type: string
+                required: false
+                description: URL to follow when icon is clicked in the Service Directory.
+            icon_url:
+                type: string
+                required: false
+                description: ICON to display in the Service Directory.
+            enabled:
+                type: boolean
+                default: true
+            published:
+                type: boolean
+                default: true
+                description: If True then display this Service in the Service Directory.
+            public_key:
+                type: string
+                required: false
+                description: Public key to install into Instances to allows Services to SSH into them.
+            private_key_fn:
+                type: string
+                required: false
+                description: Location of private key file
+            versionNumber:
+                type: string
+                required: false
+                description: Version number of Service.
+
+    tosca.nodes.VTNService:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: The vRouter Service.
+        capabilities:
+            scalable:
+                type: tosca.capabilities.Scalable
+            service:
+                type: tosca.capabilities.xos.Service
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+            kind:
+                type: string
+                default: generic
+                description: Type of service.
+            view_url:
+                type: string
+                required: false
+                description: URL to follow when icon is clicked in the Service Directory.
+            icon_url:
+                type: string
+                required: false
+                description: ICON to display in the Service Directory.
+            enabled:
+                type: boolean
+                default: true
+            published:
+                type: boolean
+                default: true
+                description: If True then display this Service in the Service Directory.
+            public_key:
+                type: string
+                required: false
+                description: Public key to install into Instances to allows Services to SSH into them.
+            private_key_fn:
+                type: string
+                required: false
+                description: Location of private key file
+            versionNumber:
+                type: string
+                required: false
+                description: Version number of Service.
+            privateGatewayMac:
+                type: string
+                required: false
+            localManagementIp:
+                type: string
+                required: false
+            ovsdbPort:
+                type: string
+                required: false
+            sshPort:
+                type: string
+                required: false
+            sshUser:
+                type: string
+                required: false
+            sshKeyFile:
+                type: string
+                required: false
+            mgmtSubnetBits:
+                type: string
+                required: false
+
     tosca.nodes.CDNService:
         derived_from: tosca.nodes.Root
         description: >
@@ -441,6 +567,61 @@ node_types:
                 type: string
                 required: false
                 description: Version number of Service.
+
+    tosca.nodes.ExampleService:
+        derived_from: tosca.nodes.Root
+        description: >
+            Example Service
+        capabilities:
+            scalable:
+                type: tosca.capabilities.Scalable
+            service:
+                type: tosca.capabilities.xos.Service
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+            kind:
+                type: string
+                default: generic
+                description: Type of service.
+            view_url:
+                type: string
+                required: false
+                description: URL to follow when icon is clicked in the Service Directory.
+            icon_url:
+                type: string
+                required: false
+                description: ICON to display in the Service Directory.
+            enabled:
+                type: boolean
+                default: true
+            published:
+                type: boolean
+                default: true
+                description: If True then display this Service in the Service Directory.
+            public_key:
+                type: string
+                required: false
+                description: Public key to install into Instances to allows Services to SSH into them.
+            private_key_fn:
+                type: string
+                required: false
+                description: Location of private key file
+            versionNumber:
+                type: string
+                required: false
+                description: Version number of Service.
+
 
     tosca.nodes.Subscriber:
         derived_from: tosca.nodes.Root
@@ -755,6 +936,39 @@ node_types:
                 required: false
                 description: Comma-separated list of flavors that this deployment supports.
 
+    tosca.nodes.AddressPool:
+        derived_from: tosca.nodes.Root
+        description: >
+            A pool of addresses
+        capabilities:
+            addresspool:
+                type: tosca.capabilities.xos.AddressPool
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+            addresses:
+                type: string
+                required: false
+                description: space-separated list of addresses
+            gateway_ip:
+                type: string
+                required: false
+                description: gateway ip address
+            gateway_mac:
+                type: string
+                required: false
+                description: gateway mac address
+
     tosca.nodes.Image:
         derived_from: tosca.nodes.Root
         description: >
@@ -972,6 +1186,27 @@ node_types:
             node:
                 type: tosca.capabilities.xos.Node
 
+    tosca.nodes.NodeLabel:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS NodeLabel.
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+        capabilities:
+            node:
+                type: tosca.capabilities.xos.NodeLabel
+
     tosca.nodes.DashboardView:
         derived_from: tosca.nodes.Root
         description: >
@@ -1117,6 +1352,17 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.DashboardView ]
 
+    tosca.relationships.HasLabel:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.NodeLabel ]
+
+    tosca.relationships.ProvidesAddresses:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.AddressPool ]
+
+    tosca.relationships.DependsOn:
+        derived_from: tosca.relationships.Root
+
     tosca.capabilities.xos.Service:
         derived_from: tosca.capabilities.Root
         description: An XOS Service
@@ -1161,6 +1407,10 @@ node_types:
         derived_from: tosca.capabilities.Root
         description: An XOS Node
 
+    tosca.capabilities.xos.NodeLabel:
+        derived_from: tosca.capabilities.Root
+        description: An XOS NodeLabel
+
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root
         description: An XOS Image
@@ -1172,3 +1422,7 @@ node_types:
     tosca.capabilities.xos.NetworkParameterType:
         derived_from: tosca.capabilities.Root
         description: An XOS NetworkParameterType
+
+    tosca.capabilities.xos.AddressPool:
+        derived_from: tosca.capabilities.Root
+        description: An XOS AddressPool

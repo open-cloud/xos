@@ -1,0 +1,7 @@
+---
+
+- name: Install apache using apt
+  apt:
+    name=apache2
+    update_cache=yes
+

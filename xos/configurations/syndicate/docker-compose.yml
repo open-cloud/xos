@@ -1,0 +1,51 @@
+xos_db:
+    image: xosproject/xos-postgres
+    expose:
+        - "5432"
+
+xos_syndicate_ms:
+    build:  ../../../containers/syndicate-ms/
+    expose:
+        - "8080"
+    volumes:
+      - ./ms/app.yaml:/usr/src/syndicate/ms/app.yaml
+      - ./ms/admin_info.py:/usr/src/syndicate/ms/common/admin_info.py
+
+xos_synchronizer_openstack:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/openstack/xos-synchronizer.py"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: openstack
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+        - ./images:/opt/xos/images:ro
+
+xos_synchronizer_exampleservice:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/exampleservice/exampleservice-synchronizer.py -C /opt/xos/synchronizers/exampleservice/exampleservice_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: exampleservice
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+        - ../setup/id_rsa:/opt/xos/synchronizers/exampleservice/exampleservice_private_key:ro
+
+xos:
+    image: xosproject/xos
+    command: python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
+    ports:
+        - "9999:8000"
+    links:
+        - xos_db
+    volumes:
+      - ../setup:/root/setup:ro
+      - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro

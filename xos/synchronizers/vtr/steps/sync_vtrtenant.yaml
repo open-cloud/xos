@@ -1,0 +1,123 @@
+---
+- hosts: {{ instance_name }}
+  #gather_facts: False
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+  vars:
+      container_name: {{ container_name }}
+      wan_container_ip: {{ wan_container_ip }}
+      wan_container_netbits: {{ wan_container_netbits }}
+      wan_container_mac: {{ wan_container_mac }}
+      wan_container_gateway_ip: {{ wan_container_gateway_ip }}
+      wan_vm_ip: {{ wan_vm_ip }}
+      wan_vm_mac: {{ wan_vm_mac }}
+
+      scope: {{ scope }}
+      test: {{ test }}
+      argument: {{ argument }}
+      result_fn: {{ result_fn }}
+      resultcode_fn: {{ resultcode_fn }}
+
+
+  tasks:
+  - name: Remove any old result file
+    shell: rm -f /tmp/{{ result_fn }}
+
+  - name: Copy run_tcpdump.sh to VM
+    copy: src=/opt/xos/synchronizers/vtr/files/run_tcpdump.sh dest=/root/run_tcpdump.sh mode=0755
+    when: (test=="tcpdump")
+
+
+# -----------------
+# scope == VM
+# -----------------
+
+  - name: Send the pings from VM
+    shell: ping -c 10 {{ argument }} 2>&1 > /tmp/{{ result_fn }}
+    ignore_errors: yes
+    register: vm_ping_result
+    when: (scope=="vm") and (test=="ping")
+
+  - name: Store VM ping resultcode to file
+    shell: echo "{{ '{{' }} vm_ping_result.rc {{ '}}' }}" > /tmp/{{ resultcode_fn }}
+    when: (scope=="vm") and (test=="ping")
+
+  - name: Install traceroute
+    apt: name=traceroute state=present
+    when: (scope=="vm") and (test=="traceroute")
+
+  - name: Send traceroute from VM
+    shell: traceroute {{ argument }} 2>&1 > /tmp/{{ result_fn }}
+    ignore_errors: yes
+    register: vm_traceroute_result
+    when: (scope=="vm") and (test=="traceroute")
+
+  - name: Store VM traceroute resultcode to file
+    shell: echo "{{ '{{' }} vm_traceroute_result.rc {{ '}}' }}" > /tmp/{{ resultcode_fn }}
+    when: (scope=="vm") and (test=="traceroute")
+
+  - name: Run tcpdump for 30 seconds on VM
+    shell: /root/run_tcpdump.sh {{ argument }} 2>&1 > /tmp/{{ result_fn }}
+    ignore_errors: yes
+    register: vm_tcpdump_result
+    when: (scope=="vm") and (test=="tcpdump")
+
+  - name: Store VM tcpdump resultcode to file
+    shell: echo "{{ '{{' }} vm_tcpdump_result.rc {{ '}}' }}" > /tmp/{{ resultcode_fn }}
+    when: (scope=="vm") and (test=="tcpdump")
+
+# ------------------
+# scope == container
+# ------------------
+
+  - name: Send the pings from Container
+    shell: docker exec {{ container_name }} ping -c 10 {{ argument }} 2>&1 > /tmp/{{ result_fn }}
+    ignore_errors: yes
+    register: ctr_ping_result
+    when: (scope=="container") and (test=="ping")
+
+  - name: Store ctr ping resultcode to file
+    shell: echo "{{ '{{' }} ctr_ping_result.rc {{ '}}' }}" > /tmp/{{ resultcode_fn }}
+    when: (scope=="container") and (test=="ping")
+
+  - name: Install traceroute into Container
+    shell: docker exec {{ container_name }} apt-get -y install traceroute
+    when: (scope=="container") and (test=="traceroute")
+
+  - name: Send traceroute from Container
+    shell: docker exec {{ container_name }} traceroute {{ argument }} 2>&1 > /tmp/{{ result_fn }}
+    ignore_errors: yes
+    register: ctr_traceroute_result
+    when: (scope=="container") and (test=="traceroute")
+
+  - name: Store ctr traceroute resultcode to file
+    shell: echo "{{ '{{' }} ctr_traceroute_result.rc {{ '}}' }}" > /tmp/{{ resultcode_fn }}
+    when: (scope=="container") and (test=="traceroute")
+
+  - name: Copy run_tcpdump.sh to container
+    command: docker cp /root/run_tcpdump.sh {{ container_name }}:/root/run_tcpdump.sh
+    when: (scope=="container") and (test=="tcpdump")
+
+  - name: Run tcpdump for 30 seconds from Container
+    shell: docker exec {{ container_name }} /root/run_tcpdump.sh {{ argument }} 2>&1 > /tmp/{{ result_fn }}
+    ignore_errors: yes
+    register: diagresult
+    when: (scope=="container") and (test=="tcpdump")
+
+  - name: Store ctr tcpdump resultcode to file
+    shell: echo "{{ '{{' }} ctr_tcpdump_result.rc {{ '}}' }}" > /tmp/{{ resultcode_fn }}
+    when: (scope=="container") and (test=="tcpdump")
+
+# ------------------
+# scope == *
+# ------------------
+  - name: Fetch the result
+    fetch: src=/tmp/{{ result_fn }} dest=/opt/xos/synchronizers/vtr/result/{{ result_fn }} flat=yes
+
+  - name: Fetch the resultcode
+    fetch: src=/tmp/{{ resultcode_fn }} dest=/opt/xos/synchronizers/vtr/result/{{ resultcode_fn }} flat=yes
+
+
+
+

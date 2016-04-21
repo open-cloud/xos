@@ -4,93 +4,17 @@
   angular.module('xos.diagnostic')
   .service('ServiceTopologyHelper', function($rootScope, $window, $log, lodash, ServiceRelation, serviceTopologyConfig, d3){
 
-    // NOTE not used anymore
-    const drawLegend = (svg) => {
-      const legendContainer = svg.append('g')
-        .attr({
-          class: 'legend'
-        });
-
-      legendContainer.append('rect')
-      .attr({
-        transform: d => `translate(10, 80)`,
-        width: 100,
-        height: 100
-      });
-
-      // service
-      const service = legendContainer.append('g')
-      .attr({
-        class: 'node service'
-      });
-
-      service.append('circle')
-      .attr({
-        r: serviceTopologyConfig.circle.radius,
-        transform: d => `translate(30, 100)`
-      });
-
-      service.append('text')
-      .attr({
-        transform: d => `translate(45, 100)`,
-        dy: '.35em'
-      })
-      .text('Service')
-        .style('fill-opacity', 1);
-
-      // slice
-      const slice = legendContainer.append('g')
-        .attr({
-          class: 'node slice'
-        });
-
-      slice.append('rect')
-        .attr({
-          width: 20,
-          height: 20,
-          x: -10,
-          y: -10,
-          transform: d => `translate(30, 130)`
-        });
-
-      slice.append('text')
-        .attr({
-          transform: d => `translate(45, 130)`,
-          dy: '.35em'
-        })
-        .text('Slices')
-        .style('fill-opacity', 1);
-
-      // instance
-      const instance = legendContainer.append('g')
-        .attr({
-          class: 'node instance'
-        });
-
-      instance.append('rect')
-        .attr({
-          width: 20,
-          height: 20,
-          x: -10,
-          y: -10,
-          transform: d => `translate(30, 160)`
-        });
-
-      instance.append('text')
-        .attr({
-          transform: d => `translate(45, 160)`,
-          dy: '.35em'
-        })
-        .text('Instances')
-        .style('fill-opacity', 1);
-    };
-
-    var _svg, _layout, _source;
+    var _svg, _layout, _source, _el;
 
     var i = 0;
 
     // given a canvas, a layout and a data source, draw a tree layout
-    const updateTree = (svg, layout, source) => {
+    const updateTree = (svg, layout, source, el = _el) => {
+      if(el){
+        _el = el;
+      }
+      
+      let targetWidth = _el.clientWidth - serviceTopologyConfig.widthMargin * 2;
 
       //cache data
       _svg = svg;
@@ -109,7 +33,7 @@
       // Normalize for fixed-depth.
       nodes.forEach(function(d) {
         // position the child node horizontally
-        const step = (($window.innerWidth - (serviceTopologyConfig.widthMargin * 2)) / maxDepth);
+        const step = ((targetWidth - (serviceTopologyConfig.widthMargin * 2)) / (maxDepth - 1));
         d.y = d.depth * step;
       });
 
@@ -131,7 +55,11 @@
       const serviceNodes = nodeEnter.filter('.service');
 
       subscriberNodes.append('rect')
-        .attr(serviceTopologyConfig.square);
+        .attr(serviceTopologyConfig.square)
+        // add event listener to subscriber
+        .on('click', () => {
+          $rootScope.$emit('subscriber.modal.open');
+        });
 
       internetNodes.append('rect')
         .attr(serviceTopologyConfig.square);
@@ -143,8 +71,13 @@
 
       nodeEnter.append('text')
         .attr({
-          x: d => d.children ? -serviceTopologyConfig.circle.selectedRadius -3 : serviceTopologyConfig.circle.selectedRadius + 3,
+          x: d => d.children ? -serviceTopologyConfig.circle.selectedRadius -5 : serviceTopologyConfig.circle.selectedRadius + 5,
           dy: '.35em',
+          y: d => {
+            if (d.children && d.parent){
+              return '-5';
+            }
+          },
           transform: d => {
             if (d.children && d.parent){
               if(d.parent.x < d.x){
@@ -240,7 +173,6 @@
     };
 
     this.updateTree = updateTree;
-    this.drawLegend = drawLegend;
   });
 
 }());
