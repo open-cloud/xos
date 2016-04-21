@@ -62,7 +62,7 @@ class VTNServiceAdmin(ReadOnlyAwareAdmin):
     list_display = ("backend_status_icon", "name", "enabled")
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber','description',"view_url","icon_url",
-                                    'privateGatewayMac', 'localManagementIp', 'ovsdbPort', 'sshPort', 'sshKeyFile', 'mgmtSubnetBits' ], 'classes':['suit-tab suit-tab-general']})]
+                                    'privateGatewayMac', 'localManagementIp', 'ovsdbPort', 'sshPort', 'sshUser', 'sshKeyFile', 'mgmtSubnetBits' ], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
 
