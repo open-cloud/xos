@@ -87,6 +87,7 @@ class MonitoringChannelForm(forms.ModelForm):
 
     class Meta:
         model = MonitoringChannel
+        fields = '__all__'
 
 class MonitoringChannelAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', )
