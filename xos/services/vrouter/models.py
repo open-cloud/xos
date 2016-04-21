@@ -95,6 +95,15 @@ class VRouterTenant(Tenant):
         return self.address_pool.cidr
 
     @property
+    def netbits(self):
+        # return number of bits in the network portion of the cidr
+        if self.cidr:
+            parts = self.cidr.split("/")
+            if len(parts)==2:
+                return int(parts[1].strip())
+        return None
+
+    @property
     def address_pool(self):
         if getattr(self, "cached_address_pool", None):
             return self.cached_address_pool

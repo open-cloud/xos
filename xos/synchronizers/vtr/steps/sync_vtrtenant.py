@@ -84,35 +84,22 @@ class SyncVTRTenant(SyncInstanceUsingAnsible):
             s_tags.append(o.target.volt.s_tag)
             c_tags.append(o.target.volt.c_tag)
 
-        wan_vm_ip=""
-        wan_vm_mac=""
-        tags = Tag.select_by_content_object(instance).filter(name="vm_wan_addr")
-        if tags:
-            parts=tags[0].value.split(",")
-            if len(parts)!=3:
-                raise Exception("vm_wan_addr tag is malformed: %s" % value)
-            wan_vm_ip = parts[1]
-            wan_vm_mac = parts[2]
-        else:
-            if CORD_USE_VTN:
-                raise Exception("no vm_wan_addr tag for instance %s" % instance)
-
         fields = {"s_tags": s_tags,
                 "c_tags": c_tags,
                 "isolation": instance.isolation,
-                "wan_container_gateway_mac": vcpe_service.wan_container_gateway_mac,
-                "wan_container_gateway_ip": vcpe_service.wan_container_gateway_ip,
-                "wan_container_netbits": vcpe_service.wan_container_netbits,
-                "wan_vm_mac": wan_vm_mac,
-                "wan_vm_ip": wan_vm_ip,
                 "container_name": "vcpe-%s-%s" % (s_tags[0], c_tags[0]),
                 "dns_servers": [x.strip() for x in vcpe_service.dns_servers.split(",")],
 
                 "result_fn": "%s-vcpe-%s-%s" % (o.test, s_tags[0], c_tags[0]),
                 "resultcode_fn": "code-%s-vcpe-%s-%s" % (o.test, s_tags[0], c_tags[0]) }
 
-        # add in the sync_attributes that come from the SubscriberRoot object
+        # add in the sync_attributes that come from the vSG object
+        # this will be wan_ip, wan_mac, wan_container_ip, wan_container_mac, ...
+        if o.target and o.target.volt and o.target.volt.vsg:
+            for attribute_name in o.target.volt.vsg.sync_attributes:
+                fields[attribute_name] = getattr(o.target.volt.vsg, attribute_name)
 
+        # add in the sync_attributes that come from the SubscriberRoot object
         if o.target and hasattr(o.target, "sync_attributes"):
             for attribute_name in o.target.sync_attributes:
                 fields[attribute_name] = getattr(o.target, attribute_name)

@@ -196,13 +196,13 @@ def test1(transaction):
     setUpTruckroll()
 
 
-@hooks.before("Truckroll > Truckroll Detail > View a Truckroll Detail")
+@hooks.before("Truckroll > Truckroll Collection > View a Truckroll Detail")
 def test2(transaction):
     deleteTruckrolls()
     createTruckroll()
 
 
-@hooks.before("Truckroll > Truckroll Detail > Delete a Truckroll Detail")
+@hooks.before("Truckroll > Truckroll Collection > Delete a Truckroll Detail")
 def test3(transaction):
     deleteTruckrolls()
     createTruckroll()
