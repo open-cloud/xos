@@ -87,7 +87,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
     def get_cluster_configuration(self, o):
         instance = self.get_instance(o)
         if not instance:
-           raise "No instance for ONOS App"
+           raise Exception("No instance for ONOS App")
         node_ips = [socket.gethostbyname(instance.node.name)]
 
         ipPrefix = ".".join(node_ips[0].split(".")[:3]) + ".*"
