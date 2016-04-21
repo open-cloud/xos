@@ -3,6 +3,8 @@
 
 /* eslint indent: [2,2], quotes: [2, "single"]*/
 
+// CONFIGURATION FOR JENKINS TESTS
+
 /*eslint-disable*/
 var wiredep = require('wiredep');
 var path = require('path');
