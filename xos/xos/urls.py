@@ -9,7 +9,6 @@ from hpcapi import *
 
 from core.views.legacyapi import LegacyXMLRPC
 from core.views.serviceGraph import ServiceGridView, ServiceGraphView
-from services.helloworld.view import *
 from core.models import *
 from rest_framework import generics
 from core.dashboard.sites import SitePlus
@@ -27,7 +26,6 @@ def redirect_to_apache(request):
 urlpatterns = patterns('',
     # Examples:
     url(r'^observer', 'core.views.observer.Observer', name='observer'),
-    url(r'^helloworld', HelloWorldView.as_view(), name='helloWorld'),
     url(r'^serviceGrid', ServiceGridView.as_view(), name='serviceGrid'),
     url(r'^serviceGraph.png', ServiceGraphView.as_view(), name='serviceGraph'),
     url(r'^hpcConfig', 'core.views.hpc_config.HpcConfig', name='hpcConfig'),
