@@ -47,3 +47,4 @@ neutron net-delete hpc_client_network || true
 neutron net-delete ceilometer_network || true
 neutron net-delete management || true
 neutron net-delete mysite_vsg-access || true
+neutron net-delete exampleservice-public || true

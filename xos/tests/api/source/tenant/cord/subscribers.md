@@ -2,7 +2,7 @@
 
 Resource related to the CORD Subscribers.
 
-## Subscribers Collection [/api/tenant/cord/subscriber/]
+## Subscribers [/api/tenant/cord/subscriber/{subscriber_id}/]
 
 ### List All Subscribers [GET]
 
@@ -36,12 +36,11 @@ Resource related to the CORD Subscribers.
             }
         ]
 
-## Subscriber Detail [/api/tenant/cord/subscriber/{subscriber_id}/]
+
+### View a Subscriber Detail [GET]
 
 + Parameters
     + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
-
-### View a Subscriber Detail [GET]
 
 + Response 200 (application/json)
  
@@ -72,6 +71,9 @@ Resource related to the CORD Subscribers.
         }
 
 ### Delete a Subscriber [DELETE]
+
++ Parameters
+    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
 
 + Response 204
 
