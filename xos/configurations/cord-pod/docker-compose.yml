@@ -3,20 +3,20 @@ xos_db:
     expose:
         - "5432"
 
-xos_synchronizer_openstack:
-    command: bash -c "sleep 120; python /opt/xos/synchronizers/openstack/xos-synchronizer.py"
-    image: xosproject/xos-synchronizer-openstack
-    labels:
-        org.xosproject.kind: synchronizer
-        org.xosproject.target: openstack
-    links:
-        - xos_db
-    volumes:
-        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
-        - xos_cord_config:/opt/xos/xos_configuration/xos_cord_config:ro
-        - .:/root/setup:ro
-        - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
-        - ./images:/opt/xos/images:ro
+#xos_synchronizer_openstack:
+#    command: bash -c "sleep 120; python /opt/xos/synchronizers/openstack/xos-synchronizer.py"
+#    image: xosproject/xos-synchronizer-openstack
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: openstack
+#    links:
+#        - xos_db
+#    volumes:
+#        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+#        - xos_cord_config:/opt/xos/xos_configuration/xos_cord_config:ro
+#        - .:/root/setup:ro
+#        - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
+#        - ./images:/opt/xos/images:ro
 
 xos_synchronizer_onos:
     image: xosproject/xos-synchronizer-openstack
@@ -30,28 +30,28 @@ xos_synchronizer_onos:
         - .:/root/setup:ro
         - ./id_rsa:/opt/xos/synchronizers/onos/onos_key:ro  # private key
 
-xos_synchronizer_vcpe:
-    image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120; cp /root/setup/node_key /opt/xos/synchronizers/vcpe/; chmod 0600 /opt/xos/synchronizers/vcpe/node_key; python /opt/xos/synchronizers/vcpe/vcpe-synchronizer.py -C /root/setup/files/vcpe_synchronizer_config"
-    labels:
-        org.xosproject.kind: synchronizer
-        org.xosproject.target: vcpe
-    links:
-        - xos_db
-    volumes:
-        - .:/root/setup:ro
-        - ./id_rsa:/opt/xos/synchronizers/vcpe/vcpe_private_key:ro  # private key
+#xos_synchronizer_vcpe:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "sleep 120; cp /root/setup/node_key /opt/xos/synchronizers/vcpe/; chmod 0600 /opt/xos/synchronizers/vcpe/node_key; python /opt/xos/synchronizers/vcpe/vcpe-synchronizer.py -C /root/setup/files/vcpe_synchronizer_config"
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: vcpe
+#    links:
+#        - xos_db
+#    volumes:
+#        - .:/root/setup:ro
+#        - ./id_rsa:/opt/xos/synchronizers/vcpe/vcpe_private_key:ro  # private key
 
-xos_synchronizer_vtn:
-    image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120; python /opt/xos/synchronizers/vtn/vtn-synchronizer.py -C /opt/xos/synchronizers/vtn/vtn_synchronizer_config"
-    labels:
-        org.xosproject.kind: synchronizer
-        org.xosproject.target: vtn
-    links:
-        - xos_db
-    volumes:
-        - .:/root/setup:ro
+#xos_synchronizer_vtn:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "sleep 120; python /opt/xos/synchronizers/vtn/vtn-synchronizer.py -C /opt/xos/synchronizers/vtn/vtn_synchronizer_config"
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: vtn
+#    links:
+#        - xos_db
+#    volumes:
+#        - .:/root/setup:ro
 
 #xos_synchronizer_vbng:
 #    image: xosproject/xos-synchronizer-openstack
@@ -62,29 +62,29 @@ xos_synchronizer_vtn:
 #    links:
 #        - xos_db
 
-xos_synchronizer_monitoring_channel:
-    image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120; python /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer.py -C /root/setup/files/monitoring_channel_synchronizer_config"
-    labels:
-        org.xosproject.kind: synchronizer
-        org.xosproject.target: monitoring_channel
-    links:
-        - xos_db
-    volumes:
-        - .:/root/setup:ro
-        - ./id_rsa:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key:ro  # private key
+#xos_synchronizer_monitoring_channel:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "sleep 120; python /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer.py -C /root/setup/files/monitoring_channel_synchronizer_config"
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: monitoring_channel
+#    links:
+#        - xos_db
+#    volumes:
+#        - .:/root/setup:ro
+#        - ./id_rsa:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key:ro  # private key
 
-xos_synchronizer_vtr:
-    image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120; cp /root/setup/node_key /opt/xos/synchronizers/vtr/; chmod 0600 /opt/xos/synchronizers/vtr/node_key; python /opt/xos/synchronizers/vtr/vtr-synchronizer.py -C /root/setup/files/vtr_synchronizer_config"
-    labels:
-        org.xosproject.kind: synchronizer
-        org.xosproject.target: vtr
-    links:
-        - xos_db
-    volumes:
-        - .:/root/setup:ro
-        - ./id_rsa:/opt/xos/synchronizers/vtr/vcpe_private_key:ro  # private key
+#xos_synchronizer_vtr:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "sleep 120; cp /root/setup/node_key /opt/xos/synchronizers/vtr/; chmod 0600 /opt/xos/synchronizers/vtr/node_key; python /opt/xos/synchronizers/vtr/vtr-synchronizer.py -C /root/setup/files/vtr_synchronizer_config"
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: vtr
+#    links:
+#        - xos_db
+#    volumes:
+#        - .:/root/setup:ro
+#        - ./id_rsa:/opt/xos/synchronizers/vtr/vcpe_private_key:ro  # private key
 
 xos:
     command: python /opt/xos/manage.py runserver 0.0.0.0:80 --insecure --makemigrations
