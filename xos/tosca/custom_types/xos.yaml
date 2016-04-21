@@ -442,6 +442,81 @@ node_types:
                 required: false
                 description: Version number of Service.
 
+    tosca.nodes.VTNService:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: The vRouter Service.
+        capabilities:
+            scalable:
+                type: tosca.capabilities.Scalable
+            service:
+                type: tosca.capabilities.xos.Service
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+            kind:
+                type: string
+                default: generic
+                description: Type of service.
+            view_url:
+                type: string
+                required: false
+                description: URL to follow when icon is clicked in the Service Directory.
+            icon_url:
+                type: string
+                required: false
+                description: ICON to display in the Service Directory.
+            enabled:
+                type: boolean
+                default: true
+            published:
+                type: boolean
+                default: true
+                description: If True then display this Service in the Service Directory.
+            public_key:
+                type: string
+                required: false
+                description: Public key to install into Instances to allows Services to SSH into them.
+            private_key_fn:
+                type: string
+                required: false
+                description: Location of private key file
+            versionNumber:
+                type: string
+                required: false
+                description: Version number of Service.
+            privateGatewayMac:
+                type: string
+                required: false
+            localManagementIp:
+                type: string
+                required: false
+            ovsdbPort:
+                type: string
+                required: false
+            sshPort:
+                type: string
+                required: false
+            sshUser:
+                type: string
+                required: false
+            sshKeyFile:
+                type: string
+                required: false
+            mgmtSubnetBits:
+                type: string
+                required: false
+
     tosca.nodes.CDNService:
         derived_from: tosca.nodes.Root
         description: >
