@@ -858,6 +858,7 @@ class ControllerAdminForm(forms.ModelForm):
 
     class Meta:
         model = Controller
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request', None)
@@ -1177,6 +1178,7 @@ class SliceForm(forms.ModelForm):
         widgets = {
             'service': LinkedSelect
         }
+        fields = '__all__'
 
     def clean(self):
         cleaned_data = super(SliceForm, self).clean()
@@ -1405,6 +1407,7 @@ class NodeForm(forms.ModelForm):
             'site': LinkedSelect,
             'deployment': LinkedSelect
         }
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request', None)
@@ -1474,6 +1477,7 @@ class InstanceForm(forms.ModelForm):
             'node': LinkedSelect,
             'image': LinkedSelect
         }
+        fields = '__all__'
 
 
 class TagAdmin(XOSBaseAdmin):
@@ -1686,6 +1690,7 @@ class UserChangeForm(forms.ModelForm):
     class Meta:
         model = User
         widgets = {'public_key': UploadTextareaWidget, }
+        fields = '__all__'
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
@@ -1720,6 +1725,7 @@ class UserAdmin(XOSAdminMixin, UserAdmin):
 
     class Meta:
         app_label = "core"
+        fields = '__all__'
 
     # The forms to add and change user instances
     form = UserChangeForm
@@ -1882,6 +1888,7 @@ class ReservationChangeForm(forms.ModelForm):
         widgets = {
             'slice': LinkedSelect
         }
+        fields = '__all__'
 
 
 class ReservationAddForm(forms.ModelForm):
@@ -1906,6 +1913,7 @@ class ReservationAddForm(forms.ModelForm):
         widgets = {
             'slice': LinkedSelect
         }
+        fields = '__all__'
 
 
 class ReservationAddRefreshForm(ReservationAddForm):
@@ -2071,6 +2079,7 @@ class NetworkForm(forms.ModelForm):
             'topologyParameters': UploadTextareaWidget,
             'controllerParameters': UploadTextareaWidget,
         }
+        fields = '__all__'
 
 
 class NetworkAdmin(XOSBaseAdmin):
@@ -2296,6 +2305,7 @@ class ProgramForm(forms.ModelForm):
             'messages': forms.Textarea(attrs={'rows': 20, 'cols': 80, 'class': 'input-xxlarge'}),
             'output': forms.Textarea(attrs={'rows': 3, 'cols': 80, 'class': 'input-xxlarge'})
         }
+        fields = '__all__'
 
 
 class ProgramAdmin(XOSBaseAdmin):
@@ -2336,6 +2346,7 @@ class AddressPoolForm(forms.ModelForm):
         widgets = {
             'addresses': UploadTextareaWidget(attrs={'rows': 20, 'cols': 80, 'class': "input-xxlarge"}),
         }
+        fields = '__all__'
 
 
 class AddressPoolAdmin(XOSBaseAdmin):
