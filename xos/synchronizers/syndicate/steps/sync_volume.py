@@ -25,7 +25,7 @@ import logging
 from logging import Logger
 logging.basicConfig( format='[%(levelname)s] [%(module)s:%(lineno)d] %(message)s' )
 logger = logging.getLogger()
-logger.setLevel( logging.INFO )
+logger.setLevel( logging.INFO ,extra=o.tologdict())
 
 # point to planetstack
 if __name__ != "__main__": 
@@ -53,7 +53,7 @@ class SyncVolume(SyncStep):
         Synchronize a Volume record with Syndicate.
         """
         
-        logger.info( "Sync Volume = %s\n\n" % volume.name )
+        logger.info( "Sync Volume = %s\n\n" % volume.name ,extra=volume.tologdict())
     
         user_email = volume.owner_id.email
         config = syndicatelib.get_config()
@@ -65,7 +65,7 @@ class SyncVolume(SyncStep):
             observer_secret = config.SYNDICATE_OPENCLOUD_SECRET
         except Exception, e:
             traceback.print_exc()
-            logger.error("config is missing SYNDICATE_OPENCLOUD_SECRET")
+            logger.error("config is missing SYNDICATE_OPENCLOUD_SECRET",extra=volume.tologdict())
             raise e
 
         # volume owner must exist as a Syndicate user...
@@ -74,7 +74,7 @@ class SyncVolume(SyncStep):
             assert rc == True, "Failed to create or read volume principal '%s'" % volume_principal_id
         except Exception, e:
             traceback.print_exc()
-            logger.error("Failed to ensure principal '%s' exists" % volume_principal_id )
+            logger.error("Failed to ensure principal '%s' exists" % volume_principal_id ,extra=volume.tologdict())
             raise e
 
         # volume must exist 
@@ -84,7 +84,7 @@ class SyncVolume(SyncStep):
             new_volume = syndicatelib.ensure_volume_exists( volume_principal_id, volume, user=user )
         except Exception, e:
             traceback.print_exc()
-            logger.error("Failed to ensure volume '%s' exists" % volume.name )
+            logger.error("Failed to ensure volume '%s' exists" % volume.name ,extra=volume.tologdict())
             raise e
            
         # did we create the Volume?
@@ -98,7 +98,7 @@ class SyncVolume(SyncStep):
                 rc = syndicatelib.update_volume( volume )
             except Exception, e:
                 traceback.print_exc()
-                logger.error("Failed to update volume '%s', exception = %s" % (volume.name, e.message))
+                logger.error("Failed to update volume '%s', exception = %s" % (volume.name, e.message),extra=volume.tologdict())
                 raise e
                     
         return True
@@ -109,7 +109,7 @@ class SyncVolume(SyncStep):
             syndicatelib.ensure_volume_absent( volume_name )
         except Exception, e:
             traceback.print_exc()
-            logger.exception("Failed to erase volume '%s'" % volume_name)
+            logger.exception("Failed to erase volume '%s'" % volume_name,extra=volume.tologdict())
             raise e
 
 

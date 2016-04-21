@@ -176,12 +176,16 @@ INSTALLED_APPS = (
     'core',
     'services.hpc',
     'services.cord',
+    'services.mcord',
     'services.helloworldservice_complete',
     'services.mcordservice',
     'services.onos',
     'services.ceilometer',
     'services.requestrouter',
     'services.syndicate_storage',
+    'services.vtr',
+    'services.vrouter',
+    'services.vtn',
     'geoposition',
     'rest_framework_swagger',
 )
@@ -211,13 +215,23 @@ LOGGING = {
         }
     },
     'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/django_debug.log',
+        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
     },
     'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
@@ -236,7 +250,6 @@ XOS_BRANDING_CSS = getattr(config, "gui_branding_css", None)
 XOS_BRANDING_ICON = getattr(config, "gui_branding_icon", "/static/logo.png")
 XOS_BRANDING_FAVICON = getattr(config, "gui_branding_favicon", "/static/favicon.png")
 XOS_BRANDING_BG = getattr(config, "gui_branding_bg", "/static/bg.png")
-
 
 DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)
 ENCRYPTED_FIELDS_KEYDIR = XOS_DIR + '/private_keys'

@@ -14,6 +14,9 @@ custom: ; cat Dockerfile.templ | sed -e "s|XOS_GIT_REPO|${XOS_GIT_REPO}|g" -e "s
 .PHONY: devel
 devel: ; cd ../..; ls; sudo docker build -f containers/xos/Dockerfile.devel --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} .
 
+.PHONY: test
+test: ; cd ../..; ls; sudo docker build -f containers/xos/Dockerfile.test --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} .
+
 .PHONY: run
 run: ; sudo docker run -d --name ${CONTAINER_NAME} -p 80:8000 -v /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro ${IMAGE_NAME}
 

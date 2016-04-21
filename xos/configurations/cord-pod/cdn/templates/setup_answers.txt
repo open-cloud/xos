@@ -1,0 +1,18 @@
+y
+{{ cmi_password }}
+{{ cmi_password }}
+n
+{{ eth_device }}
+y
+{{ cmi_hostname }}
+{{ eth_device }}
+
+
+{{ cdn_site }}
+{{ cdn_short_name }}
+{{ cmi_dns }}
+
+{{ cdn_name }}
+{{ cmi_password }}
+{{ cmi_password }}
+y

@@ -58,6 +58,11 @@
         {% for mac in safe_browsing_macs %}
         - {{ mac }}
         {% endfor %}
+      uplink_speed: {{ uplink_speed }}
+      downlink_speed: {{ downlink_speed }}
+      status: {{ status }}
+      enable_uverse: {{ enable_uverse }}
+      url_filter_kind: {{ url_filter_kind }}
 
   tasks:
 {% if full_setup %}

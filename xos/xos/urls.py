@@ -13,10 +13,12 @@ from core.views.serviceGraph import ServiceGridView, ServiceGraphView
 from services.helloworld.view import *
 from services.mcord.view import *
 # from core.views.analytics import AnalyticsAjaxView
+
 from core.models import *
 from rest_framework import generics
 from core.dashboard.sites import SitePlus
 from django.http import HttpResponseRedirect
+
 # from core.xoslib import XOSLibDataView
 
 # Django settings for XOS.
@@ -44,6 +46,8 @@ if(isinstance(servicePage, basestring)):
     serviceClass = getattr(load_class(servicePage), "as_view")
 else:
     serviceClass = getattr(servicePage, "as_view")
+
+# from api import import_api_methods
 
 admin.site = SitePlus()
 admin.autodiscover()
@@ -86,6 +90,9 @@ urlpatterns = patterns(
     # Adding in rest_framework urls
     url(r'^xos/', include('rest_framework.urls', namespace='rest_framework')),
 
-    # XOSLib rest methods
+    # XOSLib rest methods [deprecated]
     url(r'^xoslib/', include('core.xoslib.methods', namespace='xoslib')),
+
+    url(r'^', include('api.import_methods', namespace='api')),
+
   ) + get_REST_patterns() + get_hpc_REST_patterns()

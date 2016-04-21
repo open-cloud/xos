@@ -97,6 +97,13 @@ module.exports = generators.Base.extend({
         {fileName: this._fistCharToUpper(config.name)}
       );
     },
+    css: function(){
+      this.fs.copyTpl(
+        this.templatePath('src/sass/main.scss'),
+        this.destinationPath(`${this.config.get('folder')}/${config.name}/src/sass/main.scss`),
+        {fileName: this._fistCharToUpper(config.name)}
+      );
+    },
     mainJs: function(){
       this.fs.copyTpl(
         this.templatePath('src/js/main.js'),

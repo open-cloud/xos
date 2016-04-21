@@ -201,6 +201,9 @@ node_types:
             rest_onos/v1/network/configuration/:
                 type: string
                 required: false
+            autogenerate:
+                type: string
+                required: false
 
     tosca.nodes.VCPEService:
         description: >
@@ -215,16 +218,10 @@ node_types:
                 type: string
                 required: false
                 description: Label that matches network used to connect HPC and BBS services.
-            wan_container_gateway_ip:
-                type: string
-                required: false
-            wan_container_gateway_mac:
-                type: string
-                required: false
-            wan_container_netbits:
-                type: string
-                required: false
             dns_servers:
+                type: string
+                required: false
+            node_label:
                 type: string
                 required: false
 
@@ -242,6 +239,47 @@ node_types:
                 required: false
                 description: URL of REST API endpoint for vBNG Service.
 
+    tosca.nodes.VRouterService:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: The vRouter Service.
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_props
+            xos_base_service_props
+
+    tosca.nodes.VTNService:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: The vRouter Service.
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_props
+            xos_base_service_props
+            privateGatewayMac:
+                type: string
+                required: false
+            localManagementIp:
+                type: string
+                required: false
+            ovsdbPort:
+                type: string
+                required: false
+            sshPort:
+                type: string
+                required: false
+            sshUser:
+                type: string
+                required: false
+            sshKeyFile:
+                type: string
+                required: false
+            mgmtSubnetBits:
+                type: string
+                required: false
+
     tosca.nodes.CDNService:
         derived_from: tosca.nodes.Root
         description: >
@@ -251,6 +289,17 @@ node_types:
         properties:
             xos_base_props
             xos_base_service_props
+
+    tosca.nodes.ExampleService:
+        derived_from: tosca.nodes.Root
+        description: >
+            Example Service
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_props
+            xos_base_service_props
+
 
     tosca.nodes.Subscriber:
         derived_from: tosca.nodes.Root
@@ -531,6 +580,28 @@ node_types:
                 required: false
                 description: Comma-separated list of flavors that this deployment supports.
 
+    tosca.nodes.AddressPool:
+        derived_from: tosca.nodes.Root
+        description: >
+            A pool of addresses
+        capabilities:
+            addresspool:
+                type: tosca.capabilities.xos.AddressPool
+        properties:
+            xos_base_props
+            addresses:
+                type: string
+                required: false
+                description: space-separated list of addresses
+            gateway_ip:
+                type: string
+                required: false
+                description: gateway ip address
+            gateway_mac:
+                type: string
+                required: false
+                description: gateway mac address
+
     tosca.nodes.Image:
         derived_from: tosca.nodes.Root
         description: >
@@ -704,6 +775,16 @@ node_types:
             node:
                 type: tosca.capabilities.xos.Node
 
+    tosca.nodes.NodeLabel:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS NodeLabel.
+        properties:
+            xos_base_props
+        capabilities:
+            node:
+                type: tosca.capabilities.xos.NodeLabel
+
     tosca.nodes.DashboardView:
         derived_from: tosca.nodes.Root
         description: >
@@ -838,6 +919,17 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.DashboardView ]
 
+    tosca.relationships.HasLabel:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.NodeLabel ]
+
+    tosca.relationships.ProvidesAddresses:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.AddressPool ]
+
+    tosca.relationships.DependsOn:
+        derived_from: tosca.relationships.Root
+
     tosca.capabilities.xos.Service:
         derived_from: tosca.capabilities.Root
         description: An XOS Service
@@ -882,6 +974,10 @@ node_types:
         derived_from: tosca.capabilities.Root
         description: An XOS Node
 
+    tosca.capabilities.xos.NodeLabel:
+        derived_from: tosca.capabilities.Root
+        description: An XOS NodeLabel
+
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root
         description: An XOS Image
@@ -893,3 +989,7 @@ node_types:
     tosca.capabilities.xos.NetworkParameterType:
         derived_from: tosca.capabilities.Root
         description: An XOS NetworkParameterType
+
+    tosca.capabilities.xos.AddressPool:
+        derived_from: tosca.capabilities.Root
+        description: An XOS AddressPool

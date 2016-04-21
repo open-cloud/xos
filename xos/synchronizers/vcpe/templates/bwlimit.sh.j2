@@ -1,0 +1,131 @@
+#!/bin/bash
+#  tc uses the following units when passed as a parameter.
+#  kbps: Kilobytes per second
+#  mbps: Megabytes per second
+#  kbit: Kilobits per second
+#  mbit: Megabits per second
+#  bps: Bytes per second
+#       Amounts of data can be specified in:
+#       kb or k: Kilobytes
+#       mb or m: Megabytes
+#       mbit: Megabits
+#       kbit: Kilobits
+#  To get the byte figure from bits, divide the number by 8 bit
+#
+
+TC=/sbin/tc
+
+WAN=eth0             # External (WAN side) interface
+LAN=eth1             # Customer (LAN side) interface
+
+MAXRATE=10gbit       # Maximum upload/download rate
+DNLD={{ downlink_speed }}          # DOWNLOAD Limit
+UPLD={{ uplink_speed }}            # UPLOAD Limit
+
+[ "$DNLD" == "None" ] && DNLD=$MAXRATE
+[ "$UPLD" == "None" ] && UPLD=$MAXRATE
+
+start() {
+
+# We'll use Hierarchical Token Bucket (HTB) to shape bandwidth.
+# For detailed configuration options, please consult Linux man
+# page.
+
+    #
+    # WAN side (upload limiting)
+    #
+    $TC qdisc add dev $WAN root handle 1: htb default 30
+    $TC class add dev $WAN parent 1: classid 1:1 htb rate $MAXRATE burst 15k
+
+    # The default class
+    $TC class add dev $WAN parent 1:1 classid 1:30 htb rate 1kbit ceil $UPLD burst 15k
+    $TC qdisc add dev $WAN parent 1:30 handle 30: sfq perturb 10
+
+    # This class is exempt from the upload limit
+    $TC class add dev $WAN parent 1:1 classid 1:50 htb rate 1kbit ceil $MAXRATE burst 15k
+    $TC qdisc add dev $WAN parent 1:50 handle 50: sfq perturb 10
+
+    #
+    # LAN side (download limiting)
+    #
+    $TC qdisc add dev $LAN root handle 1: htb default 30
+    $TC class add dev $LAN parent 1: classid 1:1 htb rate $MAXRATE burst 15k
+
+    # The default class
+    $TC class add dev $LAN parent 1:1 classid 1:30 htb rate 1kbit ceil $DNLD burst 15k
+    $TC qdisc add dev $LAN parent 1:30 handle 30: sfq perturb 10
+
+    # This class is exempt from the download limit
+    $TC class add dev $LAN parent 1:1 classid 1:50 htb rate 1kbit ceil $MAXRATE burst 15k
+    $TC qdisc add dev $LAN parent 1:50 handle 50: sfq perturb 10
+
+}
+
+stop() {
+
+# Stop the bandwidth shaping.
+    $TC qdisc del dev $WAN root
+    $TC qdisc del dev $LAN root
+
+}
+
+restart() {
+
+# Self-explanatory.
+    stop
+    sleep 1
+    start
+
+}
+
+show() {
+
+# Display status of traffic control status.
+    echo "Download ($LAN):"
+    $TC -s class show dev $LAN
+
+    echo ""
+    echo "Upload ($WAN):"
+    $TC -s class show dev $WAN
+
+}
+
+case "$1" in
+
+  start)
+
+    echo -n "Starting bandwidth shaping: "
+    start
+    echo "done"
+    ;;
+
+  stop)
+
+    echo -n "Stopping bandwidth shaping: "
+    stop
+    echo "done"
+    ;;
+
+  restart)
+
+    echo -n "Restarting bandwidth shaping: "
+    restart
+    echo "done"
+    ;;
+
+  show)
+
+    echo "Bandwidth shaping status:"
+    show
+    echo ""
+    ;;
+
+  *)
+
+    pwd=$(pwd)
+    echo "Usage: tc.bash {start|stop|restart|show}"
+    ;;
+
+esac
+
+exit 0

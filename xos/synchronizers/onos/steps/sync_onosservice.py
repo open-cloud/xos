@@ -59,7 +59,7 @@ class SyncONOSService(SyncInstanceUsingAnsible):
 
     def sync_record(self, o):
         if o.no_container:
-            logger.info("no work to do for onos service, because o.no_container is set")
+            logger.info("no work to do for onos service, because o.no_container is set",extra=o.tologdict())
             o.save()
         else:
             super(SyncONOSService, self).sync_record(o)

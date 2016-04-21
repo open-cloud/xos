@@ -16,7 +16,7 @@
         const el = $element[0];
 
         d3.select(window)
-        .on('resize', () => {
+        .on('resize.service', () => {
           draw(this.serviceChain);
         });
 
@@ -34,6 +34,7 @@
           // clean
           d3.select($element[0]).select('svg').remove();
 
+
           const width = el.clientWidth - (serviceTopologyConfig.widthMargin * 2);
           const height = el.clientHeight - (serviceTopologyConfig.heightMargin * 2);
 
@@ -46,30 +47,17 @@
             .style('height', `${el.clientHeight}px`)
 
           const treeContainer = svg.append('g')
-            .attr('transform', `translate(${serviceTopologyConfig.widthMargin * 4},${serviceTopologyConfig.heightMargin})`);
+            .attr('transform', `translate(${serviceTopologyConfig.widthMargin * 2},${serviceTopologyConfig.heightMargin})`);
 
           root = tree;
           root.x0 = height / 2;
           root.y0 = width / 2;
 
           // ServiceTopologyHelper.drawLegend(svg);
-          ServiceTopologyHelper.updateTree(treeContainer, treeLayout, root);
-        };
-
-        this.getInstances = (slice) => {
-          Instances.query({slice: slice.id}).$promise
-          .then((instances) => {
-            this.selectedSlice = slice;
-            this.instances = instances;
-          })
-          .catch(e => {
-            this.errors = e;
-            throw new Error(e);
-          })
+          ServiceTopologyHelper.updateTree(treeContainer, treeLayout, root, el);
         };
         
         $scope.$watch(() => this.serviceChain, (chain) => {
-          console.log(chain);
           if(angular.isDefined(chain)){
             draw(chain);
           }

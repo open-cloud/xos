@@ -41,7 +41,7 @@ def update_dep(d, o):
     except AttributeError,e:
         raise e
     except Exception,e:
-            logger.info('Could not save %r. Exception: %r'%(d,e))
+            logger.info('Could not save %r. Exception: %r'%(d,e), extra=d.tologdict())
 
 def delete_if_inactive(d, o):
     try:
@@ -52,7 +52,7 @@ def delete_if_inactive(d, o):
     return
 
 
-@atomic
+#@atomic
 def execute_model_policy(instance, deleted):
     # Automatic dirtying
     if (instance in bad_instances):
@@ -110,7 +110,7 @@ def run_policy_once():
         deleted_objects = []
 
         for m in models:
-            res = m.objects.filter(Q(policed__lt=F('updated')) | Q(policed=None))
+            res = m.objects.filter((Q(policed__lt=F('updated')) | Q(policed=None)) & Q(no_policy=False))
             objects.extend(res)
             res = m.deleted_objects.filter(Q(policed__lt=F('updated')) | Q(policed=None))
             deleted_objects.extend(res)

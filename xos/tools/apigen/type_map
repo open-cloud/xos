@@ -1,0 +1,10 @@
+{
+    "AutoField":"int64",
+    "ForeignKey":"InstanceIdentifier",
+    "CharField":"string",
+    "TextField":"string",
+    "FloatField":"float64",
+    "BooleanField":"boolean",
+    "StrippedCharField":"string",
+    "DateTimeField":"date-and-time"
+}

@@ -26,42 +26,42 @@
     {
       meter: 'cpu',
       resource_name: 'fakeName',
-      project_id: 'fakeTenant',
+      resource_id: 'fakeTenant',
       timestamp: '2015-12-15T00:34:08',
       volume: 110
     },
     {
       meter: 'cpu',
       resource_name: 'fakeName',
-      project_id: 'fakeTenant',
+      resource_id: 'fakeTenant',
       timestamp: '2015-12-15T00:44:08',
       volume: 120
     },
     {
       meter: 'cpu',
       resource_name: 'anotherName',
-      project_id: 'anotherTenant',
+      resource_id: 'anotherTenant',
       timestamp: '2015-12-15T00:24:08',
       volume: 210
     },
     {
       meter: 'cpu',
       resource_name: 'anotherName',
-      project_id: 'anotherTenant',
+      resource_id: 'anotherTenant',
       timestamp: '2015-12-15T00:34:08',
       volume: 220
     },
     {
       meter: 'cpu',
       resource_name: 'anotherName',
-      project_id: 'anotherTenant',
+      resource_id: 'anotherTenant',
       timestamp: '2015-12-15T00:44:08',
       volume: 230
     },
     {
       meter: 'cpu',
       resource_name: 'thirdName',
-      project_id: 'thirdTenant',
+      resource_id: 'thirdTenant',
       timestamp: '2015-12-15T00:44:08',
       volume: 310
     }
@@ -70,7 +70,7 @@
   const mapping = [
     {
       service: 'service-a',
-      slice: [
+      slices: [
         {
           project_id: 'id-a-1',
           slice: 'slice-a-1'
@@ -83,7 +83,7 @@
     },
     {
       service: 'service-b',
-      slice: [
+      slices: [
         {
           project_id: 'id-b-1',
           slice: 'slice-b-1'

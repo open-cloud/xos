@@ -5,7 +5,9 @@ var wrench = require('wrench');
 
 var options = {
   ngXosVendor: '../../xos/core/xoslib/static/js/vendor/', //save here the minfied vendor file, this is automatically loaded in the django page
-  xosHelperSource: './xosHelpers/src/'
+  xosHelperSource: './xosHelpers/src/',
+  xosHelperTmp: './xosHelpers/.tmp/',
+  docs: './docs'
 };
 
 wrench.readdirSyncRecursive('./gulp')

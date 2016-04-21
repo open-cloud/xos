@@ -14,43 +14,58 @@
     var _this = this;
 
     this.addNetworks = (nodes) => {
+
+      // clean childs
+      nodes.selectAll('*').remove();
+
       nodes.append('path')
       .attr({
         d: shapes.cloud,
-        transform: 'translate(-63, -52), scale(0.5)',
+        transform: 'translate(-100, -72), scale(0.7)',
         class: 'cloud'
       });
 
       nodes.append('text')
       .attr({
-        'text-anchor': 'middle'
+        'text-anchor': 'middle',
+        y: -5,
+        x: 5,
       })
       .text(d => d.name)
+
+      nodes.append('text')
+      .attr({
+        'text-anchor': 'middle',
+        y: 8,
+        x: 5,
+        class: 'small'
+      })
+      .text(d => d.subtitle)
 
       nodes.each(function(n){
         let currentNode = d3.select(this);
         // cicle trouch node to add Tags and Public IP
-        if(n.name === 'LAN' && angular.isDefined(n.subscriberTag)){
+        if(n.name === 'LAN-Side' && angular.isDefined(n.subscriberTag)){
           currentNode.append('text')
           .attr({
             'text-anchor': 'middle',
-            y: 40
+            y: 50
           })
           .text(() => `C-Tag: ${n.subscriberTag.cTag}`);
 
           currentNode.append('text')
           .attr({
             'text-anchor': 'middle',
-            y: 60
+            y: 70
           })
           .text(() => `S-Tag: ${n.subscriberTag.sTag}`);
         }
 
-        if(n.name === 'WAN' && angular.isDefined(n.subscriberIP)){
+        if(n.name === 'WAN-Side' && angular.isDefined(n.subscriberIP)){
           currentNode.append('text')
           .attr({
             'text-anchor': 'middle',
-            y: 40
+            y: 50
           })
           .text(() => `Public IP: ${n.subscriberIP}`);
         }
@@ -153,7 +168,7 @@
       nodeContainer.append('text')
       .attr({
         'text-anchor': 'start',
-        y: 15, //FIXME
+        y: 17, //FIXME
         x: 10, //FIXME
         opacity: 0
       })
@@ -304,19 +319,65 @@
 
       // NOTE this should be dinamically positioned
       // base on the number of element present
+
+      // fake the position
+      let translation = {
+        'mysite_vsg-1': '200, -120',
+        'mysite_vsg-2': '-300, 30',
+        'mysite_vsg-3': '-300, -250',
+      };
+
       const statsContainer = container.append('g')
         .attr({
-          transform: `translate(200, -120)`,
+          transform: `translate(${translation[instance.humanReadableName] || translation['mysite_vsg-1']})`,
           class: 'stats-container'
+        })
+        .on('click', function(d) {
+          // toggling visisbility
+          d.fade = !d.fade;
+          let opacity;
+          if(d.fade){
+            opacity = 0.1;
+          }
+          else{
+            opacity = 1;
+          }
+
+          d3.select(this)
+          .transition()
+          .duration(serviceTopologyConfig.duration)
+          .attr({
+            opacity: opacity
+          })
         });
 
-
-      statsContainer.append('line')
-        .attr({
+      let lines = {
+        'mysite_vsg-1': {
           x1: -160,
           y1: 120,
           x2: 0,
           y2: 50,
+        },
+        'mysite_vsg-2': {
+          x1: 250,
+          y1: 50,
+          x2: 300,
+          y2: -10
+        },
+        'mysite_vsg-3': {
+          x1: 250,
+          y1: 50,
+          x2: 300,
+          y2: 270
+        }
+      }
+
+      statsContainer.append('line')
+        .attr({
+          x1: d => lines[d.humanReadableName].x1 || lines['mysite_vsg-1'].x1,
+          y1: d => lines[d.humanReadableName].y1 || lines['mysite_vsg-1'].y1,
+          x2: d => lines[d.humanReadableName].x2 || lines['mysite_vsg-1'].x2,
+          y2: d => lines[d.humanReadableName].y2 || lines['mysite_vsg-1'].y2,
           stroke: 'black',
           opacity: 0
         })
@@ -334,7 +395,7 @@
         statsHeight += serviceTopologyConfig.container.height + (serviceTopologyConfig.container.margin * 2)
       }
 
-      statsContainer.append('rect')
+      const statsVignette = statsContainer.append('rect')
         .attr({
           width: statsWidth,
           height: statsHeight,
@@ -345,6 +406,7 @@
         .attr({
           opacity: 1
         });
+
 
       // add instance info
       statsContainer.append('text')
@@ -376,22 +438,27 @@
         })
 
       // add stats
-      const interestingMeters = ['memory', 'memory.usage', 'cpu', 'vcpus'];
+      const interestingMeters = ['memory', 'memory.usage', 'cpu', 'cpu_util'];
 
       interestingMeters.forEach((m, i) => {
         const meter = lodash.find(instance.stats, {meter: m});
-        statsContainer.append('text')
-        .attr({
-          y: 55 + (i * 15),
-          x: serviceTopologyConfig.instance.margin,
-          opacity: 0
-        })
-        .text(`${meter.description}: ${Math.round(meter.value)} ${meter.unit}`)
-        .transition()
-        .duration(serviceTopologyConfig.duration)
-        .attr({
-          opacity: 1
-        });
+
+        if(meter){
+          
+          statsContainer.append('text')
+          .attr({
+            y: 55 + (i * 15),
+            x: serviceTopologyConfig.instance.margin,
+            opacity: 0
+          })
+          .text(`${meter.description}: ${Math.round(meter.value)} ${meter.unit}`)
+          .transition()
+          .duration(serviceTopologyConfig.duration)
+          .attr({
+            opacity: 1
+          });
+        }
+
       });
 
       if(instance.container){
@@ -460,13 +527,17 @@
         }
       });
 
-      instanceContainer
-      .on('click', function(d){
-        console.log(`Draw vignette with stats for instance: ${d.name}`);
-      });
+      // instanceContainer
+      // .on('click', function(d){
+      //   console.log(`Draw vignette with stats for instance: ${d.name}`);
+      // });
     };
 
     this.addPhisical = (nodes) => {
+
+      nodes.select('rect').remove();
+      nodes.select('text').remove();
+
       nodes.append('rect')
       .attr(serviceTopologyConfig.square);
 
@@ -475,7 +546,9 @@
         'text-anchor': 'middle',
         y: serviceTopologyConfig.square.y - 10
       })
-      .text(d => d.name);
+      .text(d => {
+        return d.name || d.humanReadableName
+      });
     }
 
     this.addDevice = (nodes) => {

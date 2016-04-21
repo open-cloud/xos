@@ -1,0 +1,71 @@
+{% for app,files in generator.apps.items %}
+{% for file,models in files.items %}
+{% for m in models %}
+# This file implements the synchronization of the {{ m.class_name }} model
+# TODO (see below):
+
+import os
+import base64
+import socket
+from django.db.models import F, Q
+from xos.config import Config
+from synchronizers.base.syncstep import SyncStep
+from {{app}}.models.{{ file }} import {{ m.class_name.title }}
+from synchronizers.base.ansible import *
+from synchronizers.base.syncstep import *
+from xos.logger import observer_logger as logger
+
+class Sync{{m.camel.title}}(SyncStep):
+    # The model synchronized
+    provides=[{{m.class_name.title}}]
+    # How often do you want this to run. 0 means immediately following changes to the model
+    requested_interval=0
+    # The model in which changes trigger this module
+    observes={{m.class_name}}
+    # The Ansible recipe that does the bulk of the synchronization (hopefully)
+    playbook='sync_{{m.class_name}}.yaml'
+
+    # 1. Populate a data structure to pass into your ansible recipe, based on the data model. 
+    def map_sync_inputs(self, {{ m.class_name }}): 
+        fields = {
+            {% for f in m.fields %}'{{f.name}}': {{f.name}},
+            {% endfor %}
+        }
+        return fields
+        
+    # 2. Store the result of the operation in the model
+    def map_sync_outputs(self, {{ m.class_name }}, res):
+        // Store the output of res in the {{m.class_name}} object 
+        return
+    
+    # 3. Populate the data structure that identifies objects to delete
+    def map_delete_inputs(self, {{ m.class_name }}, res):
+        fields = {
+            {% for f in m.fields %}'{{f.name}}': {{f.name}},
+            {% endfor %}
+               'delete':True
+        }
+        return fields
+
+
++++ Sync{{ m.class_name }}.py
+---
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+  - task_1:
+      {% for f in m.fields %}
+      {{f.name}}: {% templatetag openbrace %}{% templatetag openbrace %}{{f.name}}{% templatetag closebrace %}{% templatetag closebrace %}
+      {% endfor %}
+      {% verbatim %}
+      {% if delete %}
+      state: absent
+      {% else %}
+      state: present
+      {% endif %}
+      {% endif %}
+      {% endverbatim %}
++++ Sync{{ m.class_name }}.yaml
+{% endfor %}
+{% endfor %}
+{% endfor %}

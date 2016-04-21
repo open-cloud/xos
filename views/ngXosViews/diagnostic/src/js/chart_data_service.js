@@ -11,16 +11,18 @@
       type: 'router',
       children: [
         {
-          name: 'WAN',
+          name: 'WAN-Side',
+          subtitle: 'Virtual Network',
           type: 'network',
           children: [
             {
-              name: 'Rack',
+              name: 'Compute Servers',
               type: 'rack',
               computeNodes: [],
               children: [
                 {
-                  name: 'LAN',
+                  name: 'LAN-Side',
+                  subtitle: 'Virtual Network',
                   type: 'network',
                   children: [{
                     name: 'Subscriber',
@@ -52,8 +54,8 @@
     */
     this.addSubscriberTag = (tags) => {
       this.logicTopologyData.children[0].children[0].children[0].subscriberTag = {
-        cTag: tags.c_tag,
-        sTag: tags.s_tag
+        cTag: tags.cTag,
+        sTag: tags.sTag
       };
     };
 
@@ -68,27 +70,44 @@
       return this.logicTopologyData;
     };
 
-    this.getSubscriberTag = () => {
-      const tags = JSON.parse(this.currentServiceChain.children[0].tenant.service_specific_attribute);
-      delete tags.creator_id;
+    /**
+    * Remove a subscriber from the tree
+    */
+   
+    this.removeSubscriber = () => {
+      this.logicTopologyData.children[0].children[0].children[0].children[0].humanReadableName = 'Subscriber';
+      this.currentSubscriber = null;
+      if(serviceTopologyConfig.elWidths[serviceTopologyConfig.elWidths.length - 1] === 160){
+        serviceTopologyConfig.elWidths.pop();
+      }
+
+      //remove tags and ip
+      delete this.logicTopologyData.children[0].children[0].children[0].subscriberTag;
+      delete this.logicTopologyData.children[0].subscriberIP;
+
+      this.highlightInstances([]);
+      delete this.logicTopologyData.children[0].children[0].children[0].children[0].children;
+    }
+
+    this.getSubscriberTag = (subscriber) => {
+      const tags = {
+        cTag: subscriber.c_tag,
+        sTag: subscriber.s_tag
+      };
       
       this.addSubscriberTag(tags);
       // add tags info to current subscriber
-      this.currentSubscriber.tags = {
-        cTag: tags.c_tag,
-        sTag: tags.s_tag
-      };
+      this.currentSubscriber.tags = tags;
 
     };
 
-    this.getSubscriberIP = () => {
-      const ip = JSON.parse(this.currentServiceChain.children[0].children[0].tenant.service_specific_attribute).wan_container_ip;
+    this.getSubscriberIP = (subscriber) => {
+      // const ip = JSON.parse(this.currentServiceChain.children[0].children[0].tenant.service_specific_attribute).wan_container_ip;
       // const ip = this.currentServiceChain.children[0].children[0].tenant.wan_container_ip;
-      this.logicTopologyData.children[0].subscriberIP = ip;
+      this.logicTopologyData.children[0].subscriberIP = subscriber.wan_container_ip;
     };
 
     this.selectSubscriber = (subscriber) => {
-
       // append the device with to config settings
       serviceTopologyConfig.elWidths.push(160);
 
@@ -97,8 +116,8 @@
       //clean selected instances
       this.highlightInstances([]);
 
-      this.getSubscriberTag();
-      this.getSubscriberIP();
+      this.getSubscriberTag(subscriber);
+      this.getSubscriberIP(subscriber);
 
     };
 
@@ -188,8 +207,7 @@
 
         p = Tenant.queryVsgInstances(param[service.name]).$promise
         .then((instances) => {
-
-          return Ceilometer.getInstancesStats(instances);
+          return Ceilometer.getInstancesStats(lodash.uniq(instances));
         });
       }
 

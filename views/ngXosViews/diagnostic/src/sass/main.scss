@@ -1,0 +1,356 @@
+/* CONTAINER */
+#xosDiagnostic, [ui-view] {
+    height: 100%;
+    min-height: 700px;
+    position: relative;
+}
+
+diagnostic-container .form-control.small-padding{
+  padding: 6px;
+}
+
+diagnostic-container .half-height {
+    position: relative;
+    height: 50%;
+}
+
+diagnostic-container .onethird-height {
+    position: relative;
+    height: 33%;
+    border-bottom: 1px solid #999;
+}
+
+diagnostic-container .twothird-height {
+    position: relative;
+    height: 67%;
+}
+
+diagnostic-container .subscriber-select{
+    max-width: 200px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1;
+}
+
+diagnostic-container .onethird-height .well,
+diagnostic-container .twothird-height .well {
+  font-weight: bold;
+  max-width: 165px;
+  text-align: center;
+  margin-top: 15px;
+  background: #eee;
+  border-color: steelblue;
+  padding: 10px;
+}
+
+diagnostic-container .onethird-height .well.pull-right{
+  position: absolute;
+  right: 0px;
+  top: -15px;
+  cursor: pointer;
+  z-index: 200;
+}
+
+
+/* subscriber-status-modal */
+subscriber-status-modal .row + .row {
+  margin-top: 20px;
+}
+
+.half-height + .half-height {
+    border-top: 1px solid black;
+}
+
+service-topology,
+logic-topology {
+    height: 100%;
+    width: 100%;
+    display: block;
+    position: absolute;
+    top: 0;
+}
+
+logic-topology .subscriber circle,
+logic-topology .device circle{
+    fill: #fff;
+    stroke: green;
+    stroke-width: 1px;
+}
+
+logic-topology > svg {
+    position: absolute;
+    top: 0;
+}
+
+/* CLOUDS */
+
+logic-topology .network .cloud {
+    fill: #fff;
+    stroke: green;
+    stroke-width: 1px;   
+}
+
+/* RACK */
+logic-topology .node.rack > g > rect{
+    fill: #ccc;
+    stroke: steelblue;
+    stroke-width: 1px;
+}
+
+/* CP NODE */
+
+logic-topology .compute-node > rect{
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1px;
+}
+
+logic-topology .compute-node > text{
+    font-size: 16px;
+}
+
+/* INSTANCE */
+
+logic-topology .instance > rect{
+    fill: #eee;
+    stroke: steelblue;
+    stroke-width: 1px;
+}
+
+logic-topology .node .instance.active rect{
+    fill: lightsteelblue;
+    stroke: steelblue;
+    stroke-width: 1px;   
+}
+
+logic-topology .node .instance.active.good > rect{
+    fill: green;
+}
+
+logic-topology .node .instance.active.provisioning > rect{
+    fill: yellow;
+}
+
+logic-topology .node .instance.active.bad > rect{
+    fill: red;
+}
+
+/* INSTANCE STATS */
+
+logic-topology .node .instance .stats-container rect {
+  fill: white;
+}
+
+logic-topology .node .instance .stats-container text.name{
+  font-weight: bold;
+}
+
+logic-topology .node .instance .stats-container text.ip{
+  font-style: italic;
+  font-size: 10px;
+}
+
+/* CONTAINERS */
+logic-topology .node .instance .stats-container .container rect {
+  fill: #eee;
+  stroke: steelblue;
+  stroke-width: 1px;
+}
+
+/* LEGEND */
+
+.legend {
+    fill: #fff;
+    stroke: #ccc;
+    stroke-width: 1px;
+    position: relative;
+}
+
+.legend text {
+    stroke: #000;
+}
+
+.node {
+    cursor: pointer;
+}
+
+.node circle,
+.node rect{
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1px;
+}
+
+.node.subscriber circle,
+.node.subscriber rect,
+.node.router circle,
+.node.router rect {
+    stroke: #05ffcb;
+}
+
+.node.slice rect {
+    stroke: #b01dff;
+}
+
+.node.instance rect {
+    stroke: #ccc;
+}
+
+.node.instance rect.active {
+    stroke: #ff8b00;
+}
+
+.node rect.slice-detail{
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 3px;
+}
+
+.node text {
+    font: 18px sans-serif;
+}
+
+.node .instance text {
+    font: 12px sans-serif;
+}
+
+.node text.small {
+    font-size: 10px;
+}
+
+.link, .device-link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 2px;
+}
+
+.link.slice {
+    stroke: rgba(157, 4, 183, 0.29);
+}
+.link.instance{
+    stroke: #ccc;
+}
+
+.link.instance.active{
+    stroke: rgba(255, 138, 0, 0.65);
+}
+
+.service-details{
+    width: 200px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+/* when showing the thing */
+
+.animate.ng-hide-remove {
+    animation:0.5s bounceInRight ease;
+}
+
+/* when hiding the picture */
+.animate.ng-hide-add {
+    animation:0.5s bounceOutRight ease;
+}
+
+/* LOADER */
+.loader {
+  font-size: 10px;
+  margin: 150px auto;
+  text-indent: -9999em;
+  width: 11em;
+  height: 11em;
+  border-radius: 50%;
+  background: #ffffff;
+  background: -moz-linear-gradient(left, #ffffff 10%, rgba(255, 255, 255, 0) 42%);
+  background: -webkit-linear-gradient(left, #ffffff 10%, rgba(255, 255, 255, 0) 42%);
+  background: -o-linear-gradient(left, #ffffff 10%, rgba(255, 255, 255, 0) 42%);
+  background: -ms-linear-gradient(left, #ffffff 10%, rgba(255, 255, 255, 0) 42%);
+  background: linear-gradient(to right, #ffffff 10%, rgba(255, 255, 255, 0) 42%);
+  position: relative;
+  animation: load3 1.4s infinite linear;
+  transform: translateZ(0);
+}
+.loader:before {
+  width: 50%;
+  height: 50%;
+  background: #105E9E;
+  border-radius: 100% 0 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: '';
+}
+.loader:after {
+  background: #fff;
+  width: 75%;
+  height: 75%;
+  border-radius: 50%;
+  content: '';
+  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+@keyframes load3 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+/* MODALS */
+
+.modal.fade.in {
+  display: block;
+}
+
+/* ANIMATIONS */
+
+@keyframes bounceInRight {
+    from, 60%, 75%, 90%, to {
+        animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    }
+
+    from {
+        opacity: 0;
+        transform: translate3d(3000px, 0, 0);
+    }
+
+    60% {
+        opacity: 1;
+        transform: translate3d(-25px, 0, 0);
+    }
+
+    75% {
+        transform: translate3d(10px, 0, 0);
+    }
+
+    90% {
+        transform: translate3d(-5px, 0, 0);
+    }
+
+    to {
+        transform: none;
+    }
+}
+
+@keyframes bounceOutRight {
+  20% {
+    opacity: 1;
+    transform: translate3d(-20px, 0, 0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(2000px, 0, 0);
+  }
+}

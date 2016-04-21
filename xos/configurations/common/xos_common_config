@@ -37,6 +37,9 @@ backoff_disabled=True
 images_directory=/opt/xos/images
 dependency_graph=/opt/xos/model-deps
 logfile=/var/log/xos_backend.log
+proxy_ssh=True
+proxy_ssh_key=/root/setup/node_key
+proxy_ssh_user=root
 
 [gui]
 disable_minidashboard=True
@@ -45,4 +48,7 @@ branding_icon=/static/cord-logo.png
 branding_favicon=/static/cord-favicon.png
 branding_bg=/static/mcord-bg2.jpg
 service_view_class=core.views.mCordServiceGrid.ServiceGridView
+
+[networking]
+use_vtn=True
 
