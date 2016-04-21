@@ -2,28 +2,27 @@
 - hosts: 127.0.0.1
   connection: local
   tasks:
-  - nova_compute:
-      auth_url: {{ endpoint }}
-      login_username: {{ admin_user }}
-      login_password: {{ admin_password }}
-      login_tenant_name: {{ admin_tenant }}
+  - os_server:
+      auth_type: password
+      auth:
+        auth_url: {{ endpoint }}
+        username: {{ admin_user }}
+        password: {{ admin_password }}
+        project_name: {{ admin_tenant }}
       name: {{ name }}
       {% if delete -%}
       state: absent
       {% else -%}
       state: present
       availability_zone: {{ availability_zone }}
-      image_name: {{ image_name }}
-      wait_for: 200
-      flavor_name: {{ flavor_name }}
+      image: {{ image_name }}
+      flavor: {{ flavor_name }}
+      timeout: 200
       user_data: "{{ user_data }}"
       config_drive: yes
       nics:
-      {% for net in nics %}
-          - net-id: {{ net }}
-      {% endfor %}
-      {% for port in ports %}
-          - port-id: {{ port }}
+      {% for nic in nics %}
+          - {{ nic.kind }}-id: {{ nic.value }}
       {% endfor %}
 
       {% if meta %}
