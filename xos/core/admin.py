@@ -723,6 +723,7 @@ class DeploymentAdminForm(forms.ModelForm):
     class Meta:
         model = Deployment
         many_to_many = ["flavors", ]
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request', None)
