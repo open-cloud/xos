@@ -24,9 +24,9 @@ angular.module('xos.<%= name %>', [
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/users-list.tpl.html',
-    controller: function(XosApi){
+    controller: function(Users){
       // retrieving user list
-      XosApi.User_List_GET()
+      Users.query().$promise
       .then((users) => {
         this.users = users;
       })

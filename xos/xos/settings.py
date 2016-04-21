@@ -175,7 +175,6 @@ INSTALLED_APPS = (
     'core',
     'services.hpc',
     'services.cord',
-    'services.helloworldservice_complete',
     'services.onos',
     'services.ceilometer',
     'services.requestrouter',
@@ -183,6 +182,7 @@ INSTALLED_APPS = (
     'services.openvpn',
     'services.vtr',
     'services.vrouter',
+    'services.vtn',
     'geoposition',
     'rest_framework_swagger',
 )

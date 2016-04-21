@@ -221,15 +221,6 @@ node_types:
                 type: string
                 required: false
                 description: Label that matches network used to connect HPC and BBS services.
-            wan_container_gateway_ip:
-                type: string
-                required: false
-            wan_container_gateway_mac:
-                type: string
-                required: false
-            wan_container_netbits:
-                type: string
-                required: false
             dns_servers:
                 type: string
                 required: false
@@ -260,6 +251,37 @@ node_types:
         properties:
             xos_base_props
             xos_base_service_props
+
+    tosca.nodes.VTNService:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: The vRouter Service.
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_props
+            xos_base_service_props
+            privateGatewayMac:
+                type: string
+                required: false
+            localManagementIp:
+                type: string
+                required: false
+            ovsdbPort:
+                type: string
+                required: false
+            sshPort:
+                type: string
+                required: false
+            sshUser:
+                type: string
+                required: false
+            sshKeyFile:
+                type: string
+                required: false
+            mgmtSubnetBits:
+                type: string
+                required: false
 
     tosca.nodes.CDNService:
         derived_from: tosca.nodes.Root

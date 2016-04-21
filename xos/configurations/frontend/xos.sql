@@ -5163,12 +5163,6 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 265	Can add vbng tenant	12	add_vbngtenant
 266	Can change vbng tenant	12	change_vbngtenant
 267	Can delete vbng tenant	12	delete_vbngtenant
-268	Can add Hello World Service	7	add_helloworldservicecomplete
-269	Can change Hello World Service	7	change_helloworldservicecomplete
-270	Can delete Hello World Service	7	delete_helloworldservicecomplete
-271	Can add Hello World Tenant	12	add_helloworldtenantcomplete
-272	Can change Hello World Tenant	12	change_helloworldtenantcomplete
-273	Can delete Hello World Tenant	12	delete_helloworldtenantcomplete
 274	Can add ONOS Service	7	add_onosservice
 275	Can change ONOS Service	7	change_onosservice
 276	Can delete ONOS Service	7	delete_onosservice
@@ -6509,8 +6503,6 @@ COPY django_content_type (id, name, app_label, model) FROM stdin;
 87	cord subscriber root	cord	cordsubscriberroot
 88	vOLT Service	cord	voltservice
 89	vSG Service	cord	vsgservice
-90	Hello World Tenant	helloworldservice_complete	helloworldtenantcomplete
-91	Hello World Service	helloworldservice_complete	helloworldservicecomplete
 92	ONOS Service	onos	onosservice
 93	onos app	onos	onosapp
 94	s flow tenant	ceilometer	sflowtenant
@@ -6548,7 +6540,6 @@ COPY django_migrations (id, app, name, applied) FROM stdin;
 4	auth	0001_initial	2016-04-05 17:41:46.384468+00
 5	ceilometer	0001_initial	2016-04-05 17:41:46.659809+00
 6	cord	0001_initial	2016-04-05 17:41:46.862406+00
-7	helloworldservice_complete	0001_initial	2016-04-05 17:41:47.056651+00
 8	hpc	0001_initial	2016-04-05 17:41:50.450946+00
 9	onos	0001_initial	2016-04-05 17:41:50.637887+00
 10	requestrouter	0001_initial	2016-04-05 17:41:51.319325+00

@@ -1,36 +1,39 @@
 (function() {
-    'use strict';
-    console.log('XOS Helpers Module')
-    angular.module('bugSnag', []).factory('$exceptionHandler', function () {
-      return function (exception, cause) {
-        if( window.Bugsnag ){
-          Bugsnag.notifyException(exception, {diagnostics:{cause: cause}});
-        }
-        else{
-          console.error(exception, cause, exception.stack);
-        }
-      };
-    });
+  'use strict';
+  
+  angular.module('bugSnag', []).factory('$exceptionHandler', function () {
+    return function (exception, cause) {
+      if( window.Bugsnag ){
+        Bugsnag.notifyException(exception, {diagnostics: {cause: cause}});
+      }
+      else{
+        console.error(exception, cause, exception.stack);
+      }
+    };
+  });
 
-    angular
-        .module('xos.helpers',[
-          'ngCookies',
-          'ngResource',
-          'xos.xos',
-          'xos.hpcapi',
-          'xos.xoslib',
-          'bugSnag',
-          'xos.uiComponents'
-        ])
-        .config(config);
+  /**
+  * @ngdoc overview
+  * @name xos.helpers
+  * @description this is the module that group all the helpers service and components for XOS
+  **/
 
-    function config($httpProvider, $interpolateProvider, $resourceProvider) {
-      $httpProvider.interceptors.push('SetCSRFToken');
+  angular
+      .module('xos.helpers', [
+        'ngCookies',
+        'ngResource',
+        'bugSnag',
+        'xos.uiComponents'
+      ])
+      .config(config);
 
-      $interpolateProvider.startSymbol('{$');
-      $interpolateProvider.endSymbol('$}');
+  function config($httpProvider, $interpolateProvider, $resourceProvider) {
+    $httpProvider.interceptors.push('SetCSRFToken');
 
-      // NOTE http://www.masnun.com/2013/09/18/django-rest-framework-angularjs-resource-trailing-slash-problem.html
-      $resourceProvider.defaults.stripTrailingSlashes = false;
-    }
+    $interpolateProvider.startSymbol('{$');
+    $interpolateProvider.endSymbol('$}');
+
+    // NOTE http://www.masnun.com/2013/09/18/django-rest-framework-angularjs-resource-trailing-slash-problem.html
+    $resourceProvider.defaults.stripTrailingSlashes = false;
+  }
 })();
