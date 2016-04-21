@@ -10,7 +10,7 @@ class DashboardView(PlCoreBase):
     url = StrippedCharField(max_length=1024, help_text="URL of Dashboard")
     controllers = models.ManyToManyField(Controller, blank=True, related_name="dashboardviews", through='ControllerDashboardView')
     enabled = models.BooleanField(default=True)
-    deployments = models.ManyToManyField(Deployment, blank=True, null=True, related_name="dashboardviews", help_text="Deployments that should be included in this view")
+    deployments = models.ManyToManyField(Deployment, blank=True, related_name="dashboardviews", help_text="Deployments that should be included in this view")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
