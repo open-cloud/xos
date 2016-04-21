@@ -8,7 +8,7 @@ imports:
 topology_template:
   node_templates:
 
-    service_ONOS_VTN:
+    service_ONOS_CORD:
       type: tosca.nodes.ONOSService
       requirements:
       properties:
@@ -21,8 +21,16 @@ topology_template:
       type: tosca.nodes.ONOSVTNApp
       requirements:
           - onos_tenant:
-              node: service_ONOS_VTN
+              node: service_ONOS_CORD
               relationship: tosca.relationships.TenantOfService
+          - vtn_service:
+              node: service_vtn
+              relationship: tosca.relationships.UsedByService
       properties:
           dependencies: org.onosproject.drivers, org.onosproject.drivers.ovsdb, org.onosproject.openflow-base, org.onosproject.ovsdb-base, org.onosproject.dhcp, org.onosproject.cordvtn, org.onosproject.olt, org.onosproject.igmp, org.onosproject.cordmcast
           autogenerate: vtn-network-cfg
+
+    service_vtn:
+      type: tosca.nodes.VTNService
+      properties:
+          view_url: /admin/vtn/vtnservice/$id$/
