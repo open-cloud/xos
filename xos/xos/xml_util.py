@@ -113,8 +113,8 @@ class XmlElement:
         specified root_node if specified, otherwise start at tree's root.
         """
 
-        if not element_name.startswith('//'):
-            element_name = '//' + element_name
+        if not name.startswith('//'):
+            name = '//' + name 
         elements = self.element.xpath('%s ' % name, namespaces=self.namespaces)
         for element in elements:
             parent = element.getparent()

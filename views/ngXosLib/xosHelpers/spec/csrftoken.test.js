@@ -34,6 +34,7 @@ describe('The xos.helper module', function(){
       httpBackend.when('POST', 'http://example.com', null, function(headers) {
         expect(headers['X-CSRFToken']).toBe(fakeToken);
         done();
+        return headers;
       }).respond(200, {name: 'example' });
 
       http.post('http://example.com');
