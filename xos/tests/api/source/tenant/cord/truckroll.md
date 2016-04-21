@@ -2,7 +2,7 @@
 
 Virtual Truckroll, enable to perform basic test on user connectivity such as ping, traceroute and tcpdump.
 
-## Truckroll Collection [/api/tenant/truckroll/]
+## Truckroll Collection [/api/tenant/truckroll/{truckroll_id}/]
 
 ### List all Truckroll [GET]
 
@@ -25,6 +25,8 @@ Virtual Truckroll, enable to perform basic test on user connectivity such as pin
         ]
 
 ### Create a Truckroll [POST]
+
+A virtual truckroll is complete once is_synced equal true
 
 + Request (application/json)
 
@@ -51,14 +53,11 @@ Virtual Truckroll, enable to perform basic test on user connectivity such as pin
             "backend_status": "0 - Provisioning in progress"
         }
 
-## Truckroll Detail [/api/tenant/truckroll/{truckroll_id}/]
 
-A virtual truckroll is complete once is_synced equal true
+### View a Truckroll Detail [GET]
 
 + Parameters
     + truckroll_id: 1 (number) - ID of the Truckroll in the form of an integer
-
-### View a Truckroll Detail [GET]
 
 + Response 200 (application/json)
 
@@ -77,5 +76,8 @@ A virtual truckroll is complete once is_synced equal true
         }
 
 ### Delete a Truckroll Detail [DELETE]
+
++ Parameters
+    + truckroll_id: 1 (number) - ID of the Truckroll in the form of an integer
 
 + Response 204

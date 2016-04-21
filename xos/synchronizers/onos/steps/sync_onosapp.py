@@ -17,6 +17,7 @@ from core.models import Service, Slice, Controller, ControllerSlice, ControllerU
 from services.onos.models import ONOSService, ONOSApp
 from xos.logger import Logger, logging
 from services.vrouter.models import VRouterService
+from services.vtn.models import VTNService
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")
@@ -145,16 +146,25 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
     # This function currently assumes a single Deployment and Site
     def get_vtn_config(self, o, attrs):
 
-        # The "attrs" argument contains a list of all service and tenant attributes
-        # If an attribute is present, use it in the configuration
-        # Otherwise save the attriute with a reasonable (for a CORD devel pod) default value
-        # The admin will see all possible configuration values and the assigned defaults
-        privateGatewayMac = self.attribute_default(o, attrs, "privateGatewayMac", "00:00:00:00:00:01")
-        localManagementIp = self.attribute_default(o, attrs, "localManagementIp", "172.27.0.1/24")
-        ovsdbPort = self.attribute_default(o, attrs, "ovsdbPort", "6641")
-        sshPort = self.attribute_default(o, attrs, "sshPort", "22")
-        sshUser = self.attribute_default(o, attrs, "sshUser", "root")
-        sshKeyFile = self.attribute_default(o, attrs, "sshKeyFile", "/root/node_key")
+        privateGatewayMac = None
+        localManagementIp = None
+        ovsdbPort = None
+        sshPort = None
+        sshUser = None
+        sshKeyFile = None
+        mgmtSubnetBits = None
+
+        # VTN-specific configuration from the VTN Service
+        vtns = VTNService.get_service_objects().all()
+        if vtns:
+            vtn = vtns[0]
+            privateGatewayMac = vtn.privateGatewayMac
+            localManagementIp = vtn.localManagementIp
+            ovsdbPort = vtn.ovsdbPort
+            sshPort = vtn.sshPort
+            sshUser = vtn.sshUser
+            sshKeyFile = vtn.sshKeyFile
+            mgmtSubnetBits = vtn.mgmtSubnetBits
 
         # OpenStack endpoints and credentials
         keystone_server = "http://keystone:5000/v2.0/"
@@ -165,12 +175,8 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             controller = controllers[0]
             keystone_server = controller.auth_url
             user_name = controller.admin_user
+            tenant_name = controller.admin_tenant
             password = controller.admin_password
-
-        # Put this in the controller object?  Or fetch it from Keystone?
-        # Seems like VTN should be pulling it from Keystone
-        # For now let it be specified by a service / tenant attribute
-        neutron_server = self.attribute_default(o, attrs, "neutron_server", "http://neutron-api:9696/v2.0/")
 
         data = {
             "apps" : {
@@ -179,31 +185,25 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                         "privateGatewayMac" : privateGatewayMac,
                         "localManagementIp": localManagementIp,
                         "ovsdbPort": ovsdbPort,
-                        "sshPort": sshPort,
-                        "sshUser": sshUser,
-                        "sshKeyFile": sshKeyFile,
+                        "ssh": {
+                            "sshPort": sshPort,
+                            "sshUser": sshUser,
+                            "sshKeyFile": sshKeyFile
+                        },
+                        "openstack": {
+                            "endpoint": keystone_server,
+                            "tenant": tenant_name,
+                            "user": user_name,
+                            "password": password
+                        },
                         "publicGateways": [],
                         "nodes" : []
-                    }
-                },
-                "org.onosproject.openstackinterface" : {
-                    "openstackinterface" : {
-                        "do_not_push_flows" : "true",
-                        "neutron_server" : neutron_server,
-                        "keystone_server" : keystone_server,
-                        "user_name" : user_name,
-                        "password" : password
                     }
                 }
             }
         }
 
         # Generate apps->org.onosproject.cordvtn->cordvtn->nodes
-
-        # We need to generate a CIDR address for the physical node's
-        # address on the management network
-        mgmtSubnetBits = self.attribute_default(o, attrs, "mgmtSubnetBits", "24")
-
         nodes = Node.objects.all()
         for node in nodes:
             nodeip = socket.gethostbyname(node.name)
