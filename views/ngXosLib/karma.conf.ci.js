@@ -68,12 +68,14 @@ module.exports = function(config) {
 
     junitReporter: {
       outputDir: 'test-result',
+      useBrowserName: false,
       outputFile: 'test-results.xml'
     },
 
     coverageReporter: {
-      type : 'cobertura',
-      dir : 'coverage/'
+      type: 'cobertura',
+      subdir: '.',
+      dir: 'test-result/'
     },
 
     // web server port
