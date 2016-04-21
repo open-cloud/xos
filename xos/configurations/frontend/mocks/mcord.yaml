@@ -1,0 +1,319 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup CORD-related services
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    # M-CORD Services
+    
+    # RAN
+    vBBU:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=vBBU
+          kind: RAN
+
+    eSON:
+      type: tosca.nodes.Service
+      properties:
+          view_url: http://www.google.com
+          kind: RAN
+
+    # EPC
+    vMME:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=vMME
+          kind: EPC
+
+    vSGW:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=vSGW
+          kind: EPC
+
+    vPGW:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=vPGW
+          kind: EPC
+
+    # EDGE
+    Cache:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=Cache
+          icon_url: /static/mCordServices/service_cache.png
+          kind: EDGE
+
+    Firewall:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=Firewall
+          icon_url: /static/mCordServices/service_firewall.png
+          kind: EDGE
+
+    Video Optimization:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=Video%20Optimization
+          icon_url: /static/mCordServices/service_video.png
+          kind: EDGE
+          
+    # Images
+    trusty-server-multi-nic:
+      type: tosca.nodes.Image
+      properties:
+         disk_format: QCOW2
+         container_format: BARE
+
+    # Deployments
+    StanfordDeployment:
+      type: tosca.nodes.Deployment
+      properties:
+          flavors: m1.large, m1.medium, m1.small
+      requirements:
+          - image:
+              node: trusty-server-multi-nic
+              relationship: tosca.relationships.SupportsImage
+
+    # Site
+    stanford:
+      type: tosca.nodes.Site
+      properties:
+          display_name: Stanford University
+          site_url: https://www.stanford.edu/
+      requirements:
+          - deployment:
+               node: StanfordDeployment
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: CloudLab
+                       relationship: tosca.relationships.UsesController
+
+
+    # Nodes
+    node1.stanford.edu:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: StanfordDeployment
+            relationship: tosca.relationships.MemberOfDeployment
+
+    # Slices
+    stanford_slice:
+      description: Slice that contains sample instances
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: stanford
+              relationship: tosca.relationships.MemberOfSite
+
+    # Instances
+    BBU_service_instance1:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: ubuntu
+            version: 14.04
+      requirements:
+          - slice:
+                node: stanford_slice
+                relationship: tosca.relationships.MemberOfSlice
+
+    BBU_service_instance2:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: ubuntu
+            version: 14.04
+      requirements:
+          - slice:
+                node: stanford_slice
+                relationship: tosca.relationships.MemberOfSlice
+
+    MME_service_instance1:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: ubuntu
+            version: 14.04
+      requirements:
+          - slice:
+                node: stanford_slice
+                relationship: tosca.relationships.MemberOfSlice
+
+    SGW_service_instance1:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: ubuntu
+            version: 14.04
+      requirements:
+          - slice:
+                node: stanford_slice
+                relationship: tosca.relationships.MemberOfSlice
+
+    PGW_service_instance1:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: ubuntu
+            version: 14.04
+      requirements:
+          - slice:
+                node: stanford_slice
+                relationship: tosca.relationships.MemberOfSlice
+
+    # Let's add a user who can be administrator of the household
+    johndoe@stanford.us:
+      type: tosca.nodes.User
+      properties:
+          password: letmein
+          firstname: john
+          lastname: doe
+      requirements:
+          - site:
+              node: stanford
+              relationship: tosca.relationships.MemberOfSite
+
+    # A subscriber
+    Stanford:
+       type: tosca.nodes.CORDSubscriber
+       properties:
+           service_specific_id: 123
+           firewall_enable: false
+           cdn_enable: false
+           url_filter_enable: false
+           url_filter_level: R
+       requirements:
+          - house_admin:
+              node: johndoe@stanford.us
+              relationship: tosca.relationships.AdminPrivilege
+
+    Barbera Lapinski:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 01:02:03:04:05:06
+           level: PG_13
+       requirements:
+           - household:
+               node: Stanford
+               relationship: tosca.relationships.SubscriberDevice
+
+    Norbert Shumway:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 90:E2:BA:82:F9:75
+           level: PG_13
+       requirements:
+           - household:
+               node: Stanford
+               relationship: tosca.relationships.SubscriberDevice
+
+    Fay Muldoon:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 68:5B:35:9D:91:D5
+           level: PG_13
+       requirements:
+           - household:
+               node: Stanford
+               relationship: tosca.relationships.SubscriberDevice
+
+    Janene Earnest:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 34:36:3B:C9:B6:A6
+           level: PG_13
+       requirements:
+           - household:
+               node: Stanford
+               relationship: tosca.relationships.SubscriberDevice
+
+
+    Topology:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosMcordTopology
+
+    Ceilometer:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosCeilometerDashboard
+
+    padmin@vicci.org:
+      type: tosca.nodes.User
+      properties:
+          firstname: XOS
+          lastname: admin
+          is_admin: true
+      requirements:
+          - mcord_dashboard:
+              node: Topology
+              relationship: tosca.relationships.UsesDashboard
+          - ceilometer_dashboard:
+              node: Ceilometer
+              relationship: tosca.relationships.UsesDashboard

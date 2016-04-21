@@ -733,6 +733,10 @@ node_types:
                 type: string
                 required: false
                 description: default flavor to use for slice
+            default_node:
+                type: string
+                required: false
+                description: default node to use for this slice
             network:
                 type: string
                 required: false

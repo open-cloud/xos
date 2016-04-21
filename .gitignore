@@ -4,6 +4,7 @@
 profile
 *.moved-aside
 .idea
+setup/*
 xos/configurations/frontend/Dockerfile
 xos/core/xoslib/karma-*
 xos/core/xoslib/docs

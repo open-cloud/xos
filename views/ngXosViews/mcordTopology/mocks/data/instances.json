@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "humanReadableName": "BBU_service_instance-1",
+    "instance_id": "instance-00000001", 
+    "instance_uuid": "42b75cb7-7205-4a68-9100-b2c1e3ea69b5", 
+    "name": "BBU_service_instance-1", 
+    "instance_name": "mysite_BBU-1", 
+    "ip": "130.127.133.91"
+  },
+  {
+    "id": 2,
+    "humanReadableName": "BBU_service_instance-2",
+    "instance_id": "instance-00000002", 
+    "instance_uuid": "42b75cb7-7205-4a68-9200-b2c2e3ea69b5", 
+    "name": "BBU_service_instance-2", 
+    "instance_name": "mysite_BBU-2", 
+    "ip": "130.127.133.92"
+  },
+  {
+    "id": 5,
+    "humanReadableName": "vsg_service_instance-4",
+    "instance_id": "instance-00000004", 
+    "instance_uuid": "44b75cb7-7405-4a68-9400-b4c4e3ea69b5", 
+    "name": "vsg_service_instance-4", 
+    "instance_name": "mysite_vsg-4", 
+    "ip": "130.127.133.94"
+  }
+]
