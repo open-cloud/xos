@@ -71,3 +71,67 @@ topology_template:
           - mcord_dashboard:
               node: Topology
               relationship: tosca.relationships.UsesDashboard
+
+    RRU:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=vBBU
+          icon_url: /static/mCordServices/service_rru.png
+          kind: RAN
+    vBBU:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=vBBU
+          icon_url: /static/mCordServices/service_server.png
+          kind: RAN
+    eSON:
+      type: tosca.nodes.Service
+      properties:
+          icon_url: /static/mCordServices/service_server.png
+          view_url: http://www.google.com
+          kind: RAN
+
+    # EPC
+    vMME:
+      type: tosca.nodes.Service
+      properties:
+          icon_url: /static/mCordServices/service_server.png
+          view_url: /mcord/?service=vMME
+          kind: vEPC
+
+    vSGW:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=vSGW
+          icon_url: /static/mCordServices/service_server.png
+          kind: vEPC
+
+    vPGW:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=vPGW
+          icon_url: /static/mCordServices/service_server.png
+          kind: vEPC
+
+    # EDGE
+    Cache:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=Cache
+          icon_url: /static/mCordServices/service_cache.png
+          kind: EDGE
+
+    Firewall:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=Firewall
+          icon_url: /static/mCordServices/service_firewall.png
+          kind: EDGE
+
+    Video Optimization:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/?service=Video%20Optimization
+          icon_url: /static/mCordServices/service_video.png
+          kind: EDGE
+

@@ -86,6 +86,10 @@ node_types:
                 required: false
                 default: 199 
                 description: VTN stag port-name
+            display_message:
+                type: string
+                required: false
+                description: Just a message 
 
 
 topology_template:
@@ -94,8 +98,8 @@ topology_template:
       type: tosca.nodes.MCORDService
       requirements:
       properties:
-          kind: MobileRAN
-          view_url: /admin/mcord/$id$/
+          kind: Mobile Services
+          view_url: /mcord/mcordservice
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/configurations/mcord/mcord_private_key
       artifacts:
@@ -229,6 +233,7 @@ topology_template:
               node: mysite_vbbu_slice1
               relationship: tosca.relationships.MemberOfSlice
       properties:
+          display_message: vBBU looks good!
           s1u_tag: 201
           s1mme_tag: 200
           rru_tag: 199 
