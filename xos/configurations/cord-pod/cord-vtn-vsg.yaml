@@ -65,6 +65,9 @@ topology_template:
               node: addresses_exampleservice-public
               relationship: tosca.relationships.ProvidesAddresses
 
+    service_ONOS_CORD:
+      type: tosca.nodes.ONOSService
+
     vOLT_ONOS_app:
       type: tosca.nodes.ONOSvOLTApp
       requirements:
@@ -207,16 +210,16 @@ topology_template:
                node: My House
                relationship: tosca.relationships.SubscriberDevice
 
-    My Volt:
-        type: tosca.nodes.VOLTTenant
-        properties:
-            service_specific_id: 123
-            s_tag: 222
-            c_tag: 111
-        requirements:
-            - provider_service:
-                node: service_volt
-                relationship: tosca.relationships.MemberOfService
-            - subscriber:
-                node: My House
-                relationship: tosca.relationships.BelongsToSubscriber
+#    My Volt:
+#        type: tosca.nodes.VOLTTenant
+#        properties:
+#            service_specific_id: 123
+#            s_tag: 222
+#            c_tag: 111
+#        requirements:
+#            - provider_service:
+#                node: service_volt
+#                relationship: tosca.relationships.MemberOfService
+#            - subscriber:
+#                node: My House
+#                relationship: tosca.relationships.BelongsToSubscriber
