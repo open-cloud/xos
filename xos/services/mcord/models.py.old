@@ -19,6 +19,7 @@ MCORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
 VBBU_KIND = "vBBU"
 VSGW_KIND = "vSGW"
 VPGW_KIND = "vPGW"
+# some comment
 # The class to represent the service. Most of the service logic is given for us
 # in the Service class but, we have some configuration that is specific for
 # this example.
