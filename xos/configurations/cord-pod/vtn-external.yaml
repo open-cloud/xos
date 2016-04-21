@@ -16,7 +16,6 @@ topology_template:
           view_url: /admin/onos/onosservice/$id$/
           no_container: true
           rest_hostname: onos-cord
-	  # For vOLT
           rest_onos/v1/network/configuration/: >
             {
               "devices" : {
