@@ -29,7 +29,7 @@
       },
       template: `
         <div>
-          <pre>{{vm.errors.email | json}}</pre>
+          <!-- <pre>{{vm.errors.email | json}}</pre> -->
           <xos-alert config="vm.config" show="vm.errors.email !== undefined">
             This is not a valid email
           </xos-alert>

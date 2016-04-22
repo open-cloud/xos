@@ -8,7 +8,7 @@
   **/
 
   angular
-      .module('xos.helpers')
+      .module('xos.uiComponents')
       .factory('LabelFormatter', labelFormatter);
 
   function labelFormatter() {
