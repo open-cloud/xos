@@ -12,7 +12,6 @@
       .factory('SetCSRFToken', setCSRFToken);
 
   function setCSRFToken($cookies) {
-    console.log($cookies);
     return {
       request: function(request){
         if(request.method !== 'GET'){
