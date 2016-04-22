@@ -6,7 +6,7 @@ deployment=plc
 name=xos
 user=postgres
 password=password
-host=localhost
+host=66.201.46.26
 port=5432
 
 [api]
