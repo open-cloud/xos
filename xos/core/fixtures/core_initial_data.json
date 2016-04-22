@@ -65,6 +65,34 @@
 },
 {
     "fields": {
+        "updated": "2015-02-17T22:06:38.620Z",
+        "policed": null,
+        "created": "2015-02-17T22:06:38.620Z",
+        "deleted": false,
+        "backend_register": "{}",
+        "role": "admin",
+        "backend_status": "0 - Provisioning in progress",
+        "enacted": null
+    },
+    "model": "core.tenantrole",
+    "pk": 1
+},
+{
+    "fields": {
+        "updated": "2015-02-17T22:06:38.620Z",
+        "policed": null,
+        "created": "2015-02-17T22:06:38.620Z",
+        "deleted": false,
+        "backend_register": "{}",
+        "role": "access",
+        "backend_status": "0 - Provisioning in progress",
+        "enacted": null
+    },
+    "model": "core.tenantrole",
+    "pk": 2
+},
+{
+    "fields": {
         "accessControl": "allow all",
         "updated": "2015-02-17T22:06:37.789Z",
         "policed": null,
