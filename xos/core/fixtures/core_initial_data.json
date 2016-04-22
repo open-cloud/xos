@@ -57,23 +57,6 @@
 },
 {
     "fields": {
-        "updated": "2015-02-17T22:06:37.893Z",
-        "policed": null,
-        "created": "2015-02-17T22:06:37.893Z",
-        "deleted": false,
-        "availability_zone": null,
-        "site": 1,
-        "backend_register": "{}",
-        "controller": null,
-        "deployment": 1,
-        "backend_status": "0 - Provisioning in progress",
-        "enacted": null
-    },
-    "model": "core.sitedeployment",
-    "pk": 1
-},
-{
-    "fields": {
         "updated": "2015-02-17T22:06:38.953Z",
         "policed": null,
         "created": "2015-02-17T22:06:38.953Z",
@@ -113,7 +96,6 @@
         "created": "2015-02-17T22:06:39.069Z",
         "deleted": false,
         "deployments": [
-            1
         ],
         "enabled": true,
         "name": "Tenant",
@@ -169,7 +151,6 @@
         "created": "2015-02-17T22:06:38.095Z",
         "deleted": false,
         "deployments": [
-            1
         ],
         "description": null,
         "name": "m1.small",
@@ -190,7 +171,6 @@
         "created": "2015-02-17T22:06:38.287Z",
         "deleted": false,
         "deployments": [
-            1
         ],
         "description": null,
         "name": "m1.medium",
@@ -211,7 +191,6 @@
         "created": "2015-02-17T22:06:38.445Z",
         "deleted": false,
         "deployments": [
-            1
         ],
         "description": null,
         "name": "m1.large",

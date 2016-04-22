@@ -9,6 +9,8 @@ topology_template:
   node_templates:
     MyDeployment:
       type: tosca.nodes.Deployment
+      properties:
+          flavors: m1.large, m1.medium, m1.small
 
     mysite:
       type: tosca.nodes.Site
@@ -18,10 +20,14 @@ topology_template:
           - deployment:
                node: MyDeployment
                relationship: tosca.relationships.SiteDeployment
-               requirements:
-                   - controller:
-                       node: newcontroller
-                       relationship: tosca.relationships.UsesController
+
+    # Include the Tenant view so we can make it a default of padmin@vicci.org
+    Tenant:
+      type: tosca.nodes.DashboardView
+      properties:
+          no-create: true
+          no-update: true
+          no-delete: true
 
     padmin@vicci.org:
       type: tosca.nodes.User
@@ -35,4 +41,7 @@ topology_template:
           - site:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
+          - tenant_dashboard:
+              node: Tenant
+              relationship: tosca.relationships.UsesDashboard
 
