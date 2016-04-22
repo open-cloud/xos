@@ -56,13 +56,15 @@ module.exports = function(options){
   gulp.task('makeDocs', ['cleanDocs'], function(){
     var ngOptions = {
       scripts: [
-        'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js',
-        'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-animate.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-cookies.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-resource.js',
         'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.js',
-        `${options.ngXosVendor}ngXosHelpers.js`
+        `./${options.ngXosVendor}ngXosHelpers.js`
       ],
       styles: [
-        'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',
+        'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.css',
       ],
       html5Mode: false,
       title: 'XOS Helpers documentation',

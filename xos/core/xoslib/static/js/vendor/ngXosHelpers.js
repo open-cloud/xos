@@ -233,6 +233,51 @@
  *
  * Visit http://guide.xosproject.org/devguide/addview/ for more information
  *
+ * Created by teone on 4/15/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosValidation
+    * @restrict E
+    * @description The xos-validation directive
+    * @param {Object} errors The error object
+    * @element ANY
+    * @scope
+    */
+
+  .directive('xosValidation', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        errors: '='
+      },
+      template: '\n        <div>\n          <!-- <pre>{{vm.errors.email | json}}</pre> -->\n          <xos-alert config="vm.config" show="vm.errors.email !== undefined">\n            This is not a valid email\n          </xos-alert>\n        </div>\n      ',
+      transclude: true,
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: function controller() {
+        this.config = {
+          type: 'danger'
+        };
+      }
+    };
+  });
+})();
+//# sourceMappingURL=../../maps/ui_components/dumbComponents/validation.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
  * Created by teone on 3/24/16.
  */
 
@@ -586,17 +631,38 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     * @element ANY
     * @scope
     * @example
-  <example module="sampleAlert1">
+  <example module="sampleForm">
     <file name="index.html">
-      <div ng-controller="SampleCtrl1 as vm">
-        
+      <div ng-controller="SampleCtrl as vm">
+        <xos-form ng-model="vm.model" config="vm.config"></xos-form>
       </div>
     </file>
     <file name="script.js">
-      angular.module('sampleAlert1', ['xos.uiComponents'])
-      .controller('SampleCtrl1', function(){
-        this.config1 = {
-          exclude: ['password', 'last_login']
+      angular.module('sampleForm', ['xos.uiComponents'])
+      .factory('_', function($window){
+        return $window._;
+      })
+      .controller('SampleCtrl', function(){
+        this.model = {
+          first_name: 'Jhon',
+          last_name: 'Doe',
+          email: 'jhon.doe@sample.com',
+          active: true,
+          birthDate: '2015-02-17T22:06:38.059000Z'
+        }
+        this.config = {
+          exclude: ['password', 'last_login'],
+          formName: 'sampleForm',
+          actions: [
+            {
+              label: 'Save',
+              icon: 'ok', // refers to bootstraps glyphicon
+              cb: (user) => { // receive the model
+                console.log(user);
+              },
+              class: 'success'
+            }
+          ]
         };
       });
     </file>
@@ -610,10 +676,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         config: '=',
         ngModel: '='
       },
-      template: '\n        <ng-form name="vm.config.formName || \'form\'">\n          <div class="form-group" ng-repeat="field in vm.formField">\n            <label>{{vm.formatLabel(field.label)}}</label>\n            <input type="text" name="" class="form-control" ng-model="vm.ngModel[field]"/>\n          </div>\n          <div class="form-group" ng-if="vm.config.actions">\n            <button href=""\n              ng-repeat="action in vm.config.actions"\n              ng-click="action.cb(vm.ngModel)"\n              class="btn btn-{{action.class}}"\n              title="{{action.label}}">\n              <i class="glyphicon glyphicon-{{action.icon}}"></i>\n              {{action.label}}\n            </button>\n          </div>\n        </ng-form>\n      ',
+      template: '\n        <ng-form name="vm.{{vm.config.formName || \'form\'}}">\n          <div class="form-group" ng-repeat="(name, field) in vm.formField">\n            <label>{{field.label}}</label>\n            <input ng-if="field.type !== \'boolean\'" type="{{field.type}}" name="{{name}}" class="form-control" ng-model="vm.ngModel[name]"/>\n            <span class="boolean-field" ng-if="field.type === \'boolean\'">\n              <button\n                class="btn btn-success"\n                ng-show="vm.ngModel[name]"\n                ng-click="vm.ngModel[name] = false">\n                <i class="glyphicon glyphicon-ok"></i>\n              </button>\n              <button\n                class="btn btn-danger"\n                ng-show="!vm.ngModel[name]"\n                ng-click="vm.ngModel[name] = true">\n                <i class="glyphicon glyphicon-remove"></i>\n              </button>\n            </span>\n            <xos-validation errors="vm[vm.config.formName || \'form\'][name].$error"></xos-validation>\n          </div>\n          <div class="form-group" ng-if="vm.config.actions">\n            <button role="button" href=""\n              ng-repeat="action in vm.config.actions"\n              ng-click="action.cb(vm.ngModel)"\n              class="btn btn-{{action.class}}"\n              title="{{action.label}}">\n              <i class="glyphicon glyphicon-{{action.icon}}"></i>\n              {{action.label}}\n            </button>\n          </div>\n        </ng-form>\n      ',
       bindToController: true,
       controllerAs: 'vm',
-      controller: ["$scope", "$log", "_", "LabelFormatter", "XosFormHelpers", function controller($scope, $log, _, LabelFormatter, XosFormHelpers) {
+      controller: ["$scope", "$log", "_", "XosFormHelpers", function controller($scope, $log, _, XosFormHelpers) {
         var _this = this;
 
         if (!this.config) {
@@ -623,8 +689,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (!this.config.actions) {
           throw new Error('[xosForm] Please provide an action list in the configuration');
         }
-
-        this.formatLabel = LabelFormatter.format;
 
         this.excludedField = ['id', 'validators', 'created', 'updated', 'deleted', 'backend_status'];
         if (this.config && this.config.exclude) {
@@ -638,17 +702,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           if (!model) {
             return;
           }
-          _this.formField = XosFormHelpers.buildFormStructure(_.difference(Object.keys(model), _this.excludedField));
+          _this.formField = XosFormHelpers.buildFormStructure(XosFormHelpers.parseModelField(_.difference(Object.keys(model), _this.excludedField)), _this.config.fields, model);
         });
       }]
     };
   }).service('XosFormHelpers', ["_", "LabelFormatter", function (_, LabelFormatter) {
     var _this2 = this;
 
+    this._isEmail = function (text) {
+      var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+      return re.test(text);
+    };
+
     this._getFieldFormat = function (value) {
 
       // check if is date
-      if (_.isDate(value)) {
+      if (_.isDate(value) || !Number.isNaN(Date.parse(value)) && Date.parse(value) > 0) {
         return 'date';
       }
 
@@ -663,16 +732,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return 'number';
       }
 
+      // check if a string is an email
+      if (_this2._isEmail(value)) {
+        return 'email';
+      }
+
       return typeof value === 'undefined' ? 'undefined' : _typeof(value);
     };
 
     this.buildFormStructure = function (modelField, customField, model) {
+
+      customField = customField || {};
+
       return _.reduce(Object.keys(modelField), function (form, f) {
         form[f] = {
           label: customField[f] && customField[f].label ? customField[f].label + ':' : LabelFormatter.format(f),
           type: customField[f] && customField[f].type ? customField[f].type : _this2._getFieldFormat(model[f]),
           validators: {}
         };
+
+        if (form[f].type === 'date') {
+          model[f] = new Date(model[f]);
+        }
+
+        if (form[f].type === 'number') {
+          model[f] = parseInt(model[f], 10);
+        }
+
         return form;
       }, {});
     };
@@ -904,7 +990,7 @@ angular.module('xos.helpers').config(['$provide', function ($provide) {
   * @description This factory define a set of helper function to format label started from an object property
   **/
 
-  angular.module('xos.helpers').factory('LabelFormatter', labelFormatter);
+  angular.module('xos.uiComponents').factory('LabelFormatter', labelFormatter);
 
   function labelFormatter() {
 
@@ -956,6 +1042,7 @@ angular.module('xos.helpers').config(['$provide', function ($provide) {
   angular.module('xos.helpers').factory('SetCSRFToken', setCSRFToken);
 
   function setCSRFToken($cookies) {
+    console.log($cookies);
     return {
       request: function request(_request) {
         if (_request.method !== 'GET') {

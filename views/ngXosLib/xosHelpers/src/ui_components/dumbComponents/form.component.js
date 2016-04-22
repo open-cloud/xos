@@ -38,14 +38,21 @@
   <example module="sampleForm">
     <file name="index.html">
       <div ng-controller="SampleCtrl as vm">
-        <xos-form ng-model="model" config="config"></xos-form>
+        <xos-form ng-model="vm.model" config="vm.config"></xos-form>
       </div>
     </file>
     <file name="script.js">
       angular.module('sampleForm', ['xos.uiComponents'])
+      .factory('_', function($window){
+        return $window._;
+      })
       .controller('SampleCtrl', function(){
         this.model = {
-          
+          first_name: 'Jhon',
+          last_name: 'Doe',
+          email: 'jhon.doe@sample.com',
+          active: true,
+          birthDate: '2015-02-17T22:06:38.059000Z'
         }
         this.config = {
           exclude: ['password', 'last_login'],
@@ -170,6 +177,9 @@
     };
 
     this.buildFormStructure = (modelField, customField, model) => {
+
+      customField = customField || {};
+
       return _.reduce(Object.keys(modelField), (form, f) => {
         form[f] = {
           label: (customField[f] && customField[f].label) ? `${customField[f].label}:` : LabelFormatter.format(f),
