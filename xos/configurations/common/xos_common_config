@@ -43,11 +43,10 @@ proxy_ssh_user=root
 
 [gui]
 disable_minidashboard=True
-branding_name=M-CORD
-branding_icon=/static/cord-logo.png
-branding_favicon=/static/cord-favicon.png
-branding_bg=/static/mcord-bg2.jpg
-service_view_class=core.views.mCordServiceGrid.ServiceGridView
+branding_name=Open Cloud
+branding_icon=/static/logo.png
+branding_favicon=/static/favicon.png
+branding_bg=/static/bg.jpg
 
 [networking]
 use_vtn=True
