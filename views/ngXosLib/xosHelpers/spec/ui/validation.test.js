@@ -32,6 +32,10 @@
 
       let availableErrors = [
         {
+          type: 'required',
+          message: 'Field required'
+        },
+        {
           type: 'email',
           message: 'This is not a valid email'
         },

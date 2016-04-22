@@ -85,7 +85,15 @@
         <ng-form name="vm.{{vm.config.formName || 'form'}}">
           <div class="form-group" ng-repeat="(name, field) in vm.formField">
             <label>{{field.label}}</label>
-            <input ng-if="field.type !== 'boolean'" type="{{field.type}}" name="{{name}}" class="form-control" ng-model="vm.ngModel[name]"/>
+            <input
+              ng-if="field.type !== 'boolean'"
+              type="{{field.type}}"
+              name="{{name}}"
+              class="form-control"
+              ng-model="vm.ngModel[name]"
+              ng-minlength="field.validators.minlength || 0"
+              ng-maxlength="field.validators.maxlength || 2000"
+              ng-required="field.validators.required || false"/>
             <span class="boolean-field" ng-if="field.type === 'boolean'">
               <button
                 class="btn btn-success"
@@ -100,6 +108,7 @@
                 <i class="glyphicon glyphicon-remove"></i>
               </button>
             </span>
+            <!-- <pre>{{vm[vm.config.formName][name].$error | json}}</pre> -->
             <xos-validation errors="vm[vm.config.formName || 'form'][name].$error"></xos-validation>
           </div>
           <div class="form-group" ng-if="vm.config.actions">
@@ -138,7 +147,7 @@
             return;
           }
           this.formField = XosFormHelpers.buildFormStructure(XosFormHelpers.parseModelField(_.difference(Object.keys(model), this.excludedField)), this.config.fields, model);
-        });
+        }, true);
 
       }
     }
@@ -164,13 +173,18 @@
       }
 
       // check if a string is a number
-      if(!isNaN(value)){
+      if(!isNaN(value) && value !== null){
         return 'number';
       }
 
       // check if a string is an email
       if(this._isEmail(value)){
         return 'email';
+      }
+
+      // if null return string
+      if(value === null){
+        return 'string';
       }
 
       return typeof value;
@@ -181,10 +195,11 @@
       customField = customField || {};
 
       return _.reduce(Object.keys(modelField), (form, f) => {
+
         form[f] = {
           label: (customField[f] && customField[f].label) ? `${customField[f].label}:` : LabelFormatter.format(f),
           type: (customField[f] && customField[f].type) ? customField[f].type : this._getFieldFormat(model[f]),
-          validators: {}
+          validators: (customField[f] && customField[f].validators) ? customField[f].validators : {}
         };
 
         if(form[f].type === 'date'){

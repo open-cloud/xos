@@ -56,6 +56,9 @@
       template: `
         <div>
           <!-- <pre>{{vm.errors.email | json}}</pre> -->
+          <xos-alert config="vm.config" show="vm.errors.required !== undefined && vm.errors.required !== false">
+            Field required
+          </xos-alert>
           <xos-alert config="vm.config" show="vm.errors.email !== undefined && vm.errors.email !== false">
             This is not a valid email
           </xos-alert>
