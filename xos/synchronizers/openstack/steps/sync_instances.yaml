@@ -3,22 +3,21 @@
   connection: local
   tasks:
   - os_server:
-      auth_type: password
+      name: {{ name }}
       auth:
         auth_url: {{ endpoint }}
         username: {{ admin_user }}
         password: {{ admin_password }}
-        project_name: {{ admin_tenant }}
-      name: {{ name }}
+        project_name: {{ project_name }}
       {% if delete -%}
       state: absent
       {% else -%}
       state: present
-      availability_zone: {{ availability_zone }}
+      availability_zone: "{{ availability_zone }}"
       image: {{ image_name }}
       flavor: {{ flavor_name }}
       timeout: 200
-      user_data: "{{ user_data }}"
+      userdata: "{{ user_data }}"
       config_drive: yes
       nics:
       {% for nic in nics %}
@@ -32,3 +31,4 @@
       {% endfor %}
       {% endif %}
       {% endif %}
+

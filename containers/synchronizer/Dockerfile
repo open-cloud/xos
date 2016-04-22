@@ -12,6 +12,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     software-properties-common \
     supervisor
 
+# required for ansible 2.0 OpenStack os_* modules
+RUN pip install --upgrade pbr
+RUN pip install --upgrade six
+RUN pip install shade
+
 # Install ansible from PPA
 RUN add-apt-repository ppa:ansible/ansible
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \

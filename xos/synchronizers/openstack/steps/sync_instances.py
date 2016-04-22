@@ -168,7 +168,7 @@ class SyncInstances(OpenStackSyncStep):
                      'domain': controller.domain,
                      'admin_user': instance.creator.email,
                      'admin_password': instance.creator.remote_password,
-                     'admin_tenant': instance.slice.name,
+                     'project_name': instance.slice.login_base,
                      'tenant': instance.slice.name,
                      'tenant_description': instance.slice.description,
                      'name':instance_name,
