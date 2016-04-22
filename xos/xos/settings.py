@@ -179,6 +179,7 @@ INSTALLED_APPS = (
     'services.ceilometer',
     'services.requestrouter',
     'services.syndicate_storage',
+    'services.openvpn',
     'services.vtr',
     'services.vrouter',
     'services.vtn',
