@@ -4,7 +4,7 @@ frontend:
 	sudo make -f ../common/Makefile.prereqs
 	sudo docker-compose up -d
 	bash ../common/wait_for_xos.sh
-	bash ../mcord/xos/initdb
+	# bash ../mcord/xos/initdb
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
 	# sudo docker-compose run xos python manage.py makemigrations mcordservice
 	# sudo docker-compose run xos python manage.py syncdb
@@ -37,5 +37,5 @@ mock-cord:
 mock-mcord:
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/mocks/mcord.yaml
-	sudo docker exec frontend_xos_1 cp /opt/xos/configurations/frontend/mocks/xos_mcord_config /opt/xos/xos_configuration/
+	sudo docker exec frontend_xos_1 cp /opt/xos/configurations/mcord/xos_mcord_config /opt/xos/xos_configuration/
 	sudo docker exec frontend_xos_1 touch /opt/xos/xos/settings.py
