@@ -65,10 +65,8 @@ angular.module('xos.sampleView', [
 
       this.formConfig = {
         exclude: ['password'],
+        formName: 'myForm',
         fields: {
-          last_login: {
-            type: 'date'
-          }
         },
         actions: [
           {

@@ -35,17 +35,31 @@
     * @element ANY
     * @scope
     * @example
-  <example module="sampleAlert1">
+  <example module="sampleForm">
     <file name="index.html">
-      <div ng-controller="SampleCtrl1 as vm">
-        
+      <div ng-controller="SampleCtrl as vm">
+        <xos-form ng-model="model" config="config"></xos-form>
       </div>
     </file>
     <file name="script.js">
-      angular.module('sampleAlert1', ['xos.uiComponents'])
-      .controller('SampleCtrl1', function(){
-        this.config1 = {
-          exclude: ['password', 'last_login']
+      angular.module('sampleForm', ['xos.uiComponents'])
+      .controller('SampleCtrl', function(){
+        this.model = {
+          
+        }
+        this.config = {
+          exclude: ['password', 'last_login'],
+          formName: 'sampleForm',
+          actions: [
+            {
+              label: 'Save',
+              icon: 'ok', // refers to bootstraps glyphicon
+              cb: (user) => { // receive the model
+                console.log(user);
+              },
+              class: 'success'
+            }
+          ]
         };
       });
     </file>

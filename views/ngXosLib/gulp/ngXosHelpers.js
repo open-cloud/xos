@@ -58,6 +58,7 @@ module.exports = function(options){
       scripts: [
         'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js',
         'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.js',
         `${options.ngXosVendor}ngXosHelpers.js`
       ],
       styles: [
