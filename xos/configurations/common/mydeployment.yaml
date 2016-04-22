@@ -36,9 +36,3 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
 
-
-
-
-
-foo
-
