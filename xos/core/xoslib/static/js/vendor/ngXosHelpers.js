@@ -78,7 +78,7 @@
       scope: {
         errors: '='
       },
-      template: '\n        <div>\n          <!-- <pre>{{vm.errors.email | json}}</pre> -->\n          <xos-alert config="vm.config" show="vm.errors.email !== undefined && vm.errors.email !== false">\n            This is not a valid email\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.minlength !== undefined && vm.errors.minlength !== false">\n            Too short\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.maxlength !== undefined && vm.errors.maxlength !== false">\n            Too long\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.custom !== undefined && vm.errors.custom !== false">\n            Field invalid\n          </xos-alert>\n        </div>\n      ',
+      template: '\n        <div>\n          <!-- <pre>{{vm.errors.email | json}}</pre> -->\n          <xos-alert config="vm.config" show="vm.errors.required !== undefined && vm.errors.required !== false">\n            Field required\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.email !== undefined && vm.errors.email !== false">\n            This is not a valid email\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.minlength !== undefined && vm.errors.minlength !== false">\n            Too short\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.maxlength !== undefined && vm.errors.maxlength !== false">\n            Too long\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.custom !== undefined && vm.errors.custom !== false">\n            Field invalid\n          </xos-alert>\n        </div>\n      ',
       transclude: true,
       bindToController: true,
       controllerAs: 'vm',
@@ -497,7 +497,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         config: '=',
         ngModel: '='
       },
-      template: '\n        <ng-form name="vm.{{vm.config.formName || \'form\'}}">\n          <div class="form-group" ng-repeat="(name, field) in vm.formField">\n            <label>{{field.label}}</label>\n            <input ng-if="field.type !== \'boolean\'" type="{{field.type}}" name="{{name}}" class="form-control" ng-model="vm.ngModel[name]"/>\n            <span class="boolean-field" ng-if="field.type === \'boolean\'">\n              <button\n                class="btn btn-success"\n                ng-show="vm.ngModel[name]"\n                ng-click="vm.ngModel[name] = false">\n                <i class="glyphicon glyphicon-ok"></i>\n              </button>\n              <button\n                class="btn btn-danger"\n                ng-show="!vm.ngModel[name]"\n                ng-click="vm.ngModel[name] = true">\n                <i class="glyphicon glyphicon-remove"></i>\n              </button>\n            </span>\n            <xos-validation errors="vm[vm.config.formName || \'form\'][name].$error"></xos-validation>\n          </div>\n          <div class="form-group" ng-if="vm.config.actions">\n            <button role="button" href=""\n              ng-repeat="action in vm.config.actions"\n              ng-click="action.cb(vm.ngModel)"\n              class="btn btn-{{action.class}}"\n              title="{{action.label}}">\n              <i class="glyphicon glyphicon-{{action.icon}}"></i>\n              {{action.label}}\n            </button>\n          </div>\n        </ng-form>\n      ',
+      template: '\n        <ng-form name="vm.{{vm.config.formName || \'form\'}}">\n          <div class="form-group" ng-repeat="(name, field) in vm.formField">\n            <label>{{field.label}}</label>\n            <input\n              ng-if="field.type !== \'boolean\'"\n              type="{{field.type}}"\n              name="{{name}}"\n              class="form-control"\n              ng-model="vm.ngModel[name]"\n              ng-minlength="field.validators.minlength || 0"\n              ng-maxlength="field.validators.maxlength || 2000"\n              ng-required="field.validators.required || false"/>\n            <span class="boolean-field" ng-if="field.type === \'boolean\'">\n              <button\n                class="btn btn-success"\n                ng-show="vm.ngModel[name]"\n                ng-click="vm.ngModel[name] = false">\n                <i class="glyphicon glyphicon-ok"></i>\n              </button>\n              <button\n                class="btn btn-danger"\n                ng-show="!vm.ngModel[name]"\n                ng-click="vm.ngModel[name] = true">\n                <i class="glyphicon glyphicon-remove"></i>\n              </button>\n            </span>\n            <!-- <pre>{{vm[vm.config.formName][name].$error | json}}</pre> -->\n            <xos-validation errors="vm[vm.config.formName || \'form\'][name].$error"></xos-validation>\n          </div>\n          <div class="form-group" ng-if="vm.config.actions">\n            <button role="button" href=""\n              ng-repeat="action in vm.config.actions"\n              ng-click="action.cb(vm.ngModel)"\n              class="btn btn-{{action.class}}"\n              title="{{action.label}}">\n              <i class="glyphicon glyphicon-{{action.icon}}"></i>\n              {{action.label}}\n            </button>\n          </div>\n        </ng-form>\n      ',
       bindToController: true,
       controllerAs: 'vm',
       controller: ["$scope", "$log", "_", "XosFormHelpers", function controller($scope, $log, _, XosFormHelpers) {
@@ -524,7 +524,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return;
           }
           _this.formField = XosFormHelpers.buildFormStructure(XosFormHelpers.parseModelField(_.difference(Object.keys(model), _this.excludedField)), _this.config.fields, model);
-        });
+        }, true);
       }]
     };
   }).service('XosFormHelpers', ["_", "LabelFormatter", function (_, LabelFormatter) {
@@ -549,13 +549,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       }
 
       // check if a string is a number
-      if (!isNaN(value)) {
+      if (!isNaN(value) && value !== null) {
         return 'number';
       }
 
       // check if a string is an email
       if (_this2._isEmail(value)) {
         return 'email';
+      }
+
+      // if null return string
+      if (value === null) {
+        return 'string';
       }
 
       return typeof value === 'undefined' ? 'undefined' : _typeof(value);
@@ -566,10 +571,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       customField = customField || {};
 
       return _.reduce(Object.keys(modelField), function (form, f) {
+
         form[f] = {
           label: customField[f] && customField[f].label ? customField[f].label + ':' : LabelFormatter.format(f),
           type: customField[f] && customField[f].type ? customField[f].type : _this2._getFieldFormat(model[f]),
-          validators: {}
+          validators: customField[f] && customField[f].validators ? customField[f].validators : {}
         };
 
         if (form[f].type === 'date') {
