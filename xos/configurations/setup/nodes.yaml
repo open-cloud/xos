@@ -11,7 +11,7 @@ topology_template:
         type: tosca.nodes.Deployment
     mysite:
         type: tosca.nodes.Site
-    ip-10-0-10-125:
+    computeBBU2:
       type: tosca.nodes.Node
       requirements:
         - site:
