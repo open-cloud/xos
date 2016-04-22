@@ -3,7 +3,6 @@
 angular.module('xos.mcordTopology', [
   'ngResource',
   'ngCookies',
-  'ngLodash',
   'ui.router',
   'xos.helpers'
 ])
@@ -17,12 +16,17 @@ angular.module('xos.mcordTopology', [
 .config(function($httpProvider){
   $httpProvider.interceptors.push('NoHyperlinks');
 })
+.factory('_', $window => $window._)
 .service('Traffic', function($http, $q){
   this.get = () => {
     var deferred = $q.defer();
     $http.get('videoLocal.txt')
     .then(res => {
       deferred.resolve(res.data);
+    })
+    .catch(e => {
+      console.log(e);
+      deferred.resolve(Math.random() * 10)
     });
     return deferred.promise;
   }
@@ -34,7 +38,7 @@ angular.module('xos.mcordTopology', [
     bindToController: true,
     controllerAs: 'vm',
     template: '',
-    controller: function($element, $interval, $rootScope, XosApi, lodash, TopologyElements, NodeDrawer, Traffic){
+    controller: function($element, $interval, $rootScope, _, $http, TopologyElements, NodeDrawer, Traffic){
 
       const el = $element[0];
 
@@ -45,7 +49,7 @@ angular.module('xos.mcordTopology', [
       let trafficCorrection = 5;
 
       const filterBBU = (instances) => {
-        return lodash.filter(instances, i => i.name.indexOf('BBU') >= 0);
+        return _.filter(instances, i => i.name.indexOf('BBU') >= 0);
       };
 
       const filterOthers = (instances) => {
@@ -91,11 +95,13 @@ angular.module('xos.mcordTopology', [
 
           traffic = newTraffic;
 
-          return XosApi.Instance_List_GET()
+          return $http.get('/api/core/xos/instances');
+          // return XosApi.Instance_List_GET()
         })
         .then((instances) => {
-          addBbuNodes(filterBBU(instances));
-          addOtherNodes(filterOthers(instances));
+
+          addBbuNodes(filterBBU(instances.data));
+          addOtherNodes(filterOthers(instances.data));
 
           draw(svg, nodes, links);
         })
@@ -127,9 +133,9 @@ angular.module('xos.mcordTopology', [
       const buildLinks = (links, nodes) => {
         return links.map((l) => {
 
-
-          let source = lodash.findIndex(nodes, {id: l.source});
-          let target = lodash.findIndex(nodes, {id: l.target});
+          console.log(_.find);
+          let source = _.findIndex(nodes, {id: l.source});
+          let target = _.findIndex(nodes, {id: l.target});
           // console.log(`link-${source}-${target}`, source, target);
           return {
             source: source,
@@ -144,7 +150,7 @@ angular.module('xos.mcordTopology', [
 
       // find fabric nodes and center horizontally
       const positionFabricNodes = (nodes) => {
-        return lodash.map(nodes, n => {
+        return _.map(nodes, n => {
           if(n.type !== 'fabric'){
             return n;
           }
