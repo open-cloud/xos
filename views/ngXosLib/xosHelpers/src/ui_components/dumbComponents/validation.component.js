@@ -19,6 +19,32 @@
     * @param {Object} errors The error object
     * @element ANY
     * @scope
+  * @example
+  <example module="sampleValidation">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm">
+        <div class="row">
+          <div class="col-xs-12">
+            <label>Set an error type:</label>
+          </div>
+          <div class="col-xs-2">
+            <a class="btn" ng-click="vm.errors.email = true" ng-class="{'btn-default': !vm.errors.email, 'btn-success': vm.errors.email}">
+              Email
+            </a>
+          </div>
+        </div>
+        <xos-validation errors="vm.errors"></xos-validation>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleValidation', ['xos.uiComponents'])
+      .controller('SampleCtrl', function(){
+        this.errors = {
+          email: false
+        }
+      });
+    </file>
+  </example>
     */
 
   .directive('xosValidation', function(){
@@ -30,8 +56,17 @@
       template: `
         <div>
           <!-- <pre>{{vm.errors.email | json}}</pre> -->
-          <xos-alert config="vm.config" show="vm.errors.email !== undefined">
+          <xos-alert config="vm.config" show="vm.errors.email !== undefined && vm.errors.email !== false">
             This is not a valid email
+          </xos-alert>
+          <xos-alert config="vm.config" show="vm.errors.minlength !== undefined && vm.errors.minlength !== false">
+            Too short
+          </xos-alert>
+          <xos-alert config="vm.config" show="vm.errors.maxlength !== undefined && vm.errors.maxlength !== false">
+            Too long
+          </xos-alert>
+          <xos-alert config="vm.config" show="vm.errors.custom !== undefined && vm.errors.custom !== false">
+            Field invalid
           </xos-alert>
         </div>
       `,

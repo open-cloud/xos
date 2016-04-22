@@ -30,10 +30,34 @@
         expect($(element).find('xos-alert > .alert')[0]).toHaveClass('ng-hide');
       });
 
-      it('should show an alert', () => {
-        scope.errors.email = true;
-        scope.$digest();
-        expect($(element).find('xos-alert > .alert')[0]).not.toHaveClass('ng-hide');
+      let availableErrors = [
+        {
+          type: 'email',
+          message: 'This is not a valid email'
+        },
+        {
+          type: 'minlength',
+          message: 'Too short'
+        },
+        {
+          type: 'maxlength',
+          message: 'Too long'
+        },
+        {
+          type: 'custom',
+          message: 'Field invalid'
+        },
+      ];
+
+      // use a loop to generate similar test
+      availableErrors.forEach((e, i) => {
+        it(`should show an alert for ${e.type} errors`, () => {
+          scope.errors[e.type] = true;
+          scope.$digest();
+          let alert = $(element).find('xos-alert > .alert')[i];
+          expect(alert).not.toHaveClass('ng-hide');
+          expect(alert).toHaveText(e.message);
+        });
       });
     });
   });
