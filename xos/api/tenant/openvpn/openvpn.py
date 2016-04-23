@@ -1,4 +1,5 @@
 import jinja2
+
 from api.xosapi_helpers import PlusModelSerializer, ReadOnlyField, XOSViewSet
 from core.models import TenantPrivilege
 from rest_framework import serializers
@@ -55,7 +56,7 @@ class OpenVPNTenantSerializer(PlusModelSerializer):
                   "ca_crt": obj.get_ca_crt(pki_dir),
                   "client_crt": obj.get_client_cert(client_name, pki_dir),
                   "client_key": obj.get_client_key(client_name, pki_dir)
-                 }
+                  }
         return template.render(fields)
 
 
