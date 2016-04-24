@@ -1,0 +1,14 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+  tasks:
+
+  - name: write message
+    shell: echo "{{ display_message }}" > /var/tmp/index.html
+
+  - name: setup s1u interface message
+    shell: ifconfig eth1 0.0.0.0; ip link add link eth1 name eth1.{{ s1u_tag }} type vlan id {{ s1u_tag }}; ip a a {{ s1u_ip }}/24 dev eth1.{{ s1u_tag }}; ifconfig eth1 up; ifconfig eth1.{{ s1u_tag }} up
+

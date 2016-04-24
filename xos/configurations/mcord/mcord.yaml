@@ -139,7 +139,7 @@ topology_template:
               node: External
               relationship: tosca.relationships.UsesNetworkTemplate
           - owner:
-              node: mysite_vbbu_slice1
+              node: mysite_mobile_net
               relationship: tosca.relationships.MemberOfSlice
           - connection:
               node: mysite_vbbu_slice1
@@ -159,7 +159,7 @@ topology_template:
               node: External
               relationship: tosca.relationships.UsesNetworkTemplate
           - owner:
-              node: mysite_vbbu_slice1
+              node: mysite_mobile_net
               relationship: tosca.relationships.MemberOfSlice
           - connection:
               node: mysite_vbbu_slice1
@@ -179,7 +179,7 @@ topology_template:
               node: External
               relationship: tosca.relationships.UsesNetworkTemplate
           - owner:
-              node: mysite_vbbu_slice1
+              node: mysite_mobile_net
               relationship: tosca.relationships.MemberOfSlice
           - connection:
               node: mysite_vbbu_slice1
@@ -193,6 +193,16 @@ topology_template:
 
     mysite_management:
       description: This slice exists solely to own the management network
+      type: tosca.nodes.Slice
+      properties:
+          network: noauto
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_mobile_net:
+      description: This slice exists solely to own the mobile network
       type: tosca.nodes.Slice
       properties:
           network: noauto

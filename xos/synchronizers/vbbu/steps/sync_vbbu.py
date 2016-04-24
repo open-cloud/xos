@@ -34,4 +34,4 @@ class SyncVBBUComponent(SyncInstanceUsingAnsible):
         return objs
 
     def get_extra_attributes(self, o):
-        return {"display_message": o.display_message}
+        return {"display_message": o.display_message, "s1u_tag": o.s1u_tag, "s1mme_tag": o.s1mme_tag, "rru_tag": o.rru_tag}
