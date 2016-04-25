@@ -14,9 +14,9 @@ from core.models import SlicePrivilege, SitePrivilege
 from sets import Set
 from xos.config import Config
 
-MCORD_KIND = "MCORD"
+MCORD_KIND = "RAN" # This should be changed later I did it fo demo
 MCORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
-VBBU_KIND = "vBBU"
+VBBU_KIND = "RAN"
 VSGW_KIND = "vSGW"
 VPGW_KIND = "vPGW"
 net_types = ("s1u", "s1mme", "rru")
@@ -59,7 +59,7 @@ class VBBUComponent(TenantWithContainer):
                        "rru_ip", "rru_mac")
     # default_attributes is used cleanly indicate what the default values for
     # the fields are.
-    default_attributes = {"display_message": "VBBU Component is ready!", "s1u_tag": "201", "s1mme_tag": "200", "rru_tag": "199"}
+    default_attributes = {"display_message": "New vBBU Component", "s1u_tag": "201", "s1mme_tag": "200", "rru_tag": "199"}
     def __init__(self, *args, **kwargs):
         mcord_services = MCORDService.get_service_objects().all()
         # When the tenant is created the default service in the form is set

@@ -234,3 +234,18 @@ topology_template:
           default_flavor: m1.xlarge
           default_node: computeBBU2 
     
+    mysite_VBBU_Component:
+      description: MCORD Service default Component
+      type: tosca.nodes.VBBUComponent
+      requirements:
+          - provider_service:
+              node: vBBU
+              relationship: tosca.relationships.MemberOfService
+          - vbbu_slice:
+              node: mysite_vbbu_slice1
+              relationship: tosca.relationships.MemberOfSlice
+      properties:
+          display_message: vBBU looks good!
+          s1u_tag: 201
+          s1mme_tag: 200
+          rru_tag: 199 
