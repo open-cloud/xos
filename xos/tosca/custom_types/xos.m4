@@ -748,13 +748,6 @@ node_types:
                 type: string
                 required: false
                 description: default isolation to use when bringing up instances (default to 'vm')
-            default_flavor:
-                # Note: we should probably formally introduce flavors to Tosca
-                # at some point, and use a requirement/relationship instead of
-                # a text string.
-                type: string
-                required: false
-                description: default flavor to use for slice
             network:
                 type: string
                 required: false
@@ -784,6 +777,20 @@ node_types:
         capabilities:
             node:
                 type: tosca.capabilities.xos.NodeLabel
+
+    tosca.nodes.Flavor:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Flavor.
+        properties:
+            xos_base_props
+            flavor:
+                type: string
+                required: false
+                description: openstack flavor name
+        capabilities:
+            flavor:
+                type: tosca.capabilities.xos.Flavor
 
     tosca.nodes.DashboardView:
         derived_from: tosca.nodes.Root
@@ -923,6 +930,14 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.NodeLabel ]
 
+    tosca.relationships.SupportsFlavor:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Flavor ]
+
+    tosca.relationships.DefaultFlavor:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Flavor ]
+
     tosca.relationships.ProvidesAddresses:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.AddressPool ]
@@ -977,6 +992,10 @@ node_types:
     tosca.capabilities.xos.NodeLabel:
         derived_from: tosca.capabilities.Root
         description: An XOS NodeLabel
+
+    tosca.capabilities.xos.Flavor:
+        derived_from: tosca.capabilities.Root
+        description: An XOS Flavor
 
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root

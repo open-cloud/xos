@@ -25,7 +25,10 @@ def main():
     username = sys.argv[1]
     template_name = sys.argv[2]
 
-    u = User.objects.get(email=username)
+    if username.lower()=="none":
+        u=None
+    else:
+        u = User.objects.get(email=username)
 
     xt = XOSTosca(file(template_name).read(), parent_dir=currentdir, log_to_console=True)
     xt.execute(u)
