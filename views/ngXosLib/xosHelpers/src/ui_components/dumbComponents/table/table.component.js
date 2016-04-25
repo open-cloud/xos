@@ -196,7 +196,7 @@
                   ng-model="vm.query"/>
               </div>
             </div>
-            <table ng-class="vm.classes" ng-show="vm.data.length > 0">
+            <table ng-class="vm.classes" ng-hide="vm.data.length == 0">
               <thead>
                 <tr>
                   <th ng-repeat="col in vm.columns">
