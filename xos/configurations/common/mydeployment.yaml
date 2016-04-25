@@ -8,13 +8,13 @@ imports:
 topology_template:
   node_templates:
     m1.large:
-      type: tosca.nodes.flavor
+      type: tosca.nodes.Flavor
 
     m1.medium:
-      type: tosca.nodes.flavor
+      type: tosca.nodes.Flavor
 
     m1.small:
-      type: tosca.nodes.flavor
+      type: tosca.nodes.Flavor
 
     MyDeployment:
       type: tosca.nodes.Deployment
