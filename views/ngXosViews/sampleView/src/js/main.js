@@ -67,6 +67,21 @@ angular.module('xos.sampleView', [
         exclude: ['password'],
         formName: 'myForm',
         fields: {
+          firstname: {
+            validators: {
+              minlength: 10
+            }
+          },
+          lastname: {
+            validators: {
+              maxlength: 3
+            }
+          },
+          user_url: {
+            validators: {
+              required: true
+            }
+          }
         },
         actions: [
           {
@@ -83,7 +98,7 @@ angular.module('xos.sampleView', [
       // retrieving user list
       Users.query().$promise
       .then((users) => {
-        this.users = users.concat(users).concat(users);
+        this.users = users.concat(users).concat(users).concat(users);
       })
       .catch((e) => {
         throw new Error(e);

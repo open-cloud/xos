@@ -36,6 +36,8 @@
     "gulp-concat": "^2.6.0",
     "gulp-ng-annotate": "^1.1.0",
     "gulp-ngdocs": "^0.2.13",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.1",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.4.2",
     "jasmine-core": "^2.4.1",
