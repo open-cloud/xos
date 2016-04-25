@@ -19,13 +19,13 @@ topology_template:
     MyDeployment:
       type: tosca.nodes.Deployment
       requirements:
-          m1.large:
+          - m1.large:
              node: m1.large
              relationship: tosca.relationships.SupportsFlavor
-          m1.medium:
+          - m1.medium:
              node: m1.medium
              relationship: tosca.relationships.SupportsFlavor
-          m1.small:
+          - m1.small:
              node: m1.small
              relationship: tosca.relationships.SupportsFlavor
 
