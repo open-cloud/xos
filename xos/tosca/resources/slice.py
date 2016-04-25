@@ -50,19 +50,6 @@ class XOSSlice(XOSResource):
                     ("tosca.relationships.PIPrivilege", "pi"), ("tosca.relationships.TechPrivilege", "tech") )
         self.postprocess_privileges(SliceRole, SlicePrivilege, rolemap, obj, "slice")
 
-    def create(self):
-        nodetemplate = self.nodetemplate
-        sliceName = nodetemplate.name
-
-        xos_args = self.get_xos_args()
-        slice = Slice(**xos_args)
-        slice.caller = self.user
-        slice.save()
-
-        self.postprocess(slice)
-
-        self.info("Created Slice '%s' on Site '%s'" % (str(slice), str(slice.site)))
-
     def delete(self, obj):
         if obj.instances.exists():
             self.info("Slice %s has active instances; skipping delete" % obj.name)

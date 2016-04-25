@@ -28,12 +28,12 @@ class XOSCORDUser(XOSResource):
         if not sub:
            return []
         for user in sub.users:
-            if user["name"] == self.nodetemplate.name:
+            if user["name"] == self.obj_name:
                 result.append(user)
         return result
 
     def get_xos_args(self):
-        args = {"name": self.nodetemplate.name,
+        args = {"name": self.obj_name,
                 "level": self.get_property("level"),
                 "mac": self.get_property("mac")}
         return args
@@ -46,7 +46,7 @@ class XOSCORDUser(XOSResource):
         sub.create_user(**xos_args)
         sub.save()
 
-        self.info("Created CORDUser %s for Subscriber %s" % (self.nodetemplate.name, sub.name))
+        self.info("Created CORDUser %s for Subscriber %s" % (self.obj_name, sub.name))
 
     def update(self, obj):
         pass

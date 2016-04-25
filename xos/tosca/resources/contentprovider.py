@@ -17,7 +17,7 @@ class XOSContentProvider(XOSResource):
     def get_xos_args(self):
         sp_name = self.get_requirement("tosca.relationships.MemberOfServiceProvider", throw_exception=True)
         sp = self.get_xos_object(ServiceProvider, name=sp_name)
-        return {"name": self.nodetemplate.name,
+        return {"name": self.obj_name,
                 "serviceProvider": sp}
 
     def can_delete(self, obj):
