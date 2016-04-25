@@ -94,6 +94,10 @@ angular.module('xos.sampleView', [
             class: 'success'
           }
         ]
+      };
+
+      this.errors = {
+        email: false
       }
 
       // retrieving user list

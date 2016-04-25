@@ -1,3 +1,9 @@
 @import './animations.scss';
 
 @import '../ui_components/dumbComponents/table/table.scss';
+@import '../ui_components/dumbComponents/alert/alert.scss';
+@import '../ui_components/dumbComponents/validation/validation.scss';
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}

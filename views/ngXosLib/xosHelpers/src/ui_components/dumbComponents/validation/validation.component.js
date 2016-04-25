@@ -28,8 +28,31 @@
             <label>Set an error type:</label>
           </div>
           <div class="col-xs-2">
-            <a class="btn" ng-click="vm.errors.email = true" ng-class="{'btn-default': !vm.errors.email, 'btn-success': vm.errors.email}">
+            <a class="btn"
+              ng-click="vm.errors.required = !vm.errors.required"
+              ng-class="{'btn-default': !vm.errors.required, 'btn-success': vm.errors.required}">
+              Required
+            </a>
+          </div>
+          <div class="col-xs-2">
+            <a class="btn"
+              ng-click="vm.errors.email = !vm.errors.email"
+              ng-class="{'btn-default': !vm.errors.email, 'btn-success': vm.errors.email}">
               Email
+            </a>
+          </div>
+          <div class="col-xs-2">
+            <a class="btn"
+              ng-click="vm.errors.minlength = !vm.errors.minlength"
+              ng-class="{'btn-default': !vm.errors.minlength, 'btn-success': vm.errors.minlength}">
+              Min Length
+            </a>
+          </div>
+          <div class="col-xs-2">
+            <a class="btn"
+              ng-click="vm.errors.maxlength = !vm.errors.maxlength"
+              ng-class="{'btn-default': !vm.errors.maxlength, 'btn-success': vm.errors.maxlength}">
+              Max Length
             </a>
           </div>
         </div>
@@ -54,7 +77,7 @@
         errors: '='
       },
       template: `
-        <div>
+        <div ng-cloak>
           <!-- <pre>{{vm.errors.email | json}}</pre> -->
           <xos-alert config="vm.config" show="vm.errors.required !== undefined && vm.errors.required !== false">
             Field required
