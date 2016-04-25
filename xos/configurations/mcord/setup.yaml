@@ -14,8 +14,8 @@ topology_template:
       properties:
           flavors: m1.large, m1.medium, m1.small
 
-#    m1.xlarge:
-#      type: tosca.nodes.Flavor
+    m1.xlarge:
+      type: tosca.nodes.Flavor
 
 
     MyOpenStack:

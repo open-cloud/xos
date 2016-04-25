@@ -7,6 +7,7 @@ xos: nodes.yaml images.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/images.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/mgmt-net.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/mcord.yaml
 	sudo docker exec mcord_xos_1 cp /opt/xos/configurations/mcord/xos_mcord_config /opt/xos/xos_configuration/
 	sudo docker exec mcord_xos_1 touch /opt/xos/xos/settings.py
 
