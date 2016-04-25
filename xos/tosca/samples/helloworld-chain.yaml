@@ -43,6 +43,8 @@ topology_template:
                node: service_helloworld
                relationship: tosca.relationships.MemberOfService
 
+    m1.small:
+      type: tosca.nodes.Flavor
 
     mysite_helloworld:
       type: tosca.nodes.Slice
@@ -56,8 +58,9 @@ topology_template:
           - default_image:
                 node: trusty-server-multi-nic
                 relationship: tosca.relationships.DefaultImage
-      properties:
-          default_flavor: m1.small
+          - default_flavor:
+                node: m1.small
+                relationship: tosca.relationships.DefaultFlavor
 
     helloworld_access:
       type: tosca.nodes.network.Network
