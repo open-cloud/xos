@@ -33,7 +33,7 @@ class XOSONOSApp(XOSResource):
 
     def get_existing_objs(self):
         objs = ONOSApp.get_tenant_objects().all()
-        objs = [x for x in objs if x.name == self.nodetemplate.name]
+        objs = [x for x in objs if x.name == self.obj_name]
         return objs
 
     def set_tenant_attr(self, obj, prop_name, value):

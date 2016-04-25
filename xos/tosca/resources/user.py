@@ -25,7 +25,7 @@ class XOSUser(XOSResource):
         return args
 
     def get_existing_objs(self):
-        return self.xos_model.objects.filter(email = self.nodetemplate.name)
+        return self.xos_model.objects.filter(email = self.obj_name)
 
     def postprocess(self, obj):
         rolemap = ( ("tosca.relationships.AdminPrivilege", "admin"), ("tosca.relationships.AccessPrivilege", "access"),
@@ -62,8 +62,6 @@ class XOSUser(XOSResource):
                         udv.save()
 
     def create(self):
-        nodetemplate = self.nodetemplate
-
         xos_args = self.get_xos_args()
 
         if not xos_args.get("site",None):
