@@ -9,6 +9,7 @@
     "apigen": "node apigen/blueprintToNgResource.js",
     "swagger": "node xos-swagger-def.js",
     "doc": "gulp docs; cd ./docs",
+    "doc:ci": "gulp makeDocs;",
     "build": "gulp vendor && gulp helpers",
     "dev": "gulp dev"
   },
