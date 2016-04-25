@@ -1,210 +1,5 @@
 'use strict';
 
-(function () {
-  'use strict';
-
-  config.$inject = ["$httpProvider", "$interpolateProvider", "$resourceProvider"];
-  angular.module('bugSnag', []).factory('$exceptionHandler', function () {
-    return function (exception, cause) {
-      if (window.Bugsnag) {
-        Bugsnag.notifyException(exception, { diagnostics: { cause: cause } });
-      } else {
-        console.error(exception, cause, exception.stack);
-      }
-    };
-  });
-
-  /**
-  * @ngdoc overview
-  * @name xos.helpers
-  * @description this is the module that group all the helpers service and components for XOS
-  **/
-
-  angular.module('xos.helpers', ['ngCookies', 'ngResource', 'bugSnag', 'xos.uiComponents']).config(config).factory('_', ["$window", function ($window) {
-    return $window._;
-  }]);
-
-  function config($httpProvider, $interpolateProvider, $resourceProvider) {
-    $httpProvider.interceptors.push('SetCSRFToken');
-
-    $interpolateProvider.startSymbol('{$');
-    $interpolateProvider.endSymbol('$}');
-
-    // NOTE http://www.masnun.com/2013/09/18/django-rest-framework-angularjs-resource-trailing-slash-problem.html
-    $resourceProvider.defaults.stripTrailingSlashes = false;
-  }
-})();
-//# sourceMappingURL=maps/xosHelpers.module.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.vSG-Collection
-  * @description Angular resource to fetch /api/service/vsg/
-  **/
-  .service('vSG-Collection', ["$resource", function ($resource) {
-    return $resource('/api/service/vsg/');
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/vSG.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.vOLT-Collection
-  * @description Angular resource to fetch /api/tenant/cord/volt/:volt_id/
-  **/
-  .service('vOLT-Collection', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/volt/:volt_id/', { volt_id: '@id' });
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/vOLT.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Users
-  * @description Angular resource to fetch /api/core/users/
-  **/
-  .service('Users', ["$resource", function ($resource) {
-    return $resource('/api/core/users/');
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/Users.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Truckroll-Collection
-  * @description Angular resource to fetch /api/tenant/truckroll/:truckroll_id/
-  **/
-  .service('Truckroll-Collection', ["$resource", function ($resource) {
-    return $resource('/api/tenant/truckroll/:truckroll_id/', { truckroll_id: '@id' });
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/Truckroll.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscribers
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/
-  **/
-  .service('Subscribers', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/', { subscriber_id: '@id' });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/
-  **/
-  .service('Subscriber-features', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/', { subscriber_id: '@id' });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-uplink_speed
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/
-  **/
-  .service('Subscriber-features-uplink_speed', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/', { subscriber_id: '@id' });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-downlink_speed
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/
-  **/
-  .service('Subscriber-features-downlink_speed', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/', { subscriber_id: '@id' });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-cdn
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/cdn/
-  **/
-  .service('Subscriber-features-cdn', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/cdn/', { subscriber_id: '@id' });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-uverse
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/uverse/
-  **/
-  .service('Subscriber-features-uverse', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uverse/', { subscriber_id: '@id' });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-status
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/status/
-  **/
-  .service('Subscriber-features-status', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/status/', { subscriber_id: '@id' });
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/Subscribers.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.ONOS-Services-Collection
-  * @description Angular resource to fetch /api/service/onos/
-  **/
-  .service('ONOS-Services-Collection', ["$resource", function ($resource) {
-    return $resource('/api/service/onos/');
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/ONOS-Services.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.ONOS-App-Collection
-  * @description Angular resource to fetch /api/tenant/onos/app/
-  **/
-  .service('ONOS-App-Collection', ["$resource", function ($resource) {
-    return $resource('/api/tenant/onos/app/');
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/ONOS-Apps.js.map
-
-'use strict';
-
 /**
  * © OpenCORD
  *
@@ -295,7 +90,7 @@
     };
   });
 })();
-//# sourceMappingURL=../../maps/ui_components/dumbComponents/validation.component.js.map
+//# sourceMappingURL=../../../maps/ui_components/dumbComponents/validation/validation.component.js.map
 
 'use strict';
 
@@ -480,7 +275,7 @@
         data: '=',
         config: '='
       },
-      template: '\n          <div ng-show="vm.data.length > 0">\n            <div class="row" ng-if="vm.config.filter == \'fulltext\'">\n              <div class="col-xs-12">\n                <input\n                  class="form-control"\n                  placeholder="Type to search.."\n                  type="text"\n                  ng-model="vm.query"/>\n              </div>\n            </div>\n            <table ng-class="vm.classes" ng-show="vm.data.length > 0">\n              <thead>\n                <tr>\n                  <th ng-repeat="col in vm.columns">\n                    {{col.label}}\n                    <span ng-if="vm.config.order">\n                      <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = false">\n                        <i class="glyphicon glyphicon-chevron-up"></i>\n                      </a>\n                      <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = true">\n                        <i class="glyphicon glyphicon-chevron-down"></i>\n                      </a>\n                    </span>\n                  </th>\n                  <th ng-if="vm.config.actions">Actions</th>\n                </tr>\n              </thead>\n              <tbody ng-if="vm.config.filter == \'field\'">\n                <tr>\n                  <td ng-repeat="col in vm.columns">\n                    <input\n                      class="form-control"\n                      placeholder="Type to search by {{col.label}}"\n                      type="text"\n                      ng-model="vm.query[col.prop]"/>\n                  </td>\n                  <td ng-if="vm.config.actions"></td>\n                </tr>\n              </tbody>\n              <tbody>\n                <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">\n                  <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>\n                  <td ng-if="vm.config.actions">\n                    <a href=""\n                      ng-repeat="action in vm.config.actions"\n                      ng-click="action.cb(item)"\n                      title="{{action.label}}">\n                      <i\n                        class="glyphicon glyphicon-{{action.icon}}"\n                        style="color: {{action.color}};"></i>\n                    </a>\n                  </td>\n                </tr>\n              </tbody>\n            </table>\n            <xos-pagination\n              ng-if="vm.config.pagination"\n              page-size="vm.config.pagination.pageSize"\n              total-elements="vm.data.length"\n              change="vm.goToPage">\n              </xos-pagination>\n          </div>\n          <div ng-show="vm.data.length == 0 || !vm.data">\n             <xos-alert config="{type: \'info\'}">\n              No data to show.\n            </xos-alert>\n          </div>\n        ',
+      template: '\n          <div ng-show="vm.data.length > 0">\n            <div class="row" ng-if="vm.config.filter == \'fulltext\'">\n              <div class="col-xs-12">\n                <input\n                  class="form-control"\n                  placeholder="Type to search.."\n                  type="text"\n                  ng-model="vm.query"/>\n              </div>\n            </div>\n            <table ng-class="vm.classes" ng-hide="vm.data.length == 0">\n              <thead>\n                <tr>\n                  <th ng-repeat="col in vm.columns">\n                    {{col.label}}\n                    <span ng-if="vm.config.order">\n                      <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = false">\n                        <i class="glyphicon glyphicon-chevron-up"></i>\n                      </a>\n                      <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = true">\n                        <i class="glyphicon glyphicon-chevron-down"></i>\n                      </a>\n                    </span>\n                  </th>\n                  <th ng-if="vm.config.actions">Actions</th>\n                </tr>\n              </thead>\n              <tbody ng-if="vm.config.filter == \'field\'">\n                <tr>\n                  <td ng-repeat="col in vm.columns">\n                    <input\n                      class="form-control"\n                      placeholder="Type to search by {{col.label}}"\n                      type="text"\n                      ng-model="vm.query[col.prop]"/>\n                  </td>\n                  <td ng-if="vm.config.actions"></td>\n                </tr>\n              </tbody>\n              <tbody>\n                <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">\n                  <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>\n                  <td ng-if="vm.config.actions">\n                    <a href=""\n                      ng-repeat="action in vm.config.actions"\n                      ng-click="action.cb(item)"\n                      title="{{action.label}}">\n                      <i\n                        class="glyphicon glyphicon-{{action.icon}}"\n                        style="color: {{action.color}};"></i>\n                    </a>\n                  </td>\n                </tr>\n              </tbody>\n            </table>\n            <xos-pagination\n              ng-if="vm.config.pagination"\n              page-size="vm.config.pagination.pageSize"\n              total-elements="vm.data.length"\n              change="vm.goToPage">\n              </xos-pagination>\n          </div>\n          <div ng-show="vm.data.length == 0 || !vm.data">\n             <xos-alert config="{type: \'info\'}">\n              No data to show.\n            </xos-alert>\n          </div>\n        ',
       bindToController: true,
       controllerAs: 'vm',
       controller: function controller() {
@@ -510,7 +305,7 @@
     };
   });
 })();
-//# sourceMappingURL=../../maps/ui_components/dumbComponents/table.component.js.map
+//# sourceMappingURL=../../../maps/ui_components/dumbComponents/table/table.component.js.map
 
 'use strict';
 
@@ -614,7 +409,146 @@
     };
   });
 })();
-//# sourceMappingURL=../../maps/ui_components/dumbComponents/pagination.component.js.map
+//# sourceMappingURL=../../../maps/ui_components/dumbComponents/pagination/pagination.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 4/15/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosAlert
+    * @restrict E
+    * @description The xos-alert directive
+    * @param {Object} config The configuration object
+    * ```
+    * {
+    *   type: 'danger', //info, success, warning
+    *   closeBtn: true, //default false
+    *   autoHide: 3000 //delay to automatically hide the alert
+    * }
+    * ```
+    * @param {Boolean=} show Binding to show and hide the alert, default to true
+    * @element ANY
+    * @scope
+    * @example
+  <example module="sampleAlert1">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl1 as vm">
+        <xos-alert config="vm.config1">
+          A sample alert message
+        </xos-alert>
+        <xos-alert config="vm.config2">
+          A sample alert message (with close button)
+        </xos-alert>
+        <xos-alert config="vm.config3">
+          A sample info message
+        </xos-alert>
+        <xos-alert config="vm.config4">
+          A sample success message
+        </xos-alert>
+        <xos-alert config="vm.config5">
+          A sample warning message
+        </xos-alert>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleAlert1', ['xos.uiComponents'])
+      .controller('SampleCtrl1', function(){
+        this.config1 = {
+          type: 'danger'
+        };
+         this.config2 = {
+          type: 'danger',
+          closeBtn: true
+        };
+         this.config3 = {
+          type: 'info'
+        };
+         this.config4 = {
+          type: 'success'
+        };
+         this.config5 = {
+          type: 'warning'
+        };
+      });
+    </file>
+  </example>
+   <example module="sampleAlert2">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm" class="row">
+        <div class="col-sm-4">
+          <a class="btn btn-default btn-block" ng-show="!vm.show" ng-click="vm.show = true">Show Alert</a>
+          <a class="btn btn-default btn-block" ng-show="vm.show" ng-click="vm.show = false">Hide Alert</a>
+        </div>
+        <div class="col-sm-8">
+          <xos-alert config="vm.config1" show="vm.show">
+            A sample alert message, not displayed by default.
+          </xos-alert>
+        </div>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleAlert2', ['xos.uiComponents'])
+      .controller('SampleCtrl', function(){
+        this.config1 = {
+          type: 'success'
+        };
+         this.show = false;
+      });
+    </file>
+  </example>
+  **/
+
+  .directive('xosAlert', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        config: '=',
+        show: '=?'
+      },
+      template: '\n        <div class="alert alert-{{vm.config.type}}" ng-show="vm.show">\n          <button type="button" class="close" ng-if="vm.config.closeBtn" ng-click="vm.dismiss()">\n            <span aria-hidden="true">&times;</span>\n          </button>\n          <p ng-transclude></p>\n        </div>\n      ',
+      transclude: true,
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$timeout", function controller($timeout) {
+        var _this = this;
+
+        if (!this.config) {
+          throw new Error('[xosAlert] Please provide a configuration via the "config" attribute');
+        }
+
+        // default the value to true
+        this.show = this.show !== false;
+
+        this.dismiss = function () {
+          _this.show = false;
+        };
+
+        if (this.config.autoHide) {
+          (function () {
+            var to = $timeout(function () {
+              _this.dismiss();
+              $timeout.cancel(to);
+            }, _this.config.autoHide);
+          })();
+        }
+      }]
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/dumbComponents/alert/alert.component.js.map
 
 'use strict';
 
@@ -803,146 +737,212 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
   }]);
 })();
-//# sourceMappingURL=../../maps/ui_components/dumbComponents/form.component.js.map
+//# sourceMappingURL=../../../maps/ui_components/dumbComponents/form/form.component.js.map
 
 'use strict';
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
- * Created by teone on 4/15/16.
- */
 
 (function () {
   'use strict';
 
-  angular.module('xos.uiComponents')
-
-  /**
-    * @ngdoc directive
-    * @name xos.uiComponents.directive:xosAlert
-    * @restrict E
-    * @description The xos-alert directive
-    * @param {Object} config The configuration object
-    * ```
-    * {
-    *   type: 'danger', //info, success, warning
-    *   closeBtn: true, //default false
-    *   autoHide: 3000 //delay to automatically hide the alert
-    * }
-    * ```
-    * @param {Boolean=} show Binding to show and hide the alert, default to true
-    * @element ANY
-    * @scope
-    * @example
-  <example module="sampleAlert1">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl1 as vm">
-        <xos-alert config="vm.config1">
-          A sample alert message
-        </xos-alert>
-        <xos-alert config="vm.config2">
-          A sample alert message (with close button)
-        </xos-alert>
-        <xos-alert config="vm.config3">
-          A sample info message
-        </xos-alert>
-        <xos-alert config="vm.config4">
-          A sample success message
-        </xos-alert>
-        <xos-alert config="vm.config5">
-          A sample warning message
-        </xos-alert>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('sampleAlert1', ['xos.uiComponents'])
-      .controller('SampleCtrl1', function(){
-        this.config1 = {
-          type: 'danger'
-        };
-         this.config2 = {
-          type: 'danger',
-          closeBtn: true
-        };
-         this.config3 = {
-          type: 'info'
-        };
-         this.config4 = {
-          type: 'success'
-        };
-         this.config5 = {
-          type: 'warning'
-        };
-      });
-    </file>
-  </example>
-   <example module="sampleAlert2">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl as vm" class="row">
-        <div class="col-sm-4">
-          <a class="btn btn-default btn-block" ng-show="!vm.show" ng-click="vm.show = true">Show Alert</a>
-          <a class="btn btn-default btn-block" ng-show="vm.show" ng-click="vm.show = false">Hide Alert</a>
-        </div>
-        <div class="col-sm-8">
-          <xos-alert config="vm.config1" show="vm.show">
-            A sample alert message, not displayed by default.
-          </xos-alert>
-        </div>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('sampleAlert2', ['xos.uiComponents'])
-      .controller('SampleCtrl', function(){
-        this.config1 = {
-          type: 'success'
-        };
-         this.show = false;
-      });
-    </file>
-  </example>
-  **/
-
-  .directive('xosAlert', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        config: '=',
-        show: '=?'
-      },
-      template: '\n        <div class="alert alert-{{vm.config.type}}" ng-show="vm.show">\n          <button type="button" class="close" ng-if="vm.config.closeBtn" ng-click="vm.dismiss()">\n            <span aria-hidden="true">&times;</span>\n          </button>\n          <p ng-transclude></p>\n        </div>\n      ',
-      transclude: true,
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: ["$timeout", function controller($timeout) {
-        var _this = this;
-
-        if (!this.config) {
-          throw new Error('[xosAlert] Please provide a configuration via the "config" attribute');
-        }
-
-        // default the value to true
-        this.show = this.show !== false;
-
-        this.dismiss = function () {
-          _this.show = false;
-        };
-
-        if (this.config.autoHide) {
-          (function () {
-            var to = $timeout(function () {
-              _this.dismiss();
-              $timeout.cancel(to);
-            }, _this.config.autoHide);
-          })();
-        }
-      }]
+  config.$inject = ["$httpProvider", "$interpolateProvider", "$resourceProvider"];
+  angular.module('bugSnag', []).factory('$exceptionHandler', function () {
+    return function (exception, cause) {
+      if (window.Bugsnag) {
+        Bugsnag.notifyException(exception, { diagnostics: { cause: cause } });
+      } else {
+        console.error(exception, cause, exception.stack);
+      }
     };
   });
+
+  /**
+  * @ngdoc overview
+  * @name xos.helpers
+  * @description this is the module that group all the helpers service and components for XOS
+  **/
+
+  angular.module('xos.helpers', ['ngCookies', 'ngResource', 'ngAnimate', 'bugSnag', 'xos.uiComponents']).config(config).factory('_', ["$window", function ($window) {
+    return $window._;
+  }]);
+
+  function config($httpProvider, $interpolateProvider, $resourceProvider) {
+    $httpProvider.interceptors.push('SetCSRFToken');
+
+    $interpolateProvider.startSymbol('{$');
+    $interpolateProvider.endSymbol('$}');
+
+    // NOTE http://www.masnun.com/2013/09/18/django-rest-framework-angularjs-resource-trailing-slash-problem.html
+    $resourceProvider.defaults.stripTrailingSlashes = false;
+  }
 })();
-//# sourceMappingURL=../../maps/ui_components/dumbComponents/alert.component.js.map
+//# sourceMappingURL=maps/xosHelpers.module.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.vSG-Collection
+  * @description Angular resource to fetch /api/service/vsg/
+  **/
+  .service('vSG-Collection', ["$resource", function ($resource) {
+    return $resource('/api/service/vsg/');
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/vSG.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.vOLT-Collection
+  * @description Angular resource to fetch /api/tenant/cord/volt/:volt_id/
+  **/
+  .service('vOLT-Collection', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/volt/:volt_id/', { volt_id: '@id' });
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/vOLT.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Users
+  * @description Angular resource to fetch /api/core/users/
+  **/
+  .service('Users', ["$resource", function ($resource) {
+    return $resource('/api/core/users/');
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Users.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Truckroll-Collection
+  * @description Angular resource to fetch /api/tenant/truckroll/:truckroll_id/
+  **/
+  .service('Truckroll-Collection', ["$resource", function ($resource) {
+    return $resource('/api/tenant/truckroll/:truckroll_id/', { truckroll_id: '@id' });
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Truckroll.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscribers
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/
+  **/
+  .service('Subscribers', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/', { subscriber_id: '@id' });
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscriber-features
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/
+  **/
+  .service('Subscriber-features', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/', { subscriber_id: '@id' });
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscriber-features-uplink_speed
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/
+  **/
+  .service('Subscriber-features-uplink_speed', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/', { subscriber_id: '@id' });
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscriber-features-downlink_speed
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/
+  **/
+  .service('Subscriber-features-downlink_speed', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/', { subscriber_id: '@id' });
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscriber-features-cdn
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/cdn/
+  **/
+  .service('Subscriber-features-cdn', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/cdn/', { subscriber_id: '@id' });
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscriber-features-uverse
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/uverse/
+  **/
+  .service('Subscriber-features-uverse', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uverse/', { subscriber_id: '@id' });
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscriber-features-status
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/status/
+  **/
+  .service('Subscriber-features-status', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/status/', { subscriber_id: '@id' });
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Subscribers.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.ONOS-Services-Collection
+  * @description Angular resource to fetch /api/service/onos/
+  **/
+  .service('ONOS-Services-Collection', ["$resource", function ($resource) {
+    return $resource('/api/service/onos/');
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/ONOS-Services.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.ONOS-App-Collection
+  * @description Angular resource to fetch /api/tenant/onos/app/
+  **/
+  .service('ONOS-App-Collection', ["$resource", function ($resource) {
+    return $resource('/api/tenant/onos/app/');
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/ONOS-Apps.js.map
 
 'use strict';
 

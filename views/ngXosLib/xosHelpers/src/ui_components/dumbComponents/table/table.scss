@@ -1,3 +1,24 @@
+@import '../../../styles/animations.scss';
+
 xos-table {
-  background: red;
+
+  tr.ng-move,
+  tr.ng-enter,
+  tr.ng-leave {
+    transition:all linear 0.5s;
+  }
+
+  tr.ng-leave.ng-leave-active,
+  tr.ng-move,
+  tr.ng-enter {
+    opacity:0;
+    animation: 0.5s slideOutRight ease-in-out;
+  }
+
+  tr.ng-leave,
+  tr.ng-move.ng-move-active,
+  tr.ng-enter.ng-enter-active {
+    opacity:1;
+    animation: 0.5s slideInRight ease-in-out;
+  }
 }

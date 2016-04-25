@@ -22,6 +22,7 @@
       .module('xos.helpers', [
         'ngCookies',
         'ngResource',
+        'ngAnimate',
         'bugSnag',
         'xos.uiComponents',
       ])

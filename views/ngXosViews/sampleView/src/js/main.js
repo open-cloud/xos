@@ -23,7 +23,7 @@ angular.module('xos.sampleView', [
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/users-list.tpl.html',
-    controller: function(Users){
+    controller: function(Users, _){
 
       this.tableConfig = {
         columns: [
@@ -47,6 +47,7 @@ angular.module('xos.sampleView', [
             icon: 'remove',
             cb: (user) => {
               console.log(user);
+              // _.remove(this.users, {id: user.id});
             },
             color: 'red'
           }
@@ -54,7 +55,7 @@ angular.module('xos.sampleView', [
         filter: 'field',
         order: true,
         pagination: {
-          pageSize: 3
+          pageSize: 10
         }
       };
 

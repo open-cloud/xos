@@ -87,7 +87,10 @@ module.exports = function(options){
       browserSync.reload();
     });
 
-    gulp.watch(options.helpers + 'ngXosHelpers.js', function(){
+    gulp.watch([
+      options.helpers + 'ngXosHelpers.js',
+      options.static + '../../static/xosNgLib.css'
+    ], function(){
       browserSync.reload();
     });
     
