@@ -792,6 +792,46 @@ node_types:
             flavor:
                 type: tosca.capabilities.xos.Flavor
 
+    tosca.nodes.SiteRole:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Site Role.
+        properties:
+            xos_base_props
+        capabilities:
+            siterole:
+                type: tosca.capabilities.xos.SiteRole
+
+    tosca.nodes.SliceRole:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Slice Role.
+        properties:
+            xos_base_props
+        capabilities:
+            slicerole:
+                type: tosca.capabilities.xos.SliceRole
+
+    tosca.nodes.TenantRole:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Tenant Role.
+        properties:
+            xos_base_props
+        capabilities:
+            tenantrole:
+                type: tosca.capabilities.xos.TenantRole
+
+    tosca.nodes.DeploymentRole:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Deployment Role.
+        properties:
+            xos_base_props
+        capabilities:
+            deploymentrole:
+                type: tosca.capabilities.xos.DeploymentRole
+
     tosca.nodes.DashboardView:
         derived_from: tosca.nodes.Root
         description: >
@@ -996,6 +1036,22 @@ node_types:
     tosca.capabilities.xos.Flavor:
         derived_from: tosca.capabilities.Root
         description: An XOS Flavor
+
+    tosca.capabilities.xos.DeploymentRole:
+        derived_from: tosca.capabilities.Root
+        description: An XOS DeploymentRole
+
+    tosca.capabilities.xos.SliceRole:
+        derived_from: tosca.capabilities.Root
+        description: An XOS SliceRole
+
+    tosca.capabilities.xos.SiteRole:
+        derived_from: tosca.capabilities.Root
+        description: An XOS SiteRole
+
+    tosca.capabilities.xos.TenantRole:
+        derived_from: tosca.capabilities.Root
+        description: An XOS TenantRole
 
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root
