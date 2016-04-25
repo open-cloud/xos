@@ -67,14 +67,15 @@ module.exports = function(options){
   gulp.task('makeDocs', ['cleanDocs'], function(){
     var ngOptions = {
       scripts: [
-        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-animate.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-animate.min.js',
         'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-cookies.min.js',
         'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-resource.js',
         'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.js',
-        `./${options.ngXosVendor}ngXosHelpers.js`
+        `./${options.ngXosVendor}ngXosHelpers.js`,
       ],
       styles: [
+        `./${options.ngXosStyles}xosNgLib.css`,
         'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.css',
       ],
       html5Mode: false,
@@ -106,7 +107,8 @@ module.exports = function(options){
       server: {
         baseDir: './docs',
         routes: {
-          '/xos/core/xoslib/static/js/vendor': options.ngXosVendor
+          '/xos/core/xoslib/static/js/vendor': options.ngXosVendor,
+          '/xos/core/static': options.ngXosStyles
         }
       }
     });

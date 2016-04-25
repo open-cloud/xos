@@ -81,14 +81,14 @@
     </file>
   </example>
 
-  <example module="sampleTable2">
+  <example module="sampleTable2" animations="true">
     <file name="index.html">
       <div ng-controller="SampleCtrl2 as vm">
         <xos-table data="vm.data" config="vm.config"></xos-table>
       </div>
     </file>
     <file name="script.js">
-      angular.module('sampleTable2', ['xos.uiComponents'])
+      angular.module('sampleTable2', ['xos.uiComponents', 'ngAnimate'])
       .controller('SampleCtrl2', function(){
         this.config = {
           columns: [
