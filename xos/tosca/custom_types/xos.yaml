@@ -160,6 +160,9 @@ node_types:
             no_container:
                 type: boolean
                 default: false
+            node_key:
+                type: string
+                required: false
 
 
     tosca.nodes.ONOSApp:
@@ -263,9 +266,9 @@ node_types:
                 type: string
                 required: false
 
-    tosca.nodes.VCPEService:
+    tosca.nodes.VSGService:
         description: >
-            CORD: The vCPE Service.
+            CORD: The vSG Service.
         derived_from: tosca.nodes.Root
         capabilities:
             scalable:
@@ -824,6 +827,18 @@ node_types:
             This is a variant of the TOSCA Network object that includes additional
             XOS-specific properties.
           properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
             ip_version:
               type: integer
               required: no
@@ -1144,6 +1159,14 @@ node_types:
                 type: string
                 required: false
                 description: default isolation to use when bringing up instances (default to 'vm')
+            network:
+                type: string
+                required: false
+                description: type of networking to use for this slice
+            exposed_ports:
+                type: string
+                required: false
+                description: comma-separated list of protocol _space_ port that represent ports the slice should expose
             default_flavor:
                 # Note: we should probably formally introduce flavors to Tosca
                 # at some point, and use a requirement/relationship instead of
@@ -1155,14 +1178,6 @@ node_types:
                 type: string
                 required: false
                 description: default node to use for this slice
-            network:
-                type: string
-                required: false
-                description: type of networking to use for this slice
-            exposed_ports:
-                type: string
-                required: false
-                description: comma-separated list of protocol _space_ port that represent ports the slice should expose
 
     tosca.nodes.Node:
         derived_from: tosca.nodes.Root
@@ -1206,6 +1221,31 @@ node_types:
         capabilities:
             node:
                 type: tosca.capabilities.xos.NodeLabel
+
+    tosca.nodes.Flavor:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Flavor.
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+            flavor:
+                type: string
+                required: false
+                description: openstack flavor name
+        capabilities:
+            flavor:
+                type: tosca.capabilities.xos.Flavor
 
     tosca.nodes.DashboardView:
         derived_from: tosca.nodes.Root
@@ -1356,6 +1396,14 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.NodeLabel ]
 
+    tosca.relationships.SupportsFlavor:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Flavor ]
+
+    tosca.relationships.DefaultFlavor:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Flavor ]
+
     tosca.relationships.ProvidesAddresses:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.AddressPool ]
@@ -1410,6 +1458,10 @@ node_types:
     tosca.capabilities.xos.NodeLabel:
         derived_from: tosca.capabilities.Root
         description: An XOS NodeLabel
+
+    tosca.capabilities.xos.Flavor:
+        derived_from: tosca.capabilities.Root
+        description: An XOS Flavor
 
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root
