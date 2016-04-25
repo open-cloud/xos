@@ -1,28 +1,6 @@
 [
 {
     "fields": {
-        "updated": "2015-02-17T22:06:37.837Z",
-        "policed": null,
-        "created": "2015-02-17T22:06:37.837Z",
-        "deleted": false,
-        "site_url": null,
-        "enabled": true,
-        "longitude": null,
-        "name": "MySite",
-        "backend_register": "{}",
-        "login_base": "mysite",
-        "location": "0,0",
-        "latitude": null,
-        "is_public": true,
-        "backend_status": "0 - Provisioning in progress",
-        "abbreviated_name": "mysite",
-        "enacted": null
-    },
-    "model": "core.site",
-    "pk": 1
-},
-{
-    "fields": {
         "updated": "2015-02-17T22:06:38.620Z",
         "policed": null,
         "created": "2015-02-17T22:06:38.620Z",
@@ -93,21 +71,6 @@
 },
 {
     "fields": {
-        "accessControl": "allow all",
-        "updated": "2015-02-17T22:06:37.789Z",
-        "policed": null,
-        "created": "2015-02-17T22:06:37.789Z",
-        "deleted": false,
-        "name": "MyDeployment",
-        "backend_register": "{}",
-        "backend_status": "0 - Provisioning in progress",
-        "enacted": null
-    },
-    "model": "core.deployment",
-    "pk": 1
-},
-{
-    "fields": {
         "updated": "2015-02-17T22:06:38.894Z",
         "policed": null,
         "created": "2015-02-17T22:06:38.894Z",
@@ -118,23 +81,6 @@
         "enacted": null
     },
     "model": "core.deploymentrole",
-    "pk": 1
-},
-{
-    "fields": {
-        "updated": "2015-02-17T22:06:37.893Z",
-        "policed": null,
-        "created": "2015-02-17T22:06:37.893Z",
-        "deleted": false,
-        "availability_zone": null,
-        "site": 1,
-        "backend_register": "{}",
-        "controller": null,
-        "deployment": 1,
-        "backend_status": "0 - Provisioning in progress",
-        "enacted": null
-    },
-    "model": "core.sitedeployment",
     "pk": 1
 },
 {
@@ -178,7 +124,6 @@
         "created": "2015-02-17T22:06:39.069Z",
         "deleted": false,
         "deployments": [
-            1
         ],
         "enabled": true,
         "name": "Tenant",
@@ -209,34 +154,6 @@
 },
 {
     "fields": {
-        "policed": null,
-        "site": 1,
-        "is_staff": true,
-        "timezone": "America/New_York",
-        "backend_status": "Provisioning in progress",
-        "is_registering": false,
-        "last_login": "2015-02-17T22:35:17.822Z",
-        "email": "padmin@vicci.org",
-        "username": "padmin@vicci.org",
-        "updated": "2015-02-17T22:06:38.059Z",
-        "firstname": "XOS",
-        "user_url": null,
-        "deleted": false,
-        "lastname": "admin",
-        "is_active": true,
-        "phone": null,
-        "is_admin": true,
-        "password": "pbkdf2_sha256$12000$Qufx9iqtaYma$xs0YurPOcj9qYQna/Qrb3K+im9Yr2XEVr0J4Kqek7AE=",
-        "enacted": null,
-        "public_key": null,
-        "is_readonly": false,
-        "created": "2015-02-17T22:06:38.059Z"
-    },
-    "model": "core.user",
-    "pk": 1
-},
-{
-    "fields": {
         "updated": "2015-02-17T22:06:39.361Z",
         "membershipFee": 0,
         "policed": null,
@@ -262,7 +179,6 @@
         "created": "2015-02-17T22:06:38.095Z",
         "deleted": false,
         "deployments": [
-            1
         ],
         "description": null,
         "name": "m1.small",
@@ -283,7 +199,6 @@
         "created": "2015-02-17T22:06:38.287Z",
         "deleted": false,
         "deployments": [
-            1
         ],
         "description": null,
         "name": "m1.medium",
@@ -304,7 +219,6 @@
         "created": "2015-02-17T22:06:38.445Z",
         "deleted": false,
         "deployments": [
-            1
         ],
         "description": null,
         "name": "m1.large",

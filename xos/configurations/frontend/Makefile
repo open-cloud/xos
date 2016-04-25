@@ -4,6 +4,7 @@ frontend:
 	sudo make -f ../common/Makefile.prereqs
 	sudo docker-compose up -d
 	bash ../common/wait_for_xos.sh
+	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
 
 containers:

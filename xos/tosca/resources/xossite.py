@@ -44,19 +44,20 @@ class XOSSite(XOSResource):
                     deployment = self.get_xos_object(Deployment, name=deployment_name)
 
                     controller_name = None
-                    for sd_req in v["requirements"]:
+                    for sd_req in v.get("requirements", []):
                         for (sd_req_k, sd_req_v) in sd_req.items():
                             if sd_req_v["relationship"] == "tosca.relationships.UsesController":
                                 controller_name = sd_req_v["node"]
-                    if not controller_name:
-                        raise Exception("Controller must be specified in SiteDeployment relationship")
-
-                    controller = self.get_xos_object(Controller, name=controller_name, throw_exception=True)
+                    if controller_name:
+                        controller = self.get_xos_object(Controller, name=controller_name, throw_exception=True)
+                    else:
+                        controller = None
+                        # raise Exception("Controller must be specified in SiteDeployment relationship")
 
                     existing_sitedeps = SiteDeployment.objects.filter(deployment=deployment, site=obj)
                     if existing_sitedeps:
                         sd = existing_sitedeps[0]
-                        if sd.controller != controller:
+                        if (sd.controller != controller) and (controller != None):
                             sd.controller = controller
                             sd.save()
                             self.info("SiteDeployment from %s to %s updated controller" % (str(obj), str(deployment)))
