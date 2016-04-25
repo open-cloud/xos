@@ -31,9 +31,8 @@ class XOSDeployment(XOSResource):
                 imageDep = ImageDeployments(deployment=obj, image=image)
                 imageDep.save()
 
-        # Be a little more lightweight with 'flavors'. Since we install flavors
-        # as a fixture rather than using TOSCA, we can just let the user
-        # use a comma-separated list.
+        # DEPRECATED - should switch to using a requirement, so tosca can do
+        # the topsort properly
 
         flavors = self.get_property("flavors")
         if flavors:
@@ -46,6 +45,15 @@ class XOSDeployment(XOSResource):
                     self.info("Attached flavor %s to deployment %s" % (flavor, obj))
                     flavor.deployments.add(obj)
                     flavor.save()
+
+        # The new, right way
+        for flavor in self.get_requirements("tosca.relationships.SupportsFlavor"):
+            flavor = self.get_xos_object(Flavor, name=flavor)
+            if not flavor.deployments.filter(id=obj.id).exists():
+                self.info("Attached flavor %s to deployment %s" % (flavor, obj))
+                flavor.deployments.add(obj)
+                flavor.save()
+
 
         rolemap = ( ("tosca.relationships.AdminPrivilege", "admin"), )
         self.postprocess_privileges(DeploymentRole, DeploymentPrivilege, rolemap, obj, "deployment")

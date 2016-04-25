@@ -7,10 +7,27 @@ imports:
 
 topology_template:
   node_templates:
+    m1.large:
+      type: tosca.nodes.flavor
+
+    m1.medium:
+      type: tosca.nodes.flavor
+
+    m1.small:
+      type: tosca.nodes.flavor
+
     MyDeployment:
       type: tosca.nodes.Deployment
-      properties:
-          flavors: m1.large, m1.medium, m1.small
+      requirements:
+          m1.large:
+             node: m1.large
+             relationship: tosca.relationships.SupportsFlavor
+          m1.medium:
+             node: m1.medium
+             relationship: tosca.relationships.SupportsFlavor
+          m1.small:
+             node: m1.small
+             relationship: tosca.relationships.SupportsFlavor
 
     mysite:
       type: tosca.nodes.Site

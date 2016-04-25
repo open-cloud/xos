@@ -31,7 +31,7 @@ class XOSSlice(XOSResource):
             default_image = self.get_xos_object(Image, name=default_image_name, throw_exception=True)
             args["default_image"] = default_image
 
-        default_flavor_name = self.get_property_default("default_flavor", None)
+        default_flavor_name = self.get_requirement("tosca.relationships.DefaultFlavor", throw_exception=False)
         if default_flavor_name:
             default_flavor = self.get_xos_object(Flavor, name=default_flavor_name, throw_exception=True)
             args["default_flavor"] = default_flavor
