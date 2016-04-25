@@ -93,7 +93,7 @@
               ng-model="vm.ngModel[name]"
               ng-minlength="field.validators.minlength || 0"
               ng-maxlength="field.validators.maxlength || 2000"
-              ng-required="field.validators.required || false"/>
+              ng-required="field.validators.required || false" />
             <span class="boolean-field" ng-if="field.type === 'boolean'">
               <button
                 class="btn btn-success"

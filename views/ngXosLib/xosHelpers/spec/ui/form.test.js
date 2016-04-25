@@ -272,6 +272,13 @@
               required: true
             };
 
+            scope.config.fields.age = {
+              validators: {
+                min: 10,
+                max: 20
+              }
+            };
+
             scope.$digest();
           });
 
@@ -297,6 +304,15 @@
 
             expect(isolatedScope.testForm.first_name.$valid).toBeFalsy();
             expect(isolatedScope.testForm.first_name.$error.maxlength).toBeTruthy();
+          });
+
+          xit('should validate min', () => {
+            // not validating min and max for now
+            scope.model.age = 8;
+            scope.$digest();
+
+            expect(isolatedScope.testForm.age.$valid).toBeFalsy();
+            expect(isolatedScope.testForm.age.$error.min).toBeTruthy();
           });
         });
       });
