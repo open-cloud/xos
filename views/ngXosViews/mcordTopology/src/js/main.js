@@ -49,7 +49,7 @@ angular.module('xos.mcordTopology', [
       let trafficCorrection = 5;
 
       const filterBBU = (instances) => {
-        return _.filter(instances, i => i.name.indexOf('BBU') >= 0);
+        return _.filter(instances, i => i.name.indexOf("bbu") >= 0);
       };
 
       const filterOthers = (instances) => {

@@ -32,7 +32,7 @@ node_types:
                 description: Do not allow Tosca to update this object
             kind:
                 type: string
-                default: RAN
+                default: generic
                 description: Type of service.
             view_url:
                 type: string
@@ -69,7 +69,7 @@ node_types:
         properties:
             kind:
                 type: string
-                default: RAN 
+                default: generic
                 description: Kind of component
             s1u_tag:
                 type: string
@@ -89,19 +89,17 @@ node_types:
             display_message:
                 type: string
                 required: false
-                default: New vBBU Component 
                 description: Just a message 
-                
+
 
 topology_template:
   node_templates:
-    vBBU:
+    service_mcord:
       type: tosca.nodes.MCORDService
       requirements:
       properties:
-          kind: RAN
-          icon_url: /static/mCordServices/service_server.png
-          view_url: /admin/mcord/vbbucomponent
+          kind: Mobile Services
+          view_url: /mcord/mcordservice
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/configurations/mcord/mcord_private_key
       artifacts:
@@ -214,11 +212,11 @@ topology_template:
               relationship: tosca.relationships.MemberOfSite
 
     mysite_vbbu_slice1:
-      description: vBBU Service Slice 1
+      description: MCORD Service Slice 1
       type: tosca.nodes.Slice
       requirements:
-          - vBBU:
-              node: vBBU
+          - mcord_service:
+              node: service_mcord
               relationship: tosca.relationships.MemberOfService
           - site:
               node: mysite
@@ -234,3 +232,18 @@ topology_template:
           default_flavor: m1.xlarge
           default_node: computeBBU2 
     
+    mysite_VBBU_Component:
+      description: MCORD Service default Component
+      type: tosca.nodes.VBBUComponent
+      requirements:
+          - provider_service:
+              node: service_mcord
+              relationship: tosca.relationships.MemberOfService
+          - vbbu_slice:
+              node: mysite_vbbu_slice1
+              relationship: tosca.relationships.MemberOfSlice
+      properties:
+          display_message: vBBU looks good!
+          s1u_tag: 201
+          s1mme_tag: 200
+          rru_tag: 199 

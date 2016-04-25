@@ -78,12 +78,6 @@ topology_template:
           view_url: /mcord/?service=vBBU
           icon_url: /static/mCordServices/service_rru.png
           kind: RAN
-    vBBU:
-      type: tosca.nodes.Service
-      properties:
-          view_url: /mcord/?service=vBBU
-          icon_url: /static/mCordServices/service_server.png
-          kind: RAN
     eSON:
       type: tosca.nodes.Service
       properties:
