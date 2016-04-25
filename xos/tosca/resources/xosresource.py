@@ -26,7 +26,7 @@ class XOSResource(object):
     @property
     def obj_name(self):
         if "#" in self.nodetemplate.name:
-            return.self.nodetemplate.name.split("#",1)[1]
+            return self.nodetemplate.name.split("#",1)[1]
         else:
             return self.nodetemplate.name
 
