@@ -1,5 +1,210 @@
 'use strict';
 
+(function () {
+  'use strict';
+
+  config.$inject = ["$httpProvider", "$interpolateProvider", "$resourceProvider"];
+  angular.module('bugSnag', []).factory('$exceptionHandler', function () {
+    return function (exception, cause) {
+      if (window.Bugsnag) {
+        Bugsnag.notifyException(exception, { diagnostics: { cause: cause } });
+      } else {
+        console.error(exception, cause, exception.stack);
+      }
+    };
+  });
+
+  /**
+  * @ngdoc overview
+  * @name xos.helpers
+  * @description this is the module that group all the helpers service and components for XOS
+  **/
+
+  angular.module('xos.helpers', ['ngCookies', 'ngResource', 'bugSnag', 'xos.uiComponents']).config(config).factory('_', ["$window", function ($window) {
+    return $window._;
+  }]);
+
+  function config($httpProvider, $interpolateProvider, $resourceProvider) {
+    $httpProvider.interceptors.push('SetCSRFToken');
+
+    $interpolateProvider.startSymbol('{$');
+    $interpolateProvider.endSymbol('$}');
+
+    // NOTE http://www.masnun.com/2013/09/18/django-rest-framework-angularjs-resource-trailing-slash-problem.html
+    $resourceProvider.defaults.stripTrailingSlashes = false;
+  }
+})();
+//# sourceMappingURL=maps/xosHelpers.module.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.vSG-Collection
+  * @description Angular resource to fetch /api/service/vsg/
+  **/
+  .service('vSG-Collection', ["$resource", function ($resource) {
+    return $resource('/api/service/vsg/');
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/vSG.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.vOLT-Collection
+  * @description Angular resource to fetch /api/tenant/cord/volt/:volt_id/
+  **/
+  .service('vOLT-Collection', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/volt/:volt_id/', { volt_id: '@id' });
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/vOLT.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Users
+  * @description Angular resource to fetch /api/core/users/
+  **/
+  .service('Users', ["$resource", function ($resource) {
+    return $resource('/api/core/users/');
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Users.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Truckroll-Collection
+  * @description Angular resource to fetch /api/tenant/truckroll/:truckroll_id/
+  **/
+  .service('Truckroll-Collection', ["$resource", function ($resource) {
+    return $resource('/api/tenant/truckroll/:truckroll_id/', { truckroll_id: '@id' });
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Truckroll.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscribers
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/
+  **/
+  .service('Subscribers', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/', { subscriber_id: '@id' });
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscriber-features
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/
+  **/
+  .service('Subscriber-features', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/', { subscriber_id: '@id' });
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscriber-features-uplink_speed
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/
+  **/
+  .service('Subscriber-features-uplink_speed', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/', { subscriber_id: '@id' });
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscriber-features-downlink_speed
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/
+  **/
+  .service('Subscriber-features-downlink_speed', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/', { subscriber_id: '@id' });
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscriber-features-cdn
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/cdn/
+  **/
+  .service('Subscriber-features-cdn', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/cdn/', { subscriber_id: '@id' });
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscriber-features-uverse
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/uverse/
+  **/
+  .service('Subscriber-features-uverse', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uverse/', { subscriber_id: '@id' });
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Subscriber-features-status
+  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/status/
+  **/
+  .service('Subscriber-features-status', ["$resource", function ($resource) {
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/status/', { subscriber_id: '@id' });
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Subscribers.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.ONOS-Services-Collection
+  * @description Angular resource to fetch /api/service/onos/
+  **/
+  .service('ONOS-Services-Collection', ["$resource", function ($resource) {
+    return $resource('/api/service/onos/');
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/ONOS-Services.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.ONOS-App-Collection
+  * @description Angular resource to fetch /api/tenant/onos/app/
+  **/
+  .service('ONOS-App-Collection', ["$resource", function ($resource) {
+    return $resource('/api/tenant/onos/app/');
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/ONOS-Apps.js.map
+
+'use strict';
+
 /**
  * © OpenCORD
  *
@@ -738,211 +943,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   });
 })();
 //# sourceMappingURL=../../maps/ui_components/dumbComponents/alert.component.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  config.$inject = ["$httpProvider", "$interpolateProvider", "$resourceProvider"];
-  angular.module('bugSnag', []).factory('$exceptionHandler', function () {
-    return function (exception, cause) {
-      if (window.Bugsnag) {
-        Bugsnag.notifyException(exception, { diagnostics: { cause: cause } });
-      } else {
-        console.error(exception, cause, exception.stack);
-      }
-    };
-  });
-
-  /**
-  * @ngdoc overview
-  * @name xos.helpers
-  * @description this is the module that group all the helpers service and components for XOS
-  **/
-
-  angular.module('xos.helpers', ['ngCookies', 'ngResource', 'bugSnag', 'xos.uiComponents']).config(config).factory('_', ["$window", function ($window) {
-    return $window._;
-  }]);
-
-  function config($httpProvider, $interpolateProvider, $resourceProvider) {
-    $httpProvider.interceptors.push('SetCSRFToken');
-
-    $interpolateProvider.startSymbol('{$');
-    $interpolateProvider.endSymbol('$}');
-
-    // NOTE http://www.masnun.com/2013/09/18/django-rest-framework-angularjs-resource-trailing-slash-problem.html
-    $resourceProvider.defaults.stripTrailingSlashes = false;
-  }
-})();
-//# sourceMappingURL=maps/xosHelpers.module.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.vSG-Collection
-  * @description Angular resource to fetch /api/service/vsg/
-  **/
-  .service('vSG-Collection', ["$resource", function ($resource) {
-    return $resource('/api/service/vsg/');
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/vSG.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.vOLT-Collection
-  * @description Angular resource to fetch /api/tenant/cord/volt/:volt_id/
-  **/
-  .service('vOLT-Collection', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/volt/:volt_id/', { volt_id: '@id' });
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/vOLT.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Users
-  * @description Angular resource to fetch /api/core/users/
-  **/
-  .service('Users', ["$resource", function ($resource) {
-    return $resource('/api/core/users/');
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/Users.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Truckroll-Collection
-  * @description Angular resource to fetch /api/tenant/truckroll/:truckroll_id/
-  **/
-  .service('Truckroll-Collection', ["$resource", function ($resource) {
-    return $resource('/api/tenant/truckroll/:truckroll_id/', { truckroll_id: '@id' });
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/Truckroll.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscribers
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/
-  **/
-  .service('Subscribers', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/', { subscriber_id: '@id' });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/
-  **/
-  .service('Subscriber-features', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/', { subscriber_id: '@id' });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-uplink_speed
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/
-  **/
-  .service('Subscriber-features-uplink_speed', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/', { subscriber_id: '@id' });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-downlink_speed
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/
-  **/
-  .service('Subscriber-features-downlink_speed', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/', { subscriber_id: '@id' });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-cdn
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/cdn/
-  **/
-  .service('Subscriber-features-cdn', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/cdn/', { subscriber_id: '@id' });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-uverse
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/uverse/
-  **/
-  .service('Subscriber-features-uverse', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uverse/', { subscriber_id: '@id' });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-status
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/status/
-  **/
-  .service('Subscriber-features-status', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/status/', { subscriber_id: '@id' });
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/Subscribers.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.ONOS-Services-Collection
-  * @description Angular resource to fetch /api/service/onos/
-  **/
-  .service('ONOS-Services-Collection', ["$resource", function ($resource) {
-    return $resource('/api/service/onos/');
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/ONOS-Services.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  angular.module('xos.helpers')
-  /**
-  * @ngdoc service
-  * @name xos.helpers.ONOS-App-Collection
-  * @description Angular resource to fetch /api/tenant/onos/app/
-  **/
-  .service('ONOS-App-Collection', ["$resource", function ($resource) {
-    return $resource('/api/tenant/onos/app/');
-  }]);
-})();
-//# sourceMappingURL=../../maps/services/rest/ONOS-Apps.js.map
 
 'use strict';
 

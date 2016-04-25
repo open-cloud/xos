@@ -8,8 +8,19 @@ var del = require('del');
 var babel = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
 var browserSync = require('browser-sync').create();
+var rename = require('gulp-rename');
+var sass = require('gulp-sass');
 
 module.exports = function(options){
+
+  gulp.task('style', function(){
+    return gulp.src(`${options.xosHelperSource}**/*.scss`)
+      .pipe(sourcemaps.init())
+      .pipe(sass().on('error', sass.logError))
+      .pipe(rename('xosNgLib.css'))
+      .pipe(sourcemaps.write())
+      .pipe(gulp.dest(options.ngXosStyles));
+  });
 
   // transpile js with sourceMaps
   gulp.task('babel', function(){
@@ -31,7 +42,7 @@ module.exports = function(options){
   });
 
   // build
-  gulp.task('helpers', ['babel'], function(){
+  gulp.task('helpers', ['babel', 'style'], function(){
     return gulp.src([options.xosHelperTmp + '**/*.js'])
       .pipe(angularFilesort())
       .pipe(concat('ngXosHelpers.js'))
@@ -117,6 +128,7 @@ module.exports = function(options){
   })
 
   gulp.task('dev', function(){
+    gulp.watch(`${options.xosHelperSource}**/*.scss`, ['style']);
     gulp.watch(options.xosHelperSource + '**/*.js', ['helpersDev']);
   });
 };

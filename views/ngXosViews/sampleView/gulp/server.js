@@ -53,7 +53,8 @@ module.exports = function(options){
         baseDir: options.src,
         routes: {
           // '/xosHelpers/src': options.helpers,
-          '/xos/core/xoslib/static/js/vendor': options.helpers
+          '/xos/core/xoslib/static/js/vendor': options.helpers,
+          '/xos/core/static': options.static + '../../static/'
         },
         middleware: function(req, res, next){
           if(
@@ -156,7 +157,10 @@ module.exports = function(options){
     return gulp.src(options.src + 'index.html')
       .pipe(
         inject(
-          gulp.src(options.src + 'css/*.css'),
+          gulp.src([
+            options.src + 'css/*.css',
+            options.static + '../../static/xosNgLib.css'
+          ]),
           {
             ignorePath: [options.src]
           }
