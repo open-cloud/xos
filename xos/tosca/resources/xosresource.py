@@ -19,6 +19,17 @@ class XOSResource(object):
         self.nodetemplate = nodetemplate
         self.engine = engine
 
+    @property
+    def full_name(self):
+        return self.nodetemplate.name
+
+    @property
+    def obj_name(self):
+        if "#" in self.nodetemplate.name:
+            return self.nodetemplate.name.split("#",1)[1]
+        else:
+            return self.nodetemplate.name
+
     def get_all_required_node_names(self):
         results = []
         for reqs in self.nodetemplate.requirements:
@@ -38,7 +49,7 @@ class XOSResource(object):
                     results.append(v["node"])
 
         if (not results) and throw_exception:
-            raise Exception("Failed to find requirement in %s using relationship %s" % (self.nodetemplate.name, relationship_name))
+            raise Exception("Failed to find requirement in %s using relationship %s" % (self.full_name, relationship_name))
 
         return results
 
@@ -75,7 +86,7 @@ class XOSResource(object):
         return objs[0]
 
     def get_existing_objs(self):
-        return self.xos_model.objects.filter(**{self.name_field: self.nodetemplate.name})
+        return self.xos_model.objects.filter(**{self.name_field: self.obj_name})
 
     def get_model_class_name(self):
         return self.xos_model.__name__
@@ -84,19 +95,19 @@ class XOSResource(object):
         existing_objs = self.get_existing_objs()
         if existing_objs:
             if self.get_property_default("no-update", False):
-                self.info("%s %s already exists. Skipping update due to 'no-update' property" % (self.get_model_class_name(), self.nodetemplate.name))
+                self.info("%s:%s (%s) already exists. Skipping update due to 'no-update' property" % (self.get_model_class_name(), self.obj_name, self.full_name))
             else:
-                self.info("%s %s already exists" % (self.get_model_class_name(), self.nodetemplate.name))
+                self.info("%s:%s (%s) already exists" % (self.get_model_class_name(), self.obj_name, self.full_name))
                 self.update(existing_objs[0])
         else:
             if self.get_property_default("no-create", False):
-                self.info("%s %s does not exist, but 'no-create' is specified" % (self.get_model_class_name(), self.nodetemplate.name))
+                self.info("%s:%s (%s) does not exist, but 'no-create' is specified" % (self.get_model_class_name(), self.obj_name, self.full_name))
             else:
                 self.create()
 
     def can_delete(self, obj):
         if self.get_property_default("no-delete",False):
-            self.info("%s %s is marked 'no-delete'. Skipping delete." % (self.get_model_class_name(), self.nodetemplate.name))
+            self.info("%s:%s %s is marked 'no-delete'. Skipping delete." % (self.get_model_class_name(), self.obj_name, self.full_name))
             return False
         return True
 
@@ -170,7 +181,7 @@ class XOSResource(object):
         args = {}
 
         if self.name_field:
-            args[self.name_field] = self.nodetemplate.name
+            args[self.name_field] = self.obj_name
 
         # copy simple string properties from the template into the arguments
         for prop in self.copyin_props:
@@ -186,7 +197,8 @@ class XOSResource(object):
     def create(self):
         xos_args = self.get_xos_args()
         xos_obj = self.xos_model(**xos_args)
-        xos_obj.caller = self.user
+        if self.user:
+            xos_obj.caller = self.user
         xos_obj.save()
 
         self.info("Created %s '%s'" % (self.xos_model.__name__,str(xos_obj)))

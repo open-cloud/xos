@@ -53,6 +53,7 @@ RUN pip install \
     dnslib \
     google-api-python-client \
     httplib2 \
+    jinja2 \
     lxml \
     markdown \
     netaddr \

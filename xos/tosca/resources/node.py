@@ -14,7 +14,7 @@ class XOSNode(XOSResource):
     xos_model = Node
 
     def get_xos_args(self):
-        args = {"name": self.nodetemplate.name}
+        args = {"name": self.obj_name}
 
         site = None
         siteName = self.get_requirement("tosca.relationships.MemberOfSite", throw_exception=False)
@@ -44,9 +44,6 @@ class XOSNode(XOSResource):
             obj.save()
 
     def create(self):
-        nodetemplate = self.nodetemplate
-        sliceName = nodetemplate.name
-
         xos_args = self.get_xos_args()
 
         if not xos_args.get("site", None):
