@@ -64,6 +64,7 @@ class OpenVPNServiceForm(forms.ModelForm):
 
     class Meta:
         model = OpenVPNService
+        fields = '__all__'
 
 
 class OpenVPNServiceAdmin(ReadOnlyAwareAdmin):
@@ -198,6 +199,7 @@ class OpenVPNTenantForm(forms.ModelForm):
 
     class Meta:
         model = OpenVPNTenant
+        fields = '__all__'
 
 
 class OpenVPNTenantAdmin(ReadOnlyAwareAdmin):
