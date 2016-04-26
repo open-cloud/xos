@@ -118,18 +118,9 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                 raise Exception("Controller user object for %s does not exist" % instance.creator)
             return cuser.kuser_id
 
-
-    def node_tag_default(self, o, node, tagname, default):
+    def get_node_tag(self, o, node, tagname):
         tags = Tag.select_by_content_object(node).filter(name=tagname)
-        if tags:
-            value = tags[0].value
-        else:
-            value = default
-            logger.info("node %s: saving default value %s for tag %s" % (node.name, value, tagname))
-            service = self.get_onos_service(o)
-            tag = Tag(service=service, content_object=node, name=tagname, value=value)
-            tag.save()
-        return value
+        return tags[0].value
 
     # Scan attrs for attribute name
     # If it's not present, save it as a TenantAttribute
@@ -153,6 +144,9 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         sshUser = None
         sshKeyFile = None
         mgmtSubnetBits = None
+        xosEndpoint = None
+        xosUser = None
+        xosPassword = None
 
         # VTN-specific configuration from the VTN Service
         vtns = VTNService.get_service_objects().all()
@@ -165,6 +159,9 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             sshUser = vtn.sshUser
             sshKeyFile = vtn.sshKeyFile
             mgmtSubnetBits = vtn.mgmtSubnetBits
+            xosEndpoint = vtn.xosEndpoint
+            xosUser = vtn.xosUser
+            xosPassword = vtn.xosPassword
 
         # OpenStack endpoints and credentials
         keystone_server = "http://keystone:5000/v2.0/"
@@ -196,6 +193,11 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                             "user": user_name,
                             "password": password
                         },
+                        "xos": {
+                            "endpoint": xosEndpoint,
+                            "user": xosUser,
+                            "password": xosPassword
+                        },
                         "publicGateways": [],
                         "nodes" : []
                     }
@@ -209,10 +211,9 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             nodeip = socket.gethostbyname(node.name)
 
             try:
-                bridgeId = self.node_tag_default(o, node, "bridgeId", "of:0000000000000001")
-                dataPlaneIntf = self.node_tag_default(o, node, "dataPlaneIntf", "veth1")
-                # This should be generated from the AddressPool if not present
-                dataPlaneIp = self.node_tag_default(o, node, "dataPlaneIp", "192.168.199.1/24")
+                bridgeId = self.get_node_tag(o, node, "bridgeId")
+                dataPlaneIntf = self.get_node_tag(o, node, "dataPlaneIntf")
+                dataPlaneIp = self.get_node_tag(o, node, "dataPlaneIp")
             except:
                 logger.error("not adding node %s to the VTN configuration" % node.name)
                 continue
