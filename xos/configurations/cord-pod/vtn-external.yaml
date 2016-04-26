@@ -34,3 +34,4 @@ topology_template:
       type: tosca.nodes.VTNService
       properties:
           view_url: /admin/vtn/vtnservice/$id$/
+          sshUser: ubuntu
