@@ -210,7 +210,7 @@
                       </a>
                     </span>
                   </th>
-                  <th ng-if="vm.config.actions">Actions</th>
+                  <th ng-if="vm.config.actions">Actions:</th>
                 </tr>
               </thead>
               <tbody ng-if="vm.config.filter == 'field'">

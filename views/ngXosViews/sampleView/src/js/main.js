@@ -61,7 +61,19 @@ angular.module('xos.sampleView', [
 
       this.smartTableConfig = {
         resource: 'Users',
-        hiddenFields: ['last_login']
+        hiddenFields: [
+          'email',
+          'username',
+          'created',
+          'updated',
+          'last_login',
+          'is_active',
+          'is_admin',
+          'is_staff',
+          'is_readonly',
+          'is_registering',
+          'is_appuser'
+        ]
       }
 
       this.alertConfig = {
