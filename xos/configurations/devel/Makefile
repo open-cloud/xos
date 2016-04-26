@@ -7,6 +7,7 @@ devstack: upgrade_pkgs common_devstack xos
 xos:
 	sudo MYIP=$(MYIP) docker-compose up -d
 	bash ../common/wait_for_xos.sh
+	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/base.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 
