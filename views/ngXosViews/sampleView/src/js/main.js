@@ -59,6 +59,10 @@ angular.module('xos.sampleView', [
         }
       };
 
+      this.smartTableConfig = {
+        resource: 'Users'
+      }
+
       this.alertConfig = {
         type: 'danger',
         closeBtn: true
