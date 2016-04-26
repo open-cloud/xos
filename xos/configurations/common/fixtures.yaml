@@ -7,6 +7,11 @@ imports:
 
 topology_template:
   node_templates:
+
+# -----------------------------------------------------------------------------
+# Network Parameter Types
+# -----------------------------------------------------------------------------
+
     s_tag:
       type: tosca.nodes.NetworkParameterType
 
@@ -24,3 +29,97 @@ topology_template:
 
     neutron_port_name:
       type: tosca.nodes.NetworkParameterType
+
+# ----------------------------------------------------------------------------
+# Roles
+# ----------------------------------------------------------------------------
+
+    siterole#admin:
+      type: tosca.nodes.SiteRole
+
+    siterole#pi:
+      type: tosca.nodes.SiteRole
+
+    siterole#tech:
+      type: tosca.nodes.SiteRole
+
+    tenantrole#admin:
+      type: tosca.nodes.TenantRole
+
+    tenantrole#access:
+      type: tosca.nodes.TenantRole
+
+    deploymentrole#admin:
+      type: tosca.nodes.DeploymentRole
+
+    slicerole#admin:
+      type: tosca.nodes.SliceRole
+
+    slicerole#access:
+      type: tosca.nodes.SliceRole
+
+# -----------------------------------------------------------------------------
+# Flavors
+# -----------------------------------------------------------------------------
+
+    m1.small:
+      type: tosca.nodes.Flavor
+
+    m1.medium:
+      type: tosca.nodes.Flavor
+
+    m1.large:
+      type: tosca.nodes.Flavor
+
+# -----------------------------------------------------------------------------
+# Dashboard Views
+# -----------------------------------------------------------------------------
+
+    xsh:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xsh
+
+    Customize:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:customize
+
+    Tenant:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosTenant
+
+    Developer:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosDeveloper_datatables
+
+# -----------------------------------------------------------------------------
+# Network Templates
+# -----------------------------------------------------------------------------
+
+    Private:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: private
+          translation: none
+
+    Public shared IPv4:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: private
+          translation: NAT
+          shared_network_name: nat-net
+
+    Public dedicated IPv4:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: public
+          translation: none
+          shared_network_name: ext-net
+
+
+
+
+
