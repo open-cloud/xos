@@ -385,16 +385,17 @@ node_types:
                 type: tosca.capabilities.xos.User
 
         properties:
+            xos_base_props
             password:
                 type: string
                 required: false
             firstname:
                 type: string
-                required: true
+                required: false
                 description: First name of User.
             lastname:
                 type: string
-                required: true
+                required: false
                 description: Last name of User.
             phone:
                 type: string
@@ -410,11 +411,13 @@ node_types:
                 description: Public key that will be installed in Instances.
             is_active:
                 type: boolean
-                default: true
+                required: false
+                #default: true
                 description: If True, the user may log in.
             is_admin:
                 type: boolean
-                default: false
+                required: false
+                #default: false
                 description: If True, the user has root admin privileges.
             login_page:
                 type: string
@@ -427,6 +430,9 @@ node_types:
         description: >
             An XOS network parameter type. May be applied to Networks and/or
             Ports.
+
+        properties:
+            xos_base_props
 
         capabilities:
             network_parameter_type:
@@ -444,6 +450,7 @@ node_types:
                 type: tosca.capabilities.xos.NetworkTemplate
 
         properties:
+            xos_base_props
             visibility:
                 type: string
                 default: private
