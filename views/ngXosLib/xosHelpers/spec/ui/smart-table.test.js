@@ -23,27 +23,53 @@
 
       beforeEach(module('xos.helpers'));
 
+      beforeEach(function() {
+        jasmine.addMatchers({
+          toBeInstanceOf: function() {
+
+            return {
+              compare: (actual, expected) => {
+                var actual = actual;
+                var result = {};
+                result.pass = actual instanceof expected.constructor;
+
+                result.message = 'Expected ' + actual + ' to be instance of ' + expected;
+
+                return result;
+              },
+              negativeCompare: (actual, expected) => {
+                var actual = actual;
+                var result = {};
+                result.pass = actual instanceof expected.constructor === false;
+
+                result.message = 'Expected ' + actual + ' to be instance of ' + expected;
+
+                return result;
+              }
+            }
+          }
+        });
+      });
+
       // mock the service
       beforeEach(function(){
         module(function($provide){
           $provide.service('MockResource', function(){
-            this.query = jasmine.createSpy('query').and.callFake(() => {
-              return {$promise: {then: (cb) => cb(mockData)}};
-            });
-            this.delete = jasmine.createSpy('delete').and.callFake(() => {
-              return {$promise: {then: (cb) => cb({})}};
-            });
+            return {
+              query: '',
+              delete: ''
+            }
           });
 
           $provide.service('EmptyResource', function(){
-            this.query = jasmine.createSpy('emptyQuery').and.callFake(() => {
-              return {$promise: {then: (cb) => cb([])}};
-            });
+            return {
+              query: ''
+            }
           });
         });
       })
 
-      beforeEach(inject(function ($compile, $rootScope, MockResource) {
+      beforeEach(inject(function ($compile, $rootScope, $q, MockResource) {
         scope = $rootScope.$new();
 
         scope.config = {
@@ -52,6 +78,18 @@
         };
 
         spy = MockResource;
+
+        spyOn(MockResource, 'query').and.callFake(function() {
+          var deferred = $q.defer();
+          deferred.resolve(mockData);
+          return {$promise: deferred.promise};
+        });
+
+        spyOn(MockResource, 'delete').and.callFake(function() {
+          var deferred = $q.defer();
+          deferred.resolve();
+          return {$promise: deferred.promise};
+        });
 
         element = angular.element('<xos-smart-table config="config"></xos-smart-table>');
         $compile(element)(scope);
@@ -90,31 +128,51 @@
         };
         scope.$apply();
         expect($(element).find('.panel')).not.toHaveClass('ng-hide');
-        console.log($(element).find('.panel .col-xs-1 a'));
         $(element).find('.panel .col-xs-1 a')[0].click();
         expect($(element).find('.panel')[0]).toHaveClass('ng-hide');
       });
 
-      it('should save an item', () => {
-        const saveMethod = jasmine.createSpy('$save').and.callFake(() => {
-          return {then: (cb) => cb(mockData[0])};
-        });
+      it('should save an item', inject(($q) => {
+
         let model = {
           id: 1,
           first_name: 'Jon',
           last_name: 'Snow',
           hidden_field: 'hidden',
-          $save: saveMethod
+          $save: ''
         };
+
+        spyOn(model, '$save').and.callFake(function() {
+          var deferred = $q.defer();
+          deferred.resolve();
+          return deferred.promise;
+        });
+
         isolatedScope.detailedItem = model;
         scope.$apply();
         $(element).find('xos-form .btn.btn-success').click();
-        expect(saveMethod).toHaveBeenCalled();
+        expect(model.$save).toHaveBeenCalled();
+      }));
+
+      it('should have an add button', () => {
+        let addBtn = $(element).find('.row .btn.btn-success');
+        expect(addBtn.parent().parent()).not.toHaveClass('ng-hide');
       });
 
+      describe('when the add button is clicked', () => {
+        beforeEach(() => {
+          let btn = $(element).find('.row .btn.btn-success')
+          btn[0].click();
+        });
+
+        xit('should create a new model', () => {
+          expect(isolatedScope.detailedItem).toBeDefined();
+          expect(isolatedScope.detailedItem).toBeInstanceOf('Resource');
+        });
+      });
 
       describe('when fetching an empty collection', () => {
-        beforeEach(inject(function ($compile, $rootScope, EmptyResource) {
+        beforeEach(inject(function ($compile, $rootScope, $q, EmptyResource) {
           scope = $rootScope.$new();
 
           scope.config = {
@@ -122,6 +180,12 @@
           };
 
           emptySpy = EmptyResource;
+
+          spyOn(EmptyResource, 'query').and.callFake(function() {
+            var deferred = $q.defer();
+            deferred.resolve([]);
+            return {$promise: deferred.promise};
+          });
 
           element = angular.element('<xos-smart-table config="config"></xos-smart-table>');
           $compile(element)(scope);
@@ -133,6 +197,11 @@
           expect(emptySpy.query).toHaveBeenCalled();
           expect($(element).find('.alert').parent().parent()).not.toHaveClass('ng-hide');
           expect($(element).find('.alert')).toContainText('No data to show');
+        });
+
+        it('should not have an add button', () => {
+          let addBtn = $(element).find('.row .btn.btn-success');
+          expect(addBtn.parent().parent()).toHaveClass('ng-hide');
         });
       });
 
