@@ -32,7 +32,16 @@
         <xos-table config="vm.tableConfig" data="vm.data"></xos-table>
         <div class="panel panel-default" ng-show="vm.detailedItem">
           <div class="panel-heading">
-            <h3 class="panel-title">Update {{vm.config.resource}} {{vm.detailedItem.id}}</h3>
+            <div class="row">
+              <div class="col-xs-11">
+                <h3 class="panel-title">Update {{vm.config.resource}} {{vm.detailedItem.id}}</h3>
+              </div>
+              <div class="col-xs-1">
+                <a href="" ng-click="vm.cleanForm()">
+                  <i class="glyphicon glyphicon-remove pull-right"></i>
+                </a>
+              </div>
+            </div>
           </div>
           <div class="panel-body">
             <xos-form config="vm.formConfig" ng-model="vm.detailedItem"></xos-form>
@@ -102,6 +111,10 @@
               class: 'success'
             }
           ]
+        };
+
+        this.cleanForm = () => {
+          delete this.detailedItem;
         }
 
         this.Resource = $injector.get(this.config.resource);
@@ -134,7 +147,7 @@
           });
 
           this.data = res;
-        })
+        });
       }
     };
   });
