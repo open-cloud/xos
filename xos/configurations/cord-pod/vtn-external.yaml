@@ -15,7 +15,7 @@ topology_template:
           kind: onos
           view_url: /admin/onos/onosservice/$id$/
           no_container: true
-          rest_hostname: onos-cord
+          rest_hostname: onos-cord-1
 
     VTN_ONOS_app:
       type: tosca.nodes.ONOSVTNApp
