@@ -49,7 +49,7 @@ module.exports = function(config) {
     babelPreprocessor: {
       options: {
         presets: ['es2015'],
-        sourceMap: 'inline'
+        sourceMap: 'both'
       },
       filename: function (file) {
         return file.originalPath;
@@ -86,7 +86,10 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
+    browsers: [
+      'PhantomJS',
+      'Chrome'
+    ],
 
 
     // Continuous Integration mode

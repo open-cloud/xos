@@ -162,7 +162,7 @@
     this._getFieldFormat = (value) => {
 
       // check if is date
-      if (_.isDate(value) || (!Number.isNaN(Date.parse(value)) && Date.parse(value) > 0)){
+      if (_.isDate(value) || (!Number.isNaN(Date.parse(value)) && new Date(value).getTime() > 631180800000)){
         return 'date';
       }
 
