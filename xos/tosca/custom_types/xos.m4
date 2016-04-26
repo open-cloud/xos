@@ -849,6 +849,21 @@ node_types:
                 required: false
                 description: URL to the dashboard
 
+    tosca.nodes.Tag:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Tag
+        properties:
+            xos_base_props
+            name:
+                type: string
+                required: true
+                descrption: name of tag
+            value:
+                type: string
+                required: false
+                descrption: value of tag
+
     tosca.nodes.Compute.Container:
       derived_from: tosca.nodes.Compute
       description: >
@@ -983,6 +998,9 @@ node_types:
         valid_target_types: [ tosca.capabilities.xos.AddressPool ]
 
     tosca.relationships.DependsOn:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.TagsObject:
         derived_from: tosca.relationships.Root
 
     tosca.capabilities.xos.Service:
