@@ -1,0 +1,89 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+# Note:
+#   assumes mydeployment.yaml has already been run, and the following exist:
+#       MyDeployment
+#       mysite
+#       padmin@vicci.org
+#       Public Shared IPv4
+#   assumes the following have been created and filled with appropriate data:
+#       /root/setup/admin_openrc
+#       /root/setup/flat_net_name
+#       /root/setup/padmin_public_key
+
+description: >
+    * Adds OpenCloud Sites, Deployments, and Controllers.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    trusty-server-multi-nic:
+      type: tosca.nodes.Image
+      properties:
+         disk_format: QCOW2
+         container_format: BARE
+
+    MyDeployment:
+      type: tosca.nodes.Deployment
+      properties:
+          no-create: True
+          no-delete: True
+      requirements:
+          - image:
+              node: trusty-server-multi-nic
+              relationship: tosca.relationships.SupportsImage
+
+    CloudLab:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: MyDeployment
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Kilo
+          auth_url: { get_script_env: [ SELF, adminrc, OS_AUTH_URL, LOCAL_FILE] }
+          admin_user: { get_script_env: [ SELF, adminrc, OS_USERNAME, LOCAL_FILE] }
+          admin_password: { get_script_env: [ SELF, adminrc, OS_PASSWORD, LOCAL_FILE] }
+          admin_tenant: { get_script_env: [ SELF, adminrc, OS_TENANT_NAME, LOCAL_FILE] }
+          rabbit_user: { get_script_env: [ SELF, controller_settings, RABBIT_USER, LOCAL_FILE] }
+          rabbit_password: { get_script_env: [ SELF, controller_settings, RABBIT_PASS, LOCAL_FILE] }
+          rabbit_host: { get_script_env: [ SELF, controller_settings, CONTROLLER_FLAT_LAN_IP, LOCAL_FILE] }
+          domain: Default
+      artifacts:
+          adminrc: /root/setup/admin-openrc.sh
+          controller_settings: /root/setup/controller_settings
+
+    mysite:
+      type: tosca.nodes.Site
+      properties:
+          no-create: True
+          no-delete: True
+      requirements:
+          - deployment:
+               node: MyDeployment
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: CloudLab
+                       relationship: tosca.relationships.UsesController
+
+    Public shared IPv4:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          no-create: True
+          no-delete: True
+          shared_network_name: { get_artifact: [ SELF, flat_net_name, LOCAL_FILE] }
+      artifacts:
+          flat_net_name: /root/setup/flat_net_name
+
+    padmin@vicci.org:
+      type: tosca.nodes.User
+      properties:
+          no-create: True
+          no-delete: True
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE ] }
+      artifacts:
+          pubkey: /root/setup/padmin_public_key
