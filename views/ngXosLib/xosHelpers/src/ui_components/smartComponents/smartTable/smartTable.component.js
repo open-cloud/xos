@@ -48,6 +48,7 @@
           //     color: 'red'
           //   }
           // ],
+          classes: 'table table-striped table-bordered table-responsive',
           filter: 'field',
           order: true,
           pagination: {
@@ -55,22 +56,26 @@
           }
         };
 
-        let Resource = $injector.get(this.config.resource);
+        this.Resource = $injector.get(this.config.resource);
 
-        console.log('query', Resource.query.toString(), Resource.test(`I'm Alive!`));
-
-        Resource.query().$promise
+        this.Resource.query().$promise
         .then((res) => {
-          console.log('Data!!');
+
+          if(!res[0]){
+            return;
+          }
+
           let props = Object.keys(res[0]);
 
           _.remove(props, p => {
             return p == 'id' || p == 'password' || p == 'validators'
           });
 
-          let labels = props.map(p => LabelFormatter.format(p));
+          if(angular.isArray(this.config.hiddenFields)){
+            props = _.difference(props, this.config.hiddenFields)
+          }
 
-          console.log(props, labels);
+          let labels = props.map(p => LabelFormatter.format(p));
 
           props.forEach((p, i) => {
             this.tableConfig.columns.push({
@@ -78,9 +83,6 @@
               prop: p
             });
           });
-
-
-          console.log(this.tableConfig.columns);
 
           this.data = res;
         })
