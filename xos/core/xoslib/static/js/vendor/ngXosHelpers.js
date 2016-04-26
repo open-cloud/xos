@@ -52,7 +52,7 @@
       scope: {
         config: '='
       },
-      template: '\n        <pre>{{vm.responseErr}}</pre>\n        <xos-table config="vm.tableConfig" data="vm.data"></xos-table>\n        <div class="panel panel-default" ng-show="vm.detailedItem">\n          <div class="panel-heading">\n            <h3 class="panel-title">Update {{vm.config.resource}} {{vm.detailedItem.id}}</h3>\n          </div>\n          <div class="panel-body">\n            <xos-form config="vm.formConfig" ng-model="vm.detailedItem"></xos-form>\n          </div>\n        </div>\n        <xos-alert config="{type: \'success\', closeBtn: true}" show="vm.responseMsg">{{vm.responseMsg}}</xos-alert>\n        <xos-alert config="{type: \'danger\', closeBtn: true}" show="vm.responseErr">{{vm.responseErr}}</xos-alert>\n      ',
+      template: '\n        <pre>{{vm.responseErr}}</pre>\n        <xos-table config="vm.tableConfig" data="vm.data"></xos-table>\n        <div class="panel panel-default" ng-show="vm.detailedItem">\n          <div class="panel-heading">\n            <div class="row">\n              <div class="col-xs-11">\n                <h3 class="panel-title">Update {{vm.config.resource}} {{vm.detailedItem.id}}</h3>\n              </div>\n              <div class="col-xs-1">\n                <a href="" ng-click="vm.cleanForm()">\n                  <i class="glyphicon glyphicon-remove pull-right"></i>\n                </a>\n              </div>\n            </div>\n          </div>\n          <div class="panel-body">\n            <xos-form config="vm.formConfig" ng-model="vm.detailedItem"></xos-form>\n          </div>\n        </div>\n        <xos-alert config="{type: \'success\', closeBtn: true}" show="vm.responseMsg">{{vm.responseMsg}}</xos-alert>\n        <xos-alert config="{type: \'danger\', closeBtn: true}" show="vm.responseErr">{{vm.responseErr}}</xos-alert>\n      ',
       bindToController: true,
       controllerAs: 'vm',
       controller: ["$injector", "LabelFormatter", "_", function controller($injector, LabelFormatter, _) {
@@ -105,6 +105,10 @@
             },
             class: 'success'
           }]
+        };
+
+        this.cleanForm = function () {
+          delete _this.detailedItem;
         };
 
         this.Resource = $injector.get(this.config.resource);
@@ -238,6 +242,249 @@
   });
 })();
 //# sourceMappingURL=../../../maps/ui_components/dumbComponents/validation/validation.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 4/15/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosPagination
+    * @restrict E
+    * @description The xos-table directive
+    * @param {Number} pageSize Number of elements per page
+    * @param {Number} totalElements Number of total elements in the collection
+    * @param {Function} change The callback to be triggered on page change.
+    * * @element ANY
+    * @scope
+    * @example
+  <example module="samplePagination">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl1 as vm">
+        <xos-pagination
+          page-size="vm.pageSize"
+          total-elements="vm.totalElements"
+          change="vm.change">
+        </xos-pagination>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('samplePagination', ['xos.uiComponents'])
+      .controller('SampleCtrl1', function(){
+        this.pageSize = 10;
+        this.totalElements = 35;
+        this.change = (pageNumber) => {
+          console.log(pageNumber);
+        }
+      });
+    </file>
+  </example>
+  **/
+
+  .directive('xosPagination', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        pageSize: '=',
+        totalElements: '=',
+        change: '='
+      },
+      template: '\n        <div class="row" ng-if="vm.pageList.length > 1">\n          <div class="col-xs-12 text-center">\n            <ul class="pagination">\n              <li\n                ng-click="vm.goToPage(vm.currentPage - 1)"\n                ng-class="{disabled: vm.currentPage == 0}">\n                <a href="" aria-label="Previous">\n                    <span aria-hidden="true">&laquo;</span>\n                </a>\n              </li>\n              <li ng-repeat="i in vm.pageList" ng-class="{active: i === vm.currentPage}">\n                <a href="" ng-click="vm.goToPage(i)">{{i + 1}}</a>\n              </li>\n              <li\n                ng-click="vm.goToPage(vm.currentPage + 1)"\n                ng-class="{disabled: vm.currentPage == vm.pages - 1}">\n                <a href="" aria-label="Next">\n                    <span aria-hidden="true">&raquo;</span>\n                </a>\n              </li>\n            </ul>\n          </div>\n        </div>\n      ',
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$scope", function controller($scope) {
+        var _this = this;
+
+        this.currentPage = 0;
+
+        this.goToPage = function (n) {
+          if (n < 0 || n === _this.pages) {
+            return;
+          }
+          _this.currentPage = n;
+          _this.change(n);
+        };
+
+        this.createPages = function (pages) {
+          var arr = [];
+          for (var i = 0; i < pages; i++) {
+            arr.push(i);
+          }
+          return arr;
+        };
+
+        // watch for data changes
+        $scope.$watch(function () {
+          return _this.totalElements;
+        }, function () {
+          if (_this.totalElements) {
+            _this.pages = Math.ceil(_this.totalElements / _this.pageSize);
+            _this.pageList = _this.createPages(_this.pages);
+          }
+        });
+      }]
+    };
+  }).filter('pagination', function () {
+    return function (input, start) {
+      if (!input || !angular.isArray(input)) {
+        return input;
+      }
+      start = parseInt(start, 10);
+      return input.slice(start);
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/dumbComponents/pagination/pagination.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 4/15/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosAlert
+    * @restrict E
+    * @description The xos-alert directive
+    * @param {Object} config The configuration object
+    * ```
+    * {
+    *   type: 'danger', //info, success, warning
+    *   closeBtn: true, //default false
+    *   autoHide: 3000 //delay to automatically hide the alert
+    * }
+    * ```
+    * @param {Boolean=} show Binding to show and hide the alert, default to true
+    * @element ANY
+    * @scope
+    * @example
+  <example module="sampleAlert1">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl1 as vm">
+        <xos-alert config="vm.config1">
+          A sample alert message
+        </xos-alert>
+        <xos-alert config="vm.config2">
+          A sample alert message (with close button)
+        </xos-alert>
+        <xos-alert config="vm.config3">
+          A sample info message
+        </xos-alert>
+        <xos-alert config="vm.config4">
+          A sample success message
+        </xos-alert>
+        <xos-alert config="vm.config5">
+          A sample warning message
+        </xos-alert>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleAlert1', ['xos.uiComponents'])
+      .controller('SampleCtrl1', function(){
+        this.config1 = {
+          type: 'danger'
+        };
+         this.config2 = {
+          type: 'danger',
+          closeBtn: true
+        };
+         this.config3 = {
+          type: 'info'
+        };
+         this.config4 = {
+          type: 'success'
+        };
+         this.config5 = {
+          type: 'warning'
+        };
+      });
+    </file>
+  </example>
+   <example module="sampleAlert2" animations="true">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm" class="row">
+        <div class="col-sm-4">
+          <a class="btn btn-default btn-block" ng-show="!vm.show" ng-click="vm.show = true">Show Alert</a>
+          <a class="btn btn-default btn-block" ng-show="vm.show" ng-click="vm.show = false">Hide Alert</a>
+        </div>
+        <div class="col-sm-8">
+          <xos-alert config="vm.config1" show="vm.show">
+            A sample alert message, not displayed by default.
+          </xos-alert>
+        </div>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleAlert2', ['xos.uiComponents', 'ngAnimate'])
+      .controller('SampleCtrl', function(){
+        this.config1 = {
+          type: 'success'
+        };
+         this.show = false;
+      });
+    </file>
+  </example>
+  **/
+
+  .directive('xosAlert', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        config: '=',
+        show: '=?'
+      },
+      template: '\n        <div ng-cloak class="alert alert-{{vm.config.type}}" ng-hide="!vm.show">\n          <button type="button" class="close" ng-if="vm.config.closeBtn" ng-click="vm.dismiss()">\n            <span aria-hidden="true">&times;</span>\n          </button>\n          <p ng-transclude></p>\n        </div>\n      ',
+      transclude: true,
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$timeout", function controller($timeout) {
+        var _this = this;
+
+        if (!this.config) {
+          throw new Error('[xosAlert] Please provide a configuration via the "config" attribute');
+        }
+
+        // default the value to true
+        this.show = this.show !== false;
+
+        this.dismiss = function () {
+          _this.show = false;
+        };
+
+        if (this.config.autoHide) {
+          (function () {
+            var to = $timeout(function () {
+              _this.dismiss();
+              $timeout.cancel(to);
+            }, _this.config.autoHide);
+          })();
+        }
+      }]
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/dumbComponents/alert/alert.component.js.map
 
 'use strict';
 
@@ -456,110 +703,6 @@
 
 'use strict';
 
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
- * Created by teone on 4/15/16.
- */
-
-(function () {
-  'use strict';
-
-  angular.module('xos.uiComponents')
-
-  /**
-    * @ngdoc directive
-    * @name xos.uiComponents.directive:xosPagination
-    * @restrict E
-    * @description The xos-table directive
-    * @param {Number} pageSize Number of elements per page
-    * @param {Number} totalElements Number of total elements in the collection
-    * @param {Function} change The callback to be triggered on page change.
-    * * @element ANY
-    * @scope
-    * @example
-  <example module="samplePagination">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl1 as vm">
-        <xos-pagination
-          page-size="vm.pageSize"
-          total-elements="vm.totalElements"
-          change="vm.change">
-        </xos-pagination>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('samplePagination', ['xos.uiComponents'])
-      .controller('SampleCtrl1', function(){
-        this.pageSize = 10;
-        this.totalElements = 35;
-        this.change = (pageNumber) => {
-          console.log(pageNumber);
-        }
-      });
-    </file>
-  </example>
-  **/
-
-  .directive('xosPagination', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        pageSize: '=',
-        totalElements: '=',
-        change: '='
-      },
-      template: '\n        <div class="row" ng-if="vm.pageList.length > 1">\n          <div class="col-xs-12 text-center">\n            <ul class="pagination">\n              <li\n                ng-click="vm.goToPage(vm.currentPage - 1)"\n                ng-class="{disabled: vm.currentPage == 0}">\n                <a href="" aria-label="Previous">\n                    <span aria-hidden="true">&laquo;</span>\n                </a>\n              </li>\n              <li ng-repeat="i in vm.pageList" ng-class="{active: i === vm.currentPage}">\n                <a href="" ng-click="vm.goToPage(i)">{{i + 1}}</a>\n              </li>\n              <li\n                ng-click="vm.goToPage(vm.currentPage + 1)"\n                ng-class="{disabled: vm.currentPage == vm.pages - 1}">\n                <a href="" aria-label="Next">\n                    <span aria-hidden="true">&raquo;</span>\n                </a>\n              </li>\n            </ul>\n          </div>\n        </div>\n      ',
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: ["$scope", function controller($scope) {
-        var _this = this;
-
-        this.currentPage = 0;
-
-        this.goToPage = function (n) {
-          if (n < 0 || n === _this.pages) {
-            return;
-          }
-          _this.currentPage = n;
-          _this.change(n);
-        };
-
-        this.createPages = function (pages) {
-          var arr = [];
-          for (var i = 0; i < pages; i++) {
-            arr.push(i);
-          }
-          return arr;
-        };
-
-        // watch for data changes
-        $scope.$watch(function () {
-          return _this.totalElements;
-        }, function () {
-          if (_this.totalElements) {
-            _this.pages = Math.ceil(_this.totalElements / _this.pageSize);
-            _this.pageList = _this.createPages(_this.pages);
-          }
-        });
-      }]
-    };
-  }).filter('pagination', function () {
-    return function (input, start) {
-      if (!input || !angular.isArray(input)) {
-        return input;
-      }
-      start = parseInt(start, 10);
-      return input.slice(start);
-    };
-  });
-})();
-//# sourceMappingURL=../../../maps/ui_components/dumbComponents/pagination/pagination.component.js.map
-
-'use strict';
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 /**
@@ -746,145 +889,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   }]);
 })();
 //# sourceMappingURL=../../../maps/ui_components/dumbComponents/form/form.component.js.map
-
-'use strict';
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
- * Created by teone on 4/15/16.
- */
-
-(function () {
-  'use strict';
-
-  angular.module('xos.uiComponents')
-
-  /**
-    * @ngdoc directive
-    * @name xos.uiComponents.directive:xosAlert
-    * @restrict E
-    * @description The xos-alert directive
-    * @param {Object} config The configuration object
-    * ```
-    * {
-    *   type: 'danger', //info, success, warning
-    *   closeBtn: true, //default false
-    *   autoHide: 3000 //delay to automatically hide the alert
-    * }
-    * ```
-    * @param {Boolean=} show Binding to show and hide the alert, default to true
-    * @element ANY
-    * @scope
-    * @example
-  <example module="sampleAlert1">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl1 as vm">
-        <xos-alert config="vm.config1">
-          A sample alert message
-        </xos-alert>
-        <xos-alert config="vm.config2">
-          A sample alert message (with close button)
-        </xos-alert>
-        <xos-alert config="vm.config3">
-          A sample info message
-        </xos-alert>
-        <xos-alert config="vm.config4">
-          A sample success message
-        </xos-alert>
-        <xos-alert config="vm.config5">
-          A sample warning message
-        </xos-alert>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('sampleAlert1', ['xos.uiComponents'])
-      .controller('SampleCtrl1', function(){
-        this.config1 = {
-          type: 'danger'
-        };
-         this.config2 = {
-          type: 'danger',
-          closeBtn: true
-        };
-         this.config3 = {
-          type: 'info'
-        };
-         this.config4 = {
-          type: 'success'
-        };
-         this.config5 = {
-          type: 'warning'
-        };
-      });
-    </file>
-  </example>
-   <example module="sampleAlert2" animations="true">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl as vm" class="row">
-        <div class="col-sm-4">
-          <a class="btn btn-default btn-block" ng-show="!vm.show" ng-click="vm.show = true">Show Alert</a>
-          <a class="btn btn-default btn-block" ng-show="vm.show" ng-click="vm.show = false">Hide Alert</a>
-        </div>
-        <div class="col-sm-8">
-          <xos-alert config="vm.config1" show="vm.show">
-            A sample alert message, not displayed by default.
-          </xos-alert>
-        </div>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('sampleAlert2', ['xos.uiComponents', 'ngAnimate'])
-      .controller('SampleCtrl', function(){
-        this.config1 = {
-          type: 'success'
-        };
-         this.show = false;
-      });
-    </file>
-  </example>
-  **/
-
-  .directive('xosAlert', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        config: '=',
-        show: '=?'
-      },
-      template: '\n        <div ng-cloak class="alert alert-{{vm.config.type}}" ng-hide="!vm.show">\n          <button type="button" class="close" ng-if="vm.config.closeBtn" ng-click="vm.dismiss()">\n            <span aria-hidden="true">&times;</span>\n          </button>\n          <p ng-transclude></p>\n        </div>\n      ',
-      transclude: true,
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: ["$timeout", function controller($timeout) {
-        var _this = this;
-
-        if (!this.config) {
-          throw new Error('[xosAlert] Please provide a configuration via the "config" attribute');
-        }
-
-        // default the value to true
-        this.show = this.show !== false;
-
-        this.dismiss = function () {
-          _this.show = false;
-        };
-
-        if (this.config.autoHide) {
-          (function () {
-            var to = $timeout(function () {
-              _this.dismiss();
-              $timeout.cancel(to);
-            }, _this.config.autoHide);
-          })();
-        }
-      }]
-    };
-  });
-})();
-//# sourceMappingURL=../../../maps/ui_components/dumbComponents/alert/alert.component.js.map
 
 'use strict';
 

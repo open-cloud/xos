@@ -84,6 +84,17 @@
         expect($(element).find('.panel')).not.toHaveClass('ng-hide');
       });
 
+      it('should hide the form', () => {
+        isolatedScope.detailedItem = {
+          some: 'model'
+        };
+        scope.$apply();
+        expect($(element).find('.panel')).not.toHaveClass('ng-hide');
+        console.log($(element).find('.panel .col-xs-1 a'));
+        $(element).find('.panel .col-xs-1 a')[0].click();
+        expect($(element).find('.panel')[0]).toHaveClass('ng-hide');
+      });
+
       it('should save an item', () => {
         const saveMethod = jasmine.createSpy('$save').and.callFake(() => {
           return {then: (cb) => cb(mockData[0])};
@@ -100,6 +111,7 @@
         $(element).find('xos-form .btn.btn-success').click();
         expect(saveMethod).toHaveBeenCalled();
       });
+
 
       describe('when fetching an empty collection', () => {
         beforeEach(inject(function ($compile, $rootScope, EmptyResource) {
