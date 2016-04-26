@@ -30,6 +30,10 @@ topology_template:
       properties:
           no-create: True
           no-delete: True
+      requirements:
+          - image:
+              node: trusty-server-multi-nic
+              relationship: tosca.relationships.SupportsImage
 
     CloudLab:
       type: tosca.nodes.Controller
