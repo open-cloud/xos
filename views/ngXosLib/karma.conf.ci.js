@@ -15,8 +15,7 @@ var bowerComponents = wiredep({devDependencies: true})[ 'js' ].map(function( fil
 
 var files = bowerComponents.concat([
   'node_modules/babel-polyfill/dist/polyfill.js',
-  'xosHelpers/src/**/*.module.js',
-  'xosHelpers/src/**/*.js',
+  '../../xos/core/xoslib/static/js/vendor/ngXosHelpers.js',
   'xosHelpers/spec/**/*.test.js'
 ]);
 
