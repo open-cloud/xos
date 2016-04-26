@@ -33,9 +33,8 @@ restore-initial-db-status:
 	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT truncate_tables('postgres');"
 	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT setval('core_tenant_id_seq', 1)"
 	sudo docker-compose run xos python /opt/xos/manage.py --noobserver --nomodelpolicy loaddata /opt/xos/core/fixtures/core_initial_data.json
+	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
-
 
 
 test: restore-initial-db-status
