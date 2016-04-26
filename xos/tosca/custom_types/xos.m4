@@ -453,11 +453,11 @@ node_types:
             xos_base_props
             visibility:
                 type: string
-                default: private
+                required: false
                 description: Indicates whether network is publicly routable.
             translation:
                 type: string
-                default: none
+                required: false
                 description: Indicates whether network uses address translation.
             shared_network_name:
                 type: string
@@ -469,7 +469,7 @@ node_types:
                 description: Attaches this template to a specific OpenStack network.
             topology_kind:
                 type: string
-                default: BigSwitch
+                required: false
                 description: Describes the topology of the network.
             controller_kind:
                 type: string
