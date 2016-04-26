@@ -60,7 +60,8 @@ angular.module('xos.sampleView', [
       };
 
       this.smartTableConfig = {
-        resource: 'Users'
+        resource: 'Users',
+        hiddenFields: ['last_login']
       }
 
       this.alertConfig = {
