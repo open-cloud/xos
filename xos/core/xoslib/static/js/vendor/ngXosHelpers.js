@@ -28,6 +28,98 @@
  *
  * Visit http://guide.xosproject.org/devguide/addview/ for more information
  *
+ * Created by teone on 3/24/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+  * @ngdoc directive
+  * @name xos.uiComponents.directive:xosSmartTable
+  * @restrict E
+  * @description The xos-table directive
+  * @param {Object} config The configuration for the component.
+  * @scope
+  * @example
+  */
+
+  .directive('xosSmartTable', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        config: '='
+      },
+      template: '\n        <xos-table config="vm.tableConfig" data="vm.data"></xos-table>\n      ',
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$injector", "LabelFormatter", "_", function controller($injector, LabelFormatter, _) {
+        var _this = this;
+
+        this.tableConfig = {
+          columns: [],
+          // actions: [
+          //   {
+          //     label: 'delete',
+          //     icon: 'remove',
+          //     cb: (user) => {
+          //       console.log(user);
+          //       // _.remove(this.users, {id: user.id});
+          //     },
+          //     color: 'red'
+          //   }
+          // ],
+          filter: 'field',
+          order: true,
+          pagination: {
+            pageSize: 10
+          }
+        };
+
+        var Resource = $injector.get(this.config.resource);
+
+        console.log('query', Resource.query.toString(), Resource.test('I\'m Alive!'));
+
+        Resource.query().$promise.then(function (res) {
+          console.log('Data!!');
+          var props = Object.keys(res[0]);
+
+          _.remove(props, function (p) {
+            return p == 'id' || p == 'password' || p == 'validators';
+          });
+
+          var labels = props.map(function (p) {
+            return LabelFormatter.format(p);
+          });
+
+          console.log(props, labels);
+
+          props.forEach(function (p, i) {
+            _this.tableConfig.columns.push({
+              label: labels[i],
+              prop: p
+            });
+          });
+
+          console.log(_this.tableConfig.columns);
+
+          _this.data = res;
+        });
+      }]
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/smartComponents/smartTable/smartTable.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
  * Created by teone on 4/15/16.
  */
 

@@ -57,9 +57,11 @@
 
         let Resource = $injector.get(this.config.resource);
 
+        console.log('query', Resource.query.toString(), Resource.test(`I'm Alive!`));
+
         Resource.query().$promise
         .then((res) => {
-
+          console.log('Data!!');
           let props = Object.keys(res[0]);
 
           _.remove(props, p => {
