@@ -1,10 +1,8 @@
 @import '../../../styles/animations.scss';
 
 xos-table {
-  
-  tr {
-    font-weight: bold;
-  }
+
+  display: block;
 
   tr.ng-move,
   tr.ng-enter,

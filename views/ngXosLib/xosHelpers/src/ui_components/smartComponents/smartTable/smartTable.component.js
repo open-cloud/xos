@@ -28,7 +28,13 @@
         config: '='
       },
       template: `
-        <pre>{{vm.responseErr}}</pre>
+        <div class="row" ng-show="vm.data.length > 0">
+          <div class="col-xs-12 text-right">
+            <a href="" class="btn btn-success" ng-click="vm.createItem()">
+              Add
+            </a>
+          </div>
+        </div>
         <xos-table config="vm.tableConfig" data="vm.data"></xos-table>
         <div class="panel panel-default" ng-show="vm.detailedItem">
           <div class="panel-heading">
@@ -54,6 +60,10 @@
       controllerAs: 'vm',
       controller: function($injector, LabelFormatter, _){
         
+        // NOTE
+        // Corner case
+        // - if response is empty, how can we generate a form ?
+
         this.responseMsg = false;
         this.responseErr = false;
 
@@ -67,7 +77,6 @@
               cb: (item) => {
                 this.Resource.delete({id: item.id}).$promise
                 .then(() => {
-                  console.log(this.config.resource);
                   this.responseMsg = `${this.config.resource} with id ${item.id} successfully deleted`;
                 })
                 .catch(err => {
@@ -115,7 +124,12 @@
 
         this.cleanForm = () => {
           delete this.detailedItem;
-        }
+        };
+
+        this.createItem = () => {
+          this.detailedItem = new this.Resource();
+          console.log(this.detailedItem);
+        };
 
         this.Resource = $injector.get(this.config.resource);
 
