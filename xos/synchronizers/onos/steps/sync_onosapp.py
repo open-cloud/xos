@@ -242,7 +242,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         return json.dumps(data, indent=4, sort_keys=True)
 
-    def get_volt_config(self, o, attrs):
+    def get_volt_network_config(self, o, attrs):
         data = {
             "devices" : {
                 "of:1000000000000001" : {
@@ -254,6 +254,22 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                         "driver" : "pmc-olt"
                     }
                 }
+            }
+        }
+        return json.dumps(data, indent=4, sort_keys=True)
+
+    def get_volt_component_config(self, o, attrs):
+        data = {
+            "org.ciena.onos.ext_notifier.KafkaNotificationBridge":{
+                "rabbit.user": "<rabbit_user>",
+                "rabbit.password": "<rabbit_password>",
+                "rabbit.host": "<rabbit_host>",
+                "publish.kafka": "false",
+                "publish.rabbit": "true",
+                "volt.events.rabbit.topic": "notifications.info",
+                "volt.events.rabbit.exchange": "voltlistener",
+                "volt.events.opaque.info": "{project_id: <keystone_tenant_id>, user_id: <keystone_user_id>}",
+                "publish.volt.events": "true"
             }
         }
         return json.dumps(data, indent=4, sort_keys=True)
@@ -308,7 +324,10 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                 value = self.get_vtn_config(o, attrs)
             elif label == "volt-network-cfg":
                 config = "rest_onos/v1/network/configuration/"
-                value = self.get_volt_config(o, attrs)
+                value = self.get_volt_network_config(o, attrs)
+            elif label == "volt-component-cfg":
+                config = "component_config"
+                value = self.get_volt_component_config(o, attrs)
 
             if config:
                 tas = TenantAttribute.objects.filter(tenant=o, name=config)
