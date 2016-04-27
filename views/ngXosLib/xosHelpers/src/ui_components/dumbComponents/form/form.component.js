@@ -199,8 +199,6 @@
 
     this.buildFormStructure = (modelField, customField, model) => {
 
-      // console.log(modelField, model);
-
       modelField = Object.keys(modelField).length > 0 ? modelField : customField; //if no model field are provided, check custom
       customField = customField || {};
 

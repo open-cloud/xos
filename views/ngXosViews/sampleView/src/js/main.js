@@ -38,6 +38,14 @@ angular.module('xos.sampleView', [
           {
             label: 'Last Name',
             prop: 'lastname'
+          },
+          {
+            label: 'Created',
+            prop: 'created'
+          },
+          {
+            label: 'is_admin',
+            prop: 'is_admin'
           }
         ],
         classes: 'table table-striped table-condensed',
