@@ -157,7 +157,7 @@
               type: XosFormHelpers._getFieldFormat(item[p])
             });
           });
-          console.log(_this.formConfig.fields);
+
           _this.data = res;
         });
       }]
@@ -742,8 +742,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     this.buildFormStructure = function (modelField, customField, model) {
-
-      // console.log(modelField, model);
 
       modelField = Object.keys(modelField).length > 0 ? modelField : customField; //if no model field are provided, check custom
       customField = customField || {};

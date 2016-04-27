@@ -173,7 +173,7 @@
               type: XosFormHelpers._getFieldFormat(item[p])
             });
           });
-          console.log(this.formConfig.fields);
+
           this.data = res;
         });
       }
