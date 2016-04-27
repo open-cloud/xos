@@ -892,3 +892,52 @@ class TenantRootPrivilege(PlCoreBase):
                     [trp.id for trp in cls.objects.filter(tenant_root=priv.tenant_root)])
 
             return cls.objects.filter(id__in=trp_ids)
+
+
+class TenantRole(PlCoreBase):
+    """A TenantRole option."""
+    ROLE_CHOICES = (('admin', 'Admin'), ('access', 'Access'))
+    role = StrippedCharField(choices=ROLE_CHOICES, unique=True, max_length=30)
+
+    def __unicode__(self): return u'%s' % (self.role)
+
+
+class TenantPrivilege(PlCoreBase):
+    """"A TenantPrivilege which defines how users can access a particular Tenant.
+
+    Attributes:
+        id (models.AutoField): The ID of the privilege.
+        user (models.ForeignKey): A Foreign Key to the a User.
+        tenant (models.ForeignKey): A ForeignKey to the Tenant.
+        role (models.ForeignKey): A ForeignKey to the TenantRole.
+    """
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('User', related_name="tenantprivileges")
+    tenant = models.ForeignKey('Tenant', related_name="tenantprivileges")
+    role = models.ForeignKey('TenantRole', related_name="tenantprivileges")
+
+    def __unicode__(self): return u'%s %s %s' % (
+        self.tenant, self.user, self.role)
+
+    def save(self, *args, **kwds):
+        if not self.user.is_active:
+            raise PermissionDenied, "Cannot modify role(s) of a disabled user"
+        super(TenantPrivilege, self).save(*args, **kwds)
+
+    def can_update(self, user):
+        return user.can_update_tenant_privilege(self)
+
+    @classmethod
+    def select_by_user(cls, user):
+        if user.is_admin:
+            return cls.objects.all()
+        else:
+            # User can see his own privilege
+            trp_ids = [trp.id for trp in cls.objects.filter(user=user)]
+
+            # A tenant admin can see the TenantPrivileges for their Tenants
+            for priv in cls.objects.filter(user=user, role__role="admin"):
+                trp_ids.extend(
+                    [trp.id for trp in cls.objects.filter(tenant=priv.tenant)])
+
+            return cls.objects.filter(id__in=trp_ids)

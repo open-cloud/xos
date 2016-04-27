@@ -1,0 +1,19 @@
+<div style="display: table;">
+  <div class="vpn-row">
+    <h1 class="vpn-cell">VPN List</h1>
+  </div>
+  <div class="vpn-row">
+    <div class="vpn-cell vpn-header">ID</div>
+    <div class="vpn-cell vpn-header">VPN Network</div>
+    <div class="vpn-cell vpn-header">VPN Subnet</div>
+    <div class="vpn-cell vpn-header">Script Link</div>
+  </div>
+  <div class="vpn-row" ng-repeat="vpn in vm.vpns">
+    <div class="vpn-cell">{{ vpn.id }}</div>
+    <div class="vpn-cell">{{ vpn.server_network }}</div>
+    <div class="vpn-cell">{{ vpn.vpn_subnet }}</div>
+    <div class="vpn-cell">
+      <a download="connect-{{ vpn.id }}.vpn" ng-href="{{ vpn.script_text }}">Script</a>
+    </div>
+  </div>
+</div>

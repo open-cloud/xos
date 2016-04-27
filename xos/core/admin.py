@@ -977,6 +977,24 @@ class TenantRootAdmin(XOSBaseAdmin):
                       )
 
 
+class TenantRoleAdmin(XOSBaseAdmin):
+    """Admin for TenantRoles."""
+    model = TenantRole
+    fields = ('role',)
+
+
+class TenantPrivilegeInline(XOSTabularInline):
+    """Inline for adding a TenantPrivilege to a Tenant."""
+    model = TenantPrivilege
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-tenantprivileges'
+    fields = ['backend_status_icon', 'user', 'role', 'tenant']
+    readonly_fields = ('backend_status_icon', )
+
+    def queryset(self, request):
+        return TenantPrivilege.select_by_user(request.user)
+
+
 class ProviderTenantInline(XOSTabularInline):
     model = CoarseTenant
     fields = ['provider_service', 'subscriber_service', 'connect_method']
@@ -2404,5 +2422,6 @@ if True:
     admin.site.register(Flavor, FlavorAdmin)
     admin.site.register(TenantRoot, TenantRootAdmin)
     admin.site.register(TenantRootRole, TenantRootRoleAdmin)
+    admin.site.register(TenantRole, TenantRoleAdmin)
     admin.site.register(TenantAttribute, TenantAttributeAdmin)
     admin.site.register(AddressPool, AddressPoolAdmin)

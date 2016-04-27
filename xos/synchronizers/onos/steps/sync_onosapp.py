@@ -17,6 +17,7 @@ from core.models import Service, Slice, Controller, ControllerSlice, ControllerU
 from services.onos.models import ONOSService, ONOSApp
 from xos.logger import Logger, logging
 from services.vrouter.models import VRouterService
+from services.vtn.models import VTNService
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")
@@ -117,18 +118,9 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                 raise Exception("Controller user object for %s does not exist" % instance.creator)
             return cuser.kuser_id
 
-
-    def node_tag_default(self, o, node, tagname, default):
+    def get_node_tag(self, o, node, tagname):
         tags = Tag.select_by_content_object(node).filter(name=tagname)
-        if tags:
-            value = tags[0].value
-        else:
-            value = default
-            logger.info("node %s: saving default value %s for tag %s" % (node.name, value, tagname))
-            service = self.get_onos_service(o)
-            tag = Tag(service=service, content_object=node, name=tagname, value=value)
-            tag.save()
-        return value
+        return tags[0].value
 
     # Scan attrs for attribute name
     # If it's not present, save it as a TenantAttribute
@@ -145,16 +137,31 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
     # This function currently assumes a single Deployment and Site
     def get_vtn_config(self, o, attrs):
 
-        # The "attrs" argument contains a list of all service and tenant attributes
-        # If an attribute is present, use it in the configuration
-        # Otherwise save the attriute with a reasonable (for a CORD devel pod) default value
-        # The admin will see all possible configuration values and the assigned defaults
-        privateGatewayMac = self.attribute_default(o, attrs, "privateGatewayMac", "00:00:00:00:00:01")
-        localManagementIp = self.attribute_default(o, attrs, "localManagementIp", "172.27.0.1/24")
-        ovsdbPort = self.attribute_default(o, attrs, "ovsdbPort", "6641")
-        sshPort = self.attribute_default(o, attrs, "sshPort", "22")
-        sshUser = self.attribute_default(o, attrs, "sshUser", "root")
-        sshKeyFile = self.attribute_default(o, attrs, "sshKeyFile", "/root/node_key")
+        privateGatewayMac = None
+        localManagementIp = None
+        ovsdbPort = None
+        sshPort = None
+        sshUser = None
+        sshKeyFile = None
+        mgmtSubnetBits = None
+        xosEndpoint = None
+        xosUser = None
+        xosPassword = None
+
+        # VTN-specific configuration from the VTN Service
+        vtns = VTNService.get_service_objects().all()
+        if vtns:
+            vtn = vtns[0]
+            privateGatewayMac = vtn.privateGatewayMac
+            localManagementIp = vtn.localManagementIp
+            ovsdbPort = vtn.ovsdbPort
+            sshPort = vtn.sshPort
+            sshUser = vtn.sshUser
+            sshKeyFile = vtn.sshKeyFile
+            mgmtSubnetBits = vtn.mgmtSubnetBits
+            xosEndpoint = vtn.xosEndpoint
+            xosUser = vtn.xosUser
+            xosPassword = vtn.xosPassword
 
         # OpenStack endpoints and credentials
         keystone_server = "http://keystone:5000/v2.0/"
@@ -186,6 +193,11 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                             "user": user_name,
                             "password": password
                         },
+                        "xos": {
+                            "endpoint": xosEndpoint,
+                            "user": xosUser,
+                            "password": xosPassword
+                        },
                         "publicGateways": [],
                         "nodes" : []
                     }
@@ -194,20 +206,14 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         }
 
         # Generate apps->org.onosproject.cordvtn->cordvtn->nodes
-
-        # We need to generate a CIDR address for the physical node's
-        # address on the management network
-        mgmtSubnetBits = self.attribute_default(o, attrs, "mgmtSubnetBits", "24")
-
         nodes = Node.objects.all()
         for node in nodes:
             nodeip = socket.gethostbyname(node.name)
 
             try:
-                bridgeId = self.node_tag_default(o, node, "bridgeId", "of:0000000000000001")
-                dataPlaneIntf = self.node_tag_default(o, node, "dataPlaneIntf", "veth1")
-                # This should be generated from the AddressPool if not present
-                dataPlaneIp = self.node_tag_default(o, node, "dataPlaneIp", "192.168.199.1/24")
+                bridgeId = self.get_node_tag(o, node, "bridgeId")
+                dataPlaneIntf = self.get_node_tag(o, node, "dataPlaneIntf")
+                dataPlaneIp = self.get_node_tag(o, node, "dataPlaneIp")
             except:
                 logger.error("not adding node %s to the VTN configuration" % node.name)
                 continue

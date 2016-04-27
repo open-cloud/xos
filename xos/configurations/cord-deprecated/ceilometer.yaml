@@ -164,6 +164,9 @@ topology_template:
     ceilometer-trusty-server-multi-nic:
       type: tosca.nodes.Image
 
+    m1.small:
+      type: tosca.nodes.Flavor
+
     mysite_ceilometer:
       description: Ceilometer Proxy Slice
       type: tosca.nodes.Slice
@@ -177,8 +180,9 @@ topology_template:
           - default_image:
                 node: ceilometer-trusty-server-multi-nic
                 relationship: tosca.relationships.DefaultImage
-      properties:
-          default_flavor: m1.small
+          - default_flavor:
+                node: m1.small
+                relationship: tosca.relationships.DefaultFlavor
 
 #    mysite_sflow:
 #      description: Slice for sFlow service
