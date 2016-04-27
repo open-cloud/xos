@@ -55,9 +55,9 @@ class VTNServiceForm(forms.ModelForm):
         self.instance.sshUser = self.cleaned_data.get("sshUser")
         self.instance.sshKeyFile = self.cleaned_data.get("sshKeyFile")
         self.instance.mgmtSubnetBits = self.cleaned_data.get("mgmtSubnetBits")
-        self.instance.mgmtSubnetBits = self.cleaned_data.get("xosEndpoint")
-        self.instance.mgmtSubnetBits = self.cleaned_data.get("xosUser")
-        self.instance.mgmtSubnetBits = self.cleaned_data.get("xosPassword")
+        self.instance.xosEndpoint = self.cleaned_data.get("xosEndpoint")
+        self.instance.xosUser = self.cleaned_data.get("xosUser")
+        self.instance.xosPassword = self.cleaned_data.get("xosPassword")
         return super(VTNServiceForm, self).save(commit=commit)
 
     class Meta:
