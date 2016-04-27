@@ -30,8 +30,8 @@ class SyncPorts(OpenStackSyncStep):
 
         # A bunch of stuff to compensate for OpenStackDriver.client_driveR()
         # not being in working condition.
-        from openstack.client import OpenStackClient
-        from openstack.driver import OpenStackDriver
+        from openstack_xos.client import OpenStackClient
+        from openstack_xos.driver import OpenStackDriver
         controller = port.instance.node.site_deployment.controller
         slice = port.instance.slice
         caller = port.network.owner.creator

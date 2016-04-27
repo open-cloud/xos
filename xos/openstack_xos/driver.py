@@ -4,7 +4,7 @@ from xos.config import Config
 from core.models import Controller
 
 try:
-    from openstack.client import OpenStackClient
+    from openstack_xos.client import OpenStackClient
     has_openstack = True
 except:
     has_openstack = False

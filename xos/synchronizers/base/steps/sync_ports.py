@@ -171,8 +171,8 @@ class SyncPorts(OpenStackSyncStep):
 
                     # A bunch of stuff to compensate for OpenStackDriver.client_driveR()
                     # not being in working condition.
-                    from openstack.client import OpenStackClient
-                    from openstack.driver import OpenStackDriver
+                    from openstack_xos.client import OpenStackClient
+                    from openstack_xos.driver import OpenStackDriver
                     caller = port.network.owner.creator
                     auth = {'username': caller.email,
                             'password': caller.remote_password,
