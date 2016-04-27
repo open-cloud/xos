@@ -282,6 +282,16 @@ node_types:
             mgmtSubnetBits:
                 type: string
                 required: false
+            xosEndpoint:
+                type: string
+                required: false
+            xosUser:
+                type: string
+                required: false
+            xosPassword:
+                type: string
+                required: false
+
 
     tosca.nodes.CDNService:
         derived_from: tosca.nodes.Root
@@ -385,16 +395,17 @@ node_types:
                 type: tosca.capabilities.xos.User
 
         properties:
+            xos_base_props
             password:
                 type: string
                 required: false
             firstname:
                 type: string
-                required: true
+                required: false
                 description: First name of User.
             lastname:
                 type: string
-                required: true
+                required: false
                 description: Last name of User.
             phone:
                 type: string
@@ -410,11 +421,13 @@ node_types:
                 description: Public key that will be installed in Instances.
             is_active:
                 type: boolean
-                default: true
+                required: false
+                #default: true
                 description: If True, the user may log in.
             is_admin:
                 type: boolean
-                default: false
+                required: false
+                #default: false
                 description: If True, the user has root admin privileges.
             login_page:
                 type: string
@@ -427,6 +440,9 @@ node_types:
         description: >
             An XOS network parameter type. May be applied to Networks and/or
             Ports.
+
+        properties:
+            xos_base_props
 
         capabilities:
             network_parameter_type:
@@ -444,13 +460,14 @@ node_types:
                 type: tosca.capabilities.xos.NetworkTemplate
 
         properties:
+            xos_base_props
             visibility:
                 type: string
-                default: private
+                required: false
                 description: Indicates whether network is publicly routable.
             translation:
                 type: string
-                default: none
+                required: false
                 description: Indicates whether network uses address translation.
             shared_network_name:
                 type: string
@@ -462,7 +479,7 @@ node_types:
                 description: Attaches this template to a specific OpenStack network.
             topology_kind:
                 type: string
-                default: BigSwitch
+                required: false
                 description: Describes the topology of the network.
             controller_kind:
                 type: string
@@ -849,6 +866,21 @@ node_types:
                 required: false
                 description: URL to the dashboard
 
+    tosca.nodes.Tag:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Tag
+        properties:
+            xos_base_props
+            name:
+                type: string
+                required: true
+                descrption: name of tag
+            value:
+                type: string
+                required: false
+                descrption: value of tag
+
     tosca.nodes.Compute.Container:
       derived_from: tosca.nodes.Compute
       description: >
@@ -983,6 +1015,9 @@ node_types:
         valid_target_types: [ tosca.capabilities.xos.AddressPool ]
 
     tosca.relationships.DependsOn:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.TagsObject:
         derived_from: tosca.relationships.Root
 
     tosca.capabilities.xos.Service:

@@ -8,10 +8,10 @@ xos: nodes.yaml images.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/images.yaml
 
-vtn:
+vtn: vtn-external.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/vtn-external.yaml
 
-cord: virtualbng_json
+cord: 
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/mgmt-net.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-vtn-vsg.yaml
 
@@ -26,6 +26,9 @@ nodes.yaml:
 
 images.yaml:
 	export SETUPDIR=.; bash ../common/make-images-yaml.sh
+
+vtn-external.yaml:
+	export SETUPDIR=.; bash ./make-vtn-external-yaml.sh
 
 virtualbng_json:
 	export SETUPDIR=.; bash ./make-virtualbng-json.sh

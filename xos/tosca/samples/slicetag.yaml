@@ -1,0 +1,35 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup CORD-related services -- vOLT, vCPE, vBNG.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    mysite_vsg:
+      type: tosca.nodes.Slice
+      properties:
+          no-create: True
+          no-delete: True
+          no-update: True
+
+    service_vsg:
+      type: tosca.nodes.Service
+      properties:
+          no-create: True
+          no-delete: True
+          no-update: True
+
+    mysite_vsg_foobar_tag:
+      type: tosca.nodes.Tag
+      properties:
+          name: foobar
+          value: xyz
+      requirements:
+          - target:
+              node: mysite_vsg
+              relationship: tosca.relationships.TagsObject
+          - service:
+              node: service_vsg
+              relationship: tosca.relationships.MemberOfService

@@ -37,8 +37,10 @@ class VTNService(Service):
                           ("sshUser", "root"),
                           ("sshKeyFile", "/root/node_key") ,
                           ("mgmtSubnetBits", "24"),
+                          ("xosEndpoint", "http://xos/"),
+                          ("xosUser", "padmin@vicci.org"),
+                          ("xosPassword", "letmein"),
 
                          )
 
 VTNService.setup_simple_attributes()
-

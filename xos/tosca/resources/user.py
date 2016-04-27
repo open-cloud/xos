@@ -66,6 +66,8 @@ class XOSUser(XOSResource):
 
         if not xos_args.get("site",None):
              raise Exception("Site name must be specified when creating user")
+        if ("firstname" not in xos_args) or ("lastname" not in xos_args):
+             raise Exception("firstname and lastname must be specified when creating user")
 
         user = User(**xos_args)
         user.save()
