@@ -16,6 +16,9 @@ from xos.exceptions import *
 import json
 import subprocess
 
+class VTNSerializer(PlusModelSerializer):
+        id = ReadOnlyField()
+
 class VTNViewSet(XOSViewSet):
     base_name = "vtn"
     method_name = "rs/vtn"
@@ -25,6 +28,8 @@ class VTNViewSet(XOSViewSet):
     # default endpoints
     queryset = Service.objects.none() # CordSubscriber.get_tenant_objects().select_related().all()
     model = Service
+
+    serializer_class = VTNSerializer
 
     @classmethod
     def get_urlpatterns(self):
