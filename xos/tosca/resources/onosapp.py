@@ -33,7 +33,7 @@ class XOSONOSApp(XOSResource):
 
     def get_existing_objs(self):
         objs = ONOSApp.get_tenant_objects().all()
-        objs = [x for x in objs if x.name == self.nodetemplate.name]
+        objs = [x for x in objs if x.name == self.obj_name]
         return objs
 
     def set_tenant_attr(self, obj, prop_name, value):
@@ -61,7 +61,8 @@ class XOSONOSApp(XOSResource):
                 self.set_tenant_attr(obj, k, v)
             elif k.startswith("component_config"):
                 self.set_tenant_attr(obj, k, v)
+            elif k == "autogenerate":
+                self.set_tenant_attr(obj, k, v)
 
     def can_delete(self, obj):
         return super(XOSONOSApp, self).can_delete(obj)
-

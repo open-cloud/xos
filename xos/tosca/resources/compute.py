@@ -39,7 +39,7 @@ class XOSCompute(XOSResource):
         nodetemplate = self.nodetemplate
 
         if not name:
-            name = nodetemplate.name
+            name = self.obj_name
 
         args = {"name": name}
 
@@ -105,7 +105,7 @@ class XOSCompute(XOSResource):
         if scalable:
             default_instances = scalable.get("default_instances",1)
             for i in range(0, default_instances):
-                name = "%s-%d" % (self.nodetemplate.name, i)
+                name = "%s-%d" % (self.obj_name, i)
                 existing_instances = Instance.objects.filter(name=name)
                 if existing_instances:
                     self.info("%s %s already exists" % (self.xos_model.__name__, name))
@@ -121,7 +121,7 @@ class XOSCompute(XOSResource):
             existing_instances = []
             max_instances = scalable.get("max_instances",1)
             for i in range(0, max_instances):
-                name = "%s-%d" % (self.nodetemplate.name, i)
+                name = "%s-%d" % (self.obj_name, i)
                 existing_instances = existing_instances + list(Instance.objects.filter(name=name))
             return existing_instances
         else:

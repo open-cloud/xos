@@ -51,7 +51,7 @@ class SyncServiceProvider(SyncStep, HpcLibrary):
         return result
 
     def sync_record(self, sp):
-        logger.info("sync'ing service provider %s" % str(sp))
+        logger.info("sync'ing service provider %s" % str(sp),extra=sp.tologdict())
         account_name = self.make_account_name(sp.name)
         sp_dict = {"account": account_name, "name": sp.name, "enabled": sp.enabled}
         if not sp.service_provider_id:

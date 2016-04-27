@@ -175,12 +175,14 @@ INSTALLED_APPS = (
     'core',
     'services.hpc',
     'services.cord',
-    'services.helloworldservice_complete',
     'services.onos',
     'services.ceilometer',
     'services.requestrouter',
     'services.syndicate_storage',
+    'services.openvpn',
     'services.vtr',
+    'services.vrouter',
+    'services.vtn',
     'geoposition',
     'rest_framework_swagger',
 )
@@ -245,7 +247,6 @@ XOS_BRANDING_CSS = getattr(config, "gui_branding_css", None)
 XOS_BRANDING_ICON = getattr(config, "gui_branding_icon", "/static/logo.png")
 XOS_BRANDING_FAVICON = getattr(config, "gui_branding_favicon", "/static/favicon.png")
 XOS_BRANDING_BG = getattr(config, "gui_branding_bg", "/static/bg.png")
-
 
 DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)
 ENCRYPTED_FIELDS_KEYDIR = XOS_DIR + '/private_keys'

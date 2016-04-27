@@ -1,0 +1,29 @@
+# Required by XOS
+[db]
+name=xos
+user=postgres
+password=password
+host=localhost
+port=5432
+
+# Required by XOS
+[api]
+nova_enabled=True
+
+# Sets options for the synchronizer
+[observer]
+name=exampleservice
+dependency_graph=/opt/xos/synchronizers/exampleservice/model-deps
+steps_dir=/opt/xos/synchronizers/exampleservice/steps
+sys_dir=/opt/xos/synchronizers/exampleservice/sys
+logfile=/var/log/xos_backend.log
+pretend=False
+backoff_disabled=True
+save_ansible_output=True
+proxy_ssh=True
+proxy_ssh_key=/root/setup/node_key
+proxy_ssh_user=root
+
+[networking]
+use_vtn=True
+

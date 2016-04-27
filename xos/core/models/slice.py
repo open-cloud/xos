@@ -184,6 +184,15 @@ class ControllerSlice(PlCoreBase):
     class Meta:
         unique_together = ('controller', 'slice')
      
+    def tologdict(self):
+        d=super(ControllerSlice,self).tologdict()
+        try:
+            d['slice_name']=self.slice.name
+            d['controller_name']=self.controller.name
+        except:
+            pass
+        return d
+
     def __unicode__(self):  return u'%s %s'  % (self.slice, self.controller)
 
     @staticmethod

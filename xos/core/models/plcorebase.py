@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 import sys
+import threading
 from django import db
 from django.db import models
 from django.forms.models import model_to_dict
@@ -198,7 +199,7 @@ class PlCoreBase(models.Model, PlModelMixIn):
     # default values for created and updated are only there to keep evolution
     # from failing.
     created = models.DateTimeField(auto_now_add=True, default=timezone.now)
-    updated = models.DateTimeField(auto_now=True, default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
     enacted = models.DateTimeField(null=True, blank=True, default=None)
     policed = models.DateTimeField(null=True, blank=True, default=None)
 
@@ -211,7 +212,8 @@ class PlCoreBase(models.Model, PlModelMixIn):
     deleted = models.BooleanField(default=False)
     write_protect = models.BooleanField(default=False)
     lazy_blocked = models.BooleanField(default=False)
-    no_sync = models.BooleanField(default=False)
+    no_sync = models.BooleanField(default=False)     # prevent object sync
+    no_policy = models.BooleanField(default=False)   # prevent model_policy run
 
     class Meta:
         # Changing abstract to False would require the managers of subclasses of
@@ -269,6 +271,9 @@ class PlCoreBase(models.Model, PlModelMixIn):
                 if not (field in ["backend_register", "backend_status", "deleted", "enacted", "updated"]):
                     ignore_composite_key_check=False
 
+        if 'synchronizer' not in threading.current_thread().name:
+            self.updated = datetime.datetime.now()
+
         super(PlCoreBase, self).save(*args, **kwargs)
 
         # This is a no-op if observer_disabled is set
@@ -300,3 +305,11 @@ class PlCoreBase(models.Model, PlModelMixIn):
     @classmethod
     def is_ephemeral(cls):
         return cls in ephemeral_models
+
+    def tologdict(self):
+        try:
+            d = {'model_name':self.__class__.__name__, 'pk': self.pk}
+        except:
+            d = {}
+
+        return d
