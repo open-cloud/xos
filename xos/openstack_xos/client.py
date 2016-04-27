@@ -1,10 +1,10 @@
 import urlparse
 try:
-    from keystoneclient.v2_0 import client as keystone_client
+    from keystoneclient import client as keystone_client
     #from glance import client as glance_client
     import glanceclient
-    from novaclient.v1_1 import client as nova_client
-    from neutronclient.v2_0 import client as quantum_client
+    from novaclient import client as nova_client
+    from neutronclient import client as quantum_client
     has_openstack = True
 except:
     has_openstack = False
