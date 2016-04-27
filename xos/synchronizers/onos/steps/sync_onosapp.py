@@ -100,7 +100,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
     def get_dynamic_parameter_value(self, o, param):
         instance = self.get_instance(o)
         if not instance:
-           raise "No instance for ONOS App"
+           raise Exception("No instance for ONOS App")
         if param == 'rabbit_host':
             return instance.controller.rabbit_host
         if param == 'rabbit_user':
