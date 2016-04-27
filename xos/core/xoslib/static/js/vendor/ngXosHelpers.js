@@ -28,6 +28,151 @@
  *
  * Visit http://guide.xosproject.org/devguide/addview/ for more information
  *
+ * Created by teone on 3/24/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+  * @ngdoc directive
+  * @name xos.uiComponents.directive:xosSmartTable
+  * @restrict E
+  * @description The xos-table directive
+  * @param {Object} config The configuration for the component.
+  * @scope
+  * @example
+  */
+
+  .directive('xosSmartTable', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        config: '='
+      },
+      template: '\n        <div class="row" ng-show="vm.data.length > 0">\n          <div class="col-xs-12 text-right">\n            <a href="" class="btn btn-success" ng-click="vm.createItem()">\n              Add\n            </a>\n          </div>\n        </div>\n        <div class="row">\n          <div class="col-xs-12 table-responsive">\n            <xos-table config="vm.tableConfig" data="vm.data"></xos-table>\n          </div>\n        </div>\n        <div class="panel panel-default" ng-show="vm.detailedItem">\n          <div class="panel-heading">\n            <div class="row">\n              <div class="col-xs-11">\n                <h3 class="panel-title" ng-show="vm.detailedItem.id">Update {{vm.config.resource}} {{vm.detailedItem.id}}</h3>\n                <h3 class="panel-title" ng-show="!vm.detailedItem.id">Create {{vm.config.resource}} item</h3>\n              </div>\n              <div class="col-xs-1">\n                <a href="" ng-click="vm.cleanForm()">\n                  <i class="glyphicon glyphicon-remove pull-right"></i>\n                </a>\n              </div>\n            </div>\n          </div>\n          <div class="panel-body">\n            <xos-form config="vm.formConfig" ng-model="vm.detailedItem"></xos-form>\n          </div>\n        </div>\n        <xos-alert config="{type: \'success\', closeBtn: true}" show="vm.responseMsg">{{vm.responseMsg}}</xos-alert>\n        <xos-alert config="{type: \'danger\', closeBtn: true}" show="vm.responseErr">{{vm.responseErr}}</xos-alert>\n      ',
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$injector", "LabelFormatter", "_", "XosFormHelpers", function controller($injector, LabelFormatter, _, XosFormHelpers) {
+        var _this = this;
+
+        // NOTE
+        // Corner case
+        // - if response is empty, how can we generate a form ?
+
+        this.responseMsg = false;
+        this.responseErr = false;
+
+        this.tableConfig = {
+          columns: [],
+          actions: [{
+            label: 'delete',
+            icon: 'remove',
+            cb: function cb(item) {
+              _this.Resource.delete({ id: item.id }).$promise.then(function () {
+                _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully deleted';
+              }).catch(function (err) {
+                _this.responseErr = err.data.detail || 'Error while deleting ' + _this.config.resource + ' with id ' + item.id;
+              });
+            },
+            color: 'red'
+          }, {
+            label: 'details',
+            icon: 'search',
+            cb: function cb(item) {
+              _this.detailedItem = item;
+            }
+          }],
+          classes: 'table table-striped table-bordered table-responsive',
+          filter: 'field',
+          order: true,
+          pagination: {
+            pageSize: 10
+          }
+        };
+
+        this.formConfig = {
+          exclude: this.config.hiddenFields,
+          fields: [],
+          formName: this.config.resource + 'Form',
+          actions: [{
+            label: 'Save',
+            icon: 'ok',
+            cb: function cb(item) {
+              item.$save().then(function () {
+                _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully saved';
+              }).catch(function (err) {
+                _this.responseErr = err.data.detail || 'Error while saving ' + _this.config.resource + ' with id ' + item.id;
+              });
+            },
+            class: 'success'
+          }]
+        };
+
+        this.cleanForm = function () {
+          delete _this.detailedItem;
+        };
+
+        this.createItem = function () {
+          _this.detailedItem = new _this.Resource();
+        };
+
+        this.Resource = $injector.get(this.config.resource);
+
+        this.Resource.query().$promise.then(function (res) {
+
+          if (!res[0]) {
+            return;
+          }
+
+          var item = res[0];
+          var props = Object.keys(item);
+
+          _.remove(props, function (p) {
+            return p == 'id' || p == 'password' || p == 'validators';
+          });
+
+          // TODO move out cb
+          if (angular.isArray(_this.config.hiddenFields)) {
+            props = _.difference(props, _this.config.hiddenFields);
+          }
+
+          var labels = props.map(function (p) {
+            return LabelFormatter.format(p);
+          });
+
+          props.forEach(function (p, i) {
+            _this.tableConfig.columns.push({
+              label: labels[i],
+              prop: p
+            });
+          });
+
+          // build form structure
+          props.forEach(function (p, i) {
+            _this.formConfig.fields.push({
+              label: LabelFormatter.format(labels[i]).replace(':', ''),
+              type: XosFormHelpers._getFieldFormat(item[p])
+            });
+          });
+          console.log(_this.formConfig.fields);
+          _this.data = res;
+        });
+      }]
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/smartComponents/smartTable/smartTable.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
  * Created by teone on 4/15/16.
  */
 
@@ -114,333 +259,6 @@
   });
 })();
 //# sourceMappingURL=../../../maps/ui_components/dumbComponents/validation/validation.component.js.map
-
-'use strict';
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
- * Created by teone on 3/24/16.
- */
-
-(function () {
-  'use strict';
-
-  angular.module('xos.uiComponents')
-
-  /**
-  * @ngdoc directive
-  * @name xos.uiComponents.directive:xosSmartTable
-  * @restrict E
-  * @description The xos-table directive
-  * @param {Object} config The configuration for the component.
-  * @scope
-  * @example
-  */
-
-  .directive('xosSmartTable', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        config: '='
-      },
-      template: '\n        <div class="row" ng-show="vm.data.length > 0">\n          <div class="col-xs-12 text-right">\n            <a href="" class="btn btn-success" ng-click="vm.createItem()">\n              Add\n            </a>\n          </div>\n        </div>\n        <xos-table config="vm.tableConfig" data="vm.data"></xos-table>\n        <div class="panel panel-default" ng-show="vm.detailedItem">\n          <div class="panel-heading">\n            <div class="row">\n              <div class="col-xs-11">\n                <h3 class="panel-title">Update {{vm.config.resource}} {{vm.detailedItem.id}}</h3>\n              </div>\n              <div class="col-xs-1">\n                <a href="" ng-click="vm.cleanForm()">\n                  <i class="glyphicon glyphicon-remove pull-right"></i>\n                </a>\n              </div>\n            </div>\n          </div>\n          <div class="panel-body">\n            <xos-form config="vm.formConfig" ng-model="vm.detailedItem"></xos-form>\n          </div>\n        </div>\n        <xos-alert config="{type: \'success\', closeBtn: true}" show="vm.responseMsg">{{vm.responseMsg}}</xos-alert>\n        <xos-alert config="{type: \'danger\', closeBtn: true}" show="vm.responseErr">{{vm.responseErr}}</xos-alert>\n      ',
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: ["$injector", "LabelFormatter", "_", function controller($injector, LabelFormatter, _) {
-        var _this = this;
-
-        // NOTE
-        // Corner case
-        // - if response is empty, how can we generate a form ?
-
-        this.responseMsg = false;
-        this.responseErr = false;
-
-        this.tableConfig = {
-          columns: [],
-          actions: [{
-            label: 'delete',
-            icon: 'remove',
-            cb: function cb(item) {
-              _this.Resource.delete({ id: item.id }).$promise.then(function () {
-                _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully deleted';
-              }).catch(function (err) {
-                _this.responseErr = err.data.detail || 'Error while deleting ' + _this.config.resource + ' with id ' + item.id;
-              });
-            },
-            color: 'red'
-          }, {
-            label: 'details',
-            icon: 'search',
-            cb: function cb(item) {
-              _this.detailedItem = item;
-            }
-          }],
-          classes: 'table table-striped table-bordered table-responsive',
-          filter: 'field',
-          order: true,
-          pagination: {
-            pageSize: 10
-          }
-        };
-
-        this.formConfig = {
-          exclude: this.config.hiddenFields,
-          formName: this.config.resource + 'Form',
-          actions: [{
-            label: 'Save',
-            icon: 'ok',
-            cb: function cb(item) {
-              item.$save().then(function () {
-                _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully saved';
-              }).catch(function (err) {
-                _this.responseErr = err.data.detail || 'Error while saving ' + _this.config.resource + ' with id ' + item.id;
-              });
-            },
-            class: 'success'
-          }]
-        };
-
-        this.cleanForm = function () {
-          delete _this.detailedItem;
-        };
-
-        this.createItem = function () {
-          _this.detailedItem = new _this.Resource();
-          console.log(_this.detailedItem);
-        };
-
-        this.Resource = $injector.get(this.config.resource);
-
-        this.Resource.query().$promise.then(function (res) {
-
-          if (!res[0]) {
-            return;
-          }
-
-          var props = Object.keys(res[0]);
-
-          _.remove(props, function (p) {
-            return p == 'id' || p == 'password' || p == 'validators';
-          });
-
-          // TODO move out cb
-          if (angular.isArray(_this.config.hiddenFields)) {
-            props = _.difference(props, _this.config.hiddenFields);
-          }
-
-          var labels = props.map(function (p) {
-            return LabelFormatter.format(p);
-          });
-
-          props.forEach(function (p, i) {
-            _this.tableConfig.columns.push({
-              label: labels[i],
-              prop: p
-            });
-          });
-
-          _this.data = res;
-        });
-      }]
-    };
-  });
-})();
-//# sourceMappingURL=../../../maps/ui_components/smartComponents/smartTable/smartTable.component.js.map
-
-'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
- * Created by teone on 4/18/16.
- */
-
-(function () {
-  'use strict';
-
-  angular.module('xos.uiComponents')
-
-  /**
-    * @ngdoc directive
-    * @name xos.uiComponents.directive:xosForm
-    * @restrict E
-    * @description The xos-form directive
-    * @param {Object} config The configuration object
-    * ```
-    * {
-    *   exclude: ['id', 'validators', 'created', 'updated', 'deleted'], //field to be skipped in the form, the provide values are concatenated
-    *   actions: [ // define the form buttons with related callback
-    *     {
-            label: 'save',
-            icon: 'ok', // refers to bootstraps glyphicon
-            cb: (user) => { // receive the model
-              console.log(user);
-            },
-            class: 'success'
-          }
-    *   ]
-    * }
-    * ```
-    * @element ANY
-    * @scope
-    * @example
-  <example module="sampleForm">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl as vm">
-        <xos-form ng-model="vm.model" config="vm.config"></xos-form>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('sampleForm', ['xos.uiComponents'])
-      .factory('_', function($window){
-        return $window._;
-      })
-      .controller('SampleCtrl', function(){
-        this.model = {
-          first_name: 'Jhon',
-          last_name: 'Doe',
-          email: 'jhon.doe@sample.com',
-          active: true,
-          birthDate: '2015-02-17T22:06:38.059000Z'
-        }
-        this.config = {
-          exclude: ['password', 'last_login'],
-          formName: 'sampleForm',
-          actions: [
-            {
-              label: 'Save',
-              icon: 'ok', // refers to bootstraps glyphicon
-              cb: (user) => { // receive the model
-                console.log(user);
-              },
-              class: 'success'
-            }
-          ]
-        };
-      });
-    </file>
-  </example>
-   **/
-
-  .directive('xosForm', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        config: '=',
-        ngModel: '='
-      },
-      template: '\n        <ng-form name="vm.{{vm.config.formName || \'form\'}}">\n          <div class="form-group" ng-repeat="(name, field) in vm.formField">\n            <label>{{field.label}}</label>\n            <input\n              ng-if="field.type !== \'boolean\'"\n              type="{{field.type}}"\n              name="{{name}}"\n              class="form-control"\n              ng-model="vm.ngModel[name]"\n              ng-minlength="field.validators.minlength || 0"\n              ng-maxlength="field.validators.maxlength || 2000"\n              ng-required="field.validators.required || false" />\n            <span class="boolean-field" ng-if="field.type === \'boolean\'">\n              <button\n                class="btn btn-success"\n                ng-show="vm.ngModel[name]"\n                ng-click="vm.ngModel[name] = false">\n                <i class="glyphicon glyphicon-ok"></i>\n              </button>\n              <button\n                class="btn btn-danger"\n                ng-show="!vm.ngModel[name]"\n                ng-click="vm.ngModel[name] = true">\n                <i class="glyphicon glyphicon-remove"></i>\n              </button>\n            </span>\n            <!-- <pre>{{vm[vm.config.formName][name].$error | json}}</pre> -->\n            <xos-validation errors="vm[vm.config.formName || \'form\'][name].$error"></xos-validation>\n          </div>\n          <div class="form-group" ng-if="vm.config.actions">\n            <button role="button" href=""\n              ng-repeat="action in vm.config.actions"\n              ng-click="action.cb(vm.ngModel)"\n              class="btn btn-{{action.class}}"\n              title="{{action.label}}">\n              <i class="glyphicon glyphicon-{{action.icon}}"></i>\n              {{action.label}}\n            </button>\n          </div>\n        </ng-form>\n      ',
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: ["$scope", "$log", "_", "XosFormHelpers", function controller($scope, $log, _, XosFormHelpers) {
-        var _this = this;
-
-        if (!this.config) {
-          throw new Error('[xosForm] Please provide a configuration via the "config" attribute');
-        }
-
-        if (!this.config.actions) {
-          throw new Error('[xosForm] Please provide an action list in the configuration');
-        }
-
-        this.excludedField = ['id', 'validators', 'created', 'updated', 'deleted', 'backend_status'];
-        if (this.config && this.config.exclude) {
-          this.excludedField = this.excludedField.concat(this.config.exclude);
-        }
-
-        this.formField = [];
-        $scope.$watch(function () {
-          return _this.ngModel;
-        }, function (model) {
-          if (!model) {
-            return;
-          }
-          _this.formField = XosFormHelpers.buildFormStructure(XosFormHelpers.parseModelField(_.difference(Object.keys(model), _this.excludedField)), _this.config.fields, model);
-        }, true);
-      }]
-    };
-  }).service('XosFormHelpers', ["_", "LabelFormatter", function (_, LabelFormatter) {
-    var _this2 = this;
-
-    this._isEmail = function (text) {
-      var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
-      return re.test(text);
-    };
-
-    this._getFieldFormat = function (value) {
-
-      // check if is date
-      console.log(_.isDate(value));
-      if (_.isDate(value) || !Number.isNaN(Date.parse(value)) && Date.parse(value) > 0) {
-        console.log('dio cane finisco qui');
-        return 'date';
-      }
-
-      // check if is boolean
-      // isNaN(false) = false, false is a number (0), true is a number (1)
-      if (typeof value === 'boolean') {
-        return 'boolean';
-      }
-
-      // check if a string is a number
-      if (!isNaN(value) && value !== null) {
-        return 'number';
-      }
-
-      // check if a string is an email
-      if (_this2._isEmail(value)) {
-        return 'email';
-      }
-
-      // if null return string
-      if (value === null) {
-        return 'string';
-      }
-
-      return typeof value === 'undefined' ? 'undefined' : _typeof(value);
-    };
-
-    this.buildFormStructure = function (modelField, customField, model) {
-
-      customField = customField || {};
-
-      return _.reduce(Object.keys(modelField), function (form, f) {
-
-        form[f] = {
-          label: customField[f] && customField[f].label ? customField[f].label + ':' : LabelFormatter.format(f),
-          type: customField[f] && customField[f].type ? customField[f].type : _this2._getFieldFormat(model[f]),
-          validators: customField[f] && customField[f].validators ? customField[f].validators : {}
-        };
-
-        if (form[f].type === 'date') {
-          model[f] = new Date(model[f]);
-        }
-
-        if (form[f].type === 'number') {
-          model[f] = parseInt(model[f], 10);
-        }
-
-        return form;
-      }, {});
-    };
-
-    this.parseModelField = function (fields) {
-      return _.reduce(fields, function (form, f) {
-        form[f] = {};
-        return form;
-      }, {});
-    };
-  }]);
-})();
-//# sourceMappingURL=../../../maps/ui_components/dumbComponents/form/form.component.js.map
 
 'use strict';
 
@@ -674,6 +492,309 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   /**
     * @ngdoc directive
+    * @name xos.uiComponents.directive:xosPagination
+    * @restrict E
+    * @description The xos-table directive
+    * @param {Number} pageSize Number of elements per page
+    * @param {Number} totalElements Number of total elements in the collection
+    * @param {Function} change The callback to be triggered on page change.
+    * * @element ANY
+    * @scope
+    * @example
+  <example module="samplePagination">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl1 as vm">
+        <xos-pagination
+          page-size="vm.pageSize"
+          total-elements="vm.totalElements"
+          change="vm.change">
+        </xos-pagination>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('samplePagination', ['xos.uiComponents'])
+      .controller('SampleCtrl1', function(){
+        this.pageSize = 10;
+        this.totalElements = 35;
+        this.change = (pageNumber) => {
+          console.log(pageNumber);
+        }
+      });
+    </file>
+  </example>
+  **/
+
+  .directive('xosPagination', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        pageSize: '=',
+        totalElements: '=',
+        change: '='
+      },
+      template: '\n        <div class="row" ng-if="vm.pageList.length > 1">\n          <div class="col-xs-12 text-center">\n            <ul class="pagination">\n              <li\n                ng-click="vm.goToPage(vm.currentPage - 1)"\n                ng-class="{disabled: vm.currentPage == 0}">\n                <a href="" aria-label="Previous">\n                    <span aria-hidden="true">&laquo;</span>\n                </a>\n              </li>\n              <li ng-repeat="i in vm.pageList" ng-class="{active: i === vm.currentPage}">\n                <a href="" ng-click="vm.goToPage(i)">{{i + 1}}</a>\n              </li>\n              <li\n                ng-click="vm.goToPage(vm.currentPage + 1)"\n                ng-class="{disabled: vm.currentPage == vm.pages - 1}">\n                <a href="" aria-label="Next">\n                    <span aria-hidden="true">&raquo;</span>\n                </a>\n              </li>\n            </ul>\n          </div>\n        </div>\n      ',
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$scope", function controller($scope) {
+        var _this = this;
+
+        this.currentPage = 0;
+
+        this.goToPage = function (n) {
+          if (n < 0 || n === _this.pages) {
+            return;
+          }
+          _this.currentPage = n;
+          _this.change(n);
+        };
+
+        this.createPages = function (pages) {
+          var arr = [];
+          for (var i = 0; i < pages; i++) {
+            arr.push(i);
+          }
+          return arr;
+        };
+
+        // watch for data changes
+        $scope.$watch(function () {
+          return _this.totalElements;
+        }, function () {
+          if (_this.totalElements) {
+            _this.pages = Math.ceil(_this.totalElements / _this.pageSize);
+            _this.pageList = _this.createPages(_this.pages);
+          }
+        });
+      }]
+    };
+  }).filter('pagination', function () {
+    return function (input, start) {
+      if (!input || !angular.isArray(input)) {
+        return input;
+      }
+      start = parseInt(start, 10);
+      return input.slice(start);
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/dumbComponents/pagination/pagination.component.js.map
+
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 4/18/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosForm
+    * @restrict E
+    * @description The xos-form directive
+    * @param {Object} config The configuration object
+    * ```
+    * {
+    *   exclude: ['id', 'validators', 'created', 'updated', 'deleted'], //field to be skipped in the form, the provide values are concatenated
+    *   actions: [ // define the form buttons with related callback
+    *     {
+            label: 'save',
+            icon: 'ok', // refers to bootstraps glyphicon
+            cb: (user) => { // receive the model
+              console.log(user);
+            },
+            class: 'success'
+          }
+    *   ]
+    * }
+    * ```
+    * @element ANY
+    * @scope
+    * @example
+  <example module="sampleForm">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm">
+        <xos-form ng-model="vm.model" config="vm.config"></xos-form>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleForm', ['xos.uiComponents'])
+      .factory('_', function($window){
+        return $window._;
+      })
+      .controller('SampleCtrl', function(){
+        this.model = {
+          first_name: 'Jhon',
+          last_name: 'Doe',
+          email: 'jhon.doe@sample.com',
+          active: true,
+          birthDate: '2015-02-17T22:06:38.059000Z'
+        }
+        this.config = {
+          exclude: ['password', 'last_login'],
+          formName: 'sampleForm',
+          actions: [
+            {
+              label: 'Save',
+              icon: 'ok', // refers to bootstraps glyphicon
+              cb: (user) => { // receive the model
+                console.log(user);
+              },
+              class: 'success'
+            }
+          ]
+        };
+      });
+    </file>
+  </example>
+   **/
+
+  .directive('xosForm', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        config: '=',
+        ngModel: '='
+      },
+      template: '\n        <ng-form name="vm.{{vm.config.formName || \'form\'}}">\n          <div class="form-group" ng-repeat="(name, field) in vm.formField">\n            <label>{{field.label}}</label>\n            <input\n              ng-if="field.type !== \'boolean\'"\n              type="{{field.type}}"\n              name="{{name}}"\n              class="form-control"\n              ng-model="vm.ngModel[name]"\n              ng-minlength="field.validators.minlength || 0"\n              ng-maxlength="field.validators.maxlength || 2000"\n              ng-required="field.validators.required || false" />\n            <span class="boolean-field" ng-if="field.type === \'boolean\'">\n              <button\n                class="btn btn-success"\n                ng-show="vm.ngModel[name]"\n                ng-click="vm.ngModel[name] = false">\n                <i class="glyphicon glyphicon-ok"></i>\n              </button>\n              <button\n                class="btn btn-danger"\n                ng-show="!vm.ngModel[name]"\n                ng-click="vm.ngModel[name] = true">\n                <i class="glyphicon glyphicon-remove"></i>\n              </button>\n            </span>\n            <!-- <pre>{{vm[vm.config.formName][name].$error | json}}</pre> -->\n            <xos-validation errors="vm[vm.config.formName || \'form\'][name].$error"></xos-validation>\n          </div>\n          <div class="form-group" ng-if="vm.config.actions">\n            <button role="button" href=""\n              ng-repeat="action in vm.config.actions"\n              ng-click="action.cb(vm.ngModel)"\n              class="btn btn-{{action.class}}"\n              title="{{action.label}}">\n              <i class="glyphicon glyphicon-{{action.icon}}"></i>\n              {{action.label}}\n            </button>\n          </div>\n        </ng-form>\n      ',
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$scope", "$log", "_", "XosFormHelpers", function controller($scope, $log, _, XosFormHelpers) {
+        var _this = this;
+
+        if (!this.config) {
+          throw new Error('[xosForm] Please provide a configuration via the "config" attribute');
+        }
+
+        if (!this.config.actions) {
+          throw new Error('[xosForm] Please provide an action list in the configuration');
+        }
+
+        this.excludedField = ['id', 'validators', 'created', 'updated', 'deleted', 'backend_status'];
+        if (this.config && this.config.exclude) {
+          this.excludedField = this.excludedField.concat(this.config.exclude);
+        }
+
+        this.formField = [];
+        $scope.$watch(function () {
+          return _this.ngModel;
+        }, function (model) {
+
+          // empty from old stuff
+          _this.formField = {};
+
+          if (!model) {
+            return;
+          }
+
+          var diff = _.difference(Object.keys(model), _this.excludedField);
+          var modelField = XosFormHelpers.parseModelField(diff);
+          _this.formField = XosFormHelpers.buildFormStructure(modelField, _this.config.fields, model);
+        });
+      }]
+    };
+  }).service('XosFormHelpers', ["_", "LabelFormatter", function (_, LabelFormatter) {
+    var _this2 = this;
+
+    this._isEmail = function (text) {
+      var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+      return re.test(text);
+    };
+
+    this._getFieldFormat = function (value) {
+
+      // check if is date
+      if (_.isDate(value) || !Number.isNaN(Date.parse(value)) && new Date(value).getTime() > 631180800000) {
+        return 'date';
+      }
+
+      // check if is boolean
+      // isNaN(false) = false, false is a number (0), true is a number (1)
+      if (typeof value === 'boolean') {
+        return 'boolean';
+      }
+
+      // check if a string is a number
+      if (!isNaN(value) && value !== null) {
+        return 'number';
+      }
+
+      // check if a string is an email
+      if (_this2._isEmail(value)) {
+        return 'email';
+      }
+
+      // if null return string
+      if (value === null) {
+        return 'string';
+      }
+
+      return typeof value === 'undefined' ? 'undefined' : _typeof(value);
+    };
+
+    this.buildFormStructure = function (modelField, customField, model) {
+
+      // console.log(modelField, model);
+
+      modelField = Object.keys(modelField).length > 0 ? modelField : customField; //if no model field are provided, check custom
+      customField = customField || {};
+
+      return _.reduce(Object.keys(modelField), function (form, f) {
+
+        form[f] = {
+          label: customField[f] && customField[f].label ? customField[f].label + ':' : LabelFormatter.format(f),
+          type: customField[f] && customField[f].type ? customField[f].type : _this2._getFieldFormat(model[f]),
+          validators: customField[f] && customField[f].validators ? customField[f].validators : {}
+        };
+
+        if (form[f].type === 'date') {
+          model[f] = new Date(model[f]);
+        }
+
+        if (form[f].type === 'number') {
+          model[f] = parseInt(model[f], 10);
+        }
+
+        return form;
+      }, {});
+    };
+
+    this.parseModelField = function (fields) {
+      return _.reduce(fields, function (form, f) {
+        form[f] = {};
+        return form;
+      }, {});
+    };
+  }]);
+})();
+//# sourceMappingURL=../../../maps/ui_components/dumbComponents/form/form.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 4/15/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+    * @ngdoc directive
     * @name xos.uiComponents.directive:xosAlert
     * @restrict E
     * @description The xos-alert directive
@@ -795,110 +916,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   });
 })();
 //# sourceMappingURL=../../../maps/ui_components/dumbComponents/alert/alert.component.js.map
-
-'use strict';
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
- * Created by teone on 4/15/16.
- */
-
-(function () {
-  'use strict';
-
-  angular.module('xos.uiComponents')
-
-  /**
-    * @ngdoc directive
-    * @name xos.uiComponents.directive:xosPagination
-    * @restrict E
-    * @description The xos-table directive
-    * @param {Number} pageSize Number of elements per page
-    * @param {Number} totalElements Number of total elements in the collection
-    * @param {Function} change The callback to be triggered on page change.
-    * * @element ANY
-    * @scope
-    * @example
-  <example module="samplePagination">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl1 as vm">
-        <xos-pagination
-          page-size="vm.pageSize"
-          total-elements="vm.totalElements"
-          change="vm.change">
-        </xos-pagination>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('samplePagination', ['xos.uiComponents'])
-      .controller('SampleCtrl1', function(){
-        this.pageSize = 10;
-        this.totalElements = 35;
-        this.change = (pageNumber) => {
-          console.log(pageNumber);
-        }
-      });
-    </file>
-  </example>
-  **/
-
-  .directive('xosPagination', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        pageSize: '=',
-        totalElements: '=',
-        change: '='
-      },
-      template: '\n        <div class="row" ng-if="vm.pageList.length > 1">\n          <div class="col-xs-12 text-center">\n            <ul class="pagination">\n              <li\n                ng-click="vm.goToPage(vm.currentPage - 1)"\n                ng-class="{disabled: vm.currentPage == 0}">\n                <a href="" aria-label="Previous">\n                    <span aria-hidden="true">&laquo;</span>\n                </a>\n              </li>\n              <li ng-repeat="i in vm.pageList" ng-class="{active: i === vm.currentPage}">\n                <a href="" ng-click="vm.goToPage(i)">{{i + 1}}</a>\n              </li>\n              <li\n                ng-click="vm.goToPage(vm.currentPage + 1)"\n                ng-class="{disabled: vm.currentPage == vm.pages - 1}">\n                <a href="" aria-label="Next">\n                    <span aria-hidden="true">&raquo;</span>\n                </a>\n              </li>\n            </ul>\n          </div>\n        </div>\n      ',
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: ["$scope", function controller($scope) {
-        var _this = this;
-
-        this.currentPage = 0;
-
-        this.goToPage = function (n) {
-          if (n < 0 || n === _this.pages) {
-            return;
-          }
-          _this.currentPage = n;
-          _this.change(n);
-        };
-
-        this.createPages = function (pages) {
-          var arr = [];
-          for (var i = 0; i < pages; i++) {
-            arr.push(i);
-          }
-          return arr;
-        };
-
-        // watch for data changes
-        $scope.$watch(function () {
-          return _this.totalElements;
-        }, function () {
-          if (_this.totalElements) {
-            _this.pages = Math.ceil(_this.totalElements / _this.pageSize);
-            _this.pageList = _this.createPages(_this.pages);
-          }
-        });
-      }]
-    };
-  }).filter('pagination', function () {
-    return function (input, start) {
-      if (!input || !angular.isArray(input)) {
-        return input;
-      }
-      start = parseInt(start, 10);
-      return input.slice(start);
-    };
-  });
-})();
-//# sourceMappingURL=../../../maps/ui_components/dumbComponents/pagination/pagination.component.js.map
 
 'use strict';
 
@@ -1222,7 +1239,8 @@ angular.module('xos.helpers').config(['$provide', function ($provide) {
       string = _formatByUnderscore(string);
       string = _formatByUppercase(string);
 
-      return _capitalize(string).replace(/\s\s+/g, ' ') + ':';
+      string = _capitalize(string).replace(/\s\s+/g, ' ') + ':';
+      return string.replace('::', ':');
     };
 
     return {

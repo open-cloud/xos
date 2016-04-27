@@ -128,12 +128,92 @@
         expect(service.parseModelField(fields)).toEqual(modelField);
       });
 
-      it('should combine modelField and customField in a form object', () => {
-        expect(service.buildFormStructure(modelField, customField, model)).toEqual(formObject);
+      xdescribe('when modelField are provided', () => {
+        it('should combine modelField and customField in a form object', () => {
+          expect(service.buildFormStructure(modelField, customField, model)).toEqual(formObject);
+        });
+      });
+
+      describe('when model field is an empty array', () => {
+        let modelField = {
+          // 5: {}
+        };
+        let customFields = {
+          id: {
+            label: 'Id',
+            type: 'number'
+          },
+          name: {
+            label: 'Name',
+            type: 'string'
+          },
+          mail: {
+            label: 'Mail',
+            type: 'email'
+          },
+          active: {
+            label: 'Active',
+            type: 'boolean'
+          },
+          created: {
+            label: 'Created',
+            type: 'date'
+          },
+          custom: {
+            label: 'Custom Label',
+            type: 'number'
+          }
+        };
+
+        let formObject = {
+          id: {
+            label: 'Id:',
+            type: 'number',
+            validators: {}
+          },
+          name: {
+            label: 'Name:',
+            type: 'string',
+            validators: {}
+          },
+          mail: {
+            label: 'Mail:',
+            type: 'email',
+            validators: {}
+          },
+          active: {
+            label: 'Active:',
+            type: 'boolean',
+            validators: {}
+          },
+          created: {
+            label: 'Created:',
+            type: 'date',
+            validators: {}
+          },
+          custom: {
+            label: 'Custom Label:',
+            type: 'number',
+            validators: {}
+          }
+        };
+
+        let model = {5: 'Nan'}
+
+        it('should create a form object', () => {
+          let res = service.buildFormStructure(modelField, customFields, model)
+          expect(res.id).toEqual(formObject.id);
+          expect(res.name).toEqual(formObject.name);
+          expect(res.mail).toEqual(formObject.mail);
+          expect(res.active).toEqual(formObject.active);
+          expect(res.created).toEqual(formObject.created);
+          expect(res.custom).toEqual(formObject.custom);
+          expect(res).toEqual(formObject);
+        });
       });
     });
 
-    describe('The xos-form component', () => {
+    xdescribe('The xos-form component', () => {
 
       let element, scope, isolatedScope;
 

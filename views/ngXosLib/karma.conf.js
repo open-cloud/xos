@@ -16,6 +16,7 @@ var files = bowerComponents.concat([
   'xosHelpers/src/**/*.module.js',
   'xosHelpers/src/**/*.js',
   'xosHelpers/spec/**/*.test.js'
+  // 'xosHelpers/spec/ui/form.test.js'
 ]);
 
 module.exports = function(config) {
@@ -88,7 +89,7 @@ module.exports = function(config) {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: [
       'PhantomJS',
-      'Chrome'
+      // 'Chrome'
     ],
 
 
