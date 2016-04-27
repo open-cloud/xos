@@ -3,7 +3,7 @@ try:
     from keystoneclient.v2_0 import client as keystone_client
     #from glance import client as glance_client
     import glanceclient
-    from novaclient import client as nova_client
+     from novaclient.v2 import client as nova_client
     from neutronclient import client as quantum_client
     has_openstack = True
 except:
@@ -117,15 +117,17 @@ class NovaClient(Client):
     def __init__(self, *args, **kwds):
         Client.__init__(self, *args, **kwds)
         if has_openstack:
-            self.client = nova_client.Client(username=self.username,
-                                             api_key=self.password,
-                                             project_id=self.tenant,
-                                             auth_url=self.url,
-                                             region_name='',
-                                             extensions=[],
-                                             service_type='compute',
-                                             service_name='',
-                                             )
+            self.client = nova_client.client.Client(
+                    "2",
+                    username=self.username,
+                    api_key=self.password,
+                    project_id=self.tenant,
+                    auth_url=self.url,
+                    region_name='',
+                    extensions=[],
+                    service_type='compute',
+                    service_name='',
+                    )
 
     @require_enabled
     def connect(self, *args, **kwds):
