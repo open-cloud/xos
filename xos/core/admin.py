@@ -21,7 +21,7 @@ from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.html import conditional_escape, format_html
 from django.utils.safestring import mark_safe
 from django.utils.text import capfirst
-from openstack.manager import OpenStackManager
+from openstack_xos.manager import OpenStackManager
 from suit.widgets import LinkedSelect
 
 # thread locals necessary to work around a django-suit issue
