@@ -1,6 +1,6 @@
 import urlparse
 try:
-    from keystoneclient.v2.0 import client as keystone_client
+    from keystoneclient.v2_0 import client as keystone_client
     #from glance import client as glance_client
     import glanceclient
     from novaclient import client as nova_client
