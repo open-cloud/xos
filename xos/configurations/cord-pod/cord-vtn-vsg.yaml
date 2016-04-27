@@ -80,8 +80,7 @@ topology_template:
       properties:
           install_dependencies: onos-ext-notifier-1.0-SNAPSHOT.oar, onos-ext-volt-event-publisher-1.0-SNAPSHOT.oar
           dependencies: org.onosproject.openflow-base, org.onosproject.olt, org.ciena.onos.ext_notifier, org.ciena.onos.volt_event_publisher
-          autogenerate: volt-network-cfg
-          autogenerate: volt-component-cfg
+          autogenerate: volt-network-cfg, volt-component-cfg
 
     Private:
       type: tosca.nodes.NetworkTemplate

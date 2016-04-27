@@ -311,11 +311,13 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             o.early_rest_configs.append( {"endpoint": endpoint, "fn": fn} )
 
         # Generate config files and save them to the appropriate tenant attributes
-        autogen = []
+        configs = []
         for key, value in attrs.iteritems():
             if key == "autogenerate" and value:
-                autogen.append(value)
-        for label in autogen:
+                for config in value.split(','):
+                    configs.append(config.strip())
+
+        for label in configs:
             config = None
             value = None
             if label == "vtn-network-cfg":
