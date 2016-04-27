@@ -3,8 +3,8 @@ try:
     from keystoneclient.v2_0 import client as keystone_client
     #from glance import client as glance_client
     import glanceclient
-     from novaclient.v2 import client as nova_client
-    from neutronclient import client as quantum_client
+    from novaclient.v2 import client as nova_client
+    from neutronclient.v2_0 import client as neutron_client 
     has_openstack = True
 except:
     has_openstack = False
@@ -154,11 +154,11 @@ class NovaDB(Client):
     def __getattr__(self, name):
         return getattr(self.client, name)
 
-class QuantumClient(Client):
+class NeutronClient(Client):
     def __init__(self, *args, **kwds):
         Client.__init__(self, *args, **kwds)
         if has_openstack:
-            self.client = quantum_client.Client(username=self.username,
+            self.client = neutron_client.Client(username=self.username,
                                                 password=self.password,
                                                 tenant_name=self.tenant,
                                                 auth_url=self.url,
@@ -188,7 +188,7 @@ class OpenStackClient:
         self.glanceclient = GlanceClient('1', endpoint=glance_endpoint, token=token.id, **kwds)
         self.nova = NovaClient(*args, **kwds)
         # self.nova_db = NovaDB(*args, **kwds)
-        self.quantum = QuantumClient(*args, **kwds)
+        self.neutron = NeutronClient(*args, **kwds)
     
 
     @require_enabled

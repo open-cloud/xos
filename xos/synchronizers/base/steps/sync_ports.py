@@ -12,7 +12,7 @@ class SyncPorts(OpenStackSyncStep):
     provides=[Port]
     observes=Port
 
-    #     The way it works is to enumerate the all of the ports that quantum
+    #     The way it works is to enumerate the all of the ports that neutron
     #     has, and then work backward from each port's network-id to determine
     #     which Network is associated from the port.
 
@@ -51,7 +51,7 @@ class SyncPorts(OpenStackSyncStep):
                 continue
             try:
                 driver = self.driver.admin_driver(controller = controller)
-                ports = driver.shell.quantum.list_ports()["ports"]
+                ports = driver.shell.neutron.list_ports()["ports"]
             except:
                 logger.log_exc("failed to get ports from controller %s" % controller)
                 continue
@@ -63,7 +63,7 @@ class SyncPorts(OpenStackSyncStep):
             # in the data model, so build up a list of which ids map to which network
             # templates.
             try:
-                neutron_networks = driver.shell.quantum.list_networks()["networks"]
+                neutron_networks = driver.shell.neutron.list_networks()["networks"]
             except:
                 print "failed to get networks from controller %s" % controller
                 continue
@@ -109,7 +109,7 @@ class SyncPorts(OpenStackSyncStep):
 
             if network.template.shared_network_name:
                 # If it's a shared network template, then more than one network
-                # object maps to the quantum network. We have to do a whole bunch
+                # object maps to the neutron network. We have to do a whole bunch
                 # of extra work to find the right one.
                 networks = network.template.network_set.all()
                 network = None
@@ -180,7 +180,7 @@ class SyncPorts(OpenStackSyncStep):
                     client = OpenStackClient(controller=controller, **auth) # cacert=self.config.nova_ca_ssl_cert,
                     driver = OpenStackDriver(client=client)
 
-                    neutron_port = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]
+                    neutron_port = driver.shell.neutron.create_port({"port": {"network_id": cn.net_id}})["port"]
                     port.port_id = neutron_port["id"]
                     if neutron_port["fixed_ips"]:
                         port.ip = neutron_port["fixed_ips"][0]["ip_address"]

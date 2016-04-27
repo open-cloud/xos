@@ -118,7 +118,7 @@ class SyncInstances(OpenStackSyncStep):
 
         #driver = self.driver.client_driver(caller=instance.creator, tenant=instance.slice.name, controller=instance.controllerNetwork)
         driver = self.driver.admin_driver(tenant='admin', controller=instance.node.site_deployment.controller)
-        nets = driver.shell.quantum.list_networks()['networks']
+        nets = driver.shell.neutron.list_networks()['networks']
         for net in nets:
             if net['name'] in network_templates:
                 nics.append({"kind": "net", "value": net['id'], "network": None})
