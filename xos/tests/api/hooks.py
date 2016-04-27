@@ -51,6 +51,9 @@ def cleanDB():
     for s in NetworkSlice.objects.all():
         s.delete(purge=True)
 
+    for s in AddressPool.objects.all():
+        s.delete(purge=True)
+
     # print 'DB Cleaned'
 
 
@@ -69,6 +72,22 @@ def createTestSubscriber():
     # creating the test subscriber
     subscriber = CordSubscriberRoot(name='Test Subscriber 1', id=1)
     subscriber.save()
+
+    # vRouter service
+    vrouter_service = VRouterService()
+    vrouter_service.name = 'service_vrouter'
+    vrouter_service.save()
+
+    # address pools
+    ap_vsg = AddressPool()
+    ap_vsg.service = vrouter_service
+    ap_vsg.name = 'addresses_vsg'
+    ap_vsg.addresses = '10.168.0.0'
+    ap_vsg.gateway_ip = '10.168.0.1'
+    ap_vsg.gateway_mac = '02:42:0a:a8:00:01'
+    ap_vsg.save()
+
+    # print 'vRouter created'
 
     # Site
     site = Site.objects.get(name='MySite')
@@ -164,6 +183,7 @@ def my_before_all_hook(transactions):
 @hooks.before_each
 def my_before_each_hook(transaction):
     # print "-------------------------------- Before Each Hook --------------------------------"
+    # print transaction['name']
     auth = doLogin('padmin@vicci.org', 'letmein')
     transaction['request']['headers']['X-CSRFToken'] = auth['token']
     transaction['request']['headers']['Cookie'] = "xossessionid=%s; xoscsrftoken=%s" % (auth['sessionid'], auth['token'])
@@ -176,13 +196,13 @@ def test1(transaction):
     setUpTruckroll()
 
 
-@hooks.before("Truckroll > Truckroll Detail > View a Truckroll Detail")
+@hooks.before("Truckroll > Truckroll Collection > View a Truckroll Detail")
 def test2(transaction):
     deleteTruckrolls()
     createTruckroll()
 
 
-@hooks.before("Truckroll > Truckroll Detail > Delete a Truckroll Detail")
+@hooks.before("Truckroll > Truckroll Collection > Delete a Truckroll Detail")
 def test3(transaction):
     deleteTruckrolls()
     createTruckroll()
@@ -192,3 +212,8 @@ def test3(transaction):
 def test4(transaction):
     # transaction['skip'] = True
     VOLTTenant.objects.get(kind='vOLT').delete()
+
+
+@hooks.before("Example > Example Services Collection > List all Example Services")
+def exampleTest(transaction):
+    transaction['skip'] = True

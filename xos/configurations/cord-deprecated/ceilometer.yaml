@@ -1,0 +1,270 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup CORD-related services -- vOLT, vCPE, vBNG.
+
+imports:
+   - custom_types/xos.yaml
+
+node_types:
+    tosca.nodes.SFlowService:
+        derived_from: tosca.nodes.Root
+        description: >
+            XOS SFlow Collection Service
+        capabilities:
+            scalable:
+                type: tosca.capabilities.Scalable
+            service:
+                type: tosca.capabilities.xos.Service
+        properties:
+            kind:
+                type: string
+                default: generic
+                description: Type of service.
+            view_url:
+                type: string
+                required: false
+                description: URL to follow when icon is clicked in the Service Directory.
+            icon_url:
+                type: string
+                required: false
+                description: ICON to display in the Service Directory.
+            enabled:
+                type: boolean
+                default: true
+            published:
+                type: boolean
+                default: true
+                description: If True then display this Service in the Service Directory.
+            public_key:
+                type: string
+                required: false
+                description: Public key to install into Instances to allows Services to SSH into them.
+            private_key_fn:
+                type: string
+                required: false
+                description: Location of private key file
+            versionNumber:
+                type: string
+                required: false
+                description: Version number of Service.
+            sflow_port:
+              type: integer
+              required: false
+              default: 6343
+              description: sFlow listening port
+            sflow_api_port:
+              type: integer
+              required: false
+              default: 33333
+              description: sFlow publish subscribe api listening port
+
+    tosca.nodes.CeilometerService:
+        derived_from: tosca.nodes.Root
+        description: >
+            XOS Ceilometer Service
+        capabilities:
+            scalable:
+                type: tosca.capabilities.Scalable
+            service:
+                type: tosca.capabilities.xos.Service
+        properties:
+            kind:
+                type: string
+                default: generic
+                description: Type of service.
+            view_url:
+                type: string
+                required: false
+                description: URL to follow when icon is clicked in the Service Directory.
+            icon_url:
+                type: string
+                required: false
+                description: ICON to display in the Service Directory.
+            enabled:
+                type: boolean
+                default: true
+            published:
+                type: boolean
+                default: true
+                description: If True then display this Service in the Service Directory.
+            public_key:
+                type: string
+                required: false
+                description: Public key to install into Instances to allows Services to SSH into them.
+            private_key_fn:
+                type: string
+                required: false
+                description: Location of private key file
+            versionNumber:
+                type: string
+                required: false
+                description: Version number of Service.
+            ceilometer_pub_sub_url:
+                type: string
+                required: false
+                description: REST URL of ceilometer PUB/SUB component
+
+    tosca.nodes.CeilometerTenant:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: A Tenant of the Ceilometer Service.
+        properties:
+            kind:
+                type: string
+                default: generic
+                description: Kind of tenant
+
+topology_template:
+  node_templates:
+    service_ceilometer:
+      type: tosca.nodes.CeilometerService
+      requirements:
+      properties:
+          view_url: /admin/ceilometer/ceilometerservice/$id$/
+          kind: ceilometer
+          ceilometer_pub_sub_url: http://10.11.10.1:4455/
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+      artifacts:
+          pubkey: /opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key
+
+#    service_sflow:
+#      type: tosca.nodes.SFlowService
+#      requirements:
+#      properties:
+#          view_url: /admin/ceilometer/sflowservice/$id$/
+#          kind: sflow
+#          sflow_port: 6343
+#          sflow_api_port: 33333
+
+    Private:
+      type: tosca.nodes.NetworkTemplate
+
+    ceilometer_network:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: ceilometer_client_access
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_ceilometer
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_ceilometer
+              relationship: tosca.relationships.ConnectsToSlice
+
+    mysite:
+      type: tosca.nodes.Site
+
+    trusty-server-multi-nic:
+      type: tosca.nodes.Image
+
+    ceilometer-trusty-server-multi-nic:
+      type: tosca.nodes.Image
+
+    m1.small:
+      type: tosca.nodes.Flavor
+
+    mysite_ceilometer:
+      description: Ceilometer Proxy Slice
+      type: tosca.nodes.Slice
+      requirements:
+          - ceilometer_service:
+              node: service_ceilometer
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - default_image:
+                node: ceilometer-trusty-server-multi-nic
+                relationship: tosca.relationships.DefaultImage
+          - default_flavor:
+                node: m1.small
+                relationship: tosca.relationships.DefaultFlavor
+
+#    mysite_sflow:
+#      description: Slice for sFlow service
+#      type: tosca.nodes.Slice
+#      requirements:
+#          - sflow_service:
+#              node: service_sflow
+#              relationship: tosca.relationships.MemberOfService
+#          - site:
+#              node: mysite
+#              relationship: tosca.relationships.MemberOfSite
+
+    my_ceilometer_tenant:
+      description: Ceilometer Service default Tenant
+      type: tosca.nodes.CeilometerTenant
+      requirements:
+          - provider_service:
+              node: service_ceilometer
+              relationship: tosca.relationships.MemberOfService
+       
+    # Virtual machines
+#    sflow_service_instance:
+#      type: tosca.nodes.Compute
+#      capabilities:
+#        # Host container properties
+#        host:
+#         properties:
+#           num_cpus: 1
+#           disk_size: 10 GB
+#           mem_size: 4 MB
+#        # Guest Operating System properties
+#        os:
+#          properties:
+#            # host Operating System image properties
+#            architecture: x86_64
+#            type: linux
+#            distribution: Ubuntu
+#            version: 14.10
+#      requirements:
+#          - slice:
+#                node: mysite_sflow
+#                relationship: tosca.relationships.MemberOfSlice
+
+    Customer Care:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosDiagnostic
+
+    TruckRoll:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosTruckroll
+
+    Ceilometer:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosCeilometerDashboard
+
+
+    Tenant:
+      type: tosca.nodes.DashboardView
+      properties:
+          no-create: true
+          no-update: true
+          no-delete: true
+
+    padmin@vicci.org:
+      type: tosca.nodes.User
+      properties:
+          firstname: XOS
+          lastname: admin
+          is_admin: true
+      requirements:
+          - customer_care_dashboard:
+              node: Customer Care
+              relationship: tosca.relationships.UsesDashboard
+          - truckroll_dashboard:
+              node: TruckRoll
+              relationship: tosca.relationships.UsesDashboard
+          - ceilometer_dashboard:
+              node: Ceilometer
+              relationship: tosca.relationships.UsesDashboard
+          - tenant_dashboard:
+              node: Tenant
+              relationship: tosca.relationships.UsesDashboard

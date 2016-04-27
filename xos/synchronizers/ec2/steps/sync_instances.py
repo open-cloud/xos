@@ -44,7 +44,7 @@ class SyncInstances(SyncStep):
         result = aws_run('ec2 terminate-instances --instance-ids=%s'%instance.instance_id, env=e)
 
     def sync_record(self, instance):
-        logger.info("sync'ing instance:%s deployment:%s " % (instance, instance.node.deployment))
+        logger.info("sync'ing instance:%s deployment:%s " % (instance, instance.node.deployment),extra=instance.tologdict())
 
         if not instance.instance_id:
             # public keys

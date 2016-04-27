@@ -114,7 +114,7 @@ class SyncStep(object):
                 reset_queries()
             except:
                 # this shouldn't happen, but in case it does, catch it...
-                logger.log_exc("exception in reset_queries")
+                logger.log_exc("exception in reset_queries",extra=o.tologdict())
 
             sync_failed = False
             try:
@@ -129,7 +129,7 @@ class SyncStep(object):
                     if (not backoff_disabled and next_run>time.time()):
                         sync_failed = True
             except:
-                logger.log_exc("Exception while loading scratchpad")
+                logger.log_exc("Exception while loading scratchpad",extra=o.tologdict())
                 pass
 
             if (not sync_failed):
@@ -147,7 +147,7 @@ class SyncStep(object):
                         o.backend_status = "1 - OK"
                         o.save(update_fields=['enacted','backend_status','backend_register'])
 		except (InnocuousException,Exception) as e:
-                    logger.log_exc("Syncstep caught exception")
+                    logger.log_exc("Syncstep caught exception",extra=o.tologdict())
 
                     force_error = False
                     try:
@@ -180,7 +180,7 @@ class SyncStep(object):
                         scratchpad = json.loads(o.backend_register)
                         scratchpad['exponent']
                     except:
-                        logger.log_exc("Exception while updating scratchpad")
+                        logger.log_exc("Exception while updating scratchpad",extra=o.tologdict())
                         scratchpad = {'next_run':0, 'exponent':0}
 
                     # Second failure

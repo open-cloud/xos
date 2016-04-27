@@ -15,5 +15,5 @@ class NetworkDeleter(Deleter):
             try:
                 network_deployment_deleter(network_deployment.id)    
             except:
-                logger.log_exc("Failed to delte network deployment %s" % network_deployment)
+                logger.log_exc("Failed to delete network deployment %s" % network_deployment,extra=network.tologdict())
         network.delete()

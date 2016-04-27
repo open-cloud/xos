@@ -50,6 +50,7 @@ RUN pip install \
     django-timezones \
     djangorestframework==3.3.3 \
     dnslib \
+    jinja2 \
     lxml \
     markdown \
     netaddr \
@@ -58,6 +59,7 @@ RUN pip install \
     python-ceilometerclient \
     python-dateutil \
     python-keyczar \
+    python-logstash \
     pygraphviz \
     pytz \
     pyyaml \

@@ -2,7 +2,7 @@
 
 OLT devices aggregate a set of subscriber connections
 
-## vOLT Collection [/api/tenant/cord/volt/]
+## vOLT Collection [/api/tenant/cord/volt/{volt_id}/]
 
 ### List all vOLT [GET]
 
@@ -54,14 +54,10 @@ OLT devices aggregate a set of subscriber connections
                 }
             }
 
-## vOLT Detail [/api/tenant/cord/volt/{volt_id}/]
-
-A virtual volt is complete once is_synced equal true
+### View a vOLT Detail [GET]
 
 + Parameters
     + volt_id: 1 (number) - ID of the vOLT in the form of an integer
-
-### View a vOLT Detail [GET]
 
 + Response 200 (application/json)
 

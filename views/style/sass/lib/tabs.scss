@@ -1,0 +1,27 @@
+.nav-tabs-suit li.active a,
+.nav-tabs-suit li.active a:hover,
+.nav-tabs-suit li a:hover,
+.nav-tabs-suit > li.active > a:focus {
+  background-color: $brand-primary;
+  color: #fff;
+  outline: none;
+}
+
+.nav-tabs>li {
+  margin-bottom: 0px;
+}
+
+.nav-tabs-suit li a{
+  letter-spacing: 1px;
+}
+
+#suit_form_tabs {
+  border-bottom-width: 5px !important;
+  border-bottom-style: solid;
+  border-bottom-color: $brand-primary;
+}
+
+.ui-widget-header {
+  background: none !important;
+  border: none !important;
+}

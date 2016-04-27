@@ -16,6 +16,9 @@ topology_template:
     trusty-server-multi-nic:
       type: tosca.nodes.Image
 
+    m1.small:
+      type: tosca.nodes.Flavor
+
     mysite_test1:
       type: tosca.nodes.Slice
       requirements:
@@ -25,6 +28,6 @@ topology_template:
           - default_image:
                 node: trusty-server-multi-nic
                 relationship: tosca.relationships.DefaultImage
-      properties:
-          default_flavor: m1.small
-
+          -default_flavor:
+                node: m1.small
+                relationship: tosca.relationships.DefaultFlavor

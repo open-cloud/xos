@@ -80,6 +80,25 @@ angular.module('xos.contentProvider', [
     scope: {},
     templateUrl: 'templates/cp_list.html',
     controller: function(){
+      ['Name', 'Description', 'Status', 'Actions']
+      this.tableConfig = {
+        columns: [
+          {
+            label: 'Name',
+            field: 'humanReadableName'
+          },
+          {
+            label: 'Description',
+            field: 'description'
+          },
+          {
+            label: 'Status',
+            field: 'enabled'
+          }
+        ],
+        enableActions: true
+      };
+
       var self = this;
 
       ContentProvider.query().$promise

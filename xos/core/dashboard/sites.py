@@ -33,7 +33,7 @@ class AdminMixin(object):
                     name="test"),
                url(r'^sliceinteractions/(?P<name>\w+)/$', self.admin_view(DashboardSliceInteractions.as_view()),
                     name="interactions"),
-               url(r'^dashboard/(?P<name>\w+)/$', self.admin_view(DashboardDynamicView.as_view()),
+               url(r'^dashboard/(?P<name>[\w|\W]+)/$', self.admin_view(DashboardDynamicView.as_view()),
                     name="dashboard"),
                url(r'^dashboardWholePage/(?P<name>\w+)/$', self.admin_view(DashboardDynamicView.as_view()),
                     {"wholePage": True},

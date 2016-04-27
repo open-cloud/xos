@@ -9,6 +9,7 @@ var babel = require('gulp-babel');
 var wiredep = require('wiredep').stream;
 var httpProxy = require('http-proxy');
 var del = require('del');
+var sass = require('gulp-sass');
 
 const environment = process.env.NODE_ENV;
 
@@ -49,14 +50,14 @@ module.exports = function(options){
       server: {
         baseDir: options.src,
         routes: {
-          '/api': options.api,
           '/xosHelpers/src': options.helpers
         },
         middleware: function(req, res, next){
           if(
             req.url.indexOf('/xos/') !== -1 ||
             req.url.indexOf('/xoslib/') !== -1 ||
-            req.url.indexOf('/hpcapi/') !== -1
+            req.url.indexOf('/hpcapi/') !== -1 ||
+            req.url.indexOf('/api/') !== -1
           ){
             if(conf.xoscsrftoken && conf.xossessionid){
               req.headers.cookie = `xoscsrftoken=${conf.xoscsrftoken}; xossessionid=${conf.xossessionid}`;
@@ -78,6 +79,19 @@ module.exports = function(options){
     gulp.watch(options.src + '**/*.html', function(){
       browserSync.reload();
     });
+    gulp.watch(options.css + '**/*.css', function(){
+      browserSync.reload();
+    });
+    gulp.watch(`${options.sass}/**/*.scss`, ['sass'], function(){
+      browserSync.reload();
+    });
+  });
+
+  // compile sass
+  gulp.task('sass', function () {
+    return gulp.src(`${options.sass}/**/*.scss`)
+      .pipe(sass().on('error', sass.logError))
+      .pipe(gulp.dest(options.css));
   });
 
   // transpile js with sourceMaps
@@ -94,8 +108,7 @@ module.exports = function(options){
         inject(
           gulp.src([
             options.tmp + '**/*.js',
-            options.api + '*.js',
-            options.helpers + '**/*.js'
+            options.helpers + '**/*.js' // todo add Babel here
           ])
           .pipe(angularFilesort()),
           {
@@ -137,6 +150,7 @@ module.exports = function(options){
 
   gulp.task('serve', function() {
     runSequence(
+      'sass',
       'bower',
       'injectScript',
       'injectCss',

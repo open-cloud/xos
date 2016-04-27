@@ -1,6 +1,6 @@
 # Group ONOS Apps
 
-## app Collection [/api/tenant/onos/app/]
+## ONOS App Collection [/api/tenant/onos/app/]
 
 ### List all apps [GET]
 

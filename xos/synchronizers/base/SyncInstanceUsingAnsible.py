@@ -33,7 +33,7 @@ class SyncInstanceUsingAnsible(SyncStep):
         return False
 
     def defer_sync(self, o, reason):
-        logger.info("defer object %s due to %s" % (str(o), reason))
+        logger.info("defer object %s due to %s" % (str(o), reason),extra=o.tologdict())
         raise Exception("defer object %s due to %s" % (str(o), reason))
 
     def get_extra_attributes(self, o):
@@ -63,7 +63,7 @@ class SyncInstanceUsingAnsible(SyncStep):
             template_name = self.template_name
         tStart = time.time()
         run_template_ssh(template_name, fields)
-        logger.info("playbook execution time %d" % int(time.time()-tStart))
+        logger.info("playbook execution time %d" % int(time.time()-tStart),extra=o.tologdict())
 
     def pre_sync_hook(self, o, fields):
         pass
@@ -154,7 +154,7 @@ class SyncInstanceUsingAnsible(SyncStep):
         return fields
 
     def sync_record(self, o):
-        logger.info("sync'ing object %s" % str(o))
+        logger.info("sync'ing object %s" % str(o),extra=o.tologdict())
 
         self.prepare_record(o)
 

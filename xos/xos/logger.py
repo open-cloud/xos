@@ -26,6 +26,8 @@
 import os, sys
 import traceback
 import logging, logging.handlers
+import logstash
+from xos.config import Config
 
 CRITICAL=logging.CRITICAL
 ERROR=logging.ERROR
@@ -36,10 +38,16 @@ DEBUG=logging.DEBUG
 # a logger that can handle tracebacks 
 class Logger:
     def __init__ (self,logfile=None,loggername=None,level=logging.INFO):
+        # Logstash config
+        try:
+            logstash_host,logstash_port = Config().observer_logstash_hostport.split(':')
+            logstash_handler = logstash.LogstashHandler(logstash_host, int(logstash_port), version=1)
+        except:
+            logstash_handler = None
+
         # default is to locate loggername from the logfile if avail.
         if not logfile:
             try:
-                from xos.config import Config
                 logfile = Config().observer_log_file
             except:
                 logfile = "/var/log/xos.log"
@@ -72,13 +80,13 @@ class Logger:
         self.logger.setLevel(level)
         # check if logger already has the handler we're about to add
         handler_exists = False
-        for l_handler in self.logger.handlers:
-            if ((not hasattr(l_handler,"baseFilename")) or (l_handler.baseFilename == handler.baseFilename)) and \
-               l_handler.level == handler.level:
-                handler_exists = True 
+        logstash_handler_exists = False
 
-        if not handler_exists:
+        if not len(self.logger.handlers):
             self.logger.addHandler(handler)
+
+            if (logstash_handler):
+                self.logger.addHandler(logstash_handler)
 
         self.loggername=loggername
 
@@ -109,39 +117,58 @@ class Logger:
         return verbose>=2
 
     ####################
-    def info(self, msg):
-        self.logger.info(msg)
 
-    def debug(self, msg):
-        self.logger.debug(msg)
+    def extract_context(self,cur):
+        try:
+            observer_name=Config().observer_name
+            cur['synchronizer_name']=observer_name
+        except:
+            pass
+
+        return cur
+
+    def info(self, msg, extra={}):
+        extra = self.extract_context(extra) 
+        self.logger.info(msg, extra=extra)
+
+    def debug(self, msg, extra={}):
+        extra = self.extract_context(extra) 
+        self.logger.debug(msg, extra=extra)
         
-    def warn(self, msg):
-        self.logger.warn(msg)
+    def warn(self, msg, extra={}):
+        extra = self.extract_context(extra) 
+        self.logger.warn(msg, extra=extra)
 
     # some code is using logger.warn(), some is using logger.warning()
-    def warning(self, msg):
-        self.logger.warning(msg)
+    def warning(self, msg, extra={}):
+        extra = self.extract_context(extra) 
+        self.logger.warning(msg,extra=extra)
    
-    def error(self, msg):
-        self.logger.error(msg)    
+    def error(self, msg, extra={}):
+        extra = self.extract_context(extra) 
+        self.logger.error(msg, extra=extra)    
  
-    def critical(self, msg):
-        self.logger.critical(msg)
+    def critical(self, msg, extra={}):
+        extra = self.extract_context(extra) 
+        self.logger.critical(msg, extra=extra)
 
     # logs an exception - use in an except statement
-    def log_exc(self,message):
-        self.error("%s BEG TRACEBACK"%message+"\n"+traceback.format_exc().strip("\n"))
-        self.error("%s END TRACEBACK"%message)
+    def log_exc(self,message, extra={}):
+        extra = self.extract_context(extra) 
+        self.error("%s BEG TRACEBACK"%message+"\n"+traceback.format_exc().strip("\n"), extra=extra)
+        self.error("%s END TRACEBACK"%message, extra=extra)
     
-    def log_exc_critical(self,message):
-        self.critical("%s BEG TRACEBACK"%message+"\n"+traceback.format_exc().strip("\n"))
-        self.critical("%s END TRACEBACK"%message)
+    def log_exc_critical(self,message, extra={}):
+        extra = self.extract_context(extra) 
+        self.critical("%s BEG TRACEBACK"%message+"\n"+traceback.format_exc().strip("\n"), extra=extra)
+        self.critical("%s END TRACEBACK"%message, extra=extra)
     
     # for investigation purposes, can be placed anywhere
-    def log_stack(self,message):
+    def log_stack(self,message, extra={}):
+        extra = self.extract_context(extra) 
         to_log="".join(traceback.format_stack())
-        self.info("%s BEG STACK"%message+"\n"+to_log)
-        self.info("%s END STACK"%message)
+        self.info("%s BEG STACK"%message+"\n"+to_log,extra=extra)
+        self.info("%s END STACK"%message,extra=extra)
 
     def enable_console(self, stream=sys.stdout):
         formatter = logging.Formatter("%(message)s")
