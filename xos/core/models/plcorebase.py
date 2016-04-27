@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 import sys
+import threading
 from django import db
 from django.db import models
 from django.forms.models import model_to_dict
@@ -269,6 +270,9 @@ class PlCoreBase(models.Model, PlModelMixIn):
             for field in kwargs["update_fields"]:
                 if not (field in ["backend_register", "backend_status", "deleted", "enacted", "updated"]):
                     ignore_composite_key_check=False
+
+        if 'synchronizer' not in threading.current_thread().name:
+            self.updated = datetime.datetime.now()
 
         super(PlCoreBase, self).save(*args, **kwargs)
 

@@ -15,7 +15,7 @@ class Backend:
     def run(self):
         # start the openstack observer
         observer = XOSObserver()
-        observer_thread = threading.Thread(target=observer.run)
+        observer_thread = threading.Thread(target=observer.run,name='synchronizer')
         observer_thread.start()
 
         # start model policies thread
