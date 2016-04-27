@@ -17,6 +17,20 @@ xos_synchronizer_openstack:
         - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
         - ./images:/opt/xos/images:ro
 
+xos_synchronizer_exampleservice:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/exampleservice/exampleservice-synchronizer.py -C /opt/xos/synchronizers/exampleservice/exampleservice_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: exampleservice
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+        - ../setup/id_rsa:/opt/xos/synchronizers/exampleservice/exampleservice_private_key:ro
+
 # FUTURE
 #xos_swarm_synchronizer:
 #    image: xosproject/xos-swarm-synchronizer

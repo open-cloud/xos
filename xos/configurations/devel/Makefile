@@ -29,7 +29,7 @@ showlogs:
 	sudo MYIP=$(MYIP) docker-compose logs
 
 rm: stop
-	sudo MYIP=$(MYIP) docker-compose rm
+	sudo MYIP=$(MYIP) docker-compose rm -f
 
 ps:
 	sudo MYIP=$(MYIP) docker-compose ps

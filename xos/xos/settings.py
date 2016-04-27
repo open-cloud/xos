@@ -177,6 +177,7 @@ INSTALLED_APPS = (
     'services.cord',
     'services.onos',
     'services.ceilometer',
+    'services.exampleservice',
     'services.requestrouter',
     'services.syndicate_storage',
     'services.openvpn',
