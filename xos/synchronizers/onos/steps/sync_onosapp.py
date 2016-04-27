@@ -242,6 +242,22 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         return json.dumps(data, indent=4, sort_keys=True)
 
+    def get_volt_config(self, o, attrs):
+        data = {
+            "devices" : {
+                "of:1000000000000001" : {
+                    "accessDevice" : {
+                        "uplink" : "2",
+                        "vlan"   : "222",
+                    },
+                    "basic" : {
+                        "driver" : "pmc-olt"
+                    }
+                }
+            }
+        }
+        return json.dumps(data, indent=4, sort_keys=True)
+
     def write_configs(self, o):
         o.config_fns = []
         o.rest_configs = []
@@ -287,9 +303,13 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             config = None
             value = None
             if label == "vtn-network-cfg":
-            # Generate the VTN config file... where should this live?
+                # Generate the VTN config file... where should this live?
                 config = "rest_onos/v1/network/configuration/"
                 value = self.get_vtn_config(o, attrs)
+            elif label == "volt-network-cfg":
+                config = "rest_onos/v1/network/configuration/"
+                value = self.get_volt_config(o, attrs)
+
             if config:
                 tas = TenantAttribute.objects.filter(tenant=o, name=config)
                 if tas:

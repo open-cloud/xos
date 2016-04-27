@@ -242,6 +242,9 @@ node_types:
             rest_onos/v1/network/configuration/:
                 type: string
                 required: false
+            autogenerate:
+                type: string
+                required: false
 
     tosca.nodes.ONOSVTNApp:
         derived_from: tosca.nodes.Root

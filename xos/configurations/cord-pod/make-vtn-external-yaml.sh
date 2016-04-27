@@ -21,21 +21,6 @@ topology_template:
           view_url: /admin/onos/onosservice/$id$/
           no_container: true
           rest_hostname: onos-cord
-          rest_onos/v1/network/configuration/: >
-            {
-              "devices" : {
-                "of:1000000000000001" : {
-                  "accessDevice" : {
-                    "uplink" : "2",
-                    "vlan"   : "222",
-                    "defaultVlan" : "0"
-                  },
-                  "basic" : {
-                    "driver" : "pmc-olt"
-                  }
-                }
-              }
-            }
 
     service_vtn:
       type: tosca.nodes.VTNService
