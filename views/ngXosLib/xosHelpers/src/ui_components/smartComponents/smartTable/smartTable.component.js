@@ -35,12 +35,17 @@
             </a>
           </div>
         </div>
-        <xos-table config="vm.tableConfig" data="vm.data"></xos-table>
+        <div class="row">
+          <div class="col-xs-12 table-responsive">
+            <xos-table config="vm.tableConfig" data="vm.data"></xos-table>
+          </div>
+        </div>
         <div class="panel panel-default" ng-show="vm.detailedItem">
           <div class="panel-heading">
             <div class="row">
               <div class="col-xs-11">
-                <h3 class="panel-title">Update {{vm.config.resource}} {{vm.detailedItem.id}}</h3>
+                <h3 class="panel-title" ng-show="vm.detailedItem.id">Update {{vm.config.resource}} {{vm.detailedItem.id}}</h3>
+                <h3 class="panel-title" ng-show="!vm.detailedItem.id">Create {{vm.config.resource}} item</h3>
               </div>
               <div class="col-xs-1">
                 <a href="" ng-click="vm.cleanForm()">
@@ -58,7 +63,7 @@
       `,
       bindToController: true,
       controllerAs: 'vm',
-      controller: function($injector, LabelFormatter, _){
+      controller: function($injector, LabelFormatter, _, XosFormHelpers){
         
         // NOTE
         // Corner case
@@ -103,6 +108,7 @@
 
         this.formConfig = {
           exclude: this.config.hiddenFields,
+          fields: [],
           formName: `${this.config.resource}Form`,
           actions: [
             {
@@ -128,7 +134,6 @@
 
         this.createItem = () => {
           this.detailedItem = new this.Resource();
-          console.log(this.detailedItem);
         };
 
         this.Resource = $injector.get(this.config.resource);
@@ -140,7 +145,8 @@
             return;
           }
 
-          let props = Object.keys(res[0]);
+          let item = res[0];
+          let props = Object.keys(item);
 
           _.remove(props, p => {
             return p == 'id' || p == 'password' || p == 'validators'
@@ -160,6 +166,14 @@
             });
           });
 
+          // build form structure
+          props.forEach((p, i) => {
+            this.formConfig.fields.push({
+              label: LabelFormatter.format(labels[i]).replace(':', ''),
+              type: XosFormHelpers._getFieldFormat(item[p])
+            });
+          });
+          console.log(this.formConfig.fields);
           this.data = res;
         });
       }

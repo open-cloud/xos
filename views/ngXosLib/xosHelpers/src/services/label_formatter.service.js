@@ -23,7 +23,8 @@
       string = _formatByUnderscore(string);
       string = _formatByUppercase(string);
 
-      return _capitalize(string).replace(/\s\s+/g, ' ') + ':';
+      string = _capitalize(string).replace(/\s\s+/g, ' ') + ':';
+      return string.replace('::', ':');
     };
 
     return {

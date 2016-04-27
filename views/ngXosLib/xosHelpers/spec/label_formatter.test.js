@@ -32,6 +32,10 @@
         expect(service.format('myWeird_String')).toEqual('My weird string:');
       });
 
+      it('should not add column if already present', () => {
+        expect(service.format('myWeird_String:')).toEqual('My weird string:');
+      });
+
     });
   });
 

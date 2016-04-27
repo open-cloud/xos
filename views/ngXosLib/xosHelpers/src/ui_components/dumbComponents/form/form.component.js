@@ -143,11 +143,18 @@
 
         this.formField = [];
         $scope.$watch(() => this.ngModel, (model) => {
+
+          // empty from old stuff
+          this.formField = {};
+
           if(!model){
             return;
           }
-          this.formField = XosFormHelpers.buildFormStructure(XosFormHelpers.parseModelField(_.difference(Object.keys(model), this.excludedField)), this.config.fields, model);
-        }, true);
+
+          let diff = _.difference(Object.keys(model), this.excludedField);
+          let modelField = XosFormHelpers.parseModelField(diff);
+          this.formField = XosFormHelpers.buildFormStructure(modelField, this.config.fields, model);
+        });
 
       }
     }
@@ -192,6 +199,9 @@
 
     this.buildFormStructure = (modelField, customField, model) => {
 
+      // console.log(modelField, model);
+
+      modelField = Object.keys(modelField).length > 0 ? modelField : customField; //if no model field are provided, check custom
       customField = customField || {};
 
       return _.reduce(Object.keys(modelField), (form, f) => {

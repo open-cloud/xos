@@ -64,7 +64,7 @@ angular.module('xos.sampleView', [
         hiddenFields: [
           'email',
           'username',
-          'created',
+          // 'created',
           'updated',
           'last_login',
           'is_active',
@@ -72,7 +72,8 @@ angular.module('xos.sampleView', [
           'is_staff',
           'is_readonly',
           'is_registering',
-          'is_appuser'
+          'is_appuser',
+          'timezone'
         ]
       }
 
@@ -116,6 +117,8 @@ angular.module('xos.sampleView', [
       this.errors = {
         email: false
       }
+
+      console.log('aaa')
 
       // retrieving user list
       Users.query().$promise
