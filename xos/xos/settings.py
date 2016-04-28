@@ -183,6 +183,7 @@ INSTALLED_APPS = (
     'services.vtr',
     'services.vrouter',
     'services.vtn',
+    'services.fabric',
     'geoposition',
     'rest_framework_swagger',
 )

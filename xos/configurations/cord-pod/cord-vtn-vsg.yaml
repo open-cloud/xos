@@ -65,6 +65,11 @@ topology_template:
               node: addresses_exampleservice-public
               relationship: tosca.relationships.ProvidesAddresses
 
+    service_fabric:
+      type: tosca.nodes.FabricService
+      properties:
+          view_url: /admin/fabric/fabricservice/$id$/
+
     Private:
       type: tosca.nodes.NetworkTemplate
 
