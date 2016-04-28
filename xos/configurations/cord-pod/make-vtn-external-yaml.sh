@@ -29,7 +29,7 @@ topology_template:
           privateGatewayMac: 00:00:00:00:00:01
           localManagementIp: 172.27.0.1/24
           ovsdbPort: 6641
-          sshUser: root
+          sshUser: ubuntu
           sshKeyFile: /root/node_key
           sshPort: 22
           xosEndpoint: http://xos/
