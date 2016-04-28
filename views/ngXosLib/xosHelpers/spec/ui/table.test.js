@@ -91,7 +91,7 @@
           });
         });
 
-        describe('when a field type is provided', () => {
+        xdescribe('when a field type is provided', () => {
           describe('and is boolean', () => {
             beforeEach(() => {
               console.log('iS: ' + isolatedScope);

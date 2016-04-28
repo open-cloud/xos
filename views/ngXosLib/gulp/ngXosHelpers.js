@@ -71,6 +71,7 @@ module.exports = function(options){
         'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-animate.min.js',
         'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-cookies.min.js',
         'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-resource.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-mocks.js',
         'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.js',
         `./${options.ngXosVendor}ngXosHelpers.js`,
       ],
@@ -124,9 +125,12 @@ module.exports = function(options){
 
     gulp.watch(files, ['makeDocs']);
 
-    gulp.watch(files, function(){
-      browserSync.reload();
-    });
+    // uncomment to enable autoreload, now it is broken (reload a wrong page)
+    // https://github.com/nikhilmodak/gulp-ngdocs/issues/81
+
+    // gulp.watch(files, function(){
+    //   browserSync.reload();
+    // });
   })
 
   gulp.task('dev', function(){
