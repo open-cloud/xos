@@ -16,9 +16,64 @@
     * @name xos.uiComponents.directive:xosSmartTable
     * @restrict E
     * @description The xos-table directive
-    * @param {Object} config The configuration for the component.
+    * @param {Object} config The configuration for the component,
+    * it is composed by the name of an angular [$resource](https://docs.angularjs.org/api/ngResource/service/$resource)
+    * and an array of fields that shouldn't be printed.
+    * ```
+    * {
+        resource: 'Users',
+        hiddenFields: []
+      }
+    * ```
     * @scope
     * @example
+
+    <example module="sampleSmartTable">
+      <file name="index.html">
+        <div ng-controller="SampleCtrl as vm">
+          <xos-smart-table config="vm.config"></xos-smart-table>
+        </div>
+      </file>
+      <file name="script.js">
+        angular.module('sampleSmartTable', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
+        // This is only for documentation purpose
+        .run(function($httpBackend, _){
+          let datas = [{id: 1, name: 'Jhon', surname: 'Doe'}];
+          let count = 1;
+
+          let paramsUrl = new RegExp(/\/test\/(.+)/);
+
+          $httpBackend.whenDELETE(paramsUrl, undefined, ['id']).respond((method, url, data, headers, params) => {
+            data = angular.fromJson(data);
+            let id = url.match(paramsUrl)[1];
+            _.remove(datas, (d) => {
+              return d.id === parseInt(id);
+            })
+            return [204];
+          });
+
+          $httpBackend.whenGET('/test').respond(200, datas)
+          $httpBackend.whenPOST('/test').respond((method, url, data) => {
+            data = angular.fromJson(data);
+            data.id = ++count;
+            datas.push(data);
+            return [201, data, {}];
+          });
+        })
+        .factory('_', function($window){
+          return $window._;
+        })
+        .service('SampleResource', function($resource){
+          return $resource('/test/:id', {id: '@id'});
+        })
+        // End of documentation purpose, example start
+        .controller('SampleCtrl', function(){
+          this.config = {
+            resource: 'SampleResource'
+          };
+        });
+      </file>
+    </example>
     */
    
   .directive('xosSmartTable', function(){
@@ -82,6 +137,7 @@
               cb: (item) => {
                 this.Resource.delete({id: item.id}).$promise
                 .then(() => {
+                  _.remove(this.data, (d) => d.id === item.id);
                   this.responseMsg = `${this.config.resource} with id ${item.id} successfully deleted`;
                 })
                 .catch(err => {
@@ -108,7 +164,7 @@
 
         this.formConfig = {
           exclude: this.config.hiddenFields,
-          fields: [],
+          fields: {},
           formName: `${this.config.resource}Form`,
           actions: [
             {
@@ -116,7 +172,9 @@
               icon: 'ok',
               cb: (item) => {
                 item.$save()
-                .then(() => {
+                .then((res) => {
+                  this.data.push(angular.copy(res));
+                  delete this.detailedItem;
                   this.responseMsg = `${this.config.resource} with id ${item.id} successfully saved`;
                 })
                 .catch((err) => {
@@ -138,44 +196,48 @@
 
         this.Resource = $injector.get(this.config.resource);
 
-        this.Resource.query().$promise
-        .then((res) => {
+        const getData = () => {
+          this.Resource.query().$promise
+          .then((res) => {
 
-          if(!res[0]){
-            return;
-          }
+            if(!res[0]){
+              return;
+            }
 
-          let item = res[0];
-          let props = Object.keys(item);
+            let item = res[0];
+            let props = Object.keys(item);
 
-          _.remove(props, p => {
-            return p == 'id' || p == 'password' || p == 'validators'
-          });
-
-          // TODO move out cb
-          if(angular.isArray(this.config.hiddenFields)){
-            props = _.difference(props, this.config.hiddenFields)
-          }
-
-          let labels = props.map(p => LabelFormatter.format(p));
-
-          props.forEach((p, i) => {
-            this.tableConfig.columns.push({
-              label: labels[i],
-              prop: p
+            _.remove(props, p => {
+              return p == 'id' || p == 'password' || p == 'validators'
             });
-          });
 
-          // build form structure
-          props.forEach((p, i) => {
-            this.formConfig.fields.push({
-              label: LabelFormatter.format(labels[i]).replace(':', ''),
-              type: XosFormHelpers._getFieldFormat(item[p])
+            // TODO move out cb
+            if(angular.isArray(this.config.hiddenFields)){
+              props = _.difference(props, this.config.hiddenFields)
+            }
+
+            let labels = props.map(p => LabelFormatter.format(p));
+
+            props.forEach((p, i) => {
+              this.tableConfig.columns.push({
+                label: labels[i],
+                prop: p
+              });
             });
-          });
 
-          this.data = res;
-        });
+            // build form structure
+            props.forEach((p, i) => {
+              this.formConfig.fields[p] = {
+                label: LabelFormatter.format(labels[i]).replace(':', ''),
+                type: XosFormHelpers._getFieldFormat(item[p])
+              };
+            });
+
+            this.data = res;
+          });
+        }
+
+        getData();
       }
     };
   });

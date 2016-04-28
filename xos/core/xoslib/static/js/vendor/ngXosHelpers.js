@@ -41,9 +41,60 @@
   * @name xos.uiComponents.directive:xosSmartTable
   * @restrict E
   * @description The xos-table directive
-  * @param {Object} config The configuration for the component.
+  * @param {Object} config The configuration for the component,
+  * it is composed by the name of an angular [$resource](https://docs.angularjs.org/api/ngResource/service/$resource)
+  * and an array of fields that shouldn't be printed.
+  * ```
+  * {
+      resource: 'Users',
+      hiddenFields: []
+    }
+  * ```
   * @scope
   * @example
+   <example module="sampleSmartTable">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm">
+        <xos-smart-table config="vm.config"></xos-smart-table>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleSmartTable', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
+      // This is only for documentation purpose
+      .run(function($httpBackend, _){
+        let datas = [{id: 1, name: 'Jhon', surname: 'Doe'}];
+        let count = 1;
+         let paramsUrl = new RegExp(/\/test\/(.+)/);
+         $httpBackend.whenDELETE(paramsUrl, undefined, ['id']).respond((method, url, data, headers, params) => {
+          data = angular.fromJson(data);
+          let id = url.match(paramsUrl)[1];
+          _.remove(datas, (d) => {
+            return d.id === parseInt(id);
+          })
+          return [204];
+        });
+         $httpBackend.whenGET('/test').respond(200, datas)
+        $httpBackend.whenPOST('/test').respond((method, url, data) => {
+          data = angular.fromJson(data);
+          data.id = ++count;
+          datas.push(data);
+          return [201, data, {}];
+        });
+      })
+      .factory('_', function($window){
+        return $window._;
+      })
+      .service('SampleResource', function($resource){
+        return $resource('/test/:id', {id: '@id'});
+      })
+      // End of documentation purpose, example start
+      .controller('SampleCtrl', function(){
+        this.config = {
+          resource: 'SampleResource'
+        };
+      });
+    </file>
+  </example>
   */
 
   .directive('xosSmartTable', function () {
@@ -72,6 +123,9 @@
             icon: 'remove',
             cb: function cb(item) {
               _this.Resource.delete({ id: item.id }).$promise.then(function () {
+                _.remove(_this.data, function (d) {
+                  return d.id === item.id;
+                });
                 _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully deleted';
               }).catch(function (err) {
                 _this.responseErr = err.data.detail || 'Error while deleting ' + _this.config.resource + ' with id ' + item.id;
@@ -95,13 +149,15 @@
 
         this.formConfig = {
           exclude: this.config.hiddenFields,
-          fields: [],
+          fields: {},
           formName: this.config.resource + 'Form',
           actions: [{
             label: 'Save',
             icon: 'ok',
             cb: function cb(item) {
-              item.$save().then(function () {
+              item.$save().then(function (res) {
+                _this.data.push(angular.copy(res));
+                delete _this.detailedItem;
                 _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully saved';
               }).catch(function (err) {
                 _this.responseErr = err.data.detail || 'Error while saving ' + _this.config.resource + ' with id ' + item.id;
@@ -121,45 +177,49 @@
 
         this.Resource = $injector.get(this.config.resource);
 
-        this.Resource.query().$promise.then(function (res) {
+        var getData = function getData() {
+          _this.Resource.query().$promise.then(function (res) {
 
-          if (!res[0]) {
-            return;
-          }
+            if (!res[0]) {
+              return;
+            }
 
-          var item = res[0];
-          var props = Object.keys(item);
+            var item = res[0];
+            var props = Object.keys(item);
 
-          _.remove(props, function (p) {
-            return p == 'id' || p == 'password' || p == 'validators';
-          });
-
-          // TODO move out cb
-          if (angular.isArray(_this.config.hiddenFields)) {
-            props = _.difference(props, _this.config.hiddenFields);
-          }
-
-          var labels = props.map(function (p) {
-            return LabelFormatter.format(p);
-          });
-
-          props.forEach(function (p, i) {
-            _this.tableConfig.columns.push({
-              label: labels[i],
-              prop: p
+            _.remove(props, function (p) {
+              return p == 'id' || p == 'password' || p == 'validators';
             });
-          });
 
-          // build form structure
-          props.forEach(function (p, i) {
-            _this.formConfig.fields.push({
-              label: LabelFormatter.format(labels[i]).replace(':', ''),
-              type: XosFormHelpers._getFieldFormat(item[p])
+            // TODO move out cb
+            if (angular.isArray(_this.config.hiddenFields)) {
+              props = _.difference(props, _this.config.hiddenFields);
+            }
+
+            var labels = props.map(function (p) {
+              return LabelFormatter.format(p);
             });
-          });
 
-          _this.data = res;
-        });
+            props.forEach(function (p, i) {
+              _this.tableConfig.columns.push({
+                label: labels[i],
+                prop: p
+              });
+            });
+
+            // build form structure
+            props.forEach(function (p, i) {
+              _this.formConfig.fields[p] = {
+                label: LabelFormatter.format(labels[i]).replace(':', ''),
+                type: XosFormHelpers._getFieldFormat(item[p])
+              };
+            });
+
+            _this.data = res;
+          });
+        };
+
+        getData();
       }]
     };
   });

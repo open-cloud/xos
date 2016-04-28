@@ -7,14 +7,7 @@
 (function () {
   'use strict';
 
-  const mockData = [
-    {
-      id: 1,
-      first_name: 'Jon',
-      last_name: 'Snow',
-      hidden_field: 'hidden'
-    }
-  ];
+  let mockData;
 
   describe('The xos.helper module', function(){
     describe('The xos-smart-table component', () => {
@@ -24,6 +17,17 @@
       beforeEach(module('xos.helpers'));
 
       beforeEach(function() {
+
+        // set mockData
+        mockData = [
+          {
+            id: 1,
+            first_name: 'Jon',
+            last_name: 'Snow',
+            hidden_field: 'hidden'
+          }
+        ]
+
         jasmine.addMatchers({
           toBeInstanceOf: function() {
 
@@ -111,9 +115,11 @@
       });
 
       it('should delete a model', () => {
+        // saving mockData (they are going to be deleted)
+        let mock = angular.copy(mockData);
         $(element).find('a[title="delete"]')[0].click();
-        expect(spy.delete).toHaveBeenCalledWith({id: mockData[0].id});
-        expect($(element).find('.alert')).toContainText(`MockResource with id ${mockData[0].id} successfully deleted`);
+        expect(spy.delete).toHaveBeenCalledWith({id: mock[0].id});
+        expect($(element).find('.alert')).toContainText(`MockResource with id ${mock[0].id} successfully deleted`);
       });
 
       it('should show the form', () => {
