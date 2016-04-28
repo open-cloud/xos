@@ -8,17 +8,17 @@ imports:
 topology_template:
   node_templates:
     # CORD Services
-    service_vtr:
+    service#vtr:
       type: tosca.nodes.Service
       properties:
           view_url: /admin/vtr/vtrservice/$id$/
           kind: vTR
 
-    service_volt:
+    service#volt:
       type: tosca.nodes.Service
       requirements:
           - vsg_tenant:
-              node: service_vsg
+              node: service#vsg
               relationship: tosca.relationships.TenantOfService
       properties:
           view_url: /admin/cord/voltservice/$id$/
@@ -38,11 +38,11 @@ topology_template:
           gateway_ip: 10.168.1.1
           gateway_mac: 02:42:0a:a8:00:01
 
-    service_vsg:
+    service#vsg:
       type: tosca.nodes.VSGService
       requirements:
           - vrouter_tenant:
-              node: service_vrouter
+              node: service#vrouter
               relationship: tosca.relationships.TenantOfService
       properties:
           view_url: /admin/cord/vsgservice/$id$/
@@ -53,7 +53,7 @@ topology_template:
       artifacts:
           pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
 
-    service_vrouter:
+    service#vrouter:
       type: tosca.nodes.VRouterService
       properties:
           view_url: /admin/vrouter/vrouterservice/$id$/
@@ -64,6 +64,11 @@ topology_template:
           - addresses_service1:
               node: addresses_exampleservice-public
               relationship: tosca.relationships.ProvidesAddresses
+
+    service#fabric:
+      type: tosca.nodes.FabricService
+      properties:
+          view_url: /admin/fabric/fabricservice/$id$/
 
     Private:
       type: tosca.nodes.NetworkTemplate
@@ -105,7 +110,7 @@ topology_template:
           network: noauto
       requirements:
           - vsg_service:
-              node: service_vsg
+              node: service#vsg
               relationship: tosca.relationships.MemberOfService
           - site:
               node: mysite
@@ -188,7 +193,7 @@ topology_template:
             c_tag: 111
         requirements:
             - provider_service:
-                node: service_volt
+                node: service#volt
                 relationship: tosca.relationships.MemberOfService
             - subscriber:
                 node: My House
