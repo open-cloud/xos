@@ -51,7 +51,7 @@ class OpenStackDriver:
         driver = OpenStackDriver(client=client)
         driver.admin_user = client.keystone.users.find(name=controller.admin_user)
         driver.controller = controller
-        return driver    
+        return driver
 
     def create_role(self, name):
         roles = self.shell.keystone.roles.findall(name=name)
@@ -70,17 +70,17 @@ class OpenStackDriver:
         return 1
 
     def create_tenant(self, tenant_name, enabled, description):
-        """Create keystone tenant. Suggested fields: name, description, enabled"""  
+        """Create keystone tenant. Suggested fields: name, description, enabled"""
         tenants = self.shell.keystone.tenants.findall(name=tenant_name)
         if not tenants:
-            fields = {'tenant_name': tenant_name, 'enabled': enabled, 
-                      'description': description}  
+            fields = {'tenant_name': tenant_name, 'enabled': enabled,
+                      'description': description}
             tenant = self.shell.keystone.tenants.create(**fields)
         else:
             tenant = tenants[0]
 
-        # always give the admin user the admin role to any tenant created 
-        # by the driver. 
+        # always give the admin user the admin role to any tenant created
+        # by the driver.
         self.add_user_role(self.admin_user.id, tenant.id, 'admin')
         return tenant
 
@@ -88,17 +88,20 @@ class OpenStackDriver:
         return self.shell.keystone.tenants.update(id, **kwds)
 
     def delete_tenant(self, id):
-        ctx = self.shell.nova_db.ctx
+        # FIXME: nova_db is commented out in clients.py, throws errors.
+        # Commenting this out for the time being until actually fixed
+
+        #ctx = self.shell.nova_db.ctx
         tenants = self.shell.keystone.tenants.findall(id=id)
         for tenant in tenants:
             # nova does not automatically delete the tenant's instances
-            # so we manually delete instances before deleteing the tenant   
-            instances = self.shell.nova_db.instance_get_all_by_filters(ctx,
-                       {'project_id': tenant.id}, 'id', 'asc')
+            # so we manually delete instances before deleting the tenant
+            #instances = self.shell.nova_db.instance_get_all_by_filters(ctx,
+            #          {'project_id': tenant.id}, 'id', 'asc')
             client = OpenStackClient(tenant=tenant.name)
             driver = OpenStackDriver(client=client)
-            for instance in instances:
-                driver.destroy_instance(instance.id)
+            #for instance in instances:
+            #    driver.destroy_instance(instance.id)
             self.shell.keystone.tenants.delete(tenant)
         return 1
 
@@ -108,7 +111,7 @@ class OpenStackDriver:
             fields = {'name': name, 'email': email, 'password': password,
                       'enabled': enabled}
             user = self.shell.keystone.users.create(**fields)
-        else: 
+        else:
             user = users[0]
         return user
 
@@ -129,7 +132,7 @@ class OpenStackDriver:
             if roles:
                 role = roles[0]
                 break
-        return role 
+        return role
 
     def add_user_role(self, kuser_id, tenant_id, role_name):
         user = self.shell.keystone.users.find(id=kuser_id)
@@ -139,8 +142,8 @@ class OpenStackDriver:
         if role_name.lower() == 'admin':
             role = self.get_admin_role()
         else:
-            # look up non admin role or force exception when admin role isnt found 
-            role = self.shell.keystone.roles.find(name=role_name)                   
+            # look up non admin role or force exception when admin role isnt found
+            role = self.shell.keystone.roles.find(name=role_name)
 
         role_found = False
         user_roles = user.list_roles(tenant.id)
@@ -171,14 +174,14 @@ class OpenStackDriver:
         if role_found:
             tenant.remove_user(user, role)
 
-        return 1 
+        return 1
 
     def update_user(self, id, fields):
         if 'password' in fields:
             self.shell.keystone.users.update_password(id, fields['password'])
         if 'enabled' in fields:
-            self.shell.keystone.users.update_enabled(id, fields['enabled']) 
-        return 1 
+            self.shell.keystone.users.update_enabled(id, fields['enabled'])
+        return 1
 
     def create_router(self, name, set_gateway=True):
         routers = self.shell.neutron.list_routers(name=name)['routers']
@@ -190,10 +193,10 @@ class OpenStackDriver:
         if set_gateway:
             nets = self.shell.neutron.list_networks()['networks']
             for net in nets:
-                if net['router:external'] == True: 
+                if net['router:external'] == True:
                     self.shell.neutron.add_gateway_router(router['id'],
                                                           {'network_id': net['id']})
-        
+
         return router
 
     def delete_router(self, id):
@@ -217,15 +220,15 @@ class OpenStackDriver:
         subnet = self.shell.neutron.show_subnet(subnet_id)
         if router and subnet:
             self.shell.neutron.remove_interface_router(router_id, {'subnet_id': subnet_id})
- 
+
     def create_network(self, name, shared=False):
         nets = self.shell.neutron.list_networks(name=name)['networks']
-        if nets: 
+        if nets:
             net = nets[0]
         else:
             net = self.shell.neutron.create_network({'network': {'name': name, 'shared': shared}})['network']
         return net
- 
+
     def delete_network(self, id):
         nets = self.shell.neutron.list_networks()['networks']
         for net in nets:
@@ -243,7 +246,7 @@ class OpenStackDriver:
         for port in ports:
             if port['network_id'] == network_id:
                 self.shell.neutron.delete_port(port['id'])
-        return 1         
+        return 1
 
     def delete_subnet_ports(self, subnet_id):
         ports = self.shell.neutron.list_ports()['ports']
@@ -256,14 +259,14 @@ class OpenStackDriver:
             if delete:
                 self.shell.neutron.delete_port(port['id'])
         return 1
- 
+
     def create_subnet(self, name, network_id, cidr_ip, ip_version, start, end):
         #nets = self.shell.neutron.list_networks(name=network_name)['networks']
         #if not nets:
-        #    raise Exception, "No such network: %s" % network_name   
+        #    raise Exception, "No such network: %s" % network_name
         #net = nets[0]
 
-        subnet = None 
+        subnet = None
         subnets = self.shell.neutron.list_subnets()['subnets']
         for snet in subnets:
             if snet['cidr'] == cidr_ip and snet['network_id'] == network_id:
@@ -309,7 +312,7 @@ class OpenStackDriver:
     def add_external_route(self, subnet, routes=[]):
         if not routes:
             routes = self.get_external_routes()
- 
+
         ports = self.shell.neutron.list_ports()['ports']
 
         gw_ip = subnet['gateway_ip']
@@ -371,14 +374,14 @@ class OpenStackDriver:
         if ip_address:
             cmd = "route delete -net %s" % (subnet['cidr'])
             commands.getstatusoutput(cmd)
-             
+
         return 1
-    
+
     def create_keypair(self, name, public_key):
         keys = self.shell.nova.keypairs.findall(name=name)
         if keys:
             key = keys[0]
-            # update key     
+            # update key
             if key.public_key != public_key:
                 self.delete_keypair(key.id)
                 key = self.shell.nova.keypairs.create(name=name, public_key=public_key)
@@ -389,7 +392,7 @@ class OpenStackDriver:
     def delete_keypair(self, id):
         keys = self.shell.nova.keypairs.findall(id=id)
         for key in keys:
-            self.shell.nova.keypairs.delete(key) 
+            self.shell.nova.keypairs.delete(key)
         return 1
 
     def get_private_networks(self, tenant=None):
@@ -433,12 +436,12 @@ class OpenStackDriver:
         #if pubkeys:
         #    files["/root/.ssh/authorized_keys"] = "\n".join(pubkeys).encode('base64')
         hints = {}
-        
-        # determine availability zone and compute host 
+
+        # determine availability zone and compute host
         availability_zone_filter = None
         if availability_zone is None or not availability_zone:
             availability_zone_filter = 'nova'
-        else: 
+        else:
             availability_zone_filter = availability_zone
         if hostname:
             availability_zone_filter += ':%s' % hostname
