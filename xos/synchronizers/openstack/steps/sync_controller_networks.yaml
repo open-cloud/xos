@@ -30,8 +30,6 @@
         state=present
         {% if use_vtn %}
         gateway_ip={{ gateway }}
-        {% else %}
-        gateway_ip="None"
         {% endif %}
         dns_nameservers=8.8.8.8
         cidr={{ cidr }}
