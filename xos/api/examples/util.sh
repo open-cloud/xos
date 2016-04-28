@@ -12,6 +12,19 @@ function lookup_account_num {
     echo $ID
 }
 
+function lookup_slice_id {
+    JSON=`curl -f -s -u $AUTH -X GET $HOST/xos/slices/?name=$1`
+    if [[ $? != 0 ]]; then
+        echo "function lookup_slice_id with arguments $1 failed" >&2
+        echo "See CURL output below:" >&2
+        curl -s -u $AUTH -X GET $HOST/xos/slices/?name=$1 >&2
+        exit -1
+    fi
+    ID=`echo $JSON | python -c "import json,sys; print json.load(sys.stdin)[0].get('id','')"`
+    #echo "(mapped slice_name to id $ID)" >&2
+    echo $ID
+}
+
 function lookup_subscriber_volt {
     JSON=`curl -f -s -u $AUTH -X GET $HOST/api/tenant/cord/subscriber/$1/`
     if [[ $? != 0 ]]; then
