@@ -14,6 +14,8 @@
     /**
     * @ngdoc directive
     * @name xos.uiComponents.directive:xosSmartTable
+    * @link xos.uiComponents.directive:xosTable xosTable
+    * @link xos.uiComponents.directive:xosForm xosForm
     * @restrict E
     * @description The xos-table directive
     * @param {Object} config The configuration for the component,

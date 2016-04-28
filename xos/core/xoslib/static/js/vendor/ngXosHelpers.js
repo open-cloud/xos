@@ -28,211 +28,6 @@
  *
  * Visit http://guide.xosproject.org/devguide/addview/ for more information
  *
- * Created by teone on 3/24/16.
- */
-
-(function () {
-  'use strict';
-
-  angular.module('xos.uiComponents')
-
-  /**
-  * @ngdoc directive
-  * @name xos.uiComponents.directive:xosSmartTable
-  * @restrict E
-  * @description The xos-table directive
-  * @param {Object} config The configuration for the component,
-  * it is composed by the name of an angular [$resource](https://docs.angularjs.org/api/ngResource/service/$resource)
-  * and an array of fields that shouldn't be printed.
-  * ```
-  * {
-      resource: 'Users',
-      hiddenFields: []
-    }
-  * ```
-  * @scope
-  * @example
-   <example module="sampleSmartTable">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl as vm">
-        <xos-smart-table config="vm.config"></xos-smart-table>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('sampleSmartTable', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
-      // This is only for documentation purpose
-      .run(function($httpBackend, _){
-        let datas = [{id: 1, name: 'Jhon', surname: 'Doe'}];
-        let count = 1;
-         let paramsUrl = new RegExp(/\/test\/(.+)/);
-         $httpBackend.whenDELETE(paramsUrl, undefined, ['id']).respond((method, url, data, headers, params) => {
-          data = angular.fromJson(data);
-          let id = url.match(paramsUrl)[1];
-          _.remove(datas, (d) => {
-            return d.id === parseInt(id);
-          })
-          return [204];
-        });
-         $httpBackend.whenGET('/test').respond(200, datas)
-        $httpBackend.whenPOST('/test').respond((method, url, data) => {
-          data = angular.fromJson(data);
-          data.id = ++count;
-          datas.push(data);
-          return [201, data, {}];
-        });
-      })
-      .factory('_', function($window){
-        return $window._;
-      })
-      .service('SampleResource', function($resource){
-        return $resource('/test/:id', {id: '@id'});
-      })
-      // End of documentation purpose, example start
-      .controller('SampleCtrl', function(){
-        this.config = {
-          resource: 'SampleResource'
-        };
-      });
-    </file>
-  </example>
-  */
-
-  .directive('xosSmartTable', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        config: '='
-      },
-      template: '\n        <div class="row" ng-show="vm.data.length > 0">\n          <div class="col-xs-12 text-right">\n            <a href="" class="btn btn-success" ng-click="vm.createItem()">\n              Add\n            </a>\n          </div>\n        </div>\n        <div class="row">\n          <div class="col-xs-12 table-responsive">\n            <xos-table config="vm.tableConfig" data="vm.data"></xos-table>\n          </div>\n        </div>\n        <div class="panel panel-default" ng-show="vm.detailedItem">\n          <div class="panel-heading">\n            <div class="row">\n              <div class="col-xs-11">\n                <h3 class="panel-title" ng-show="vm.detailedItem.id">Update {{vm.config.resource}} {{vm.detailedItem.id}}</h3>\n                <h3 class="panel-title" ng-show="!vm.detailedItem.id">Create {{vm.config.resource}} item</h3>\n              </div>\n              <div class="col-xs-1">\n                <a href="" ng-click="vm.cleanForm()">\n                  <i class="glyphicon glyphicon-remove pull-right"></i>\n                </a>\n              </div>\n            </div>\n          </div>\n          <div class="panel-body">\n            <xos-form config="vm.formConfig" ng-model="vm.detailedItem"></xos-form>\n          </div>\n        </div>\n        <xos-alert config="{type: \'success\', closeBtn: true}" show="vm.responseMsg">{{vm.responseMsg}}</xos-alert>\n        <xos-alert config="{type: \'danger\', closeBtn: true}" show="vm.responseErr">{{vm.responseErr}}</xos-alert>\n      ',
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: ["$injector", "LabelFormatter", "_", "XosFormHelpers", function controller($injector, LabelFormatter, _, XosFormHelpers) {
-        var _this = this;
-
-        // NOTE
-        // Corner case
-        // - if response is empty, how can we generate a form ?
-
-        this.responseMsg = false;
-        this.responseErr = false;
-
-        this.tableConfig = {
-          columns: [],
-          actions: [{
-            label: 'delete',
-            icon: 'remove',
-            cb: function cb(item) {
-              _this.Resource.delete({ id: item.id }).$promise.then(function () {
-                _.remove(_this.data, function (d) {
-                  return d.id === item.id;
-                });
-                _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully deleted';
-              }).catch(function (err) {
-                _this.responseErr = err.data.detail || 'Error while deleting ' + _this.config.resource + ' with id ' + item.id;
-              });
-            },
-            color: 'red'
-          }, {
-            label: 'details',
-            icon: 'search',
-            cb: function cb(item) {
-              _this.detailedItem = item;
-            }
-          }],
-          classes: 'table table-striped table-bordered table-responsive',
-          filter: 'field',
-          order: true,
-          pagination: {
-            pageSize: 10
-          }
-        };
-
-        this.formConfig = {
-          exclude: this.config.hiddenFields,
-          fields: {},
-          formName: this.config.resource + 'Form',
-          actions: [{
-            label: 'Save',
-            icon: 'ok',
-            cb: function cb(item) {
-              item.$save().then(function (res) {
-                _this.data.push(angular.copy(res));
-                delete _this.detailedItem;
-                _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully saved';
-              }).catch(function (err) {
-                _this.responseErr = err.data.detail || 'Error while saving ' + _this.config.resource + ' with id ' + item.id;
-              });
-            },
-            class: 'success'
-          }]
-        };
-
-        this.cleanForm = function () {
-          delete _this.detailedItem;
-        };
-
-        this.createItem = function () {
-          _this.detailedItem = new _this.Resource();
-        };
-
-        this.Resource = $injector.get(this.config.resource);
-
-        var getData = function getData() {
-          _this.Resource.query().$promise.then(function (res) {
-
-            if (!res[0]) {
-              return;
-            }
-
-            var item = res[0];
-            var props = Object.keys(item);
-
-            _.remove(props, function (p) {
-              return p == 'id' || p == 'password' || p == 'validators';
-            });
-
-            // TODO move out cb
-            if (angular.isArray(_this.config.hiddenFields)) {
-              props = _.difference(props, _this.config.hiddenFields);
-            }
-
-            var labels = props.map(function (p) {
-              return LabelFormatter.format(p);
-            });
-
-            props.forEach(function (p, i) {
-              _this.tableConfig.columns.push({
-                label: labels[i],
-                prop: p
-              });
-            });
-
-            // build form structure
-            props.forEach(function (p, i) {
-              _this.formConfig.fields[p] = {
-                label: LabelFormatter.format(labels[i]).replace(':', ''),
-                type: XosFormHelpers._getFieldFormat(item[p])
-              };
-            });
-
-            _this.data = res;
-          });
-        };
-
-        getData();
-      }]
-    };
-  });
-})();
-//# sourceMappingURL=../../../maps/ui_components/smartComponents/smartTable/smartTable.component.js.map
-
-'use strict';
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
  * Created by teone on 4/15/16.
  */
 
@@ -660,7 +455,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     * @ngdoc directive
     * @name xos.uiComponents.directive:xosForm
     * @restrict E
-    * @description The xos-form directive
+    * @description The xos-form directive.
+    * This components have two usage, given a model it is able to autogenerate a form or it can be configured to create a custom form.
     * @param {Object} config The configuration object
     * ```
     * {
@@ -674,18 +470,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             },
             class: 'success'
           }
-    *   ]
+    *   ],
+    *   fields: {
+    *     field_name: {
+    *       label: 'Field Label',
+    *       type: 'string' // options are: [date, boolean, number, email, string],
+    *       validators: {
+    *         minlength: number,
+              maxlength: number,
+              required: boolean,
+              min: number,
+              max: number
+    *       }
+    *     }
+    *   }
     * }
     * ```
     * @element ANY
     * @scope
     * @example
-  <example module="sampleForm">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl as vm">
-        <xos-form ng-model="vm.model" config="vm.config"></xos-form>
-      </div>
-    </file>
+    
+    Autogenerated form
+   <example module="sampleForm">
     <file name="script.js">
       angular.module('sampleForm', ['xos.uiComponents'])
       .factory('_', function($window){
@@ -714,6 +520,66 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           ]
         };
       });
+    </file>
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm">
+        <xos-form ng-model="vm.model" config="vm.config"></xos-form>
+      </div>
+    </file>
+  </example>
+   Configuration defined form
+   <example module="sampleForm1">
+    <file name="script.js">
+      angular.module('sampleForm1', ['xos.uiComponents'])
+      .factory('_', function($window){
+        return $window._;
+      })
+      .controller('SampleCtrl1', function(){
+        this.model = {
+        };
+         this.config = {
+          exclude: ['password', 'last_login'],
+          formName: 'sampleForm1',
+          actions: [
+            {
+              label: 'Save',
+              icon: 'ok', // refers to bootstraps glyphicon
+              cb: (user) => { // receive the model
+                console.log(user);
+              },
+              class: 'success'
+            }
+          ],
+          fields: {
+            first_name: {
+              type: 'string',
+              validators: {
+                required: true
+              }
+            },
+            last_name: {
+              label: 'Surname',
+              type: 'string',
+              validators: {
+                required: true,
+                minlength: 10
+              }
+            },
+            age: {
+              type: 'number',
+              validators: {
+                required: true,
+                min: 21
+              }
+            },
+          }
+        };
+      });
+    </file>
+    <file name="index.html">
+      <div ng-controller="SampleCtrl1 as vm">
+        <xos-form ng-model="vm.model" config="vm.config"></xos-form>
+      </div>
     </file>
   </example>
    **/
@@ -977,6 +843,213 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 'use strict';
 
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 3/24/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+  * @ngdoc directive
+  * @name xos.uiComponents.directive:xosSmartTable
+  * @link xos.uiComponents.directive:xosTable xosTable
+  * @link xos.uiComponents.directive:xosForm xosForm
+  * @restrict E
+  * @description The xos-table directive
+  * @param {Object} config The configuration for the component,
+  * it is composed by the name of an angular [$resource](https://docs.angularjs.org/api/ngResource/service/$resource)
+  * and an array of fields that shouldn't be printed.
+  * ```
+  * {
+      resource: 'Users',
+      hiddenFields: []
+    }
+  * ```
+  * @scope
+  * @example
+   <example module="sampleSmartTable">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm">
+        <xos-smart-table config="vm.config"></xos-smart-table>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleSmartTable', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
+      // This is only for documentation purpose
+      .run(function($httpBackend, _){
+        let datas = [{id: 1, name: 'Jhon', surname: 'Doe'}];
+        let count = 1;
+         let paramsUrl = new RegExp(/\/test\/(.+)/);
+         $httpBackend.whenDELETE(paramsUrl, undefined, ['id']).respond((method, url, data, headers, params) => {
+          data = angular.fromJson(data);
+          let id = url.match(paramsUrl)[1];
+          _.remove(datas, (d) => {
+            return d.id === parseInt(id);
+          })
+          return [204];
+        });
+         $httpBackend.whenGET('/test').respond(200, datas)
+        $httpBackend.whenPOST('/test').respond((method, url, data) => {
+          data = angular.fromJson(data);
+          data.id = ++count;
+          datas.push(data);
+          return [201, data, {}];
+        });
+      })
+      .factory('_', function($window){
+        return $window._;
+      })
+      .service('SampleResource', function($resource){
+        return $resource('/test/:id', {id: '@id'});
+      })
+      // End of documentation purpose, example start
+      .controller('SampleCtrl', function(){
+        this.config = {
+          resource: 'SampleResource'
+        };
+      });
+    </file>
+  </example>
+  */
+
+  .directive('xosSmartTable', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        config: '='
+      },
+      template: '\n        <div class="row" ng-show="vm.data.length > 0">\n          <div class="col-xs-12 text-right">\n            <a href="" class="btn btn-success" ng-click="vm.createItem()">\n              Add\n            </a>\n          </div>\n        </div>\n        <div class="row">\n          <div class="col-xs-12 table-responsive">\n            <xos-table config="vm.tableConfig" data="vm.data"></xos-table>\n          </div>\n        </div>\n        <div class="panel panel-default" ng-show="vm.detailedItem">\n          <div class="panel-heading">\n            <div class="row">\n              <div class="col-xs-11">\n                <h3 class="panel-title" ng-show="vm.detailedItem.id">Update {{vm.config.resource}} {{vm.detailedItem.id}}</h3>\n                <h3 class="panel-title" ng-show="!vm.detailedItem.id">Create {{vm.config.resource}} item</h3>\n              </div>\n              <div class="col-xs-1">\n                <a href="" ng-click="vm.cleanForm()">\n                  <i class="glyphicon glyphicon-remove pull-right"></i>\n                </a>\n              </div>\n            </div>\n          </div>\n          <div class="panel-body">\n            <xos-form config="vm.formConfig" ng-model="vm.detailedItem"></xos-form>\n          </div>\n        </div>\n        <xos-alert config="{type: \'success\', closeBtn: true}" show="vm.responseMsg">{{vm.responseMsg}}</xos-alert>\n        <xos-alert config="{type: \'danger\', closeBtn: true}" show="vm.responseErr">{{vm.responseErr}}</xos-alert>\n      ',
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$injector", "LabelFormatter", "_", "XosFormHelpers", function controller($injector, LabelFormatter, _, XosFormHelpers) {
+        var _this = this;
+
+        // NOTE
+        // Corner case
+        // - if response is empty, how can we generate a form ?
+
+        this.responseMsg = false;
+        this.responseErr = false;
+
+        this.tableConfig = {
+          columns: [],
+          actions: [{
+            label: 'delete',
+            icon: 'remove',
+            cb: function cb(item) {
+              _this.Resource.delete({ id: item.id }).$promise.then(function () {
+                _.remove(_this.data, function (d) {
+                  return d.id === item.id;
+                });
+                _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully deleted';
+              }).catch(function (err) {
+                _this.responseErr = err.data.detail || 'Error while deleting ' + _this.config.resource + ' with id ' + item.id;
+              });
+            },
+            color: 'red'
+          }, {
+            label: 'details',
+            icon: 'search',
+            cb: function cb(item) {
+              _this.detailedItem = item;
+            }
+          }],
+          classes: 'table table-striped table-bordered table-responsive',
+          filter: 'field',
+          order: true,
+          pagination: {
+            pageSize: 10
+          }
+        };
+
+        this.formConfig = {
+          exclude: this.config.hiddenFields,
+          fields: {},
+          formName: this.config.resource + 'Form',
+          actions: [{
+            label: 'Save',
+            icon: 'ok',
+            cb: function cb(item) {
+              item.$save().then(function (res) {
+                _this.data.push(angular.copy(res));
+                delete _this.detailedItem;
+                _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully saved';
+              }).catch(function (err) {
+                _this.responseErr = err.data.detail || 'Error while saving ' + _this.config.resource + ' with id ' + item.id;
+              });
+            },
+            class: 'success'
+          }]
+        };
+
+        this.cleanForm = function () {
+          delete _this.detailedItem;
+        };
+
+        this.createItem = function () {
+          _this.detailedItem = new _this.Resource();
+        };
+
+        this.Resource = $injector.get(this.config.resource);
+
+        var getData = function getData() {
+          _this.Resource.query().$promise.then(function (res) {
+
+            if (!res[0]) {
+              return;
+            }
+
+            var item = res[0];
+            var props = Object.keys(item);
+
+            _.remove(props, function (p) {
+              return p == 'id' || p == 'password' || p == 'validators';
+            });
+
+            // TODO move out cb
+            if (angular.isArray(_this.config.hiddenFields)) {
+              props = _.difference(props, _this.config.hiddenFields);
+            }
+
+            var labels = props.map(function (p) {
+              return LabelFormatter.format(p);
+            });
+
+            props.forEach(function (p, i) {
+              _this.tableConfig.columns.push({
+                label: labels[i],
+                prop: p
+              });
+            });
+
+            // build form structure
+            props.forEach(function (p, i) {
+              _this.formConfig.fields[p] = {
+                label: LabelFormatter.format(labels[i]).replace(':', ''),
+                type: XosFormHelpers._getFieldFormat(item[p])
+              };
+            });
+
+            _this.data = res;
+          });
+        };
+
+        getData();
+      }]
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/smartComponents/smartTable/smartTable.component.js.map
+
+'use strict';
+
 (function () {
   'use strict';
 
@@ -1056,10 +1129,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   /**
   * @ngdoc service
   * @name xos.helpers.Users
-  * @description Angular resource to fetch /api/core/users/
+  * @description Angular resource to fetch /api/core/users/:user_id/
   **/
   .service('Users', ["$resource", function ($resource) {
-    return $resource('/api/core/users/');
+    return $resource('/api/core/users/:user_id/', { user_id: '@id' });
   }]);
 })();
 //# sourceMappingURL=../../maps/services/rest/Users.js.map
@@ -1189,10 +1262,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   /**
   * @ngdoc service
   * @name xos.helpers.Instances
-  * @description Angular resource to fetch /api/core/instances/
+  * @description Angular resource to fetch /api/core/instances/:instance_id/
   **/
   .service('Instances', ["$resource", function ($resource) {
-    return $resource('/api/core/instances/');
+    return $resource('/api/core/instances/:instance_id/', { instance_id: '@id' });
   }]);
 })();
 //# sourceMappingURL=../../maps/services/rest/Instances.js.map
