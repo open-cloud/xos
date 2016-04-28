@@ -38,13 +38,16 @@ topology_template:
                node: MyDeployment
                relationship: tosca.relationships.SiteDeployment
 
-    # Include the Tenant view so we can make it a default of padmin@vicci.org
+    # Attach the Tenant view to the MyDeployment deployment
     Tenant:
       type: tosca.nodes.DashboardView
       properties:
           no-create: true
-          no-update: true
           no-delete: true
+      requirements:
+          - deployment:
+              node: MyDeployment
+              relationship: tosca.relationships.SupportsDeployment
 
     padmin@vicci.org:
       type: tosca.nodes.User
@@ -61,4 +64,6 @@ topology_template:
           - tenant_dashboard:
               node: Tenant
               relationship: tosca.relationships.UsesDashboard
+
+
 

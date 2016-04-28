@@ -41,7 +41,7 @@ function lookup_subscriber_vsg {
     fi
     ID=`echo $JSON | python -c "import json,sys; print json.load(sys.stdin)['related'].get('vsg_id','')"`
     if [[ $ID == "" ]]; then
-        echo "there is no volt for this subscriber" >&2
+        echo "there is no vsg for this subscriber" >&2
         exit -1
     fi
 
