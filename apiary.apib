@@ -3,7 +3,69 @@ FORMAT: 1A
 # XOS
  
  
+# Group Users
+
+List of the XOS users
+
+## Users [/api/core/users/]
+
+### List all Users [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 2,
+                "password": "pbkdf2_sha256$12000$9gn8DmZuIoz2$YPQkx3AOOV7jZNYr2ddrgUCkiuaPpvb8+aJR7RwLZNA=",
+                "last_login": "2016-04-12T18:50:45.880823Z",
+                "email": "johndoe@myhouse.com",
+                "username": "johndoe@myhouse.com",
+                "firstname": "john",
+                "lastname": "doe",
+                "phone": null,
+                "user_url": null,
+                "site": "http://xos.dev:9999/api/core/sites/1/",
+                "public_key": null,
+                "is_active": true,
+                "is_admin": false,
+                "is_staff": true,
+                "is_readonly": false,
+                "is_registering": false,
+                "is_appuser": false,
+                "login_page": null,
+                "created": "2016-04-12T18:50:45.912602Z",
+                "updated": "2016-04-12T18:50:45.912671Z",
+                "enacted": null,
+                "policed": null,
+                "backend_status": "Provisioning in progress",
+                "deleted": false,
+                "write_protect": false,
+                "timezone": "America/New_York"
+            }
+        ]
+        
+ 
+ 
+# Group Example
+
+## Example Services Collection [/api/service/exampleservice/]
+
+### List all Example Services [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "humanReadableName": "MyExample",
+                "id": 1,
+                "service_message": "This is the test message"
+            }
+        ]
+ 
+ 
 # Group ONOS Services
+
+List of the active onos services
 
 ## ONOS Services Collection [/api/service/onos/]
 
@@ -35,8 +97,6 @@ FORMAT: 1A
             {
                 "humanReadableName": "service_vsg",
                 "id": 2,
-                "wan_container_gateway_ip": "",
-                "wan_container_gateway_mac": "",
                 "dns_servers": "8.8.8.8",
                 "url_filter_kind": null,
                 "node_label": null
@@ -48,7 +108,7 @@ FORMAT: 1A
 
 Resource related to the CORD Subscribers.
 
-## Subscribers Collection [/api/tenant/cord/subscriber/]
+## Subscribers [/api/tenant/cord/subscriber/{subscriber_id}/]
 
 ### List All Subscribers [GET]
 
@@ -82,12 +142,11 @@ Resource related to the CORD Subscribers.
             }
         ]
 
-## Subscriber Detail [/api/tenant/cord/subscriber/{subscriber_id}/]
+
+### View a Subscriber Detail [GET]
 
 + Parameters
     + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
-
-### View a Subscriber Detail [GET]
 
 + Response 200 (application/json)
  
@@ -118,6 +177,9 @@ Resource related to the CORD Subscribers.
         }
 
 ### Delete a Subscriber [DELETE]
+
++ Parameters
+    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
 
 + Response 204
 
@@ -278,7 +340,7 @@ Resource related to the CORD Subscribers.
 
 Virtual Truckroll, enable to perform basic test on user connectivity such as ping, traceroute and tcpdump.
 
-## Truckroll Collection [/api/tenant/truckroll/]
+## Truckroll Collection [/api/tenant/truckroll/{truckroll_id}/]
 
 ### List all Truckroll [GET]
 
@@ -301,6 +363,8 @@ Virtual Truckroll, enable to perform basic test on user connectivity such as pin
         ]
 
 ### Create a Truckroll [POST]
+
+A virtual truckroll is complete once is_synced equal true
 
 + Request (application/json)
 
@@ -327,14 +391,11 @@ Virtual Truckroll, enable to perform basic test on user connectivity such as pin
             "backend_status": "0 - Provisioning in progress"
         }
 
-## Truckroll Detail [/api/tenant/truckroll/{truckroll_id}/]
 
-A virtual truckroll is complete once is_synced equal true
+### View a Truckroll Detail [GET]
 
 + Parameters
     + truckroll_id: 1 (number) - ID of the Truckroll in the form of an integer
-
-### View a Truckroll Detail [GET]
 
 + Response 200 (application/json)
 
@@ -354,6 +415,9 @@ A virtual truckroll is complete once is_synced equal true
 
 ### Delete a Truckroll Detail [DELETE]
 
++ Parameters
+    + truckroll_id: 1 (number) - ID of the Truckroll in the form of an integer
+
 + Response 204
 
  
@@ -362,7 +426,7 @@ A virtual truckroll is complete once is_synced equal true
 
 OLT devices aggregate a set of subscriber connections
 
-## vOLT Collection [/api/tenant/cord/volt/]
+## vOLT Collection [/api/tenant/cord/volt/{volt_id}/]
 
 ### List all vOLT [GET]
 
@@ -414,14 +478,10 @@ OLT devices aggregate a set of subscriber connections
                 }
             }
 
-## vOLT Detail [/api/tenant/cord/volt/{volt_id}/]
-
-A virtual volt is complete once is_synced equal true
+### View a vOLT Detail [GET]
 
 + Parameters
     + volt_id: 1 (number) - ID of the vOLT in the form of an integer
-
-### View a vOLT Detail [GET]
 
 + Response 200 (application/json)
 
@@ -445,7 +505,7 @@ A virtual volt is complete once is_synced equal true
  
 # Group ONOS Apps
 
-## app Collection [/api/tenant/onos/app/]
+## ONOS App Collection [/api/tenant/onos/app/]
 
 ### List all apps [GET]
 
