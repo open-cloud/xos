@@ -4,7 +4,7 @@ xos_db:
         - "5432"
 
 xos_synchronizer_openstack:
-    command: bash -c "sleep 120; python /opt/xos/synchronizers/openstack/xos-synchronizer.py"
+    command: bash -c "update-ca-certificates; sleep 120; python /opt/xos/synchronizers/openstack/xos-synchronizer.py"
     image: xosproject/xos-synchronizer-openstack
     labels:
         org.xosproject.kind: synchronizer
@@ -17,6 +17,7 @@ xos_synchronizer_openstack:
         - .:/root/setup:ro
         - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
         - ./images:/opt/xos/images:ro
+        - /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro
 
 xos_synchronizer_onos:
     image: xosproject/xos-synchronizer-openstack
