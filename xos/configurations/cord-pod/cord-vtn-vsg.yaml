@@ -197,16 +197,16 @@ topology_template:
                node: My House
                relationship: tosca.relationships.SubscriberDevice
 
-#    My Volt:
-#        type: tosca.nodes.VOLTTenant
-#        properties:
-#            service_specific_id: 123
-#            s_tag: 222
-#            c_tag: 111
-#        requirements:
-#            - provider_service:
-#                node: service_volt
-#                relationship: tosca.relationships.MemberOfService
-#            - subscriber:
-#                node: My House
-#                relationship: tosca.relationships.BelongsToSubscriber
+    My Volt:
+        type: tosca.nodes.VOLTTenant
+        properties:
+            service_specific_id: 123
+            s_tag: 222
+            c_tag: 111
+        requirements:
+            - provider_service:
+                node: service_volt
+                relationship: tosca.relationships.MemberOfService
+            - subscriber:
+                node: My House
+                relationship: tosca.relationships.BelongsToSubscriber
