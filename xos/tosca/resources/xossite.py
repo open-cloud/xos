@@ -19,9 +19,9 @@ class XOSSite(XOSResource):
     def get_xos_args(self):
         display_name = self.get_property("display_name")
         if not display_name:
-            display_name = self.nodetemplate.name
+            display_name = self.obj_name
 
-        args = {"login_base": self.nodetemplate.name,
+        args = {"login_base": self.obj_name,
                 "name": display_name}
 
         # copy simple string properties from the template into the arguments
@@ -33,7 +33,7 @@ class XOSSite(XOSResource):
         return args
 
     def get_existing_objs(self):
-        return self.xos_model.objects.filter(login_base = self.nodetemplate.name)
+        return self.xos_model.objects.filter(login_base = self.obj_name)
 
     def postprocess(self, obj):
         results = []
@@ -67,20 +67,6 @@ class XOSSite(XOSResource):
                         sitedep = SiteDeployment(deployment=deployment, site=obj, controller=controller)
                         sitedep.save()
                         self.info("Created SiteDeployment from %s to %s" % (str(obj), str(deployment)))
-
-    def create(self):
-        nodetemplate = self.nodetemplate
-        siteName = nodetemplate.name
-
-        xos_args = self.get_xos_args()
-
-        site = Site(**xos_args)
-        site.caller = self.user
-        site.save()
-
-        self.postprocess(site)
-
-        self.info("Created Site '%s'" % (str(site), ))
 
     def delete(self, obj):
         if obj.slices.exists():
