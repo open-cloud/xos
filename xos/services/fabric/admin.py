@@ -21,10 +21,10 @@ from django.contrib.admin.utils import quote
 
 class FabricServiceForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
-        super (VRouterServiceForm,self ).__init__(*args,**kwargs)
+        super (FabricServiceForm,self ).__init__(*args,**kwargs)
 
     def save(self, commit=True):
-        return super(VRouterServiceForm, self).save(commit=commit)
+        return super(FabricServiceForm, self).save(commit=commit)
 
     class Meta:
         model = FabricService
@@ -45,7 +45,7 @@ class FabricServiceAdmin(ReadOnlyAwareAdmin):
 
     user_readonly_fields = ["name", "enabled", "versionNumber", "description"]
 
-    suit_form_tabs =(('general', 'vRouter Service Details'),
+    suit_form_tabs =(('general', 'Fabric Service Details'),
         ('administration', 'Administration'),
         #('tools', 'Tools'),
         ('slices','Slices'),
@@ -53,8 +53,8 @@ class FabricServiceAdmin(ReadOnlyAwareAdmin):
         ('serviceprivileges','Privileges'),
     )
 
-    suit_form_includes = (('vrouteradmin.html', 'top', 'administration'),
-                           ) #('hpctools.html', 'top', 'tools') )
+    suit_form_includes = (('fabricadmin.html', 'top', 'administration'),
+                           )
 
     def queryset(self, request):
         return FabricService.get_service_objects_by_user(request.user)
