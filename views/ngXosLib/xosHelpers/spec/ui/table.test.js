@@ -91,6 +91,66 @@
           });
         });
 
+        xdescribe('when a field type is provided', () => {
+          describe('and is boolean', () => {
+            beforeEach(() => {
+              console.log('iS: ' + isolatedScope);
+              isolatedScope.config = {
+                columns: [
+                  {
+                    label: 'Label 1',
+                    prop: 'label-1',
+                    type: 'boolean'
+                  }
+                ]
+              };
+              isolatedScope.data = [
+                {
+                  'label-1': true
+                },
+                {
+                  'label-1': false
+                }
+              ];
+              scope.$digest();
+            });
+
+            it('should render an incon', () => {
+              let td1 = $(element).find('tbody tr:first-child td')[0];
+              let td2 = $(element).find('tbody tr:last-child td')[0];
+              console.log(td2);
+              expect($(td1).find('i')).toHaveClass('glyphicon-ok');
+              expect($(td2).find('i')).toHaveClass('glyphicon-remove');
+            });
+          });
+
+          describe('and is date', () => {
+            beforeEach(() => {
+              console.log('iS: ' + isolatedScope);
+              isolatedScope.config = {
+                columns: [
+                  {
+                    label: 'Label 1',
+                    prop: 'label-1',
+                    type: 'date'
+                  }
+                ]
+              };
+              isolatedScope.data = [
+                {
+                  'label-1': '2015-02-17T22:06:38.059000Z'
+                }
+              ];
+              scope.$digest();
+            });
+
+            it('should render an formatted date', () => {
+              let td1 = $(element).find('tbody tr:first-child td')[0];
+              expect($(td1).text()).toEqual('02-17-2015 14:06:38');
+            });
+          });
+        });
+
         describe('when actions are passed', () => {
 
           let cb = jasmine.createSpy('callback')

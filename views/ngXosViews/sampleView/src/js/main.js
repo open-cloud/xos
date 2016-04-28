@@ -3,7 +3,6 @@
 angular.module('xos.sampleView', [
   'ngResource',
   'ngCookies',
-  'ngLodash',
   'ui.router',
   'xos.helpers'
 ])
@@ -24,7 +23,7 @@ angular.module('xos.sampleView', [
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/users-list.tpl.html',
-    controller: function(Users){
+    controller: function(Users, _){
 
       this.tableConfig = {
         columns: [
@@ -39,6 +38,14 @@ angular.module('xos.sampleView', [
           {
             label: 'Last Name',
             prop: 'lastname'
+          },
+          {
+            label: 'Created',
+            prop: 'created'
+          },
+          {
+            label: 'is_admin',
+            prop: 'is_admin'
           }
         ],
         classes: 'table table-striped table-condensed',
@@ -48,27 +55,83 @@ angular.module('xos.sampleView', [
             icon: 'remove',
             cb: (user) => {
               console.log(user);
+              // _.remove(this.users, {id: user.id});
             },
             color: 'red'
           }
         ],
         filter: 'field',
         order: true,
-        // pagination: {
-        //   pageSize: 6
-        // }
+        pagination: {
+          pageSize: 10
+        }
       };
+
+      this.smartTableConfig = {
+        resource: 'Users',
+        hiddenFields: [
+          'email',
+          'username',
+          // 'created',
+          'updated',
+          'last_login',
+          'is_active',
+          'is_admin',
+          'is_staff',
+          'is_readonly',
+          'is_registering',
+          'is_appuser',
+          'timezone'
+        ]
+      }
 
       this.alertConfig = {
         type: 'danger',
         closeBtn: true
       }
 
+      this.formConfig = {
+        exclude: ['password'],
+        formName: 'myForm',
+        fields: {
+          firstname: {
+            validators: {
+              minlength: 10
+            }
+          },
+          lastname: {
+            validators: {
+              maxlength: 3
+            }
+          },
+          user_url: {
+            validators: {
+              required: true
+            }
+          }
+        },
+        actions: [
+          {
+            label: 'Save',
+            icon: 'ok', // refers to bootstraps glyphicon
+            cb: (user) => { // receive the model
+              console.log(user);
+            },
+            class: 'success'
+          }
+        ]
+      };
+
+      this.errors = {
+        email: false
+      }
+
+      console.log('aaa')
 
       // retrieving user list
       Users.query().$promise
       .then((users) => {
-        this.users = users;
+        this.users = users.concat(users).concat(users).concat(users);
       })
       .catch((e) => {
         throw new Error(e);

@@ -81,14 +81,14 @@
     </file>
   </example>
 
-  <example module="sampleTable2">
+  <example module="sampleTable2" animations="true">
     <file name="index.html">
       <div ng-controller="SampleCtrl2 as vm">
         <xos-table data="vm.data" config="vm.config"></xos-table>
       </div>
     </file>
     <file name="script.js">
-      angular.module('sampleTable2', ['xos.uiComponents'])
+      angular.module('sampleTable2', ['xos.uiComponents', 'ngAnimate'])
       .controller('SampleCtrl2', function(){
         this.config = {
           columns: [
@@ -196,7 +196,7 @@
                   ng-model="vm.query"/>
               </div>
             </div>
-            <table ng-class="vm.classes" ng-show="vm.data.length > 0">
+            <table ng-class="vm.classes" ng-hide="vm.data.length == 0">
               <thead>
                 <tr>
                   <th ng-repeat="col in vm.columns">
@@ -210,7 +210,7 @@
                       </a>
                     </span>
                   </th>
-                  <th ng-if="vm.config.actions">Actions</th>
+                  <th ng-if="vm.config.actions">Actions:</th>
                 </tr>
               </thead>
               <tbody ng-if="vm.config.filter == 'field'">
@@ -249,9 +249,9 @@
               </xos-pagination>
           </div>
           <div ng-show="vm.data.length == 0 || !vm.data">
-            <div class="alert alert-info">
+             <xos-alert config="{type: 'info'}">
               No data to show.
-            </div>
+            </xos-alert>
           </div>
         `,
         bindToController: true,
