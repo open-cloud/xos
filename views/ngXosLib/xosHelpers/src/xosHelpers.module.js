@@ -22,10 +22,12 @@
       .module('xos.helpers', [
         'ngCookies',
         'ngResource',
+        'ngAnimate',
         'bugSnag',
-        'xos.uiComponents'
+        'xos.uiComponents',
       ])
-      .config(config);
+      .config(config)
+      .factory('_', $window => $window._ );
 
   function config($httpProvider, $interpolateProvider, $resourceProvider) {
     $httpProvider.interceptors.push('SetCSRFToken');
