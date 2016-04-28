@@ -78,6 +78,11 @@ class XOSResource(object):
         return default
 
     def get_xos_object(self, cls, throw_exception=True, **kwargs):
+        # do the same parsing that we do for objname
+        for (k,v) in kwargs.items():
+            if (k=="name") and ("#" in v):
+                kwargs[k] = v.split("#",1)[1]
+
         objs = cls.objects.filter(**kwargs)
         if not objs:
             if throw_exception:
