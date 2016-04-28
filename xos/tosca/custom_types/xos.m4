@@ -252,6 +252,16 @@ node_types:
             xos_base_props
             xos_base_service_props
 
+    tosca.nodes.FabricService:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: The Fabric Service.
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_props
+            xos_base_service_props
+
     tosca.nodes.VTNService:
         derived_from: tosca.nodes.Root
         description: >
