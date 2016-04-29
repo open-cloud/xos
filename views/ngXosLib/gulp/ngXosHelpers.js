@@ -8,8 +8,19 @@ var del = require('del');
 var babel = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
 var browserSync = require('browser-sync').create();
+var rename = require('gulp-rename');
+var sass = require('gulp-sass');
 
 module.exports = function(options){
+
+  gulp.task('style', function(){
+    return gulp.src(`${options.xosHelperSource}styles/main.scss`)
+      .pipe(sourcemaps.init())
+      .pipe(sass().on('error', sass.logError))
+      .pipe(rename('xosNgLib.css'))
+      .pipe(sourcemaps.write())
+      .pipe(gulp.dest(options.ngXosStyles));
+  });
 
   // transpile js with sourceMaps
   gulp.task('babel', function(){
@@ -31,7 +42,7 @@ module.exports = function(options){
   });
 
   // build
-  gulp.task('helpers', ['babel'], function(){
+  gulp.task('helpers', ['babel', 'style'], function(){
     return gulp.src([options.xosHelperTmp + '**/*.js'])
       .pipe(angularFilesort())
       .pipe(concat('ngXosHelpers.js'))
@@ -56,12 +67,17 @@ module.exports = function(options){
   gulp.task('makeDocs', ['cleanDocs'], function(){
     var ngOptions = {
       scripts: [
-        'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js',
-        'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js',
-        `${options.ngXosVendor}ngXosHelpers.js`
+        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-animate.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-cookies.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-resource.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-mocks.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.js',
+        `./${options.ngXosVendor}ngXosHelpers.js`,
       ],
       styles: [
-        'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',
+        `./${options.ngXosStyles}xosNgLib.css`,
+        'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.css',
       ],
       html5Mode: false,
       title: 'XOS Helpers documentation',
@@ -92,7 +108,8 @@ module.exports = function(options){
       server: {
         baseDir: './docs',
         routes: {
-          '/xos/core/xoslib/static/js/vendor': options.ngXosVendor
+          '/xos/core/xoslib/static/js/vendor': options.ngXosVendor,
+          '/xos/core/static': options.ngXosStyles
         }
       }
     });
@@ -108,12 +125,16 @@ module.exports = function(options){
 
     gulp.watch(files, ['makeDocs']);
 
-    gulp.watch(files, function(){
-      browserSync.reload();
-    });
+    // uncomment to enable autoreload, now it is broken (reload a wrong page)
+    // https://github.com/nikhilmodak/gulp-ngdocs/issues/81
+
+    // gulp.watch(files, function(){
+    //   browserSync.reload();
+    // });
   })
 
   gulp.task('dev', function(){
+    gulp.watch(`${options.xosHelperSource}**/*.scss`, ['style']);
     gulp.watch(options.xosHelperSource + '**/*.js', ['helpersDev']);
   });
 };
