@@ -23,7 +23,7 @@ angular.module('xos.openVPNDashboard', [
   this.getOpenVpnTenants = () => {
     let deferred = $q.defer();
 
-    $http.get('/xoslib/openvpntenant/')
+    $http.get('/api/tenant/openvpn/list/')
     .then((res) => {
       deferred.resolve(res.data)
     })
