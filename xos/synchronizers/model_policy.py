@@ -1,15 +1,16 @@
+from core.models import *
+from datetime import datetime
+from django.db import reset_queries
+from django.db.models import F, Q
 from django.db.models.signals import post_save
+from django.db.transaction import atomic
 from django.dispatch import receiver
-import pdb
 from generate.dependency_walker import *
 from synchronizers.openstack import model_policies
 from xos.logger import logger
-from datetime import datetime
+
+import pdb
 import time
-from core.models import *
-from django.db import reset_queries
-from django.db.transaction import atomic
-from django.db.models import F, Q
 
 modelPolicyEnabled = True
 bad_instances=[]
@@ -90,7 +91,7 @@ def execute_model_policy(instance, deleted):
         instance.policed=datetime.now()
         instance.save(update_fields=['policed'])
     except:
-        logging.error('Object %r is defective'%instance)
+        logger.error('Object %r is defective'%instance)
         bad_instances.append(instance)
 
 def noop(o,p):
