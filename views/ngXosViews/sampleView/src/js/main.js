@@ -29,14 +29,6 @@ angular.module('xos.sampleView', [
         resource: 'Users'
       };
       
-      // retrieving user list
-      Users.query().$promise
-      .then((users) => {
-        this.users = users;
-      })
-      .catch((e) => {
-        throw new Error(e);
-      });
     }
   };
 });
