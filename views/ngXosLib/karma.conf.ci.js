@@ -3,6 +3,8 @@
 
 /* eslint indent: [2,2], quotes: [2, "single"]*/
 
+// CONFIGURATION FOR JENKINS TESTS
+
 /*eslint-disable*/
 var wiredep = require('wiredep');
 var path = require('path');
@@ -13,10 +15,8 @@ var bowerComponents = wiredep({devDependencies: true})[ 'js' ].map(function( fil
 
 var files = bowerComponents.concat([
   'node_modules/babel-polyfill/dist/polyfill.js',
-  'xosHelpers/src/**/*.module.js',
-  'xosHelpers/src/**/*.js',
+  '../../xos/core/xoslib/static/js/vendor/ngXosHelpers.js',
   'xosHelpers/spec/**/*.test.js'
-  // 'xosHelpers/spec/ui/form.test.js'
 ]);
 
 module.exports = function(config) {
@@ -44,13 +44,13 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'xosHelpers/**/*.js': ['babel'],
+      'xosHelpers/**/*.js': ['babel', 'coverage'],
     },
 
     babelPreprocessor: {
       options: {
         presets: ['es2015'],
-        sourceMap: 'both'
+        sourceMap: 'inline'
       },
       filename: function (file) {
         return file.originalPath;
@@ -65,8 +65,19 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['mocha'],
+    reporters: ['dots', 'junit', 'coverage'],
 
+    junitReporter: {
+      outputDir: 'test-result',
+      useBrowserName: false,
+      outputFile: 'test-results.xml'
+    },
+
+    coverageReporter: {
+      type: 'cobertura',
+      subdir: '.',
+      dir: 'test-result/'
+    },
 
     // web server port
     port: 9876,
@@ -78,23 +89,20 @@ module.exports = function(config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_ERROR,
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: true,
+    autoWatch: false,
 
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: [
-      'PhantomJS',
-      'Chrome'
-    ],
+    browsers: ['PhantomJS'],
 
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false
+    singleRun: true
   });
 };

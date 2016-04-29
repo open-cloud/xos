@@ -75,7 +75,7 @@
     </file>
   </example>
 
-  <example module="sampleAlert2">
+  <example module="sampleAlert2" animations="true">
     <file name="index.html">
       <div ng-controller="SampleCtrl as vm" class="row">
         <div class="col-sm-4">
@@ -90,7 +90,7 @@
       </div>
     </file>
     <file name="script.js">
-      angular.module('sampleAlert2', ['xos.uiComponents'])
+      angular.module('sampleAlert2', ['xos.uiComponents', 'ngAnimate'])
       .controller('SampleCtrl', function(){
         this.config1 = {
           type: 'success'
@@ -110,7 +110,7 @@
         show: '=?'
       },
       template: `
-        <div class="alert alert-{{vm.config.type}}" ng-show="vm.show">
+        <div ng-cloak class="alert alert-{{vm.config.type}}" ng-hide="!vm.show">
           <button type="button" class="close" ng-if="vm.config.closeBtn" ng-click="vm.dismiss()">
             <span aria-hidden="true">&times;</span>
           </button>
