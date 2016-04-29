@@ -145,7 +145,8 @@
           first_name: 'Jon',
           last_name: 'Snow',
           hidden_field: 'hidden',
-          $save: ''
+          $save: '',
+          $update: ''
         };
 
         spyOn(model, '$save').and.callFake(function() {
@@ -154,10 +155,16 @@
           return deferred.promise;
         });
 
+        spyOn(model, '$update').and.callFake(function() {
+          var deferred = $q.defer();
+          deferred.resolve();
+          return deferred.promise;
+        });
+
         isolatedScope.detailedItem = model;
         scope.$apply();
         $(element).find('xos-form .btn.btn-success').click();
-        expect(model.$save).toHaveBeenCalled();
+        expect(model.$update).toHaveBeenCalled();
       }));
 
       it('should have an add button', () => {
