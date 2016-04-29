@@ -119,6 +119,9 @@
       controller: ["$injector", "LabelFormatter", "_", "XosFormHelpers", function controller($injector, LabelFormatter, _, XosFormHelpers) {
         var _this = this;
 
+        // TODO
+        // - Validate the config (what if resource does not exist?)
+
         // NOTE
         // Corner case
         // - if response is empty, how can we generate a form ?
@@ -132,6 +135,7 @@
             label: 'delete',
             icon: 'remove',
             cb: function cb(item) {
+              console.log(item);
               _this.Resource.delete({ id: item.id }).$promise.then(function () {
                 _.remove(_this.data, function (d) {
                   return d.id === item.id;
@@ -165,8 +169,20 @@
             label: 'Save',
             icon: 'ok',
             cb: function cb(item) {
-              item.$save().then(function (res) {
-                _this.data.push(angular.copy(res));
+              var p = void 0;
+              var isNew = true;
+
+              if (item.id) {
+                p = item.$update();
+                isNew = false;
+              } else {
+                p = item.$save();
+              }
+
+              p.then(function (res) {
+                if (isNew) {
+                  _this.data.push(angular.copy(res));
+                }
                 delete _this.detailedItem;
                 _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully saved';
               }).catch(function (err) {
@@ -198,7 +214,7 @@
             var props = Object.keys(item);
 
             _.remove(props, function (p) {
-              return p == 'id' || p == 'password' || p == 'validators';
+              return p == 'id' || p == 'validators';
             });
 
             // TODO move out cb
@@ -544,145 +560,6 @@
   });
 })();
 //# sourceMappingURL=../../../maps/ui_components/dumbComponents/table/table.component.js.map
-
-'use strict';
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
- * Created by teone on 4/15/16.
- */
-
-(function () {
-  'use strict';
-
-  angular.module('xos.uiComponents')
-
-  /**
-    * @ngdoc directive
-    * @name xos.uiComponents.directive:xosAlert
-    * @restrict E
-    * @description The xos-alert directive
-    * @param {Object} config The configuration object
-    * ```
-    * {
-    *   type: 'danger', //info, success, warning
-    *   closeBtn: true, //default false
-    *   autoHide: 3000 //delay to automatically hide the alert
-    * }
-    * ```
-    * @param {Boolean=} show Binding to show and hide the alert, default to true
-    * @element ANY
-    * @scope
-    * @example
-  <example module="sampleAlert1">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl1 as vm">
-        <xos-alert config="vm.config1">
-          A sample alert message
-        </xos-alert>
-        <xos-alert config="vm.config2">
-          A sample alert message (with close button)
-        </xos-alert>
-        <xos-alert config="vm.config3">
-          A sample info message
-        </xos-alert>
-        <xos-alert config="vm.config4">
-          A sample success message
-        </xos-alert>
-        <xos-alert config="vm.config5">
-          A sample warning message
-        </xos-alert>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('sampleAlert1', ['xos.uiComponents'])
-      .controller('SampleCtrl1', function(){
-        this.config1 = {
-          type: 'danger'
-        };
-         this.config2 = {
-          type: 'danger',
-          closeBtn: true
-        };
-         this.config3 = {
-          type: 'info'
-        };
-         this.config4 = {
-          type: 'success'
-        };
-         this.config5 = {
-          type: 'warning'
-        };
-      });
-    </file>
-  </example>
-   <example module="sampleAlert2" animations="true">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl as vm" class="row">
-        <div class="col-sm-4">
-          <a class="btn btn-default btn-block" ng-show="!vm.show" ng-click="vm.show = true">Show Alert</a>
-          <a class="btn btn-default btn-block" ng-show="vm.show" ng-click="vm.show = false">Hide Alert</a>
-        </div>
-        <div class="col-sm-8">
-          <xos-alert config="vm.config1" show="vm.show">
-            A sample alert message, not displayed by default.
-          </xos-alert>
-        </div>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('sampleAlert2', ['xos.uiComponents', 'ngAnimate'])
-      .controller('SampleCtrl', function(){
-        this.config1 = {
-          type: 'success'
-        };
-         this.show = false;
-      });
-    </file>
-  </example>
-  **/
-
-  .directive('xosAlert', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        config: '=',
-        show: '=?'
-      },
-      template: '\n        <div ng-cloak class="alert alert-{{vm.config.type}}" ng-hide="!vm.show">\n          <button type="button" class="close" ng-if="vm.config.closeBtn" ng-click="vm.dismiss()">\n            <span aria-hidden="true">&times;</span>\n          </button>\n          <p ng-transclude></p>\n        </div>\n      ',
-      transclude: true,
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: ["$timeout", function controller($timeout) {
-        var _this = this;
-
-        if (!this.config) {
-          throw new Error('[xosAlert] Please provide a configuration via the "config" attribute');
-        }
-
-        // default the value to true
-        this.show = this.show !== false;
-
-        this.dismiss = function () {
-          _this.show = false;
-        };
-
-        if (this.config.autoHide) {
-          (function () {
-            var to = $timeout(function () {
-              _this.dismiss();
-              $timeout.cancel(to);
-            }, _this.config.autoHide);
-          })();
-        }
-      }]
-    };
-  });
-})();
-//# sourceMappingURL=../../../maps/ui_components/dumbComponents/alert/alert.component.js.map
 
 'use strict';
 
@@ -1058,6 +935,145 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 'use strict';
 
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 4/15/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosAlert
+    * @restrict E
+    * @description The xos-alert directive
+    * @param {Object} config The configuration object
+    * ```
+    * {
+    *   type: 'danger', //info, success, warning
+    *   closeBtn: true, //default false
+    *   autoHide: 3000 //delay to automatically hide the alert
+    * }
+    * ```
+    * @param {Boolean=} show Binding to show and hide the alert, default to true
+    * @element ANY
+    * @scope
+    * @example
+  <example module="sampleAlert1">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl1 as vm">
+        <xos-alert config="vm.config1">
+          A sample alert message
+        </xos-alert>
+        <xos-alert config="vm.config2">
+          A sample alert message (with close button)
+        </xos-alert>
+        <xos-alert config="vm.config3">
+          A sample info message
+        </xos-alert>
+        <xos-alert config="vm.config4">
+          A sample success message
+        </xos-alert>
+        <xos-alert config="vm.config5">
+          A sample warning message
+        </xos-alert>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleAlert1', ['xos.uiComponents'])
+      .controller('SampleCtrl1', function(){
+        this.config1 = {
+          type: 'danger'
+        };
+         this.config2 = {
+          type: 'danger',
+          closeBtn: true
+        };
+         this.config3 = {
+          type: 'info'
+        };
+         this.config4 = {
+          type: 'success'
+        };
+         this.config5 = {
+          type: 'warning'
+        };
+      });
+    </file>
+  </example>
+   <example module="sampleAlert2" animations="true">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm" class="row">
+        <div class="col-sm-4">
+          <a class="btn btn-default btn-block" ng-show="!vm.show" ng-click="vm.show = true">Show Alert</a>
+          <a class="btn btn-default btn-block" ng-show="vm.show" ng-click="vm.show = false">Hide Alert</a>
+        </div>
+        <div class="col-sm-8">
+          <xos-alert config="vm.config1" show="vm.show">
+            A sample alert message, not displayed by default.
+          </xos-alert>
+        </div>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleAlert2', ['xos.uiComponents', 'ngAnimate'])
+      .controller('SampleCtrl', function(){
+        this.config1 = {
+          type: 'success'
+        };
+         this.show = false;
+      });
+    </file>
+  </example>
+  **/
+
+  .directive('xosAlert', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        config: '=',
+        show: '=?'
+      },
+      template: '\n        <div ng-cloak class="alert alert-{{vm.config.type}}" ng-hide="!vm.show">\n          <button type="button" class="close" ng-if="vm.config.closeBtn" ng-click="vm.dismiss()">\n            <span aria-hidden="true">&times;</span>\n          </button>\n          <p ng-transclude></p>\n        </div>\n      ',
+      transclude: true,
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$timeout", function controller($timeout) {
+        var _this = this;
+
+        if (!this.config) {
+          throw new Error('[xosAlert] Please provide a configuration via the "config" attribute');
+        }
+
+        // default the value to true
+        this.show = this.show !== false;
+
+        this.dismiss = function () {
+          _this.show = false;
+        };
+
+        if (this.config.autoHide) {
+          (function () {
+            var to = $timeout(function () {
+              _this.dismiss();
+              $timeout.cancel(to);
+            }, _this.config.autoHide);
+          })();
+        }
+      }]
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/dumbComponents/alert/alert.component.js.map
+
+'use strict';
+
 (function () {
   'use strict';
 
@@ -1123,7 +1139,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   * @description Angular resource to fetch /api/tenant/cord/volt/:volt_id/
   **/
   .service('vOLT-Collection', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/volt/:volt_id/', { volt_id: '@id' });
+    return $resource('/api/tenant/cord/volt/:volt_id/', { volt_id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   }]);
 })();
 //# sourceMappingURL=../../maps/services/rest/vOLT.js.map
@@ -1137,10 +1155,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   /**
   * @ngdoc service
   * @name xos.helpers.Users
-  * @description Angular resource to fetch /api/core/users/:user_id/
+  * @description Angular resource to fetch /api/core/users/:id/
   **/
   .service('Users', ["$resource", function ($resource) {
-    return $resource('/api/core/users/:user_id/', { user_id: '@id' });
+    return $resource('/api/core/users/:id/', { id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   }]);
 })();
 //# sourceMappingURL=../../maps/services/rest/Users.js.map
@@ -1157,7 +1177,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   * @description Angular resource to fetch /api/tenant/truckroll/:truckroll_id/
   **/
   .service('Truckroll-Collection', ["$resource", function ($resource) {
-    return $resource('/api/tenant/truckroll/:truckroll_id/', { truckroll_id: '@id' });
+    return $resource('/api/tenant/truckroll/:truckroll_id/', { truckroll_id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   }]);
 })();
 //# sourceMappingURL=../../maps/services/rest/Truckroll.js.map
@@ -1174,7 +1196,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/
   **/
   .service('Subscribers', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/', { subscriber_id: '@id' });
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/', { subscriber_id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   }])
   /**
   * @ngdoc service
@@ -1182,7 +1206,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/
   **/
   .service('Subscriber-features', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/', { subscriber_id: '@id' });
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/', { subscriber_id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   }])
   /**
   * @ngdoc service
@@ -1190,7 +1216,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/
   **/
   .service('Subscriber-features-uplink_speed', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/', { subscriber_id: '@id' });
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/', { subscriber_id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   }])
   /**
   * @ngdoc service
@@ -1198,7 +1226,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/
   **/
   .service('Subscriber-features-downlink_speed', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/', { subscriber_id: '@id' });
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/', { subscriber_id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   }])
   /**
   * @ngdoc service
@@ -1206,7 +1236,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/cdn/
   **/
   .service('Subscriber-features-cdn', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/cdn/', { subscriber_id: '@id' });
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/cdn/', { subscriber_id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   }])
   /**
   * @ngdoc service
@@ -1214,7 +1246,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/uverse/
   **/
   .service('Subscriber-features-uverse', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uverse/', { subscriber_id: '@id' });
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uverse/', { subscriber_id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   }])
   /**
   * @ngdoc service
@@ -1222,7 +1256,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/status/
   **/
   .service('Subscriber-features-status', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/status/', { subscriber_id: '@id' });
+    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/status/', { subscriber_id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   }]);
 })();
 //# sourceMappingURL=../../maps/services/rest/Subscribers.js.map
@@ -1270,13 +1306,32 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   /**
   * @ngdoc service
   * @name xos.helpers.Instances
-  * @description Angular resource to fetch /api/core/instances/:instance_id/
+  * @description Angular resource to fetch /api/core/instances/:id/
   **/
   .service('Instances', ["$resource", function ($resource) {
-    return $resource('/api/core/instances/:instance_id/', { instance_id: '@id' });
+    return $resource('/api/core/instances/:id/', { id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   }]);
 })();
 //# sourceMappingURL=../../maps/services/rest/Instances.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Example-Services-Collection
+  * @description Angular resource to fetch /api/service/exampleservice/
+  **/
+  .service('Example-Services-Collection', ["$resource", function ($resource) {
+    return $resource('/api/service/exampleservice/');
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Example.js.map
 
 'use strict';
 

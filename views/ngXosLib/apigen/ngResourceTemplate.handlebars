@@ -9,7 +9,9 @@
   * @description Angular resource to fetch {{param.href}}
   **/
   .service('{{name}}', function($resource){
-    return $resource('{{param.href}}'{{#if param.name}}, { {{param.name}}: '@id' }{{/if}});
+    return $resource('{{param.href}}'{{#if param.name}}, { {{param.name}}: '@id' }, {
+      update: { method: 'PUT' }
+    }{{/if}});
   })
   {{/each}}
 })();

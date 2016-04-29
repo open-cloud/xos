@@ -122,6 +122,9 @@
       controllerAs: 'vm',
       controller: function($injector, LabelFormatter, _, XosFormHelpers){
         
+        // TODO
+        // - Validate the config (what if resource does not exist?)
+
         // NOTE
         // Corner case
         // - if response is empty, how can we generate a form ?
@@ -137,6 +140,7 @@
               label: 'delete',
               icon: 'remove',
               cb: (item) => {
+                console.log(item);
                 this.Resource.delete({id: item.id}).$promise
                 .then(() => {
                   _.remove(this.data, (d) => d.id === item.id);
@@ -173,9 +177,21 @@
               label: 'Save',
               icon: 'ok',
               cb: (item) => {
-                item.$save()
-                .then((res) => {
-                  this.data.push(angular.copy(res));
+                let p;
+                let isNew = true;
+
+                if(item.id){
+                  p = item.$update();
+                  isNew = false;
+                }
+                else {
+                  p = item.$save();
+                }
+
+                p.then((res) => {
+                  if(isNew){
+                    this.data.push(angular.copy(res));
+                  }
                   delete this.detailedItem;
                   this.responseMsg = `${this.config.resource} with id ${item.id} successfully saved`;
                 })
@@ -210,7 +226,7 @@
             let props = Object.keys(item);
 
             _.remove(props, p => {
-              return p == 'id' || p == 'password' || p == 'validators'
+              return p == 'id' || p == 'validators'
             });
 
             // TODO move out cb

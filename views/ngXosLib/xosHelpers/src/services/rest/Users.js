@@ -5,9 +5,11 @@
   /**
   * @ngdoc service
   * @name xos.helpers.Users
-  * @description Angular resource to fetch /api/core/users/:user_id/
+  * @description Angular resource to fetch /api/core/users/:id/
   **/
   .service('Users', function($resource){
-    return $resource('/api/core/users/:user_id/', { user_id: '@id' });
+    return $resource('/api/core/users/:id/', { id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   })
 })();

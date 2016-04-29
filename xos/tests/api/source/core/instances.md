@@ -2,7 +2,7 @@
 
 List of the XOS instances
 
-## Instances [/api/core/instances/{instance_id}/]
+## Instances [/api/core/instances/{id}/]
 
 ### List all Instances [GET]
 

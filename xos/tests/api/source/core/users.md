@@ -2,7 +2,7 @@
 
 List of the XOS users
 
-## Users [/api/core/users/{user_id}/]
+## Users [/api/core/users/{id}/]
 
 ### List all Users [GET]
 

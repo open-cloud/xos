@@ -5,9 +5,11 @@
   /**
   * @ngdoc service
   * @name xos.helpers.Instances
-  * @description Angular resource to fetch /api/core/instances/:instance_id/
+  * @description Angular resource to fetch /api/core/instances/:id/
   **/
   .service('Instances', function($resource){
-    return $resource('/api/core/instances/:instance_id/', { instance_id: '@id' });
+    return $resource('/api/core/instances/:id/', { id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   })
 })();

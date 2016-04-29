@@ -8,6 +8,8 @@
   * @description Angular resource to fetch /api/tenant/cord/volt/:volt_id/
   **/
   .service('vOLT-Collection', function($resource){
-    return $resource('/api/tenant/cord/volt/:volt_id/', { volt_id: '@id' });
+    return $resource('/api/tenant/cord/volt/:volt_id/', { volt_id: '@id' }, {
+      update: { method: 'PUT' }
+    });
   })
 })();

@@ -70,7 +70,7 @@ let handlebarsTemplate;
 fs.readFileAsync(path.join(__dirname, './ngResourceTemplate.handlebars'), 'utf8')
 .then((template) => {
   handlebarsTemplate = Handlebars.compile(template);
-  return fs.readFileAsync(path.join(__dirname, '../../../xos/tests/api/apiary.apib'), 'utf8')
+  return fs.readFileAsync(path.join(__dirname, '../../../apiary.apib'), 'utf8')
 })
 .then(data => protagonist.parseAsync(data))
 .then(result => loopApiDefinitions(result.content))
