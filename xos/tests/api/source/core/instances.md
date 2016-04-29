@@ -27,19 +27,19 @@ List of the XOS instances
                 "name": "mysite_vcpe",
                 "instance_name": null,
                 "ip": null,
-                "image": "http://xos.dev:9999/api/core/images/1/",
-                "creator": "http://xos.dev:9999/api/core/users/1/",
-                "slice": "http://xos.dev:9999/api/core/slices/1/",
-                "deployment": "http://xos.dev:9999/api/core/deployments/1/",
-                "node": "http://xos.dev:9999/api/core/nodes/1/",
+                "image": "1",
+                "creator": "1",
+                "slice": "1",
+                "deployment": "1",
+                "node": "1",
                 "numberCores": 0,
-                "flavor": "http://xos.dev:9999/api/core/flavors/1/",
+                "flavor": "1",
                 "userData": null,
                 "isolation": "vm",
                 "volumes": "/etc/dnsmasq.d,/etc/ufw",
                 "parent": null,
                 "networks": [
-                    "http://xos.dev:9999/api/core/networks/2/"
+                    "1"
                 ]
             }
         ]
