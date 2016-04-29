@@ -26,7 +26,7 @@ angular.module('xos.helperView', [
     controller: function(Users){
 
       this.tableConfig = {
-        resource: 'Users'
+        resource: 'Instances'
       };
       
       // retrieving user list
