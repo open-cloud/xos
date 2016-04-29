@@ -174,6 +174,13 @@ def createTruckroll():
     tn.save()
 
 
+def createFlavor():
+    fl = Flavor(id=1)
+    fl.name = 'm1.large'
+    fl.save()
+    print(fl)
+
+
 @hooks.before_all
 def my_before_all_hook(transactions):
     # print "-------------------------------- Before All Hook --------------------------------"
@@ -212,6 +219,11 @@ def test3(transaction):
 def test4(transaction):
     # transaction['skip'] = True
     VOLTTenant.objects.get(kind='vOLT').delete()
+
+
+@hooks.before("Flavors > Flavors > View a Flavors Detail")
+def test5(transaction):
+    createFlavor()
 
 
 @hooks.before("Example > Example Services Collection > List all Example Services")

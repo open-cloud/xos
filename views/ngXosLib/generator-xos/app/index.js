@@ -4,6 +4,7 @@ var generators = require('yeoman-generator');
 var user = require('../node_modules/yeoman-generator/lib/actions/user');
 
 var config = {};
+var userName;
 
 module.exports = generators.Base.extend({
   _fistCharToUpper: function(string){
@@ -59,6 +60,7 @@ module.exports = generators.Base.extend({
   },
   writing: {
     rcFiles: function(){
+      userName = user.git.name().split(' ');
       this.fs.copy(this.templatePath('.bowerrc'), this.destinationPath(`${this.config.get('folder')}/${config.name}/.bowerrc`));
       this.fs.copy(this.templatePath('.gitignore'), this.destinationPath(`${this.config.get('folder')}/${config.name}/.gitignore`));
     },
@@ -87,7 +89,7 @@ module.exports = generators.Base.extend({
       this.fs.copyTpl(
         this.templatePath('src/index.html'),
         this.destinationPath(`${this.config.get('folder')}/${config.name}/src/index.html`),
-        { name: config.name, fileName: this._fistCharToUpper(config.name) }
+        { name: config.name, fileName: this._fistCharToUpper(config.name), user: {firstname: userName[0]}}
       );
     },
     css: function(){
@@ -129,7 +131,6 @@ module.exports = generators.Base.extend({
       );
     },
     spec: function(){
-      const userName = user.git.name().split(' ');
       this.fs.copyTpl(
         this.templatePath('spec/sample.test.js'),
         this.destinationPath(`${this.config.get('folder')}/${config.name}/spec/sample.test.js`),

@@ -30,7 +30,16 @@ def import_module_from_filename(dirname, fn):
 
 def import_module_by_dotted_name(name):
     print "import", name
-    module = __import__(name)
+    try:
+        module = __import__(name)
+    except:
+        # django will eat the exception, and then fail later with
+        #  'conflicting models in application'
+        # when it tries to import the module a second time.
+        print "exception in import_model_by_dotted_name"
+        import traceback
+        traceback.print_exc()
+        raise
     for part in name.split(".")[1:]:
         module = getattr(module, part)
     return module

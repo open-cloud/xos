@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.models import AddressPool
-from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, TenantRootTenantInline, TenantRootPrivilegeInline
+from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, AddressPoolInline
 from core.middleware import get_request
 
 from functools import update_wrapper
@@ -39,7 +39,7 @@ class VRouterServiceAdmin(ReadOnlyAwareAdmin):
     fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", ],
                          'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
-    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
+    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline,AddressPoolInline]
     form = VRouterServiceForm
 
     extracontext_registered_admins = True
@@ -48,6 +48,7 @@ class VRouterServiceAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs =(('general', 'vRouter Service Details'),
         ('administration', 'Administration'),
+        ('addresspools', 'Addresses'),
         #('tools', 'Tools'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
