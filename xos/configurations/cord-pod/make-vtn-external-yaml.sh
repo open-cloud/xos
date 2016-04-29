@@ -18,14 +18,14 @@ topology_template:
       requirements:
       properties:
           kind: onos
-          view_url: /admin/onos/onosservice/$id$/
+          view_url: /admin/onos/onosservice/\$id$/
           no_container: true
           rest_hostname: onos-cord
 
     service_vtn:
       type: tosca.nodes.VTNService
       properties:
-          view_url: /admin/vtn/vtnservice/$id$/
+          view_url: /admin/vtn/vtnservice/\$id$/
           privateGatewayMac: 00:00:00:00:00:01
           localManagementIp: 172.27.0.1/24
           ovsdbPort: 6641

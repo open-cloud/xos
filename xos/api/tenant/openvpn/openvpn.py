@@ -1,16 +1,9 @@
 import jinja2
+
+from api.xosapi_helpers import PlusModelSerializer, ReadOnlyField, XOSViewSet
 from core.models import TenantPrivilege
-from plus import PlusSerializerMixin
 from rest_framework import serializers
 from services.openvpn.models import OpenVPNService, OpenVPNTenant
-from xos.apibase import XOSListCreateAPIView
-
-if hasattr(serializers, "ReadOnlyField"):
-    # rest_framework 3.x
-    ReadOnlyField = serializers.ReadOnlyField
-else:
-    # rest_framework 2.x
-    ReadOnlyField = serializers.Field
 
 
 def get_default_openvpn_service():
@@ -20,7 +13,7 @@ def get_default_openvpn_service():
     return None
 
 
-class OpenVPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
+class OpenVPNTenantSerializer(PlusModelSerializer):
     """A Serializer for the OpenVPNTenant that has the minimum information required for clients.
 
     Attributes:
@@ -63,15 +56,16 @@ class OpenVPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
                   "ca_crt": obj.get_ca_crt(pki_dir),
                   "client_crt": obj.get_client_cert(client_name, pki_dir),
                   "client_key": obj.get_client_key(client_name, pki_dir)
-                 }
+                  }
         return template.render(fields)
 
 
-class OpenVPNTenantList(XOSListCreateAPIView):
+class OpenVPNTenantViewSet(XOSViewSet):
     """Class that provides a list of OpenVPNTenants that the user has permission to access."""
+    base_name = "openvpn"
+    method_kind = "viewset"
+    method_name = "list"
     serializer_class = OpenVPNTenantSerializer
-    method_kind = "list"
-    method_name = "openvpntenant"
 
     def get_queryset(self):
         # Get every privilege for this user
