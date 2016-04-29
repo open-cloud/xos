@@ -12,7 +12,6 @@ var options = {
   dist: 'dist/',
   api: '../../ngXosLib/api/',
   helpers: '../../../xos/core/xoslib/static/js/vendor/',
-  helpersSourceMaps: '../../ngXosLib/xosHelpers/.tmp/maps/',
   static: '../../../xos/core/xoslib/static/', // this is the django static folder
   dashboards: '../../../xos/core/xoslib/dashboards/' // this is the django html folder
 };
