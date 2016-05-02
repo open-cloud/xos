@@ -54,12 +54,20 @@ def cleanDB():
     for s in AddressPool.objects.all():
         s.delete(purge=True)
 
+    for s in Flavor.objects.all():
+        s.delete(purge=True)
+
     # print 'DB Cleaned'
 
 
 def createTestSubscriber():
 
     cleanDB()
+
+    # create flavors
+    small = Flavor()
+    small.name = "m1.small"
+    small.save()
 
     # load user
     user = User.objects.get(email="padmin@vicci.org")
