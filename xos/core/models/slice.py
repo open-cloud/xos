@@ -7,7 +7,7 @@ from core.models import User
 from core.models import Role
 from core.models import Controller,ControllerLinkManager,ControllerLinkDeletionManager
 from core.models import ServiceClass
-from core.models.serviceclass import get_default_serviceclass
+#from core.models.serviceclass import get_default_serviceclass
 from core.models import Tag
 from django.contrib.contenttypes import generic
 from core.models import Service
@@ -34,7 +34,7 @@ class Slice(PlCoreBase):
     network = models.CharField(null=True, blank=True, max_length=256, choices=NETWORK_CHOICES)
     exposed_ports = models.CharField(null=True, blank=True, max_length=256)
     tags = generic.GenericRelation(Tag)
-    serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=get_default_serviceclass)
+    serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, blank=True)  # DEPRECATED
     creator = models.ForeignKey(User, related_name='slices', blank=True, null=True)
 
     # for tenant view
