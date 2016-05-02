@@ -63,11 +63,7 @@ def cleanDB():
 def createTestSubscriber():
 
     cleanDB()
-
-    # create flavors
-    small = Flavor()
-    small.name = "m1.small"
-    small.save()
+    createFlavors()
 
     # load user
     user = User.objects.get(email="padmin@vicci.org")
@@ -182,11 +178,25 @@ def createTruckroll():
     tn.save()
 
 
-def createFlavor():
-    fl = Flavor(id=1)
-    fl.name = 'm1.large'
-    fl.save()
-    print(fl)
+def createFlavors():
+    small = Flavor(id=1)
+    small.name = "m1.small"
+    small.save()
+
+    medium = Flavor(id=2)
+    medium.name = "m1.medium"
+    medium.save()
+
+    large = Flavor(id=3)
+    large.name = "m1.large"
+    large.save()
+
+
+def createDeployment():
+    deployment = Deployment(id=1)
+    deployment.name = 'MyTestDeployment'
+    deployment.save()
+    print 'Created deployment: ', deployment.id
 
 
 @hooks.before_all
@@ -231,7 +241,12 @@ def test4(transaction):
 
 @hooks.before("Flavors > Flavors > View a Flavors Detail")
 def test5(transaction):
-    createFlavor()
+    createFlavors()
+
+
+@hooks.before("Deployments > Deployments > View a Deployment Detail")
+def deployments_collection(transaction):
+    createDeployment()
 
 
 @hooks.before("Example > Example Services Collection > List all Example Services")
