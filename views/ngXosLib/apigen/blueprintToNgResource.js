@@ -26,10 +26,8 @@ const getGroupDescription = (group) => _.find(group, {element: 'copy'}) ? _.find
 
 // Loop APIs endpoint
 const loopApiEndpoint = (group) => {
-  // {name: 'ResourceName', attributes: {href: '/ahhsiiis'}}
+  // removing description
   _.remove(group, {element: 'copy'})
-  // console.log(group);
-  // _.forEach(group, d => console.log(d));
 
   return _.map(group, g => {
     return {
@@ -46,6 +44,7 @@ const loopApiGroups = (defs) => {
   }
   _.forEach(defs, d => {
     console.info(chalk.blue.bold(`Parsing Group: ${d.meta.title}`));
+
     var data = {
       description: getGroupDescription(d.content),
       ngModule: angualarModuleName,

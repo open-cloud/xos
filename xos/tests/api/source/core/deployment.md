@@ -8,11 +8,51 @@ List of the XOS deployments
 
 + Response 200 (application/json)
 
+        [
+            {
+                "humanReadableName": "MyDeployment",
+                "id": 1,
+                "created": "2016-04-29T16:19:03.549901Z",
+                "updated": "2016-04-29T16:19:05.624151Z",
+                "enacted": null,
+                "policed": null,
+                "backend_register": "{}",
+                "backend_status": "0 - Provisioning in progress",
+                "deleted": false,
+                "write_protect": false,
+                "lazy_blocked": false,
+                "no_sync": true,
+                "name": "MyDeployment",
+                "accessControl": "allow all",
+                "images": [
+                    "1"
+                ],
+                "sites": [
+                    "1"
+                ],
+                "flavors": [
+                    "1",
+                    "2",
+                    "3"
+                ],
+                "dashboardviews": [
+                    "1"
+                ]
+            }
+        ]
+
+### View a Deployment Detail [GET]
+
++ Parameters
+    + id: 1 (number) - ID of the Deployment in the form of an integer
+
++ Response 200 (application/json)
+
         {
             "humanReadableName": "MyDeployment",
             "id": 1,
-            "created": "2016-04-29T16:19:03.549901Z",
-            "updated": "2016-04-29T16:19:05.624151Z",
+            "created": "2016-04-27T21:46:57.354544Z",
+            "updated": "2016-04-27T21:47:05.221720Z",
             "enacted": null,
             "policed": null,
             "backend_register": "{}",
@@ -23,18 +63,16 @@ List of the XOS deployments
             "no_sync": true,
             "name": "MyDeployment",
             "accessControl": "allow all",
-            "images": [
-                "1"
-            ],
+            "images": [],
             "sites": [
                 "1"
             ],
             "flavors": [
-                "1",
+                "3",
                 "2",
-                "3"
+                "1"
             ],
             "dashboardviews": [
-                "1"
+                "3"
             ]
         }
