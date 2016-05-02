@@ -85,7 +85,7 @@ class XOSViewSet(viewsets.ModelViewSet):
 
     @classmethod
     def detail_url(self, pattern, viewdict, name):
-        return url(self.get_api_method_path() + r'(?P<pk>[a-zA-Z0-9\-]+)/' + pattern,
+        return url(self.get_api_method_path() + r'(?P<pk>[a-zA-Z0-9\-_]+)/' + pattern,
                    self.as_view(viewdict),
                    name=self.base_name+"_"+name)
 
@@ -102,7 +102,7 @@ class XOSViewSet(viewsets.ModelViewSet):
         patterns = []
 
         patterns.append(url(self.get_api_method_path() + '$', self.as_view({'get': 'list', 'post': 'create'}), name=self.base_name+'_list'))
-        patterns.append(url(self.get_api_method_path() + '(?P<pk>[a-zA-Z0-9\-]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
+        patterns.append(url(self.get_api_method_path() + '(?P<pk>[a-zA-Z0-9\-_]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
 
         return patterns
 
