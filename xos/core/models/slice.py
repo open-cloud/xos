@@ -62,12 +62,6 @@ class Slice(PlCoreBase):
         if " " in self.name:
             raise XOSValidationError('slice name must not contain spaces')
 
-        if self.serviceClass is None:
-            # We allowed None=True for serviceClass because Django evolution
-            # will fail unless it is allowed. But, we we really don't want it to
-            # ever save None, so fix it up here.
-            self.serviceClass = ServiceClass.get_default()
-        
         # set creator on first save
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
