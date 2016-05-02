@@ -9,7 +9,6 @@ xos_syndicate_ms:
         - "8080"
     volumes:
       - ./ms/app.yaml:/usr/src/syndicate/ms/app.yaml
-      - ./ms/admin_info.py:/usr/src/syndicate/ms/common/admin_info.py
 
 xos_synchronizer_openstack:
     image: xosproject/xos-synchronizer-openstack

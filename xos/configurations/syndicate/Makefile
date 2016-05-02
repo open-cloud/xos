@@ -17,9 +17,13 @@ containers:
 	cd ../../../containers/synchronizer; make
 	cd ../../../containers/syndicate-ms; make
 
-# see Makefiles on this project: https://github.com/syndicate-storage/syndicate-core
-include MS.mk
-syndicate_config: ms/admin_info.py ms/app.yaml
+# see Makefiles on this project:
+# https://github.com/syndicate-storage/syndicate-core
+# specifically the ms subdirectory
+CONFIG_DIR=ms
+BUILD_MS=ms
+include configure_ms.mk
+syndicate_config: ms/app.yaml
 
 common_cloudlab:
 	make -C ../common -f Makefile.cloudlab
