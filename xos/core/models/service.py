@@ -67,7 +67,7 @@ class Service(PlCoreBase, AttributeMixin):
     kind = StrippedCharField(
         max_length=30, help_text="Kind of service", default=KIND)
     name = StrippedCharField(max_length=30, help_text="Service Name")
-    versionNumber = StrippedCharField(
+    versionNumber = StrippedCharField(blank=True, null=True,
         max_length=30, help_text="Version of Service Definition")
     published = models.BooleanField(default=True)
     view_url = StrippedCharField(blank=True, null=True, max_length=1024)
