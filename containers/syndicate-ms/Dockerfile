@@ -7,7 +7,7 @@ MAINTAINER Zack Williams <zdw@cs.arizona.edu>
 # vars
 ENV APT_KEY butler_opencloud_cs_arizona_edu_pub.gpg
 ENV MS_PORT 8080
-ENV GAE_SDK google_appengine_1.9.35.zip
+ENV GAE_SDK google_appengine_1.9.36.zip
 
 # Prep apt to be able to download over https
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --force-yes\
