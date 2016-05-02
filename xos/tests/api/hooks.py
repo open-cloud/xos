@@ -245,6 +245,7 @@ def test5(transaction):
 
 
 @hooks.before("Deployments > Deployments > View a Deployment Detail")
+# @hooks.before("Deployments > Deployments > Delete a Deployment")
 def deployments_collection(transaction):
     createDeployment()
 
