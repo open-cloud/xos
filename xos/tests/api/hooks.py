@@ -54,12 +54,20 @@ def cleanDB():
     for s in AddressPool.objects.all():
         s.delete(purge=True)
 
+    for s in Flavor.objects.all():
+        s.delete(purge=True)
+
     # print 'DB Cleaned'
 
 
 def createTestSubscriber():
 
     cleanDB()
+
+    # create flavors
+    small = Flavor()
+    small.name = "m1.small"
+    small.save()
 
     # load user
     user = User.objects.get(email="padmin@vicci.org")
@@ -228,4 +236,17 @@ def test5(transaction):
 
 @hooks.before("Example > Example Services Collection > List all Example Services")
 def exampleTest(transaction):
+    transaction['skip'] = True
+
+
+@hooks.before("Utility > Login > Log a user in the system")
+def before_logout_hook(transaction):
+    transaction['skip'] = True
+    # auth = doLogin('padmin@vicci.org', 'letmein')
+    # transaction['request']['body'] = {}
+    # transaction['request']['body']['xossessionid'] = auth['sessionid']
+
+
+@hooks.before("Utility > Logout > Log a user out of the system")
+def skip_for_now(transaction):
     transaction['skip'] = True
