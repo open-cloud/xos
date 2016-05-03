@@ -75,6 +75,7 @@ class PlusModelSerializer(serializers.ModelSerializer):
 
 class XOSViewSet(viewsets.ModelViewSet):
     api_path=""
+    read_only=False
 
     @classmethod
     def get_api_method_path(self):
@@ -101,8 +102,12 @@ class XOSViewSet(viewsets.ModelViewSet):
 
         patterns = []
 
-        patterns.append(url(self.get_api_method_path() + '$', self.as_view({'get': 'list', 'post': 'create'}), name=self.base_name+'_list'))
-        patterns.append(url(self.get_api_method_path() + '(?P<pk>[a-zA-Z0-9\-_]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
+        if self.read_only:
+            patterns.append(url(self.get_api_method_path() + '$', self.as_view({'get': 'list'}), name=self.base_name+'_list'))
+            patterns.append(url(self.get_api_method_path() + '(?P<pk>[a-zA-Z0-9\-_]+)/$', self.as_view({'get': 'retrieve'}), name=self.base_name+'_detail'))
+        else:
+            patterns.append(url(self.get_api_method_path() + '$', self.as_view({'get': 'list', 'post': 'create'}), name=self.base_name+'_list'))
+            patterns.append(url(self.get_api_method_path() + '(?P<pk>[a-zA-Z0-9\-_]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
 
         return patterns
 

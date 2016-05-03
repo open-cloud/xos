@@ -27,7 +27,7 @@ class SSHKeys(Instance):
 #            return None
 
 class SSHKeysSerializer(PlusModelSerializer):
-    id = serializers.CharField(read_only=True, source="instance_name")
+    id = serializers.CharField(read_only=True, source="instance_id")
     public_keys = serializers.ListField(read_only=True, source="get_public_keys")
     node_name = serializers.CharField(read_only=True, source="node.name")
 
@@ -40,12 +40,13 @@ class SSHKeysViewSet(XOSViewSet):
     method_name = "sshkeys"
     method_kind = "viewset"
     serializer_class = SSHKeysSerializer
+    read_only = True
 
-    lookup_field = "instance_name"
+    lookup_field = "instance_id"
     lookup_url_kwarg = "pk"
 
     def get_queryset(self):
-        queryset = queryset=SSHKeys.objects.exclude(Q(instance_name__isnull=True) | Q(instance_name__exact=''))
+        queryset = queryset=SSHKeys.objects.exclude(Q(instance_id__isnull=True) | Q(instance_id__exact=''))
 
         node_name = self.request.query_params.get('node_name', None)
         if node_name is not None:
