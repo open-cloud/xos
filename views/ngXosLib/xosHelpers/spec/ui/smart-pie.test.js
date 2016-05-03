@@ -86,6 +86,28 @@
         expect(isolatedScope.data).toEqual(groupedData);
       });
 
+      describe('when a labelFormatter function is provided', () => {
+        beforeEach(inject(function ($compile, $rootScope){
+          scope = $rootScope.$new();
+          scope.config = {
+            resource: 'MockResource',
+            groupBy: 'category',
+            classes: 'label-formatter-test',
+            labelFormatter: (labels) => {
+              return labels.map(l => l === '1' ? 'First' : 'Second');
+            }
+          };
+          element = angular.element('<xos-smart-pie config="config"></xos-smart-pie>');
+          $compile(element)(scope);
+          scope.$digest();
+          isolatedScope = element.isolateScope().vm;
+        }));
+
+        it('should format labels', () => {
+          expect(isolatedScope.labels).toEqual(['First', 'Second'])
+        });
+      });
+
     });
   });
 })();
