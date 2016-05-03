@@ -11,21 +11,13 @@ from xos.exceptions import XOSNotFound
 from api.xosapi_helpers import PlusModelSerializer, XOSViewSet, ReadOnlyField
 from django.db.models import Q
 
-class SSHKeys(Instance):
-    class Meta:
-        proxy = True
-        app_label = "core"
-
-    def __init__(self, *args, **kwargs):
-        super(SSHKeys, self).__init__(*args, **kwargs)
-
 class SSHKeysSerializer(PlusModelSerializer):
     id = serializers.CharField(read_only=True, source="instance_id")
     public_keys = serializers.ListField(read_only=True, source="get_public_keys")
     node_name = serializers.CharField(read_only=True, source="node.name")
 
     class Meta:
-        model = SSHKeys
+        model = Instance
         fields = ('id', 'public_keys', 'node_name')
 
 class SSHKeysViewSet(XOSViewSet):
@@ -39,7 +31,7 @@ class SSHKeysViewSet(XOSViewSet):
     lookup_url_kwarg = "pk"
 
     def get_queryset(self):
-        queryset = queryset=SSHKeys.objects.exclude(Q(instance_id__isnull=True) | Q(instance_id__exact=''))
+        queryset = queryset=Instance.objects.exclude(Q(instance_id__isnull=True) | Q(instance_id__exact=''))
 
         node_name = self.request.query_params.get('node_name', None)
         if node_name is not None:
