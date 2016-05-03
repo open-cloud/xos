@@ -24,19 +24,19 @@ xos_synchronizer_openstack:
         - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
         - ./images:/opt/xos/images:ro
 
-xos_synchronizer_exampleservice:
+xos_synchronizer_syndicate:
     image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120; python /opt/xos/synchronizers/exampleservice/exampleservice-synchronizer.py -C /opt/xos/synchronizers/exampleservice/exampleservice_config"
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/syndicate/syndicate-synchronizer.py -C /opt/xos/synchronizers/syndicate/syndicate_config"
     labels:
         org.xosproject.kind: synchronizer
-        org.xosproject.target: exampleservice
+        org.xosproject.target: syndicate
     links:
         - xos_db
     extra_hosts:
         - ctl:${MYIP}
     volumes:
         - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
-        - ../setup/id_rsa:/opt/xos/synchronizers/exampleservice/exampleservice_private_key:ro
+        - ../setup/id_rsa:/opt/xos/synchronizers/syndicate/syndicate_private_key:ro
 
 xos:
     image: xosproject/xos
