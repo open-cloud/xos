@@ -30,21 +30,27 @@ class PortForwardingSerializer(serializers.Serializer):
         fields = ('id', 'ip', 'ports', 'hostname')
 
 class PortForwardingViewSet(XOSViewSet):
-    base_name = "list"
+    base_name = "portforwarding"
     method_name = "portforwarding"
     method_kind = "viewset"
     serializer_class = PortForwardingSerializer
 
     def get_queryset(self):
-        queryset = queryset=Port.objects.exclude(Q(network__isnull=True) |
-                                                 Q(instance__isnull=True) |
-                                                 Q(instance__node__isnull=True) |
-                                                 Q(network__ports__exact='') |
-                                                 Q(ip__isnull=True) | Q(ip__exact=''))
+        queryset=Port.objects.exclude(Q(network__isnull=True) |
+                                                  Q(instance__isnull=True) |
+                                                  Q(instance__node__isnull=True) |
+                                                  Q(network__ports__isnull=True) | Q(network__ports__exact='') |
+                                                  Q(ip__isnull=True))
 
         node_name = self.request.query_params.get('node_name', None)
         if node_name is not None:
             queryset = queryset.filter(instance__node__name = node_name)
+
+        if "" in [q.ip for q in list(queryset)]:
+            # Q(ip__exact=='') does not work right, so let's filter the hard way
+            queryset = [q for q in list(queryset) if q.ip!='']
+            queryset = [q.id for q in queryset]
+            queryset = Port.objects.filter(pk__in=queryset)
 
         return queryset
 
