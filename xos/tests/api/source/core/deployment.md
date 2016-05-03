@@ -43,6 +43,12 @@ List of the XOS deployments
 
 ### Create a deployment [POST]
 
++ Request (application/json)
+
+        {
+            "humanReadableName": "MyDeployment",
+        }
+
 + Response 200 (application/json)
 
         {
