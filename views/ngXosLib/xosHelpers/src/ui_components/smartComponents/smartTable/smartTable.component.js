@@ -140,7 +140,6 @@
               label: 'delete',
               icon: 'remove',
               cb: (item) => {
-                console.log(item);
                 this.Resource.delete({id: item.id}).$promise
                 .then(() => {
                   _.remove(this.data, (d) => d.id === item.id);
