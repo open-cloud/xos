@@ -15,7 +15,7 @@ describe('The User List', () => {
       {
         email: 'teo@onlab.us',
         firstname: 'Matteo',
-        lastname: 'Scandolo'
+        lastname: 'Scandolo' 
       }
     ]);
   

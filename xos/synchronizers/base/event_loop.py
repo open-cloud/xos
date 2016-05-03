@@ -521,7 +521,12 @@ class XOSObserver:
 
                         loop_end = time.time()
 
-                        diag = Diag.objects.filter(name=Config().observer_name).first()
+                        try:
+                            observer_name = Config().observer_name
+                        except:
+                            observer_name = ''
+
+                        diag = Diag.objects.filter(name=observer_name).first()
                         if (diag):
                             br_str = diag.backend_register
                             br = json.loads(br_str)

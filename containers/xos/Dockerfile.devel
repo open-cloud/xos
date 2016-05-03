@@ -50,6 +50,7 @@ RUN pip install \
     django-timezones \
     djangorestframework==3.3.3 \
     dnslib \
+    jinja2 \
     lxml \
     markdown \
     netaddr \

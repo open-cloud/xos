@@ -11,7 +11,7 @@ then
 fi 
 
 echo "Waiting for XOS to come up"
-until http 0.0.0.0:$1 &> /dev/null
+until curl 0.0.0.0:$1 &> /dev/null
 do
     sleep 1
     RUNNING_CONTAINER=`sudo docker ps|grep "xos"|awk '{print $$NF}'`

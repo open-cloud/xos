@@ -16,7 +16,7 @@ class XOSCDNPrefix(XOSResource):
     copyin_props = []
 
     def get_xos_args(self):
-        args = {"prefix": self.nodetemplate.name}
+        args = {"prefix": self.obj_name}
 
         cp_name = self.get_requirement("tosca.relationships.MemberOfContentProvider")
         if cp_name:

@@ -1,6 +1,7 @@
 xos:
 	sudo docker-compose up -d
 	bash ./wait_for_xos.sh
+	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/opencloud/opencloud.yaml
 
 containers:

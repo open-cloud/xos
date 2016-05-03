@@ -65492,6 +65492,7 @@ angular.module('ngAnimate', [])
     root._ = _;
   }
 }.call(this));
+<<<<<<< HEAD
 
 /**
  * @license AngularJS v1.5.5
@@ -66215,3 +66216,5 @@ function ngMessageDirectiveFactory() {
 
 
 })(window, window.angular);
+=======
+>>>>>>> upstream/master

@@ -10,10 +10,13 @@ from hpcapi import *
 
 from core.views.legacyapi import LegacyXMLRPC
 from core.views.serviceGraph import ServiceGridView, ServiceGraphView
+<<<<<<< HEAD
 from services.helloworld.view import *
 from services.mcord.view import *
 # from core.views.analytics import AnalyticsAjaxView
 
+=======
+>>>>>>> upstream/master
 from core.models import *
 from rest_framework import generics
 from core.dashboard.sites import SitePlus
@@ -61,11 +64,15 @@ def redirect_to_apache(request):
 urlpatterns = patterns(
     '',
     url(r'^observer', 'core.views.observer.Observer', name='observer'),
+<<<<<<< HEAD
     url(r'^helloworld', HelloWorldView.as_view(), name='helloWorld'),
 
     url(r'^mcord', MCordView.as_view(), name='mcord'),
 
     url(r'^serviceGrid', serviceClass(), name='serviceGrid'),
+=======
+    url(r'^serviceGrid', ServiceGridView.as_view(), name='serviceGrid'),
+>>>>>>> upstream/master
     url(r'^serviceGraph.png', ServiceGraphView.as_view(), name='serviceGraph'),
     url(r'^hpcConfig', 'core.views.hpc_config.HpcConfig', name='hpcConfig'),
 

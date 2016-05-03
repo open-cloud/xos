@@ -15,32 +15,27 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
-        self.object = self.get_object_or_none()
+        self.object = self.get_object()
 
         if self.object is None:
             raise XOSProgrammingError("Use the List API for creating objects")
 
-        serializer = self.get_serializer(self.object, data=request.DATA,
-                                         files=request.FILES, partial=partial)
-
-        assert(serializer.object is not None)
-
-        serializer.object.caller = request.user
+        serializer = self.get_serializer(self.object, data=request.data, partial=partial)
 
         if not serializer.is_valid():
             raise XOSValidationError(fields=serializer._errors)
 
-        if not serializer.object.can_update(request.user):
+        # Do the XOS perm check
+
+        assert(serializer.instance is not None)
+        obj = serializer.instance
+        for attr, value in serializer.validated_data.items():
+            setattr(obj, attr, value)
+        obj.caller = request.user
+        if not obj.can_update(request.user):
             raise XOSPermissionDenied()
 
-        if (hasattr(self, "pre_save")):
-            # rest_framework 2.x
-            self.pre_save(serializer.object)
-            self.object = serializer.save(force_update=True)
-            self.post_save(self.object, created=False)
-        else:
-            # rest_framework 3.x
-            self.perform_update(serializer)
+        self.perform_update(serializer)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -48,11 +43,7 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         obj = self.get_object()
         obj.caller = request.user
         if obj.can_update(request.user):
-            # this is the guts of DestroyModelMixin, copied here so that we
-            # can use the obj with caller set in it,
-            self.pre_delete(obj)
-            obj.delete()
-            self.post_delete(obj)
+            self.perform_destroy(obj)
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -69,7 +60,7 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class XOSListCreateAPIView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        serializer = self.get_serializer(data=request.data)
 
         # In rest_framework 3.x: we can pass raise_exception=True instead of
         # raising the exception ourselves
@@ -77,22 +68,12 @@ class XOSListCreateAPIView(generics.ListCreateAPIView):
             raise XOSValidationError(fields=serializer._errors)
 
         # now do XOS can_update permission checking
-
-        obj = serializer.object
+        obj = serializer.Meta.model(**serializer.validated_data)
         obj.caller = request.user
         if not obj.can_update(request.user):
             raise XOSPermissionDenied()
 
-        # stuff below is from generics.ListCreateAPIView
-
-        if (hasattr(self, "pre_save")):
-            # rest_framework 2.x
-            self.pre_save(serializer.object)
-            self.object = serializer.save(force_insert=True)
-            self.post_save(self.object, created=True)
-        else:
-            # rest_framework 3.x
-            self.perform_create(serializer)
+        self.perform_create(serializer)
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED,

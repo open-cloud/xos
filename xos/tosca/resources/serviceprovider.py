@@ -17,7 +17,7 @@ class XOSServiceProvider(XOSResource):
     def get_xos_args(self):
         hpc_service_name = self.get_requirement("tosca.relationships.MemberOfService", throw_exception=True)
         hpc_service = self.get_xos_object(HpcService, name=hpc_service_name)
-        return {"name": self.nodetemplate.name,
+        return {"name": self.obj_name,
                 "hpcService": hpc_service}
 
     def can_delete(self, obj):

@@ -7,7 +7,7 @@ from core.models import User
 from core.models import Role
 from core.models import Controller,ControllerLinkManager,ControllerLinkDeletionManager
 from core.models import ServiceClass
-from core.models.serviceclass import get_default_serviceclass
+#from core.models.serviceclass import get_default_serviceclass
 from core.models import Tag
 from django.contrib.contenttypes import generic
 from core.models import Service
@@ -35,7 +35,7 @@ class Slice(PlCoreBase):
     network = models.CharField(null=True, blank=True, max_length=256, choices=NETWORK_CHOICES)
     exposed_ports = models.CharField(null=True, blank=True, max_length=256)
     tags = generic.GenericRelation(Tag)
-    serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=get_default_serviceclass)
+    serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, blank=True)  # DEPRECATED
     creator = models.ForeignKey(User, related_name='slices', blank=True, null=True)
 
     # for tenant view
@@ -64,12 +64,6 @@ class Slice(PlCoreBase):
         if " " in self.name:
             raise XOSValidationError('slice name must not contain spaces')
 
-        if self.serviceClass is None:
-            # We allowed None=True for serviceClass because Django evolution
-            # will fail unless it is allowed. But, we we really don't want it to
-            # ever save None, so fix it up here.
-            self.serviceClass = ServiceClass.get_default()
-        
         # set creator on first save
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller

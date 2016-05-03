@@ -176,15 +176,20 @@ INSTALLED_APPS = (
     'core',
     'services.hpc',
     'services.cord',
+<<<<<<< HEAD
     'services.mcord',
     'services.helloworldservice_complete',
+=======
+>>>>>>> upstream/master
     'services.onos',
     'services.ceilometer',
     'services.requestrouter',
     'services.syndicate_storage',
+    'services.openvpn',
     'services.vtr',
     'services.vrouter',
     'services.vtn',
+    'services.fabric',
     'geoposition',
     'rest_framework_swagger',
 )
