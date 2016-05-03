@@ -2,16 +2,14 @@
   'use strict';
 
   angular.module('{{ngModule}}')
-  {{#each resources}}
   /**
   * @ngdoc service
   * @name {{../ngModule}}.{{name}}
-  * @description Angular resource to fetch {{param.href}}
+  * @description Angular resource to fetch {{resourceName}}
   **/
-  .service('{{name}}', function($resource){
-    return $resource('{{param.href}}'{{#if param.name}}, { {{param.name}}: '@id' }, {
+  .service('{{resourceName}}', function($resource){
+    return $resource('{{baseUrl.href}}'{{#if baseUrl.param}}, { {{baseUrl.param}}: '@id' }, {
       update: { method: 'PUT' }
     }{{/if}});
   })
-  {{/each}}
 })();

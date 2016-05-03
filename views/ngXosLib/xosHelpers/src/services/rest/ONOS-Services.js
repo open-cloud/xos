@@ -4,10 +4,10 @@
   angular.module('xos.helpers')
   /**
   * @ngdoc service
-  * @name xos.helpers.ONOS-Services-Collection
-  * @description Angular resource to fetch /api/service/onos/
+  * @name .
+  * @description Angular resource to fetch ONOS Services
   **/
-  .service('ONOS-Services-Collection', function($resource){
+  .service('ONOS Services', function($resource){
     return $resource('/api/service/onos/');
   })
 })();

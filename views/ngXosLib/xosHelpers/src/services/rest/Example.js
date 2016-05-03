@@ -4,10 +4,10 @@
   angular.module('xos.helpers')
   /**
   * @ngdoc service
-  * @name xos.helpers.Example-Services-Collection
-  * @description Angular resource to fetch /api/service/exampleservice/
+  * @name .
+  * @description Angular resource to fetch Example
   **/
-  .service('Example-Services-Collection', function($resource){
+  .service('Example', function($resource){
     return $resource('/api/service/exampleservice/');
   })
 })();

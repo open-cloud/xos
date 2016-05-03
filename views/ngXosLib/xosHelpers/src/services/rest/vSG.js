@@ -4,10 +4,10 @@
   angular.module('xos.helpers')
   /**
   * @ngdoc service
-  * @name xos.helpers.vSG-Collection
-  * @description Angular resource to fetch /api/service/vsg/
+  * @name .
+  * @description Angular resource to fetch vSG
   **/
-  .service('vSG-Collection', function($resource){
+  .service('vSG', function($resource){
     return $resource('/api/service/vsg/');
   })
 })();
