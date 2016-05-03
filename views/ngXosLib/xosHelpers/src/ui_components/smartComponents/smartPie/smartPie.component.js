@@ -23,6 +23,11 @@
         resource: 'Users',
         groupBy: 'fieldName',
         classes: 'my-custom-class',
+        labelFormatter: (labels) => {
+          // here you can format your label,
+          // you should return an array with the same order
+          return labels;
+        }
       }
     * ```
     * @scope
@@ -43,6 +48,7 @@
       bindToController: true,
       controllerAs: 'vm',
       controller: function($injector, _){
+
         this.Resource = $injector.get(this.config.resource);
 
         const getData = () => {
@@ -58,7 +64,7 @@
             this.data = _.reduce(Object.keys(grouped), (data, group) => data.concat(grouped[group].length), []);
 
             // create labels
-            this.labels = Object.keys(grouped);
+            this.labels = angular.isFunction(this.config.labelFormatter) ? this.config.labelFormatter(Object.keys(grouped)) : Object.keys(grouped);
           });
         }
 
