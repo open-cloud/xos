@@ -4,12 +4,12 @@
   angular.module('xos.helpers')
   /**
   * @ngdoc service
-  * @name .
+  * @name xos.helpers.Users
   * @description Angular resource to fetch Users
   **/
   .service('Users', function($resource){
     return $resource('/api/core/users/:id/', { id: '@id' }, {
-      update: { method: 'PUT' }
+      update: { method: 'PUT' },
     });
   })
 })();

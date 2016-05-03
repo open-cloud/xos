@@ -4,7 +4,7 @@
   angular.module('xos.helpers')
   /**
   * @ngdoc service
-  * @name .
+  * @name xos.helpers.Utility
   * @description Angular resource to fetch Utility
   **/
   .service('Utility', function($resource){

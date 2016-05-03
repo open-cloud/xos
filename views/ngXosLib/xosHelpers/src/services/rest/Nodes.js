@@ -4,12 +4,12 @@
   angular.module('xos.helpers')
   /**
   * @ngdoc service
-  * @name .
+  * @name xos.helpers.Nodes
   * @description Angular resource to fetch Nodes
   **/
   .service('Nodes', function($resource){
     return $resource('/api/core/nodes/:id/', { id: '@id' }, {
-      update: { method: 'PUT' }
+      update: { method: 'PUT' },
     });
   })
 })();

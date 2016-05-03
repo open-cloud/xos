@@ -4,7 +4,7 @@
   angular.module('xos.helpers')
   /**
   * @ngdoc service
-  * @name .
+  * @name xos.helpers.Truckroll
   * @description Angular resource to fetch Truckroll
   **/
   .service('Truckroll', function($resource){

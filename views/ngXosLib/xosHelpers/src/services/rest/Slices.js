@@ -4,12 +4,12 @@
   angular.module('xos.helpers')
   /**
   * @ngdoc service
-  * @name .
+  * @name xos.helpers.Slices
   * @description Angular resource to fetch Slices
   **/
   .service('Slices', function($resource){
     return $resource('/api/core/slices/:id/', { id: '@id' }, {
-      update: { method: 'PUT' }
+      update: { method: 'PUT' },
     });
   })
 })();

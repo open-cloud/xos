@@ -73,8 +73,52 @@ const loopApiEndpoint = (group) => {
   })
 };
 
+
+// list all the requested defined in a group,
+// return {method, url, isArray}
+const getGroupMethods = (group, baseUrl) => {
+
+  _.remove(group, {element: 'copy'})
+
+  let actions = [];
+
+  _.forEach(group, g => {
+    _.remove(g.content, {element: 'copy'})
+    // console.log('-----------------------');
+    // console.log(g);
+    let url = formatHref(g.attributes.href);
+    _.forEach(g.content, action => {
+      // if it is a base method (Query, Save, $save, $delete, $update) return
+      if(baseUrl.indexOf(url) >= 0){
+        // console.info('base method');
+        return
+      }
+      // console.log(baseUrl, url);
+
+      // console.log(action);
+      let name = action.meta.title;
+      let method = action.content[0].content[0].attributes.method;
+      let response = _.find(action.content[0].content, {element: 'httpResponse'}).content[0] ? _.find(action.content[0].content, {element: 'httpResponse'}).content[0].content : null;
+      let isArray = Array.isArray(JSON.parse(response));
+      // console.log(method, url, isArray, name);
+
+
+      actions.push({
+        method: method,
+        url: url,
+        isArray: isArray,
+        name: formatTitle(name)
+      })
+    })
+  });
+
+  return actions;
+}
+
 // Loop APIs groups
 const loopApiGroups = (defs) => {
+
+  let formattedData = {};
 
   // console.log(util.inspect(defs, false, null));
 
@@ -82,22 +126,32 @@ const loopApiGroups = (defs) => {
     return;
   }
   _.forEach(defs, d => {
-    console.info(chalk.blue.bold(`Parsing Group: ${d.meta.title}`));
+    if(process.env.NODE_ENV !== 'test'){
+      console.info(chalk.blue.bold(`Parsing Group: ${d.meta.title}`));
+    }
 
     let endpoints = loopApiEndpoint(d.content);
+    let baseUrl = getBaseUrl(endpoints);
 
     let data = {
       description: getGroupDescription(d.content),
-      baseUrl: getBaseUrl(endpoints),
+      baseUrl: baseUrl,
       resourceName: d.meta.title,
       ngModule: angualarModuleName,
-      resources: endpoints
+      customActions: getGroupMethods(d.content, baseUrl.href)
     };
-    fs.writeFileSync(path.join(__dirname, `../xosHelpers/src/services/rest/${formatTitle(d.meta.title)}.js`), handlebarsTemplate(data));
+
+    if(process.env.NODE_ENV !== 'test'){
+      fs.writeFileSync(path.join(__dirname, `../xosHelpers/src/services/rest/${formatTitle(d.meta.title)}.js`), handlebarsTemplate(data));
+    }
+
+    formattedData[d.meta.title] = data;
   });
 
-  console.info(chalk.green.bold(`Api Generated`));
-
+  if(process.env.NODE_ENV !== 'test'){
+    console.info(chalk.green.bold(`Api Generated`));
+  }
+  return formattedData;
 };
 
 // Loop the top level definitions
@@ -112,10 +166,11 @@ let handlebarsTemplate;
 fs.readFileAsync(path.join(__dirname, './ngResourceTemplate.handlebars'), 'utf8')
 .then((template) => {
   handlebarsTemplate = Handlebars.compile(template);
-  return fs.readFileAsync(path.join(__dirname, '../../../apiary.apib'), 'utf8')
+  // return fs.readFileAsync(path.join(__dirname, '../../../apiary.apib'), 'utf8')
   // return fs.readFileAsync(path.join(__dirname, '../../../xos/tests/api/source/tenant/cord/subscribers.md'), 'utf8')
   // return fs.readFileAsync(path.join(__dirname, '../../../xos/tests/api/source/core/instances.md'), 'utf8')
   // return fs.readFileAsync(path.join(__dirname, '../../../xos/tests/api/source/core/deployment.md'), 'utf8')
+  return fs.readFileAsync(path.join(__dirname, '../../../xos/tests/api/source/utility/utility.md'), 'utf8')
 })
 .then(data => protagonist.parseAsync(data))
 .then(result => loopApiDefinitions(result.content))
@@ -126,4 +181,6 @@ exports.formatHref = formatHref;
 exports.getParamName = getParamName;
 exports.getBaseUrl = getBaseUrl;
 exports.loopApiEndpoint = loopApiEndpoint;
+exports.getGroupMethods = getGroupMethods;
+exports.loopApiGroups = loopApiGroups;
 

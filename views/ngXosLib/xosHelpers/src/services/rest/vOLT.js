@@ -4,7 +4,7 @@
   angular.module('xos.helpers')
   /**
   * @ngdoc service
-  * @name .
+  * @name xos.helpers.vOLT
   * @description Angular resource to fetch vOLT
   **/
   .service('vOLT', function($resource){

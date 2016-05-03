@@ -4,7 +4,7 @@
   angular.module('xos.helpers')
   /**
   * @ngdoc service
-  * @name .
+  * @name xos.helpers.ONOS Apps
   * @description Angular resource to fetch ONOS Apps
   **/
   .service('ONOS Apps', function($resource){

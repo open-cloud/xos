@@ -4,12 +4,26 @@
   angular.module('{{ngModule}}')
   /**
   * @ngdoc service
-  * @name {{../ngModule}}.{{name}}
+  * @name {{ngModule}}.{{resourceName}}
   * @description Angular resource to fetch {{resourceName}}
   **/
   .service('{{resourceName}}', function($resource){
     return $resource('{{baseUrl.href}}'{{#if baseUrl.param}}, { {{baseUrl.param}}: '@id' }, {
-      update: { method: 'PUT' }
+      update: { method: 'PUT' },
+      {{#each customActions}}
+      /**
+      * @ngdoc method
+      * @name {{../ngModule}}.{{../resourceName}}#{{name}}
+      * @methodOf {{../ngModule}}.{{../resourceName}}
+      * @description
+      * {{name}}
+      **/
+      '{{name}}': {
+        method: '{{method}}',
+        isArray: {{isArray}},
+        url: '{{url}}'
+      },
+      {{/each}}
     }{{/if}});
   })
 })();

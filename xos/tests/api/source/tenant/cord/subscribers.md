@@ -2,7 +2,7 @@
 
 Resource related to the CORD Subscribers.
 
-## Subscribers [/api/tenant/cord/subscriber/{subscriber_id}/]
+## Subscribers Collection [/api/tenant/cord/subscriber/]
 
 ### List All Subscribers [GET]
 
@@ -36,11 +36,12 @@ Resource related to the CORD Subscribers.
             }
         ]
 
+## Subscribers Detail [/api/tenant/cord/subscriber/{id}/]
 
 ### View a Subscriber Detail [GET]
 
 + Parameters
-    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+    + id: 1 (number) - ID of the Subscriber in the form of an integer
 
 + Response 200 (application/json)
  
@@ -73,14 +74,14 @@ Resource related to the CORD Subscribers.
 ### Delete a Subscriber [DELETE]
 
 + Parameters
-    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+    + id: 1 (number) - ID of the Subscriber in the form of an integer
 
 + Response 204
 
-### Subscriber features [/api/tenant/cord/subscriber/{subscriber_id}/features/]
+### Subscriber features [/api/tenant/cord/subscriber/{id}/features/]
 
 + Parameters
-    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+    + id: 1 (number) - ID of the Subscriber in the form of an integer
 
 ### View a Subscriber Features Detail [GET]
 
@@ -94,10 +95,10 @@ Resource related to the CORD Subscribers.
             "status": "enabled"
         }
 
-#### Subscriber features uplink_speed [/api/tenant/cord/subscriber/{subscriber_id}/features/uplink_speed/]
+#### Subscriber features uplink_speed [/api/tenant/cord/subscriber/{id}/features/uplink_speed/]
 
 + Parameters
-    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+    + id: 1 (number) - ID of the Subscriber in the form of an integer
 
 #### Read Subscriber uplink_speed [GET]
 
@@ -121,10 +122,10 @@ Resource related to the CORD Subscribers.
             "uplink_speed": 1000000000
         }
 
-#### Subscriber features downlink_speed [/api/tenant/cord/subscriber/{subscriber_id}/features/downlink_speed/]
+#### Subscriber features downlink_speed [/api/tenant/cord/subscriber/{id}/features/downlink_speed/]
 
 + Parameters
-    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+    + id: 1 (number) - ID of the Subscriber in the form of an integer
 
 #### Read Subscriber downlink_speed [GET]
 
@@ -148,10 +149,10 @@ Resource related to the CORD Subscribers.
             "downlink_speed": 1000000000
         }
 
-#### Subscriber features cdn [/api/tenant/cord/subscriber/{subscriber_id}/features/cdn/]
+#### Subscriber features cdn [/api/tenant/cord/subscriber/{id}/features/cdn/]
 
 + Parameters
-    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+    + id: 1 (number) - ID of the Subscriber in the form of an integer
 
 #### Read Subscriber cdn [GET]
 
@@ -175,10 +176,10 @@ Resource related to the CORD Subscribers.
             "cdn": false
         }
 
-#### Subscriber features uverse [/api/tenant/cord/subscriber/{subscriber_id}/features/uverse/]
+#### Subscriber features uverse [/api/tenant/cord/subscriber/{id}/features/uverse/]
 
 + Parameters
-    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+    + id: 1 (number) - ID of the Subscriber in the form of an integer
 
 #### Read Subscriber uverse [GET]
 
@@ -202,10 +203,10 @@ Resource related to the CORD Subscribers.
             "uverse": false
         }
 
-#### Subscriber features status [/api/tenant/cord/subscriber/{subscriber_id}/features/status/]
+#### Subscriber features status [/api/tenant/cord/subscriber/{id}/features/status/]
 
 + Parameters
-    + subscriber_id: 1 (number) - ID of the Subscriber in the form of an integer
+    + id: 1 (number) - ID of the Subscriber in the form of an integer
 
 #### Read Subscriber status [GET]
 

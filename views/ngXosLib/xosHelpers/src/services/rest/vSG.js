@@ -4,7 +4,7 @@
   angular.module('xos.helpers')
   /**
   * @ngdoc service
-  * @name .
+  * @name xos.helpers.vSG
   * @description Angular resource to fetch vSG
   **/
   .service('vSG', function($resource){
