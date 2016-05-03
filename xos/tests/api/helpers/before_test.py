@@ -133,7 +133,7 @@ def createTestSubscriber():
     # print 'vcpe_slice created'
 
     # create a lan network
-    lan_net = Network(id=1)
+    lan_net = Network()
     lan_net.name = 'lan_network'
     lan_net.owner = vcpe_slice
     lan_net.template = private_template
@@ -247,7 +247,7 @@ def setupInstance():
     sl = createSlice()
     node = createNode(deployment)
     img = createImage('test-image')
-    # print {'image': img.id, 'deployment': deployment.id, 'slice': sl.id}
+    print {'image': img.id, 'deployment': deployment.id, 'slice': sl.id}
     return {'image': img, 'deployment': deployment, 'slice': sl}
 
 
@@ -264,97 +264,7 @@ def createInstance():
     instance.caller = user
     instance.save()
 
-
-@hooks.before_all
-def my_before_all_hook(transactions):
-    # print "-------------------------------- Before All Hook --------------------------------"
-    cleanDB()
-
-
-@hooks.before_each
-def my_before_each_hook(transaction):
-    # print "-------------------------------- Before Each Hook --------------------------------"
-    # print transaction['name']
-    auth = doLogin('padmin@vicci.org', 'letmein')
-    transaction['request']['headers']['X-CSRFToken'] = auth['token']
-    transaction['request']['headers']['Cookie'] = "xossessionid=%s; xoscsrftoken=%s" % (auth['sessionid'], auth['token'])
-    createTestSubscriber()
-    setupInstance()
-    sys.stdout.flush()
-
-
-# @hooks.after_each
-# def my_after_each(transaction):
-#     print "-------------------------------- Test end --------------------------------"
-
-
-@hooks.before("Truckroll > Truckroll Collection > Create a Truckroll")
-def test1(transaction):
-    setUpTruckroll()
-
-
-@hooks.before("Truckroll > Truckroll Collection > View a Truckroll Detail")
-def test2(transaction):
-    deleteTruckrolls()
-    createTruckroll()
-
-
-@hooks.before("Truckroll > Truckroll Collection > Delete a Truckroll Detail")
-def test3(transaction):
-    deleteTruckrolls()
-    createTruckroll()
-
-
-@hooks.before("vOLT > vOLT Collection > Create a vOLT")
-def test4(transaction):
-    # transaction['skip'] = True
-    VOLTTenant.objects.get(kind='vOLT').delete()
-
-
-@hooks.before("Flavors > Flavors > View a Flavors Detail")
-def test5(transaction):
-    createFlavors()
-
-
-@hooks.before("Deployments > Deployments > View a Deployment Detail")
-def get_deployments(transaction):
-    createDeployment()
-
-
-@hooks.before("Deployments > Deployments > Delete a Deployment")
-def delete_deployments(transaction):
-    createDeployment()
-
-
-@hooks.before("Instances > Instances Collection > Create an Instance")
-def create_instance(transaction):
-    setupInstance()
-    transaction['skip'] = True
-
-
-@hooks.before("Instances > Instances Detail > Get instance details")
-def get_instance(transaction):
-    createInstance()
-
-
-@hooks.before("Instances > Instances Detail > Delete instance")
-def delete_instance(transaction):
-    createInstance()
-
-
-@hooks.before("Example > Example Services Collection > List all Example Services")
-def exampleTest(transaction):
-    transaction['skip'] = True
-
-
-@hooks.before("Utility > Login > Log a user in the system")
-def before_logout_hook(transaction):
-    transaction['skip'] = True
-    # auth = doLogin('padmin@vicci.org', 'letmein')
-    # transaction['request']['body'] = {}
-    # transaction['request']['body']['xossessionid'] = auth['sessionid']
-
-
-@hooks.before("Utility > Logout > Log a user out of the system")
-def skip_for_now(transaction):
-    transaction['skip'] = True
+setupInstance()
+# createTestSubscriber()
+# createInstance()
+# createNode()
