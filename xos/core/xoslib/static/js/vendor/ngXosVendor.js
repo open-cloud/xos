@@ -28745,10 +28745,12 @@ var minlengthDirective = function() {
 
       var minlength = 0;
       attr.$observe('minlength', function(value) {
+        // console.log('minlength: ' + minlength);
         minlength = toInt(value) || 0;
         ctrl.$validate();
       });
       ctrl.$validators.minlength = function(modelValue, viewValue) {
+        // console.log('minlength: ' + minlength);
         return ctrl.$isEmpty(viewValue) || viewValue.length >= minlength;
       };
     }
