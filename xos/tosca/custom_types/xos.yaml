@@ -41,6 +41,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             kind:
                 type: string
                 default: generic
@@ -117,6 +121,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             kind:
                 type: string
                 default: generic
@@ -288,6 +296,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             kind:
                 type: string
                 default: generic
@@ -352,6 +364,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             kind:
                 type: string
                 default: generic
@@ -410,6 +426,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             kind:
                 type: string
                 default: generic
@@ -464,6 +484,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             kind:
                 type: string
                 default: generic
@@ -518,6 +542,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             kind:
                 type: string
                 default: generic
@@ -603,6 +631,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             kind:
                 type: string
                 default: generic
@@ -657,6 +689,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             kind:
                 type: string
                 default: generic
@@ -806,6 +842,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             password:
                 type: string
                 required: false
@@ -864,6 +904,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
 
         capabilities:
             network_parameter_type:
@@ -893,6 +937,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             visibility:
                 type: string
                 required: false
@@ -943,6 +991,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             ip_version:
               type: integer
               required: no
@@ -1046,6 +1098,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             accessControl:
                 type: string
                 default: allow all
@@ -1075,6 +1131,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             addresses:
                 type: string
                 required: false
@@ -1138,6 +1198,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             backend_type:
                 type: string
                 required: false
@@ -1199,6 +1263,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             display_name:
                 type: string
                 required: false
@@ -1244,6 +1312,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             enabled:
                 type: boolean
                 default: true
@@ -1290,6 +1362,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
         capabilities:
             node:
                 type: tosca.capabilities.xos.Node
@@ -1311,6 +1387,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
         capabilities:
             node:
                 type: tosca.capabilities.xos.NodeLabel
@@ -1332,6 +1412,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             flavor:
                 type: string
                 required: false
@@ -1357,6 +1441,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
         capabilities:
             siterole:
                 type: tosca.capabilities.xos.SiteRole
@@ -1378,6 +1466,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
         capabilities:
             slicerole:
                 type: tosca.capabilities.xos.SliceRole
@@ -1399,6 +1491,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
         capabilities:
             tenantrole:
                 type: tosca.capabilities.xos.TenantRole
@@ -1420,6 +1516,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
         capabilities:
             deploymentrole:
                 type: tosca.capabilities.xos.DeploymentRole
@@ -1444,6 +1544,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             enabled:
                 type: boolean
                 default: true
@@ -1469,6 +1573,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
             name:
                 type: string
                 required: true
