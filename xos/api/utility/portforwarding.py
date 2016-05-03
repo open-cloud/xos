@@ -11,22 +11,14 @@ from xos.exceptions import XOSNotFound
 from api.xosapi_helpers import PlusModelSerializer, XOSViewSet, ReadOnlyField
 from django.db.models import Q
 
-class PortForwarding(Port):
-    class Meta:
-        proxy = True
-        app_label = "core"
-
-    def __init__(self, *args, **kwargs):
-        super(PortForwarding, self).__init__(*args, **kwargs)
-
 class PortForwardingSerializer(serializers.Serializer):
-    id = serializers.CharField(read_only=True)
+    id = serializers.IntegerField(read_only=True)
     ip = serializers.CharField(read_only=True)
     ports = serializers.CharField(read_only=True, source="network.ports")
     hostname = serializers.CharField(read_only=True, source="instance.node.name")
 
     class Meta:
-        model = PortForwarding
+        model = Port
         fields = ('id', 'ip', 'ports', 'hostname')
 
 class PortForwardingViewSet(XOSViewSet):
