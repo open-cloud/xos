@@ -3,7 +3,6 @@
 angular.module('xos.<%= name %>', [
   'ngResource',
   'ngCookies',
-  'ngLodash',
   'ui.router',
   'xos.helpers'
 ])
@@ -25,6 +24,32 @@ angular.module('xos.<%= name %>', [
     controllerAs: 'vm',
     templateUrl: 'templates/users-list.tpl.html',
     controller: function(Users){
+
+      this.tableConfig = {
+        columns: [
+          {
+            label: 'E-Mail',
+            prop: 'email'
+          },
+          {
+            label: 'First Name',
+            prop: 'firstname'
+          },
+          {
+            label: 'Last Name',
+            prop: 'lastname'
+          },
+          {
+            label: 'Created',
+            prop: 'created'
+          },
+          {
+            label: 'Is Admin',
+            prop: 'is_admin'
+          }
+        ]
+      };
+      
       // retrieving user list
       Users.query().$promise
       .then((users) => {

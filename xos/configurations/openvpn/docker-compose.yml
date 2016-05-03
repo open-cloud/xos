@@ -1,0 +1,62 @@
+xos_db:
+    image: xosproject/xos-postgres
+    expose:
+        - "5432"
+
+xos_synchronizer_openstack:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/openstack/xos-synchronizer.py"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: openstack
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+        - ./images:/opt/xos/images:ro
+
+xos_synchronizer_openvpn:
+    image: xosproject/xos-openvpn
+    command: bash -c "sleep 120 ; python /opt/xos/synchronizers/openvpn/openvpn-synchronizer.py -C /opt/xos/synchronizers/openvpn/openvpn_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: openvpn
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+        - ../setup/id_rsa:/opt/xos/synchronizers/openvpn/openvpn_private_key:ro  # private key
+    volumes_from:
+        - xos_openvpn_data:rw
+
+xos_openvpn_data:
+    image: xosproject/xos-openvpn
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+        - /opt/openvpn
+
+# FUTURE
+#xos_swarm_synchronizer:
+#    image: xosproject/xos-swarm-synchronizer
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: swarm
+
+xos:
+    image: xosproject/xos-openvpn
+    command: python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
+    ports:
+        - "9999:8000"
+    links:
+        - xos_db
+    volumes:
+      - ../setup:/root/setup:ro
+      - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+    volumes_from:
+      - xos_openvpn_data:rw

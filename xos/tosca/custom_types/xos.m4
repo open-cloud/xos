@@ -252,6 +252,16 @@ node_types:
             xos_base_props
             xos_base_service_props
 
+    tosca.nodes.FabricService:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: The Fabric Service.
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_props
+            xos_base_service_props
+
     tosca.nodes.VTNService:
         derived_from: tosca.nodes.Root
         description: >
@@ -282,6 +292,16 @@ node_types:
             mgmtSubnetBits:
                 type: string
                 required: false
+            xosEndpoint:
+                type: string
+                required: false
+            xosUser:
+                type: string
+                required: false
+            xosPassword:
+                type: string
+                required: false
+
 
     tosca.nodes.CDNService:
         derived_from: tosca.nodes.Root
@@ -385,16 +405,17 @@ node_types:
                 type: tosca.capabilities.xos.User
 
         properties:
+            xos_base_props
             password:
                 type: string
                 required: false
             firstname:
                 type: string
-                required: true
+                required: false
                 description: First name of User.
             lastname:
                 type: string
-                required: true
+                required: false
                 description: Last name of User.
             phone:
                 type: string
@@ -410,11 +431,13 @@ node_types:
                 description: Public key that will be installed in Instances.
             is_active:
                 type: boolean
-                default: true
+                required: false
+                #default: true
                 description: If True, the user may log in.
             is_admin:
                 type: boolean
-                default: false
+                required: false
+                #default: false
                 description: If True, the user has root admin privileges.
             login_page:
                 type: string
@@ -427,6 +450,9 @@ node_types:
         description: >
             An XOS network parameter type. May be applied to Networks and/or
             Ports.
+
+        properties:
+            xos_base_props
 
         capabilities:
             network_parameter_type:
@@ -444,13 +470,14 @@ node_types:
                 type: tosca.capabilities.xos.NetworkTemplate
 
         properties:
+            xos_base_props
             visibility:
                 type: string
-                default: private
+                required: false
                 description: Indicates whether network is publicly routable.
             translation:
                 type: string
-                default: none
+                required: false
                 description: Indicates whether network uses address translation.
             shared_network_name:
                 type: string
@@ -462,7 +489,7 @@ node_types:
                 description: Attaches this template to a specific OpenStack network.
             topology_kind:
                 type: string
-                default: BigSwitch
+                required: false
                 description: Describes the topology of the network.
             controller_kind:
                 type: string
@@ -749,6 +776,7 @@ node_types:
                 required: false
                 description: default isolation to use when bringing up instances (default to 'vm')
             network:
+<<<<<<< HEAD
                 type: string
                 required: false
                 description: type of networking to use for this slice
@@ -764,6 +792,8 @@ node_types:
                 required: false
                 description: default flavor to use for slice
             default_node:
+=======
+>>>>>>> upstream/master
                 type: string
                 required: false
                 description: default node to use for this slice
@@ -803,6 +833,49 @@ node_types:
             flavor:
                 type: tosca.capabilities.xos.Flavor
 
+<<<<<<< HEAD
+=======
+    tosca.nodes.SiteRole:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Site Role.
+        properties:
+            xos_base_props
+        capabilities:
+            siterole:
+                type: tosca.capabilities.xos.SiteRole
+
+    tosca.nodes.SliceRole:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Slice Role.
+        properties:
+            xos_base_props
+        capabilities:
+            slicerole:
+                type: tosca.capabilities.xos.SliceRole
+
+    tosca.nodes.TenantRole:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Tenant Role.
+        properties:
+            xos_base_props
+        capabilities:
+            tenantrole:
+                type: tosca.capabilities.xos.TenantRole
+
+    tosca.nodes.DeploymentRole:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Deployment Role.
+        properties:
+            xos_base_props
+        capabilities:
+            deploymentrole:
+                type: tosca.capabilities.xos.DeploymentRole
+
+>>>>>>> upstream/master
     tosca.nodes.DashboardView:
         derived_from: tosca.nodes.Root
         description: >
@@ -819,6 +892,21 @@ node_types:
                 type: string
                 required: false
                 description: URL to the dashboard
+
+    tosca.nodes.Tag:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Tag
+        properties:
+            xos_base_props
+            name:
+                type: string
+                required: true
+                descrption: name of tag
+            value:
+                type: string
+                required: false
+                descrption: value of tag
 
     tosca.nodes.Compute.Container:
       derived_from: tosca.nodes.Compute
@@ -956,6 +1044,9 @@ node_types:
     tosca.relationships.DependsOn:
         derived_from: tosca.relationships.Root
 
+    tosca.relationships.TagsObject:
+        derived_from: tosca.relationships.Root
+
     tosca.capabilities.xos.Service:
         derived_from: tosca.capabilities.Root
         description: An XOS Service
@@ -1008,6 +1099,25 @@ node_types:
         derived_from: tosca.capabilities.Root
         description: An XOS Flavor
 
+<<<<<<< HEAD
+=======
+    tosca.capabilities.xos.DeploymentRole:
+        derived_from: tosca.capabilities.Root
+        description: An XOS DeploymentRole
+
+    tosca.capabilities.xos.SliceRole:
+        derived_from: tosca.capabilities.Root
+        description: An XOS SliceRole
+
+    tosca.capabilities.xos.SiteRole:
+        derived_from: tosca.capabilities.Root
+        description: An XOS SiteRole
+
+    tosca.capabilities.xos.TenantRole:
+        derived_from: tosca.capabilities.Root
+        description: An XOS TenantRole
+
+>>>>>>> upstream/master
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root
         description: An XOS Image

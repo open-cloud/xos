@@ -12,6 +12,6 @@ gulp.task('concat', function() {
       './source/base.md',
       './source/**/*.md'
     ])
-    .pipe(concat('apiary.apib', {newLine: '\n \n \n'}))
+    .pipe(concat('../../../apiary.apib', {newLine: '\n \n \n'}))
     .pipe(gulp.dest('./'));
 });

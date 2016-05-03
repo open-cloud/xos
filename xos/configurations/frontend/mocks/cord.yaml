@@ -7,6 +7,21 @@ imports:
 
 topology_template:
   node_templates:
+
+    addresses_vsg:
+      type: tosca.nodes.AddressPool
+      properties:
+          addresses: 10.168.0.0/24
+          gateway_ip: 10.168.0.1
+          gateway_mac: 02:42:0a:a8:00:01
+
+    addresses_exampleservice-public:
+      type: tosca.nodes.AddressPool
+      properties:
+          addresses: 10.168.1.0/24
+          gateway_ip: 10.168.1.1
+          gateway_mac: 02:42:0a:a8:00:01
+    
     # CORD Services
     service_volt:
       type: tosca.nodes.Service
@@ -24,11 +39,23 @@ topology_template:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
 
+    service_vrouter:
+      type: tosca.nodes.VRouterService
+      properties:
+          view_url: /admin/vrouter/vrouterservice/$id$/
+      requirements:
+          - addresses_vsg:
+              node: addresses_vsg
+              relationship: tosca.relationships.ProvidesAddresses
+          - addresses_service1:
+              node: addresses_exampleservice-public
+              relationship: tosca.relationships.ProvidesAddresses
+
     service_vsg:
       type: tosca.nodes.VSGService
       requirements:
-          - vbng_tenant:
-              node: service_vbng
+          - vrouter_tenant:
+              node: service_vrouter
               relationship: tosca.relationships.TenantOfService
       properties:
           view_url: /admin/cord/vsgservice/$id$/

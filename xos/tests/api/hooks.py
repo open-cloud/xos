@@ -54,12 +54,19 @@ def cleanDB():
     for s in AddressPool.objects.all():
         s.delete(purge=True)
 
+    for s in Flavor.objects.all():
+        s.delete(purge=True)
+
+    for s in Image.objects.all():
+        s.delete(purge=True)
+
     # print 'DB Cleaned'
 
 
 def createTestSubscriber():
 
     cleanDB()
+    createFlavors()
 
     # load user
     user = User.objects.get(email="padmin@vicci.org")
@@ -97,7 +104,7 @@ def createTestSubscriber():
     vsg_service.name = 'service_vsg'
 
     # vSG slice
-    vsg_slice = Slice()
+    vsg_slice = Slice(id=2)
     vsg_slice.name = site.login_base + "_testVsg"
     vsg_slice.service = vsg_service.id
     vsg_slice.site = site
@@ -112,8 +119,11 @@ def createTestSubscriber():
     volt_service.name = 'service_volt'
     volt_service.save()
 
+    # cvpe image
+    createImage('ubuntu-vcpe4')
+
     # vcpe slice
-    vcpe_slice = Slice()
+    vcpe_slice = Slice(id=3)
     vcpe_slice.name = site.login_base + "_testVcpe"
     vcpe_slice.service = Service.objects.get(kind='vCPE')
     vcpe_slice.site = site
@@ -123,7 +133,7 @@ def createTestSubscriber():
     # print 'vcpe_slice created'
 
     # create a lan network
-    lan_net = Network()
+    lan_net = Network(id=1)
     lan_net.name = 'lan_network'
     lan_net.owner = vcpe_slice
     lan_net.template = private_template
@@ -174,6 +184,87 @@ def createTruckroll():
     tn.save()
 
 
+def createFlavors():
+    small = Flavor(id=1)
+    small.name = "m1.small"
+    small.save()
+
+    medium = Flavor(id=2)
+    medium.name = "m1.medium"
+    medium.save()
+
+    large = Flavor(id=3)
+    large.name = "m1.large"
+    large.save()
+
+
+def createSlice():
+    site = Site.objects.get(name='MySite')
+    user = User.objects.get(email="padmin@vicci.org")
+
+    sl = Slice(id=1)
+    sl.name = site.login_base + "_testSlice"
+    sl.site = site
+    sl.caller = user
+    sl.save()
+    return sl
+
+
+def createDeployment():
+    deployment = Deployment(id=1)
+    deployment.name = 'MyTestDeployment'
+    deployment.save()
+    return deployment
+
+
+def createImage(name):
+    img = Image(id=1)
+    img.name = name
+    img.disk_format = 'QCOW2'
+    img.kind = 'vm'
+    img.save()
+    return img
+
+
+def createNode(deployment):
+    site = Site.objects.get(name='MySite')
+
+    site_deployment = SiteDeployment(id=1)
+    site_deployment.site = site
+    site_deployment.deployment = deployment
+    site_deployment.save()
+
+    node = Node(id=1)
+    node.name = 'test-node'
+    node.site = site
+    node.site_deployment = site_deployment
+    node.save()
+    return node
+
+
+def setupInstance():
+    deployment = createDeployment()
+    sl = createSlice()
+    node = createNode(deployment)
+    img = createImage('test-image')
+    # print {'image': img.id, 'deployment': deployment.id, 'slice': sl.id}
+    return {'image': img, 'deployment': deployment, 'slice': sl}
+
+
+def createInstance():
+    requirements = setupInstance()
+    user = User.objects.get(email="padmin@vicci.org")
+
+    instance = Instance(id=1)
+    instance.name = 'test-instance'
+    instance.node = Node.objects.all()[0]
+    instance.image = requirements['image']
+    instance.slice = requirements['slice']
+    instance.deployment = requirements['deployment']
+    instance.caller = user
+    instance.save()
+
+
 @hooks.before_all
 def my_before_all_hook(transactions):
     # print "-------------------------------- Before All Hook --------------------------------"
@@ -188,7 +279,13 @@ def my_before_each_hook(transaction):
     transaction['request']['headers']['X-CSRFToken'] = auth['token']
     transaction['request']['headers']['Cookie'] = "xossessionid=%s; xoscsrftoken=%s" % (auth['sessionid'], auth['token'])
     createTestSubscriber()
+    setupInstance()
     sys.stdout.flush()
+
+
+# @hooks.after_each
+# def my_after_each(transaction):
+#     print "-------------------------------- Test end --------------------------------"
 
 
 @hooks.before("Truckroll > Truckroll Collection > Create a Truckroll")
@@ -214,6 +311,50 @@ def test4(transaction):
     VOLTTenant.objects.get(kind='vOLT').delete()
 
 
+@hooks.before("Flavors > Flavors > View a Flavors Detail")
+def test5(transaction):
+    createFlavors()
+
+
+@hooks.before("Deployments > Deployments > View a Deployment Detail")
+def get_deployments(transaction):
+    createDeployment()
+
+
+@hooks.before("Deployments > Deployments > Delete a Deployment")
+def delete_deployments(transaction):
+    createDeployment()
+
+
+@hooks.before("Instances > Instances Collection > Create an Instance")
+def create_instance(transaction):
+    setupInstance()
+    transaction['skip'] = True
+
+
+@hooks.before("Instances > Instances Detail > Get instance details")
+def get_instance(transaction):
+    createInstance()
+
+
+@hooks.before("Instances > Instances Detail > Delete instance")
+def delete_instance(transaction):
+    createInstance()
+
+
 @hooks.before("Example > Example Services Collection > List all Example Services")
 def exampleTest(transaction):
+    transaction['skip'] = True
+
+
+@hooks.before("Utility > Login > Log a user in the system")
+def before_logout_hook(transaction):
+    transaction['skip'] = True
+    # auth = doLogin('padmin@vicci.org', 'letmein')
+    # transaction['request']['body'] = {}
+    # transaction['request']['body']['xossessionid'] = auth['sessionid']
+
+
+@hooks.before("Utility > Logout > Log a user out of the system")
+def skip_for_now(transaction):
     transaction['skip'] = True

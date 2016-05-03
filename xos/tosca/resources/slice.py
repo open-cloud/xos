@@ -31,7 +31,7 @@ class XOSSlice(XOSResource):
             default_image = self.get_xos_object(Image, name=default_image_name, throw_exception=True)
             args["default_image"] = default_image
 
-        default_flavor_name = self.get_property_default("default_flavor", None)
+        default_flavor_name = self.get_requirement("tosca.relationships.DefaultFlavor", throw_exception=False)
         if default_flavor_name:
             default_flavor = self.get_xos_object(Flavor, name=default_flavor_name, throw_exception=True)
             args["default_flavor"] = default_flavor
@@ -54,19 +54,6 @@ class XOSSlice(XOSResource):
         rolemap = ( ("tosca.relationships.AdminPrivilege", "admin"), ("tosca.relationships.AccessPrivilege", "access"),
                     ("tosca.relationships.PIPrivilege", "pi"), ("tosca.relationships.TechPrivilege", "tech") )
         self.postprocess_privileges(SliceRole, SlicePrivilege, rolemap, obj, "slice")
-
-    def create(self):
-        nodetemplate = self.nodetemplate
-        sliceName = nodetemplate.name
-
-        xos_args = self.get_xos_args()
-        slice = Slice(**xos_args)
-        slice.caller = self.user
-        slice.save()
-
-        self.postprocess(slice)
-
-        self.info("Created Slice '%s' on Site '%s'" % (str(slice), str(slice.site)))
 
     def delete(self, obj):
         if obj.instances.exists():

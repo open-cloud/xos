@@ -356,8 +356,20 @@ class User(AbstractBaseUser, PlModelMixIn):
             return True
         return False
 
+    def can_update_tenant(self, tenant, allow=[]):
+        from core.models.service import Tenant, TenantPrivilege
+        if self.can_update_root():
+            return True
+        if TenantPrivilege.objects.filter(
+                tenant=tenant, user=self, role__role__in=['admin', 'Admin'] + allow):
+            return True
+        return False
+
     def can_update_tenant_root_privilege(self, tenant_root_privilege, allow=[]):
         return self.can_update_tenant_root(tenant_root_privilege.tenant_root, allow)
+
+    def can_update_tenant_privilege(self, tenant_privilege, allow=[]):
+        return self.can_update_tenant(tenant_privilege.tenant, allow)
 
     def get_readable_objects(self, filter_by=None):
         """ Returns a list of objects that the user is allowed to read. """

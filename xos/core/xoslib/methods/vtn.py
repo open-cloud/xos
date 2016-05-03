@@ -57,7 +57,8 @@ class VTNViewSet(XOSViewSet):
         for xos_service in Service.objects.all():
             if service in xos_service.get_vtn_src_ids():
                 return Response(xos_service.get_vtn_dependencies_ids())
-        raise DoesNotExist()
+        return Response([])
+        # raise DoesNotExist()
 
     def list(self, request):
         raise Exception("Not Implemented")

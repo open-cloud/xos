@@ -1,0 +1,10 @@
+@import '../../../styles/animations.scss';
+
+xos-alert {
+
+  /* when hiding */
+  .ng-hide-add         { animation:0.5s fadeOutDown ease-in-out; }
+
+  /* when showing */
+  .ng-hide-remove      { animation:0.5s fadeInUp ease-in-out; }
+}

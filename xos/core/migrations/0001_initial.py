@@ -1628,6 +1628,52 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model,),
         ),
+        migrations.CreateModel(
+            name='TenantPrivilege',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID',
+                                        serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(
+                    default=django.utils.timezone.now, auto_now_add=True)),
+                ('updated', models.DateTimeField(
+                    default=django.utils.timezone.now, auto_now=True)),
+                ('enacted', models.DateTimeField(
+                    default=None, null=True, blank=True)),
+                ('policed', models.DateTimeField(
+                    default=None, null=True, blank=True)),
+                ('backend_status', models.CharField(
+                    default=b'Provisioning in progress', max_length=140)),
+                ('deleted', models.BooleanField(default=False)),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='TenantRole',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID',
+                                        serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(
+                    default=django.utils.timezone.now, auto_now_add=True)),
+                ('updated', models.DateTimeField(
+                    default=django.utils.timezone.now, auto_now=True)),
+                ('enacted', models.DateTimeField(
+                    default=None, null=True, blank=True)),
+                ('policed', models.DateTimeField(
+                    default=None, null=True, blank=True)),
+                ('backend_status', models.CharField(
+                    default=b'Provisioning in progress', max_length=140)),
+                ('deleted', models.BooleanField(default=False)),
+                ('role', models.CharField(unique=True, max_length=30,
+                                          choices=[(b'admin', b'Admin'), (b'access', b'Access')])),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
         migrations.AddField(
             model_name='sliceprivilege',
             name='role',
