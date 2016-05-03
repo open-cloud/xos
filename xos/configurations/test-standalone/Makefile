@@ -41,7 +41,7 @@ test: restore-initial-db-status
 	sudo docker cp ../../../apiary.apib teststandalone_xos_1:/opt/xos/tests/api/apiary.apib
 	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm test"
 
-test-tosca:
+test-tosca: restore-initial-db-status
 	sudo docker-compose run xos bash -c "cd /opt/xos/tosca/tests; python ./alltests.py"
 
 base-container: 
