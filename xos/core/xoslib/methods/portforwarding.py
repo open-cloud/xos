@@ -27,7 +27,7 @@ class PortForwardingList(APIView):
     def get_queryset(self):
         queryset = queryset=Port.objects.all()
 
-        node_name = self.request.QUERY_PARAMS.get('node_name', None)
+        node_name = self.request.query_params.get('node_name', None)
         if node_name is not None:
             queryset = queryset.filter(instance__node__name = node_name)
 
@@ -51,7 +51,7 @@ class PortForwardingDetail(APIView):
     def get_queryset(self):
         queryset = queryset=Port.objects.all()
 
-        node_name = self.request.QUERY_PARAMS.get('node_name', None)
+        node_name = self.request.query_params.get('node_name', None)
         if node_name is not None:
             queryset = queryset.filter(instance__node__name = node_name)
 
