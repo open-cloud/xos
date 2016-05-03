@@ -19,13 +19,6 @@ class SSHKeys(Instance):
     def __init__(self, *args, **kwargs):
         super(SSHKeys, self).__init__(*args, **kwargs)
 
-#    @property
-#    def node_name(self):
-#        if self.node:
-#            return self.node.name
-#        else:
-#            return None
-
 class SSHKeysSerializer(PlusModelSerializer):
     id = serializers.CharField(read_only=True, source="instance_id")
     public_keys = serializers.ListField(read_only=True, source="get_public_keys")
