@@ -146,7 +146,7 @@ class {{ object.camel }}IdSerializer(XOSModelSerializer):
     id = IdField()
     {% for ref in object.refs %}
     {% if ref.multi %}
-    {{ ref.plural }} = serializers.PrimaryKeyRelatedField(many=True,  queryset = {{ ref.camel }}.objects.all())
+    {{ ref.plural }} = serializers.PrimaryKeyRelatedField(many=True, required=False, queryset = {{ ref.camel }}.objects.all())
     {% else %}
     {{ ref }} = serializers.PrimaryKeyRelatedField( queryset = {{ ref.camel }}.objects.all())
     {% endif %}
