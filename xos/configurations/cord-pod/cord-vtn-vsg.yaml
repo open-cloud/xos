@@ -109,7 +109,7 @@ topology_template:
               node: service#ONOS_Fabric
               relationship: tosca.relationships.TenantOfService
           - vrouter_service:
-              node: service_vrouter
+              node: service#vrouter
               relationship: tosca.relationships.UsedByService
       properties:
           dependencies: org.onosproject.vrouter
