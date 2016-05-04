@@ -12,7 +12,7 @@
   describe('The xos.helper module', function(){
     describe('The xos-smart-pie component', () => {
 
-      var spy, scope, isolatedScope, element;
+      var spy, scope, isolatedScope, element, interval;
 
       beforeEach(module('xos.helpers'));
 
@@ -109,7 +109,14 @@
       });
 
       describe('when polling is enabled', () => {
-        beforeEach(inject(function ($compile, $rootScope){
+        beforeEach(inject(function ($compile, $rootScope, $interval){
+
+          //mocked $interval (by ngMock)
+          interval = $interval;
+
+          // cleaning the spy
+          spy.query.calls.reset()
+
           scope = $rootScope.$new();
           scope.config = {
             resource: 'MockResource',
@@ -125,7 +132,11 @@
 
         it('should call the backend every 2 second', () => {
           expect(spy.query).toHaveBeenCalled();
-          // $interval
+          expect(spy.query.calls.count()).toEqual(1);
+          interval.flush(2000);
+          expect(spy.query.calls.count()).toEqual(2);
+          interval.flush(2000);
+          expect(spy.query.calls.count()).toEqual(3)
         });
       });
 
