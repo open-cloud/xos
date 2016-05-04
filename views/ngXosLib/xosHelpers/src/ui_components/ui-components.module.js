@@ -24,5 +24,6 @@
   **/
 
   angular.module('xos.uiComponents', [
+    'chart.js'
   ])
 })();

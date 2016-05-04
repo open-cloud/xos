@@ -16,7 +16,11 @@ define(xos_base_props,
             no-update:
                 type: boolean
                 default: false
-                description: Do not allow Tosca to update this object)
+                description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object)
 # Service
 define(xos_base_service_caps,
             scalable:
