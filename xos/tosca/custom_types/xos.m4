@@ -211,6 +211,22 @@ node_types:
                 type: string
                 required: false
 
+    tosca.nodes.ONOSvRouterApp:
+        derived_from: tosca.nodes.Root
+        description: >
+            An ONOS vRouter Application.
+        properties:
+            xos_base_tenant_props
+            dependencies:
+                type: string
+                required: false
+            rest_onos/v1/network/configuration/:
+                type: string
+                required: false
+            autogenerate:
+                type: string
+                required: false
+
     tosca.nodes.VSGService:
         description: >
             CORD: The vSG Service.
