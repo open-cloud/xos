@@ -65,6 +65,15 @@ topology_template:
               node: addresses_exampleservice-public
               relationship: tosca.relationships.ProvidesAddresses
 
+    service_ONOS_Fabric:
+      type: tosca.nodes.ONOSService
+      requirements:
+      properties:
+          kind: onos
+          view_url: /admin/onos/onosservice/$id$/
+          no_container: true
+          rest_hostname: onos-fabric
+
     service_ONOS_CORD:
       type: tosca.nodes.ONOSService
 
@@ -86,7 +95,7 @@ topology_template:
       type: tosca.nodes.ONOSvRouterApp
       requirements:
           - onos_tenant:
-              node: service_ONOS_CORD
+              node: service_ONOS_Fabric
               relationship: tosca.relationships.TenantOfService
           - vrouter_service:
               node: service_vrouter
