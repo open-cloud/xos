@@ -108,6 +108,27 @@
         });
       });
 
+      describe('when polling is enabled', () => {
+        beforeEach(inject(function ($compile, $rootScope){
+          scope = $rootScope.$new();
+          scope.config = {
+            resource: 'MockResource',
+            groupBy: 'category',
+            classes: 'label-formatter-test',
+            poll: 2
+          };
+          element = angular.element('<xos-smart-pie config="config"></xos-smart-pie>');
+          $compile(element)(scope);
+          scope.$digest();
+          isolatedScope = element.isolateScope().vm;
+        }));
+
+        it('should call the backend every 2 second', () => {
+          expect(spy.query).toHaveBeenCalled();
+          // $interval
+        });
+      });
+
     });
   });
 })();
