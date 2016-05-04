@@ -176,11 +176,7 @@ INSTALLED_APPS = (
     'core',
     'services.hpc',
     'services.cord',
-<<<<<<< HEAD
     'services.mcord',
-    'services.helloworldservice_complete',
-=======
->>>>>>> upstream/master
     'services.onos',
     'services.ceilometer',
     'services.requestrouter',

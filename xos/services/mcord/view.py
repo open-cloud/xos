@@ -2,7 +2,6 @@ from django.http import HttpResponse
 from django.views.generic import TemplateView, View
 from django import template
 from core.models import *
-from services.helloworld.models import *
 import json
 import os
 import time

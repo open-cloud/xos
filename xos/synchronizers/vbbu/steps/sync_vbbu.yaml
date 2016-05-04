@@ -17,4 +17,3 @@
 
   - name: setup rru interface config
     shell: ./start_3gpp_int.sh eth3 {{ rru_tag }} {{ rru_ip }}/24 
-

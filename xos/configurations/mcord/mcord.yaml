@@ -74,17 +74,17 @@ node_types:
             s1u_tag:
                 type: string
                 required: false
-                default: 201
+                default: 901
                 description: VTN stag port-name
             s1mme_tag:
                 type: string
                 required: false
-                default: 200
+                default: 900
                 description: VTN stag port-name
             rru_tag:
                 type: string
                 required: false
-                default: 199 
+                default: 999 
                 description: VTN stag port-name
             display_message:
                 type: string
@@ -107,6 +107,8 @@ topology_template:
       artifacts:
           pubkey: /opt/xos/configurations/mcord/mcord_public_key
 
+    m1.xlarge:
+      type: tosca.nodes.Flavor
 
     Private:
       type: tosca.nodes.NetworkTemplate
@@ -226,11 +228,14 @@ topology_template:
           - default_image:
                 node: mcord-bbu-multi-nic 
                 relationship: tosca.relationships.DefaultImage
+          - default_flavor:
+                node: m1.xlarge
+                relationship: tosca.relationships.DefaultFlavor
           - management:
               node: management
               relationship: tosca.relationships.ConnectsToNetwork
       properties:
           network: noauto
-          default_flavor: m1.xlarge
+#          default_flavor: m1.xlarge
           default_node: computeBBU2 
     

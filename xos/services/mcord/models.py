@@ -59,7 +59,7 @@ class VBBUComponent(TenantWithContainer):
                        "rru_ip", "rru_mac")
     # default_attributes is used cleanly indicate what the default values for
     # the fields are.
-    default_attributes = {"display_message": "New vBBU Component", "s1u_tag": "201", "s1mme_tag": "200", "rru_tag": "199"}
+    default_attributes = {"display_message": "New vBBU Component", "s1u_tag": "901", "s1mme_tag": "900", "rru_tag": "999"}
     def __init__(self, *args, **kwargs):
         mcord_services = MCORDService.get_service_objects().all()
         # When the tenant is created the default service in the form is set
@@ -169,6 +169,7 @@ class VBBUComponent(TenantWithContainer):
     def make_instance(self):
         slice = self.provider_service.slices.all()[0]            
         flavors = Flavor.objects.filter(name=slice.default_flavor)
+#        flavors = Flavor.objects.filter(name="m1.xlarge")
         if not flavors:
             raise XOSConfigurationError("No default flavor")
         default_flavor = slice.default_flavor
