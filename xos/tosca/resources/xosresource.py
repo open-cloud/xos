@@ -2,6 +2,7 @@ import os
 import pdb
 import json
 import subprocess
+import sys
 
 from core.models import User
 
@@ -78,12 +79,24 @@ class XOSResource(object):
         return default
 
     def get_xos_object(self, cls, throw_exception=True, **kwargs):
+        # do the same parsing that we do for objname
+        for (k,v) in kwargs.items():
+            if (k=="name") and ("#" in v):
+                kwargs[k] = v.split("#",1)[1]
+
         objs = cls.objects.filter(**kwargs)
         if not objs:
             if throw_exception:
                 raise Exception("Failed to find %s filtered by %s" % (cls.__name__, str(kwargs)))
             return None
         return objs[0]
+
+    def get_replaces_objs(self):
+        replaces = self.get_property_default("replaces", None)
+        if replaces:
+            return self.xos_model.objects.filter(**{self.name_field: replaces})
+        else:
+            return []
 
     def get_existing_objs(self):
         return self.xos_model.objects.filter(**{self.name_field: self.obj_name})
@@ -92,7 +105,25 @@ class XOSResource(object):
         return self.xos_model.__name__
 
     def create_or_update(self):
+        replaces_objs = self.get_replaces_objs()
         existing_objs = self.get_existing_objs()
+
+        if (replaces_objs and existing_objs):
+            ro = replaces_objs[0]
+            self.info("deleting %s:%s" % (self.get_model_class_name(), getattr(ro,self.name_field)))
+            ro.delete()
+
+            # in case we wanted to throw an error instead...
+            #self.error("CRITICAL ERROR: Both %s and %s exist!" % (getattr(ro,self.name_field), self.obj_name))
+            #sys.exit(-1)
+
+        if (replaces_objs and not existing_objs):
+            ro = replaces_objs[0]
+            self.info("renaming %s:%s to %s" % (self.get_model_class_name(), getattr(ro,self.name_field), self.obj_name))
+            setattr(ro, self.name_field, self.obj_name)
+            ro.save()
+            existing_objs = self.get_existing_objs()
+
         if existing_objs:
             if self.get_property_default("no-update", False):
                 self.info("%s:%s (%s) already exists. Skipping update due to 'no-update' property" % (self.get_model_class_name(), self.obj_name, self.full_name))

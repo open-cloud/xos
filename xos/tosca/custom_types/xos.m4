@@ -16,7 +16,11 @@ define(xos_base_props,
             no-update:
                 type: boolean
                 default: false
-                description: Do not allow Tosca to update this object)
+                description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object)
 # Service
 define(xos_base_service_caps,
             scalable:
@@ -265,6 +269,16 @@ node_types:
         derived_from: tosca.nodes.Root
         description: >
             CORD: The vRouter Service.
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_props
+            xos_base_service_props
+
+    tosca.nodes.FabricService:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: The Fabric Service.
         capabilities:
             xos_base_service_caps
         properties:

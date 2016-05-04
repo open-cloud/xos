@@ -8,21 +8,23 @@ imports:
 topology_template:
   node_templates:
     # CORD Services
-    service_vtr:
+    service#vtr:
       type: tosca.nodes.Service
       properties:
           view_url: /admin/vtr/vtrservice/$id$/
           kind: vTR
+          replaces: service_vtr
 
-    service_volt:
+    service#volt:
       type: tosca.nodes.Service
       requirements:
           - vsg_tenant:
-              node: service_vsg
+              node: service#vsg
               relationship: tosca.relationships.TenantOfService
       properties:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
+          replaces: service_volt
 
     addresses_vsg:
       type: tosca.nodes.AddressPool
@@ -38,11 +40,11 @@ topology_template:
           gateway_ip: 10.168.1.1
           gateway_mac: 02:42:0a:a8:00:01
 
-    service_vsg:
+    service#vsg:
       type: tosca.nodes.VSGService
       requirements:
           - vrouter_tenant:
-              node: service_vrouter
+              node: service#vrouter
               relationship: tosca.relationships.TenantOfService
       properties:
           view_url: /admin/cord/vsgservice/$id$/
@@ -50,13 +52,15 @@ topology_template:
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/synchronizers/vcpe/vcpe_private_key
 #          node_label: label_vsg
+          replaces: service_vsg
       artifacts:
           pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
 
-    service_vrouter:
+    service#vrouter:
       type: tosca.nodes.VRouterService
       properties:
           view_url: /admin/vrouter/vrouterservice/$id$/
+          replaces: service_vrouter
       requirements:
           - addresses_vsg:
               node: addresses_vsg
@@ -65,7 +69,13 @@ topology_template:
               node: addresses_exampleservice-public
               relationship: tosca.relationships.ProvidesAddresses
 
-    service_ONOS_Fabric:
+    service#fabric:
+      type: tosca.nodes.FabricService
+      properties:
+          view_url: /admin/fabric/fabricservice/$id$/
+          replaces: service_fabric
+
+    service#ONOS_Fabric:
       type: tosca.nodes.ONOSService
       requirements:
       properties:
@@ -73,18 +83,19 @@ topology_template:
           view_url: /admin/onos/onosservice/$id$/
           no_container: true
           rest_hostname: onos-fabric
+          replaces: service_ONOS_Fabric
 
-    service_ONOS_CORD:
+    service#ONOS_CORD:
       type: tosca.nodes.ONOSService
 
     vOLT_ONOS_app:
       type: tosca.nodes.ONOSvOLTApp
       requirements:
           - onos_tenant:
-              node: service_ONOS_CORD
+              node: service#ONOS_CORD
               relationship: tosca.relationships.TenantOfService
           - volt_service:
-              node: service_volt
+              node: service#volt
               relationship: tosca.relationships.UsedByService
       properties:
           install_dependencies: onos-ext-notifier-1.0-SNAPSHOT.oar, onos-ext-volt-event-publisher-1.0-SNAPSHOT.oar
@@ -95,7 +106,7 @@ topology_template:
       type: tosca.nodes.ONOSvRouterApp
       requirements:
           - onos_tenant:
-              node: service_ONOS_Fabric
+              node: service#ONOS_Fabric
               relationship: tosca.relationships.TenantOfService
           - vrouter_service:
               node: service_vrouter
@@ -144,7 +155,7 @@ topology_template:
           network: noauto
       requirements:
           - vsg_service:
-              node: service_vsg
+              node: service#vsg
               relationship: tosca.relationships.MemberOfService
           - site:
               node: mysite
@@ -227,7 +238,7 @@ topology_template:
             c_tag: 111
         requirements:
             - provider_service:
-                node: service_volt
+                node: service#volt
                 relationship: tosca.relationships.MemberOfService
             - subscriber:
                 node: My House

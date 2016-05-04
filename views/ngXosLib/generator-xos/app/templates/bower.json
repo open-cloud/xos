@@ -24,7 +24,8 @@
     "angular-cookies": "1.4.7",
     "angular-animate": "1.4.7",
     "angular-resource": "1.4.7",
-    "ng-lodash": "0.3.0",
-    "bootstrap-css": "3.3.6"
+    "lodash": "~4.11.1",
+    "bootstrap-css": "3.3.6",
+    "angular-chart.js": "~0.10.2"
   }
 }

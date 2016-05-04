@@ -2381,6 +2381,17 @@ class AddressPoolAdmin(XOSBaseAdmin):
 
         return tabs
 
+class AddressPoolInline(XOSTabularInline):
+    model = AddressPool
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-addresspools'
+    fields = ['cidr', 'gateway_ip', 'gateway_mac']
+    readonly_fields = ['cidr',]
+
+    # disable the add link
+    def has_add_permission(self, request):
+        return False
+
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)
 # ... and, since we're not using Django's builtin permissions,

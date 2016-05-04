@@ -6,14 +6,6 @@ This is a collection of helpers to develop views as Angular SPA.
 
 This tools are designed to help you developing UI for XOS. As they born for this purpose if often necessary that a XOS instance is running on your sistem and responding at: `localhost:9999`. The `xos/configurations/frontend` is normally enough.
 
-### Apigen
-
-Usage: `npm run apigen`
-
-This tool will automatically generate an angular resource file for each endpoint available in Apiary.
-
->You can generate api related documentation with: `npm run doc`. The output is locate in `api/docs`. You can have a list of available method also trough Apiary at `http://docs.xos.apiary.io/#`
-
 ### Vendors
 
 Xos comes with a preset of common libraries, as listed in `bower.json`:
@@ -33,7 +25,7 @@ This libraries are served through Django, so they will not be included in your m
 
 ### Helpers
 
-XOS comes with an helper library that is automatically loaded in the Django template.
+XOS comes with an helper library that is automatically loaded in the Django template. It a set of Services and UI Components
 
 To use it, add `xos.helpers` to your required modules:
 
@@ -45,13 +37,11 @@ angular.module('xos.myView', [
 
 It will automatically ad a `token` to all your request, eventually you can take advantage of some other services:
 
-- **NoHyperlinks Interceptor**: will add a `?no_hyperlinks=1` to your request, to tell Django to return ids instead of links.
-
->_NOTE: for the API related service, check documentation in [Apigen](#apigen) section._
-
 To develop components inside this folder there is a particular command: `npm run dev`, this will watch the helpers file and rebuild them with sourcemaps. For this reason remember to build them when done developing.
 
 When some changes are applied to this common library it should be rebuilt with: `npm run build`
+
+To generate the relative documentation use: `npm run doc`
 
 ### Yo Xos
 

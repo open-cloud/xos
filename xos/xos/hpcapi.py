@@ -190,7 +190,7 @@ class HpcHealthCheckSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = HpcHealthCheck
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','hpcService','kind','resource_name','result_contains','result_min_size','result_max_size',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','hpcService','kind','resource_name','result_contains','result_min_size','result_max_size',)
 
 class HpcHealthCheckIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -206,7 +206,7 @@ class HpcHealthCheckIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = HpcHealthCheck
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','hpcService','kind','resource_name','result_contains','result_min_size','result_max_size',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','hpcService','kind','resource_name','result_contains','result_min_size','result_max_size',)
 
 
 
@@ -225,7 +225,7 @@ class HpcServiceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = HpcService
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
 
 class HpcServiceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -241,7 +241,7 @@ class HpcServiceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = HpcService
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
 
 
 
@@ -260,7 +260,7 @@ class OriginServerSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = OriginServer
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','origin_server_id','url','contentProvider','authenticated','enabled','protocol','redirects','description',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','origin_server_id','url','contentProvider','authenticated','enabled','protocol','redirects','description',)
 
 class OriginServerIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -276,7 +276,7 @@ class OriginServerIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = OriginServer
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','origin_server_id','url','contentProvider','authenticated','enabled','protocol','redirects','description',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','origin_server_id','url','contentProvider','authenticated','enabled','protocol','redirects','description',)
 
 
 
@@ -295,7 +295,7 @@ class CDNPrefixSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = CDNPrefix
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','cdn_prefix_id','prefix','contentProvider','description','defaultOriginServer','enabled',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','cdn_prefix_id','prefix','contentProvider','description','defaultOriginServer','enabled',)
 
 class CDNPrefixIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -311,7 +311,7 @@ class CDNPrefixIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = CDNPrefix
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','cdn_prefix_id','prefix','contentProvider','description','defaultOriginServer','enabled',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','cdn_prefix_id','prefix','contentProvider','description','defaultOriginServer','enabled',)
 
 
 
@@ -330,7 +330,7 @@ class ServiceProviderSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ServiceProvider
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','hpcService','service_provider_id','name','description','enabled',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','hpcService','service_provider_id','name','description','enabled',)
 
 class ServiceProviderIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -346,7 +346,7 @@ class ServiceProviderIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ServiceProvider
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','hpcService','service_provider_id','name','description','enabled',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','hpcService','service_provider_id','name','description','enabled',)
 
 
 
@@ -365,7 +365,7 @@ class ContentProviderSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ContentProvider
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','content_provider_id','name','enabled','description','serviceProvider',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','content_provider_id','name','enabled','description','serviceProvider',)
 
 class ContentProviderIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -381,7 +381,7 @@ class ContentProviderIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ContentProvider
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','content_provider_id','name','enabled','description','serviceProvider',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','content_provider_id','name','enabled','description','serviceProvider',)
 
 
 
@@ -400,7 +400,7 @@ class AccessMapSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = AccessMap
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','contentProvider','name','description','map',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','contentProvider','name','description','map',)
 
 class AccessMapIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -416,7 +416,7 @@ class AccessMapIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = AccessMap
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','contentProvider','name','description','map',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','contentProvider','name','description','map',)
 
 
 
@@ -435,7 +435,7 @@ class SiteMapSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = SiteMap
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','contentProvider','serviceProvider','cdnPrefix','hpcService','name','description','map','map_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','contentProvider','serviceProvider','cdnPrefix','hpcService','name','description','map','map_id',)
 
 class SiteMapIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -451,7 +451,7 @@ class SiteMapIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = SiteMap
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','contentProvider','serviceProvider','cdnPrefix','hpcService','name','description','map','map_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','contentProvider','serviceProvider','cdnPrefix','hpcService','name','description','map','map_id',)
 
 
 
@@ -485,7 +485,7 @@ class HpcHealthCheckList(XOSListCreateAPIView):
     serializer_class = HpcHealthCheckSerializer
     id_serializer_class = HpcHealthCheckIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','hpcService','kind','resource_name','result_contains','result_min_size','result_max_size',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','hpcService','kind','resource_name','result_contains','result_min_size','result_max_size',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -532,7 +532,7 @@ class HpcServiceList(XOSListCreateAPIView):
     serializer_class = HpcServiceSerializer
     id_serializer_class = HpcServiceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -579,7 +579,7 @@ class OriginServerList(XOSListCreateAPIView):
     serializer_class = OriginServerSerializer
     id_serializer_class = OriginServerIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','origin_server_id','url','contentProvider','authenticated','enabled','protocol','redirects','description',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','origin_server_id','url','contentProvider','authenticated','enabled','protocol','redirects','description',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -626,7 +626,7 @@ class CDNPrefixList(XOSListCreateAPIView):
     serializer_class = CDNPrefixSerializer
     id_serializer_class = CDNPrefixIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','cdn_prefix_id','prefix','contentProvider','description','defaultOriginServer','enabled',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','cdn_prefix_id','prefix','contentProvider','description','defaultOriginServer','enabled',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -673,7 +673,7 @@ class ServiceProviderList(XOSListCreateAPIView):
     serializer_class = ServiceProviderSerializer
     id_serializer_class = ServiceProviderIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','hpcService','service_provider_id','name','description','enabled',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','hpcService','service_provider_id','name','description','enabled',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -720,7 +720,7 @@ class ContentProviderList(XOSListCreateAPIView):
     serializer_class = ContentProviderSerializer
     id_serializer_class = ContentProviderIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','content_provider_id','name','enabled','description','serviceProvider',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','content_provider_id','name','enabled','description','serviceProvider',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -767,7 +767,7 @@ class AccessMapList(XOSListCreateAPIView):
     serializer_class = AccessMapSerializer
     id_serializer_class = AccessMapIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','contentProvider','name','description','map',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','contentProvider','name','description','map',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -814,7 +814,7 @@ class SiteMapList(XOSListCreateAPIView):
     serializer_class = SiteMapSerializer
     id_serializer_class = SiteMapIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','contentProvider','serviceProvider','cdnPrefix','hpcService','name','description','map','map_id',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','contentProvider','serviceProvider','cdnPrefix','hpcService','name','description','map','map_id',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -853,3 +853,5 @@ class SiteMapDetail(XOSRetrieveUpdateDestroyAPIView):
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
+
+

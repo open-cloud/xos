@@ -68,7 +68,8 @@ def api_root(request, format=None):
 # Based on serializers.py
 
 class XOSModelSerializer(serializers.ModelSerializer):
-    def save_object(self, obj, **kwargs):
+    # TODO: Rest Framework 3.x doesn't support save_object()
+    def NEED_TO_UPDATE_save_object(self, obj, **kwargs):
 
         """ rest_framework can't deal with ManyToMany relations that have a
             through table. In xos, most of the through tables we have
@@ -147,7 +148,7 @@ class {{ object.camel }}IdSerializer(XOSModelSerializer):
     id = IdField()
     {% for ref in object.refs %}
     {% if ref.multi %}
-    {{ ref.plural }} = serializers.PrimaryKeyRelatedField(many=True,  queryset = {{ ref.camel }}.objects.all())
+    {{ ref.plural }} = serializers.PrimaryKeyRelatedField(many=True,  required=False, queryset = {{ ref.camel }}.objects.all())
     {% else %}
     {{ ref }} = serializers.PrimaryKeyRelatedField( queryset = {{ ref.camel }}.objects.all())
     {% endif %}

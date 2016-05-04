@@ -1,7 +1,11 @@
 .PHONY: xos
-xos: nodes.yaml images.yaml
+xos: up bootstrap
+
+up:
 	sudo docker-compose up -d
 	../common/wait_for_xos_port.sh 80
+
+bootstrap: nodes.yaml images.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/setup.yaml
@@ -11,7 +15,7 @@ xos: nodes.yaml images.yaml
 vtn: vtn-external.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/vtn-external.yaml
 
-cord: 
+cord:
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/mgmt-net.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-vtn-vsg.yaml
 

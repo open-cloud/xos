@@ -25,9 +25,11 @@ xos:
 	bash ../common/wait_for_xos.sh
 
 restore-initial-db-status:
-	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "$$TRUNCATE_FN"
-	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT truncate_tables('postgres');"
-	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT setval('core_tenant_id_seq', 1)"
+	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "$$TRUNCATE_FN" >/dev/null 2>&1
+	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT truncate_tables('postgres');" >/dev/null 2>&1
+	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT setval('core_tenant_id_seq', 1)" >/dev/null 2>&1
+	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT setval('core_deployment_id_seq', 1)" >/dev/null 2>&1
+	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT setval('core_flavor_id_seq', 1)" >/dev/null 2>&1
 	sudo docker-compose run xos python /opt/xos/manage.py --noobserver --nomodelpolicy loaddata /opt/xos/core/fixtures/core_initial_data.json
 	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
@@ -36,9 +38,10 @@ restore-initial-db-status:
 
 test: restore-initial-db-status
 	# RUN TESTS
+	sudo docker cp ../../../apiary.apib teststandalone_xos_1:/opt/xos/tests/api/apiary.apib
 	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm test"
 
-test-tosca:
+test-tosca: restore-initial-db-status
 	sudo docker-compose run xos bash -c "cd /opt/xos/tosca/tests; python ./alltests.py"
 
 base-container: 

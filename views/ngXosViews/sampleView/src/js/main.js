@@ -3,7 +3,6 @@
 angular.module('xos.sampleView', [
   'ngResource',
   'ngCookies',
-  'ngLodash',
   'ui.router',
   'xos.helpers'
 ])
@@ -26,53 +25,17 @@ angular.module('xos.sampleView', [
     templateUrl: 'templates/users-list.tpl.html',
     controller: function(Users){
 
-      this.tableConfig = {
-        columns: [
-          {
-            label: 'E-Mail',
-            prop: 'email'
-          },
-          {
-            label: 'First Name',
-            prop: 'firstname'
-          },
-          {
-            label: 'Last Name',
-            prop: 'lastname'
-          }
-        ],
-        classes: 'table table-striped table-condensed',
-        actions: [
-          {
-            label: 'delete',
-            icon: 'remove',
-            cb: (user) => {
-              console.log(user);
-            },
-            color: 'red'
-          }
-        ],
-        filter: 'field',
-        order: true,
-        // pagination: {
-        //   pageSize: 6
-        // }
+      this.config = {
+        resource: 'Users',
+        groupBy: 'is_admin',
+        legend: true,
+        poll: 2,
+        labelFormatter: (labels) => {
+          console.log(labels);
+          return labels.map(l => l === 'true' ? 'Admin' : 'Non admin');
+        }
       };
-
-      this.alertConfig = {
-        type: 'danger',
-        closeBtn: true
-      }
-
-
-      // retrieving user list
-      Users.query().$promise
-      .then((users) => {
-        this.users = users;
-      })
-      .catch((e) => {
-        throw new Error(e);
-      });
+      
     }
   };
 });
