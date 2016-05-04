@@ -9,6 +9,15 @@
   - name: write message
     shell: echo "{{ display_message }}" > /var/tmp/index.html
 
-  - name: setup s1u interface message
-    shell: ifconfig eth1 0.0.0.0; ip link add link eth1 name eth1.{{ s1u_tag }} type vlan id {{ s1u_tag }}; ip a a {{ s1u_ip }}/24 dev eth1.{{ s1u_tag }}; ifconfig eth1 up; ifconfig eth1.{{ s1u_tag }} up
+  - name: setup s1u interface config
+    shell: ./start_3gpp_int.sh eth1 {{ s1u_tag }} {{ s1u_ip }}/24 
+
+  - name: setup s1mme interface config
+    shell: ./start_3gpp_int.sh eth2 {{ s1mme_tag }} {{ s1mme_ip }}/24 
+
+  - name: setup rru interface config
+    shell: ./start_3gpp_int.sh eth3 {{ rru_tag }} {{ rru_ip }}/24 
+
+#  - name: startup bbu
+#    shell: /bin/sh -c /usr/sbin/start_bbu 0
 

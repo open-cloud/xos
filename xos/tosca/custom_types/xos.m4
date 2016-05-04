@@ -776,7 +776,6 @@ node_types:
                 required: false
                 description: default isolation to use when bringing up instances (default to 'vm')
             network:
-<<<<<<< HEAD
                 type: string
                 required: false
                 description: type of networking to use for this slice
@@ -784,16 +783,7 @@ node_types:
                 type: string
                 required: false
                 description: comma-separated list of protocol _space_ port that represent ports the slice should expose
-            default_flavor:
-                # Note: we should probably formally introduce flavors to Tosca
-                # at some point, and use a requirement/relationship instead of
-                # a text string.
-                type: string
-                required: false
-                description: default flavor to use for slice
             default_node:
-=======
->>>>>>> upstream/master
                 type: string
                 required: false
                 description: default node to use for this slice
@@ -833,8 +823,6 @@ node_types:
             flavor:
                 type: tosca.capabilities.xos.Flavor
 
-<<<<<<< HEAD
-=======
     tosca.nodes.SiteRole:
         derived_from: tosca.nodes.Root
         description: >
@@ -875,7 +863,6 @@ node_types:
             deploymentrole:
                 type: tosca.capabilities.xos.DeploymentRole
 
->>>>>>> upstream/master
     tosca.nodes.DashboardView:
         derived_from: tosca.nodes.Root
         description: >
@@ -1099,8 +1086,6 @@ node_types:
         derived_from: tosca.capabilities.Root
         description: An XOS Flavor
 
-<<<<<<< HEAD
-=======
     tosca.capabilities.xos.DeploymentRole:
         derived_from: tosca.capabilities.Root
         description: An XOS DeploymentRole
@@ -1117,7 +1102,6 @@ node_types:
         derived_from: tosca.capabilities.Root
         description: An XOS TenantRole
 
->>>>>>> upstream/master
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root
         description: An XOS Image

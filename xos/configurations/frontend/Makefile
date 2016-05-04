@@ -4,12 +4,9 @@ frontend:
 	sudo make -f ../common/Makefile.prereqs
 	sudo docker-compose up -d
 	bash ../common/wait_for_xos.sh
-<<<<<<< HEAD
 	# bash ../mcord/xos/initdb
-=======
 	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
->>>>>>> upstream/master
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
 	# sudo docker-compose run xos python manage.py makemigrations mcordservice
 	# sudo docker-compose run xos python manage.py syncdb

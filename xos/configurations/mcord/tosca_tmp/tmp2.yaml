@@ -9,76 +9,8 @@ imports:
 topology_template:
   node_templates:
 
-    Stanford_Deployment:
-      type: tosca.nodes.Deployment
-      properties:
-          flavors: m1.large, m1.medium, m1.small
-
-    computeBBU1:
-      type: tosca.nodes.Node
-      requirements:
-        - site:
-            node: Stanford_University
-            relationship: tosca.relationships.MemberOfSite
-        - deployment:
-            node: Stanford_Deployment
-            relationship: tosca.relationships.MemberOfDeployment
-
-    computeBBU2:
-      type: tosca.nodes.Node
-      requirements:
-        - site:
-            node: Stanford_University
-            relationship: tosca.relationships.MemberOfSite
-        - deployment:
-            node: Stanford_Deployment
-            relationship: tosca.relationships.MemberOfDeployment
-
-    McordOpenStack:
-      type: tosca.nodes.Controller
-      requirements:
-          - deployment:
-              node: Stanford_Deployment
-              relationship: tosca.relationships.ControllerDeployment
-      properties:
-          backend_type: OpenStack
-          version: Kilo
-          auth_url: { get_script_env: [ SELF, adminrc, OS_AUTH_URL, LOCAL_FILE] }
-          admin_user: { get_script_env: [ SELF, adminrc, OS_USERNAME, LOCAL_FILE] }
-          admin_password: { get_script_env: [ SELF, adminrc, OS_PASSWORD, LOCAL_FILE] }
-          admin_tenant: { get_script_env: [ SELF, adminrc, OS_TENANT_NAME, LOCAL_FILE] }
-          domain: Default
-      artifacts:
-          adminrc: /root/setup/admin-openrc.sh
-
-    Stanford_University:
-      type: tosca.nodes.Site
-      properties:
-          display_name: Stanford University
-          site_url: http://xosproject.org/
-      requirements:
-          - deployment:
-               node: Stanford_Deployment
-               relationship: tosca.relationships.SiteDeployment
-               requirements:
-                   - controller:
-                       node: McordOpenStack
-                       relationship: tosca.relationships.UsesController
-
     # This user already exists in XOS with this password
     # It's an example of how to create new users
-    padmin@vicci.org:
-      type: tosca.nodes.User
-      requirements:
-          - site:
-              node: Stanford_University
-              relationship: tosca.relationships.MemberOfSite
-      properties:
-          is_admin: true
-          is_active: true
-          firstname: XOS
-          lastname: admin
-          password: letmein
 
     johndoe@stanford.us:
       type: tosca.nodes.User
@@ -86,10 +18,6 @@ topology_template:
           password: letmein
           firstname: john
           lastname: doe
-      requirements:
-          - site:
-              node: Stanford_University
-              relationship: tosca.relationships.MemberOfSite
     
     # A subscriber
     Stanford:
@@ -144,69 +72,4 @@ topology_template:
            - household:
                node: Stanford
                relationship: tosca.relationships.SubscriberDevice
-
-    RRU:
-      type: tosca.nodes.Service
-      properties:
-          view_url: /mcord/?service=vBBU
-          icon_url: /static/mCordServices/service_rru.png
-          kind: RAN
-    vBBU:
-      type: tosca.nodes.Service
-      properties:
-          view_url: /mcord/?service=vBBU
-          icon_url: /static/mCordServices/service_server.png
-          kind: RAN
-
-    eSON:
-      type: tosca.nodes.Service
-      properties:
-          icon_url: /static/mCordServices/service_server.png
-          view_url: http://www.google.com
-          kind: RAN
-
-    # EPC
-    vMME:
-      type: tosca.nodes.Service
-      properties:
-          icon_url: /static/mCordServices/service_server.png
-          view_url: /mcord/?service=vMME
-          kind: vEPC
-
-    vSGW:
-      type: tosca.nodes.Service
-      properties:
-          view_url: /mcord/?service=vSGW
-          icon_url: /static/mCordServices/service_server.png
-          kind: vEPC
-
-    vPGW:
-      type: tosca.nodes.Service
-      properties:
-          view_url: /mcord/?service=vPGW
-          icon_url: /static/mCordServices/service_server.png
-          kind: vEPC
-
-    # EDGE
-    Cache:
-      type: tosca.nodes.Service
-      properties:
-          view_url: /mcord/?service=Cache
-          icon_url: /static/mCordServices/service_cache.png
-          kind: EDGE
-
-    Firewall:
-      type: tosca.nodes.Service
-      properties:
-          view_url: /mcord/?service=Firewall
-          icon_url: /static/mCordServices/service_firewall.png
-          kind: EDGE
-
-    Video Optimization:
-      type: tosca.nodes.Service
-      properties:
-          view_url: /mcord/?service=Video%20Optimization
-          icon_url: /static/mCordServices/service_video.png
-          kind: EDGE
-
 
