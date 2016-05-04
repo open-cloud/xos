@@ -65,16 +65,13 @@ module.exports = function(options){
   });
 
   gulp.task('makeDocs', ['cleanDocs'], function(){
+
     var ngOptions = {
-      scripts: [
-        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-animate.min.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-cookies.min.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-resource.js',
+      scripts: [].concat([
         'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-mocks.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.js',
+        `./${options.ngXosVendor}ngXosVendor.js`,
         `./${options.ngXosVendor}ngXosHelpers.js`,
-      ],
+      ]),
       styles: [
         `./${options.ngXosStyles}xosNgLib.css`,
         'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.css',

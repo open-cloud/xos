@@ -25,7 +25,7 @@
   * - [xosValidation](/#/module/xos.uiComponents.directive:xosValidation)
   **/
 
-  angular.module('xos.uiComponents', []);
+  angular.module('xos.uiComponents', ['chart.js']);
 })();
 //# sourceMappingURL=../maps/ui_components/ui-components.module.js.map
 
@@ -135,7 +135,6 @@
             label: 'delete',
             icon: 'remove',
             cb: function cb(item) {
-              console.log(item);
               _this.Resource.delete({ id: item.id }).$promise.then(function () {
                 _.remove(_this.data, function (d) {
                   return d.id === item.id;
@@ -251,6 +250,177 @@
   });
 })();
 //# sourceMappingURL=../../../maps/ui_components/smartComponents/smartTable/smartTable.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 3/24/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosSmartPie
+    * @restrict E
+    * @description The xos-table directive
+    * @param {Object} config The configuration for the component,
+    * it is composed by the name of an angular [$resource](https://docs.angularjs.org/api/ngResource/service/$resource)
+    * and a field name that is used to group the data.
+    * ```
+    * {
+        resource: 'Users',
+        groupBy: 'fieldName',
+        classes: 'my-custom-class',
+        labelFormatter: (labels) => {
+          // here you can format your label,
+          // you should return an array with the same order
+          return labels;
+        }
+      }
+    * ```
+    * @scope
+    * @example
+     <example module="sampleSmartPie">
+      <file name="index.html">
+        <div ng-controller="SampleCtrl as vm">
+          <xos-smart-pie config="vm.config"></xos-smart-pie>
+        </div>
+      </file>
+      <file name="script.js">
+        angular.module('sampleSmartPie', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
+        .controller('SampleCtrl', function(){
+          this.config = {
+            resource: 'SampleResource',
+            groupBy: 'category',
+            poll: 2,
+            labelFormatter: (labels) => {
+              return labels.map(l => l === '1' ? 'Active' : 'Banned');
+            }
+          };
+        });
+      </file>
+      <file name="backend.js">
+        angular.module('sampleSmartPie')
+        .run(function($httpBackend, _){
+          let mock = [
+            [
+              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
+              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
+              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1},
+              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 1}
+            ],
+             [
+              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
+              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
+              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 2},
+              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 2}
+            ],
+             [
+              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
+              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
+              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1},
+              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 2}
+            ]
+          ];
+          $httpBackend.whenGET('/test').respond(function(method, url, data, headers, params) {
+            return [200, mock[Math.round(Math.random() * 3)]];
+          });
+        })
+        .factory('_', function($window){
+          return $window._;
+        })
+        .service('SampleResource', function($resource){
+          return $resource('/test/:id', {id: '@id'});
+        })
+      </file>
+    </example>
+     <example module="sampleSmartPiePoll">
+      <file name="index.html">
+        <div ng-controller="SampleCtrl as vm">
+          <xos-smart-pie config="vm.config"></xos-smart-pie>
+        </div>
+      </file>
+      <file name="script.js">
+        angular.module('sampleSmartPiePoll', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
+        .controller('SampleCtrl', function(){
+          this.config = {
+            resource: 'SampleResource',
+            groupBy: 'category',
+            labelFormatter: (labels) => {
+              return labels.map(l => l === '1' ? 'North' : 'Dragon');
+            }
+          };
+        });
+      </file>
+      <file name="backendPoll.js">
+        angular.module('sampleSmartPiePoll')
+        .run(function($httpBackend, _){
+          let datas = [
+            {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
+            {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
+            {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1}
+          ];
+           $httpBackend.whenGET('/test').respond(200, datas)
+        })
+        .factory('_', function($window){
+          return $window._;
+        })
+        .service('SampleResource', function($resource){
+          return $resource('/test/:id', {id: '@id'});
+        })
+      </file>
+    </example>
+    */
+  .directive('xosSmartPie', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        config: '='
+      },
+      template: '\n        <canvas\n          class="chart chart-pie {{vm.config.classes}}"\n          chart-data="vm.data" chart-labels="vm.labels"\n          chart-legend="{{vm.config.legend}}">\n        </canvas>\n      ',
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$injector", "$timeout", "$interval", "_", function controller($injector, $timeout, $interval, _) {
+        var _this = this;
+
+        this.Resource = $injector.get(this.config.resource);
+
+        var getData = function getData() {
+          _this.Resource.query().$promise.then(function (res) {
+
+            if (!res[0]) {
+              return;
+            }
+
+            // group data
+            var grouped = _.groupBy(res, _this.config.groupBy);
+            _this.data = _.reduce(Object.keys(grouped), function (data, group) {
+              return data.concat(grouped[group].length);
+            }, []);
+            // create labels
+            _this.labels = angular.isFunction(_this.config.labelFormatter) ? _this.config.labelFormatter(Object.keys(grouped)) : Object.keys(grouped);
+          });
+        };
+
+        getData();
+
+        if (this.config.poll) {
+          $interval(function () {
+            getData();
+          }, this.config.poll * 1000);
+        }
+      }]
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/smartComponents/smartPie/smartPie.component.js.map
 
 'use strict';
 
@@ -1154,6 +1324,31 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   angular.module('xos.helpers')
   /**
   * @ngdoc service
+  * @name xos.helpers.Login
+  * @description Angular resource to fetch /api/utility/login/
+  **/
+  .service('Login', ["$resource", function ($resource) {
+    return $resource('/api/utility/login/');
+  }])
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Logout
+  * @description Angular resource to fetch /api/utility/logout/
+  **/
+  .service('Logout', ["$resource", function ($resource) {
+    return $resource('/api/utility/logout/');
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Utility.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
   * @name xos.helpers.Users
   * @description Angular resource to fetch /api/core/users/:id/
   **/
@@ -1193,75 +1388,185 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   /**
   * @ngdoc service
   * @name xos.helpers.Subscribers
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/
+  * @description Angular resource to fetch Subscribers
   **/
   .service('Subscribers', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/', { subscriber_id: '@id' }, {
-      update: { method: 'PUT' }
-    });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/
-  **/
-  .service('Subscriber-features', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/', { subscriber_id: '@id' }, {
-      update: { method: 'PUT' }
-    });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-uplink_speed
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/
-  **/
-  .service('Subscriber-features-uplink_speed', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uplink_speed/', { subscriber_id: '@id' }, {
-      update: { method: 'PUT' }
-    });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-downlink_speed
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/
-  **/
-  .service('Subscriber-features-downlink_speed', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/downlink_speed/', { subscriber_id: '@id' }, {
-      update: { method: 'PUT' }
-    });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-cdn
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/cdn/
-  **/
-  .service('Subscriber-features-cdn', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/cdn/', { subscriber_id: '@id' }, {
-      update: { method: 'PUT' }
-    });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-uverse
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/uverse/
-  **/
-  .service('Subscriber-features-uverse', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/uverse/', { subscriber_id: '@id' }, {
-      update: { method: 'PUT' }
-    });
-  }])
-  /**
-  * @ngdoc service
-  * @name xos.helpers.Subscriber-features-status
-  * @description Angular resource to fetch /api/tenant/cord/subscriber/:subscriber_id/features/status/
-  **/
-  .service('Subscriber-features-status', ["$resource", function ($resource) {
-    return $resource('/api/tenant/cord/subscriber/:subscriber_id/features/status/', { subscriber_id: '@id' }, {
-      update: { method: 'PUT' }
+    return $resource('/api/tenant/cord/subscriber/:id/', { id: '@id' }, {
+      update: { method: 'PUT' },
+      /**
+      * @ngdoc method
+      * @name xos.helpers.Subscribers#View-a-Subscriber-Features-Detail
+      * @methodOf xos.helpers.Subscribers
+      * @description
+      * View-a-Subscriber-Features-Detail
+      **/
+      'View-a-Subscriber-Features-Detail': {
+        method: 'GET',
+        isArray: false,
+        url: '/api/tenant/cord/subscriber/:id/features/'
+      },
+      /**
+      * @ngdoc method
+      * @name xos.helpers.Subscribers#Read-Subscriber-uplink_speed
+      * @methodOf xos.helpers.Subscribers
+      * @description
+      * Read-Subscriber-uplink_speed
+      **/
+      'Read-Subscriber-uplink_speed': {
+        method: 'GET',
+        isArray: false,
+        url: '/api/tenant/cord/subscriber/:id/features/uplink_speed/'
+      },
+      /**
+      * @ngdoc method
+      * @name xos.helpers.Subscribers#Update-Subscriber-uplink_speed
+      * @methodOf xos.helpers.Subscribers
+      * @description
+      * Update-Subscriber-uplink_speed
+      **/
+      'Update-Subscriber-uplink_speed': {
+        method: 'PUT',
+        isArray: false,
+        url: '/api/tenant/cord/subscriber/:id/features/uplink_speed/'
+      },
+      /**
+      * @ngdoc method
+      * @name xos.helpers.Subscribers#Read-Subscriber-downlink_speed
+      * @methodOf xos.helpers.Subscribers
+      * @description
+      * Read-Subscriber-downlink_speed
+      **/
+      'Read-Subscriber-downlink_speed': {
+        method: 'GET',
+        isArray: false,
+        url: '/api/tenant/cord/subscriber/:id/features/downlink_speed/'
+      },
+      /**
+      * @ngdoc method
+      * @name xos.helpers.Subscribers#Update-Subscriber-downlink_speed
+      * @methodOf xos.helpers.Subscribers
+      * @description
+      * Update-Subscriber-downlink_speed
+      **/
+      'Update-Subscriber-downlink_speed': {
+        method: 'PUT',
+        isArray: false,
+        url: '/api/tenant/cord/subscriber/:id/features/downlink_speed/'
+      },
+      /**
+      * @ngdoc method
+      * @name xos.helpers.Subscribers#Read-Subscriber-cdn
+      * @methodOf xos.helpers.Subscribers
+      * @description
+      * Read-Subscriber-cdn
+      **/
+      'Read-Subscriber-cdn': {
+        method: 'GET',
+        isArray: false,
+        url: '/api/tenant/cord/subscriber/:id/features/cdn/'
+      },
+      /**
+      * @ngdoc method
+      * @name xos.helpers.Subscribers#Update-Subscriber-cdn
+      * @methodOf xos.helpers.Subscribers
+      * @description
+      * Update-Subscriber-cdn
+      **/
+      'Update-Subscriber-cdn': {
+        method: 'PUT',
+        isArray: false,
+        url: '/api/tenant/cord/subscriber/:id/features/cdn/'
+      },
+      /**
+      * @ngdoc method
+      * @name xos.helpers.Subscribers#Read-Subscriber-uverse
+      * @methodOf xos.helpers.Subscribers
+      * @description
+      * Read-Subscriber-uverse
+      **/
+      'Read-Subscriber-uverse': {
+        method: 'GET',
+        isArray: false,
+        url: '/api/tenant/cord/subscriber/:id/features/uverse/'
+      },
+      /**
+      * @ngdoc method
+      * @name xos.helpers.Subscribers#Update-Subscriber-uverse
+      * @methodOf xos.helpers.Subscribers
+      * @description
+      * Update-Subscriber-uverse
+      **/
+      'Update-Subscriber-uverse': {
+        method: 'PUT',
+        isArray: false,
+        url: '/api/tenant/cord/subscriber/:id/features/uverse/'
+      },
+      /**
+      * @ngdoc method
+      * @name xos.helpers.Subscribers#Read-Subscriber-status
+      * @methodOf xos.helpers.Subscribers
+      * @description
+      * Read-Subscriber-status
+      **/
+      'Read-Subscriber-status': {
+        method: 'GET',
+        isArray: false,
+        url: '/api/tenant/cord/subscriber/:id/features/status/'
+      },
+      /**
+      * @ngdoc method
+      * @name xos.helpers.Subscribers#Update-Subscriber-status
+      * @methodOf xos.helpers.Subscribers
+      * @description
+      * Update-Subscriber-status
+      **/
+      'Update-Subscriber-status': {
+        method: 'PUT',
+        isArray: false,
+        url: '/api/tenant/cord/subscriber/:id/features/status/'
+      }
     });
   }]);
 })();
 //# sourceMappingURL=../../maps/services/rest/Subscribers.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Slices
+  * @description Angular resource to fetch /api/core/slices/:id/
+  **/
+  .service('Slices', ["$resource", function ($resource) {
+    return $resource('/api/core/slices/:id/', { id: '@id' }, {
+      update: { method: 'PUT' }
+    });
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Slices.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Sites
+  * @description Angular resource to fetch /api/core/sites/:id/
+  **/
+  .service('Sites', ["$resource", function ($resource) {
+    return $resource('/api/core/sites/:id/', { id: '@id' }, {
+      update: { method: 'PUT' }
+    });
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Sites.js.map
 
 'use strict';
 
@@ -1305,6 +1610,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   angular.module('xos.helpers')
   /**
   * @ngdoc service
+  * @name xos.helpers.Nodes
+  * @description Angular resource to fetch /api/core/nodes/:id/
+  **/
+  .service('Nodes', ["$resource", function ($resource) {
+    return $resource('/api/core/nodes/:id/', { id: '@id' }, {
+      update: { method: 'PUT' }
+    });
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Nodes.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
   * @name xos.helpers.Instances
   * @description Angular resource to fetch /api/core/instances/:id/
   **/
@@ -1324,6 +1648,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   angular.module('xos.helpers')
   /**
   * @ngdoc service
+  * @name xos.helpers.Flavors
+  * @description Angular resource to fetch /api/core/flavors/:id/
+  **/
+  .service('Flavors', ["$resource", function ($resource) {
+    return $resource('/api/core/flavors/:id/', { id: '@id' }, {
+      update: { method: 'PUT' }
+    });
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Flavors.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
   * @name xos.helpers.Example-Services-Collection
   * @description Angular resource to fetch /api/service/exampleservice/
   **/
@@ -1332,6 +1675,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   }]);
 })();
 //# sourceMappingURL=../../maps/services/rest/Example.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers')
+  /**
+  * @ngdoc service
+  * @name xos.helpers.Deployments
+  * @description Angular resource to fetch /api/core/deployments/:id/
+  **/
+  .service('Deployments', ["$resource", function ($resource) {
+    return $resource('/api/core/deployments/:id/', { id: '@id' }, {
+      update: { method: 'PUT' }
+    });
+  }]);
+})();
+//# sourceMappingURL=../../maps/services/rest/Deployments.js.map
 
 'use strict';
 

@@ -25,8 +25,15 @@ angular.module('xos.sampleView', [
     templateUrl: 'templates/users-list.tpl.html',
     controller: function(Users){
 
-      this.tableConfig = {
-        resource: 'Users'
+      this.config = {
+        resource: 'Users',
+        groupBy: 'is_admin',
+        legend: true,
+        poll: 2,
+        labelFormatter: (labels) => {
+          console.log(labels);
+          return labels.map(l => l === 'true' ? 'Admin' : 'Non admin');
+        }
       };
       
     }
