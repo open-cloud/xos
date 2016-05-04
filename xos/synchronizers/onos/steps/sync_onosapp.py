@@ -274,6 +274,68 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         }
         return json.dumps(data, indent=4, sort_keys=True)
 
+    def get_vrouter_network_config(self, o, attrs):
+        # From the onosproject wiki:
+        # https://wiki.onosproject.org/display/ONOS/vRouter
+        data = {
+            "devices" : {
+                "of:00000000000000b1" : {
+                    "basic" : {
+                        "driver" : "softrouter"
+                    }
+                }
+            },
+            "ports" : {
+                "of:00000000000000b1/1" : {
+                    "interfaces" : [
+                        {
+                            "name" : "b1-1",
+                            "ips"  : [ "10.0.1.2/24" ],
+                            "mac"  : "00:00:00:00:00:01"
+                        }
+                    ]
+                },
+                "of:00000000000000b1/2" : {
+                    "interfaces" : [
+                        {
+                            "name" : "b1-2",
+                            "ips"  : [ "10.0.2.2/24" ],
+                            "mac"  : "00:00:00:00:00:01"
+                        }
+                    ]
+                },
+                "of:00000000000000b1/3" : {
+                    "interfaces" : [
+                        {
+                            "name" : "b1-3",
+                            "ips"  : [ "10.0.3.2/24" ],
+                            "mac"  : "00:00:00:00:00:01"
+                        }
+                    ]
+                },
+                "of:00000000000000b1/4" : {
+                    "interfaces" : [
+                        {
+                            "name" : "b1-4",
+                            "ips"  : [ "10.0.4.2/24" ],
+                            "mac"  : "00:00:00:00:00:02",
+                            "vlan" : "100"
+                        }
+                    ]
+                }
+            },
+            "apps" : {
+                "org.onosproject.router" : {
+                    "router" : {
+                        "controlPlaneConnectPoint" : "of:00000000000000b1/5",
+                        "ospfEnabled" : "true",
+                        "interfaces" : [ "b1-1", "b1-2", "b1-2", "b1-4" ]
+                    }
+                }
+            }
+        }
+        return json.dumps(data, indent=4, sort_keys=True)
+
     def write_configs(self, o):
         o.config_fns = []
         o.rest_configs = []
@@ -330,6 +392,9 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             elif label == "volt-component-cfg":
                 config = "component_config"
                 value = self.get_volt_component_config(o, attrs)
+            elif label == "vrouter-network-cfg":
+                config = "rest_onos/v1/network/configuration/"
+                value = self.get_vrouter_network_config(o, attrs)
 
             if config:
                 tas = TenantAttribute.objects.filter(tenant=o, name=config)
