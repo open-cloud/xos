@@ -282,7 +282,7 @@ class CordSubscriberViewSet(XOSViewSet):
         subscriber = self.get_object()
         ser = DeviceSerializer(subscriber.devices, data=request.data)
         ser.is_valid(raise_exception = True)
-        newdevice = CordDevice(subscriber.create_device(ser.validated_data), subscriber)
+        newdevice = CordDevice(subscriber.create_device(**ser.validated_data), subscriber)
         subscriber.save()
         return Response(DeviceSerializer(newdevice).data)
 
