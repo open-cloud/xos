@@ -94,7 +94,6 @@
         xdescribe('when a field type is provided', () => {
           describe('and is boolean', () => {
             beforeEach(() => {
-              console.log('iS: ' + isolatedScope);
               isolatedScope.config = {
                 columns: [
                   {
@@ -118,7 +117,6 @@
             it('should render an incon', () => {
               let td1 = $(element).find('tbody tr:first-child td')[0];
               let td2 = $(element).find('tbody tr:last-child td')[0];
-              console.log(td2);
               expect($(td1).find('i')).toHaveClass('glyphicon-ok');
               expect($(td2).find('i')).toHaveClass('glyphicon-remove');
             });
@@ -126,7 +124,6 @@
 
           describe('and is date', () => {
             beforeEach(() => {
-              console.log('iS: ' + isolatedScope);
               isolatedScope.config = {
                 columns: [
                   {
