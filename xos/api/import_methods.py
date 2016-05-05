@@ -88,8 +88,10 @@ def import_api_methods(dirname=None, api_path="api", api_module="api"):
            viewset = view_url[3]
            urlpatterns.extend(viewset.get_urlpatterns(api_path="^"+api_path+"/"))
 
-    if not has_index_view:
-        urlpatterns.append(url('^' + api_path + '/$', XOSIndexViewSet.as_view({'get': 'list'}, view_urls=view_urls, subdirs=subdirs), name="api_path"+"_index"))
+    # Only add an index_view if 1) the is not already an index view, and
+    # 2) we have found some methods in this directory.
+    if (not has_index_view) and (urlpatterns):
+        urlpatterns.append(url('^' + api_path + '/$', XOSIndexViewSet.as_view({'get': 'list'}, view_urls=view_urls, subdirs=subdirs, api_path=api_path), name=api_path+"_index"))
 
     return urlpatterns
 

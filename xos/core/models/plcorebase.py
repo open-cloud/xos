@@ -198,8 +198,8 @@ class PlCoreBase(models.Model, PlModelMixIn):
 
     # default values for created and updated are only there to keep evolution
     # from failing.
-    created = models.DateTimeField(auto_now_add=True, default=timezone.now)
-    updated = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     enacted = models.DateTimeField(null=True, blank=True, default=None)
     policed = models.DateTimeField(null=True, blank=True, default=None)
 
