@@ -13,6 +13,7 @@ from services.cord.models import *
 from services.vtr.models import *
 import urllib2
 import json
+from django.utils import timezone
 django.setup()
 
 
@@ -78,6 +79,7 @@ def createTestSubscriber():
 
     # creating the test subscriber
     subscriber = CordSubscriberRoot(name='Test Subscriber 1', id=1)
+    subscriber.created = timezone.now()
     subscriber.save()
 
     # vRouter service
@@ -181,20 +183,24 @@ def setUpTruckroll():
 def createTruckroll():
     setUpTruckroll()
     tn = VTRTenant(id=1)
+    tn.created = timezone.now()
     tn.save()
 
 
 def createFlavors():
     small = Flavor(id=1)
     small.name = "m1.small"
+    small.created = timezone.now()
     small.save()
 
     medium = Flavor(id=2)
     medium.name = "m1.medium"
+    medium.created = timezone.now()
     medium.save()
 
     large = Flavor(id=3)
     large.name = "m1.large"
+    large.created = timezone.now()
     large.save()
 
 
@@ -203,6 +209,7 @@ def createSlice():
     user = User.objects.get(email="padmin@vicci.org")
 
     sl = Slice(id=1)
+    sl.created = timezone.now()
     sl.name = site.login_base + "_testSlice"
     sl.site = site
     sl.caller = user
@@ -212,6 +219,7 @@ def createSlice():
 
 def createDeployment():
     deployment = Deployment(id=1)
+    deployment.created = timezone.now()
     deployment.name = 'MyTestDeployment'
     deployment.save()
     return deployment
@@ -220,6 +228,7 @@ def createDeployment():
 def createImage(name):
     img = Image(id=1)
     img.name = name
+    img.created = timezone.now()
     img.disk_format = 'QCOW2'
     img.kind = 'vm'
     img.save()
@@ -231,11 +240,13 @@ def createNode(deployment):
 
     site_deployment = SiteDeployment(id=1)
     site_deployment.site = site
+    site_deployment.created = timezone.now()
     site_deployment.deployment = deployment
     site_deployment.save()
 
     node = Node(id=1)
     node.name = 'test-node'
+    node.created = timezone.now()
     node.site = site
     node.site_deployment = site_deployment
     node.save()
@@ -257,6 +268,7 @@ def createInstance():
 
     instance = Instance(id=1)
     instance.name = 'test-instance'
+    instance.created = timezone.now()
     instance.node = Node.objects.all()[0]
     instance.image = requirements['image']
     instance.slice = requirements['slice']
