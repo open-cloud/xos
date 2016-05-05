@@ -258,177 +258,6 @@
  *
  * Visit http://guide.xosproject.org/devguide/addview/ for more information
  *
- * Created by teone on 3/24/16.
- */
-
-(function () {
-  'use strict';
-
-  angular.module('xos.uiComponents')
-  /**
-    * @ngdoc directive
-    * @name xos.uiComponents.directive:xosSmartPie
-    * @restrict E
-    * @description The xos-table directive
-    * @param {Object} config The configuration for the component,
-    * it is composed by the name of an angular [$resource](https://docs.angularjs.org/api/ngResource/service/$resource)
-    * and a field name that is used to group the data.
-    * ```
-    * {
-        resource: 'Users',
-        groupBy: 'fieldName',
-        classes: 'my-custom-class',
-        labelFormatter: (labels) => {
-          // here you can format your label,
-          // you should return an array with the same order
-          return labels;
-        }
-      }
-    * ```
-    * @scope
-    * @example
-     <example module="sampleSmartPie">
-      <file name="index.html">
-        <div ng-controller="SampleCtrl as vm">
-          <xos-smart-pie config="vm.config"></xos-smart-pie>
-        </div>
-      </file>
-      <file name="script.js">
-        angular.module('sampleSmartPie', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
-        .controller('SampleCtrl', function(){
-          this.config = {
-            resource: 'SampleResource',
-            groupBy: 'category',
-            poll: 2,
-            labelFormatter: (labels) => {
-              return labels.map(l => l === '1' ? 'Active' : 'Banned');
-            }
-          };
-        });
-      </file>
-      <file name="backend.js">
-        angular.module('sampleSmartPie')
-        .run(function($httpBackend, _){
-          let mock = [
-            [
-              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
-              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
-              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1},
-              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 1}
-            ],
-             [
-              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
-              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
-              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 2},
-              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 2}
-            ],
-             [
-              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
-              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
-              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1},
-              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 2}
-            ]
-          ];
-          $httpBackend.whenGET('/test').respond(function(method, url, data, headers, params) {
-            return [200, mock[Math.round(Math.random() * 3)]];
-          });
-        })
-        .factory('_', function($window){
-          return $window._;
-        })
-        .service('SampleResource', function($resource){
-          return $resource('/test/:id', {id: '@id'});
-        })
-      </file>
-    </example>
-     <example module="sampleSmartPiePoll">
-      <file name="index.html">
-        <div ng-controller="SampleCtrl as vm">
-          <xos-smart-pie config="vm.config"></xos-smart-pie>
-        </div>
-      </file>
-      <file name="script.js">
-        angular.module('sampleSmartPiePoll', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
-        .controller('SampleCtrl', function(){
-          this.config = {
-            resource: 'SampleResource',
-            groupBy: 'category',
-            labelFormatter: (labels) => {
-              return labels.map(l => l === '1' ? 'North' : 'Dragon');
-            }
-          };
-        });
-      </file>
-      <file name="backendPoll.js">
-        angular.module('sampleSmartPiePoll')
-        .run(function($httpBackend, _){
-          let datas = [
-            {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
-            {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
-            {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1}
-          ];
-           $httpBackend.whenGET('/test').respond(200, datas)
-        })
-        .factory('_', function($window){
-          return $window._;
-        })
-        .service('SampleResource', function($resource){
-          return $resource('/test/:id', {id: '@id'});
-        })
-      </file>
-    </example>
-    */
-  .directive('xosSmartPie', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        config: '='
-      },
-      template: '\n        <canvas\n          class="chart chart-pie {{vm.config.classes}}"\n          chart-data="vm.data" chart-labels="vm.labels"\n          chart-legend="{{vm.config.legend}}">\n        </canvas>\n      ',
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: ["$injector", "$timeout", "$interval", "_", function controller($injector, $timeout, $interval, _) {
-        var _this = this;
-
-        this.Resource = $injector.get(this.config.resource);
-
-        var getData = function getData() {
-          _this.Resource.query().$promise.then(function (res) {
-
-            if (!res[0]) {
-              return;
-            }
-
-            // group data
-            var grouped = _.groupBy(res, _this.config.groupBy);
-            _this.data = _.reduce(Object.keys(grouped), function (data, group) {
-              return data.concat(grouped[group].length);
-            }, []);
-            // create labels
-            _this.labels = angular.isFunction(_this.config.labelFormatter) ? _this.config.labelFormatter(Object.keys(grouped)) : Object.keys(grouped);
-          });
-        };
-
-        getData();
-
-        if (this.config.poll) {
-          $interval(function () {
-            getData();
-          }, this.config.poll * 1000);
-        }
-      }]
-    };
-  });
-})();
-//# sourceMappingURL=../../../maps/ui_components/smartComponents/smartPie/smartPie.component.js.map
-
-'use strict';
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
  * Created by teone on 4/15/16.
  */
 
@@ -515,6 +344,247 @@
   });
 })();
 //# sourceMappingURL=../../../maps/ui_components/dumbComponents/validation/validation.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 3/24/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosSmartPie
+    * @restrict E
+    * @description The xos-table directive
+    * @param {Object} config The configuration for the component,
+    * it is composed by the name of an angular [$resource](https://docs.angularjs.org/api/ngResource/service/$resource)
+    * and a field name that is used to group the data.
+    * ```
+    * {
+        resource: 'Users',
+        groupBy: 'fieldName',
+        classes: 'my-custom-class',
+        labelFormatter: (labels) => {
+          // here you can format your label,
+          // you should return an array with the same order
+          return labels;
+        }
+      }
+    * ```
+    * @scope
+    * @example
+    
+    Displaying Local data
+     <example module="sampleSmartPieLocal">
+      <file name="index.html">
+        <div ng-controller="SampleCtrlLocal as vm">
+          <xos-smart-pie config="vm.configLocal"></xos-smart-pie>
+        </div>
+      </file>
+      <file name="script.js">
+        angular.module('sampleSmartPieLocal', ['xos.uiComponents'])
+        .factory('_', function($window){
+          return $window._;
+        })
+        .controller('SampleCtrlLocal', function($timeout){
+          
+          this.datas = [
+            {id: 1, first_name: 'Jon', last_name: 'aaa', category: 2},
+            {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 1},
+            {id: 3, first_name: 'Aria', last_name: 'Stark', category: 2}
+          ];
+           this.configLocal = {
+            data: [],
+            groupBy: 'category',
+            classes: 'local',
+            labelFormatter: (labels) => {
+              return labels.map(l => l === '1' ? 'North' : 'Dragon');
+            }
+          };
+          
+          $timeout(() => {
+            // this need to be triggered in this way just because of ngDoc,
+            // otherwise you can assign data directly in the config
+            this.configLocal.data = this.datas;
+          }, 1)
+        });
+      </file>
+    </example>
+     Fetching data from API
+     <example module="sampleSmartPieResource">
+      <file name="index.html">
+        <div ng-controller="SampleCtrl as vm">
+          <xos-smart-pie config="vm.config"></xos-smart-pie>
+        </div>
+      </file>
+      <file name="script.js">
+        angular.module('sampleSmartPieResource', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
+        .controller('SampleCtrl', function(){
+          this.config = {
+            resource: 'SampleResource',
+            groupBy: 'category',
+            classes: 'resource',
+            labelFormatter: (labels) => {
+              return labels.map(l => l === '1' ? 'North' : 'Dragon');
+            }
+          };
+        });
+      </file>
+      <file name="backendPoll.js">
+        angular.module('sampleSmartPieResource')
+        .run(function($httpBackend, _){
+          let datas = [
+            {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
+            {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
+            {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1}
+          ];
+           $httpBackend.whenGET('/test').respond(200, datas)
+        })
+        .factory('_', function($window){
+          return $window._;
+        })
+        .service('SampleResource', function($resource){
+          return $resource('/test/:id', {id: '@id'});
+        })
+      </file>
+    </example>
+     Polling data from API
+     <example module="sampleSmartPiePoll">
+      <file name="index.html">
+        <div ng-controller="SampleCtrl as vm">
+          <xos-smart-pie config="vm.config"></xos-smart-pie>
+        </div>
+      </file>
+      <file name="script.js">
+        angular.module('sampleSmartPiePoll', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
+        .controller('SampleCtrl', function(){
+          this.config = {
+            resource: 'SampleResource',
+            groupBy: 'category',
+            poll: 2,
+            labelFormatter: (labels) => {
+              return labels.map(l => l === '1' ? 'Active' : 'Banned');
+            }
+          };
+        });
+      </file>
+      <file name="backend.js">
+        angular.module('sampleSmartPiePoll')
+        .run(function($httpBackend, _){
+          let mock = [
+            [
+              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
+              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
+              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1},
+              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 1}
+            ],
+             [
+              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
+              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
+              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 2},
+              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 2}
+            ],
+             [
+              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
+              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
+              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1},
+              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 2}
+            ]
+          ];
+          $httpBackend.whenGET('/test').respond(function(method, url, data, headers, params) {
+            return [200, mock[Math.round(Math.random() * 3)]];
+          });
+        })
+        .factory('_', function($window){
+          return $window._;
+        })
+        .service('SampleResource', function($resource){
+          return $resource('/test/:id', {id: '@id'});
+        })
+      </file>
+    </example>
+    */
+  .directive('xosSmartPie', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        config: '='
+      },
+      template: '\n        <canvas\n          class="chart chart-pie {{vm.config.classes}}"\n          chart-data="vm.data" chart-labels="vm.labels"\n          chart-legend="{{vm.config.legend}}">\n        </canvas>\n      ',
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$injector", "$timeout", "$interval", "$scope", "_", function controller($injector, $timeout, $interval, $scope, _) {
+        var _this = this;
+
+        if (!this.config.resource && !this.config.data) {
+          throw new Error('[xosSmartPie] Please provide a resource or an array of data in the configuration');
+        }
+
+        var groupData = function groupData(data) {
+          return _.groupBy(data, _this.config.groupBy);
+        };
+        var formatData = function formatData(data) {
+          return _.reduce(Object.keys(data), function (list, group) {
+            return list.concat(data[group].length);
+          }, []);
+        };
+        var formatLabels = function formatLabels(data) {
+          return angular.isFunction(_this.config.labelFormatter) ? _this.config.labelFormatter(Object.keys(data)) : Object.keys(data);
+        };
+
+        var prepareData = function prepareData(data) {
+          // group data
+          var grouped = groupData(data);
+          _this.data = formatData(grouped);
+          // create labels
+          _this.labels = formatLabels(grouped);
+        };
+
+        if (this.config.resource) {
+          (function () {
+
+            _this.Resource = $injector.get(_this.config.resource);
+            var getData = function getData() {
+              _this.Resource.query().$promise.then(function (res) {
+
+                if (!res[0]) {
+                  return;
+                }
+
+                prepareData(res);
+              });
+            };
+
+            getData();
+
+            if (_this.config.poll) {
+              $interval(function () {
+                getData();
+              }, _this.config.poll * 1000);
+            }
+          })();
+        } else {
+          $scope.$watch(function () {
+            return _this.config.data;
+          }, function (data) {
+            if (data) {
+              prepareData(_this.config.data);
+            }
+          }, true);
+        }
+      }]
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/smartComponents/smartPie/smartPie.component.js.map
 
 'use strict';
 

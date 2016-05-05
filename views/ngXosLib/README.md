@@ -39,6 +39,9 @@ It will automatically ad a `token` to all your request, eventually you can take 
 
 To develop components inside this folder there is a particular command: `npm run dev`, this will watch the helpers file and rebuild them with sourcemaps. For this reason remember to build them when done developing.
 
+>While developing components in this library you should execute the test. The `npm test` command will run Jasmine test for the whole complete library.
+>If you want to specify a single test file to be execute, you can add it to the command like: `npm test smart-pie`, the tool will now read only the test specified in the `smart-pie.test.js` file.
+
 When some changes are applied to this common library it should be rebuilt with: `npm run build`
 
 To generate the relative documentation use: `npm run doc`
