@@ -9,8 +9,103 @@
       bindToController: true,
       controllerAs: 'vm',
       templateUrl: 'templates/service-graph.tpl.html',
-      controller: function(){
+      controller: function($element, GraphService){
 
+        let svg;
+        let el = $element[0];
+        let node;
+        let link;
+
+        const tick = (e) => {
+          // Push different nodes in different directions for clustering.
+          
+          node
+            // .attr('cx', d => d.x)
+            //   .attr('cy', d => d.y)
+              .attr({
+                transform: d => `translate(${d.x}, ${d.y})`
+              });
+          
+          link.attr('x1', d => d.source.x)
+              .attr('y1', d => d.source.y)
+              .attr('x2', d => d.target.x)
+              .attr('y2', d => d.target.y);
+        }
+
+        GraphService.loadCoarseData()
+        .then((res) => {
+
+          // build links
+          res.tenants = res.tenants.map(t => {
+            return {
+              source: t.provider_service,
+              target: t.subscriber_service
+            }
+          });
+
+          // add xos as a node
+          res.services.push({
+            name: 'XOS',
+            class: 'xos',
+            x: el.clientWidth / 2,
+            y: el.clientHeight / 2,
+            fixed: true
+          })
+
+          handleSvg(el);
+
+          var force = d3.layout.force()
+            .nodes(res.services)
+            .links(res.tenants)
+            .charge(-1060)
+            .gravity(0.1)
+            .linkDistance(200)
+            .size([el.clientWidth, el.clientHeight])
+            .on('tick', tick)
+            .start();
+
+          link = svg.selectAll('.link')
+          .data(res.tenants).enter().insert('line')
+                .attr('class', 'link');
+
+          node = svg.selectAll('.node')
+            .data(res.services)
+            .enter().append('g')
+            .call(force.drag)
+            .on("mousedown", function() { d3.event.stopPropagation(); });
+
+          node.append('circle')
+            .attr({
+              class: d => `node ${d.class || ''}`,
+              r: 10
+            });
+
+          node.append('text')
+            .attr({
+              'text-anchor': 'middle'
+            })
+            .text(d => d.name)
+
+          node.select('circle')
+            .attr({
+              r: function(d){
+                let parent = d3.select(this).node().parentNode;
+                let sib = d3.select(parent).select('text').node().getBBox()
+                return (sib.width / 2) + 10
+                
+              }
+            })
+
+        })
+
+        const handleSvg = (el) => {
+          d3.select(el).select('svg').remove();
+
+          svg = d3.select(el)
+          .append('svg')
+          .style('width', `${el.clientWidth}px`)
+          .style('height', `${el.clientHeight}px`);
+        }
       }
     };
   })

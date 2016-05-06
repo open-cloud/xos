@@ -4,7 +4,7 @@
   angular.module('xos.helpers')
   /**
   * @ngdoc service
-  * @name xos.helpers.Instances
+  * @name xos.helpers.Services
   * @description Angular resource to fetch /api/core/services/:id/
   **/
   .service('Services', function($resource){
