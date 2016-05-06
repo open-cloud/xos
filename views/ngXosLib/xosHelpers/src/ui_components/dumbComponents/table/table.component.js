@@ -206,7 +206,8 @@
           columns: [
             {
               label: 'First Name',
-              prop: 'name'
+              prop: 'name',
+              link: item => `https://www.google.it/#q=${item.name}`
             },
             {
               label: 'Enabled',
@@ -362,7 +363,7 @@
               </tbody>
               <tbody>
                 <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">
-                  <td ng-repeat="col in vm.columns">
+                  <td ng-repeat="col in vm.columns" link-wrapper>
                     <span ng-if="!col.type">{{item[col.prop]}}</span>
                     <span ng-if="col.type === 'boolean'">
                       <i class="glyphicon"
@@ -430,8 +431,19 @@
           let customCols = _.filter(this.config.columns, {type: 'custom'});
           if(angular.isArray(customCols) && customCols.length > 0){
             _.forEach(customCols, (col) => {
-              if(!col.formatter){
+              if(!col.formatter || !angular.isFunction(col.formatter)){
                 throw new Error('[xosTable] You have provided a custom field type, a formatter function should provided too.');
+              }
+            })
+          }
+
+          // if a link property is passed,
+          // it should be a function
+          let linkedColumns = _.filter(this.config.columns, col => angular.isDefined(col.link));
+          if(angular.isArray(linkedColumns) && linkedColumns.length > 0){
+            _.forEach(linkedColumns, (col) => {
+              if(!angular.isFunction(col.link)){
+                throw new Error('[xosTable] The link property should be a function.');
               }
             })
           }
@@ -452,12 +464,27 @@
         }
       }
     })
-.filter('arrayToList', function(){
-  return (input) => {
-    if(!angular.isArray(input)){
-      return input;
-    }
-    return input.join(', ');
-  }
-});
+    // TODO move in separate files
+    // TODO test
+    .filter('arrayToList', function(){
+      return (input) => {
+        if(!angular.isArray(input)){
+          return input;
+        }
+        return input.join(', ');
+      }
+    })
+    // TODO test
+    .directive('linkWrapper', function() {
+      return {
+        restrict: 'A',
+        transclude: true,
+        template: `
+          <a ng-if="col.link" href="{{col.link(item)}}">
+            <div ng-transclude></div>
+          </a>
+          <div ng-transclude ng-if="!col.link"></div>
+        `
+      };
+    });
 })();
