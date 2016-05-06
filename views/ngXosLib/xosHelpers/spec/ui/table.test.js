@@ -263,10 +263,73 @@
               expect(errorFunctionWrapper).toThrow(new Error('[xosTable] You have provided a custom field type, a formatter function should provided too.'));
             });
 
+            it('should check that the formatter property is a function', () => {
+              function errorFunctionWrapper(){
+                // setup the parent scope
+                scope = rootScope.$new();
+                scope.config = {
+                  columns: [
+                    {
+                      label: 'Categories',
+                      prop: 'categories',
+                      type: 'custom',
+                      formatter: 'formatter'
+                    }
+                  ]
+                };
+                compileElement();
+              }
+              expect(errorFunctionWrapper).toThrow(new Error('[xosTable] You have provided a custom field type, a formatter function should provided too.'));
+            });
+
             it('should format data using the formatter property', () => {
               let td1 = $(element).find('tbody tr:first-child')[0];
               expect($(td1).text().trim()).toEqual('Formatted Content');
             });
+          });
+        });
+
+        describe('when a link property is provided', () => {
+          beforeEach(() => {
+            scope.data = [
+              {
+                id: 1}
+            ];
+            scope.config = {
+              columns: [
+                {
+                  label: 'Id',
+                  prop: 'id',
+                  link: (item) => {
+                    return `/link/${item.id}`;
+                  }
+                }
+              ]
+            }
+            compileElement();
+          });
+
+          it('should check that the link property is a function', () => {
+            function errorFunctionWrapper(){
+              // setup the parent scope
+              scope = rootScope.$new();
+              scope.config = {
+                columns: [
+                  {
+                    label: 'Categories',
+                    prop: 'categories',
+                    link: 'custom'
+                  }
+                ]
+              };
+              compileElement();
+            }
+            expect(errorFunctionWrapper).toThrow(new Error('[xosTable] The link property should be a function.'));
+          });
+
+          it('should render a comma separated list', () => {
+            let link = $(element).find('tbody tr:first-child td a')[0];
+            expect($(link).attr('href')).toEqual('/link/1');
           });
         });
 
@@ -366,9 +429,9 @@
             });
 
             it('should orderBy', function() {
-              var tr = element[0].getElementsByTagName('tr');
-              expect(angular.element(tr[1]).text()).toContain('Sample 2.2');
-              expect(angular.element(tr[2]).text()).toContain('Sample 1.1');
+              var tr = $(element).find('tr');
+              expect($(tr[1]).text()).toContain('Sample 2.2');
+              expect($(tr[2]).text()).toContain('Sample 1.1');
             });
           });
         });
