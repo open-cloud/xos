@@ -118,7 +118,7 @@ class CordUserList(APIView):
     def get(self, request, format=None):
         instances=[]
         for subscriber in CordSubscriber.get_tenant_objects().all():
-            for user in subscriber.users:
+            for user in subscriber.devices:
                 instances.append( serialize_user(subscriber, user) )
 
         return Response(instances)
@@ -140,7 +140,7 @@ class CordUserDetail(APIView):
     def get(self, request, format=None, pk=0):
         parts = pk.split("-")
         subscriber = CordSubscriber.get_tenant_objects().filter(id=parts[0])
-        for user in subscriber.users:
+        for user in subscriber.devices:
             return Response( [ serialize_user(subscriber, user) ] )
         raise XOSNotFound("Failed to find user %s" % pk)
 
@@ -236,7 +236,7 @@ class CordSubscriberViewSet(XOSViewSet):
 
     def get_users(self, request, pk=None):
         subscriber = self.get_object()
-        return Response(subscriber.users)
+        return Response(subscriber.devices)
 
     def get_user_level(self, request, pk=None, uid=None):
         subscriber = self.get_object()
@@ -278,7 +278,7 @@ class CordSubscriberViewSet(XOSViewSet):
 
     def clear_users(self, request, pk=None):
         subscriber = self.get_object()
-        subscriber.users = []
+        subscriber.devices = []
         subscriber.save()
 
         return Response( "Okay" )
@@ -322,7 +322,7 @@ class CordSubscriberViewSet(XOSViewSet):
 
     def setup_demo_subscriber(self, subscriber):
         # nuke the users and start over
-        subscriber.users = []
+        subscriber.devices = []
         subscriber.create_user(name="Mom's PC",      mac="010203040506", level="PG_13")
         subscriber.create_user(name="Dad's PC",      mac="90E2Ba82F975", level="PG_13")
         subscriber.create_user(name="Jack's Laptop", mac="685B359D91D5", level="PG_13")
