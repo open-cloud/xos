@@ -258,100 +258,6 @@
  *
  * Visit http://guide.xosproject.org/devguide/addview/ for more information
  *
- * Created by teone on 4/15/16.
- */
-
-(function () {
-  'use strict';
-
-  angular.module('xos.uiComponents')
-
-  /**
-    * @ngdoc directive
-    * @name xos.uiComponents.directive:xosValidation
-    * @restrict E
-    * @description The xos-validation directive
-    * @param {Object} errors The error object
-    * @element ANY
-    * @scope
-  * @example
-  <example module="sampleValidation">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl as vm">
-        <div class="row">
-          <div class="col-xs-12">
-            <label>Set an error type:</label>
-          </div>
-          <div class="col-xs-2">
-            <a class="btn"
-              ng-click="vm.errors.required = !vm.errors.required"
-              ng-class="{'btn-default': !vm.errors.required, 'btn-success': vm.errors.required}">
-              Required
-            </a>
-          </div>
-          <div class="col-xs-2">
-            <a class="btn"
-              ng-click="vm.errors.email = !vm.errors.email"
-              ng-class="{'btn-default': !vm.errors.email, 'btn-success': vm.errors.email}">
-              Email
-            </a>
-          </div>
-          <div class="col-xs-2">
-            <a class="btn"
-              ng-click="vm.errors.minlength = !vm.errors.minlength"
-              ng-class="{'btn-default': !vm.errors.minlength, 'btn-success': vm.errors.minlength}">
-              Min Length
-            </a>
-          </div>
-          <div class="col-xs-2">
-            <a class="btn"
-              ng-click="vm.errors.maxlength = !vm.errors.maxlength"
-              ng-class="{'btn-default': !vm.errors.maxlength, 'btn-success': vm.errors.maxlength}">
-              Max Length
-            </a>
-          </div>
-        </div>
-        <xos-validation errors="vm.errors"></xos-validation>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('sampleValidation', ['xos.uiComponents'])
-      .controller('SampleCtrl', function(){
-        this.errors = {
-          email: false
-        }
-      });
-    </file>
-  </example>
-    */
-
-  .directive('xosValidation', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        errors: '='
-      },
-      template: '\n        <div ng-cloak>\n          <!-- <pre>{{vm.errors.email | json}}</pre> -->\n          <xos-alert config="vm.config" show="vm.errors.required !== undefined && vm.errors.required !== false">\n            Field required\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.email !== undefined && vm.errors.email !== false">\n            This is not a valid email\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.minlength !== undefined && vm.errors.minlength !== false">\n            Too short\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.maxlength !== undefined && vm.errors.maxlength !== false">\n            Too long\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.custom !== undefined && vm.errors.custom !== false">\n            Field invalid\n          </xos-alert>\n        </div>\n      ',
-      transclude: true,
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: function controller() {
-        this.config = {
-          type: 'danger'
-        };
-      }
-    };
-  });
-})();
-//# sourceMappingURL=../../../maps/ui_components/dumbComponents/validation/validation.component.js.map
-
-'use strict';
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
  * Created by teone on 3/24/16.
  */
 
@@ -593,6 +499,100 @@
  *
  * Visit http://guide.xosproject.org/devguide/addview/ for more information
  *
+ * Created by teone on 4/15/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosValidation
+    * @restrict E
+    * @description The xos-validation directive
+    * @param {Object} errors The error object
+    * @element ANY
+    * @scope
+  * @example
+  <example module="sampleValidation">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm">
+        <div class="row">
+          <div class="col-xs-12">
+            <label>Set an error type:</label>
+          </div>
+          <div class="col-xs-2">
+            <a class="btn"
+              ng-click="vm.errors.required = !vm.errors.required"
+              ng-class="{'btn-default': !vm.errors.required, 'btn-success': vm.errors.required}">
+              Required
+            </a>
+          </div>
+          <div class="col-xs-2">
+            <a class="btn"
+              ng-click="vm.errors.email = !vm.errors.email"
+              ng-class="{'btn-default': !vm.errors.email, 'btn-success': vm.errors.email}">
+              Email
+            </a>
+          </div>
+          <div class="col-xs-2">
+            <a class="btn"
+              ng-click="vm.errors.minlength = !vm.errors.minlength"
+              ng-class="{'btn-default': !vm.errors.minlength, 'btn-success': vm.errors.minlength}">
+              Min Length
+            </a>
+          </div>
+          <div class="col-xs-2">
+            <a class="btn"
+              ng-click="vm.errors.maxlength = !vm.errors.maxlength"
+              ng-class="{'btn-default': !vm.errors.maxlength, 'btn-success': vm.errors.maxlength}">
+              Max Length
+            </a>
+          </div>
+        </div>
+        <xos-validation errors="vm.errors"></xos-validation>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleValidation', ['xos.uiComponents'])
+      .controller('SampleCtrl', function(){
+        this.errors = {
+          email: false
+        }
+      });
+    </file>
+  </example>
+    */
+
+  .directive('xosValidation', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        errors: '='
+      },
+      template: '\n        <div ng-cloak>\n          <!-- <pre>{{vm.errors.email | json}}</pre> -->\n          <xos-alert config="vm.config" show="vm.errors.required !== undefined && vm.errors.required !== false">\n            Field required\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.email !== undefined && vm.errors.email !== false">\n            This is not a valid email\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.minlength !== undefined && vm.errors.minlength !== false">\n            Too short\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.maxlength !== undefined && vm.errors.maxlength !== false">\n            Too long\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.errors.custom !== undefined && vm.errors.custom !== false">\n            Field invalid\n          </xos-alert>\n        </div>\n      ',
+      transclude: true,
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: function controller() {
+        this.config = {
+          type: 'danger'
+        };
+      }
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/dumbComponents/validation/validation.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
  * Created by teone on 3/24/16.
  */
 
@@ -769,10 +769,10 @@
         data: '=',
         config: '='
       },
-      template: '\n          <div ng-show="vm.data.length > 0">\n            <div class="row" ng-if="vm.config.filter == \'fulltext\'">\n              <div class="col-xs-12">\n                <input\n                  class="form-control"\n                  placeholder="Type to search.."\n                  type="text"\n                  ng-model="vm.query"/>\n              </div>\n            </div>\n            <table ng-class="vm.classes" ng-hide="vm.data.length == 0">\n              <thead>\n                <tr>\n                  <th ng-repeat="col in vm.columns">\n                    {{col.label}}\n                    <span ng-if="vm.config.order">\n                      <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = false">\n                        <i class="glyphicon glyphicon-chevron-up"></i>\n                      </a>\n                      <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = true">\n                        <i class="glyphicon glyphicon-chevron-down"></i>\n                      </a>\n                    </span>\n                  </th>\n                  <th ng-if="vm.config.actions">Actions:</th>\n                </tr>\n              </thead>\n              <tbody ng-if="vm.config.filter == \'field\'">\n                <tr>\n                  <td ng-repeat="col in vm.columns">\n                    <input\n                      class="form-control"\n                      placeholder="Type to search by {{col.label}}"\n                      type="text"\n                      ng-model="vm.query[col.prop]"/>\n                  </td>\n                  <td ng-if="vm.config.actions"></td>\n                </tr>\n              </tbody>\n              <tbody>\n                <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">\n                  <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>\n                  <td ng-if="vm.config.actions">\n                    <a href=""\n                      ng-repeat="action in vm.config.actions"\n                      ng-click="action.cb(item)"\n                      title="{{action.label}}">\n                      <i\n                        class="glyphicon glyphicon-{{action.icon}}"\n                        style="color: {{action.color}};"></i>\n                    </a>\n                  </td>\n                </tr>\n              </tbody>\n            </table>\n            <xos-pagination\n              ng-if="vm.config.pagination"\n              page-size="vm.config.pagination.pageSize"\n              total-elements="vm.data.length"\n              change="vm.goToPage">\n              </xos-pagination>\n          </div>\n          <div ng-show="vm.data.length == 0 || !vm.data">\n             <xos-alert config="{type: \'info\'}">\n              No data to show.\n            </xos-alert>\n          </div>\n        ',
+      template: '\n          <div ng-show="vm.data.length > 0">\n            <div class="row" ng-if="vm.config.filter == \'fulltext\'">\n              <div class="col-xs-12">\n                <input\n                  class="form-control"\n                  placeholder="Type to search.."\n                  type="text"\n                  ng-model="vm.query"/>\n              </div>\n            </div>\n            <table ng-class="vm.classes" ng-hide="vm.data.length == 0">\n              <thead>\n                <tr>\n                  <th ng-repeat="col in vm.columns">\n                    {{col.label}}\n                    <span ng-if="vm.config.order">\n                      <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = false">\n                        <i class="glyphicon glyphicon-chevron-up"></i>\n                      </a>\n                      <a href="" ng-click="vm.orderBy = col.prop; vm.reverse = true">\n                        <i class="glyphicon glyphicon-chevron-down"></i>\n                      </a>\n                    </span>\n                  </th>\n                  <th ng-if="vm.config.actions">Actions:</th>\n                </tr>\n              </thead>\n              <tbody ng-if="vm.config.filter == \'field\'">\n                <tr>\n                  <td ng-repeat="col in vm.columns">\n                    <input\n                      class="form-control"\n                      placeholder="Type to search by {{col.label}}"\n                      type="text"\n                      ng-model="vm.query[col.prop]"/>\n                  </td>\n                  <td ng-if="vm.config.actions"></td>\n                </tr>\n              </tbody>\n              <tbody>\n                <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">\n                  <td ng-repeat="col in vm.columns">\n                    <span ng-if="!col.type">{{item[col.prop]}}</span>\n                    <span ng-if="col.type === \'boolean\'">\n                      <i class="glyphicon"\n                        ng-class="{\'glyphicon-ok\': item[col.prop], \'glyphicon-remove\': !item[col.prop]}">\n                      </i>\n                    </span>\n                    <span ng-if="col.type === \'date\'">\n                      {{item[col.prop] | date:\'H:mm MMM d, yyyy\'}}\n                    </span>\n                    <span ng-if="col.type === \'array\'">\n                      {{item[col.prop] | arrayToList}}\n                    </span>\n                    <span ng-if="col.type === \'custom\'">\n                      {{col.formatter(item[col.prop])}}\n                    </span>\n                  </td>\n                  <td ng-if="vm.config.actions">\n                    <a href=""\n                      ng-repeat="action in vm.config.actions"\n                      ng-click="action.cb(item)"\n                      title="{{action.label}}">\n                      <i\n                        class="glyphicon glyphicon-{{action.icon}}"\n                        style="color: {{action.color}};"></i>\n                    </a>\n                  </td>\n                </tr>\n              </tbody>\n            </table>\n            <xos-pagination\n              ng-if="vm.config.pagination"\n              page-size="vm.config.pagination.pageSize"\n              total-elements="vm.data.length"\n              change="vm.goToPage">\n              </xos-pagination>\n          </div>\n          <div ng-show="vm.data.length == 0 || !vm.data">\n             <xos-alert config="{type: \'info\'}">\n              No data to show.\n            </xos-alert>\n          </div>\n        ',
       bindToController: true,
       controllerAs: 'vm',
-      controller: function controller() {
+      controller: ["_", function controller(_) {
         var _this = this;
 
         if (!this.config) {
@@ -781,6 +781,17 @@
 
         if (!this.config.columns) {
           throw new Error('[xosTable] Please provide a columns list in the configuration');
+        }
+
+        // if columns with type 'custom' are provide
+        // check that a custom formatted is provided too
+        var customCols = _.filter(this.config.columns, { type: 'custom' });
+        if (angular.isArray(customCols) && customCols.length > 0) {
+          _.forEach(customCols, function (col) {
+            if (!col.formatter) {
+              throw new Error('[xosTable] You have provided a custom field type, a formatter function should provided too.');
+            }
+          });
         }
 
         this.columns = this.config.columns;
@@ -795,7 +806,14 @@
             _this.currentPage = n;
           };
         }
+      }]
+    };
+  }).filter('arrayToList', function () {
+    return function (input) {
+      if (!angular.isArray(input)) {
+        throw new Error('[xosArrayToList] This filter require an array');
       }
+      return input.join(', ');
     };
   });
 })();

@@ -227,7 +227,23 @@
               </tbody>
               <tbody>
                 <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">
-                  <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>
+                  <td ng-repeat="col in vm.columns">
+                    <span ng-if="!col.type">{{item[col.prop]}}</span>
+                    <span ng-if="col.type === 'boolean'">
+                      <i class="glyphicon"
+                        ng-class="{'glyphicon-ok': item[col.prop], 'glyphicon-remove': !item[col.prop]}">
+                      </i>
+                    </span>
+                    <span ng-if="col.type === 'date'">
+                      {{item[col.prop] | date:'H:mm MMM d, yyyy'}}
+                    </span>
+                    <span ng-if="col.type === 'array'">
+                      {{item[col.prop] | arrayToList}}
+                    </span>
+                    <span ng-if="col.type === 'custom'">
+                      {{col.formatter(item[col.prop])}}
+                    </span>
+                  </td>
                   <td ng-if="vm.config.actions">
                     <a href=""
                       ng-repeat="action in vm.config.actions"
@@ -256,7 +272,7 @@
         `,
         bindToController: true,
         controllerAs: 'vm',
-        controller: function(){
+        controller: function(_){
 
           if(!this.config){
             throw new Error('[xosTable] Please provide a configuration via the "config" attribute');
@@ -264,6 +280,17 @@
 
           if(!this.config.columns){
             throw new Error('[xosTable] Please provide a columns list in the configuration');
+          }
+
+          // if columns with type 'custom' are provide
+          // check that a custom formatted is provided too
+          let customCols = _.filter(this.config.columns, {type: 'custom'});
+          if(angular.isArray(customCols) && customCols.length > 0){
+            _.forEach(customCols, (col) => {
+              if(!col.formatter){
+                throw new Error('[xosTable] You have provided a custom field type, a formatter function should provided too.');
+              }
+            })
           }
 
           this.columns = this.config.columns;
@@ -282,4 +309,12 @@
         }
       }
     })
+.filter('arrayToList', function(){
+  return (input) => {
+    if(!angular.isArray(input)){
+      throw new Error('[xosArrayToList] This filter require an array');
+    }
+    return input.join(', ');
+  }
+});
 })();
