@@ -9,12 +9,27 @@ from xos.exceptions import *
 from rest_framework.reverse import reverse
 from django.core.urlresolvers import get_script_prefix, resolve, Resolver404
 
-if hasattr(serializers, "ReadOnlyField"):
-    # rest_framework 3.x
-    ReadOnlyField = serializers.ReadOnlyField
-else:
-    # rest_framework 2.x
-    ReadOnlyField = serializers.Field
+# rest_framework 3.x
+ReadOnlyField = serializers.ReadOnlyField
+
+ICON_URLS = {"success": "/static/admin/img/icon_success.gif",
+            "clock": "/static/admin/img/icon_clock.gif",
+            "error": "/static/admin/img/icon_error.gif"}
+
+class PlusObjectMixin:
+    def getBackendIcon(self):
+        (icon, tooltip) = self.get_backend_icon()
+        icon_url = ICON_URLS.get(icon, "unknown")
+        return icon_url
+
+    def getBackendHtml(self):
+        (icon, tooltip) = self.get_backend_icon()
+        icon_url = ICON_URLS.get(icon, "unknown")
+
+        if tooltip:
+            return '<span title="%s"><img src="%s"></span>' % (tooltip, icon_url)
+        else:
+            return '<img src="%s">' % icon_url
 
 """ PlusSerializerMixin
 
