@@ -151,6 +151,7 @@ function makemigrations {
     python ./manage.py makemigrations vrouter
     python ./manage.py makemigrations vtn
     python ./manage.py makemigrations fabric
+    python ./manage.py makemigrations exampleservice
     #python ./manage.py makemigrations servcomp
 }
 
