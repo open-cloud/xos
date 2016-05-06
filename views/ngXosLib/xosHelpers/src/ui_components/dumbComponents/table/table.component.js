@@ -44,7 +44,8 @@
     * @element ANY
     * @scope
     * @example
-
+  
+  # Basic usage
   <example module="sampleTable1">
     <file name="index.html">
       <div ng-controller="SampleCtrl1 as vm">
@@ -53,6 +54,9 @@
     </file>
     <file name="script.js">
       angular.module('sampleTable1', ['xos.uiComponents'])
+      .factory('_', function($window){
+        return $window._;
+      })
       .controller('SampleCtrl1', function(){
         this.config = {
           columns: [
@@ -80,7 +84,8 @@
       });
     </file>
   </example>
-
+  
+  # Filtering
   <example module="sampleTable2" animations="true">
     <file name="index.html">
       <div ng-controller="SampleCtrl2 as vm">
@@ -89,6 +94,9 @@
     </file>
     <file name="script.js">
       angular.module('sampleTable2', ['xos.uiComponents', 'ngAnimate'])
+      .factory('_', function($window){
+        return $window._;
+      })
       .controller('SampleCtrl2', function(){
         this.config = {
           columns: [
@@ -129,7 +137,8 @@
       });
     </file>
   </example>
-
+  
+  # Pagination
   <example module="sampleTable3">
     <file name="index.html">
       <div ng-controller="SampleCtrl3 as vm">
@@ -138,6 +147,9 @@
     </file>
     <file name="script.js">
       angular.module('sampleTable3', ['xos.uiComponents'])
+      .factory('_', function($window){
+        return $window._;
+      })
       .controller('SampleCtrl3', function(){
         this.config = {
           columns: [
@@ -171,6 +183,129 @@
           {
             name: 'Tate',
             lastname: 'Spalding'
+          }
+        ]
+      });
+    </file>
+  </example>
+  
+  # Field formatter
+  <example module="sampleTable4">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm">
+        <xos-table data="vm.data" config="vm.config"></xos-table>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleTable4', ['xos.uiComponents'])
+      .factory('_', function($window){
+        return $window._;
+      })
+      .controller('SampleCtrl', function(){
+        this.config = {
+          columns: [
+            {
+              label: 'First Name',
+              prop: 'name'
+            },
+            {
+              label: 'Enabled',
+              prop: 'enabled',
+              type: 'boolean'
+            },
+            {
+              label: 'Services',
+              prop: 'services',
+              type: 'array'
+            },
+            {
+              label: 'Details',
+              prop: 'details',
+              type: 'object'
+            }
+          ]
+        };
+
+        this.data = [
+          {
+            name: 'John',
+            enabled: true,
+            services: ['Cdn', 'IpTv'],
+            details: {
+              c_tag: '243',
+              s_tag: '444'
+            }
+          },
+          {
+            name: 'Gili',
+            enabled: false,
+            services: ['Cdn', 'IpTv', 'Cache'],
+            details: {
+              c_tag: '675',
+              s_tag: '893'
+            }
+          }
+        ]
+      });
+    </file>
+  </example>
+
+  # Custom formatter
+  <example module="sampleTable5">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm">
+        <xos-table data="vm.data" config="vm.config"></xos-table>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleTable5', ['xos.uiComponents'])
+      .factory('_', function($window){
+        return $window._;
+      })
+      .controller('SampleCtrl', function(){
+        this.config = {
+          columns: [
+            {
+              label: 'Username',
+              prop: 'username'
+            },
+            {
+              label: 'Features',
+              prop: 'features',
+              type: 'custom',
+              formatter: (val) => {
+                
+                let cdnEnabled = val.cdn ? 'enabled' : 'disabled';
+                return `
+                  Cdn is ${cdnEnabled},
+                  uplink speed is ${val.uplink_speed}
+                  and downlink speed is ${val.downlink_speed}
+                `;
+              }
+            }
+          ]
+        };
+
+        this.data = [
+          {
+            username: 'John',
+            features: {
+              "cdn": false,
+              "uplink_speed": 1000000000,
+              "downlink_speed": 1000000000,
+              "uverse": true,
+              "status": "enabled"
+            }
+          },
+          {
+            username: 'Gili',
+            features: {
+              "cdn": true,
+              "uplink_speed": 3000000000,
+              "downlink_speed": 2000000000,
+              "uverse": true,
+              "status": "enabled"
+            }
           }
         ]
       });
@@ -241,9 +376,11 @@
                       {{item[col.prop] | arrayToList}}
                     </span>
                     <span ng-if="col.type === 'object'">
-                      <dl class="dl-horizontal" ng-repeat="(k,v) in item[col.prop]">
-                        <dt>{{k}}</dt>
-                        <dd>{{v}}</dd>
+                      <dl class="dl-horizontal">
+                        <span ng-repeat="(k,v) in item[col.prop]">
+                          <dt>{{k}}</dt>
+                          <dd>{{v}}</dd>
+                        </span>
                       </dl>
                     </span>
                     <span ng-if="col.type === 'custom'">

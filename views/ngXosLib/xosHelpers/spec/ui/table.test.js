@@ -216,10 +216,10 @@
             });
             it('should render a list of key-values', () => {
               let td = $(element).find('tbody tr:first-child')[0];
-              let ageLabel = $(td).find('dl > dt')[0];
-              let ageValue = $(td).find('dl > dd')[0];
-              let heightLabel = $(td).find('dl > dt')[1];
-              let heightValue = $(td).find('dl > dd')[1];
+              let ageLabel = $(td).find('dl dt')[0];
+              let ageValue = $(td).find('dl dd')[0];
+              let heightLabel = $(td).find('dl dt')[1];
+              let heightValue = $(td).find('dl dd')[1];
               expect($(ageLabel).text().trim()).toEqual('age');
               expect($(ageValue).text().trim()).toEqual('20');
               expect($(heightLabel).text().trim()).toEqual('height');
@@ -238,7 +238,7 @@
                     label: 'Categories',
                     prop: 'categories',
                     type: 'custom',
-                    formatter: val => 'Formatted Content'
+                    formatter: () => 'Formatted Content'
                   }
                 ]
               }
