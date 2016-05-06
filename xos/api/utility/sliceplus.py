@@ -28,17 +28,21 @@ class SlicePlus(Slice, PlusObjectMixin):
         self._update_users = None
         self._sliceInfo = None
         self.getSliceInfo()
-        self._site_allocation = self._sliceInfo["sitesUsed"]
-        self._initial_site_allocation = self._site_allocation
+        self._instance_status = self._sliceInfo["instanceStatus"]
+        self._instance_distribution = self._sliceInfo["sitesUsed"]
+        self._initial_instance_distribution = self._instance_distribution
         self._network_ports = self._sliceInfo["networkPorts"]
         self._initial_network_ports = self._network_ports
+        self._current_user_roles = self._sliceInfo["roles"]
 
     def getSliceInfo(self, user=None):
         if not self._sliceInfo:
+            site_status = {}
             used_sites = {}
             ready_sites = {}
             used_deployments = {}
             instanceCount = 0
+            instance_status = {}
             sshCommands = []
             for instance in self.instances.all():
                 site = instance.node.site_deployment.site
@@ -47,10 +51,18 @@ class SlicePlus(Slice, PlusObjectMixin):
                 used_deployments[deployment.name] = used_deployments.get(deployment.name, 0) + 1
                 instanceCount = instanceCount + 1
 
+                if instance.backend_status:
+                    status = instance.backend_status[0]
+                else:
+                    status = "none"
+
+                if not status in instance_status:
+                    instance_status[status] = 0
+                instance_status[status] = instance_status[status] + 1
+
                 sshCommand = instance.get_ssh_command()
                 if sshCommand:
                     sshCommands.append(sshCommand)
-
                     ready_sites[site.name] = ready_sites.get(site.name, 0) + 1
 
             users = {}
@@ -72,6 +84,7 @@ class SlicePlus(Slice, PlusObjectMixin):
 
             self._sliceInfo= {"sitesUsed": used_sites,
                     "sitesReady": ready_sites,
+                    "instanceStatus": instance_status,
                     "deploymentsUsed": used_deployments,
                     "instanceCount": instanceCount,
                     "siteCount": len(used_sites.keys()),
@@ -88,20 +101,32 @@ class SlicePlus(Slice, PlusObjectMixin):
         return self._sliceInfo
 
     @property
-    def site_ready(self):
-        return self.getSliceInfo()["sitesReady"]
-
-    @site_ready.setter
-    def site_ready(self, value):
-        pass
+    def instance_distribution_ready(self):
+        return self._sliceinfo["sitesReady"]
 
     @property
-    def site_allocation(self):
-        return self._site_allocation
+    def instance_total_ready(self):
+        return sum(self._sliceinfo["sitesReady"].values())
 
-    @site_allocation.setter
-    def site_allocation(self, value):
-        self._site_allocation = value
+    @property
+    def current_user_roles(self):
+        return self._current_user_roles
+
+    @property
+    def instance_distribution(self):
+        return self._instance_distribution
+
+    @instance_distribution.setter
+    def instance_distribution(self, value):
+        self._instance_distribution = value
+
+    @property
+    def instance_total(self):
+        return sum(self._instance_distribution.values())
+
+    @property
+    def instance_status(self):
+        return self._instance_status
 
     @property
     def user_names(self):
@@ -118,7 +143,6 @@ class SlicePlus(Slice, PlusObjectMixin):
     @users.setter
     def users(self, value):
         self._update_users = value
-        #print "XXX set users to", value
 
     @property
     def network_ports(self):
@@ -127,7 +151,6 @@ class SlicePlus(Slice, PlusObjectMixin):
     @network_ports.setter
     def network_ports(self, value):
         self._network_ports = value
-        #print "XXX set networkPorts to", value
 
     @staticmethod
     def select_by_user(user):
@@ -161,9 +184,9 @@ class SlicePlus(Slice, PlusObjectMixin):
 
         # try things out first
 
-        updated_sites = (self._site_allocation != self._initial_site_allocation) or updated_image or updated_flavor
+        updated_sites = (self._instance_distribution != self._initial_instance_distribution) or updated_image or updated_flavor
         if updated_sites:
-            self.save_site_allocation(noAct=True, reset=(updated_image or updated_flavor))
+            self.save_instance_distribution(noAct=True, reset=(updated_image or updated_flavor))
 
         if self._update_users:
             self.save_users(noAct=True)
@@ -174,7 +197,7 @@ class SlicePlus(Slice, PlusObjectMixin):
         # now actually save them
 
         if updated_sites:
-            self.save_site_allocation(reset=(updated_image or updated_flavor))
+            self.save_instance_distribution(reset=(updated_image or updated_flavor))
 
         if self._update_users:
             self.save_users()
@@ -182,17 +205,17 @@ class SlicePlus(Slice, PlusObjectMixin):
         if (self._network_ports != self._initial_network_ports):
             self.save_network_ports()
 
-    def save_site_allocation(self, noAct = False, reset=False):
-        print "save_site_allocation, reset=",reset
+    def save_instance_distribution(self, noAct = False, reset=False):
+        print "save_instance_distribution, reset=",reset
 
-        if (not self._site_allocation):
-            # Must be a instance that was just created, and has not site_allocation
+        if (not self._instance_distribution):
+            # Must be a instance that was just created, and has not instance_distribution
             # field.
             return
 
         all_slice_instances = self.instances.all()
-        for site_name in self._site_allocation.keys():
-            desired_allocation = self._site_allocation[site_name]
+        for site_name in self._instance_distribution.keys():
+            desired_allocation = self._instance_distribution[site_name]
 
             # make a list of the instances for this site
             instances = []
@@ -305,11 +328,13 @@ class SlicePlus(Slice, PlusObjectMixin):
 class SlicePlusIdSerializer(PlusModelSerializer):
         id = IdField()
 
-        sliceInfo = serializers.SerializerMethodField("getSliceInfo")
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
         network_ports = serializers.CharField(required=False)
-        site_allocation = DictionaryField(required=False)
-        site_ready = DictionaryField(required=False)
+        instance_distribution = DictionaryField(required=False)
+        instance_distribution_ready = DictionaryField(read_only=True)
+        instance_total = serializers.IntegerField(read_only=True)
+        instance_total_ready = serializers.IntegerField(read_only=True)
+        instance_status = DictionaryField(read_only=True)
         users = ListField(required=False)
         user_names = ListField(required=False) # readonly = True ?
         current_user_can_see = serializers.SerializerMethodField("getCurrentUserCanSee")
@@ -333,7 +358,11 @@ class SlicePlusIdSerializer(PlusModelSerializer):
             model = SlicePlus
             fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','mount_data_sets',
                       'default_image', 'default_flavor',
-                      'serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml','site_allocation','site_ready','users',"user_names","current_user_can_see")
+                      'serviceClass','creator',
+
+                      # these are the value-added fields from SlicePlus
+                      'networks','network_ports','backendIcon','backendHtml',
+                      'current_user_roles', 'instance_distribution','instance_distribution_ready','instance_total','instance_total_ready','instance_status','users',"user_names","current_user_can_see","network_ports")
 
 class SlicePlusList(XOSListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
