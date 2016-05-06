@@ -123,6 +123,11 @@ class CordDevice(object):
         d.update(value)
         self.features = d
 
+    def update_identity(self, value):
+        d=self.identity
+        d.update(value)
+        self.identity = d
+
     def save(self):
         if self.subscriber:
             dev=self.subscriber.find_device(self.mac)
@@ -208,6 +213,7 @@ class CordSubscriberViewSet(XOSViewSet):
         patterns.append( self.detail_url("devices/$", {"get": "get_devices", "post": "add_device"}, "devicees") )
         patterns.append( self.detail_url("devices/(?P<mac>[a-zA-Z0-9\-_:]+)/$", {"get": "get_device"}, "getset_device") )
         patterns.append( self.detail_url("devices/(?P<mac>[a-zA-Z0-9\-_:]+)/features/(?P<feature>[a-zA-Z0-9\-_]+)/$", {"get": "get_device_feature", "put": "set_device_feature"}, "getset_device_feature") )
+        patterns.append( self.detail_url("devices/(?P<mac>[a-zA-Z0-9\-_:]+)/identity/(?P<identity>[a-zA-Z0-9\-_]+)/$", {"get": "get_device_identity", "put": "set_device_identity"}, "getset_device_identity") )
 
         patterns.append( url(self.api_path + "account_num_lookup/(?P<account_num>[0-9\-]+)/$", self.as_view({"get": "account_num_detail"}), name="account_num_detail") )
 
@@ -319,6 +325,28 @@ class CordSubscriberViewSet(XOSViewSet):
         device.save()
         subscriber.save()
         return Response({feature: DeviceFeatureSerializer(device.features).data[feature]})
+
+    def get_device_identity(self, request, pk=None, mac=None, identity=None):
+        subscriber = self.get_object()
+        device = subscriber.find_device(mac)
+        if not device:
+            return Response("Failed to find device %s" % mac, status=status.HTTP_404_NOT_FOUND)
+        return Response({identity: DeviceIdentitySerializer(CordDevice(device, subscriber).identity).data[identity]})
+
+    def set_device_identity(self, request, pk=None, mac=None, identity=None):
+        subscriber = self.get_object()
+        device = subscriber.find_device(mac)
+        if not device:
+            return Response("Failed to find device %s" % mac, status=status.HTTP_404_NOT_FOUND)
+        if [identity] != request.data.keys():
+             raise serializers.ValidationError("identity %s does not match keys in request body (%s)" % (feature, ",".join(request.data.keys())))
+        device = CordDevice(device, subscriber)
+        ser = DeviceIdentitySerializer(device.identity, data=request.data)
+        ser.is_valid(raise_exception = True)
+        device.update_identity(ser.validated_data)
+        device.save()
+        subscriber.save()
+        return Response({identity: DeviceIdentitySerializer(device.identity).data[identity]})
 
     def account_num_detail(self, pk=None, account_num=None):
         object_list = CordSubscriberNew.get_tenant_objects().all()
