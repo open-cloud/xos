@@ -118,11 +118,16 @@ class CordDevice(object):
         self.d["uplink_speed"] = value.get("uplink_speed", None)
         self.d["downlink_speed"] = value.get("downlink_speed", None)
 
+    def update_features(self, value):
+        d=self.features
+        d.update(value)
+        self.features = d
+
     def save(self):
         if self.subscriber:
             dev=self.subscriber.find_device(self.mac)
             if dev:
-                self.subscriber.update_device(mac, **self.d)
+                self.subscriber.update_device(**self.d)
             else:
                 self.subscriber.create_device(**self.d)
 
@@ -313,6 +318,7 @@ class CordSubscriberViewSet(XOSViewSet):
         device.update_features(ser.validated_data)
         device.save()
         subscriber.save()
+        return Response({feature: DeviceFeatureSerializer(device.features).data[feature]})
 
     def account_num_detail(self, pk=None, account_num=None):
         object_list = CordSubscriberNew.get_tenant_objects().all()
