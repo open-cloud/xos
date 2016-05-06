@@ -211,7 +211,7 @@ class CordSubscriberViewSet(XOSViewSet):
         patterns.append( self.detail_url("identity/(?P<identity>[a-zA-Z0-9\-_]+)/$", {"get": "get_identity", "put": "set_identity"}, "get_identity") )
 
         patterns.append( self.detail_url("devices/$", {"get": "get_devices", "post": "add_device"}, "devicees") )
-        patterns.append( self.detail_url("devices/(?P<mac>[a-zA-Z0-9\-_:]+)/$", {"get": "get_device"}, "getset_device") )
+        patterns.append( self.detail_url("devices/(?P<mac>[a-zA-Z0-9\-_:]+)/$", {"get": "get_device", "delete": "delete_device"}, "getset_device") )
         patterns.append( self.detail_url("devices/(?P<mac>[a-zA-Z0-9\-_:]+)/features/(?P<feature>[a-zA-Z0-9\-_]+)/$", {"get": "get_device_feature", "put": "set_device_feature"}, "getset_device_feature") )
         patterns.append( self.detail_url("devices/(?P<mac>[a-zA-Z0-9\-_:]+)/identity/(?P<identity>[a-zA-Z0-9\-_]+)/$", {"get": "get_device_identity", "put": "set_device_identity"}, "getset_device_identity") )
 
@@ -303,6 +303,15 @@ class CordSubscriberViewSet(XOSViewSet):
         if not device:
             return Response("Failed to find device %s" % mac, status=status.HTTP_404_NOT_FOUND)
         return Response(DeviceSerializer(CordDevice(device, subscriber)).data)
+
+    def delete_device(self, request, pk=None, mac=None):
+        subscriber = self.get_object()
+        device = subscriber.find_device(mac)
+        if not device:
+            return Response("Failed to find device %s" % mac, status=status.HTTP_404_NOT_FOUND)
+        subscriber.delete_device(mac)
+        subscriber.save()
+        return Response("Okay")
 
     def get_device_feature(self, request, pk=None, mac=None, feature=None):
         subscriber = self.get_object()
