@@ -189,8 +189,41 @@
             });
             it('should render a comma separated list', () => {
               let td1 = $(element).find('tbody tr:first-child')[0];
-              // console.log(td1);
               expect($(td1).text().trim()).toEqual('Film, Music');
+            });
+          });
+
+          describe('and is object', () => {
+            beforeEach(() => {
+              scope.data = [
+                {
+                  attributes: {
+                    age: 20,
+                    height: 50
+                  }
+                }
+              ];
+              scope.config = {
+                columns: [
+                  {
+                    label: 'Categories',
+                    prop: 'attributes',
+                    type: 'object'
+                  }
+                ]
+              }
+              compileElement();
+            });
+            it('should render a list of key-values', () => {
+              let td = $(element).find('tbody tr:first-child')[0];
+              let ageLabel = $(td).find('dl > dt')[0];
+              let ageValue = $(td).find('dl > dd')[0];
+              let heightLabel = $(td).find('dl > dt')[1];
+              let heightValue = $(td).find('dl > dd')[1];
+              expect($(ageLabel).text().trim()).toEqual('age');
+              expect($(ageValue).text().trim()).toEqual('20');
+              expect($(heightLabel).text().trim()).toEqual('height');
+              expect($(heightValue).text().trim()).toEqual('50');
             });
           });
 

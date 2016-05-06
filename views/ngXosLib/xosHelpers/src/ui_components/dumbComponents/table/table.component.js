@@ -240,6 +240,12 @@
                     <span ng-if="col.type === 'array'">
                       {{item[col.prop] | arrayToList}}
                     </span>
+                    <span ng-if="col.type === 'object'">
+                      <dl class="dl-horizontal" ng-repeat="(k,v) in item[col.prop]">
+                        <dt>{{k}}</dt>
+                        <dd>{{v}}</dd>
+                      </dl>
+                    </span>
                     <span ng-if="col.type === 'custom'">
                       {{col.formatter(item[col.prop])}}
                     </span>
@@ -312,7 +318,7 @@
 .filter('arrayToList', function(){
   return (input) => {
     if(!angular.isArray(input)){
-      throw new Error('[xosArrayToList] This filter require an array');
+      return input;
     }
     return input.join(', ');
   }
