@@ -7,15 +7,33 @@
 (function () {
   'use strict';
 
+  var scope, element, isolatedScope, rootScope, compile;
+  const compileElement = () => {
+
+    if(!scope){
+      scope = rootScope.$new();
+    }
+
+    element = angular.element('<xos-table config="config" data="data"></xos-table>');
+    compile(element)(scope);
+    scope.$digest();
+    isolatedScope = element.isolateScope().vm;
+  }
+
+
   describe('The xos.helper module', function(){
     describe('The xos-table component', () => {
 
       beforeEach(module('xos.helpers'));
 
+      beforeEach(inject(function ($compile, $rootScope) {
+        compile = $compile;
+        rootScope = $rootScope;
+      }));
+
       it('should throw an error if no config is specified', inject(($compile, $rootScope) => {
         function errorFunctionWrapper(){
-          $compile(angular.element('<xos-table></xos-table>'))($rootScope);
-          $rootScope.$digest();
+          compileElement();
         }
         expect(errorFunctionWrapper).toThrow(new Error('[xosTable] Please provide a configuration via the "config" attribute'));
       }));
@@ -23,18 +41,17 @@
       it('should throw an error if no config columns are specified', inject(($compile, $rootScope) => {
         function errorFunctionWrapper(){
           // setup the parent scope
-          let scope = $rootScope.$new();
+          scope = $rootScope.$new();
           scope.config = 'green';
-          $compile(angular.element('<xos-table config="config"></xos-table>'))(scope);
-          $rootScope.$digest();
+          compileElement();
         }
         expect(errorFunctionWrapper).toThrow(new Error('[xosTable] Please provide a columns list in the configuration'));
       }));
 
       describe('when basicly configured', function() {
-        var scope, element, isolatedScope;
 
         beforeEach(inject(function ($compile, $rootScope) {
+
           scope = $rootScope.$new();
 
           scope.config = {
@@ -78,6 +95,13 @@
           expect(tr.length).toEqual(3);
         });
 
+        it('should render labels', () => {
+          let label1 = $(element).find('thead tr th')[0]
+          let label2 = $(element).find('thead tr th')[1]
+          expect($(label1).text().trim()).toEqual('Label 1');
+          expect($(label2).text().trim()).toEqual('Label 2');
+        });
+
         describe('when no data are provided', () => {
           beforeEach(() => {
             isolatedScope.data = [];
@@ -91,10 +115,10 @@
           });
         });
 
-        xdescribe('when a field type is provided', () => {
+        describe('when a field type is provided', () => {
           describe('and is boolean', () => {
             beforeEach(() => {
-              isolatedScope.config = {
+              scope.config = {
                 columns: [
                   {
                     label: 'Label 1',
@@ -103,7 +127,7 @@
                   }
                 ]
               };
-              isolatedScope.data = [
+              scope.data = [
                 {
                   'label-1': true
                 },
@@ -111,7 +135,7 @@
                   'label-1': false
                 }
               ];
-              scope.$digest();
+              compileElement();
             });
 
             it('should render an incon', () => {
@@ -124,7 +148,7 @@
 
           describe('and is date', () => {
             beforeEach(() => {
-              isolatedScope.config = {
+              scope.config = {
                 columns: [
                   {
                     label: 'Label 1',
@@ -133,17 +157,82 @@
                   }
                 ]
               };
-              isolatedScope.data = [
+              scope.data = [
                 {
                   'label-1': '2015-02-17T22:06:38.059000Z'
                 }
               ];
-              scope.$digest();
+              compileElement();
             });
 
             it('should render an formatted date', () => {
               let td1 = $(element).find('tbody tr:first-child td')[0];
-              expect($(td1).text()).toEqual('02-17-2015 14:06:38');
+              expect($(td1).text().trim()).toEqual('14:06 Feb 17, 2015');
+            });
+          });
+
+          describe('and is array', () => {
+            beforeEach(() => {
+              scope.data = [
+                {categories: ['Film', 'Music']}
+              ];
+              scope.config = {
+                columns: [
+                  {
+                    label: 'Categories',
+                    prop: 'categories',
+                    type: 'array'
+                  }
+                ]
+              }
+              compileElement();
+            });
+            it('should render a comma separated list', () => {
+              let td1 = $(element).find('tbody tr:first-child')[0];
+              // console.log(td1);
+              expect($(td1).text().trim()).toEqual('Film, Music');
+            });
+          });
+
+          describe('and is custom', () => {
+            beforeEach(() => {
+              scope.data = [
+                {categories: ['Film', 'Music']}
+              ];
+              scope.config = {
+                columns: [
+                  {
+                    label: 'Categories',
+                    prop: 'categories',
+                    type: 'custom',
+                    formatter: val => 'Formatted Content'
+                  }
+                ]
+              }
+              compileElement();
+            });
+
+            it('should check for a formatter property', () => {
+              function errorFunctionWrapper(){
+                // setup the parent scope
+                scope = rootScope.$new();
+                scope.config = {
+                  columns: [
+                    {
+                      label: 'Categories',
+                      prop: 'categories',
+                      type: 'custom'
+                    }
+                  ]
+                };
+                compileElement();
+              }
+              expect(errorFunctionWrapper).toThrow(new Error('[xosTable] You have provided a custom field type, a formatter function should provided too.'));
+            });
+
+            it('should format data using the formatter property', () => {
+              let td1 = $(element).find('tbody tr:first-child')[0];
+              expect($(td1).text().trim()).toEqual('Formatted Content');
             });
           });
         });
