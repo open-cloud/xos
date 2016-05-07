@@ -102,11 +102,11 @@ class SlicePlus(Slice, PlusObjectMixin):
 
     @property
     def instance_distribution_ready(self):
-        return self._sliceinfo["sitesReady"]
+        return self._sliceInfo["sitesReady"]
 
     @property
     def instance_total_ready(self):
-        return sum(self._sliceinfo["sitesReady"].values())
+        return sum(self._sliceInfo["sitesReady"].values())
 
     @property
     def current_user_roles(self):
