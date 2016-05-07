@@ -362,7 +362,7 @@ class SlicePlusIdSerializer(PlusModelSerializer):
 
                       # these are the value-added fields from SlicePlus
                       'networks','network_ports','backendIcon','backendHtml',
-                      'current_user_roles', 'instance_distribution','instance_distribution_ready','instance_total','instance_total_ready','instance_status','users',"user_names","current_user_can_see","network_ports")
+                      'current_user_roles', 'instance_distribution','instance_distribution_ready','instance_total','instance_total_ready','instance_status','users',"user_names","current_user_can_see")
 
 class SlicePlusList(XOSListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
