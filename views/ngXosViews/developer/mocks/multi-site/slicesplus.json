@@ -9,10 +9,12 @@
 
       ],
       "instance_distribution":{
-        "mysite": 9
+         "mysite": 4,
+         "anothersite": 5
       },
       "instance_distribution_ready":{
-
+         "mysite": 3,
+         "anothersite": 1
       },
       "instance_total":9,
       "instance_total_ready":4,
@@ -30,10 +32,12 @@
 
       ],
       "instance_distribution":{
-        "mysite": 6
+        "mysite": 3,
+        "anothersite": 3
       },
       "instance_distribution_ready":{
-
+         "mysite": 2,
+         "anothersite": 3
       },
       "instance_total":6,
       "instance_total_ready":5,
