@@ -35,9 +35,6 @@ class ServiceGridView(TemplateView):
 
     def get(self, request, name="root", *args, **kwargs):
 
-        # context = self.get_context_data(**kwargs)
-        # context = getDashboardContext(request.user, context)
-
         dash = DashboardView.objects.get(name="Services Grid")
 
         gridTemplate = self.readTemplate(dash.url[9:])
