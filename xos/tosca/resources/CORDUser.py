@@ -27,7 +27,7 @@ class XOSCORDUser(XOSResource):
         sub = self.get_subscriber_root(throw_exception=False)
         if not sub:
            return []
-        for user in sub.users:
+        for user in sub.devices:
             if user["name"] == self.obj_name:
                 result.append(user)
         return result
@@ -43,7 +43,7 @@ class XOSCORDUser(XOSResource):
         xos_args = self.get_xos_args()
         sub = self.get_subscriber_root()
 
-        sub.create_user(**xos_args)
+        sub.create_device(**xos_args)
         sub.save()
 
         self.info("Created CORDUser %s for Subscriber %s" % (self.obj_name, sub.name))
