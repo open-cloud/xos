@@ -22,7 +22,10 @@
     *   columns: [
     *     {
     *       label: 'Human readable name',
-    *       prop: 'Property to read in the model object'
+    *       prop: 'Property to read in the model object', // optional if type is custom
+    *       type: 'object' | 'array' | 'boolean' | 'date' | 'custom',
+    *       formatter: fn(), // receive the whole item if tipe is custom and return a string
+    *       link: fn() // receive the whole item and return an url
     *     }
     *   ],
     *   classes: 'table table-striped table-bordered',
@@ -272,15 +275,14 @@
             },
             {
               label: 'Features',
-              prop: 'features',
               type: 'custom',
               formatter: (val) => {
                 
-                let cdnEnabled = val.cdn ? 'enabled' : 'disabled';
+                let cdnEnabled = val.features.cdn ? 'enabled' : 'disabled';
                 return `
                   Cdn is ${cdnEnabled},
-                  uplink speed is ${val.uplink_speed}
-                  and downlink speed is ${val.downlink_speed}
+                  uplink speed is ${val.features.uplink_speed}
+                  and downlink speed is ${val.features.downlink_speed}
                 `;
               }
             }
@@ -385,7 +387,7 @@
                       </dl>
                     </span>
                     <span ng-if="col.type === 'custom'">
-                      {{col.formatter(item[col.prop])}}
+                      {{col.formatter(item)}}
                     </span>
                   </td>
                   <td ng-if="vm.config.actions">
