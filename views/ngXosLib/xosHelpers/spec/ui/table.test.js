@@ -228,6 +228,9 @@
           });
 
           describe('and is custom', () => {
+
+            let formatterFn = jasmine.createSpy('formatter').and.returnValue('Formatted Content');
+
             beforeEach(() => {
               scope.data = [
                 {categories: ['Film', 'Music']}
@@ -238,7 +241,7 @@
                     label: 'Categories',
                     prop: 'categories',
                     type: 'custom',
-                    formatter: () => 'Formatted Content'
+                    formatter: formatterFn
                   }
                 ]
               }
@@ -285,6 +288,8 @@
             it('should format data using the formatter property', () => {
               let td1 = $(element).find('tbody tr:first-child')[0];
               expect($(td1).text().trim()).toEqual('Formatted Content');
+              // the custom formatted should receive the entire object, otherwise is not so custom
+              expect(formatterFn).toHaveBeenCalledWith({categories: ['Film', 'Music']});
             });
           });
         });
@@ -327,7 +332,7 @@
             expect(errorFunctionWrapper).toThrow(new Error('[xosTable] The link property should be a function.'));
           });
 
-          it('should render a comma separated list', () => {
+          it('should render a link with the correct url', () => {
             let link = $(element).find('tbody tr:first-child td a')[0];
             expect($(link).attr('href')).toEqual('/link/1');
           });
