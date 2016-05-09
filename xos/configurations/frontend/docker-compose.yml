@@ -24,6 +24,7 @@ xos:
       - ../../core/static:/opt/xos/core/static
       - ../../core/dashboard:/opt/xos/core/dashboard
       - ../../core/templatetags:/opt/xos/core/templatetags
+      - ../../core/views:/opt/xos/core/views
       - ../../templates/admin:/opt/xos/templates/admin
       - ../../configurations:/opt/xos/configurations
       - ../../xos:/opt/xos/xos

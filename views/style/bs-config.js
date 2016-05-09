@@ -5,6 +5,7 @@ module.exports = {
     '../../xos/core/xoslib/static/**/*.js',
     '../../xos/core/xoslib/static/**/*.css',
     '../../xos/core/dashboard/views/*.py',
+    '../../xos/core/views/*.py',
     '../../xos/templates/**/*.html',
     '../../xos/core/static/xos.css',
     '../../xos/xos/**/*.py'
