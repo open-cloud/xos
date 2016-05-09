@@ -10,7 +10,8 @@
     "test": "karma start",
     "test:ci": "karma start --single-run",
     "lint": "eslint src/js/",
-    "single-site": "easy-mocker -c ./mocks/single-site.json -d ./mocks/single-site"
+    "single-site": "easy-mocker -c ./mocks/config.json -d ./mocks/single-site",
+    "multi-site": "easy-mocker -c ./mocks/config.json -d ./mocks/multi-site"
   },
   "keywords": [
     "XOS",
