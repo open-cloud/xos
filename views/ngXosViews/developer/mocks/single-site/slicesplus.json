@@ -1,0 +1,44 @@
+[
+   {
+      "id":1,
+      "name":"mysite_management1",
+      "site":1,
+      "max_instances":10,
+      "networks":[1, 2],
+      "current_user_roles":[
+
+      ],
+      "instance_distribution":{
+        "mysite": 1
+      },
+      "instance_distribution_ready":{
+
+      },
+      "instance_total":9,
+      "instance_total_ready":4,
+      "instance_status":{
+
+      }
+   },
+   {
+      "id":2,
+      "name":"mysite_management2",
+      "site":1,
+      "max_instances":10,
+      "networks":[2, 3, 4],
+      "current_user_roles":[
+
+      ],
+      "instance_distribution":{
+        "mysite": 2
+      },
+      "instance_distribution_ready":{
+
+      },
+      "instance_total":6,
+      "instance_total_ready":5,
+      "instance_status":{
+
+      }
+   }
+]

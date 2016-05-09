@@ -1,0 +1,14 @@
+{
+  "endpoints": [
+    {
+      "url": "slicesplus",
+      "base": "api/utility/",
+      "methods": ["GET"]
+    },
+    {
+      "url": "instances",
+      "base": "api/core/",
+      "methods": ["GET"]
+    }
+  ]
+}
