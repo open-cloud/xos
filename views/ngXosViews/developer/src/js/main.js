@@ -23,7 +23,7 @@ angular.module('xos.developer', [
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/developer-dashboard.tpl.html',
-    controller: function($scope, $timeout, SlicesPlus, _){
+    controller: function($timeout, SlicesPlus, _){
 
       this.instancePerSliceConfig = {
         resource: 'Instances',
@@ -80,6 +80,9 @@ angular.module('xos.developer', [
       SlicesPlus.query().$promise
       .then(slices => {
         
+        // formatting data in this way sucks.
+        // Provide a way to just pass data to the chart if needed [smartPie].
+
         // retrieving network per slices
         let networkPerSlice = _.reduce(slices, (list, s) => {
           if( s.networks.length > 1){
@@ -104,12 +107,12 @@ angular.module('xos.developer', [
           return list;
         }, []);
 
+        this.sites = Object.keys(_.groupBy(instancePerSite, 'site'));
+
         $timeout(() => {
-          console.log(instancePerSite, networkPerSlice);
           this.instancePerSiteConfig.data = instancePerSite;
           this.networkPerSliceConfig.data = networkPerSlice;
-          $scope.$apply();
-        }, 1);
+        }, 0);
 
         this.slices = slices;
       })
