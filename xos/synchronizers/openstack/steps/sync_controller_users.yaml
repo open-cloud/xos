@@ -25,8 +25,8 @@
       login_user={{ admin_user }}
       login_password={{ admin_password }}
       login_tenant_name={{ admin_tenant }}
-      user="{{ name }}"
       role="{{ role }}"
       tenant="{{ tenant }}"
+      user="{{ name }}"
   {% endfor %}
 
