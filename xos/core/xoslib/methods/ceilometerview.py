@@ -1151,8 +1151,8 @@ class MetersList(APIView):
         if (not tenant_ceilometer_url):
             raise XOSMissingField("Tenant ceilometer URL is missing")
 
-        tenant_id = request.QUERY_PARAMS.get('tenant', None)
-        resource_id = request.QUERY_PARAMS.get('resource', None)
+        tenant_id = request.query_params.get('tenant', None)
+        resource_id = request.query_params.get('resource', None)
 
         query = []
         if tenant_id:
@@ -1187,9 +1187,9 @@ class MeterStatisticsList(APIView):
             raise XOSMissingField("Tenant ceilometer URL is missing")
         tenant_map = getTenantControllerTenantMap(request.user)
         
-        date_options = request.QUERY_PARAMS.get('period', 1)
-        date_from = request.QUERY_PARAMS.get('date_from', '')
-        date_to = request.QUERY_PARAMS.get('date_to', '')
+        date_options = request.query_params.get('period', 1)
+        date_from = request.query_params.get('date_from', '')
+        date_to = request.query_params.get('date_to', '')
 
         try:
             date_from, date_to = calc_date_args(date_from,
@@ -1208,9 +1208,9 @@ class MeterStatisticsList(APIView):
                                      'op': 'le',
                                      'value': date_to})
 
-        meter_name = request.QUERY_PARAMS.get('meter', None)
-        tenant_id = request.QUERY_PARAMS.get('tenant', None)
-        resource_id = request.QUERY_PARAMS.get('resource', None)
+        meter_name = request.query_params.get('meter', None)
+        tenant_id = request.query_params.get('tenant', None)
+        resource_id = request.query_params.get('resource', None)
 
         query = []
         if tenant_id:
@@ -1284,12 +1284,12 @@ class MeterSamplesList(APIView):
         tenant_ceilometer_url = getTenantCeilometerProxyURL(request.user)
         if (not tenant_ceilometer_url):
             raise XOSMissingField("Tenant ceilometer URL is missing")
-        meter_name = request.QUERY_PARAMS.get('meter', None)
+        meter_name = request.query_params.get('meter', None)
         if not meter_name:
             raise XOSMissingField("Meter name in query params is missing")
-        limit = request.QUERY_PARAMS.get('limit', 10)
-        tenant_id = request.QUERY_PARAMS.get('tenant', None)
-        resource_id = request.QUERY_PARAMS.get('resource', None)
+        limit = request.query_params.get('limit', 10)
+        tenant_id = request.query_params.get('tenant', None)
+        resource_id = request.query_params.get('resource', None)
         query = []
         if tenant_id:
             query.extend(make_query(tenant_id=tenant_id))
@@ -1340,7 +1340,7 @@ class XOSInstanceStatisticsList(APIView):
         tenant_ceilometer_url = getTenantCeilometerProxyURL(request.user)
         if (not tenant_ceilometer_url):
             raise XOSMissingField("Tenant ceilometer URL is missing")
-        instance_uuid = request.QUERY_PARAMS.get('instance-uuid', None)
+        instance_uuid = request.query_params.get('instance-uuid', None)
         if not instance_uuid:
             raise XOSMissingField("Instance UUID in query params is missing")
         if not Instance.objects.filter(instance_uuid=instance_uuid):
@@ -1354,9 +1354,9 @@ class XOSInstanceStatisticsList(APIView):
             #neutron port resource id is represented in ceilometer as "nova instance-name"+"-"+"nova instance-id"+"-"+"tap"+first 11 characters of port-id
             resource_ids.append(xos_instance.instance_id+"-"+instance_uuid+"-tap"+p.port_id[:11])
         
-        date_options = request.QUERY_PARAMS.get('period', 1)
-        date_from = request.QUERY_PARAMS.get('date_from', '')
-        date_to = request.QUERY_PARAMS.get('date_to', '')
+        date_options = request.query_params.get('period', 1)
+        date_from = request.query_params.get('date_from', '')
+        date_to = request.query_params.get('date_to', '')
 
         try:
             date_from, date_to = calc_date_args(date_from,
@@ -1437,9 +1437,9 @@ class ServiceAdjustScale(APIView):
     def get(self, request, format=None):
         if (not request.user.is_authenticated()) or (not request.user.is_admin):
             raise PermissionDenied("You must be authenticated admin user in order to use this API")
-        service = request.QUERY_PARAMS.get('service', None)
-        slice_hint = request.QUERY_PARAMS.get('slice_hint', None)
-        scale = request.QUERY_PARAMS.get('scale', None)
+        service = request.query_params.get('service', None)
+        slice_hint = request.query_params.get('slice_hint', None)
+        scale = request.query_params.get('scale', None)
         if not service or not slice_hint or not scale:
             raise XOSMissingField("Mandatory fields missing")
         services = Service.select_by_user(request.user)
