@@ -5,7 +5,7 @@ service to CORD.
 
 ## Prepare the development POD
 
-This tutorial configures a single-node CORD POD development environment.
+This tutorial runs on a single-node CORD POD development environment.
 For best results, prepare a clean Ubuntu 14.04
 LTS installation on a server with at least 48GB RAM and 12 CPU cores.
 Update the packages to the latest versions.
