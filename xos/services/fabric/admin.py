@@ -27,6 +27,7 @@ class FabricServiceForm(forms.ModelForm):
 
     class Meta:
         model = FabricService
+        fields = '__all__'
 
 class FabricServiceAdmin(ReadOnlyAwareAdmin):
     model = FabricService
