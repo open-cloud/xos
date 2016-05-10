@@ -50,7 +50,7 @@ ubuntu@onos-cord:~$ cd cord; sudo docker-compose up -d
 The CORD fabric is responsible for providing external (Internet) connectivity
 for VMs created on CORD.  If you are running on CloudLab (or another development
 environment) and want external connectivity without the fabric, download [this script](https://raw.githubusercontent.com/open-cloud/openstack-cluster-setup/master/scripts/compute-ext-net.sh)
- and run it as root:
+ and run it on the Nova compute node(s) as root:
  ```
  $ sudo compute-ext-net.sh
  ```
@@ -183,10 +183,12 @@ CONTAINER ID        IMAGE                    COMMAND             CREATED        
 2b0bfb3662c7        andybavier/docker-vcpe   "/sbin/my_init"     5 days ago          Up 5 days                               vcpe-222-111
 ```
 
-### Logging into XOS on CloudLab
+### Logging into XOS on CloudLab (or any remote host)
 
-The VMs created by the install process, including the _xos_ VM, have private IP addresses.
-In order to log into the XOS GUI from your local machine (desktop or laptop), 
+The XOS service is accessible on the POD at `http://xos/`, but `xos` maps to a private IP address
+on the management network.  If you install CORD on CloudLab 
+you will not be able to directly access the XOS GUI.
+In order to log into the XOS GUI in the browser on your local machine (desktop or laptop), 
 you can set up an SSH tunnel to your CloudLab node.  Assuming that 
 `<your-cloudlab-node>` is the DNS name of the CloudLab node hosting your experiment,
 run the following on your local machine to create the tunnel:
