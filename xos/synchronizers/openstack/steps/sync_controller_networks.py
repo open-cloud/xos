@@ -64,8 +64,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
         network_fields = {'endpoint':controller_network.controller.auth_url,
                     'endpoint_v3': controller_network.controller.auth_url_v3,
                     'admin_user':slice.creator.email,
-                    'tenant_name':slice.name,
                     'admin_password':slice.creator.remote_password,
+                    'project_name':slice.name,
                     'domain': controller_network.controller.domain,
                     'name':network_name,
                     'subnet_name':subnet_name,
@@ -78,8 +78,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
         return network_fields
 
     def map_sync_outputs(self, controller_network,res):
-        network_id = res[0]['id']
-        subnet_id = res[1]['id']
+        network_id = res[0]['openstack']
+        subnet_id = res[1]['openstack']
         controller_network.net_id = network_id
         controller_network.subnet = self.cidr
         controller_network.subnet_id = subnet_id
