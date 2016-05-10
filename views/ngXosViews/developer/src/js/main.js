@@ -23,14 +23,17 @@ angular.module('xos.developer', [
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/developer-dashboard.tpl.html',
-    controller: function($timeout, SlicesPlus, _){
+    controller: function($scope, $timeout, SlicesPlus, Instances, _){
 
       this.instancePerSliceConfig = {
-        resource: 'Instances',
+        data: [],
         groupBy: 'slice',
         legend: true,
+        classes: 'instance per slice',
         labelFormatter: (labels) => {
-          return labels.map(l => _.find(this.slices, {id: parseInt(l)}).name);
+          return labels.map(l => {
+            return _.find(this.slices, {id: parseInt(l)}).name
+          });
         }
       };
 
@@ -38,12 +41,14 @@ angular.module('xos.developer', [
         data: [],
         groupBy: 'site',
         legend: true,
+        classes: 'instance per site',
       };
 
       this.networkPerSliceConfig = {
         data: [],
         groupBy: 'name',
         legend: true,
+        classes: 'network per slice',
       };
 
       this.tableConfig = {
@@ -82,13 +87,17 @@ angular.module('xos.developer', [
 
       // retrieving user list
       SlicesPlus.query().$promise
-      .then(slices => {
+      .then((slices) => {
+        this.slices = slices;
+        return Instances.query().$promise
+      })
+      .then(instances => {
         
         // formatting data in this way sucks.
         // Provide a way to just pass data to the chart if needed [smartPie].
 
         // retrieving network per slices
-        let networkPerSlice = _.reduce(slices, (list, s) => {
+        let networkPerSlice = _.reduce(this.slices, (list, s) => {
           if( s.networks.length > 1){
             // push s.neworks.length values in array
             for(let i = 0; i < s.networks.length; i++){
@@ -102,7 +111,7 @@ angular.module('xos.developer', [
         }, []);
 
         // retrieving instance distribution across sites
-        let instancePerSite = _.reduce(slices, (list, s) => {
+        let instancePerSite = _.reduce(this.slices, (list, s) => {
           _.forEach(Object.keys(s.instance_distribution), k => {
             for(let i = 0; i < s.instance_distribution[k]; i++){
               list.push({site: k, instance: i})
@@ -113,12 +122,10 @@ angular.module('xos.developer', [
 
         this.sites = Object.keys(_.groupBy(instancePerSite, 'site'));
 
-        $timeout(() => {
-          this.instancePerSiteConfig.data = instancePerSite;
-          this.networkPerSliceConfig.data = networkPerSlice;
-        }, 0);
+        this.instancePerSliceConfig.data = instances;
+        this.instancePerSiteConfig.data = instancePerSite;
+        this.networkPerSliceConfig.data = networkPerSlice;
 
-        this.slices = slices;
       })
       .catch((e) => {
         throw new Error(e);

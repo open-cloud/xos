@@ -187,7 +187,7 @@
       `,
       bindToController: true,
       controllerAs: 'vm',
-      controller: function($injector, $timeout, $interval, $scope, _){
+      controller: function($injector, $interval, $scope, $timeout, _){
 
         if(!this.config.resource && !this.config.data){
           throw new Error('[xosSmartPie] Please provide a resource or an array of data in the configuration');
@@ -198,11 +198,13 @@
         const formatLabels = (data) => angular.isFunction(this.config.labelFormatter) ? this.config.labelFormatter(Object.keys(data)) : Object.keys(data);
 
         const prepareData = (data) => {
-          // group data
-          let grouped = groupData(data);
-          this.data = formatData(grouped);
-          // create labels
-          this.labels = formatLabels(grouped);
+          // $timeout(() => {
+            // group data
+            let grouped = groupData(data);
+            this.data = formatData(grouped);
+            // create labels
+            this.labels = formatLabels(grouped);
+          // }, 10);
         }
 
         if(this.config.resource){
@@ -233,6 +235,14 @@
             }
           }, true);
         }
+
+        $scope.$on('create', function (event, chart) {
+          console.log(`create: ${chart.id}`);
+        });
+
+        $scope.$on('destroy', function (event, chart) {
+          console.log(`destroy: ${chart.id}`);
+        });
 
       }
     };
