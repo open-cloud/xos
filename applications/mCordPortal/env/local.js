@@ -7,5 +7,5 @@
 // (works only for local environment as both application are served on the same domain)
 
 module.exports = {
-  host: 'http://xos.local:9999/'
+  host: 'http://xos.dev:9999/'
 };

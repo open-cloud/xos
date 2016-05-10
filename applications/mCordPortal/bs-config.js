@@ -28,10 +28,12 @@ var proxy = httpProxy.createProxyServer({
 });
 
 proxy.on('error', function(error, req, res) {
-  res.writeHead(500, {
-    'Content-Type': 'text/plain'
-  });
+  console.log('------------------------------------------------------');
+  // res.writeHead(500, {
+  //   'Content-Type': 'text/plain'
+  // });
   console.error('[Proxy]', error);
+  console.log('------------------------------------------------------');
 });
 
 module.exports = {
@@ -62,6 +64,7 @@ module.exports = {
           req.headers['x-csrftoken'] = req.headers['x-csrftoken'];
           req.headers.cookie = `xoscsrftoken=${req.headers['x-csrftoken']}; xossessionid=${req.headers['sessionid']}`;
         }
+        console.log(`proxied: ${req.url}`, req.headers['x-csrftoken'], req.headers.cookie);
         proxy.web(req, res);
       }
       else{

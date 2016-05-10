@@ -39,7 +39,7 @@
       var user;
 
       // logging in the user
-      $http.post(cordConfig.url + '/xoslib/login/', {username: username, password: password})
+      $http.post(cordConfig.url + '/api/utility/login/', {username: username, password: password})
       .then(function(res){
         $cookies.put('user', res.data.user);
         $cookies.put('sessionid', res.data.xossessionid);
