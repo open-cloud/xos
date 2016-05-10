@@ -5,29 +5,21 @@ service to CORD.
 
 ## Prepare the development POD
 
-Follow steps 1-3 under the **How to Bring up CORD** heading in the
-[README.md](./README.md) file.  For best results, use on a clean Ubuntu 14.04
+This tutorial configures a single-node CORD POD development environment.
+For best results, prepare a clean Ubuntu 14.04
 LTS installation on a server with at least 48GB RAM and 12 CPU cores.
+Update the packages to the latest versions.
 
-For step 1, use the single-node POD setup described at
-https://github.com/open-cloud/openstack-cluster-setup.  If you like, you can run
-[this script](https://github.com/open-cloud/openstack-cluster-setup/blob/master/scripts/single-node-pod.sh) to perform steps 1 and 2:
+To set up the POD, run
+[this script](https://github.com/open-cloud/openstack-cluster-setup/blob/master/scripts/single-node-pod.sh)
+with the `-e` option:
 
 ```
 ubuntu@pod:~$ wget https://raw.githubusercontent.com/open-cloud/openstack-cluster-setup/master/scripts/single-node-pod.sh
-ubuntu@pod:~$ bash single-node-pod.sh
+ubuntu@pod:~$ bash single-node-pod.sh -e
 ```
 
-For step 3, in place of the `compute-ext-net.sh` script, run
-[this script](https://github.com/open-cloud/openstack-cluster-setup/blob/master/scripts/compute-ext-net-tutorial.sh)
-inside the nova-compute VM.  It enables routing packets between the ExampleService and vSG subnets on a
-single-node POD.
-
-```
-ubuntu@pod:~$ ssh ubuntu@nova-compute
-ubuntu@nova-compute:~$ wget https://raw.githubusercontent.com/open-cloud/openstack-cluster-setup/master/scripts/compute-ext-net-tutorial.sh
-ubuntu@nova-compute:~$ sudo bash compute-ext-net-tutorial.sh
-```
+Be patient... it will take at least one hour to fully set up the single-node POD.
 
 ## Include ExampleService in XOS
 
@@ -37,15 +29,14 @@ checked out under `~/xos/`
 Change the XOS code as described in the
 [ExampleService Tutorial](http://guide.xosproject.org/devguide/exampleservice/)
 under the **Install the Service in Django** heading, and rebuild the XOS containers as
-described in that Tutorial:
+follows:
 
 ```
-ubuntu@xos:~$ cd xos/xos/configurations/devel
-ubuntu@xos:~/xos/xos/configurations/devel$ make containers
+ubuntu@xos:~$ cd xos/xos/configurations/cord-pod
+ubuntu@xos:~/xos/xos/configurations/devel$ make local_containers
 ```
 
-Change directories to `../cord-pod`.  
-Modify the `docker-compose.yml` file in this directory to include the synchronizer
+Modify the `docker-compose.yml` file in the `cord-pod` directory to include the synchronizer
 for ExampleService:
 
 ```yaml
