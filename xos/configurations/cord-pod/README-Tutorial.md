@@ -19,6 +19,12 @@ ubuntu@pod:~$ wget https://raw.githubusercontent.com/open-cloud/openstack-cluste
 ubuntu@pod:~$ bash single-node-pod.sh -e
 ```
 
+> NOTE: The above script can also automatically perform (nearly) all the steps of this
+> tutorial if run as `bash single-node-pod -e -t`.  However, you will still need 
+> to manually log into XOS and create an ExampleTenant, as described under 
+> [Configure ExampleService in XOS](#configure-exampleservice-in-xos)
+> below.  The script will tell you when it's time to do this.
+
 Be patient... it will take at least one hour to fully set up the single-node POD.
 
 ## Include ExampleService in XOS
