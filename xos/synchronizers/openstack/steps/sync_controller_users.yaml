@@ -3,14 +3,30 @@
   connection: local
   tasks:
   - keystone_user:
-       endpoint={{ endpoint }}
-       login_user={{ admin_user }} 
-       login_password={{ admin_password }} 
-       login_tenant_name={{ admin_tenant }} 
-       user="{{ name }}"
-       email={{ email }}
-       password={{ password }}
-       tenant={{ tenant }}
+      endpoint={{ endpoint }}
+      login_user={{ admin_user }}
+      login_password={{ admin_password }}
+      login_tenant_name={{ admin_tenant }}
+      user="{{ name }}"
+      email="{{ email }}"
+      password="{{ password }}"
+      tenant="{{ tenant }}"
+
+  - keystone_user:
+      endpoint={{ endpoint }}
+      login_user={{ admin_user }}
+      login_password={{ admin_password }}
+      login_tenant_name={{ admin_tenant }}
+      tenant="{{ tenant }}"
+
   {% for role in roles %}
-  - keystone_user: endpoint={{ endpoint}}  login_user={{ admin_user }} login_password={{ admin_password }} login_tenant_name={{ admin_tenant }} user="{{ name }}" role={{ role }} tenant={{ tenant }}
+  - keystone_user:
+      endpoint={{ endpoint}}
+      login_user={{ admin_user }}
+      login_password={{ admin_password }}
+      login_tenant_name={{ admin_tenant }}
+      user="{{ name }}"
+      role="{{ role }}"
+      tenant="{{ tenant }}"
   {% endfor %}
+
