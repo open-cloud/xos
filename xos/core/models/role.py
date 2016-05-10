@@ -2,7 +2,6 @@ import os
 import datetime
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
 from core.models import PlCoreBase
 from core.models.plcorebase import StrippedCharField
 
