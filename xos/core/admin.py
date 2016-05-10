@@ -12,7 +12,7 @@ from django.contrib.auth.forms import (AdminPasswordChangeForm,
                                        ReadOnlyPasswordHashField)
 from django.contrib.auth.models import Group
 from django.contrib.auth.signals import user_logged_in
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.admin import GenericTabularInline
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.urlresolvers import NoReverseMatch, resolve, reverse
 from django.forms.utils import flatatt, to_current_timezone
@@ -415,7 +415,7 @@ class XOSTabularInline(admin.TabularInline):
     backend_status_icon.short_description = ""
 
 
-class PlStackGenericTabularInline(generic.GenericTabularInline):
+class PlStackGenericTabularInline(GenericTabularInline):
 
     def has_add_permission(self, request):
         return not request.user.isReadOnlyUser()

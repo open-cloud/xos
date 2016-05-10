@@ -4,7 +4,7 @@ from core.models import PlCoreBase
 from core.models.plcorebase import StrippedCharField
 from core.models import Site, SiteDeployment, SitePrivilege
 from core.models import Tag
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 
 # Create your models here.
 
@@ -12,7 +12,7 @@ class Node(PlCoreBase):
     name = StrippedCharField(max_length=200, unique=True, help_text="Name of the Node")
     site_deployment = models.ForeignKey(SiteDeployment, related_name='nodes')
     site = models.ForeignKey(Site, null=True, blank=True, related_name='nodes')
-    tags = generic.GenericRelation(Tag)
+    tags = GenericRelation(Tag)
 
     def __unicode__(self):  return u'%s' % (self.name)
 

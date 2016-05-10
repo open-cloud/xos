@@ -13,7 +13,7 @@ from core.models import Controller
 from core.models import User
 from core.models import Tag
 from core.models import Flavor
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from xos.config import Config
 from django.core.exceptions import PermissionDenied, ValidationError
 
@@ -95,7 +95,7 @@ class Instance(PlCoreBase):
     node = models.ForeignKey(Node, related_name='instances')
     numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for instance", default=0)
     flavor = models.ForeignKey(Flavor, help_text="Flavor of this instance", default=get_default_flavor)
-    tags = generic.GenericRelation(Tag)
+    tags = GenericRelation(Tag)
     userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
     isolation = models.CharField(null=False, blank=False, max_length=30, choices=ISOLATION_CHOICES, default="vm")
     volumes = models.TextField(null=True, blank=True, help_text="Comma-separated list of directories to expose to parent context")

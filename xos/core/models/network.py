@@ -5,7 +5,7 @@ from django.db import models, transaction
 from core.models import PlCoreBase, Site, Slice, Instance, Controller, Service
 from core.models import ControllerLinkManager,ControllerLinkDeletionManager
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 
@@ -342,7 +342,7 @@ class NetworkParameter(PlCoreBase):
     # The required fields to do a ObjectType lookup, and object_id assignment
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     def __unicode__(self):
         return self.parameter.name

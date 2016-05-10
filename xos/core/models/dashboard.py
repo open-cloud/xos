@@ -3,7 +3,6 @@ from django.db import models
 from core.models import PlCoreBase, Controller, Deployment
 from core.models.plcorebase import StrippedCharField
 from core.models.site import ControllerLinkManager, ControllerLinkDeletionManager
-from django.contrib.contenttypes import generic
 
 class DashboardView(PlCoreBase):
     name = StrippedCharField(max_length=200, unique=True, help_text="Name of the View")
