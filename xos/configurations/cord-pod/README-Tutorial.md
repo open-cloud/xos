@@ -66,21 +66,8 @@ xos:
 
 ## Bring up XOS
 
-Run the `make` commands described in the [README.md](./README.md) file:
-
-```
-ubuntu@xos:~/xos/xos/configurations/cord-pod$ make
-ubuntu@xos:~/xos/xos/configurations/cord-pod$ make vtn
-ubuntu@xos:~/xos/xos/configurations/cord-pod$ make cord
-```
-
-The first `make` command initializes XOS and configures it to talk to OpenStack.
-After running it you should be able to login to the XOS UI at http://xos
-using credentials padmin@vicci.org/letmein.
-
-The `make vtn` tells XOS to start and configure the ONOS VTN app.  The `make cord`
-installs the CORD services in XOS and configures a sample subscriber; the end
-result is that XOS will spin up the subscriber's vSG.
+Run the `make` commands described in the [Bringing up XOS](https://github.com/open-cloud/xos/blob/master/xos/configurations/cord-pod/README.md#bringing-up-xos)
+section of the README.md file.
 
 ## Configure ExampleService in XOS
 
@@ -91,7 +78,7 @@ Tell XOS to process it by running:
 ubuntu@xos:~/xos/xos/configurations/cord-pod$ make exampleservice
 ```
 
-In the XOS UI, create an ExampleTenant. Go to *http://xos/admin/exampleservice*
+Next, in the XOS UI, create an ExampleTenant. Go to *http://xos/admin/exampleservice*
 and add / save an Example Tenant (when creating the tenant, fill in a message that
 this tenant should display).  This will cause an Instance to be created
 in the the *mysite_exampleservice* slice.
