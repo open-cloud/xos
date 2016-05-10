@@ -87,11 +87,9 @@ First, run:
 ubuntu@xos:~/xos/xos/configurations/cord-pod$ make
 ```
 
-After this you will be able to login to the XOS GUI at
-*http://xos/* using username/password `padmin@vicci.org/letmein`.
 Before proceeding, you should verify that objects in XOS are
-being sync'ed with OpenStack.  Log into the GUI and select *Users*
-at left.  Make sure there is a green check next to `padmin@vicci.org`.
+being sync'ed with OpenStack. [Login to the XOS GUI](#logging-into-xos-on-cloudlab-or-any-remote-host) 
+and select *Users* at left.  Make sure there is a green check next to `padmin@vicci.org`.
 
 > If you are **not** building the single-node development POD, the next
 > step is to create and edit the VTN configuration.  Run `make vtn-external.yaml`
@@ -112,7 +110,8 @@ The above step configures the ONOS VTN app by generating a configuration
 and pushing it to ONOS.  You are able to see and modify the configuration
 via the GUI as follows:
 
-* To see the generated configuration, go to *http://xos/admin/onos/onosapp/*, select
+* To see the generated configuration, go to *http://xos/admin/onos/onosapp/* 
+([caveat](#logging-into-xos-on-cloudlab-or-any-remote-host)), select
 *VTN_ONOS_app*, then the *Attributes* tab, and look for the
 `rest_onos/v1/network/configuration/` attribute.  
 
