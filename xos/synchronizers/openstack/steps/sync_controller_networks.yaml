@@ -15,6 +15,7 @@
         state=present
         {% endif %}
         shared=true
+
   {% if not delete %}
   - quantum_subnet:
         auth_url={{ endpoint }}
@@ -35,3 +36,4 @@
         cidr={{ cidr }}
         {% endif %}
   {% endif %}
+

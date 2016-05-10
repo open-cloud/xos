@@ -183,11 +183,11 @@ class SyncInstances(OpenStackSyncStep):
 
 
     def map_sync_outputs(self, instance, res):
-	instance_id = res[0]['info']['OS-EXT-SRV-ATTR:instance_name']
+	instance_id = res[0]['openstack']['OS-EXT-SRV-ATTR:instance_name']
         instance_uuid = res[0]['id']
 
 	try:
-            hostname = res[0]['info']['OS-EXT-SRV-ATTR:hypervisor_hostname']
+            hostname = res[0]['openstack']['OS-EXT-SRV-ATTR:hypervisor_hostname']
             ip = socket.gethostbyname(hostname)
             instance.ip = ip
         except:
