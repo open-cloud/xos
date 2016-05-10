@@ -182,3 +182,18 @@ ubuntu@mysite-vsg-1:~$ sudo docker ps
 CONTAINER ID        IMAGE                    COMMAND             CREATED             STATUS              PORTS               NAMES
 2b0bfb3662c7        andybavier/docker-vcpe   "/sbin/my_init"     5 days ago          Up 5 days                               vcpe-222-111
 ```
+
+### Logging into XOS on CloudLab
+
+The VMs created by the install process, including the _xos_ VM, have private IP addresses.
+In order to log into the XOS GUI from your local machine (desktop or laptop), 
+you can set up an SSH tunnel to your CloudLab node.  Assuming that 
+`<your-cloudlab-node>` is the DNS name of the CloudLab node hosting your experiment,
+run the following on your local machine to create the tunnel:
+
+```
+$ ssh -L 8888:xos:80 <your-cloudlab-node>
+```
+
+Then you should be able to access the XOS GUI by pointing your browser to
+`http://localhost:8888`.  Default username/password is `padmin@vicci.org/letmein`.
