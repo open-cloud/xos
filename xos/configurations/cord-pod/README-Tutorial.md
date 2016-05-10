@@ -85,8 +85,9 @@ ubuntu@xos:~/xos/xos/configurations/cord-pod$ make exampleservice
 ```
 
 Next, in the XOS UI, create an ExampleTenant. Go to *http://xos/admin/exampleservice*
-and add / save an Example Tenant (when creating the tenant, fill in a message that
-this tenant should display).  This will cause an Instance to be created
+([caveat](https://github.com/open-cloud/xos/blob/master/xos/configurations/cord-pod/README.md#logging-into-xos-on-cloudlab-or-any-remote-host))
+and add / save an Example Tenant.  When creating the tenant, fill in a message that
+this tenant should display.  This will cause an Instance to be created
 in the the *mysite_exampleservice* slice.
 
 ## Set up a Subscriber Device
