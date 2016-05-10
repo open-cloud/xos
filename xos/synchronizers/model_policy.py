@@ -5,6 +5,7 @@ from django.db.models import F, Q
 from django.db.models.signals import post_save
 from django.db.transaction import atomic
 from django.dispatch import receiver
+from django.utils import timezone
 from generate.dependency_walker import *
 from synchronizers.openstack import model_policies
 from xos.logger import logger
@@ -88,7 +89,7 @@ def execute_model_policy(instance, deleted):
         logger.log_exc("Model Policy Error:")
 
     try:
-        instance.policed=datetime.now()
+        instance.policed=timezone.now()
         instance.save(update_fields=['policed'])
     except:
         logger.error('Object %r is defective'%instance)
@@ -138,3 +139,4 @@ def run_policy_once():
         except:
             # this shouldn't happen, but in case it does, catch it...
             logger.log_exc("exception in reset_queries")
+

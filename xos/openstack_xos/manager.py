@@ -4,6 +4,7 @@ import string
 import random
 import hashlib
 from datetime import datetime
+from django.utils import timezone
 
 from netaddr import IPAddress, IPNetwork
 from xos import settings
@@ -121,7 +122,7 @@ class OpenStackManager:
             self.init_admin()
 
         user.save()
-        user.enacted = datetime.now()
+        user.enacted = timezone.now()
         user.save(update_fields=['enacted'])
   
     @require_enabled
@@ -147,7 +148,7 @@ class OpenStackManager:
 
         # commit the updated record
         site.save()
-        site.enacted = datetime.now()
+        site.enacted = timezone.now()
         site.save(update_fields=['enacted']) # enusre enacted > updated  
         
 
@@ -162,7 +163,7 @@ class OpenStackManager:
             self.driver.add_user_role(site_priv.user.kuser_id,
                                       site_priv.site.tenant_id,
                                       site_priv.role.role_type)
-        site_priv.enacted = datetime.now()
+        site_priv.enacted = timezone.now()
         site_priv.save(update_fields=['enacted'])
 
     
@@ -222,7 +223,7 @@ class OpenStackManager:
                                       enabled=slice.enabled)   
 
         slice.save()
-        slice.enacted = datetime.now()
+        slice.enacted = timezone.now()
         slice.save(update_fields=['enacted']) 
 
     @require_enabled
@@ -253,7 +254,7 @@ class OpenStackManager:
             self.driver.add_user_role(slice_memb.user.kuser_id,
                                       slice_memb.slice.tenant_id,
                                       slice_memb.role.role_type)
-        slice_memb.enacted = datetime.now()
+        slice_memb.enacted = timezone.now()
         slice_memb.save(update_fields=['enacted'])
 
 
@@ -348,7 +349,7 @@ class OpenStackManager:
                 self.driver.update_instance_metadata(instance.instance_id, metadata_update)
 
         instance.save()
-        instance.enacted = datetime.now()
+        instance.enacted = timezone.now()
         instance.save(update_fields=['enacted'])
 
     @require_enabled
@@ -457,7 +458,7 @@ class OpenStackManager:
                 self.driver.add_external_route(subnet)
 
         network.save()
-        network.enacted = datetime.now()
+        network.enacted = timezone.now()
         network.save(update_fields=['enacted'])
 
     def delete_network(self, network):
@@ -477,7 +478,7 @@ class OpenStackManager:
                 template.shared_network_id = os_networks[0]["id"]
 
         template.save()
-        template.enacted = datetime.now()
+        template.enacted = timezone.now()
         template.save(update_fields=['enacted'])
 
     def find_or_make_template_for_network(self, name):
