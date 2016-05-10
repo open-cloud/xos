@@ -6,7 +6,7 @@
       "max_instances":10,
       "networks":[1, 2],
       "current_user_roles":[
-
+         "Admin"
       ],
       "instance_distribution":{
          "mysite": 4,
@@ -29,7 +29,7 @@
       "max_instances":10,
       "networks":[2, 3, 4],
       "current_user_roles":[
-
+         "Access"
       ],
       "instance_distribution":{
         "mysite": 3,
