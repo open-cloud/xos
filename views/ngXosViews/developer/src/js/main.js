@@ -68,14 +68,14 @@ angular.module('xos.developer', [
             formatter: item => `${item.instance_total_ready} / ${item.instance_total}`
           },
           {
-            label: 'Total Instances per Sites',
-            type: 'object',
-            prop: 'instance_distribution'
-          },
-          {
             label: 'Active Instances per Sites',
             type: 'object',
             prop: 'instance_distribution_ready'
+          },
+          {
+            label: 'Total Instances per Sites',
+            type: 'object',
+            prop: 'instance_distribution'
           },
           {
             label: 'Networks',
