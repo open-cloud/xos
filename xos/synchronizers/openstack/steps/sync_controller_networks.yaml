@@ -4,7 +4,6 @@
   tasks:
   - os_network:
       name: {{ name }}
-      project: {{ project_name }}
       shared: true
       {% if not delete -%}
       state: present 
@@ -15,16 +14,16 @@
         auth_url: {{ endpoint }}
         username: {{ admin_user }}
         password: {{ admin_password }}
-        project_name: {{ project_name }}
+        project_name: {{ admin_project }}
 
-{% if not delete -%}
+{% if not delete %}
   - os_subnet:
        name: {{ subnet_name }}
        network_name: {{ name }}
        {% if not delete -%}
        state: present
-       dns_nameservers: 8.8.8.8
        cidr: {{ cidr }}
+       dns_nameservers: 8.8.8.8
        {% if use_vtn -%}
        gateway_ip: {{ gateway }}
        {% endif -%}
@@ -35,6 +34,6 @@
          auth_url: {{ endpoint }}
          username: {{ admin_user }}
          password: {{ admin_password }}
-         project_name: {{ project_name }}
-{% endif -%}
+         project_name: {{ admin_project }}
+{% endif %}
 

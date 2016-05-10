@@ -65,7 +65,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
                     'endpoint_v3': controller_network.controller.auth_url_v3,
                     'admin_user':slice.creator.email,
                     'admin_password':slice.creator.remote_password,
-                    'project_name':slice.name,
+                    'admin_project':slice.name,
                     'domain': controller_network.controller.domain,
                     'name':network_name,
                     'subnet_name':subnet_name,
