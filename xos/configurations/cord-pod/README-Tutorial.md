@@ -39,7 +39,7 @@ follows:
 
 ```
 ubuntu@xos:~$ cd xos/xos/configurations/cord-pod
-ubuntu@xos:~/xos/xos/configurations/devel$ make local_containers
+ubuntu@xos:~/xos/xos/configurations/cord-pod$ make local_containers
 ```
 
 Modify the `docker-compose.yml` file in the `cord-pod` directory to include the synchronizer
@@ -62,7 +62,7 @@ xos_synchronizer_exampleservice:
 
 Also, add ExampleService's public key to the `volumes` section of the `xos` docker container:
 
-```
+```yaml
 xos:
     ...
     volumes:
