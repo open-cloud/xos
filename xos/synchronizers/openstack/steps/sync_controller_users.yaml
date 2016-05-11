@@ -23,16 +23,27 @@
         password: {{ admin_password }}
         project_name: {{ admin_project }}
 
-{% for role in roles -%}
+{% for role in roles %}
   - name: Creating role "{{ role }}" for "{{ name }}" on "{{ project }}"
-    os_user_role:
+    keystone_user:
       user: "{{ name }}"
       role: "{{ role }}"
-      project: "{{ project }}"
-      auth:
-        auth_url: {{ endpoint }}
-        username: {{ admin_user }}
-        password: {{ admin_password }}
-        project_name: {{ admin_project }}
+      tenant: "{{ project }}"
+      endpoint: {{ endpoint }}
+      login_user: {{ admin_user }}
+      login_password: {{ admin_password }}
+      login_tenant_name: {{ admin_project }}
 {% endfor %}
+
+# FIXME: the below should work in Ansible 2.1
+#  - name: Creating role "{{ role }}" for "{{ name }}" on "{{ project }}"
+#    os_user_role:
+#      user: "{{ name }}"
+#      role: "{{ role }}"
+#      project: "{{ project }}"
+#      auth:
+#        auth_url: {{ endpoint }}
+#        username: {{ admin_user }}
+#        password: {{ admin_password }}
+#        project_name: {{ admin_project }}
 
