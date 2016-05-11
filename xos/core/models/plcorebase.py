@@ -198,7 +198,7 @@ class PlCoreBase(models.Model, PlModelMixIn):
 
     # default values for created and updated are only there to keep evolution
     # from failing.
-    created = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(default=timezone.now)
     enacted = models.DateTimeField(null=True, blank=True, default=None)
     policed = models.DateTimeField(null=True, blank=True, default=None)
@@ -272,7 +272,7 @@ class PlCoreBase(models.Model, PlModelMixIn):
                     ignore_composite_key_check=False
 
         if 'synchronizer' not in threading.current_thread().name:
-            self.updated = datetime.datetime.now()
+            self.updated = timezone.now()
 
         super(PlCoreBase, self).save(*args, **kwargs)
 
