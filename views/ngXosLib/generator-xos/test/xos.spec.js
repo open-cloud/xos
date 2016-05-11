@@ -18,6 +18,7 @@ bowerDeps = bowerDeps.js.map(d => d.match(/bower_components\/([a-zA-Z\-`.]+)\//)
 
 // test values
 const viewName = 'testDashboard';
+const fileName = firstCharTouppercase(viewName);
 const testPath = path.join(__dirname, `../../../ngXosViews/${viewName}/`);
 
 const getDefaultFiles = () => {
@@ -91,13 +92,22 @@ describe('Yeoman XOS generator', function () {
 
   it('should set the right module name in all the files', () => {
     assert.fileContent(`${testPath}src/index.html`, `ng-app="xos.${viewName}"`)
-    assert.fileContent(`${testPath}src/index.html`, `id="xos${firstCharTouppercase(viewName)}"`)
+    assert.fileContent(`${testPath}src/index.html`, `id="xos${fileName}"`)
     assert.fileContent(`${testPath}src/js/main.js`, `angular.module('xos.${viewName}', [`)
-    assert.fileContent(`${testPath}src/sass/main.scss`, `#xos${firstCharTouppercase(viewName)}`)
+    assert.fileContent(`${testPath}src/sass/main.scss`, `#xos${fileName}`)
   });
 
-  xit('should create a correct gulp build file', () => {
-    
+  it('should set correct paths in build file', () => {
+    assert.fileContent(`${testPath}gulp/build.js`, `angular.module('xos.${viewName}')`)
+    assert.fileContent(`${testPath}gulp/build.js`, `options.dashboards + 'xos${fileName}.html'`)
+    assert.fileContent(`${testPath}gulp/build.js`, `options.static + 'css/xos${fileName}.css'`)
+    assert.fileContent(`${testPath}gulp/build.js`, `.pipe(concat('xos${fileName}.css'))`)
+    assert.fileContent(`${testPath}gulp/build.js`, `.pipe(concat('xos${fileName}.js'))`)
+    assert.fileContent(`${testPath}gulp/build.js`, `module: 'xos.${viewName}'`)
+    assert.fileContent(`${testPath}gulp/build.js`, `options.static + 'js/vendor/xos${fileName}Vendor.js'`)
+    assert.fileContent(`${testPath}gulp/build.js`, `options.static + 'js/xos${fileName}.js'`)
+    assert.fileContent(`${testPath}gulp/build.js`, `options.static + 'css/xos${fileName}.css'`)
+    assert.fileContent(`${testPath}gulp/build.js`, `.pipe(concat('xos${fileName}Vendor.js'))`)
   });
 
   after(done => {
