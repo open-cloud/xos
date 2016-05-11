@@ -78,8 +78,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
         return network_fields
 
     def map_sync_outputs(self, controller_network,res):
-        network_id = res[0]['openstack']
-        subnet_id = res[1]['openstack']
+        network_id = res[0]['network']['id']
+        subnet_id = res[1]['subnet']['id']
         controller_network.net_id = network_id
         controller_network.subnet = self.cidr
         controller_network.subnet_id = subnet_id
