@@ -4,7 +4,7 @@
   "description": "View generator for XOS",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test --timeout 5000"
+    "test": "mocha test"
   },
   "author": "Matteo Scandolo",
   "license": "ISC",

@@ -150,6 +150,7 @@ module.exports = function(options){
   gulp.task('build', function() {
     runSequence(
       'clean',
+      'sass',
       'templates',
       'babel',
       'scripts',
