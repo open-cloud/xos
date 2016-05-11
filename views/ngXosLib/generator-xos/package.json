@@ -4,7 +4,7 @@
   "description": "View generator for XOS",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test --timeout 5000"
   },
   "author": "Matteo Scandolo",
   "license": "ISC",
@@ -13,5 +13,10 @@
   },
   "files": [
     "app"
-  ]
+  ],
+  "devDependencies": {
+    "mocha": "^2.4.5",
+    "yeoman-assert": "^2.2.1",
+    "yeoman-test": "^1.4.0"
+  }
 }
