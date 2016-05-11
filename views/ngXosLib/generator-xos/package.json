@@ -16,6 +16,9 @@
   ],
   "devDependencies": {
     "mocha": "^2.4.5",
+    "mockery": "^1.7.0",
+    "rimraf": "^2.5.2",
+    "wiredep": "^4.0.0",
     "yeoman-assert": "^2.2.1",
     "yeoman-test": "^1.4.0"
   }
