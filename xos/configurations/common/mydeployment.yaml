@@ -23,7 +23,7 @@ topology_template:
       type: tosca.nodes.Deployment
       requirements:
           - m1.xlarge:
-             node: m1.large
+             node: m1.xlarge
              relationship: tosca.relationships.SupportsFlavor
           - m1.large:
              node: m1.large

@@ -15,7 +15,6 @@ from sets import Set
 from xos.config import Config
 
 MCORD_KIND = "RAN" # This should be changed later I did it fo demo
-VNFM_KIND = "vEPC" # This should be changed later I did it fo demo
 MCORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
 VBBU_KIND = "RAN"
 VSGW_KIND = "vSGW"
@@ -24,77 +23,6 @@ net_types = ("s1u", "s1mme", "rru")
 # The class to represent the service. Most of the service logic is given for us
 # in the Service class but, we have some configuration that is specific for
 # this example.
-class ProxyService(Service):
-    KIND = VNFM_KIND
-
-    class Meta:
-        # When the proxy field is set to True the model is represented as
-        # it's superclass in the database, but we can still change the python
-        # behavior. In this case HelloWorldServiceComplete is a Service in the
-        # database.
-        proxy = True
-        # The name used to find this service, all directories are named this
-        app_label = "mcord"
-        verbose_name = "MCORD VNFM Service"
-
-class VSGWTenant(Tenant):
-    class Meta:
-        proxy = True
-
-    KIND = VSGW_KIND
-
-    default_attributes = {"status": None, "action": None, "control": None, "extra": None}
-    def __init__(self, *args, **kwargs):
-        proxy_services = VNFMService.get_service_objects().all()
-        if volt_services:
-            self._meta.get_field("provider_service").default = proxy_services[0].id
-        super(VSGWTenant, self).__init__(*args, **kwargs)
-
-    @property
-    def status(self):
-        return self.get_attribute("status", self.default_attributes["status"])
-
-    @status.setter
-    def status(self, value):
-        self.set_attribute("status", value)
-
-    @property
-    def action(self):
-        return self.get_attribute("action", self.default_attributes["action"])
-
-    @action.setter
-    def action(self, value):
-        self.set_attribute("action", value)
-
-    @property
-    def control(self):
-        return self.get_attribute("control", self.default_attributes["control"])
-
-    @control.setter
-    def control(self, value):
-        self.set_attribute("control", value)
-
-    @property
-    def extra(self):
-        return self.get_attribute("extra", self.default_attributes["extra"])
-
-    @extra.setter
-    def extra(self, value):
-        self.set_attribute("extra", value)
-
-
-    def save(self, *args, **kwargs):
-
-        super(VSGWTenant, self).save(*args, **kwargs)
-        model_policy_mcord_service_component(self.pk)
-
-    def delete(self, *args, **kwargs):
-        super(VSGWTenant, self).delete(*args, **kwargs)
-
-
-# This is the class to represent the tenant. Most of the logic is given to use
-# in TenantWithContainer, however there is some configuration and logic that
-# we need to define for this example.
 class MCORDService(Service):
     KIND = MCORD_KIND
 
