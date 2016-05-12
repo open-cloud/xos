@@ -4,6 +4,7 @@ description: Setup the ExampleService on the pod
 
 imports:
    - custom_types/xos.yaml
+   - custom_types/exampleservice.yaml
 
 topology_template:
   node_templates:
