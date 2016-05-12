@@ -74,6 +74,15 @@ topology_template:
           kind: exampleservice
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/synchronizers/exampleservice/exampleservice_private_key
+          service_message: hello
       artifacts:
           pubkey: /opt/xos/synchronizers/exampleservice/exampleservice_public_key
 
+    tenant#exampletenant1:
+        type: tosca.nodes.ExampleTenant
+        properties:
+            tenant_message: world
+        requirements:
+          - tenant:
+              node: service#exampleservice
+              relationship: tosca.relationships.TenantOfService
