@@ -40,3 +40,8 @@ topology_template:
         type: tosca.nodes.ExampleTenant
         properties:
             tenant_message: world
+        requirements:
+          - tenant:
+              node: service#exampleservice
+              relationship: tosca.relationships.TenantOfService
+
