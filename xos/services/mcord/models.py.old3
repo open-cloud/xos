@@ -14,12 +14,12 @@ from core.models import SlicePrivilege, SitePrivilege
 from sets import Set
 from xos.config import Config
 
-MCORD_KIND = "MCORD"
+MCORD_KIND = "RAN" # This should be changed later I did it fo demo
 MCORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
-VBBU_KIND = "vBBU"
+VBBU_KIND = "RAN"
 VSGW_KIND = "vSGW"
 VPGW_KIND = "vPGW"
-# some comment
+net_types = ("s1u", "s1mme", "rru")
 # The class to represent the service. Most of the service logic is given for us
 # in the Service class but, we have some configuration that is specific for
 # this example.
@@ -57,10 +57,9 @@ class VBBUComponent(TenantWithContainer):
     sync_attributes = ("s1u_ip", "s1u_mac",
                        "s1mme_ip", "s1mme_mac",
                        "rru_ip", "rru_mac")
-
     # default_attributes is used cleanly indicate what the default values for
     # the fields are.
-    default_attributes = {"display_message": "VBBU Component is ready!", "s1u_tag": "201", "s1mme_tag": "200", "rru_tag": "199"}
+    default_attributes = {"display_message": "New vBBU Component", "s1u_tag": "901", "s1mme_tag": "900", "rru_tag": "999"}
     def __init__(self, *args, **kwargs):
         mcord_services = MCORDService.get_service_objects().all()
         # When the tenant is created the default service in the form is set
@@ -92,30 +91,22 @@ class VBBUComponent(TenantWithContainer):
         with transaction.atomic():
             super(VBBUComponent, self).save_instance(instance)
             if instance.isolation in ["vm"]:
-                ntypes = ["s1u", "s1mme", "rru"]
-                for i in range(len(ntypes)): 
-                    ntype = ntypes[i]
+                for ntype in net_types:
                     lan_network = self.get_lan_network(instance, ntype)
-#                    port = self.find_or_make_port(instance, lan_network)
-                    if ntype == "s1u":
-                        print "S1U_TAG", self.s1u_tag
-                        s1uport = self.find_or_make_port(instance, lan_network)
-                        s1uport.set_parameter("s_tag", self.s1u_tag)
-                        s1uport.set_parameter("neutron_port_name", "stag-%s" % self.s1u_tag)
-                        s1uport.save()
-                    elif ntype == "s1mme":
-                        print "MME_TAG", self.s1mme_tag
-                        mmeport = self.find_or_make_port(instance, lan_network)
-                        mmeport.set_parameter("s_tag", self.s1mme_tag)
-                        mmeport.set_parameter("neutron_port_name", "stag-%s" % self.s1mme_tag)
-                        mmeport.save()
-                    elif ntype == "rru":
-                        print "RRU_TAG", self.rru_tag
-                        rruport = self.find_or_make_port(instance, lan_network)
-                        rruport.set_parameter("s_tag", self.rru_tag)
-                        rruport.set_parameter("neutron_port_name", "stag-%s" % self.rru_tag)
-                        rruport.save()
- 
+                    port = self.find_or_make_port(instance,lan_network)
+                    if (ntype == "s1u"):
+                        port.set_parameter("s_tag", self.s1u_tag)
+                        port.set_parameter("neutron_port_name", "stag-%s" % self.s1u_tag)
+                        port.save()
+                    elif (ntype == "s1mme"):
+                        port.set_parameter("s_tag", self.s1mme_tag)
+                        port.set_parameter("neutron_port_name", "stag-%s" % self.s1mme_tag)
+                        port.save()
+                    elif (ntype == "rru"):
+                        port.set_parameter("s_tag", self.rru_tag)
+                        port.set_parameter("neutron_port_name", "stag-%s" % self.rru_tag)
+                        port.save()
+    
     def delete(self, *args, **kwargs):
         # Delete the instance that was created for this tenant
         self.cleanup_container()
@@ -125,8 +116,10 @@ class VBBUComponent(TenantWithContainer):
         port = Port.objects.filter(instance=instance, network=network)
         if port:
             port = port[0]
+            print "port already exist", port[0]
         else:
             port = Port(instance=instance, network=network, **kwargs)
+            print "NETWORK", network, "MAKE_PORT", port 
             port.save()
         return port
 
@@ -163,7 +156,7 @@ class VBBUComponent(TenantWithContainer):
             # We're good.
             return
 
-        instance = self.make_instance_for_s_tag(self.s1u_tag)
+        instance = self.make_instance()
         self.instance = instance
         super(TenantWithContainer, self).save()
 
@@ -173,9 +166,10 @@ class VBBUComponent(TenantWithContainer):
         slice = self.provider_service.slices.all()[0]
         return slice
 
-    def make_instance_for_s_tag(self, s_tag):
+    def make_instance(self):
         slice = self.provider_service.slices.all()[0]            
         flavors = Flavor.objects.filter(name=slice.default_flavor)
+#        flavors = Flavor.objects.filter(name="m1.xlarge")
         if not flavors:
             raise XOSConfigurationError("No default flavor")
         default_flavor = slice.default_flavor
