@@ -6,6 +6,8 @@ from xos.apibase import XOSRetrieveUpdateDestroyAPIView, XOSListCreateAPIView
 from rest_framework import viewsets
 from django.conf.urls import patterns, url
 from xos.exceptions import *
+from rest_framework.reverse import reverse
+from django.core.urlresolvers import get_script_prefix, resolve, Resolver404
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -133,20 +135,32 @@ class XOSViewSet(viewsets.ModelViewSet):
 class XOSIndexViewSet(viewsets.ViewSet):
     view_urls=[]
     subdirs=[]
+    api_path = None
 
-    def __init__(self, view_urls, subdirs):
+    def __init__(self, view_urls, subdirs, api_path):
         self.view_urls = view_urls
         self.subdirs = subdirs
+        self.api_path = api_path
         super(XOSIndexViewSet, self).__init__()
 
     def list(self, request):
-        endpoints = []
+        endpoints = {}
         for view_url in self.view_urls:
             method_name = view_url[1].split("/")[-1]
-            endpoints.append(method_name)
+            method_url = "http://" + request.get_host() + get_script_prefix() + self.api_path + "/" + method_name
+            endpoints[method_name] = method_url
 
         for subdir in self.subdirs:
-            endpoints.append(subdir)
+            method_name = subdir
+            method_url = get_script_prefix() + self.api_path + "/" + subdir + "/"
+            # Check to make sure that an endpoint exists at this method_url. This
+            # prunes out subdirs that don't have any methods (like examples/)
+            try:
+                resolve(method_url)
+            except Resolver404:
+                continue
+            method_url = "http://" + request.get_host() + method_url
+            endpoints[method_name] = method_url
 
-        return Response({"endpoints": endpoints})
+        return Response(endpoints)
 

@@ -3,6 +3,12 @@
 
 /* eslint indent: [2,2], quotes: [2, "single"]*/
 
+// this is to load a different suite of test while developing
+var testFiles = '*';
+if(process.argv[4]){
+  testFiles = process.argv[4];
+}
+
 /*eslint-disable*/
 var wiredep = require('wiredep');
 var path = require('path');
@@ -15,7 +21,7 @@ var files = bowerComponents.concat([
   'node_modules/babel-polyfill/dist/polyfill.js',
   'xosHelpers/src/**/*.module.js',
   'xosHelpers/src/**/*.js',
-  'xosHelpers/spec/**/*.test.js'
+  `xosHelpers/spec/**/${testFiles}.test.js`
   // 'xosHelpers/spec/ui/smart-pie.test.js'
 ]);
 
@@ -89,7 +95,7 @@ module.exports = function(config) {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: [
       'PhantomJS',
-      'Chrome'
+      // 'Chrome'
     ],
 
 

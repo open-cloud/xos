@@ -5,6 +5,7 @@ from generate.dependency_walker import *
 from synchronizers.openstack import model_policies
 from xos.logger import logger
 from datetime import datetime
+from django.utils import timezone
 import time
 from core.models import *
 from django.db import reset_queries
@@ -87,7 +88,7 @@ def execute_model_policy(instance, deleted):
         logger.log_exc("Model Policy Error:")
 
     try:
-        instance.policed=datetime.now()
+        instance.policed=timezone.now()
         instance.save(update_fields=['policed'])
     except:
         logging.error('Object %r is defective'%instance)

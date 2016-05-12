@@ -47,7 +47,7 @@ class CordSubscriberRoot(Subscriber):
                           ("url_filter_rules", "allow all"),
                           ("url_filter_level", "PG"),
                           ("cdn_enable", False),
-                          ("users", []),
+                          ("devices", []),
                           ("is_demo_user", False),
 
                           ("uplink_speed", 1000000000),  # 1 gigabit, a reasonable default?
@@ -95,58 +95,65 @@ class CordSubscriberRoot(Subscriber):
             raise Exception("invalid status %s" % value)
         self.set_attribute("status", value)
 
-    def find_user(self, uid):
-        uid = int(uid)
-        for user in self.users:
-            if user["id"] == uid:
-                return user
+    def find_device(self, mac):
+        for device in self.devices:
+            if device["mac"] == mac:
+                return device
         return None
 
-    def update_user(self, uid, **kwargs):
+    def update_device(self, mac, **kwargs):
         # kwargs may be "level" or "mac"
         #    Setting one of these to None will cause None to be stored in the db
-        uid = int(uid)
-        users = self.users
-        for user in users:
-            if user["id"] == uid:
+        devices = self.devices
+        for device in devices:
+            if device["mac"] == mac:
                 for arg in kwargs.keys():
-                    user[arg] = kwargs[arg]
-                    self.users = users
-                return user
-        raise ValueError("User %d not found" % uid)
+                    device[arg] = kwargs[arg]
+                self.devices = devices
+                return device
+        raise ValueError("Device with mac %s not found" % mac)
 
-    def create_user(self, **kwargs):
-        if "name" not in kwargs:
-            raise XOSMissingField("The name field is required")
+    def create_device(self, **kwargs):
+        if "mac" not in kwargs:
+            raise XOSMissingField("The mac field is required")
 
-        for user in self.users:
-            if kwargs["name"] == user["name"]:
-                raise XOSDuplicateKey("User %s already exists" % kwargs["name"])
+        if self.find_device(kwargs['mac']):
+                raise XOSDuplicateKey("Device with mac %s already exists" % kwargs["mac"])
 
-        uids = [x["id"] for x in self.users]
-        if uids:
-            uid = max(uids)+1
-        else:
-            uid = 0
-        newuser = kwargs.copy()
-        newuser["id"] = uid
+        device = kwargs.copy()
 
-        users = self.users
-        users.append(newuser)
-        self.users = users
+        devices = self.devices
+        devices.append(device)
+        self.devices = devices
 
-        return newuser
+        return device
 
-    def delete_user(self, uid):
-        uid = int(uid)
-        users = self.users
-        for user in users:
-            if user["id"]==uid:
-                users.remove(user)
-                self.users = users
+    def delete_device(self, mac):
+        devices = self.devices
+        for device in devices:
+            if device["mac"]==mac:
+                devices.remove(device)
+                self.devices = devices
                 return
 
-        raise ValueError("Users %d not found" % uid)
+        raise ValueError("Device with mac %s not found" % mac)
+
+    #--------------------------------------------------------------------------
+    # Deprecated -- devices used to be called users
+
+    def find_user(self, uid):
+        return self.find_device(uid)
+
+    def update_user(self, uid, **kwargs):
+        return self.update_device(uid, **kwargs)
+
+    def create_user(self, **kwargs):
+        return self.create_device(**kwargs)
+
+    def delete_user(self, uid):
+        return self.delete_user(uid)
+
+    # ------------------------------------------------------------------------
 
     @property
     def services(self):
