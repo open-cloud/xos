@@ -84,11 +84,9 @@ Tell XOS to process it by running:
 ubuntu@xos:~/xos/xos/configurations/cord-pod$ make exampleservice
 ```
 
-Next, in the XOS UI, create an ExampleTenant. Go to *http://xos/admin/exampleservice*
-([caveat](https://github.com/open-cloud/xos/blob/master/xos/configurations/cord-pod/README.md#logging-into-xos-on-cloudlab-or-any-remote-host))
-and add / save an Example Tenant.  When creating the tenant, fill in a message that
-this tenant should display.  This will cause an Instance to be created
-in the the *mysite_exampleservice* slice.
+This will add the ExampleService to XOS.  It will also create an ExampleTenant,
+which causes a VM to be created with Apache running inside.
+
 
 ## Set up a Subscriber Device
 
