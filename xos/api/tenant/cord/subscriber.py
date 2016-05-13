@@ -87,6 +87,55 @@ class CordSubscriberNew(CordSubscriberRoot):
     def save(self, *args, **kwargs):
         super(CordSubscriberNew, self).save(*args, **kwargs)
 
+class CordDevice(object):
+    def __init__(self, d={}, subscriber=None):
+        self.d = d
+        self.subscriber = subscriber
+
+    @property
+    def mac(self):
+        return self.d.get("mac", None)
+
+    @mac.setter
+    def mac(self, value):
+        self.d["mac"] = value
+
+    @property
+    def identity(self):
+        return {"name": self.d.get("name", None)}
+
+    @identity.setter
+    def identity(self, value):
+        self.d["name"] = value.get("name", None)
+
+    @property
+    def features(self):
+        return {"uplink_speed": self.d.get("uplink_speed", None),
+                "downlink_speed": self.d.get("downlink_speed", None)}
+
+    @features.setter
+    def features(self, value):
+        self.d["uplink_speed"] = value.get("uplink_speed", None)
+        self.d["downlink_speed"] = value.get("downlink_speed", None)
+
+    def update_features(self, value):
+        d=self.features
+        d.update(value)
+        self.features = d
+
+    def update_identity(self, value):
+        d=self.identity
+        d.update(value)
+        self.identity = d
+
+    def save(self):
+        if self.subscriber:
+            dev=self.subscriber.find_device(self.mac)
+            if dev:
+                self.subscriber.update_device(**self.d)
+            else:
+                self.subscriber.create_device(**self.d)
+
 # Add some structure to the REST API by subdividing the object into
 # features, identity, and related.
 
@@ -100,6 +149,21 @@ class FeatureSerializer(serializers.Serializer):
 class IdentitySerializer(serializers.Serializer):
     account_num = serializers.CharField(required=False)
     name = serializers.CharField(required=False)
+
+class DeviceFeatureSerializer(serializers.Serializer):
+    uplink_speed = serializers.IntegerField(required=False)
+    downlink_speed = serializers.IntegerField(required=False)
+
+class DeviceIdentitySerializer(serializers.Serializer):
+    name = serializers.CharField(required=False)
+
+class DeviceSerializer(serializers.Serializer):
+    mac = serializers.CharField(required=True)
+    identity = DeviceIdentitySerializer(required=False)
+    features = DeviceFeatureSerializer(required=False)
+
+    class Meta:
+        fields = ('mac', 'identity', 'features')
 
 class CordSubscriberSerializer(PlusModelSerializer):
         id = ReadOnlyField()
@@ -132,7 +196,11 @@ class CordSubscriberViewSet(XOSViewSet):
     custom_serializers = {"set_features": FeatureSerializer,
                           "set_feature": FeatureSerializer,
                           "set_identities": IdentitySerializer,
-                          "set_identity": IdentitySerializer}
+                          "set_identity": IdentitySerializer,
+                          "get_devices": DeviceSerializer,
+                          "add_device": DeviceSerializer,
+                          "get_device_feature": DeviceFeatureSerializer,
+                          "set_device_feature": DeviceFeatureSerializer}
 
     @classmethod
     def get_urlpatterns(self, api_path="^"):
@@ -141,6 +209,11 @@ class CordSubscriberViewSet(XOSViewSet):
         patterns.append( self.detail_url("features/(?P<feature>[a-zA-Z0-9\-_]+)/$", {"get": "get_feature", "put": "set_feature"}, "get_feature") )
         patterns.append( self.detail_url("identity/$", {"get": "get_identities", "put": "set_identities"}, "identities") )
         patterns.append( self.detail_url("identity/(?P<identity>[a-zA-Z0-9\-_]+)/$", {"get": "get_identity", "put": "set_identity"}, "get_identity") )
+
+        patterns.append( self.detail_url("devices/$", {"get": "get_devices", "post": "add_device"}, "devicees") )
+        patterns.append( self.detail_url("devices/(?P<mac>[a-zA-Z0-9\-_:]+)/$", {"get": "get_device", "delete": "delete_device"}, "getset_device") )
+        patterns.append( self.detail_url("devices/(?P<mac>[a-zA-Z0-9\-_:]+)/features/(?P<feature>[a-zA-Z0-9\-_]+)/$", {"get": "get_device_feature", "put": "set_device_feature"}, "getset_device_feature") )
+        patterns.append( self.detail_url("devices/(?P<mac>[a-zA-Z0-9\-_:]+)/identity/(?P<identity>[a-zA-Z0-9\-_]+)/$", {"get": "get_device_identity", "put": "set_device_identity"}, "getset_device_identity") )
 
         patterns.append( url(self.api_path + "account_num_lookup/(?P<account_num>[0-9\-]+)/$", self.as_view({"get": "account_num_detail"}), name="account_num_detail") )
 
@@ -207,6 +280,82 @@ class CordSubscriberViewSet(XOSViewSet):
         subscriber.update_identity(ser.validated_data)
         subscriber.save()
         return Response({identity: IdentitySerializer(subscriber.identity).data[identity]})
+
+    def get_devices(self, request, pk=None):
+        subscriber = self.get_object()
+        result = []
+        for device in subscriber.devices:
+            device = CordDevice(device, subscriber)
+            result.append(DeviceSerializer(device).data)
+        return Response(result)
+
+    def add_device(self, request, pk=None):
+        subscriber = self.get_object()
+        ser = DeviceSerializer(subscriber.devices, data=request.data)
+        ser.is_valid(raise_exception = True)
+        newdevice = CordDevice(subscriber.create_device(**ser.validated_data), subscriber)
+        subscriber.save()
+        return Response(DeviceSerializer(newdevice).data)
+
+    def get_device(self, request, pk=None, mac=None):
+        subscriber = self.get_object()
+        device = subscriber.find_device(mac)
+        if not device:
+            return Response("Failed to find device %s" % mac, status=status.HTTP_404_NOT_FOUND)
+        return Response(DeviceSerializer(CordDevice(device, subscriber)).data)
+
+    def delete_device(self, request, pk=None, mac=None):
+        subscriber = self.get_object()
+        device = subscriber.find_device(mac)
+        if not device:
+            return Response("Failed to find device %s" % mac, status=status.HTTP_404_NOT_FOUND)
+        subscriber.delete_device(mac)
+        subscriber.save()
+        return Response("Okay")
+
+    def get_device_feature(self, request, pk=None, mac=None, feature=None):
+        subscriber = self.get_object()
+        device = subscriber.find_device(mac)
+        if not device:
+            return Response("Failed to find device %s" % mac, status=status.HTTP_404_NOT_FOUND)
+        return Response({feature: DeviceFeatureSerializer(CordDevice(device, subscriber).features).data[feature]})
+
+    def set_device_feature(self, request, pk=None, mac=None, feature=None):
+        subscriber = self.get_object()
+        device = subscriber.find_device(mac)
+        if not device:
+            return Response("Failed to find device %s" % mac, status=status.HTTP_404_NOT_FOUND)
+        if [feature] != request.data.keys():
+             raise serializers.ValidationError("feature %s does not match keys in request body (%s)" % (feature, ",".join(request.data.keys())))
+        device = CordDevice(device, subscriber)
+        ser = DeviceFeatureSerializer(device.features, data=request.data)
+        ser.is_valid(raise_exception = True)
+        device.update_features(ser.validated_data)
+        device.save()
+        subscriber.save()
+        return Response({feature: DeviceFeatureSerializer(device.features).data[feature]})
+
+    def get_device_identity(self, request, pk=None, mac=None, identity=None):
+        subscriber = self.get_object()
+        device = subscriber.find_device(mac)
+        if not device:
+            return Response("Failed to find device %s" % mac, status=status.HTTP_404_NOT_FOUND)
+        return Response({identity: DeviceIdentitySerializer(CordDevice(device, subscriber).identity).data[identity]})
+
+    def set_device_identity(self, request, pk=None, mac=None, identity=None):
+        subscriber = self.get_object()
+        device = subscriber.find_device(mac)
+        if not device:
+            return Response("Failed to find device %s" % mac, status=status.HTTP_404_NOT_FOUND)
+        if [identity] != request.data.keys():
+             raise serializers.ValidationError("identity %s does not match keys in request body (%s)" % (feature, ",".join(request.data.keys())))
+        device = CordDevice(device, subscriber)
+        ser = DeviceIdentitySerializer(device.identity, data=request.data)
+        ser.is_valid(raise_exception = True)
+        device.update_identity(ser.validated_data)
+        device.save()
+        subscriber.save()
+        return Response({identity: DeviceIdentitySerializer(device.identity).data[identity]})
 
     def account_num_detail(self, pk=None, account_num=None):
         object_list = CordSubscriberNew.get_tenant_objects().all()

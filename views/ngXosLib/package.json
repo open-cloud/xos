@@ -4,7 +4,7 @@
   "description": "Angular Version of XosLib, containing Helpers and ngResources",
   "main": "index.js",
   "scripts": {
-    "test": "karma start",
+    "test": "karma start karma.conf.js",
     "test:ci": "karma start karma.conf.ci.js",
     "apigen": "node apigen/blueprintToNgResource.js",
     "swagger": "node xos-swagger-def.js",
