@@ -5,29 +5,27 @@ service to CORD.
 
 ## Prepare the development POD
 
-Follow steps 1-3 under the **How to Bring up CORD** heading in the
-[README.md](./README.md) file.  For best results, use on a clean Ubuntu 14.04
+This tutorial runs on a single-node CORD POD development environment.
+For best results, prepare a clean Ubuntu 14.04
 LTS installation on a server with at least 48GB RAM and 12 CPU cores.
+Update the packages to the latest versions.
 
-For step 1, use the single-node POD setup described at
-https://github.com/open-cloud/openstack-cluster-setup.  If you like, you can run
-[this script](https://github.com/open-cloud/openstack-cluster-setup/blob/master/scripts/single-node-pod.sh) to perform steps 1 and 2:
+To set up the POD, run
+[this script](https://github.com/open-cloud/openstack-cluster-setup/blob/master/scripts/single-node-pod.sh)
+with the `-e` option:
 
 ```
 ubuntu@pod:~$ wget https://raw.githubusercontent.com/open-cloud/openstack-cluster-setup/master/scripts/single-node-pod.sh
-ubuntu@pod:~$ bash single-node-pod.sh
+ubuntu@pod:~$ bash single-node-pod.sh -e
 ```
 
-For step 3, in place of the `compute-ext-net.sh` script, run
-[this script](https://github.com/open-cloud/openstack-cluster-setup/blob/master/scripts/compute-ext-net-tutorial.sh)
-inside the nova-compute VM.  It enables routing packets between the ExampleService and vSG subnets on a
-single-node POD.
+> NOTE: The above script can also automatically perform (nearly) all the steps of this
+> tutorial if run as `bash single-node-pod -e -t`.  However, you will still need 
+> to manually log into XOS and create an ExampleTenant, as described under 
+> [Configure ExampleService in XOS](#configure-exampleservice-in-xos)
+> below.  The script will tell you when it's time to do this.
 
-```
-ubuntu@pod:~$ ssh ubuntu@nova-compute
-ubuntu@nova-compute:~$ wget https://raw.githubusercontent.com/open-cloud/openstack-cluster-setup/master/scripts/compute-ext-net-tutorial.sh
-ubuntu@nova-compute:~$ sudo bash compute-ext-net-tutorial.sh
-```
+Be patient... it will take at least one hour to fully set up the single-node POD.
 
 ## Include ExampleService in XOS
 
@@ -37,15 +35,14 @@ checked out under `~/xos/`
 Change the XOS code as described in the
 [ExampleService Tutorial](http://guide.xosproject.org/devguide/exampleservice/)
 under the **Install the Service in Django** heading, and rebuild the XOS containers as
-described in that Tutorial:
+follows:
 
 ```
-ubuntu@xos:~$ cd xos/xos/configurations/devel
-ubuntu@xos:~/xos/xos/configurations/devel$ make containers
+ubuntu@xos:~$ cd xos/xos/configurations/cord-pod
+ubuntu@xos:~/xos/xos/configurations/cord-pod$ make local_containers
 ```
 
-Change directories to `../cord-pod`.  
-Modify the `docker-compose.yml` file in this directory to include the synchronizer
+Modify the `docker-compose.yml` file in the `cord-pod` directory to include the synchronizer
 for ExampleService:
 
 ```yaml
@@ -65,7 +62,7 @@ xos_synchronizer_exampleservice:
 
 Also, add ExampleService's public key to the `volumes` section of the `xos` docker container:
 
-```
+```yaml
 xos:
     ...
     volumes:
@@ -75,21 +72,8 @@ xos:
 
 ## Bring up XOS
 
-Run the `make` commands described in the [README.md](./README.md) file:
-
-```
-ubuntu@xos:~/xos/xos/configurations/cord-pod$ make
-ubuntu@xos:~/xos/xos/configurations/cord-pod$ make vtn
-ubuntu@xos:~/xos/xos/configurations/cord-pod$ make cord
-```
-
-The first `make` command initializes XOS and configures it to talk to OpenStack.
-After running it you should be able to login to the XOS UI at http://xos
-using credentials padmin@vicci.org/letmein.
-
-The `make vtn` tells XOS to start and configure the ONOS VTN app.  The `make cord`
-installs the CORD services in XOS and configures a sample subscriber; the end
-result is that XOS will spin up the subscriber's vSG.
+Run the `make` commands described in the [Bringing up XOS](https://github.com/open-cloud/xos/blob/master/xos/configurations/cord-pod/README.md#bringing-up-xos)
+section of the README.md file.
 
 ## Configure ExampleService in XOS
 
@@ -100,10 +84,9 @@ Tell XOS to process it by running:
 ubuntu@xos:~/xos/xos/configurations/cord-pod$ make exampleservice
 ```
 
-In the XOS UI, create an ExampleTenant. Go to *http://xos/admin/exampleservice*
-and add / save an Example Tenant (when creating the tenant, fill in a message that
-this tenant should display).  This will cause an Instance to be created
-in the the *mysite_exampleservice* slice.
+This will add the ExampleService to XOS.  It will also create an ExampleTenant,
+which causes a VM to be created with Apache running inside.
+
 
 ## Set up a Subscriber Device
 

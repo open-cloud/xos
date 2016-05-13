@@ -60,6 +60,10 @@ angular.module('xos.serviceGrid', [
       .then((services) => {
         this.services = _.map(services, s => {
           // parse backend_status string in a boolean for display
+          // NOTE they are not boolean:
+          // - start with 0 = provisioning
+          // - start with 1 = good
+          // - start with 2 = error
           s.status = parseInt(s.backend_status.match(/^[0-9]/)[0]) === 0 ? false : true;
           return s;
         })

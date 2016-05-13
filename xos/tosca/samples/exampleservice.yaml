@@ -1,0 +1,47 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup the ExampleService
+
+imports:
+   - custom_types/xos.yaml
+   - custom_types/exampleservice.yaml
+
+topology_template:
+  node_templates:
+
+    mysite:
+      type: tosca.nodes.Site
+
+    mysite_exampleservice:
+      description: This slice holds the ExampleService
+      type: tosca.nodes.Slice
+
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - exmapleserver:
+              node: service#exampleservice
+              relationship: tosca.relationships.MemberOfService
+
+    service#exampleservice:
+      type: tosca.nodes.ExampleService
+      properties:
+          view_url: /admin/exampleservice/exampleservice/$id$/
+          kind: exampleservice
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/synchronizers/exampleservice/exampleservice_private_key
+          service_message: hello
+      artifacts:
+          pubkey: /opt/xos/synchronizers/exampleservice/exampleservice_public_key
+
+
+    tenant#exampletenant1:
+        type: tosca.nodes.ExampleTenant
+        properties:
+            tenant_message: world
+        requirements:
+          - tenant:
+              node: service#exampleservice
+              relationship: tosca.relationships.TenantOfService
+

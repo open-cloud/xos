@@ -14,7 +14,7 @@ from xosresource import XOSResource
 class XOSExampleService(XOSResource):
     provides = "tosca.nodes.ExampleService"
     xos_model = ExampleService
-    copyin_props = ["view_url", "icon_url", "enabled", "published", "public_key", "private_key_fn", "versionNumber"]
+    copyin_props = ["view_url", "icon_url", "enabled", "published", "public_key", "private_key_fn", "versionNumber", "service_message"]
 
     def postprocess(self, obj):
         for provider_service_name in self.get_requirements("tosca.relationships.TenantOfService"):
