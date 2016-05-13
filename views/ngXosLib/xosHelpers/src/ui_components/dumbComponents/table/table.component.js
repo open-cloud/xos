@@ -385,7 +385,11 @@
                       </dl>
                     </span>
                     <span ng-if="col.type === 'custom'">
-                      {{col.formatter(item[col.prop])}}
+                      {{col.formatter(item)}}
+                    </span>
+                    <span ng-if="col.type === 'icon'">
+                      <i class="glyphicon glyphicon-{{col.formatter(item)}}">
+                      </i>
                     </span>
                   </td>
                   <td ng-if="vm.config.actions">
@@ -426,13 +430,30 @@
             throw new Error('[xosTable] Please provide a columns list in the configuration');
           }
 
-          // if columns with type 'custom' are provide
-          // check that a custom formatted is provided too
+          // handle default ordering
+          if(this.config.order && angular.isObject(this.config.order)){
+            this.reverse = this.config.order.reverse || false;
+            this.orderBy = this.config.order.field || 'id';
+          }
+
+          // if columns with type 'custom' are provided
+          // check that a custom formatte3 is provided too
           let customCols = _.filter(this.config.columns, {type: 'custom'});
           if(angular.isArray(customCols) && customCols.length > 0){
             _.forEach(customCols, (col) => {
               if(!col.formatter || !angular.isFunction(col.formatter)){
                 throw new Error('[xosTable] You have provided a custom field type, a formatter function should provided too.');
+              }
+            })
+          }
+
+          // if columns with type 'icon' are provided
+          // check that a custom formatte3 is provided too
+          let iconCols = _.filter(this.config.columns, {type: 'icon'});
+          if(angular.isArray(iconCols) && iconCols.length > 0){
+            _.forEach(iconCols, (col) => {
+              if(!col.formatter || !angular.isFunction(col.formatter)){
+                throw new Error('[xosTable] You have provided an icon field type, a formatter function should provided too.');
               }
             })
           }
