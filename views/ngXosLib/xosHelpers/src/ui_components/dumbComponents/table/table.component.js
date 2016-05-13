@@ -22,7 +22,10 @@
     *   columns: [
     *     {
     *       label: 'Human readable name',
-    *       prop: 'Property to read in the model object'
+    *       prop: 'Property to read in the model object',
+    *       type: 'boolean'| 'array'| 'object'| 'custom'| 'date' | 'icon' // see examples for more details
+            formatter: fn(), // receive the whole item if tipe is custom and return a string
+            link: fn() // receive the whole item and return an url
     *     }
     *   ],
     *   classes: 'table table-striped table-bordered',
@@ -37,7 +40,7 @@
           }
         ],
         filter: 'field', // can be by `field` or `fulltext`
-        order: true // whether to show ordering arrows
+        order: true | {field: 'property name', reverse: true | false} // whether to show ordering arrows, or a configuration for a default ordering
     * }
     * ```
     * @param {Array} data The data that should be rendered
@@ -223,6 +226,16 @@
               label: 'Details',
               prop: 'details',
               type: 'object'
+            },
+            {
+              label: 'Created',
+              prop: 'created',
+              type: 'date'
+            },
+            {
+              label: 'Icon',
+              type: 'icon',
+              formatter: item => item.icon //note that this refer to [Bootstrap Glyphicon](http://getbootstrap.com/components/#glyphicons)
             }
           ]
         };
@@ -235,7 +248,9 @@
             details: {
               c_tag: '243',
               s_tag: '444'
-            }
+            },
+            created: new Date('December 17, 1995 03:24:00'),
+            icon: 'music'
           },
           {
             name: 'Gili',
@@ -244,7 +259,9 @@
             details: {
               c_tag: '675',
               s_tag: '893'
-            }
+            },
+            created: new Date(),
+            icon: 'camera'
           }
         ]
       });

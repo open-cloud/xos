@@ -34,7 +34,18 @@ angular.module('xos.serviceGrid', [
           {
             label: 'Status',
             prop: 'status',
-            type: 'boolean',
+            type: 'icon',
+            formatter: item => {
+              let status = parseInt(item.backend_status.match(/^[0-9]/)[0]);
+              switch(status){
+              case 0:
+                return 'time';
+              case 1:
+                return 'ok';
+              case 2:
+                return 'remove';
+              }
+            }
           },
           {
             label: 'Name',
@@ -52,7 +63,9 @@ angular.module('xos.serviceGrid', [
           }
         ],
         filter: 'field',
-        order: true
+        order: {
+          field: 'name'
+        }
       };
       
       // retrieving user list
