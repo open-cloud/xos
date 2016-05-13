@@ -92,7 +92,7 @@
     uri:
       url: http://{{ '{{' }} onosaddr.stdout {{ '}}' }}:8181/{{ '{{' }} item.endpoint {{ '}}' }}
       body: "{{ '{{' }} item.body {{ '}}' }}"
-      body_format: raw
+      body_format: json
       method: POST
       user: karaf
       password: karaf
@@ -164,7 +164,7 @@
     uri:
       url: http://{{ '{{' }} onosaddr.stdout {{ '}}' }}:8181/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
       body: "{{ '{{' }} item.body {{ '}}' }}"
-      body_format: raw
+      body_format: json
       method: POST
       user: karaf
       password: karaf

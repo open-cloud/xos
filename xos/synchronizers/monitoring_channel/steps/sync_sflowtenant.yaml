@@ -24,5 +24,5 @@
     uri:
       url: http://{{ '{{' }} sflowserviceaddr.stdout {{ '}}' }}:{{ sflow_api_port }}/subscribe
       body: "{{ listening_endpoint }}"
-      body_format: raw
+      body_format: json
       method: POST

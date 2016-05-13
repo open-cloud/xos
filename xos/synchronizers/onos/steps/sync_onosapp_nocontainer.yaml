@@ -49,7 +49,7 @@
     uri:
       url: http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
       body: "{{ '{{' }} item.body {{ '}}' }}"
-      body_format: raw
+      body_format: json
       method: POST
       user: karaf
       password: karaf
