@@ -7,9 +7,6 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
 
-# a bit of a hack for developing -- run m4 to generate xos.yaml from xos.m4
-os.system("m4 %s/custom_types/xos.m4 > %s/custom_types/xos.yaml" % (currentdir, currentdir))
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import django
 django.setup()

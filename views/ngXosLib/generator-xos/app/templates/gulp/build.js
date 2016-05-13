@@ -98,8 +98,8 @@ module.exports = function(options){
   gulp.task('copyHtml', function(){
     return gulp.src(options.src + 'index.html')
       // remove dev dependencies from html
-      .pipe(replace(/<!-- bower:css -->(\n.*)*\n<!-- endbower --><!-- endcss -->/, ''))
-      .pipe(replace(/<!-- bower:js -->(\n.*)*\n<!-- endbower --><!-- endjs -->/, ''))
+      .pipe(replace(/<!-- bower:css -->(\n^<link.*)*\n<!-- endbower -->/gmi, ''))
+      .pipe(replace(/<!-- bower:js -->(\n^<script.*)*\n<!-- endbower -->/gmi, ''))
       // injecting minified files
       .pipe(
         inject(
@@ -150,6 +150,7 @@ module.exports = function(options){
   gulp.task('build', function() {
     runSequence(
       'clean',
+      'sass',
       'templates',
       'babel',
       'scripts',
