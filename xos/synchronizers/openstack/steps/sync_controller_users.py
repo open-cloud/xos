@@ -25,9 +25,10 @@ class SyncControllerUsers(OpenStackSyncStep):
 
         # All users will have at least the 'user' role at their home site/tenant.
         # We must also check if the user should have the admin role
+        admin_role = getattr(Config(), "nova_admin_role", "admin")
         roles = ['user']
         if controller_user.user.is_admin:
-            roles.append('admin')
+            roles.append(admin_role)
 
         # setup user home site roles at controller
         if not controller_user.user.site:
