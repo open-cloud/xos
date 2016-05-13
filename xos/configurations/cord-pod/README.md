@@ -50,7 +50,7 @@ ubuntu@onos-cord:~$ cd cord; sudo docker-compose up -d
 The CORD fabric is responsible for providing external (Internet) connectivity
 for VMs created on CORD.  If you are running on CloudLab (or another development
 environment) and want external connectivity without the fabric, download [this script](https://raw.githubusercontent.com/open-cloud/openstack-cluster-setup/master/scripts/compute-ext-net.sh)
- and run it as root:
+ and run it on the Nova compute node(s) as root:
  ```
  $ sudo compute-ext-net.sh
  ```
@@ -87,11 +87,9 @@ First, run:
 ubuntu@xos:~/xos/xos/configurations/cord-pod$ make
 ```
 
-After this you will be able to login to the XOS GUI at
-*http://xos/* using username/password `padmin@vicci.org/letmein`.
 Before proceeding, you should verify that objects in XOS are
-being sync'ed with OpenStack.  Log into the GUI and select *Users*
-at left.  Make sure there is a green check next to `padmin@vicci.org`.
+being sync'ed with OpenStack. [Login to the XOS GUI](#logging-into-xos-on-cloudlab-or-any-remote-host) 
+and select *Users* at left.  Make sure there is a green check next to `padmin@vicci.org`.
 
 > If you are **not** building the single-node development POD, the next
 > step is to create and edit the VTN configuration.  Run `make vtn-external.yaml`
@@ -112,7 +110,8 @@ The above step configures the ONOS VTN app by generating a configuration
 and pushing it to ONOS.  You are able to see and modify the configuration
 via the GUI as follows:
 
-* To see the generated configuration, go to *http://xos/admin/onos/onosapp/*, select
+* To see the generated configuration, go to *http://xos/admin/onos/onosapp/* 
+([caveat](#logging-into-xos-on-cloudlab-or-any-remote-host)), select
 *VTN_ONOS_app*, then the *Attributes* tab, and look for the
 `rest_onos/v1/network/configuration/` attribute.  
 
@@ -182,3 +181,20 @@ ubuntu@mysite-vsg-1:~$ sudo docker ps
 CONTAINER ID        IMAGE                    COMMAND             CREATED             STATUS              PORTS               NAMES
 2b0bfb3662c7        andybavier/docker-vcpe   "/sbin/my_init"     5 days ago          Up 5 days                               vcpe-222-111
 ```
+
+### Logging into XOS on CloudLab (or any remote host)
+
+The XOS service is accessible on the POD at `http://xos/`, but `xos` maps to a private IP address
+on the management network.  If you install CORD on CloudLab 
+you will not be able to directly access the XOS GUI.
+In order to log into the XOS GUI in the browser on your local machine (desktop or laptop), 
+you can set up an SSH tunnel to your CloudLab node.  Assuming that 
+`<your-cloudlab-node>` is the DNS name of the CloudLab node hosting your experiment,
+run the following on your local machine to create the tunnel:
+
+```
+$ ssh -L 8888:xos:80 <your-cloudlab-node>
+```
+
+Then you should be able to access the XOS GUI by pointing your browser to
+`http://localhost:8888`.  Default username/password is `padmin@vicci.org/letmein`.
