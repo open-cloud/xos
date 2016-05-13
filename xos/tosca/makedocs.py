@@ -10,9 +10,6 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
 
-# a bit of a hack for developing -- run m4 to generate xos.yaml from xos.m4
-os.system("m4 %s/custom_types/xos.m4 > %s/custom_types/xos.yaml" % (currentdir, currentdir))
-
 """
 {'derived_from': 'tosca.nodes.Root', 'capabilities': {'scalable': {'type': 'tosca.capabilities.Scalable'},
 'service': {'type': 'tosca.capabilities.xos.Service'}}, 'properties': {'icon_url': {'required': False,
