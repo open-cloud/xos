@@ -7,6 +7,9 @@ profile
 setup/*
 setup/id_rsa/*
 xos/configurations/frontend/Dockerfile
+xos/configurations/mcord/admin-openrc.sh
+xos/configurations/setup/*
+xos/configurations/common/*
 xos/core/xoslib/karma-*
 xos/core/xoslib/docs
 xos/core/xoslib/coverage

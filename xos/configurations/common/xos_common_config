@@ -6,7 +6,7 @@ deployment=plc
 name=xos
 user=postgres
 password=password
-host=66.201.46.26
+host=localhost
 port=5432
 
 [api]
@@ -37,9 +37,7 @@ backoff_disabled=True
 images_directory=/opt/xos/images
 dependency_graph=/opt/xos/model-deps
 logfile=/var/log/xos_backend.log
-proxy_ssh=True
-proxy_ssh_key=/root/setup/node_key
-proxy_ssh_user=root
+save_ansible_output=True
 
 [gui]
 disable_minidashboard=True
@@ -47,7 +45,3 @@ branding_name=Open Cloud
 branding_icon=/static/logo.png
 branding_favicon=/static/favicon.png
 branding_bg=/static/bg.jpg
-
-[networking]
-use_vtn=True
-

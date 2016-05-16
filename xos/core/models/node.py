@@ -13,7 +13,6 @@ class Node(PlCoreBase):
     site_deployment = models.ForeignKey(SiteDeployment, related_name='nodes')
     site = models.ForeignKey(Site, null=True, blank=True, related_name='nodes')
     tags = generic.GenericRelation(Tag)
-#    default = models.BooleanField(default=False, help_text="make this a default node to use when creating new instances")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
