@@ -277,6 +277,11 @@ def createInstance():
     instance.save()
 
 
+def createService():
+    service = Service(id=1)
+    service.name = 'test-service'
+    service.save()
+
 @hooks.before_all
 def my_before_all_hook(transactions):
     # print "-------------------------------- Before All Hook --------------------------------"
@@ -298,6 +303,16 @@ def my_before_each_hook(transaction):
 # @hooks.after_each
 # def my_after_each(transaction):
 #     print "-------------------------------- Test end --------------------------------"
+
+
+@hooks.before("Services > Services > View a Service Detail")
+def get_service(transaction):
+    createService()
+
+
+@hooks.before("Services > Services > Delete a Service")
+def delete_service(transaction):
+    createService()
 
 
 @hooks.before("Truckroll > Truckroll Collection > Create a Truckroll")
