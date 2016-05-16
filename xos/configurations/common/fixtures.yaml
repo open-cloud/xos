@@ -93,7 +93,7 @@ topology_template:
     Developer:
       type: tosca.nodes.DashboardView
       properties:
-          url: template:xosDeveloper_datatables
+          url: template:xosDeveloper
 
     Services Grid:
       type: tosca.nodes.DashboardView

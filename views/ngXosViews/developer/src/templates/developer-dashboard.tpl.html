@@ -1,0 +1,16 @@
+<div class="row">
+  <div ng-class="{'col-sm-4': vm.sites.length > 1 || !vm.sites, 'col-sm-6': vm.sites.length <= 1}" class="text-center">
+    <h3>Instances per Slice</h3>
+    <xos-smart-pie ng-if="vm.instancePerSliceConfig.data.length > 0" config="vm.instancePerSliceConfig"></xos-smart-pie>
+  </div>
+  <div ng-if="vm.sites.length > 1" class="col-sm-4 text-center">
+    <h3>Instances per Site</h3>
+    <xos-smart-pie ng-if="vm.instancePerSiteConfig.data.length > 0" config="vm.instancePerSiteConfig"></xos-smart-pie>
+  </div>
+  <div ng-class="{'col-sm-4': vm.sites.length > 1 || !vm.sites, 'col-sm-6': vm.sites.length <= 1}" class="text-center">
+    <h3>Network per Slice</h3>
+    <xos-smart-pie ng-if="vm.networkPerSliceConfig.data.length > 0" config="vm.networkPerSliceConfig"></xos-smart-pie>
+  </div>
+</div>
+
+<xos-table config="vm.tableConfig" data="vm.slices"></xos-table>

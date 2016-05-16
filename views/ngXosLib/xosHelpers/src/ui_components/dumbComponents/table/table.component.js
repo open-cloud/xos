@@ -289,15 +289,14 @@
             },
             {
               label: 'Features',
-              prop: 'features',
               type: 'custom',
               formatter: (val) => {
                 
-                let cdnEnabled = val.cdn ? 'enabled' : 'disabled';
+                let cdnEnabled = val.features.cdn ? 'enabled' : 'disabled';
                 return `
                   Cdn is ${cdnEnabled},
-                  uplink speed is ${val.uplink_speed}
-                  and downlink speed is ${val.downlink_speed}
+                  uplink speed is ${val.features.uplink_speed}
+                  and downlink speed is ${val.features.downlink_speed}
                 `;
               }
             }
