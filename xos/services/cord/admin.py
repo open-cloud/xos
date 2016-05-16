@@ -46,7 +46,7 @@ class VOLTServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('voltadmin.html', 'top', 'administration'),
                            ) #('hpctools.html', 'top', 'tools') )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VOLTService.get_service_objects_by_user(request.user)
 
 class VOLTTenantForm(forms.ModelForm):
@@ -91,7 +91,7 @@ class VOLTTenantAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs = (('general','Details'),)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VOLTTenant.get_tenant_objects_by_user(request.user)
 
 #-----------------------------------------------------------------------------
@@ -168,7 +168,7 @@ class VSGServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('vcpeadmin.html', 'top', 'administration'),
                            ) #('hpctools.html', 'top', 'tools') )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VSGService.get_service_objects_by_user(request.user)
 
 class VSGTenantForm(forms.ModelForm):
@@ -220,7 +220,7 @@ class VSGTenantAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs = (('general','Details'),)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VSGTenant.get_tenant_objects_by_user(request.user)
 
 #-----------------------------------------------------------------------------
@@ -272,7 +272,7 @@ class VBNGServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('vbngadmin.html', 'top', 'administration'),
                            ) #('hpctools.html', 'top', 'tools') )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VBNGService.get_service_objects_by_user(request.user)
 
 class VBNGTenantForm(forms.ModelForm):
@@ -319,7 +319,7 @@ class VBNGTenantAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs = (('general','Details'),)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VBNGTenant.get_tenant_objects_by_user(request.user)
 
 #-----------------------------------------------------------------------------
@@ -341,7 +341,7 @@ class VOLTTenantInline(XOSTabularInline):
     def selflink_reverse_path(self):
         return "admin:cord_volttenant_change"
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         qs = super(VOLTTenantInline, self).queryset(request)
         return qs.filter(kind=VOLT_KIND)
 
@@ -401,7 +401,7 @@ class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
         ('tenantrootprivileges','Privileges')
     )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return CordSubscriberRoot.get_tenant_objects_by_user(request.user)
 
 admin.site.register(VOLTService, VOLTServiceAdmin)

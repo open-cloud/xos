@@ -44,7 +44,7 @@ class VTRServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('vtradmin.html', 'top', 'administration'),
                            ) #('hpctools.html', 'top', 'tools') )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VTRService.get_service_objects_by_user(request.user)
 
 class VTRTenantForm(forms.ModelForm):
@@ -104,7 +104,7 @@ class VTRTenantAdmin(ReadOnlyAwareAdmin):
     def is_synced(self, obj):
         return (obj.enacted is not None) and (obj.enacted >= obj.updated)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VTRTenant.get_tenant_objects_by_user(request.user)
 
 admin.site.register(VTRService, VTRServiceAdmin)

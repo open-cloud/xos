@@ -56,7 +56,7 @@ class FabricServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('fabricadmin.html', 'top', 'administration'),
                            )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return FabricService.get_service_objects_by_user(request.user)
 
 admin.site.register(FabricService, FabricServiceAdmin)

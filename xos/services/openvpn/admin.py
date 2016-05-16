@@ -93,7 +93,7 @@ class OpenVPNServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_tabs = (('general', 'VPN Service Details'),
                       ('slices', 'Slices'),)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return OpenVPNService.get_service_objects_by_user(request.user)
 
 
@@ -222,7 +222,7 @@ class OpenVPNTenantAdmin(ReadOnlyAwareAdmin):
     suit_form_tabs = (('general', 'Details'),
                       ('tenantprivileges', 'Privileges'))
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return OpenVPNTenant.get_tenant_objects_by_user(request.user)
 
 

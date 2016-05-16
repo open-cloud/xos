@@ -89,7 +89,7 @@ class VTNServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = ( # ('vtnadmin.html', 'top', 'administration'),
                            ) #('hpctools.html', 'top', 'tools') )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VTNService.get_service_objects_by_user(request.user)
 
 admin.site.register(VTNService, VTNServiceAdmin)

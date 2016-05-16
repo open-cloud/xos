@@ -71,7 +71,7 @@ class ONOSServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('onosadmin.html', 'top', 'administration'),
                            )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return ONOSService.get_service_objects_by_user(request.user)
 
 class ONOSAppForm(forms.ModelForm):
@@ -117,7 +117,7 @@ class ONOSAppAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs = (('general','Details'), ('tenantattrs', 'Attributes'))
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return ONOSApp.get_tenant_objects_by_user(request.user)
 
 admin.site.register(ONOSService, ONOSServiceAdmin)
