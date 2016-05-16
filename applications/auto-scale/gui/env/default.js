@@ -1,3 +1,3 @@
 module.exports = {
-  host: 'http://clnode015.clemson.cloudlab.us:9991'
+  host: 'http://130.127.133.58:9991/'
 }

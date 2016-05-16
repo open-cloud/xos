@@ -14,7 +14,7 @@ class XOSExampleTenant(XOSResource):
     provides = "tosca.nodes.ExampleTenant"
     xos_model = ExampleTenant
     name_field = "service_specific_id"
-    copyin_props = ("tenant_message")
+    copyin_props = ("tenant_message",)
 
     def get_xos_args(self, throw_exception=True):
         args = super(XOSExampleTenant, self).get_xos_args()

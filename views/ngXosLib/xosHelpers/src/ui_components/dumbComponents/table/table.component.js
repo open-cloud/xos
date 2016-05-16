@@ -22,7 +22,10 @@
     *   columns: [
     *     {
     *       label: 'Human readable name',
-    *       prop: 'Property to read in the model object'
+    *       prop: 'Property to read in the model object',
+    *       type: 'boolean'| 'array'| 'object'| 'custom'| 'date' | 'icon' // see examples for more details
+            formatter: fn(), // receive the whole item if tipe is custom and return a string
+            link: fn() // receive the whole item and return an url
     *     }
     *   ],
     *   classes: 'table table-striped table-bordered',
@@ -37,7 +40,7 @@
           }
         ],
         filter: 'field', // can be by `field` or `fulltext`
-        order: true // whether to show ordering arrows
+        order: true | {field: 'property name', reverse: true | false} // whether to show ordering arrows, or a configuration for a default ordering
     * }
     * ```
     * @param {Array} data The data that should be rendered
@@ -223,6 +226,16 @@
               label: 'Details',
               prop: 'details',
               type: 'object'
+            },
+            {
+              label: 'Created',
+              prop: 'created',
+              type: 'date'
+            },
+            {
+              label: 'Icon',
+              type: 'icon',
+              formatter: item => item.icon //note that this refer to [Bootstrap Glyphicon](http://getbootstrap.com/components/#glyphicons)
             }
           ]
         };
@@ -235,7 +248,9 @@
             details: {
               c_tag: '243',
               s_tag: '444'
-            }
+            },
+            created: new Date('December 17, 1995 03:24:00'),
+            icon: 'music'
           },
           {
             name: 'Gili',
@@ -244,7 +259,9 @@
             details: {
               c_tag: '675',
               s_tag: '893'
-            }
+            },
+            created: new Date(),
+            icon: 'camera'
           }
         ]
       });
@@ -272,15 +289,14 @@
             },
             {
               label: 'Features',
-              prop: 'features',
               type: 'custom',
               formatter: (val) => {
                 
-                let cdnEnabled = val.cdn ? 'enabled' : 'disabled';
+                let cdnEnabled = val.features.cdn ? 'enabled' : 'disabled';
                 return `
                   Cdn is ${cdnEnabled},
-                  uplink speed is ${val.uplink_speed}
-                  and downlink speed is ${val.downlink_speed}
+                  uplink speed is ${val.features.uplink_speed}
+                  and downlink speed is ${val.features.downlink_speed}
                 `;
               }
             }
@@ -385,7 +401,11 @@
                       </dl>
                     </span>
                     <span ng-if="col.type === 'custom'">
-                      {{col.formatter(item[col.prop])}}
+                      {{col.formatter(item)}}
+                    </span>
+                    <span ng-if="col.type === 'icon'">
+                      <i class="glyphicon glyphicon-{{col.formatter(item)}}">
+                      </i>
                     </span>
                   </td>
                   <td ng-if="vm.config.actions">
@@ -426,13 +446,30 @@
             throw new Error('[xosTable] Please provide a columns list in the configuration');
           }
 
-          // if columns with type 'custom' are provide
-          // check that a custom formatted is provided too
+          // handle default ordering
+          if(this.config.order && angular.isObject(this.config.order)){
+            this.reverse = this.config.order.reverse || false;
+            this.orderBy = this.config.order.field || 'id';
+          }
+
+          // if columns with type 'custom' are provided
+          // check that a custom formatte3 is provided too
           let customCols = _.filter(this.config.columns, {type: 'custom'});
           if(angular.isArray(customCols) && customCols.length > 0){
             _.forEach(customCols, (col) => {
               if(!col.formatter || !angular.isFunction(col.formatter)){
                 throw new Error('[xosTable] You have provided a custom field type, a formatter function should provided too.');
+              }
+            })
+          }
+
+          // if columns with type 'icon' are provided
+          // check that a custom formatte3 is provided too
+          let iconCols = _.filter(this.config.columns, {type: 'icon'});
+          if(angular.isArray(iconCols) && iconCols.length > 0){
+            _.forEach(iconCols, (col) => {
+              if(!col.formatter || !angular.isFunction(col.formatter)){
+                throw new Error('[xosTable] You have provided an icon field type, a formatter function should provided too.');
               }
             })
           }

@@ -3,7 +3,6 @@
 angular.module('xos.truckroll', [
   'ngResource',
   'ngCookies',
-  'ngLodash',
   'ui.router',
   'xos.helpers'
 ])
@@ -17,12 +16,6 @@ angular.module('xos.truckroll', [
 .config(function($httpProvider){
   $httpProvider.interceptors.push('NoHyperlinks');
 })
-.service('Subscribers', function($resource){
-  return $resource('/xos/subscribers/:id');
-})
-.service('Truckroll', function($resource){
-  return $resource('/xoslib/truckroll/:id');
-})
 .directive('truckroll', function(){
   return {
     restrict: 'E',
@@ -30,11 +23,17 @@ angular.module('xos.truckroll', [
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/truckroll.tpl.html',
-    controller: function($timeout, Subscribers, Truckroll){
+    controller: function($timeout, $log, Subscribers, Truckroll){
       Subscribers.query().$promise
       .then((subscribers) => {
         this.subscribers = subscribers;
       });
+
+      $log.log('Truckorll Component!');
+      $log.info('Truckorll Component!');
+      $log.warn('Truckorll Component!');
+      $log.error('Truckorll Component!');
+      $log.debug('Truckorll Component!');
 
       this.loader = false;
 

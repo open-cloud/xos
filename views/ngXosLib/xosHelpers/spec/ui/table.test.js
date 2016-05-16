@@ -228,6 +228,9 @@
           });
 
           describe('and is custom', () => {
+
+            let formatterFn = jasmine.createSpy('formatter').and.returnValue('Formatted Content');
+
             beforeEach(() => {
               scope.data = [
                 {categories: ['Film', 'Music']}
@@ -238,7 +241,7 @@
                     label: 'Categories',
                     prop: 'categories',
                     type: 'custom',
-                    formatter: () => 'Formatted Content'
+                    formatter: formatterFn
                   }
                 ]
               }
@@ -285,6 +288,54 @@
             it('should format data using the formatter property', () => {
               let td1 = $(element).find('tbody tr:first-child')[0];
               expect($(td1).text().trim()).toEqual('Formatted Content');
+              // the custom formatted should receive the entire object, otherwise is not so custom
+              expect(formatterFn).toHaveBeenCalledWith({categories: ['Film', 'Music']});
+            });
+          });
+
+          describe('and is icon', () => {
+
+            beforeEach(() => {
+              scope.config = {
+                columns: [
+                  {
+                    label: 'Label 1',
+                    prop: 'label-1',
+                    type: 'icon',
+                    formatter: item => {
+                      switch (item['label-1']){
+                        case 1:
+                          return 'ok';
+                        case 2:
+                          return 'remove';
+                        case 3:
+                          return 'plus'
+                      }
+                    }
+                  }
+                ]
+              };
+              scope.data = [
+                {
+                  'label-1': 1
+                },
+                {
+                  'label-1': 2
+                },
+                {
+                  'label-1': 3
+                }
+              ];
+              compileElement();
+            });
+
+            it('should render a custom icon', () => {
+              let td1 = $(element).find('tbody tr:first-child td')[0];
+              let td2 = $(element).find('tbody tr:nth-child(2) td')[0];
+              let td3 = $(element).find('tbody tr:last-child td')[0];
+              expect($(td1).find('i')).toHaveClass('glyphicon-ok');
+              expect($(td2).find('i')).toHaveClass('glyphicon-remove');
+              expect($(td3).find('i')).toHaveClass('glyphicon-plus');
             });
           });
         });
@@ -327,7 +378,7 @@
             expect(errorFunctionWrapper).toThrow(new Error('[xosTable] The link property should be a function.'));
           });
 
-          it('should render a comma separated list', () => {
+          it('should render a link with the correct url', () => {
             let link = $(element).find('tbody tr:first-child td a')[0];
             expect($(link).attr('href')).toEqual('/link/1');
           });
@@ -421,6 +472,23 @@
             expect(arrows.length).toEqual(4);
           });
 
+          describe('and a default ordering is passed', () => {
+
+            beforeEach(() => {
+              scope.config.order = {
+                field: 'label-1',
+                reverse: true
+              };
+              compileElement();
+            });
+
+            it('should orderBy the default order', () => {
+              var tr = $(element).find('tr');
+              expect($(tr[1]).text()).toContain('Sample 2.2');
+              expect($(tr[2]).text()).toContain('Sample 1.1');
+            });
+          });
+
           describe('and an order is set', () => {
             beforeEach(() => {
               isolatedScope.orderBy = 'label-1';
@@ -429,6 +497,7 @@
             });
 
             it('should orderBy', function() {
+              // console.log($(element).find('table'));
               var tr = $(element).find('tr');
               expect($(tr[1]).text()).toContain('Sample 2.2');
               expect($(tr[2]).text()).toContain('Sample 1.1');
