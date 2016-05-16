@@ -1,0 +1,48 @@
+[
+   {
+      "id":1,
+      "name":"mysite_management1",
+      "site":1,
+      "max_instances":10,
+      "networks":[1, 2],
+      "current_user_roles":[
+         "Admin"
+      ],
+      "instance_distribution":{
+         "mysite": 4,
+         "anothersite": 5
+      },
+      "instance_distribution_ready":{
+         "mysite": 3,
+         "anothersite": 1
+      },
+      "instance_total":9,
+      "instance_total_ready":4,
+      "instance_status":{
+
+      }
+   },
+   {
+      "id":2,
+      "name":"mysite_management2",
+      "site":1,
+      "max_instances":10,
+      "networks":[2, 3, 4],
+      "current_user_roles":[
+         "Access"
+      ],
+      "instance_distribution":{
+        "mysite": 3,
+        "anothersite": 3
+      },
+      "instance_distribution_ready":{
+         "mysite": 2,
+         "anothersite": 3
+      },
+      "instance_total":6,
+      "instance_total_ready":5,
+      "instance_status":{
+
+      }
+   }
+]
