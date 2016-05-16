@@ -510,16 +510,12 @@ class LeastLoadedNodeScheduler(Scheduler):
 
     def pick(self):
         from core.models import Node
-#        nodes = list(Node.objects.all())
-#        nodes = Node.objects.all()
-#MCORD        
         if not self.slice.default_node:
             nodes = list(Node.objects.all())
             nodes = sorted(nodes, key=lambda node: node.instances.all().count())
         else:
             nodes = list(Node.objects.filter(name = self.slice.default_node))
 
-#MCORD
         if self.label:
             nodes = nodes.filter(nodelabels__name=self.label)
 
