@@ -1,10 +1,10 @@
 {
-  "name": "xos-<%= name %>",
+  "name": "xos-serviceGrid",
   "version": "0.0.0",
   "authors": [
-    "<%= author.name %> <<%= author.email %>>"
+    "Matteo Scandolo <teo@onlab.us>"
   ],
-  "description": "The <%= name %> view",
+  "description": "The serviceGrid view",
   "license": "MIT",
   "ignore": [
     "**/.*",
@@ -27,6 +27,6 @@
     "lodash": "~4.11.1",
     "bootstrap-css": "3.3.6",
     "angular-chart.js": "~0.10.2",
-    "d3": "~3.5.17"
+    "d3": "~3.5.13"
   }
 }

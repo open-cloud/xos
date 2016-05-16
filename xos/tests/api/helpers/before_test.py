@@ -277,13 +277,19 @@ def createInstance():
     instance.save()
 
 
+def createService():
+    service = Service(id=1)
+    service.name = 'test-service'
+    service.save()
+
 # setupInstance()
 # depl = createDeployment()
-createTestSubscriber()
+# createTestSubscriber()
 # createInstance()
 # createSlice()
 # createNode(depl)
 # createImage('test-image')
 # createFlavors()
 # createTruckroll()
-setUpTruckroll()
+# setUpTruckroll()
+createService()

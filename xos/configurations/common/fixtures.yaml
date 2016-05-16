@@ -95,6 +95,11 @@ topology_template:
       properties:
           url: template:xosDeveloper_datatables
 
+    Services Grid:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosServiceGrid
+
 # -----------------------------------------------------------------------------
 # Network Templates
 # -----------------------------------------------------------------------------

@@ -14,7 +14,12 @@ let bowerDeps = wiredep({
   cwd: path.join(__dirname, '../../'), // pretending to be in the ngXosLib root
   exclude: ['Chart.js']
 });
-bowerDeps = bowerDeps.js.map(d => d.match(/bower_components\/([a-zA-Z\-`.]+)\//)[1]);
+bowerDeps = bowerDeps.js.map(d => {
+  let path = d.match(/bower_components\/([1-9a-zA-Z\-`.]+)\//);
+  if(path){
+    return path[1];
+  }
+});
 
 // test values
 const viewName = 'testDashboard';
