@@ -1,28 +1,45 @@
+'use strict';
+
+// THIS KARMA CONF WILL ITERATE THE VIEW FOLDER AND PERFORM ALL THE TESTS!!!
+
 // Karma configuration
 // Generated on Tue Oct 06 2015 09:27:10 GMT+0000 (UTC)
 
 /* eslint indent: [2,2], quotes: [2, "single"]*/
 
-// this is to load a different suite of test while developing
-var testFiles = '*';
-if(process.argv[4]){
-  testFiles = process.argv[4];
-}
+const babelPreset = require('babel-preset-es2015');
+const fs = require('fs');
+
+const viewDir = '../../xos/core/xoslib/static/js/';
+let viewFiles = fs.readdirSync(viewDir);
+
+// hack to avoid testing backbone implementation (they need to be removed)
+viewFiles = viewFiles.filter(f => f.indexOf('xosAdminSite') === -1);
+
+viewFiles = viewFiles.filter(f => f.indexOf('js') >= 0).filter(f => f.match(/^xos[A-Z][a-z]+/)).map(f => `${viewDir}${f}`);
 
 /*eslint-disable*/
-var wiredep = require('wiredep');
-var path = require('path');
 
-var bowerComponents = wiredep({devDependencies: true})[ 'js' ].map(function( file ){
-  return path.relative(process.cwd(), file);
-});
-
-var files = bowerComponents.concat([
+var files = [
   'node_modules/babel-polyfill/dist/polyfill.js',
-  'xosHelpers/src/**/*.module.js',
-  'xosHelpers/src/**/*.js',
-  `xosHelpers/spec/**/${testFiles}.test.js`
-]);
+
+  // loading jquery (it's used in tests)
+  `./bower_components/jasmine-jquery/lib/jasmine-jquery.js`,
+  `./bower_components/jquery/dist/jquery.js`,
+
+  // loading helpers and vendors
+  `../../xos/core/xoslib/static/js/vendor/ngXosVendor.js`,
+  `../../xos/core/xoslib/static/js/vendor/ngXosHelpers.js`,
+
+  // loading ngMock
+  `./bower_components/angular-mocks/angular-mocks.js`,
+
+  // loading templates
+  `../../xos/core/xoslib/dashboards/xosDiagnostic.html`,
+
+  // loading files
+  `../ngXosViews/*/spec/*.test.js`
+].concat(viewFiles);
 
 module.exports = function(config) {
 /*eslint-enable*/
@@ -49,17 +66,14 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'xosHelpers/**/*.js': ['babel'],
+      '../ngXosViews/**/spec/*.test.js': ['babel'],
     },
 
     babelPreprocessor: {
       options: {
-        presets: ['es2015'],
-        sourceMap: 'both'
-      },
-      filename: function (file) {
-        return file.originalPath;
-      },
+        presets: [babelPreset],
+        sourceMap: 'inline'
+      }
     },
 
     //ngHtml2JsPreprocessor: {
@@ -93,8 +107,7 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: [
-      'PhantomJS',
-      // 'Chrome'
+      'PhantomJS'
     ],
 
 
