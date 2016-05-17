@@ -60,7 +60,12 @@ module.exports = generators.Base.extend({
   },
   writing: {
     rcFiles: function(){
-      userName = user.git.name().split(' ');
+      if (!user.git.name()){
+        userName = ['','']
+      }
+      else {
+        userName = user.git.name().split(' ');
+      }
       this.fs.copy(this.templatePath('.bowerrc'), this.destinationPath(`${this.config.get('folder')}/${config.name}/.bowerrc`));
       this.fs.copy(this.templatePath('.gitignore'), this.destinationPath(`${this.config.get('folder')}/${config.name}/.gitignore`));
     },
