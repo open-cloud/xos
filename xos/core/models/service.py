@@ -232,7 +232,7 @@ class Service(PlCoreBase, AttributeMixin):
                     continue
                 for cn in ns.network.controllernetworks.all():
                     if cn.net_id:
-                        net = {"name": ns.network.name, "net_id": cn.net_id}
+                        net = {"name": ns.network.name, "net_id": cn.net_id, "serviceId": cn.net_id}
                         nets.append(net)
         return nets
 
@@ -242,14 +242,17 @@ class Service(PlCoreBase, AttributeMixin):
             if tenant.provider_service:
                 for net in tenant.provider_service.get_vtn_nets():
                     if not net in provider_nets:
+                        net["bidirectional"] = tenant.connect_method!="private-unidirectional"
                         provider_nets.append(net)
         return provider_nets
 
     def get_vtn_dependencies_ids(self):
-        return [x["net_id"] for x in self.get_vtn_dependencies_nets()]
+        # deprecated
+        return self.get_vtn_dependencies_nets()
 
     def get_vtn_dependencies_names(self):
-        return [x["name"] + "_" + x["net_id"] for x in self.get_vtn_dependencies_nets()]
+        # deprecated
+        return self.get_vtn_dependencies_nets()
 
     def get_vtn_src_ids(self):
         return [x["net_id"] for x in self.get_vtn_src_nets()]
@@ -391,7 +394,9 @@ class Tenant(PlCoreBase, AttributeMixin):
     """
 
     CONNECTIVITY_CHOICES = (('public', 'Public'),
-                            ('private', 'Private'), ('na', 'Not Applicable'))
+                            ('private', 'Private'),
+                            ('private-unidirectional', 'Private Unidirectional'),
+                            ('na', 'Not Applicable'))
 
     # when subclassing a service, redefine KIND to describe the new service
     KIND = "generic"
