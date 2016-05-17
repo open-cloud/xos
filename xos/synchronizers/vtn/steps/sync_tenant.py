@@ -11,6 +11,7 @@ from core.models.service import COARSE_KIND
 from services.cord.models import Tenant
 from xos.logger import Logger, logging
 from requests.auth import HTTPBasicAuth
+from services.onos.models import ONOSService
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")
@@ -36,7 +37,7 @@ class SyncTenant(SyncStep):
 #        vtn_tenant = vtn_tenant[0]
 #
 #        vtn_service = vtn_tenant.provider_service
-        vtn_service = Service.objects.filter(name="service_ONOS_VTN")  # XXX fixme - harcoded
+        vtn_service = ONOSService.get_service_objects().filter(name="ONOS_CORD")  # XXX fixme - harcoded
         if not vtn_service:
             raise "No VTN Onos Service"
 
@@ -44,6 +45,9 @@ class SyncTenant(SyncStep):
 
     def get_vtn_addr(self):
         vtn_service = self.get_vtn_onos_service()
+
+        if vtn_service.rest_hostname:
+            return vtn_service.rest_hostname+":"+str(vtn_service.rest_port)
 
         if not vtn_service.slices.exists():
             raise "VTN Service has no slices"
@@ -55,7 +59,7 @@ class SyncTenant(SyncStep):
 
         vtn_instance = vtn_slice.instances.all()[0]
 
-        return vtn_instance.node.name
+        return vtn_instance.node.name + ":8181"
 
     def call(self, **args):
         global glo_saved_vtn_maps
@@ -68,25 +72,29 @@ class SyncTenant(SyncStep):
                dependencies = service.get_vtn_dependencies_ids()
                if dependencies:
                    for dependency in dependencies:
-                       vtn_maps.append( (id, dependency) )
-
-        for vtn_map in vtn_maps:
-            if not (vtn_map in glo_saved_vtn_maps):
-                # call vtn rest api to add map
-                url = "http://" + self.get_vtn_addr() + ":8181/onos/cordvtn/service-dependency/%s/%s" % (vtn_map[0], vtn_map[1])
-
-                print "POST %s" % url
-                r = requests.post(url, auth=HTTPBasicAuth('karaf', 'karaf') )    # XXX fixme - hardcoded auth
-                if (r.status_code != 200):
-                    raise Exception("Received error from vtn service (%d)" % r.status_code)
+                       if dependency["bidirectional"]:
+                           directionality="b"
+                       else:
+                           directionality="u"
+                       vtn_maps.append( (id, dependency["serviceId"], directionality) )
 
         for vtn_map in glo_saved_vtn_maps:
             if not vtn_map in vtn_maps:
                 # call vtn rest api to delete map
-                url = "http://" + self.get_vtn_addr() + ":8181/onos/cordvtn/service-dependency/%s/%s" % (vtn_map[0],vtn_map[1])
+                url = "http://" + self.get_vtn_addr() + "/onos/cordvtn/service-dependency/%s/%s/%s" % (vtn_map[0],vtn_map[1], vtn_map[2])
 
-                print "DELETE %s" % url
+                logger.info( "DELETE %s" % url )
                 r = requests.delete(url, auth=HTTPBasicAuth('karaf', 'karaf') )    # XXX fixme - hardcoded auth
+                if (r.status_code != 200):
+                    raise Exception("Received error from vtn service (%d)" % r.status_code)
+
+        for vtn_map in vtn_maps:
+            if not (vtn_map in glo_saved_vtn_maps):
+                # call vtn rest api to add map
+                url = "http://" + self.get_vtn_addr() + "/onos/cordvtn/service-dependency/%s/%s/%s" % (vtn_map[0], vtn_map[1], vtn_map[2])
+
+                logger.info( "POST %s" % url )
+                r = requests.post(url, auth=HTTPBasicAuth('karaf', 'karaf') )    # XXX fixme - hardcoded auth
                 if (r.status_code != 200):
                     raise Exception("Received error from vtn service (%d)" % r.status_code)
 
