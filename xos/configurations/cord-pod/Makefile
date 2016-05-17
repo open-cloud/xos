@@ -59,5 +59,6 @@ ceilometer_custom_images:
 
 .PHONY: local_containers
 local_containers:
+	cat /usr/local/share/ca-certificates/* > ../../../containers/xos/local_certs.crt
 	cd ../../../containers/xos; make devel
 	cd ../../../containers/synchronizer; make
