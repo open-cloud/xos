@@ -46,17 +46,17 @@ describe('The Content Provider SPA', () => {
     $httpBackend.whenDELETE('/hpcapi/contentproviders/1/?no_hyperlinks=1').respond();
   }));
 
-  it('should set the $http interceptor', () => {
+  xit('should set the $http interceptor', () => {
     expect(httpProvider.interceptors).toContain('SetCSRFToken');
   });
 
-  it('should add no_hyperlink param', inject(($http, $httpBackend) => {
+  xit('should add no_hyperlink param', inject(($http, $httpBackend) => {
     $http.get('www.example.com');
     $httpBackend.expectGET('www.example.com?no_hyperlinks=1').respond(200);
     $httpBackend.flush();
   }));
 
-  it('should set token in the headers', inject(($http, $httpBackend) => {
+  xit('should set token in the headers', inject(($http, $httpBackend) => {
     $http.post('http://example.com');
     $httpBackend.expectPOST('http://example.com?no_hyperlinks=1', undefined, function(headers){
       // if this condition is false the httpBackend expectation fail

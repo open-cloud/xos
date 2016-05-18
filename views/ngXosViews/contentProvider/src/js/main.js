@@ -177,13 +177,13 @@ angular.module('xos.contentProvider', [
     }
   };
 })
-.directive('contentProviderCdn', function($stateParams, CdnPrefix, ContentProvider, _){
+.directive('contentProviderCdn', function($stateParams, CdnPrefix, ContentProvider){
   return{
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
     templateUrl: 'templates/cp_cdn_prefix.html',
-    controller: function(){
+    controller: function(_){
       var self = this;
 
       this.pageName = 'cdn';
@@ -195,7 +195,7 @@ angular.module('xos.contentProvider', [
         }).catch(function(e){
           self.result = {
             status: 0,
-            msg: e.data.detail
+            msg: e.data ? e.data.detail : ''
           };
         });
       }
@@ -203,8 +203,10 @@ angular.module('xos.contentProvider', [
       CdnPrefix.query().$promise
       .then(function(prf){
         self.prf = prf;
+        // console.log(prf, $stateParams.id);
         // set the active CdnPrefix for this contentProvider
-        self.cp_prf = _.where(prf, {contentProvider: parseInt($stateParams.id)});
+        self.cp_prf = [];
+        self.cp_prf.push(_.find(prf, {contentProvider: parseInt($stateParams.id)}));
       }).catch(function(e){
         self.result = {
           status: 0,
@@ -244,13 +246,13 @@ angular.module('xos.contentProvider', [
     }
   };
 })
-.directive('contentProviderServer', function($stateParams, OriginServer, ContentProvider, _){
+.directive('contentProviderServer', function($stateParams, OriginServer, ContentProvider){
   return{
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
     templateUrl: 'templates/cp_origin_server.html',
-    controller: function(){
+    controller: function(_){
       this.pageName = 'server';
       this.protocols = {'http': 'HTTP', 'rtmp': 'RTMP', 'rtp': 'RTP', 'shout': 'SHOUTcast'};
 
@@ -310,13 +312,13 @@ angular.module('xos.contentProvider', [
     }
   };
 })
-.directive('contentProviderUsers', function($stateParams, ContentProvider, User, _){
+.directive('contentProviderUsers', function($stateParams, ContentProvider, User){
   return{
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
     templateUrl: 'templates/cp_user.html',
-    controller: function(){
+    controller: function(_){
       var self = this;
 
       this.pageName = 'user';
@@ -361,7 +363,7 @@ angular.module('xos.contentProvider', [
       this.saveContentProvider = function(cp){
 
         // flatten the user to id of array
-        cp.users = _.pluck(cp.users, 'id');
+        cp.users = _.map(cp.users, 'id');
 
         cp.$update()
         .then(function(res){
