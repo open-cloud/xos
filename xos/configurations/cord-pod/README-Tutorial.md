@@ -19,13 +19,10 @@ ubuntu@pod:~$ wget https://raw.githubusercontent.com/open-cloud/openstack-cluste
 ubuntu@pod:~$ bash single-node-pod.sh -e
 ```
 
-> NOTE: The above script can also automatically perform (nearly) all the steps of this
-> tutorial if run as `bash single-node-pod -e -t`.  However, you will still need 
-> to manually log into XOS and create an ExampleTenant, as described under 
-> [Configure ExampleService in XOS](#configure-exampleservice-in-xos)
-> below.  The script will tell you when it's time to do this.
+> NOTE: The above script can also automatically perform all the steps of this
+> tutorial if run as `bash single-node-pod -e -t`.  
 
-Be patient... it will take at least one hour to fully set up the single-node POD.
+Be patient... it will take **at least one hour** to fully set up the single-node POD.
 
 ## Include ExampleService in XOS
 
@@ -147,3 +144,20 @@ ExampleService
 
 Hooray!  This shows that the subscriber (1) has external connectivity, and
 (2) can access the new service via the vSG.
+
+## Troubleshooting
+
+Sometimes the ExampleService instance comes up with the wrong default route.  If the 
+ExampleService instance is active but the `curl` command does not work, SSH to the
+instance and check its default gateway.  Assuming the management address of the `mysite_exampleservice`
+VM is 172.27.0.3:
+
+```
+ubuntu@pod:~$ ssh-agent bash
+ubuntu@pod:~$ ssh-add
+ubuntu@pod:~$ ssh -A ubuntu@nova-compute
+ubuntu@nova-compute:~$ ssh ubuntu@172.27.0.3
+ubuntu@mysite_exampleservice-1:~$ route -n
+```
+
+If the default gateway is not `10.168.1.1`, manually set it to this value.
