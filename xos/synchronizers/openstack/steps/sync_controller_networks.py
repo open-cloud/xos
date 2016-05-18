@@ -22,7 +22,7 @@ import pdb
 class SyncControllerNetworks(OpenStackSyncStep):
     requested_interval = 0
     provides=[Network]
-    observes=ControllerNetwork	
+    observes=ControllerNetwork
     playbook='sync_controller_networks.yaml'
 
     def alloc_subnet(self, uuid):
@@ -61,6 +61,15 @@ class SyncControllerNetworks(OpenStackSyncStep):
         self.cidr=cidr
         slice = controller_network.network.owner
 
+        # (VTN only) A primary network is one with an external gateway.
+        # For now we set it to True for all but the management network.
+        # In future we may want to make it an attribute of a Network.
+        use_vtn = getattr(Config(), "networking_use_vtn", False)
+        if use_vtn:
+            primary = not network_name.startswith("management")
+        else:
+            primary = False
+
         network_fields = {'endpoint':controller_network.controller.auth_url,
                     'endpoint_v3': controller_network.controller.auth_url_v3,
                     'admin_user':slice.creator.email,
@@ -72,7 +81,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
                     'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
                     'cidr':cidr,
                     'gateway':self.alloc_gateway(cidr),
-                    'use_vtn':getattr(Config(), "networking_use_vtn", False),
+                    'primary':primary,
                     'delete':False
                     }
         return network_fields
@@ -97,7 +106,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
         # hopefully a better approach than above
         if (controller_network.network.template.shared_network_name or controller_network.network.template.shared_network_id):
             return SyncStep.SYNC_WITHOUT_RUNNING
-        
+
         if not controller_network.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_network.controller)
             return
@@ -128,7 +137,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
                     'subnet_name':subnet_name,
                     'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
                     'cidr':cidr,
-		    'delete':True	
+		    'delete':True
                     }
 
         return network_fields
