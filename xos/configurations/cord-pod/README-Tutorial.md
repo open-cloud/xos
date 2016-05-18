@@ -149,14 +149,34 @@ Hooray!  This shows that the subscriber (1) has external connectivity, and
 Sometimes the ExampleService instance comes up with the wrong default route.  If the 
 ExampleService instance is active but the `curl` command does not work, SSH to the
 instance and check its default gateway.  Assuming the management address of the `mysite_exampleservice`
-VM is 172.27.0.3:
+VM is 172.27.0.2:
 
 ```
 ubuntu@pod:~$ ssh-agent bash
 ubuntu@pod:~$ ssh-add
 ubuntu@pod:~$ ssh -A ubuntu@nova-compute
-ubuntu@nova-compute:~$ ssh ubuntu@172.27.0.3
-ubuntu@mysite_exampleservice-1:~$ route -n
+ubuntu@nova-compute:~$ ssh ubuntu@172.27.0.2
+ubuntu@mysite-exampleservice-2:~$ route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         172.27.0.1      0.0.0.0         UG    0      0        0 eth1
+10.168.1.0      0.0.0.0         255.255.255.0   U     0      0        0 eth0
+172.27.0.0      0.0.0.0         255.255.255.0   U     0      0        0 eth1
 ```
 
 If the default gateway is not `10.168.1.1`, manually set it to this value.
+
+```
+ubuntu@mysite-exampleservice-2:~$ sudo bash
+root@mysite-exampleservice-2:~# route del default gw 172.27.0.1
+root@mysite-exampleservice-2:~# route add default gw 10.168.1.1
+root@mysite-exampleservice-2:~# route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         10.168.1.1      0.0.0.0         UG    0      0        0 eth0
+10.168.1.0      0.0.0.0         255.255.255.0   U     0      0        0 eth0
+172.27.0.0      0.0.0.0         255.255.255.0   U     0      0        0 eth1
+```
+
+Now the VM should have Internet connectivity and XOS will start downloading Apache. 
+A short while later the `curl` test should complete.
