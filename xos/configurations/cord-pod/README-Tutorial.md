@@ -19,8 +19,7 @@ ubuntu@pod:~$ wget https://raw.githubusercontent.com/open-cloud/openstack-cluste
 ubuntu@pod:~$ bash single-node-pod.sh -e
 ```
 
-> NOTE: The above script can also automatically perform all the steps of this
-> tutorial if run as `bash single-node-pod -e -t`.  
+> NOTE: The above script can also automatically perform all tutoral steps if run as `bash single-node-pod -e -t`.  
 
 Be patient... it will take **at least one hour** to fully set up the single-node POD.
 
