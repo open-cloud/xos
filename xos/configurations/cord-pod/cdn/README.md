@@ -57,8 +57,9 @@
 
 ### CDN on VTN - important notes
 
-* We manually edited synchronizers/vcpe/templates/dnsasq_safe_servers.j2 inside the vcpe synchronizer VM:
+We manually edited synchronizers/vcpe/templates/dnsasq_safe_servers.j2 inside the vcpe synchronizer VM:
 
+    # temporary for ONS demo
     address=/z.cdn.turner.com/207.141.192.134
     address=/cnn-vh.akamaihd.net/207.141.192.134
 
