@@ -203,6 +203,7 @@ class ControllerNetwork(PlCoreBase):
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
     subnet = models.CharField(max_length=32, blank=True)
+    segmentation_id = models.IntegerField(null=True, blank=True)
 
     class Meta:
         unique_together = ('network', 'controller')

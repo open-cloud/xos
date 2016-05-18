@@ -2076,7 +2076,7 @@ class ControllerNetworkInline(XOSTabularInline):
     verbose_name = "Controller Network"
     suit_classes = 'suit-tab suit-tab-admin-only'
     fields = ['backend_status_icon', 'controller',
-              'net_id', 'subnet_id', 'subnet']
+              'net_id', 'subnet_id', 'subnet', 'segmentation_id']
     readonly_fields = ('backend_status_icon', )
 
 

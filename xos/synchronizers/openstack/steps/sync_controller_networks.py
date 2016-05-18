@@ -77,6 +77,22 @@ class SyncControllerNetworks(OpenStackSyncStep):
                     }
         return network_fields
 
+    def update_neutron_attributes(self, controller_network):
+        # A bunch of stuff to compensate for OpenStackDriver.client_driveR()
+        # not being in working condition.
+        from openstack.client import OpenStackClient
+        from openstack.driver import OpenStackDriver
+        caller = controller_network.network.owner.creator
+        auth = {'username': caller.email,
+                'password': caller.remote_password,
+                'tenant': controller_network.network.owner.name}
+        client = OpenStackClient(controller=controller_network.controller, **auth)
+        driver = OpenStackDriver(client=client)
+
+        neutron_network = driver.shell.quantum.list_networks(controller_network.net_id)["networks"][0]
+        if "provider:segmentation_id" in neutron_network:
+            controller_network.segmentation_id = int(neutron_network["provider:segmentation_id"])
+
     def map_sync_outputs(self, controller_network,res):
         network_id = res[0]['id']
         subnet_id = res[1]['id']
@@ -84,8 +100,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
         controller_network.subnet = self.cidr
         controller_network.subnet_id = subnet_id
 	controller_network.backend_status = '1 - OK'
+        self.update_neutron_attributes(controller_network)
         controller_network.save()
-
 
     def map_sync_inputs(self, controller_network):
         # XXX This check should really be made from booleans, rather than using hardcoded network names
