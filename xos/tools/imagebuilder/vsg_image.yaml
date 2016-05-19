@@ -28,9 +28,6 @@
 - hosts: chroots
   connection: chroot
   tasks:
-      - name: write a file
-        shell: echo > /tmp/foobar creates=/tmp/foobar
-
       - name: Stop resolvconf service
         service: name=resolvconf state=stopped
 
@@ -88,6 +85,4 @@
       - name: Unconnect the nbd device, if it is connected
         shell: qemu-nbd --disconnect /dev/nbd0 removes=/dev/nbd0p1
 
-      - name: Tell the user what to do
-        shell: echo "Find your image in /image/vsg.qcow2"
 
