@@ -11,13 +11,13 @@
         shell: qemu-nbd --disconnect /dev/nbd0 removes=/dev/nbd0p1
 
       - name: copy the base image to the desgination filename
-        shell: cp /image/trusty-server-multi-nic.img /image/vsg.qcow2 creates=/image/vsg.qcow2
+        shell: cp /image/trusty-server-multi-nic.img /image/vsg.img creates=/image/vsg.img
 
       - name: make the mountpount
         shell: mkdir /image/inside creates=/image/inside
 
       - name: connect the nbd device
-        shell: qemu-nbd --connect=/dev/nbd0 /image/vsg.qcow2 creates=/dev/nbd0p1
+        shell: qemu-nbd --connect=/dev/nbd0 /image/vsg.img creates=/dev/nbd0p1
 
       - name: mount the image
         shell: mount /dev/nbd0p1 /image/inside creates=/image/inside/root
