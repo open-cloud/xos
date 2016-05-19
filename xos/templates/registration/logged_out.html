@@ -1,12 +1,24 @@
-{% extends "admin/base_site.html" %}
-{% load i18n admin_modify%}
+
+{% extends "admin/base_logout.html" %}
+{% load i18n admin_modify admin_static%}
+
+<link rel="stylesheet" type="text/css" href="{% static 'xos.css' %}" />
+
+
+
 
 {% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></div>{% endblock %}
 
 {% block content %}
+    <div id="content-main">
+        <div class="row">
+            <div class="col-xs-12">
+                <img class="logo" src="{% static XOS_BRANDING_ICON %}"/>
+                <p class="logoutptag">{% random_str "a" %}</p>
+            </div>
+        </div>
+        <input type="submit" class="btn btn-primary btn-block" value="{% trans 'Log in again' %}" onclick="location.href = '{% url 'admin:index' %}'; "/>
 
-<p>{% random_str "a" %}</p>
 
-<p><a href="{% url 'admin:index' %}">{% trans 'Log in again' %}</a></p>
-
+    </div>
 {% endblock %}
