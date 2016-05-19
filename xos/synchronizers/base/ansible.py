@@ -201,7 +201,6 @@ def run_template_ssh(name, opts, path='', expected_num=None):
             proxy_command = "ProxyCommand ssh -q -i %s -o StrictHostKeyChecking=no %s@%s" % (private_key_pathname, instance_id, hostname)
         f.write('ssh_args = -o "%s"\n' % proxy_command)
     f.write('scp_if_ssh = True\n')
-    f.write('pipelining = True\n')
     f.write('\n[defaults]\n')
     f.write('host_key_checking = False\n')
     f.close()
