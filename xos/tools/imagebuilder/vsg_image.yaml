@@ -1,0 +1,47 @@
+- hosts: localhost
+  connection: local
+  tasks:
+      - name: Unmount proc, if it is mounted
+        shell: umount /image/inside/proc removes=/image/inside/proc/cmdline
+
+      - name: Unmount the image, if it is mounted
+        shell: umount /image/inside removes=/image/inside/root
+
+      - name: Unconnect the nbd device, if it is connected
+        shell: qemu-nbd --disconnect /dev/nbd0 removes=/dev/nbd0p1
+
+      - name: copy the base image to the desgination filename
+        shell: cp /image/trusty-server-multi-nic.img /image/vsg.qcow2 creates=/image/vsg.qcow2
+
+      - name: make the mountpount
+        shell: mkdir /image/inside creates=/image/inside
+
+      - name: connect the nbd device
+        shell: qemu-nbd --connect=/dev/nbd0 /image/vsg.qcow2 creates=/dev/nbd0p1
+
+      - name: mount the image
+        shell: mount /dev/nbd0p1 /image/inside creates=/image/inside/root
+
+      - name: mount proc
+        shell: mount -t proc proc /image/inside/proc creates=/image/inside/proc/cmdline
+
+- hosts: chroots
+  connection: chroot
+  tasks:
+      - name: write a file
+        shell: echo > /tmp/foobar creates=/tmp/foobar
+
+      # The chrooted environment needs /run/resolvconf/resolv.conf for the
+      # Internet to work
+      - name: make /run/resolvconf
+        shell: mkdir /run/resolvconf creates=/run/resolvconf
+
+      - name: setup resolv.conf
+        copy: src=resolv.conf dest=/run/resolvconf/resolv.conf
+
+      - name: install bridge-utils
+        apt: name=bridge-utils state=present
+
+      - name: cleanup /run/resolvconf
+        shell: rm -rf /run/resolvconf removes=/run/resolvconf
+
