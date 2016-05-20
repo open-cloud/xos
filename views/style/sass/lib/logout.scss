@@ -5,29 +5,27 @@ body.logout img.logo{
    padding-top: 20px;
 }
 
-p.logoutptag{
-  margin: 80px 10px 10px;
-  font-size: 16px;
-  text-align: center;
-}
 h1.logouth1tag{
-  position: absolute;
-
-  margin: 130px 43%;
+  text-align: center;
 }
 
 .logout #content-main {
   float: none;
-    height: 330px;
-    margin: 100px auto 0;
-    width: 316px;
+
+    width: 300px;
   overflow-x: hidden;
-  padding: 10px;
+
 }
 .logout{
-  #content-main {
-    background: rgba(255,255,255,0.82);
-  }
+
+  background: rgba(255,255,255,0.82);
+  float: none;
+  height: 330px;
+  margin: 100px auto 0;
+  width: 316px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  padding: 10px 0px 0px 10px;
 
   .requestDialog.ui-widget input{
     background-color: rgb(250, 255, 189);
@@ -40,6 +38,10 @@ h1.logouth1tag{
     @include button-variant($btn-primary-color, $btn-primary-bg, $btn-primary-border);
     background: $btn-primary-bg;
   }
-
+  p.logoutptag {
+    margin: 20px 10px 20px;
+    font-size: 16px;
+    text-align: center;
+  }
 }
 
