@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('xos.diagnostic')
-  .service('LogicTopologyHelper', function($window, $log, $rootScope, _, serviceTopologyConfig, NodeDrawer, ChartData){
+  .service('LogicTopologyHelper', function($window, $log, $rootScope, lodash, serviceTopologyConfig, NodeDrawer, ChartData){
 
     var diagonal, nodes, links, i = 0, svgWidth, svgHeight, layout;
 
@@ -21,18 +21,18 @@
 
       let xPos = [];
 
-      let totalElWidth = _.reduce(serviceTopologyConfig.elWidths, (el, val) => val + el, 0);
+      let totalElWidth = lodash.reduce(serviceTopologyConfig.elWidths, (el, val) => val + el, 0);
 
       let remainingSpace = svgWidth - totalElWidth - (serviceTopologyConfig.widthMargin * 2);
 
       let step = remainingSpace / (serviceTopologyConfig.elWidths.length - 1);
 
-      _.forEach(serviceTopologyConfig.elWidths, (el, i) => {
+      lodash.forEach(serviceTopologyConfig.elWidths, (el, i) => {
 
         // get half of the previous elements width
         let previousElWidth = 0;
         if(i !== 0){
-          previousElWidth = _.reduce(serviceTopologyConfig.elWidths.slice(0, i), (el, val) => val + el, 0);
+          previousElWidth = lodash.reduce(serviceTopologyConfig.elWidths.slice(0, i), (el, val) => val + el, 0);
         }
 
         let elPos =

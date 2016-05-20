@@ -4,6 +4,7 @@
   angular.module('xos.diagnostic', [
     'ngResource',
     'ngCookies',
+    'ngLodash',
     'ngAnimate',
     'ui.router',
     'xos.helpers'
