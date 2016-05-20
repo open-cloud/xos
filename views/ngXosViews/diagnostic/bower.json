@@ -26,7 +26,6 @@
     "angular-ui-router": "~0.2.15",
     "angular-cookies": "~1.4.7",
     "angular-resource": "~1.4.7",
-    "ng-lodash": "~0.3.0",
     "bootstrap-css": "~3.3.6"
   }
 }

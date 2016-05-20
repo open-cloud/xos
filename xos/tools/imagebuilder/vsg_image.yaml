@@ -1,0 +1,88 @@
+- hosts: localhost
+  connection: local
+  tasks:
+      - name: Unmount proc, if it is mounted
+        shell: umount /image/inside/proc removes=/image/inside/proc/cmdline
+
+      - name: Unmount the image, if it is mounted
+        shell: umount /image/inside removes=/image/inside/root
+
+      - name: Unconnect the nbd device, if it is connected
+        shell: qemu-nbd --disconnect /dev/nbd0 removes=/dev/nbd0p1
+
+      - name: copy the base image to the desgination filename
+        shell: cp /image/trusty-server-multi-nic.img /image/vsg.img creates=/image/vsg.img
+
+      - name: make the mountpount
+        shell: mkdir /image/inside creates=/image/inside
+
+      - name: connect the nbd device
+        shell: qemu-nbd --connect=/dev/nbd0 /image/vsg.img creates=/dev/nbd0p1
+
+      - name: mount the image
+        shell: mount /dev/nbd0p1 /image/inside creates=/image/inside/root
+
+      - name: mount proc
+        shell: mount -t proc proc /image/inside/proc creates=/image/inside/proc/cmdline
+
+- hosts: chroots
+  connection: chroot
+  tasks:
+      - name: Stop resolvconf service
+        service: name=resolvconf state=stopped
+
+      - name: Disable resolvconf service
+        copy: dest=/etc/init/resolvconf.override content="manual"
+
+      - name: Install resolv.conf
+        copy: src=files/vm-resolv.conf
+          dest=/etc/resolv.conf
+
+      - name: install bridge-utils
+        apt: name=bridge-utils state=present
+
+      - name: Docker repository
+        copy: src=files/docker.list
+          dest=/etc/apt/sources.list.d/docker.list
+
+      - name: Import the repository key
+        apt_key: keyserver=keyserver.ubuntu.com id=36A1D7869245C8950F966E92D8576A8BA88D21E9
+
+      - name: Update cache
+        apt: update_cache=yes
+
+      - name: install Docker
+        apt: name=lxc-docker state=present
+
+      - name: install python-setuptools
+        apt: name=python-setuptools state=present
+
+      - name: install pip
+        easy_install: name=pip
+
+      - name: install docker-py
+        pip: name=docker-py version=0.5.3
+
+      - name: install Pipework
+        get_url: url=https://raw.githubusercontent.com/jpetazzo/pipework/master/pipework
+           dest=/usr/local/bin/pipework
+           mode=0755
+
+# now unmount the image file
+
+- hosts: localhost
+  connection: local
+  tasks:
+      - name: sync the filesystem
+        shell: sync
+
+      - name: Unmount proc, if it is mounted
+        shell: umount /image/inside/proc removes=/image/inside/proc/cmdline
+
+      - name: Unmount the image, if it is mounted
+        shell: umount /image/inside removes=/image/inside/root
+
+      - name: Unconnect the nbd device, if it is connected
+        shell: qemu-nbd --disconnect /dev/nbd0 removes=/dev/nbd0p1
+
+

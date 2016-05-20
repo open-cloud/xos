@@ -1,23 +1,62 @@
+'use strict';
+
+// THIS KARMA CONF WILL ITERATE THE VIEW FOLDER AND PERFORM ALL THE TESTS!!!
+
 // Karma configuration
 // Generated on Tue Oct 06 2015 09:27:10 GMT+0000 (UTC)
 
 /* eslint indent: [2,2], quotes: [2, "single"]*/
 
-// CONFIGURATION FOR JENKINS TESTS
+const babelPreset = require('babel-preset-es2015');
+const fs = require('fs');
+
+const viewDir = '../../xos/core/xoslib/static/js/';
+const vendorDir = '../../xos/core/xoslib/static/js/vendor/';
+let viewFiles = fs.readdirSync(viewDir);
+let vendorFiles = fs.readdirSync(vendorDir);
+
+// hack to avoid testing backbone implementation (they need to be removed)
+viewFiles = viewFiles
+              .filter(f => f.indexOf('xosAdminSite') === -1)
+              .filter(f => f.indexOf('xosCord') === -1)
+              .filter(f => f.indexOf('xosTenant') === -1)
+              .filter(f => f.indexOf('xosHpc') === -1);
+
+viewFiles = viewFiles.filter(f => f.indexOf('js') >= 0).filter(f => f.match(/^xos[A-Z][a-z]+/)).map(f => `${viewDir}${f}`);
+
+vendorFiles = vendorFiles.filter(f => f.indexOf('js') >= 0).filter(f => f.match(/^xos[A-Z][a-z]+/)).map(f => `${vendorDir}${f}`);
 
 /*eslint-disable*/
-var wiredep = require('wiredep');
-var path = require('path');
 
-var bowerComponents = wiredep({devDependencies: true})[ 'js' ].map(function( file ){
-  return path.relative(process.cwd(), file);
-});
-
-var files = bowerComponents.concat([
+var files = [
   'node_modules/babel-polyfill/dist/polyfill.js',
-  '../../xos/core/xoslib/static/js/vendor/ngXosHelpers.js',
+
+
+  // loading jquery (it's used in tests)
+  `./bower_components/jquery/dist/jquery.js`,
+  `./bower_components/jasmine-jquery/lib/jasmine-jquery.js`,
+
+  // loading helpers and vendors
+  `../../xos/core/xoslib/static/js/vendor/ngXosVendor.js`,
+  `../../xos/core/xoslib/static/js/vendor/ngXosHelpers.js`,
+
+  // loading ngMock
+  'template.module.js',
+  `./bower_components/angular-mocks/angular-mocks.js`,
+
+  // loading templates
+  `../../xos/core/xoslib/dashboards/xosDiagnostic.html`,
+
+]
+.concat(vendorFiles)
+.concat(viewFiles)
+.concat([
+  // loading tests
+  `../ngXosViews/*/spec/*.test.js`,
+  `../ngXosViews/*/spec/**/*.mock.js`,
   'xosHelpers/spec/**/*.test.js'
 ]);
+
 
 module.exports = function(config) {
 /*eslint-enable*/
@@ -44,17 +83,16 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'xosHelpers/**/*.js': ['babel', 'coverage'],
+      '../ngXosViews/**/spec/*.test.js': ['babel'],
+      '../ngXosViews/**/spec/*.mock.js': ['babel'],
+      'xosHelpers/spec/**/*.test.js': ['babel'],
     },
 
     babelPreprocessor: {
       options: {
-        presets: ['es2015'],
+        presets: [babelPreset],
         sourceMap: 'inline'
-      },
-      filename: function (file) {
-        return file.originalPath;
-      },
+      }
     },
 
     //ngHtml2JsPreprocessor: {
@@ -89,16 +127,19 @@ module.exports = function(config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_ERROR,
+    logLevel: config.LOG_INFO,
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
+    autoWatch: true,
 
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
+    browsers: [
+      'PhantomJS',
+      // 'Chrome'
+    ],
 
 
     // Continuous Integration mode

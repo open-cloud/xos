@@ -369,10 +369,19 @@
                 <tr>
                   <td ng-repeat="col in vm.columns">
                     <input
+                      ng-if="col.type !== 'boolean'"
                       class="form-control"
                       placeholder="Type to search by {{col.label}}"
                       type="text"
                       ng-model="vm.query[col.prop]"/>
+                    <select
+                      ng-if="col.type === 'boolean'"
+                      class="form-control"
+                      ng-model="vm.query[col.prop]">
+                      <option value="">-</option>
+                      <option value="true">True</option>
+                      <option value="false">False</option>
+                    </select>
                   </td>
                   <td ng-if="vm.config.actions"></td>
                 </tr>
