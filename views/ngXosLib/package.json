@@ -6,6 +6,7 @@
   "scripts": {
     "test": "karma start karma.conf.js",
     "test:ci": "karma start karma.conf.ci.js",
+    "test:views": "karma start karma.conf.views.js",
     "apigen": "node apigen/blueprintToNgResource.js",
     "swagger": "node xos-swagger-def.js",
     "doc": "gulp docs; cd ./docs",

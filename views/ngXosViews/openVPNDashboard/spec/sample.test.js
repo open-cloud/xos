@@ -11,7 +11,7 @@ describe('The User List', () => {
     
     httpBackend = $httpBackend;
     // Setting up mock request
-    $httpBackend.expectGET('/xos/users/?no_hyperlinks=1').respond([
+    $httpBackend.expectGET('/api/tenant/openvpn/list/?no_hyperlinks=1').respond([
       {
         email: 'jermowery@email.arizona.edu',
         firstname: 'Jeremy',
@@ -20,18 +20,15 @@ describe('The User List', () => {
     ]);
   
     scope = $rootScope.$new();
-    element = angular.element('<users-list></users-list>');
+    element = angular.element('<vpn-list></vpn-list>');
     $compile(element)(scope);
     scope.$digest();
     isolatedScope = element.isolateScope().vm;
   }));
 
-  it('should load 1 users', () => {
+  it('should load 1 vpn', () => {
     httpBackend.flush();
-    expect(isolatedScope.users.length).toBe(1);
-    expect(isolatedScope.users[0].email).toEqual('jermowery@email.arizona.edu');
-    expect(isolatedScope.users[0].firstname).toEqual('Jeremy');
-    expect(isolatedScope.users[0].lastname).toEqual('Mowery');
+    expect(isolatedScope.vpns.length).toBe(1);
   });
 
 });
