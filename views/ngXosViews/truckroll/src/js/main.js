@@ -29,12 +29,6 @@ angular.module('xos.truckroll', [
         this.subscribers = subscribers;
       });
 
-      $log.log('Truckorll Component!');
-      $log.info('Truckorll Component!');
-      $log.warn('Truckorll Component!');
-      $log.error('Truckorll Component!');
-      $log.debug('Truckorll Component!');
-
       this.loader = false;
 
       this.runTest = () => {

@@ -7,7 +7,7 @@
 // (works only for local environment as both application are served on the same domain)
 
 module.exports = {
-  host: 'http://apt020.apt.emulab.net:9999/',
-  xoscsrftoken: 'H6rV67DUIoxw9nBfWlCuUWPckyj10Hx2',
-  xossessionid: 'q7oc8zw5g2awk7n7hme7pmftukkwtf9d'
+  host: 'http://xos.dev:9999/',
+  xoscsrftoken: 'v9QmTQomVGdvkps5K3AxWfTJeidrFOvt',
+  xossessionid: 'h0chy2q37rrd8vpbt62c89wvp31b0ycb'
 };

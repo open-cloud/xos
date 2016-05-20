@@ -50,7 +50,7 @@ To generate the relative documentation use: `npm run doc`
 
 We have created a [yeoman](http://yeoman.io/) generator to help you scaffolding views.
 
->As it is in an early stage of development you should manually link it to your system, to do this enter `xos/views/ngXosLib/generator-xos` and run `npm link`.
+>As it is in an early stage of development you should manually link it to your system, to do this enter `xos/views/ngXosLib/generator-xos` and run `npm install && npm link`.
 
 #### To generate a new view
 
