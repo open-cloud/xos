@@ -47,6 +47,9 @@ topology_template:
     mysite:
       type: tosca.nodes.Site
 
+    trusty-server-multi-nic:
+      type: tosca.nodes.Image
+
     mysite_exampleservice:
       description: This slice holds the ExampleService
       type: tosca.nodes.Slice
@@ -62,6 +65,9 @@ topology_template:
           - exmapleserver:
               node: service#exampleservice
               relationship: tosca.relationships.MemberOfService
+          - image:
+              node: trusty-server-multi-nic
+              relationship: tosca.relationships.DefaultImage
 
     service#exampleservice:
       type: tosca.nodes.ExampleService
