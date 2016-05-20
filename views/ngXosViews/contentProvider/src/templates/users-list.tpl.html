@@ -1,0 +1,14 @@
+<div class="row">
+  <h1>Users List</h1>
+  <p>This is only an example view.</p>
+</div>
+<div class="row">
+  <div class="span4">Email</div>
+  <div class="span4">First Name</div>
+  <div class="span4">Last Name</div>
+</div>  
+<div class="row" ng-repeat="user in vm.users">
+  <div class="span4">{{user.email}}</div>
+  <div class="span4">{{user.firstname}}</div>
+  <div class="span4">{{user.lastname}}</div>
+</div>  

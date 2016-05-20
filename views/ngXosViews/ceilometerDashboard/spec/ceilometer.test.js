@@ -1,7 +1,7 @@
 'use strict';
 
 describe('In Ceilometer View', () => {
-
+  
   var scope, element, vm, httpBackend;
 
   beforeEach(module('xos.ceilometerDashboard'));
@@ -22,11 +22,11 @@ describe('In Ceilometer View', () => {
     }));
 
     describe('when loading service list', () => {
-      it('should append the list to the scope', inject(() => {
+      it('should append the list to the scope', () => {
         expect(vm.services.length).toBe(2);
         expect(vm.services[0].slices.length).toBe(2);
         expect(vm.services[1].slices.length).toBe(2);
-      }));
+      });
     });
 
     describe('when a slice is selected', () => {
@@ -64,8 +64,7 @@ describe('In Ceilometer View', () => {
       expect(Object.keys(vm.samplesList.thirdTenant).length).toBe(1)
     });
 
-    xit('should add the comparable samples to the dropdown list', () => {
-      console.log(vm.sampleLabels);
+    it('should add the comparable samples to the dropdown list', () => {
       expect(vm.sampleLabels[0].id).toEqual('anotherTenant')
       expect(vm.sampleLabels[1].id).toEqual('thirdTenant')
     });
@@ -104,7 +103,7 @@ describe('In Ceilometer View', () => {
     });
 
     describe('The format sample labels method', () => {
-      xit('should create an array of unique labels', () => {
+      it('should create an array of unique labels', () => {
         // unique because every resource has multiple samples (time-series)
         const samples = [
           {resource_id: 1, resource_name: 'fakeName'},

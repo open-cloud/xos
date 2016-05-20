@@ -144,20 +144,6 @@
               expect($(td1).find('i')).toHaveClass('glyphicon-ok');
               expect($(td2).find('i')).toHaveClass('glyphicon-remove');
             });
-
-            describe('with field filters', () => {
-              beforeEach(() => {
-                scope.config.filter = 'field';
-                compileElement();
-              });
-
-              it('should render a dropdown for filtering', () => {
-                let td1 = $(element).find('table tbody tr td')[0];
-                console.log(td1);
-                expect(td1).toContainElement('select');
-                expect(td1).not.toContainElement('input');
-              });
-            });
           });
 
           describe('and is date', () => {
@@ -318,12 +304,12 @@
                     type: 'icon',
                     formatter: item => {
                       switch (item['label-1']){
-                      case 1:
-                        return 'ok';
-                      case 2:
-                        return 'remove';
-                      case 3:
-                        return 'plus'
+                        case 1:
+                          return 'ok';
+                        case 2:
+                          return 'remove';
+                        case 3:
+                          return 'plus'
                       }
                     }
                   }

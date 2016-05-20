@@ -3,6 +3,7 @@
 angular.module('xos.openVPNDashboard', [
   'ngResource',
   'ngCookies',
+  'ngLodash',
   'ui.router',
   'xos.helpers'
 ])
