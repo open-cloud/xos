@@ -78,33 +78,20 @@
       line="127.0.0.1 localhost {{ '{{' }} ansible_hostname {{ '}}' }}"
       owner=root group=root mode=0644
 
+  - name: Verify that bridge-utils is installed
+    shell: stat /sbin/brctl
+
+  - name: Verify that docker is installed
+    shell: stat /usr/bin/docker
+
   - name: Check to see if network is setup
     stat: path=/root/network_is_setup
     register: network_is_setup
 
-  - name: Add eth0.500
+  - name: set up the network
     shell: "{{ '{{' }} item {{ '}}' }}"
     with_items:
-      - ifconfig br-wan down || true
-      - brctl delbr br-wan || true
-      - ip link del link eth0 eth0.500 || true
-      - ip link add link eth0 eth0.500 type vlan id 500
-      - ifconfig eth0.500 up
-      - ifconfig eth0.500 0.0.0.0
-      - ifconfig eth0.500 hw ether {{ wan_vm_mac }}
-      - ip addr add {{ wan_vm_ip }}/{{ wan_container_netbits }} dev eth0.500
-      - ip link set eth0.500 up
-      - ip route del default || true
-      - ip route add default via {{ wan_container_gateway_ip }}
-    when: network_is_setup.stat.exists == False
-
-  - name: install bridge-utils
-    apt: name=bridge-utils state=present
-
-  - name: now redo everything using a bridge
-    shell: "{{ '{{' }} item {{ '}}' }}"
-    with_items:
-       - ip link del link eth0 eth0.500
+       - ip link del link eth0 eth0.500 || true
        - ip link add link eth0 eth0.500 type vlan id 500
        - ip link set eth0.500 up
        - ifconfig br-wan down || true
@@ -127,53 +114,8 @@
     stat: path=/root/environment_is_setup
     register: environment_is_setup
 
-  - name: Docker repository
-    copy: src=/opt/xos/synchronizers/vcpe/files/docker.list
-      dest=/etc/apt/sources.list.d/docker.list
-    when: environment_is_setup.stat.exists == False
-
-  - name: Import the repository key
-    apt_key: keyserver=keyserver.ubuntu.com id=36A1D7869245C8950F966E92D8576A8BA88D21E9
-    when: environment_is_setup.stat.exists == False
-
-  - name: Update cache
-    apt: update_cache=yes
-    when: environment_is_setup.stat.exists == False
-
-  - name: install Docker
-    apt: name=lxc-docker state=present
-    when: environment_is_setup.stat.exists == False
-
-  - name: install python-setuptools
-    apt: name=python-setuptools state=present
-    when: environment_is_setup.stat.exists == False
-
-  - name: install pip
-    easy_install: name=pip
-    when: environment_is_setup.stat.exists == False
-
-  - name: install docker-py
-    pip: name=docker-py version=0.5.3
-    when: environment_is_setup.stat.exists == False
-
-  - name: install Pipework
-    get_url: url=https://raw.githubusercontent.com/jpetazzo/pipework/master/pipework
-       dest=/usr/local/bin/pipework
-       mode=0755
-    when: environment_is_setup.stat.exists == False
-
-  - name: Stop resolvconf service
-    service: name=resolvconf state=stopped
-    when: environment_is_setup.stat.exists == False
-
-  - name: Disable resolvconf service
-    copy: dest=/etc/init/resolvconf.override content="manual"
-    when: environment_is_setup.stat.exists == False
-
-  - name: Install resolv.conf
-    copy: src=/opt/xos/synchronizers/vcpe/files/vm-resolv.conf
-      dest=/etc/resolv.conf
-    when: environment_is_setup.stat.exists == False
+# Everything here is now baked into the vCPE image
+# Leave this spot in place for future temporary setup stuff
 
   - name: Remember that the environment is setup, so we never do the above again
     shell: touch /root/environment_is_setup
