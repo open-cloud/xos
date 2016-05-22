@@ -98,6 +98,9 @@ def createTestSubscriber():
 
     # print 'vRouter created'
 
+    # cvpe image
+    vsg_img = createImage('ubuntu-vcpe4')
+
     # Site
     site = Site.objects.get(name='MySite')
 
@@ -111,7 +114,7 @@ def createTestSubscriber():
     vsg_slice.service = vsg_service.id
     vsg_slice.site = site
     vsg_slice.caller = user
-
+    vsg_slice.default_image = vsg_img
     vsg_slice.save()
 
     vsg_service.save()
@@ -121,15 +124,13 @@ def createTestSubscriber():
     volt_service.name = 'service_volt'
     volt_service.save()
 
-    # cvpe image
-    createImage('ubuntu-vcpe4')
-
     # vcpe slice
     vcpe_slice = Slice(id=3)
     vcpe_slice.name = site.login_base + "_testVcpe"
     vcpe_slice.service = Service.objects.get(kind='vCPE')
     vcpe_slice.site = site
     vcpe_slice.caller = user
+    vcpe_slice.default_image =  vsg_img
     vcpe_slice.save()
 
     # print 'vcpe_slice created'
