@@ -18,19 +18,6 @@ xos_synchronizer_openstack:
         - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
         - ./images:/opt/xos/images:ro
 
-xos_synchronizer_exampleservice:
-    image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120; python /opt/xos/synchronizers/exampleservice/exampleservice-synchronizer.py -C /root/setup/files/exampleservice_config"
-    labels:
-        org.xosproject.kind: synchronizer
-        org.xosproject.target: exampleservice
-    links:
-        - xos_db
-    volumes:
-        - .:/root/setup:ro
-        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
-        - ./id_rsa:/opt/xos/synchronizers/exampleservice/exampleservice_private_key:ro
-
 xos_synchronizer_onos:
     image: xosproject/xos-synchronizer-openstack
     command: bash -c "python /opt/xos/synchronizers/onos/onos-synchronizer.py -C /opt/xos/synchronizers/onos/onos_synchronizer_config"
@@ -114,5 +101,4 @@ xos:
         - ./id_rsa.pub:/opt/xos/synchronizers/onos/onos_key.pub:ro
         - ./id_rsa.pub:/opt/xos/synchronizers/vcpe/vcpe_public_key:ro
         - ./id_rsa.pub:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key:ro
-        - ./id_rsa:/opt/xos/synchronizers/exampleservice/exampleservice_public_key:ro
 
