@@ -1,9 +1,6 @@
 <div class="row">
   <div class="col-sm-10">
     <h1>Graph</h1>
-    <ul>
-      <li>Use D3 to create a service chart based on coarse services?</li>
-    </ul>
   </div>
   <div class="col-sm-2">
     <a href="/admin/core/service/add" class="btn btn-success btn-block">
@@ -15,3 +12,29 @@
     </a>
   </div>
 </div>
+<xos-side-panel config="vm.panelConfig" show="vm.panelShow">
+  <h1>
+    {{vm.selectedNode.name}}
+    <small>
+      <i class="glyphicon glyphicon-{{vm.selectedNode.icon}}"></i>
+    </small>
+  </h1>
+  <table class="table">
+    <tr>
+      <td>Kind:</td>
+      <td>{{vm.selectedNode.kind}}</td>
+    </tr>
+    <tr>
+      <td>Enabled:</td>
+      <td>{{vm.selectedNode.enabled}}</td>
+    </tr>
+    <tr>
+      <td>Status:</td>
+      <td>{{vm.selectedNode.backend_status}}</td>
+    </tr>
+  </table>
+  <a ng-click="vm.exportToTosca(vm.selectedNode)" class="btn btn-primary">
+    Export to TOSCA
+    <i class="glyphicon glyphicon-export"></i>
+  </a>
+</xos-side-panel>
