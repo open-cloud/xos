@@ -39,7 +39,10 @@ module.exports = function(options){
   // delete previous builded file
   gulp.task('clean', function(){
     return del(
-      [options.dashboards + 'xosDiagnostic.html'],
+      [
+        options.dashboards + 'xosDiagnostic.html',
+        options.static + 'css/xosDiagnostic.css'
+      ],
       {force: true}
     );
   });
@@ -60,7 +63,8 @@ module.exports = function(options){
     .pipe(gulp.dest(options.tmp + '/css/'));
   });
 
-  gulp.task('copyCss', ['css'], function(){
+  // copy css in correct folder
+  gulp.task('copyCss', ['wait'], function(){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xosDiagnostic.css'))
     .pipe(gulp.dest(options.static + 'css/'))
@@ -69,8 +73,7 @@ module.exports = function(options){
   // compile and minify scripts
   gulp.task('scripts', function() {
     return gulp.src([
-      options.tmp + '**/*.js',
-      options.tmp + 'templates.js'
+      options.tmp + '**/*.js'
     ])
     .pipe(ngAnnotate())
     .pipe(angularFilesort())
@@ -86,19 +89,17 @@ module.exports = function(options){
     return gulp.src('./src/templates/*.html')
       .pipe(templateCache({
         module: 'xos.diagnostic',
-        root: 'templates/',
-        // templateFooter: TEMPLATE_FOOTER
+        root: 'templates/'
       }))
       .pipe(gulp.dest(options.tmp));
   });
 
   // copy html index to Django Folder
-  gulp.task('copyHtml', ['clean'], function(){
+  gulp.task('copyHtml', function(){
     return gulp.src(options.src + 'index.html')
       // remove dev dependencies from html
-      .pipe(replace(/<!-- bower:css -->(\n.*)*\n<!-- endbower --><!-- endcss -->/, ''))
-      .pipe(replace(/<!-- bower:js -->(\n.*)*\n<!-- endbower --><!-- endjs -->/, ''))
-      // .pipe(replace(/ng-app=".*"\s/, ''))
+      .pipe(replace(/<!-- bower:css -->(\n^<link.*)*\n<!-- endbower -->/gmi, ''))
+      .pipe(replace(/<!-- bower:js -->(\n^<script.*)*\n<!-- endbower -->/gmi, ''))
       // injecting minified files
       .pipe(
         inject(
@@ -139,30 +140,25 @@ module.exports = function(options){
       .pipe(eslint.failAfterError());
   });
 
-  // inject CSS
-  gulp.task('injectCss', function(){
-    return gulp.src(options.src + 'index.html')
-      .pipe(
-        inject(
-          gulp.src(options.src + 'css/*.css'),
-          {
-            ignorePath: [options.src]
-          }
-          )
-        )
-      .pipe(gulp.dest(options.src));
+  gulp.task('wait', function (cb) {
+    // setTimeout could be any async task
+    setTimeout(function () {
+      cb();
+    }, 1000);
   });
 
   gulp.task('build', function() {
     runSequence(
-      'lint',
+      'clean',
+      'sass',
       'templates',
       'babel',
       'scripts',
       'wiredep',
-      'injectCss',
+      'css',
+      'copyCss',
       'copyHtml',
-      'copyCss'
+      'cleanTmp'
     );
   });
 };

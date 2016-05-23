@@ -1,10 +1,10 @@
 {
-  "name": "xos-serviceTopology",
+  "name": "xos-diagnostic",
   "version": "0.0.0",
   "authors": [
     "Matteo Scandolo <teo@onlab.us>"
   ],
-  "description": "The serviceTopology view",
+  "description": "The diagnostic view",
   "license": "MIT",
   "ignore": [
     "**/.*",
@@ -14,18 +14,21 @@
     "test",
     "tests"
   ],
-  "dependencies": {
-    "d3": "~3.5.13",
-    "lodash": "~4.0.0",
-    "angular-animate": "~1.4.9"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "jquery": "~2.1.4",
-    "angular-mocks": "~1.4.7",
-    "angular": "~1.4.7",
-    "angular-ui-router": "~0.2.15",
-    "angular-cookies": "~1.4.7",
-    "angular-resource": "~1.4.7",
-    "bootstrap-css": "~3.3.6"
+    "jquery": "2.1.4",
+    "angular-mocks": "1.4.7",
+    "angular": "1.4.7",
+    "angular-ui-router": "0.2.15",
+    "angular-cookies": "1.4.7",
+    "angular-animate": "1.4.7",
+    "angular-resource": "1.4.7",
+    "lodash": "~4.11.1",
+    "bootstrap-css": "3.3.6",
+    "angular-chart.js": "~0.10.2",
+    "d3": "~3.5.17"
+  },
+  "resolutions": {
+    "angular": "1.4.7"
   }
 }
