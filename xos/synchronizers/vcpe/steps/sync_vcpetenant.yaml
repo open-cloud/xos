@@ -9,10 +9,6 @@
       dnsdemux_ip: {{ dnsdemux_ip }}
       firewall_enable: {{ firewall_enable }}
       url_filter_enable: {{ url_filter_enable }}
-      vlan_ids:
-        {% for vlan_id in vlan_ids %}
-        - {{ vlan_id }}
-        {% endfor %}
       c_tags:
         {% for c_tag in c_tags %}
         - {{ c_tag }}

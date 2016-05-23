@@ -28,7 +28,6 @@ else:
 class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = ReadOnlyField()
         service_specific_id = ReadOnlyField()
-        vlan_id = ReadOnlyField()      # XXX remove this
         c_tag = ReadOnlyField()
         s_tag = ReadOnlyField()
         vcpe_id = ReadOnlyField()
@@ -67,7 +66,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         class Meta:
             model = CordSubscriber
             fields = ('humanReadableName', 'id',
-                      'service_specific_id', 'vlan_id', 's_tag', 'c_tag',
+                      'service_specific_id', 's_tag', 'c_tag',
                       'vcpe_id', 'instance', 'instance_name', 'image', 'image_name',
                       'firewall_enable', 'firewall_rules',
                       'url_filter_enable', 'url_filter_rules', 'url_filter_level',
