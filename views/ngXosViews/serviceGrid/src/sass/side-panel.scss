@@ -1,0 +1,54 @@
+@import '../../../../style/sass/lib/_variables.scss';
+
+xos-side-panel{
+
+  .xos-side-panel-content{
+    position: fixed;
+    width: 30%;
+    height: 100%;
+    padding: 25px;
+    background: #fff;
+    overflow: scroll;
+
+    &.right {
+      border-left: 1px solid $gray;
+      top: 0;
+      //right: -35%;
+      right: 0;
+      visibility: hidden;
+      box-shadow: -10px 0px 20px -8px rgba(0,0,0,0.75);
+    }
+
+    &.right.out {
+      animation:  0.5s slideOutRight ease-in-out;
+      visibility: visible;
+    }
+
+    &.right.in {
+      animation:  0.5s slideInRight ease-in-out;
+      visibility: visible;
+    }
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translate3d(100%, 0, 0);
+    visibility: visible;
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    visibility: hidden;
+    transform: translate3d(100%, 0, 0);
+  }
+}
