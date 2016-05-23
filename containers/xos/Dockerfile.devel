@@ -35,7 +35,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     python-neutronclient \
     python-glanceclient \
     python-ceilometerclient
-    python-requests
 
 RUN pip install \
     django==1.7 \
@@ -63,7 +62,8 @@ RUN pip install \
     python-logstash \
     pygraphviz \
     pytz \
-    pyyaml
+    pyyaml \
+    requests
 
 RUN easy_install --upgrade httplib2
 
