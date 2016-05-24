@@ -23,6 +23,13 @@ class XOSAccessAgent(XOSResource):
         return args
 
     def postprocess(self, obj):
+        # For convenient, allow the port mappings to be specified by a Tosca
+        # string with commas between lines.
+        #      <port> <mac>,
+        #      <port> <mac>,
+        #      ...
+        #      <port> <mac>
+
         port_mappings_str = self.get_property("port_mappings")
         port_mappings = []
         if port_mappings_str:
