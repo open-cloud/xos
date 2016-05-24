@@ -17,6 +17,10 @@ xos_synchronizer_openstack:
         - .:/root/setup:ro
         - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
         - ./images:/opt/xos/images:ro
+    log_driver: "json-file"
+    log_opt:
+            max-size: "100k"
+            max-file: "5"
 
 xos_synchronizer_onos:
     image: xosproject/xos-synchronizer-openstack
@@ -29,6 +33,10 @@ xos_synchronizer_onos:
     volumes:
         - .:/root/setup:ro
         - ./id_rsa:/opt/xos/synchronizers/onos/onos_key:ro  # private key
+    log_driver: "json-file"
+    log_opt:
+            max-size: "100k"
+            max-file: "5"
 
 xos_synchronizer_vcpe:
     image: xosproject/xos-synchronizer-openstack
@@ -41,6 +49,10 @@ xos_synchronizer_vcpe:
     volumes:
         - .:/root/setup:ro
         - ./id_rsa:/opt/xos/synchronizers/vcpe/vcpe_private_key:ro  # private key
+    log_driver: "json-file"
+    log_opt:
+            max-size: "100k"
+            max-file: "5"
 
 xos_synchronizer_vtn:
     image: xosproject/xos-synchronizer-openstack
@@ -52,15 +64,10 @@ xos_synchronizer_vtn:
         - xos_db
     volumes:
         - .:/root/setup:ro
-
-#xos_synchronizer_vbng:
-#    image: xosproject/xos-synchronizer-openstack
-#    command: bash -c "sleep 120; python /opt/xos/synchronizers/vbng/vbng-synchronizer.py -C /opt/xos/synchronizers/vbng/vbng_synchronizer_config"
-#    labels:
-#        org.xosproject.kind: synchronizer
-#        org.xosproject.target: vbng
-#    links:
-#        - xos_db
+    log_driver: "json-file"
+    log_opt:
+            max-size: "100k"
+            max-file: "5"
 
 xos_synchronizer_monitoring_channel:
     image: xosproject/xos-synchronizer-openstack
@@ -73,6 +80,10 @@ xos_synchronizer_monitoring_channel:
     volumes:
         - .:/root/setup:ro
         - ./id_rsa:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key:ro  # private key
+    log_driver: "json-file"
+    log_opt:
+            max-size: "100k"
+            max-file: "5"
 
 xos_synchronizer_vtr:
     image: xosproject/xos-synchronizer-openstack
@@ -85,6 +96,10 @@ xos_synchronizer_vtr:
     volumes:
         - .:/root/setup:ro
         - ./id_rsa:/opt/xos/synchronizers/vtr/vcpe_private_key:ro  # private key
+    log_driver: "json-file"
+    log_opt:
+            max-size: "100k"
+            max-file: "5"
 
 xos:
     command: python /opt/xos/manage.py runserver 0.0.0.0:80 --insecure --makemigrations
@@ -101,3 +116,8 @@ xos:
         - ./id_rsa.pub:/opt/xos/synchronizers/onos/onos_key.pub:ro
         - ./id_rsa.pub:/opt/xos/synchronizers/vcpe/vcpe_public_key:ro
         - ./id_rsa.pub:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key:ro
+    log_driver: "json-file"
+    log_opt:
+            max-size: "100k"
+            max-file: "5"
+
