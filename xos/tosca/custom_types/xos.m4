@@ -349,21 +349,27 @@ node_types:
                 type: string
                 required: false
                 description: driver name
+            access_devices:
+                type: string
+                required: false
+                description: list of access devices, in format "uplink vlan", multiple entries separated by commas
 
-    tosca.nodes.AccessDevice:
-        derived_from: tosca.nodes.Root
-        description: >
-            CORD: A vOLT Access Device.
-        properties:
-            xos_base_props
-            uplink:
-               type: integer
-               required: false
-               description: uplink
-            vlan:
-               type: integer
-               required: false
-               description: vlan
+# XXX - uncomment if we want access device to be specified as separate Tosca
+# objects, rather than encoding them into VOLTDevice.access_devices
+#    tosca.nodes.AccessDevice:
+#        derived_from: tosca.nodes.Root
+#        description: >
+#            CORD: A vOLT Access Device.
+#        properties:
+#            xos_base_props
+#            uplink:
+#               type: integer
+#               required: false
+#               description: uplink
+#            vlan:
+#               type: integer
+#               required: false
+#               description: vlan
 
     tosca.nodes.AccessAgent:
         derived_from: tosca.nodes.Root
@@ -378,7 +384,7 @@ node_types:
             port_mappings:
                 type: string
                 required: false
-                description: list of port mappings, separated by commas
+                description: list of port mappings, in format "port mac", multiple entries separated by commas
 
 
     tosca.nodes.User:
@@ -1019,6 +1025,9 @@ node_types:
         derived_from: tosca.relationships.Root
 
     tosca.relationships.MemberOfDevice:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.UsesAgent:
         derived_from: tosca.relationships.Root
 
     tosca.capabilities.xos.Service:

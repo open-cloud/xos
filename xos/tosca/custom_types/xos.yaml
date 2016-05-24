@@ -876,36 +876,25 @@ node_types:
                 type: string
                 required: false
                 description: driver name
-
-    tosca.nodes.AccessDevice:
-        derived_from: tosca.nodes.Root
-        description: >
-            CORD: A vOLT Access Device.
-        properties:
-            no-delete:
-                type: boolean
-                default: false
-                description: Do not allow Tosca to delete this object
-            no-create:
-                type: boolean
-                default: false
-                description: Do not allow Tosca to create this object
-            no-update:
-                type: boolean
-                default: false
-                description: Do not allow Tosca to update this object
-            replaces:
+            access_devices:
                 type: string
                 required: false
-                descrption: Replaces/renames this object
-            uplink:
-               type: integer
-               required: false
-               description: uplink
-            vlan:
-               type: integer
-               required: false
-               description: vlan
+                description: list of access devices, in format "uplink vlan", multiple entries separated by commas
+
+#    tosca.nodes.AccessDevice:
+#        derived_from: tosca.nodes.Root
+#        description: >
+#            CORD: A vOLT Access Device.
+#        properties:
+#            xos_base_props
+#            uplink:
+#               type: integer
+#               required: false
+#               description: uplink
+#            vlan:
+#               type: integer
+#               required: false
+#               description: vlan
 
     tosca.nodes.AccessAgent:
         derived_from: tosca.nodes.Root
@@ -935,7 +924,7 @@ node_types:
             port_mappings:
                 type: string
                 required: false
-                description: list of port mappings, separated by commas
+                description: list of port mappings, in format "port mac", multiple entries separated by commas
 
 
     tosca.nodes.User:
