@@ -14,6 +14,9 @@ const deleteFile = file => {
   }
 }
 
+// config files
+const cfg = path.join(__dirname, `../../../env/default.js`);
+
 // source files
 const viewName = 'testDashboard';
 const fileName = viewName.replace(/^./, viewName[0].toUpperCase());
@@ -32,6 +35,12 @@ describe('The XOS Build script', function(){
   this.timeout(getMillisec(5));
 
   before(done => {
+    // if `default.js` config is not present
+    // create one (we check to avoid screwing up local envs)
+    if(!fs.existsSync(cfg)){
+      fs.writeFileSync(cfg, 'module.exports = {}');
+    }
+    
     console.log('Running generator');
     this.generator = helpers
       .run(require.resolve('../app'))

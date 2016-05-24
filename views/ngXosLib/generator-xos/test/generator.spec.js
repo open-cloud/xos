@@ -65,10 +65,7 @@ describe('Yeoman XOS generator', function () {
       .inDir(testPath)
       .withOptions({ 'skip-install': true })
       .withPrompts({
-        name: viewName,
-        host: 'test-host',
-        token: 'test-token',
-        session: 'test-session'
+        name: viewName
       })
       .on('end', done);
   });
@@ -76,12 +73,6 @@ describe('Yeoman XOS generator', function () {
 
   it('should generate base files in the correct directory', () => {
     assert.file(getDefaultFiles());
-  });
-
-  it('should create the env file with correct params', () => {
-    assert.fileContent(`${testPath}env/default.js`, 'host: \'test-host\'');
-    assert.fileContent(`${testPath}env/default.js`, 'xoscsrftoken: \'test-token\'');
-    assert.fileContent(`${testPath}env/default.js`, 'xossessionid: \'test-session\'');
   });
 
   it('should write username in package & bower json', () => {

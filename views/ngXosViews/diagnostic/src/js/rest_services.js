@@ -3,10 +3,10 @@
 
   angular.module('xos.diagnostic')
   .service('Services', function($resource){
-    return $resource('/xos/services/:id', {id: '@id'});
+    return $resource('/api/core/services/:id', {id: '@id'});
   })
   .service('Tenant', function($resource){
-    return $resource('/xos/tenants', {id: '@id'}, {
+    return $resource('/api/core/tenants', {id: '@id'}, {
       queryVsgInstances: {
         method: 'GET',
         isArray: true,
@@ -124,13 +124,13 @@
     }
   })
   .service('Slice', function($resource){
-    return $resource('/xos/slices', {id: '@id'});
+    return $resource('/api/core/slices', {id: '@id'});
   })
   .service('Instances', function($resource){
-    return $resource('/xos/instances/:id', {id: '@id'});
+    return $resource('/api/core/instances/:id', {id: '@id'});
   })
   .service('Node', function($resource, $q, Instances){
-    return $resource('/xos/nodes', {id: '@id'}, {
+    return $resource('/api/core/nodes', {id: '@id'}, {
       queryWithInstances: {
         method: 'GET',
         isArray: true,
