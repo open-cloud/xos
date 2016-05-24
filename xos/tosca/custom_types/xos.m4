@@ -335,6 +335,52 @@ node_types:
                 required: false
                 description: c_tag, identifies which subscriber within s_tag
 
+    tosca.nodes.VOLTDevice:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: A vOLT Device.
+        properties:
+            xos_base_props
+            openflow_id:
+                type: string
+                required: false
+                description: openflow id
+            driver:
+                type: string
+                required: false
+                description: driver name
+
+    tosca.nodes.AccessDevice:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: A vOLT Access Device.
+        properties:
+            xos_base_props
+            uplink:
+               type: integer
+               required: false
+               description: uplink
+            vlan:
+               type: integer
+               required: false
+               description: vlan
+
+    tosca.nodes.AccessAgent:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: A vOLT Access Agent.
+        properties:
+            xos_base_props
+            mac:
+                type: string
+                required: false
+                description: mac address
+            port_mappings:
+                type: string
+                required: false
+                description: list of port mappings, separated by commas
+
+
     tosca.nodes.User:
         derived_from: tosca.nodes.Root
 
@@ -970,6 +1016,9 @@ node_types:
         derived_from: tosca.relationships.Root
 
     tosca.relationships.TagsObject:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.MemberOfDevice:
         derived_from: tosca.relationships.Root
 
     tosca.capabilities.xos.Service:
