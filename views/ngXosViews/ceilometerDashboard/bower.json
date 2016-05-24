@@ -14,24 +14,27 @@
     "test",
     "tests"
   ],
-  "dependencies": {
-    "angular-chart.js": "0.8.7",
-    "angular-animate": "1.4.7",
-    "ui.bootstrap": "0.14.3"
-  },
+  "dependencies": {},
   "devDependencies": {
     "jquery": "2.1.4",
     "angular-mocks": "1.4.7",
     "angular": "1.4.7",
     "angular-ui-router": "0.2.15",
     "angular-cookies": "1.4.7",
+    "angular-animate": "1.4.7",
     "angular-resource": "1.4.7",
-    "ng-lodash": "0.3.0",
-    "bootstrap-css": "3.3.4"
+    "lodash": "~4.11.1",
+    "bootstrap-css": "3.3.6",
+    "angular-chart.js": "~0.10.2",
+    "d3": "~3.5.17",
+    "ui.bootstrap": "0.14.3"
   },
   "overrides": {
     "ui.bootstrap": {
       "main": ["src/accordion/accordion.js", "src/collapse/collapse.js"]
     }
+  },
+  "resolutions": {
+    "Chart.js": "~1.1.1"
   }
 }

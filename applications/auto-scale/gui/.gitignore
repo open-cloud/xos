@@ -5,3 +5,5 @@ coverage/
 .idea/
 .tmp/
 dist/
+src/vendor
+src/.tmp

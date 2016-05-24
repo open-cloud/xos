@@ -1,0 +1,10 @@
+#xosOpenVPNDashboard {
+  width: 70%;
+  margin: auto; }
+  #xosOpenVPNDashboard .vpn-row {
+    display: table-row; }
+  #xosOpenVPNDashboard .vpn-cell {
+    display: table-cell;
+    padding: 5px; }
+  #xosOpenVPNDashboard .vpn-header {
+    font-weight: bold; }

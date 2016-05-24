@@ -19,13 +19,9 @@ ubuntu@pod:~$ wget https://raw.githubusercontent.com/open-cloud/openstack-cluste
 ubuntu@pod:~$ bash single-node-pod.sh -e
 ```
 
-> NOTE: The above script can also automatically perform (nearly) all the steps of this
-> tutorial if run as `bash single-node-pod -e -t`.  However, you will still need 
-> to manually log into XOS and create an ExampleTenant, as described under 
-> [Configure ExampleService in XOS](#configure-exampleservice-in-xos)
-> below.  The script will tell you when it's time to do this.
+> NOTE: The above script can also automatically perform all tutoral steps if run as `bash single-node-pod -e -t`.  
 
-Be patient... it will take at least one hour to fully set up the single-node POD.
+Be patient... it will take **at least one hour** to fully set up the single-node POD.
 
 ## Include ExampleService in XOS
 
@@ -84,11 +80,9 @@ Tell XOS to process it by running:
 ubuntu@xos:~/xos/xos/configurations/cord-pod$ make exampleservice
 ```
 
-Next, in the XOS UI, create an ExampleTenant. Go to *http://xos/admin/exampleservice*
-([caveat](https://github.com/open-cloud/xos/blob/master/xos/configurations/cord-pod/README.md#logging-into-xos-on-cloudlab-or-any-remote-host))
-and add / save an Example Tenant.  When creating the tenant, fill in a message that
-this tenant should display.  This will cause an Instance to be created
-in the the *mysite_exampleservice* slice.
+This will add the ExampleService to XOS.  It will also create an ExampleTenant,
+which causes a VM to be created with Apache running inside.
+
 
 ## Set up a Subscriber Device
 
@@ -149,3 +143,40 @@ ExampleService
 
 Hooray!  This shows that the subscriber (1) has external connectivity, and
 (2) can access the new service via the vSG.
+
+## Troubleshooting
+
+Sometimes the ExampleService instance comes up with the wrong default route.  If the 
+ExampleService instance is active but the `curl` command does not work, SSH to the
+instance and check its default gateway.  Assuming the management address of the `mysite_exampleservice`
+VM is 172.27.0.2:
+
+```
+ubuntu@pod:~$ ssh-agent bash
+ubuntu@pod:~$ ssh-add
+ubuntu@pod:~$ ssh -A ubuntu@nova-compute
+ubuntu@nova-compute:~$ ssh ubuntu@172.27.0.2
+ubuntu@mysite-exampleservice-2:~$ route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         172.27.0.1      0.0.0.0         UG    0      0        0 eth1
+10.168.1.0      0.0.0.0         255.255.255.0   U     0      0        0 eth0
+172.27.0.0      0.0.0.0         255.255.255.0   U     0      0        0 eth1
+```
+
+If the default gateway is not `10.168.1.1`, manually set it to this value.
+
+```
+ubuntu@mysite-exampleservice-2:~$ sudo bash
+root@mysite-exampleservice-2:~# route del default gw 172.27.0.1
+root@mysite-exampleservice-2:~# route add default gw 10.168.1.1
+root@mysite-exampleservice-2:~# route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         10.168.1.1      0.0.0.0         UG    0      0        0 eth0
+10.168.1.0      0.0.0.0         255.255.255.0   U     0      0        0 eth0
+172.27.0.0      0.0.0.0         255.255.255.0   U     0      0        0 eth1
+```
+
+Now the VM should have Internet connectivity and XOS will start downloading Apache. 
+A short while later the `curl` test should complete.
