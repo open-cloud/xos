@@ -309,6 +309,16 @@ node_types:
                 required: true
                 description: MAC address for this device.
 
+    tosca.nodes.VOLTService:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: The vOLT Service
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_props
+            xos_base_service_props
+
     tosca.nodes.VOLTTenant:
         derived_from: tosca.nodes.Root
         description: >
