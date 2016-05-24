@@ -6,14 +6,6 @@ This is a collection of helpers to develop views as Angular SPA.
 
 These tools are designed to help develop a graphical view. They assume XOS is running on your system and responding at: `localhost:9999`. The `xos/configurations/frontend` is normally sufficient for GUI development.
 
-### Apigen
-
-Usage: `npm run apigen`
-
-This tool generates an angular resource file for each endpoint available in Swagger.
-
->You can generate api related documentation with: `npm run apidoc`. The output is locate in `api/docs`. You can also see a list of available methods through Swagger at `http://localhost:9999/docs/`
-
 ### Vendors
 
 XOS comes with a set of common libraries, as listed in `bower.json`:
@@ -59,6 +51,20 @@ These views are based on AngularJs and they communicate with XOS through the RES
 
 ## How to Create a View
 
+### Environment setup
+
+Before getting started with new views you should create a configuration file to define the backend environment to be used. This file have to be in `views/env/default.js` and it content have to be:
+
+```
+module.exports = {
+  host: 'XOS Url',
+  xoscsrftoken: 'CSRF Token',
+  xossessionid: 'Sessio ID'
+};
+```
+
+You can define multiple environment creating other configurations (eg: `views/env/production.js`) with the same structure.
+
 ### Getting Started
 
 We have created a [yeoman](http://yeoman.io/) generator to help scaffold views.
@@ -76,6 +82,8 @@ From `/views` run `yo xos`. This command will create a new folder with the provi
 In your `view` folder run `npm start`.
 
 This will install the required dependencies and start a local server with [BrowserSync](http://www.browsersync.io/).
+
+>If you want to use a different backend environment you can call the command with an environment variable: `NODE_ENV=production.js npm start`
 
 #### Publish Your View
 

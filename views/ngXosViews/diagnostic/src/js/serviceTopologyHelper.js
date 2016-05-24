@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('xos.diagnostic')
-  .service('ServiceTopologyHelper', function($rootScope, $window, $log, lodash, ServiceRelation, serviceTopologyConfig, d3){
+  .service('ServiceTopologyHelper', function($rootScope, $window, $log, _, ServiceRelation, serviceTopologyConfig, d3){
 
     var _svg, _layout, _source, _el;
 

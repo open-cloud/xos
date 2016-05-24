@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('xos.diagnostic')
-  .service('ChartData', function($rootScope, $q, lodash, Tenant, Node, serviceTopologyConfig, Ceilometer, Instances) {
+  .service('ChartData', function($rootScope, $q, _, Tenant, Node, serviceTopologyConfig, Ceilometer, Instances) {
     this.currentSubscriber = null;
     this.currentServiceChain = null;
 
@@ -133,7 +133,7 @@
         });
       });
 
-      lodash.forEach(instances, (instance) => {
+      _.forEach(instances, (instance) => {
         computeNodes.map((node) => {
           node.instances.map((d3instance) => {
             if(d3instance.id === instance.id){
@@ -207,7 +207,7 @@
 
         p = Tenant.queryVsgInstances(param[service.name]).$promise
         .then((instances) => {
-          return Ceilometer.getInstancesStats(lodash.uniq(instances));
+          return Ceilometer.getInstancesStats(_.uniq(instances));
         });
       }
 

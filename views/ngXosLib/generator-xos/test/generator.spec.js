@@ -14,7 +14,12 @@ let bowerDeps = wiredep({
   cwd: path.join(__dirname, '../../'), // pretending to be in the ngXosLib root
   exclude: ['Chart.js']
 });
-bowerDeps = bowerDeps.js.map(d => d.match(/bower_components\/([a-zA-Z\-`.]+)\//)[1]);
+bowerDeps = bowerDeps.js.map(d => {
+  let path = d.match(/bower_components\/([1-9a-zA-Z\-`.]+)\//);
+  if(path){
+    return path[1];
+  }
+});
 
 // test values
 const viewName = 'testDashboard';
@@ -60,10 +65,7 @@ describe('Yeoman XOS generator', function () {
       .inDir(testPath)
       .withOptions({ 'skip-install': true })
       .withPrompts({
-        name: viewName,
-        host: 'test-host',
-        token: 'test-token',
-        session: 'test-session'
+        name: viewName
       })
       .on('end', done);
   });
@@ -71,12 +73,6 @@ describe('Yeoman XOS generator', function () {
 
   it('should generate base files in the correct directory', () => {
     assert.file(getDefaultFiles());
-  });
-
-  it('should create the env file with correct params', () => {
-    assert.fileContent(`${testPath}env/default.js`, 'host: \'test-host\'');
-    assert.fileContent(`${testPath}env/default.js`, 'xoscsrftoken: \'test-token\'');
-    assert.fileContent(`${testPath}env/default.js`, 'xossessionid: \'test-session\'');
   });
 
   it('should write username in package & bower json', () => {

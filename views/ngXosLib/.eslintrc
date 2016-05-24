@@ -17,7 +17,7 @@
     "rules": {
         "quotes": [2, "single"],
         "camelcase": [0, {"properties": "always"}],
-        "no-underscore-dangle": 1,
+        "no-underscore-dangle": 0,
         "eqeqeq": [2, "smart"],
         "no-alert": 1,
         "key-spacing": [1, { "beforeColon": false, "afterColon": true }],

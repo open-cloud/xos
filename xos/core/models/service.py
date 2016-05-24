@@ -535,13 +535,6 @@ class ContainerVmScheduler(Scheduler):
     # This scheduler picks a VM in the slice with the fewest containers inside
     # of it. If no VMs are suitable, then it creates a VM.
 
-    # this is a hack and should be replaced by something smarter...
-    LOOK_FOR_IMAGES = ["ubuntu-vcpe4",        # ONOS demo machine -- preferred vcpe image
-                       "Ubuntu 14.04 LTS",    # portal
-                       "Ubuntu-14.04-LTS",    # ONOS demo machine
-                       "trusty-server-multi-nic",  # CloudLab
-                       ]
-
     MAX_VM_PER_CONTAINER = 10
 
     def __init__(self, slice):
@@ -551,14 +544,11 @@ class ContainerVmScheduler(Scheduler):
     def image(self):
         from core.models import Image
 
-        look_for_images = self.LOOK_FOR_IMAGES
-        for image_name in look_for_images:
-            images = Image.objects.filter(name=image_name)
-            if images:
-                return images[0]
+        # If slice has default_image set then use it
+        if self.slice.default_image:
+            return self.slice.default_image
 
-        raise XOSProgrammingError(
-            "No ContainerVM image (looked for %s)" % str(look_for_images))
+        raise XOPSProgrammingError("Please set a default image for %s" % self.slice.name)
 
     def make_new_instance(self):
         from core.models import Instance, Flavor
@@ -606,15 +596,6 @@ class ContainerVmScheduler(Scheduler):
 
 class TenantWithContainer(Tenant):
     """ A tenant that manages a container """
-
-    # this is a hack and should be replaced by something smarter...
-    LOOK_FOR_IMAGES = ["ubuntu-vcpe4",        # ONOS demo machine -- preferred vcpe image
-                       "Ubuntu 14.04 LTS",    # portal
-                       "Ubuntu-14.04-LTS",    # ONOS demo machine
-                       "trusty-server-multi-nic",  # CloudLab
-                       ]
-
-    LOOK_FOR_CONTAINER_IMAGES = ["docker-vcpe"]
 
     class Meta:
         proxy = True
@@ -713,8 +694,7 @@ class TenantWithContainer(Tenant):
                 if images:
                     return images[0]
 
-        raise XOSProgrammingError(
-            "No VPCE image (looked for %s)" % str(look_for_images))
+        raise XOPSProgrammingError("Please set a default image for %s" % self.slice.name)
 
     def save_instance(self, instance):
         # Override this function to do custom pre-save or post-save processing,

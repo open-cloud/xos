@@ -28,11 +28,17 @@ xos-table {
     margin-bottom: 0;
 
     dt {
-      width: 50px !important;
+      width: auto !important;
+      margin-right: 10px;
+    }
+    
+    dt:after {
+      /*display: block;*/
+      content: ':';
     }
 
     dd {
-      margin-left: 60px !important;
+      margin-left: 0 !important;
     }
   }
 }

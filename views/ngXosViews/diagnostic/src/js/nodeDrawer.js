@@ -9,7 +9,7 @@
   var instanceId = 0;
 
   angular.module('xos.diagnostic')
-  .service('NodeDrawer', function(d3, serviceTopologyConfig, RackHelper, lodash){
+  .service('NodeDrawer', function(d3, serviceTopologyConfig, RackHelper, _){
 
     var _this = this;
 
@@ -245,7 +245,7 @@
       const interestingMeters = ['memory', 'memory.usage', 'cpu_util'];
 
       interestingMeters.forEach((m, i) => {
-        const meter = lodash.find(docker.stats, {meter: m});
+        const meter = _.find(docker.stats, {meter: m});
         // if there is no meter stats skip rendering
         if(!angular.isDefined(meter)){
           return;
@@ -294,7 +294,7 @@
 
         interestingPortMeters.forEach((m, i) => {
 
-          const meter = lodash.find(docker.port[p], {meter: m.meter});
+          const meter = _.find(docker.port[p], {meter: m.meter});
           // if there is no meter stats skip rendering
           if(!angular.isDefined(meter)){
             return;
@@ -441,7 +441,7 @@
       const interestingMeters = ['memory', 'memory.usage', 'cpu', 'cpu_util'];
 
       interestingMeters.forEach((m, i) => {
-        const meter = lodash.find(instance.stats, {meter: m});
+        const meter = _.find(instance.stats, {meter: m});
 
         if(meter){
           
