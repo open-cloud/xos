@@ -324,12 +324,13 @@ class VOLTDevice(PlCoreBase):
     class Meta:
         app_label = "cord"
 
+    name = models.CharField(max_length=254, help_text="name of device", null=False, blank=False)
     volt_service = models.ForeignKey(VOLTService, related_name='volt_devices')
     openflow_id = models.CharField(max_length=254, help_text="OpenFlow ID", null=True, blank=True)
     driver = models.CharField(max_length=254, help_text="driver", null=True, blank=True)
     access_agent = models.ForeignKey("AccessAgent", related_name='volt_devices', blank=True, null=True)
 
-    def __unicode__(self): return u'%s' % (self.openflow_id)
+    def __unicode__(self): return u'%s' % (self.name)
 
 class AccessDevice(PlCoreBase):
     class Meta:
@@ -339,16 +340,17 @@ class AccessDevice(PlCoreBase):
     uplink = models.IntegerField(null=True, blank=True)
     vlan = models.IntegerField(null=True, blank=True)
 
-    def __unicode__(self): return u'%d:%d' % (self.uplink,self.vlan)
+    def __unicode__(self): return u'%s-%d:%d' % (self.volt_device.name,self.uplink,self.vlan)
 
 class AccessAgent(PlCoreBase):
     class Meta:
         app_label = "cord"
 
+    name = models.CharField(max_length=254, help_text="name of agent", null=False, blank=False)
     volt_service = models.ForeignKey(VOLTService, related_name='access_agents')
     mac = models.CharField(max_length=32, help_text="MAC Address or Access Agent", null=True, blank=True)
 
-    def __unicode__(self): return u'%s' % (self.mac)
+    def __unicode__(self): return u'%s' % (self.name)
 
 class AgentPortMapping(PlCoreBase):
     class Meta:
@@ -357,6 +359,8 @@ class AgentPortMapping(PlCoreBase):
     access_agent = models.ForeignKey(AccessAgent, related_name='access_devices')
     mac = models.CharField(max_length=32, help_text="MAC Address", null=True, blank=True)
     port = models.CharField(max_length=32, help_text="Openflow port ID", null=True, blank=True)
+
+    def __unicode__(self): return u'%s-%s-%s' % (self.access_agent.name, self.port, self.mac)
 
 
 # -------------------------------------------

@@ -112,9 +112,9 @@ class AccessDeviceInline(XOSTabularInline):
 #        return "admin:cord_volttenant_change"
 
 class VOLTDeviceAdmin(ReadOnlyAwareAdmin):
-    list_display = ('backend_status_icon', 'openflow_id', 'driver' )
-    list_display_links = ('backend_status_icon', 'openflow_id')
-    fieldsets = [ (None, {'fields': ['backend_status_text','volt_service','openflow_id','driver','access_agent'],
+    list_display = ('backend_status_icon', 'name', 'openflow_id', 'driver' )
+    list_display_links = ('backend_status_icon', 'name', 'openflow_id')
+    fieldsets = [ (None, {'fields': ['backend_status_text','name','volt_service','openflow_id','driver','access_agent'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text',)
     inlines = [AccessDeviceInline]
@@ -143,9 +143,9 @@ class AgentPortMappingInline(XOSTabularInline):
 #        return "admin:cord_volttenant_change"
 
 class AccessAgentAdmin(ReadOnlyAwareAdmin):
-    list_display = ('backend_status_icon', 'id', 'mac' )
-    list_display_links = ('backend_status_icon', 'id')
-    fieldsets = [ (None, {'fields': ['backend_status_text','volt_service','mac'],
+    list_display = ('backend_status_icon', 'name', 'mac' )
+    list_display_links = ('backend_status_icon', 'name')
+    fieldsets = [ (None, {'fields': ['backend_status_text','name','volt_service','mac'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text',)
     inlines= [AgentPortMappingInline]
