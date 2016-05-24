@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber, NetworkParameter, NetworkParameterType, Port, AddressPool
+from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber, NetworkParameter, NetworkParameterType, Port, AddressPool, User
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models, transaction
@@ -200,7 +200,7 @@ class VOLTTenant(Tenant):
     c_tag = models.IntegerField(null=True, blank=True, help_text="c-tag")
 
     # at some point, this should probably end up part of Tenant.
-    creator = models.ForeignKey("User", related_name='created_volts', blank=True, null=True)
+    creator = models.ForeignKey(User, related_name='created_volts', blank=True, null=True)
 
     def __init__(self, *args, **kwargs):
         volt_services = VOLTService.get_service_objects().all()
