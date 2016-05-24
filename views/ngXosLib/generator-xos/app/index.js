@@ -43,13 +43,6 @@ module.exports = generators.Base.extend({
         { name: config.name, author: {name: user.git.name()} }
       );
     },
-    // envConfig: function(){
-    //   this.fs.copyTpl(
-    //     this.templatePath('env/default.js'),
-    //     this.destinationPath(`${this.config.get('folder')}/${config.name}/env/default.js`),
-    //     { host: config.host, token: config.token, session: config.session }
-    //   );
-    // },
     bowerJson: function(){
       this.fs.copyTpl(
         this.templatePath('bower.json'),
