@@ -19,6 +19,7 @@ vtn: vtn-external.yaml
 cord: vsg_custom_images
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/mgmt-net.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-vtn-vsg.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-volt-devices.yaml
 
 exampleservice:
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/pod-exampleservice.yaml
