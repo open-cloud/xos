@@ -16,7 +16,7 @@ topology_template:
           replaces: service_vtr
 
     service#volt:
-      type: tosca.nodes.Service
+      type: tosca.nodes.VOLTService
       requirements:
           - vsg_tenant:
               node: service#vsg
