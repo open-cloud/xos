@@ -2,12 +2,11 @@
 // You can duplicate this configuration for any of your Backend Environments.
 // Different configurations are loaded setting a NODE_ENV variable that contain the config file name.
 // `NODE_ENV=local npm start`
-//
-// If xoscsrftoken or xossessionid are not specified the browser value are used
-// (works only for local environment as both application are served on the same domain)
+
+// You can retrieve token and sessionId from your browser cookies.
 
 module.exports = {
-  host: '<%= host %>',
-  xoscsrftoken: '<%= token %>',
-  xossessionid: '<%= session %>'
+  host: 'http://localhost:9999/', // XOS Url
+  xoscsrftoken: 'ogrMpnJgOGq43OxGd8jIKIx2aY1vl1Ci', // XOS token
+  xossessionid: 'l49h474keq0vsk6car6l1quz0oeyvohh' // XOS session id
 };
