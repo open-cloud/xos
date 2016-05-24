@@ -188,37 +188,26 @@ class VOLTService(Service):
     class Meta:
         app_label = "cord"
         verbose_name = "vOLT Service"
-        proxy = True
 
 class VOLTTenant(Tenant):
-    class Meta:
-        proxy = True
-
     KIND = VOLT_KIND
 
-    default_attributes = {"s_tag": None, "c_tag": None}
+    class Meta:
+        app_label = "cord"
+        verbose_name = "vOLT Tenant"
+
+    s_tag = models.IntegerField(null=True, blank=True, help_text="s-tag")
+    c_tag = models.IntegerField(null=True, blank=True, help_text="c-tag")
+
+    # at some point, this should probably end up part of Tenant.
+    creator = models.ForeignKey("User", related_name='created_volts', blank=True, null=True)
+
     def __init__(self, *args, **kwargs):
         volt_services = VOLTService.get_service_objects().all()
         if volt_services:
             self._meta.get_field("provider_service").default = volt_services[0].id
         super(VOLTTenant, self).__init__(*args, **kwargs)
         self.cached_vcpe = None
-
-    @property
-    def s_tag(self):
-        return self.get_attribute("s_tag", self.default_attributes["s_tag"])
-
-    @s_tag.setter
-    def s_tag(self, value):
-        self.set_attribute("s_tag", value)
-
-    @property
-    def c_tag(self):
-        return self.get_attribute("c_tag", self.default_attributes["c_tag"])
-
-    @c_tag.setter
-    def c_tag(self, value):
-        self.set_attribute("c_tag", value)
 
     @property
     def vcpe(self):
@@ -246,28 +235,6 @@ class VOLTTenant(Tenant):
         if not subs:
             return None
         return subs[0]
-
-    @property
-    def creator(self):
-        if getattr(self, "cached_creator", None):
-            return self.cached_creator
-        creator_id=self.get_attribute("creator_id")
-        if not creator_id:
-            return None
-        users=User.objects.filter(id=creator_id)
-        if not users:
-            return None
-        user=users[0]
-        self.cached_creator = users[0]
-        return user
-
-    @creator.setter
-    def creator(self, value):
-        if value:
-            value = value.id
-        if (value != self.get_attribute("creator_id", None)):
-            self.cached_creator=None
-        self.set_attribute("creator_id", value)
 
     def manage_vcpe(self):
         # Each VOLT object owns exactly one VCPE object
@@ -337,9 +304,6 @@ class VOLTTenant(Tenant):
 
         super(VOLTTenant, self).save(*args, **kwargs)
         model_policy_volt(self.pk)
-        #self.manage_vcpe()
-        #self.manage_subscriber()
-        #self.cleanup_orphans()
 
     def delete(self, *args, **kwargs):
         self.cleanup_vcpe()
@@ -355,6 +319,45 @@ def model_policy_volt(pk):
         volt.manage_vcpe()
         volt.manage_subscriber()
         volt.cleanup_orphans()
+
+class VOLTDevice(PlCoreBase):
+    class Meta:
+        app_label = "cord"
+
+    volt_service = models.ForeignKey(VOLTService, related_name='volt_devices')
+    openflow_id = models.CharField(max_length=254, help_text="OpenFlow ID", null=True, blank=True)
+    driver = models.CharField(max_length=254, help_text="driver", null=True, blank=True)
+    access_agent = models.ForeignKey("AccessAgent", related_name='volt_devices', blank=True, null=True)
+
+    def __unicode__(self): return u'%s' % (self.openflow_id)
+
+class AccessDevice(PlCoreBase):
+    class Meta:
+        app_label = "cord"
+
+    volt_device = models.ForeignKey(VOLTDevice, related_name='access_devices')
+    uplink = models.IntegerField(null=True, blank=True)
+    vlan = models.IntegerField(null=True, blank=True)
+
+    def __unicode__(self): return u'%d:%d' % (self.uplink,self.vlan)
+
+class AccessAgent(PlCoreBase):
+    class Meta:
+        app_label = "cord"
+
+    volt_service = models.ForeignKey(VOLTService, related_name='access_agents')
+    mac = models.CharField(max_length=32, help_text="MAC Address or Access Agent", null=True, blank=True)
+
+    def __unicode__(self): return u'%s' % (self.mac)
+
+class AgentPortMapping(PlCoreBase):
+    class Meta:
+        app_label = "cord"
+
+    access_agent = models.ForeignKey(AccessAgent, related_name='access_devices')
+    mac = models.CharField(max_length=32, help_text="MAC Address", null=True, blank=True)
+    port = models.CharField(max_length=32, help_text="Openflow port ID", null=True, blank=True)
+
 
 # -------------------------------------------
 # VCPE
