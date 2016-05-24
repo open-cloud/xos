@@ -1,5 +1,4 @@
 #!/bin/bash
 
 source /opt/ansible/hacking/env-setup >> /dev/null
-export REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 ansible-playbook -vvv "$@"
