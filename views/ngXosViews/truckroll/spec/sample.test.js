@@ -26,7 +26,7 @@ describe('The User List', () => {
     isolatedScope = element.isolateScope().vm;
   }));
 
-  it('should load 1 users', () => {
+  it('should load 1 subscriber', () => {
     httpBackend.flush();
     expect(isolatedScope.subscribers.length).toBe(1);
   });
