@@ -29,3 +29,4 @@ xos:
       - ../../templates:/opt/xos/templates
       - ../../configurations:/opt/xos/configurations
       - ../../xos:/opt/xos/xos
+      - ../../api:/opt/xos/api

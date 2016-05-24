@@ -19,6 +19,7 @@ WritableField = serializers.Field
 DictionaryField = serializers.DictField
 ListField = serializers.ListField
 
+
 class SlicePlus(Slice, PlusObjectMixin):
     class Meta:
         proxy = True
@@ -82,7 +83,8 @@ class SlicePlus(Slice, PlusObjectMixin):
                 if network.ports:
                     networkPorts = network.ports
 
-            self._sliceInfo= {"sitesUsed": used_sites,
+            self._sliceInfo = {
+                    "sitesUsed": used_sites,
                     "sitesReady": ready_sites,
                     "instanceStatus": instance_status,
                     "deploymentsUsed": used_deployments,
@@ -134,7 +136,7 @@ class SlicePlus(Slice, PlusObjectMixin):
 
     @user_names.setter
     def user_names(self, value):
-        pass # it's read-only
+        pass  # it's read-only
 
     @property
     def users(self):
@@ -168,13 +170,13 @@ class SlicePlus(Slice, PlusObjectMixin):
             if (node.site_deployment.site.id in siteIDList):
                 node.instanceCount = 0
                 for instance in node.instances.all():
-                     if instance.slice.id == self.id:
-                         node.instanceCount = node.instanceCount + 1
+                    if instance.slice.id == self.id:
+                        node.instanceCount = node.instanceCount + 1
                 nodeList.append(node)
         return nodeList
 
     def save(self, *args, **kwargs):
-        if (not hasattr(self,"caller")) or self.caller==None:
+        if (not hasattr(self, "caller")) or self.caller==None:
             raise APIException("no self.caller in SlicePlus.save")
 
         updated_image = self.has_field_changed("default_image")
@@ -224,7 +226,7 @@ class SlicePlus(Slice, PlusObjectMixin):
                     instances.append(instance)
 
             # delete extra instances
-            while (reset and len(instances)>0) or (len(instances) > desired_allocation):
+            while (reset and len(instances) > 0) or (len(instances) > desired_allocation):
                 instance = instances.pop()
                 if (not noAct):
                     print "deleting instance", instance
@@ -234,7 +236,7 @@ class SlicePlus(Slice, PlusObjectMixin):
 
             # add more instances
             if (len(instances) < desired_allocation):
-                site = Site.objects.get(name = site_name)
+                site = Site.objects.get(name=site_name)
                 nodes = self.get_node_allocation([site])
 
                 if (not nodes):
@@ -246,12 +248,12 @@ class SlicePlus(Slice, PlusObjectMixin):
                     node = nodes[0]
 
                     instance = Instance(name=node.name,
-                            slice=self,
-                            node=node,
-                            image = self.default_image,
-                            flavor = self.default_flavor,
-                            creator = self.creator,
-                            deployment = node.site_deployment.deployment)
+                                        slice=self,
+                                        node=node,
+                                        image=self.default_image,
+                                        flavor=self.default_flavor,
+                                        creator=self.creator,
+                                        deployment=node.site_deployment.deployment)
                     instance.caller = self.caller
                     instances.append(instance)
                     if (not noAct):
@@ -262,7 +264,7 @@ class SlicePlus(Slice, PlusObjectMixin):
 
                     node.instanceCount = node.instanceCount + 1
 
-    def save_users(self, noAct = False):
+    def save_users(self, noAct=False):
         new_users = self._update_users
 
         try:
@@ -283,15 +285,15 @@ class SlicePlus(Slice, PlusObjectMixin):
                 print "added user id", user_id
 
         for priv in slice_privs:
-             if (priv.role.id != default_role.id):
-                 # only mess with 'default' users; don't kill an admin
-                 continue
+            if (priv.role.id != default_role.id):
+                # only mess with 'default' users; don't kill an admin
+                continue
 
-             if (priv.user.id not in new_users):
-                 if (not noAct):
-                     priv.delete()
+            if (priv.user.id not in new_users):
+                if (not noAct):
+                    priv.delete()
 
-                 print "deleted user id", user_id
+                print "deleted user id", user_id
 
     def save_network_ports(self, noAct=False):
         # First search for any network that already has a filled in 'ports'
@@ -314,7 +316,7 @@ class SlicePlus(Slice, PlusObjectMixin):
             network = networkSlice.network
             if (network.owner.id != self.id):
                 continue
-            if network.template.translation=="NAT":
+            if network.template.translation == "NAT":
                 network.ports = self._network_ports
                 network.caller = self.caller
                 if (not noAct):
@@ -324,6 +326,7 @@ class SlicePlus(Slice, PlusObjectMixin):
         # uh oh, we didn't find a network
 
         raise APIException(detail="No network was found that ports could be set on")
+
 
 class SlicePlusIdSerializer(PlusModelSerializer):
         id = IdField()
@@ -336,14 +339,14 @@ class SlicePlusIdSerializer(PlusModelSerializer):
         instance_total_ready = serializers.IntegerField(read_only=True)
         instance_status = DictionaryField(read_only=True)
         users = ListField(required=False)
-        user_names = ListField(required=False) # readonly = True ?
+        user_names = ListField(required=False)  # readonly = True ?
         current_user_can_see = serializers.SerializerMethodField("getCurrentUserCanSee")
 
         def getCurrentUserCanSee(self, slice):
             # user can 'see' the slice if he is the creator or he has a role
             current_user = self.context['request'].user
-            if (slice.creator and slice.creator==current_user):
-                return True;
+            if (slice.creator and slice.creator == current_user):
+                return True
             return (len(slice.getSliceInfo(current_user)["roles"]) > 0)
 
         def getSliceInfo(self, slice):
@@ -356,13 +359,16 @@ class SlicePlusIdSerializer(PlusModelSerializer):
 
         class Meta:
             model = SlicePlus
-            fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','mount_data_sets',
+            fields = ('humanReadableName', 'id', 'created', 'updated', 'enacted', 'name', 'enabled', 'omf_friendly',
+                      'description', 'slice_url', 'site', 'max_instances', 'service', 'network', 'mount_data_sets',
                       'default_image', 'default_flavor',
-                      'serviceClass','creator',
+                      'serviceClass', 'creator',
 
                       # these are the value-added fields from SlicePlus
-                      'networks','network_ports','backendIcon','backendHtml',
-                      'current_user_roles', 'instance_distribution','instance_distribution_ready','instance_total','instance_total_ready','instance_status','users',"user_names","current_user_can_see")
+                      'networks', 'network_ports', 'backendIcon', 'backendHtml',
+                      'current_user_roles',  'instance_distribution', 'instance_distribution_ready', 'instance_total',
+                      'instance_total_ready', 'instance_status', 'users', "user_names", "current_user_can_see")
+
 
 class SlicePlusList(XOSListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
@@ -373,11 +379,15 @@ class SlicePlusList(XOSListCreateAPIView):
 
     def get_queryset(self):
         current_user_can_see = self.request.query_params.get('current_user_can_see', False)
+        site_filter = self.request.query_params.get('site', False)
 
         if (not self.request.user.is_authenticated()):
             raise XOSPermissionDenied("You must be authenticated in order to use this API")
 
         slices = SlicePlus.select_by_user(self.request.user)
+
+        if (site_filter and not current_user_can_see):
+            slices = SlicePlus.objects.filter(site=site_filter)
 
         # If current_user_can_see is set, then filter the queryset to return
         # only those slices that the user is either creator or has privilege
@@ -387,10 +397,13 @@ class SlicePlusList(XOSListCreateAPIView):
             for slice in slices:
                 if (self.request.user == slice.creator) or (len(slice.getSliceInfo(self.request.user)["roles"]) > 0):
                     slice_ids.append(slice.id)
-
-            slices = SlicePlus.objects.filter(id__in=slice_ids)
+            if (site_filter):
+                slices = SlicePlus.objects.filter(id__in=slice_ids, site=site_filter)
+            else:
+                slices = SlicePlus.objects.filter(id__in=slice_ids)
 
         return slices
+
 
 class SlicePlusDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = SlicePlus.objects.select_related().all()
@@ -403,5 +416,3 @@ class SlicePlusDetail(XOSRetrieveUpdateDestroyAPIView):
         if (not self.request.user.is_authenticated()):
             raise XOSPermissionDenied("You must be authenticated in order to use this API")
         return SlicePlus.select_by_user(self.request.user)
-
-
