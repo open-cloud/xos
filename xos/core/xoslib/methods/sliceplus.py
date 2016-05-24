@@ -77,11 +77,15 @@ class SlicePlusList(XOSListCreateAPIView):
 
     def get_queryset(self):
         current_user_can_see = self.request.query_params.get('current_user_can_see', False)
+        site_filter = self.request.query_params.get('site', False)
 
         if (not self.request.user.is_authenticated()):
             raise XOSPermissionDenied("You must be authenticated in order to use this API")
 
         slices = SlicePlus.select_by_user(self.request.user)
+
+        if (site_filter and not current_user_can_see):
+            slices = SlicePlus.objects.filter(site=site_filter)
 
         # If current_user_can_see is set, then filter the queryset to return
         # only those slices that the user is either creator or has privilege
@@ -91,10 +95,13 @@ class SlicePlusList(XOSListCreateAPIView):
             for slice in slices:
                 if (self.request.user == slice.creator) or (len(slice.getSliceInfo(self.request.user)["roles"]) > 0):
                     slice_ids.append(slice.id)
-
-            slices = SlicePlus.objects.filter(id__in=slice_ids)
+            if (site_filter):
+                slices = SlicePlus.objects.filter(id__in=slice_ids, site=site_filter)
+            else:
+                slices = SlicePlus.objects.filter(id__in=slice_ids)
 
         return slices
+
 
 class SlicePlusDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = SlicePlus.objects.select_related().all()
