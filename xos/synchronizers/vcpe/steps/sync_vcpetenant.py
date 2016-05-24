@@ -144,7 +144,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         safe_macs=[]
         if vcpe_service.url_filter_kind == "safebrowsing":
             if o.volt and o.volt.subscriber:
-                for user in o.volt.subscriber.users:
+                for user in o.volt.subscriber.devices:
                     level = user.get("level",None)
                     mac = user.get("mac",None)
                     if level in ["G", "PG"]:
@@ -196,7 +196,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         if o.volt and o.volt.subscriber:
             url_filter_enable = o.volt.subscriber.url_filter_enable
             url_filter_level = o.volt.subscriber.url_filter_level
-            url_filter_users = o.volt.subscriber.users
+            url_filter_users = o.volt.subscriber.devices
 
         if service.url_filter_kind == "broadbandshield":
             # disable url_filter if there are no bbs_addrs
