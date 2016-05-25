@@ -1,0 +1,6 @@
+{
+  "directory": "src/bower_components/",
+  "scripts": {
+    "postinstall": "./node_modules/wiredep/wiredep-cli.js --dependencies --src ./src/index.html"
+  }
+}

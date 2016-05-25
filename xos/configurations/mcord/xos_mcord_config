@@ -1,0 +1,6 @@
+[gui]
+branding_name=M-CORD
+branding_icon=/static/cord-logo.png
+branding_favicon=/static/cord-favicon.png
+branding_bg=/static/mcord-bg.jpg
+service_view_class=core.views.mCordServiceGrid.ServiceGridView
