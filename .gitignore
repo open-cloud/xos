@@ -22,3 +22,4 @@ xos/core/static/*.css
 !xos/core/static/xos.css
 .DS_Store
 xos/configurations/setup/
+migrations/

@@ -9,6 +9,7 @@
 
   describe('The xos.helper module', function(){
 
+    // TODO move in separate file
     describe('The XosFormHelper service', () => {
       let service;
 
@@ -121,6 +122,16 @@
           expect(service._getFieldFormat('2016-04-19T23:09:1092Z')).toEqual('string');
           expect(service._getFieldFormat(new Date())).toEqual('date');
           expect(service._getFieldFormat('2016-04-19T23:09:10.208092Z')).toEqual('date');
+        });
+
+        it('should return array', () => {
+          expect(service._getFieldFormat([])).toEqual('array');
+          expect(service._getFieldFormat(['a', 'b'])).toEqual('array');
+        });
+
+        it('should return object', () => {
+          expect(service._getFieldFormat({})).toEqual('object');
+          expect(service._getFieldFormat({foo: 'bar'})).toEqual('object');
         });
       });
 
@@ -274,10 +285,11 @@
             enabled: true,
             role: 'user', //select
             a_permissions: [
-
             ],
-            o_permissions: {
-
+            object_field: {
+              string: 'bar',
+              number: 1,
+              email: 'teo@onlab.us'
             }
           };
 
@@ -292,14 +304,15 @@
           expect(isolatedScope.excludedField).toEqual(expected);
         });
 
-        it('should render 8 input field', () => {
+        xit('should render 8 input field', () => {
           // boolean are in the form model, but are not input
           expect(Object.keys(isolatedScope.formField).length).toEqual(9);
           var field = element[0].getElementsByTagName('input');
-          expect(field.length).toEqual(8);
+          expect(field.length).toEqual(10);
         });
 
         it('should render 1 boolean field', () => {
+          // console.log($(element).find('.boolean-field'));
           expect($(element).find('.boolean-field > button').length).toEqual(2)
         });
 
@@ -336,7 +349,7 @@
             expect(isolatedScope.ngModel.enabled).toEqual(false);
           });
 
-          it('should change value to false', () => {
+          it('should change value to true', () => {
             isolatedScope.ngModel.enabled = false;
             scope.$apply();
             expect(isolatedScope.ngModel.enabled).toEqual(false);
@@ -396,6 +409,10 @@
             expect(isolatedScope.testForm.age.$valid).toBeFalsy();
             expect(isolatedScope.testForm.age.$error.min).toBeTruthy();
           });
+        });
+
+        describe('the object field', () => {
+          
         });
       });
     });
