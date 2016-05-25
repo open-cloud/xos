@@ -42,6 +42,7 @@ You can find a Swagger documentation for endpoint at: `http://0.0.0.0:9000/docs/
 Sometimes while developing the GUI is usefull to have control over the DataModel. Sample `tosca` recipes for different configuration are defined in the `mocks` folder, and corresponding `make` commands are provided.
 
 - Bring up the **CORD** data model: `make mock-cord`
+- - Bring up the **M-CORD** data model: `make mock-mcord`
 
 ## JS Styleguide
 

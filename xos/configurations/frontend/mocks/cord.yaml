@@ -23,12 +23,6 @@ topology_template:
           gateway_mac: 02:42:0a:a8:00:01
     
     # CORD Services
-    service_vtr:
-      type: tosca.nodes.Service
-      properties:
-          view_url: /admin/vtr/vtrservice/$id$/
-          kind: vTR
-
     service_volt:
       type: tosca.nodes.Service
       requirements:
@@ -565,20 +559,3 @@ topology_template:
             - subscriber:
                 node: My House
                 relationship: tosca.relationships.BelongsToSubscriber
-
-    # DASHBOARDS
-    Customer Care:
-      type: tosca.nodes.DashboardView
-      properties:
-          url: template:xosDiagnostic
-
-    padmin@vicci.org:
-      type: tosca.nodes.User
-      properties:
-          firstname: XOS
-          lastname: admin
-          is_admin: true
-      requirements:
-          - customer_care_dashboard:
-              node: Customer Care
-              relationship: tosca.relationships.UsesDashboard
