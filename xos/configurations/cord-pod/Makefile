@@ -1,4 +1,8 @@
-.PHONY: xos
+        echo "" > ../../../containers/xos/local_certs.crt
+        for CRT in /usr/local/share/ca-certificates/* ; do \
+                echo Processing $$CRT ; \
+                cat $$CRT >> ../../../containers/xos/local_certs.crt ; \
+        done.PHONY: xos
 xos: up bootstrap
 
 up:
@@ -62,6 +66,11 @@ vsg_custom_images:
 
 .PHONY: local_containers
 local_containers:
-	bash -c "for CRT in `ls /usr/local/share/ca-certificates/`; do cat $$CRT >> ../../../containers/xos/local_certs.crt; done"
+	echo "" > ../../../containers/xos/local_certs.crt
+	for CRT in /usr/local/share/ca-certificates/* ; do \
+		echo Adding Certificate: $$CRT ;\
+		cat $$CRT >> ../../../containers/xos/local_certs.crt ;\
+	done
 	cd ../../../containers/xos; make devel
 	cd ../../../containers/synchronizer; make
+
