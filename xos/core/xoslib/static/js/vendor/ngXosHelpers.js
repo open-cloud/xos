@@ -31,6 +31,8 @@
 
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 /**
  * © OpenCORD
  *
@@ -216,7 +218,7 @@
               return p == 'id' || p == 'validators';
             });
 
-            // TODO move out cb
+            // TODO move out cb,  non sense triggering a lot of times
             if (angular.isArray(_this.config.hiddenFields)) {
               props = _.difference(props, _this.config.hiddenFields);
             }
@@ -226,10 +228,16 @@
             });
 
             props.forEach(function (p, i) {
-              _this.tableConfig.columns.push({
+              var fieldConfig = {
                 label: labels[i],
                 prop: p
-              });
+              };
+
+              if (typeof item[p] !== 'string' && typeof item[p] !== 'undefined') {
+                fieldConfig.type = _typeof(item[p]);
+              }
+
+              _this.tableConfig.columns.push(fieldConfig);
             });
 
             // build form structure

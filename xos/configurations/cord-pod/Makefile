@@ -54,10 +54,10 @@ cleanup: stop rm
 	bash -c "source ./admin-openrc.sh; nova list --all-tenants; neutron net-list"
 
 ceilometer_custom_images: images/ceilometer-trusty-server-multi-nic.img
-	bash -c "source ./admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || ! glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file ./images/ceilometer-trusty-server-multi-nic.img --container-format bare"
+	bash -c "source ./admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file ./images/ceilometer-trusty-server-multi-nic.img --container-format bare"
 
 vsg_custom_images: images/vsg-1.0.img
-	bash -c "source ./admin-openrc.sh; glance image-show vsg || ! glance image-create --name vsg-1.0 --disk-format qcow2 --file ./images/vsg-1.0.img --container-format bare"
+	bash -c "source ./admin-openrc.sh; glance image-show vsg-1.0 || glance image-create --name vsg-1.0 --disk-format qcow2 --file ./images/vsg-1.0.img --container-format bare"
 
 images/ceilometer-trusty-server-multi-nic.img: images
 	wget http://www.vicci.org/cord/ceilometer-trusty-server-multi-nic.compressed.qcow2 -P ./images
