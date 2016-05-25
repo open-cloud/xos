@@ -25,38 +25,29 @@ angular.module('xos.subscribers', [
     templateUrl: 'templates/subscribers-list.tpl.html',
     controller: function(Subscribers){
 
-      this.tableConfig = {
-        filter: 'field',
-        order: true,
-        pagination: {
-          pageSize: 10
-        },
-        columns: [
-          {
-            label: 'Name',
-            prop: 'humanReadableName'
-          },
-          {
-            label: 'Identity',
-            prop: 'identity',
-            type: 'object'
-          },
-          {
-            label: 'Related Info',
-            prop: 'related',
-            type: 'object'
-          }
-        ]
-      };
-
       this.smartTableConfig = {
         resource: 'Subscribers'
+      };
+
+      this.formConfig = {
+        exclude: ['password', 'last_login'],
+        formName: 'sampleForm',
+        actions: [
+          {
+            label: 'Save',
+            icon: 'ok', // refers to bootstraps glyphicon
+            cb: (user) => { // receive the model
+              console.log(user);
+            },
+            class: 'success'
+          }
+        ]
       };
       
       // retrieving user list
       Subscribers.query().$promise
       .then((users) => {
-        this.users = users;
+        this.users = users[0];
       })
       .catch((e) => {
         throw new Error(e);

@@ -3,7 +3,7 @@
 
   /**
   * @ngdoc service
-  * @name xos.helpers.LabelFormatter
+  * @name xos.uiComponents.LabelFormatter
   * @description This factory define a set of helper function to format label started from an object property
   **/
 

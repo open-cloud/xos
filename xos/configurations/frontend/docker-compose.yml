@@ -20,9 +20,8 @@ xos:
         - xos_db
     volumes:
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config
-      - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
-      - ../../core/xoslib:/opt/xos/core/xoslib
       - ../../tosca:/opt/xos/tosca
+      - ../../core/xoslib:/opt/xos/core/xoslib
       - ../../core/static:/opt/xos/core/static
       - ../../core/dashboard:/opt/xos/core/dashboard
       - ../../core/templatetags:/opt/xos/core/templatetags
@@ -31,6 +30,5 @@ xos:
       - ../../configurations:/opt/xos/configurations
       - ../../xos:/opt/xos/xos
       - ../../api:/opt/xos/api
-      - ../../core/views:/opt/xos/core/views
       - ../../services:/opt/xos/services
 

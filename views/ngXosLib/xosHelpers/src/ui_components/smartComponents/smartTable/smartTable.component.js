@@ -249,6 +249,7 @@
             });
 
             // build form structure
+            // TODO move in a pure function for testing purposes
             props.forEach((p, i) => {
               this.formConfig.fields[p] = {
                 label: LabelFormatter.format(labels[i]).replace(':', ''),
