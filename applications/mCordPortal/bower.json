@@ -1,0 +1,27 @@
+{
+  "name": "subscriber-portal",
+  "description": "Demo implementation for a subscriber portal in XOS",
+  "main": "index.js",
+  "authors": [
+    "Matteo Scandolo"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/open-cloud/xos",
+  "moduleType": [],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-animate": "~1.4.9",
+    "jquery": "~2.2.0",
+    "angular-resource": "~1.4.9",
+    "angular-route": "~1.4.9",
+    "angular-cookies": "~1.4.9",
+    "bootstrap-sass": "~3.3.6"
+  }
+}
