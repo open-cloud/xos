@@ -56,8 +56,9 @@ class SyncInstances(OpenStackSyncStep):
             if network:
                 tem = network.template
                 if (tem.visibility == "private") and (tem.translation=="none") and ("management" in tem.name):
-                    if len(result)!=1:
-                        raise Exception("Management network needs to be inserted in slot 1, but there are %d private nics" % len(result))
+#MCORD
+#                    if len(result)!=1:
+#                        raise Exception("Management network needs to be inserted in slot 1, but there are %d private nics" % len(result))
                     result.append(nic)
                     nics.remove(nic)
 
