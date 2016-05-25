@@ -62,6 +62,6 @@ vsg_custom_images:
 
 .PHONY: local_containers
 local_containers:
-	cat /usr/local/share/ca-certificates/* > ../../../containers/xos/local_certs.crt
+	bash -c "for CRT in `ls /usr/local/share/ca-certificates/`; do cat $CRT >> ../../../containers/xos/local_certs.crt; done"
 	cd ../../../containers/xos; make devel
 	cd ../../../containers/synchronizer; make
