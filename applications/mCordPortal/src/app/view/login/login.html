@@ -1,0 +1,26 @@
+<!-- Login page partial html -->
+<div class="container login">
+    <div class="login-wrapper">
+        <h3 class="text-center">Subscriber Portal</h3>
+        <form ng-submit="login()">
+            <div class="form-group">
+                <input class="form-control" ng-model="email" type="text" placeholder="email" required>
+            </div>
+            <div class="form-group">
+                <input class="form-control" ng-model="password" type="password" placeholder="password" required>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary btn-block" type="submit">
+                    Log In
+                    <div class="loader small reverse inline" ng-show="loading === true"></div>
+                </button>
+            </div>
+            <div class="form-group" ng-show="error">
+                <div class="alert alert-danger">
+                    Sorry, your login failed.
+                    Please try again.
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+IMAGE_NAME=xosproject/xos
+CONTAINER_NAME=xos_build_helper_$$
+DB_HOST=$(wget http://ipinfo.io/ip -qO -)
+
+# configure db host
+docker run -it --name=$CONTAINER_NAME $IMAGE_NAME sed -i '0,/host/{s/host=localhost/host='$DB_HOST'/}' /opt/xos/xos_configuration/xos_common_config
+docker commit $CONTAINER_NAME $IMAGE_NAME
+docker rm $CONTAINER_NAME
+
+# init db schema
+docker run -it --name=$CONTAINER_NAME $IMAGE_NAME /opt/xos/tools/xos-manage makemigrations
+# run overrides the CMD specifed in the Dockerfile, so we re-set the CMD in the final commit"
+docker commit --change="CMD update-ca-certificates && python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure" $CONTAINER_NAME $IMAGE_NAME
+docker rm $CONTAINER_NAME

@@ -1,0 +1,251 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup MCORD-related services.
+
+imports:
+   - custom_types/xos.yaml
+
+node_types:
+
+    tosca.nodes.MCORDService:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Service object. Services may be listed in the Service
+            directory and may be linked together via Tenancy Relationships.
+        capabilities:
+            scalable:
+                type: tosca.capabilities.Scalable
+            service:
+                type: tosca.capabilities.xos.Service
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+            kind:
+                type: string
+                default: RAN
+                description: Type of service.
+            view_url:
+                type: string
+                required: false
+                description: URL to follow when icon is clicked in the Service Directory.
+            icon_url:
+                type: string
+                required: false
+                description: ICON to display in the Service Directory.
+            enabled:
+                type: boolean
+                default: true
+            published:
+                type: boolean
+                default: true
+                description: If True then display this Service in the Service Directory.
+            public_key:
+                type: string
+                required: false
+                description: Public key to install into Instances to allows Services to SSH into them.
+            private_key_fn:
+                type: string
+                required: false
+                description: Location of private key file
+            versionNumber:
+                type: string
+                required: false
+                description: Version number of Service.
+
+    tosca.nodes.VBBUComponent:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: vBBU Component of MCORD Service.
+        properties:
+            kind:
+                type: string
+                default: RAN 
+                description: Kind of component
+            s1u_tag:
+                type: string
+                required: false
+                default: 201
+                description: VTN stag port-name
+            s1mme_tag:
+                type: string
+                required: false
+                default: 200
+                description: VTN stag port-name
+            rru_tag:
+                type: string
+                required: false
+                default: 199 
+                description: VTN stag port-name
+            display_message:
+                type: string
+                required: false
+                default: New vBBU Component 
+                description: Just a message 
+                
+
+topology_template:
+  node_templates:
+    vBBU:
+      type: tosca.nodes.MCORDService
+      requirements:
+      properties:
+          kind: RAN
+          icon_url: /static/mCordServices/service_server.png
+          view_url: /admin/mcord/vbbucomponent
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/configurations/mcord/mcord_private_key
+      artifacts:
+          pubkey: /opt/xos/configurations/mcord/mcord_public_key
+
+
+    Private:
+      type: tosca.nodes.NetworkTemplate
+
+    External:
+      type: tosca.nodes.NetworkTemplate
+
+    management_template:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: private
+          translation: none
+
+    management:
+      type: tosca.nodes.network.Network.XOS
+#      properties:
+#          no-create: true
+#          no-delete: true
+#          no-update: true
+
+    lan_3gpp_s1mme_network:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: lan_3gpp_s1uc_net
+          cidr: 172.16.1.0/24
+          start_ip: 172.16.1.3
+          end_ip: 172.16.1.12
+          gateway_ip: 172.16.1.1
+      requirements:
+          - network_template:
+              node: External
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_mobile_net
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vbbu_slice1
+              relationship: tosca.relationships.ConnectsToSlice
+
+    lan_3gpp_s1u_network:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: lan_3gpp_s1u_net
+          cidr: 172.16.2.0/24
+          start_ip: 172.16.2.3
+          end_ip: 172.16.2.12
+          gateway_ip: 172.16.16.1
+      requirements:
+          - network_template:
+              node: External
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_mobile_net
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vbbu_slice1
+              relationship: tosca.relationships.ConnectsToSlice
+
+    lan_rru_network:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: lan_rru_net
+          cidr: 172.16.0.0/24
+          start_ip: 172.16.0.3
+          end_ip: 172.16.0.12
+          gateway_ip: 172.16.0.1
+      requirements:
+          - network_template:
+              node: External
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_mobile_net
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vbbu_slice1
+              relationship: tosca.relationships.ConnectsToSlice
+
+    mysite:
+      type: tosca.nodes.Site
+
+    mcord-bbu-multi-nic:
+      type: tosca.nodes.Image
+
+    mysite_management:
+      description: This slice exists solely to own the management network
+      type: tosca.nodes.Slice
+      properties:
+          network: noauto
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_mobile_net:
+      description: This slice exists solely to own the mobile network
+      type: tosca.nodes.Slice
+      properties:
+          network: noauto
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_vbbu_slice1:
+      description: vBBU Service Slice 1
+      type: tosca.nodes.Slice
+      requirements:
+          - vBBU:
+              node: vBBU
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - default_image:
+                node: mcord-bbu-multi-nic 
+                relationship: tosca.relationships.DefaultImage
+          - management:
+              node: management
+              relationship: tosca.relationships.ConnectsToNetwork
+      properties:
+          network: noauto
+          default_flavor: m1.xlarge
+          default_node: computeBBU2 
+    
+    mysite_VBBU_Component:
+      description: MCORD Service default Component
+      type: tosca.nodes.VBBUComponent
+      requirements:
+          - provider_service:
+              node: vBBU
+              relationship: tosca.relationships.MemberOfService
+          - vbbu_slice:
+              node: mysite_vbbu_slice1
+              relationship: tosca.relationships.MemberOfSlice
+      properties:
+          display_message: vBBU looks good!
+          s1u_tag: 201
+          s1mme_tag: 200
+          rru_tag: 199 

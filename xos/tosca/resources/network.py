@@ -42,6 +42,16 @@ class XOSNetwork(XOSResource):
         cidr = self.get_property_default("cidr", None)
         if cidr:
             args["subnet"] = cidr
+        print "DEF_RES_CIDR", cidr 
+
+        start_ip = self.get_property_default("start_ip", None)
+        if start_ip:
+            args["start_ip"] = start_ip 
+        print "DEF_RES_IP", start_ip 
+
+        end_ip = self.get_property_default("end_ip", None)
+        if end_ip:
+            args["end_ip"] = end_ip
 
         return args
 

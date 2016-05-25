@@ -1,0 +1,12 @@
+.panel {
+  @include box-shadow(0 0 3px rgba(0,0,0,.2));
+  border-width: 0;
+  .panel-heading {
+    border-bottom: 4px solid transparent;
+  }
+}
+
+.panel-primary {
+  @include panel-variant(transparent, $panel-primary-text, $brand-primary, darken($brand-primary, 20%));
+}
+
