@@ -2,12 +2,22 @@ from view_common import *
 from django.http import HttpResponseRedirect
 import sys
 
+
+def isInt(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
 class LoggedInView(TemplateView):
     def get(self, request, name="root", *args, **kwargs):
         if request.user.login_page:
-             return HttpResponseRedirect(request.user.login_page)
+            return HttpResponseRedirect(request.user.login_page)
         else:
-             return HttpResponseRedirect("/admin/")
+            return HttpResponseRedirect("/admin/")
+
 
 class DashboardDynamicView(TemplateView):
     head_template = r"""{% extends "admin/dashboard/dashboard_base.html" %}
@@ -26,13 +36,13 @@ class DashboardDynamicView(TemplateView):
         context = self.get_context_data(**kwargs)
         context = getDashboardContext(request.user, context)
 
-        if name=="root":
+        if name == "root":
             # maybe it is a bit hacky, didn't want to mess up everything @teone
             user_dashboards = request.user.get_dashboards()
-            first_dasboard_name = user_dashboards[0].id;
+            first_dasboard_name = user_dashboards[0].id
             return self.singleDashboardView(request, first_dasboard_name, context)
             # return self.multiDashboardView(request, context)
-        elif kwargs.get("wholePage",None):
+        elif kwargs.get("wholePage", None):
             return self.singleFullView(request, name, context)
         else:
             return self.singleDashboardView(request, name, context)
@@ -48,8 +58,8 @@ class DashboardDynamicView(TemplateView):
         else:
             return "failed to find %s in %s" % (fn, TEMPLATE_DIRS)
 
-        template= open(pathname, "r").read()
-        if (fn=="tenant"):
+        template = open(pathname, "r").read()
+        if (fn == "tenant"):
             # fix for tenant view - it writes html to a div called tabs-5
             template = '<div id="tabs-5"></div>' + template
         return template
@@ -66,14 +76,14 @@ class DashboardDynamicView(TemplateView):
     def embedDashboardView(self, view, i=0):
         body = ""
         url = view.url
-        if (view.controllers.all().count()>0):
-            body = body + 'Controller: <select id="dashselect-%d">' % i;
-            body = body + '<option value="None">(select a controller)</option>';
-            for j,controllerdashboard in enumerate(view.controllerdashboardviews.all()):
+        if (view.controllers.all().count() > 0):
+            body = body + 'Controller: <select id="dashselect-%d">' % i
+            body = body + '<option value="None">(select a controller)</option>'
+            for j, controllerdashboard in enumerate(view.controllerdashboardviews.all()):
                 body = body + '<option value="%d">%s</option>' % (j, controllerdashboard.controller.name)
             body = body + '</select><hr>'
 
-            for j,controllerdashboard in enumerate(view.controllerdashboardviews.all()):
+            for j, controllerdashboard in enumerate(view.controllerdashboardviews.all()):
                 body = body + '<script type="text/template" id="dashtemplate-%d-%d">\n%s\n</script>\n' % (i,j, self.embedDashboardUrl(controllerdashboard.url));
 
             body = body + '<div id="dashcontent-%d" class="dashcontent"></div>\n' % i
@@ -89,7 +99,7 @@ class DashboardDynamicView(TemplateView):
                              });
                              //$("#dashcontent-%d").html( $("#dashtemplate-%d-0").html() );
                              </script>
-                          """ % (i,i,i,i,i,i,i);
+                          """ % (i, i, i, i, i, i, i)
         else:
             body = body + self.embedDashboardUrl(url)
         return body
@@ -115,7 +125,7 @@ class DashboardDynamicView(TemplateView):
             if (not view.enabled):
                 continue
 
-            tabs.append( '<li><a href="#dashtab-%d">%s</a></li>\n' % (i, view.name) )
+            tabs.append('<li><a href="#dashtab-%d">%s</a></li>\n' % (i, view.name))
             body = '<div id="dashtab-%d">%s</div>\n' % (i, self.embedDashboardView(view, i))
 
             bodies.append(body)
@@ -124,7 +134,7 @@ class DashboardDynamicView(TemplateView):
         # embed content provider dashboards
         for cp in ContentProvider.objects.all():
             if request.user in cp.users.all():
-                tabs.append( '<li><a href="#dashtab-%d">%s</a></li>\n' % (i, cp.name) )
+                tabs.append('<li><a href="#dashtab-%d">%s</a></li>\n' % (i, cp.name))
 
                 body = ""
                 body = body + '<div id="dashtab-%d">\n' % i
@@ -134,7 +144,7 @@ class DashboardDynamicView(TemplateView):
                 bodies.append(body)
                 i = i + 1
 
-        if (len(tabs)==1) and (len(bodies)==1):
+        if (len(tabs) == 1) and (len(bodies) == 1):
             # there is only one dashboard, so optimize out the tabbing
             contents = bodies[0]
         else:
@@ -152,27 +162,29 @@ class DashboardDynamicView(TemplateView):
         response_kwargs = {}
         response_kwargs.setdefault('content_type', self.content_type)
         return self.response_class(
-            request = request,
-            template = t,
-            context = context,
+            request=request,
+            template=t,
+            context=context,
             **response_kwargs)
 
     def singleDashboardView(self, request, id, context):
         head_template = self.head_template
         tail_template = self.tail_template
 
-        view = DashboardView.objects.get(id=id)
-
-        print "XXX", view
-
-        t = template.Template(head_template + self.embedDashboardView(view) + self.tail_template)
+        # if id is a number, load by datamodel,
+        # else look directly for the template
+        if(isInt(id)):
+            view = DashboardView.objects.get(id=id)
+            t = template.Template(head_template + self.embedDashboardView(view) + self.tail_template)
+        else:
+            t = template.Template(head_template + self.readTemplate("xos" + id) + self.tail_template)
 
         response_kwargs = {}
         response_kwargs.setdefault('content_type', self.content_type)
         return self.response_class(
-            request = request,
-            template = t,
-            context = context,
+            request=request,
+            template=t,
+            context=context,
             **response_kwargs)
 
     def singleFullView(self, request, id, context):
@@ -186,8 +198,7 @@ class DashboardDynamicView(TemplateView):
         response_kwargs = {}
         response_kwargs.setdefault('content_type', self.content_type)
         return self.response_class(
-            request = request,
-            template = t,
-            context = context,
+            request=request,
+            template=t,
+            context=context,
             **response_kwargs)
-
