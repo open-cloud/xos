@@ -510,7 +510,11 @@ class LeastLoadedNodeScheduler(Scheduler):
 
     def pick(self):
         from core.models import Node
-        nodes = Node.objects.all()
+        if not self.slice.default_node:
+            nodes = list(Node.objects.all())
+            nodes = sorted(nodes, key=lambda node: node.instances.all().count())
+        else:
+            nodes = list(Node.objects.filter(name = self.slice.default_node))
 
         if self.label:
             nodes = nodes.filter(nodelabels__name=self.label)
@@ -523,7 +527,7 @@ class LeastLoadedNodeScheduler(Scheduler):
 
         # TODO: logic to filter nodes by which nodes are up, and which
         #   nodes the slice can instantiate on.
-        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
+#        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
         return [nodes[0], None]
 
 
@@ -669,15 +673,26 @@ class TenantWithContainer(Tenant):
         from core.models import Image
         # Implement the logic here to pick the image that should be used when
         # instantiating the VM that will hold the container.
-
         slice = self.provider_service.slices.all()
         if not slice:
             raise XOSProgrammingError("provider service has no slice")
         slice = slice[0]
 
-        # If slice has default_image set then use it
-        if slice.default_image:
-            return slice.default_image
+        if slice.default_isolation in ["container", "container_vm"]:
+            look_for_images = self.LOOK_FOR_CONTAINER_IMAGES
+        else:
+            look_for_images = self.LOOK_FOR_IMAGES
+
+        for image_name in look_for_images:
+
+            images = Image.objects.filter(name=image_name)
+
+            if images:
+                return images[0]
+            else:
+                images = Image.objects.filter(name = slice.default_image)
+                if images:
+                    return images[0]
 
         raise XOPSProgrammingError("Please set a default image for %s" % self.slice.name)
 
@@ -728,6 +743,7 @@ class TenantWithContainer(Tenant):
 
             if not instance:
                 slice = self.provider_service.slices.all()[0]
+                flavors = Flavor.objects.filter(name=slice.default_flavor) #MCORD
 
                 flavor = slice.default_flavor
                 if not flavor:
@@ -735,6 +751,8 @@ class TenantWithContainer(Tenant):
                     if not flavors:
                         raise XOSConfigurationError("No m1.small flavor")
                     flavor = flavors[0]
+#                default_flavor = slice.default_flavor #MCORD
+
 
                 if slice.default_isolation == "container_vm":
                     (node, parent) = ContainerVmScheduler(slice).pick()

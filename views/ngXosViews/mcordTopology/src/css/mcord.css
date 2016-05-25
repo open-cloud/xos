@@ -1,0 +1,81 @@
+#xosMcordTopology {
+  height: 700px;
+}
+
+[ui-view],
+m-cord-topology{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+line {
+  stroke: blue;
+  /*stroke-width: 1;*/
+}
+
+line.big{
+  stroke-width: 2;
+}
+
+circle,
+rect {
+  fill: #fff;
+  stroke-width: 1; 
+}
+
+.fabric {
+  stroke: none;
+  fill: #123456;
+  fill-rule: evenodd;
+}
+
+.fabric-container {
+  fill: transparent;
+  stroke: #000;
+  stroke-width: 1;
+}
+
+.bbu {
+  stroke: black;
+  fill: #FF7F0E;
+}
+
+.rru {
+  stroke: #000;
+  fill: #FFBB78;
+}
+
+.rru.antenna {
+  stroke: #000;
+  fill: brown;
+}
+
+.rru-shadow {
+  fill: #FFBB78;
+  opacity: .4
+}
+
+.MME, .SGW, .PGW, .Vid {
+  fill: purple;
+  stroke: #000;
+}
+
+rect.MME,
+rect.SGW,
+rect.PGW,
+rect.bbu,
+rect.Vid {
+  fill: #fff;
+  stroke: #fff;
+}
+
+.bbu text, 
+.MME text,
+.SGW text,
+.PGW text, 
+.Vid text {
+  font-size: 10px;
+  stroke-width: 0;
+  fill: #000;
+}

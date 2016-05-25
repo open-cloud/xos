@@ -35,5 +35,7 @@
         {% endif %}
         dns_nameservers=8.8.8.8
         cidr={{ cidr }}
+        allocation_pool_start={{ start_ip }}
+        allocation_pool_end={{ end_ip }}
         {% endif %}
   {% endif %}
