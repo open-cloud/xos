@@ -715,6 +715,10 @@ node_types:
                 type: string
                 required: false
                 description: comma-separated list of protocol _space_ port that represent ports the slice should expose
+            default_node:
+                type: string
+                required: false
+                description: default node to use for this slice
 
     tosca.nodes.Node:
         derived_from: tosca.nodes.Root

@@ -58,7 +58,7 @@ ceilometer_custom_images:
 	bash -c "source ./admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || ! mkdir -p ./images || ! wget http://www.vicci.org/cord/ceilometer-trusty-server-multi-nic.compressed.qcow2 -P ./images || glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file ./images/ceilometer-trusty-server-multi-nic.compressed.qcow2 --container-format bare"
 
 vsg_custom_images:
-	bash -c "source ./admin-openrc.sh; glance image-show vsg || ! mkdir -p ./glance-images || ! wget http://www.vicci.org/cord/vsg-1.0.img -P ./glance-images || glance image-create --name vsg-1.0 --disk-format qcow2 --file ./glance-images/vsg-1.0.img --container-format bare"
+	bash -c "source ./admin-openrc.sh; glance image-show vsg-1.0 || ! mkdir -p ./glance-images || ! wget http://www.vicci.org/cord/vsg-1.0.img -P ./glance-images || glance image-create --name vsg-1.0 --disk-format qcow2 --file ./glance-images/vsg-1.0.img --container-format bare"
 
 .PHONY: local_containers
 local_containers:

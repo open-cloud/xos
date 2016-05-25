@@ -26,7 +26,7 @@ describe('The User List', () => {
     isolatedScope = element.isolateScope().vm;
   }));
 
-  it('should load 1 users', () => {
+  xit('should load 1 users', () => {
     httpBackend.flush();
     expect(isolatedScope.users.length).toBe(1);
     expect(isolatedScope.users[0].email).toEqual('matteo.scandolo@gmail.com');

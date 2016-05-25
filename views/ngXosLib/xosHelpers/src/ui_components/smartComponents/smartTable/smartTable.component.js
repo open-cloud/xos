@@ -244,7 +244,6 @@
               if(typeof item[p] !== 'string' && typeof item[p] !== 'undefined'){
                 fieldConfig.type = typeof item[p];
               }
-              console.log(fieldConfig, item[p]);
 
               this.tableConfig.columns.push(fieldConfig);
             });

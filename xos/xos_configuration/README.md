@@ -59,6 +59,7 @@ disable_minidashboard=True
 branding_name=Open Cloud
 #branding_css= #no branding css is provided by default
 branding_icon=/static/logo.png
+service_view_class=core.views.mCordServiceGrid.ServiceGridView
 
 ``
 

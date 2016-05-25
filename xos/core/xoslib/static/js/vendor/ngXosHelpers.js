@@ -236,7 +236,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
               if (typeof item[p] !== 'string' && typeof item[p] !== 'undefined') {
                 fieldConfig.type = _typeof(item[p]);
               }
-              console.log(fieldConfig, item[p]);
 
               _this.tableConfig.columns.push(fieldConfig);
             });
