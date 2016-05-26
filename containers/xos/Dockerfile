@@ -74,6 +74,10 @@ RUN easy_install \
 
 ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
 
+# Include certificates from Openstack
+ADD containers/xos/local_certs.crt /usr/local/share/ca-certificates/local_certs.crt
+RUN update-ca-certificates
+
 # Install XOS
 RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && \
     mv /tmp/xos/xos /opt/ && \
@@ -93,4 +97,4 @@ ENV HOME /root
 WORKDIR /opt/xos
 
 # Define default command.
-CMD update-ca-certificates && python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
+CMD python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
