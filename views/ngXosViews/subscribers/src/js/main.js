@@ -23,13 +23,19 @@ angular.module('xos.subscribers', [
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/subscribers-list.tpl.html',
-    controller: function(Subscribers){
+    controller: function(){
 
       this.smartTableConfig = {
         resource: 'Subscribers'
       };
 
-      this.formConfig = {
+      this.model = {
+        label: {
+          name: 'aaa'
+        },
+        empty: {}
+      }
+      this.config = {
         exclude: ['password', 'last_login'],
         formName: 'sampleForm',
         actions: [
@@ -43,15 +49,6 @@ angular.module('xos.subscribers', [
           }
         ]
       };
-      
-      // retrieving user list
-      Subscribers.query().$promise
-      .then((users) => {
-        this.users = users[0];
-      })
-      .catch((e) => {
-        throw new Error(e);
-      });
     }
   };
 });
