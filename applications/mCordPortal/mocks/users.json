@@ -1,0 +1,48 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Mom's MacBook",
+      "mac": "010203040506",
+      "icon_id": "mom",
+      "profile": {
+        "url_filter": {
+          "level": "R"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Dad's iPad",
+      "mac": "010203040507",
+      "icon_id": "dad",
+      "profile": {
+        "url_filter": {
+          "level": "R"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "Dick's laptop",
+      "mac": "010203040508",
+      "icon_id": "boy2",
+      "profile": {
+        "url_filter": {
+          "level": "PG_13"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Jane's laptop",
+      "mac": "010203040509",
+      "icon_id": "girl1",
+      "profile": {
+        "url_filter": {
+          "level": "PG"
+        }
+      }
+    }
+  ]
+}

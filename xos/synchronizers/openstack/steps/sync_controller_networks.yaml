@@ -6,7 +6,7 @@
       name: {{ name }}
       shared: true
       {% if not delete -%}
-      state: present 
+      state: present
       {% else -%}
       state: absent
       {% endif -%}
@@ -18,22 +18,28 @@
 
 {% if not delete %}
   - os_subnet:
-       name: {{ subnet_name }}
-       network_name: {{ name }}
-       {% if not delete -%}
-       state: present
-       cidr: {{ cidr }}
-       dns_nameservers: 8.8.8.8
-       {% if use_vtn -%}
-       gateway_ip: {{ gateway }}
-       {% endif -%}
-       {% else -%}
-       state: absent
-       {% endif -%}
-       auth:
-         auth_url: {{ endpoint }}
-         username: {{ admin_user }}
-         password: {{ admin_password }}
-         project_name: {{ admin_project }}
+      name: {{ subnet_name }}
+      network_name: {{ name }}
+      {% if not delete -%}
+      state: present
+      cidr: {{ cidr }}
+      dns_nameservers: 8.8.8.8
+      {% if use_vtn -%}
+      gateway_ip: {{ gateway }}
+      {% endif -%}
+      {% if start_ip -%}
+      allocation_pool_start: {{ start_ip }}
+      {% endif -%}
+      {% if end_ip -%}
+      allocation_pool_end: {{ end_ip }}
+      {% endif -%}
+      {% else -%}
+      state: absent
+      {% endif -%}
+      auth:
+        auth_url: {{ endpoint }}
+        username: {{ admin_user }}
+        password: {{ admin_password }}
+        project_name: {{ admin_project }}
 {% endif %}
 

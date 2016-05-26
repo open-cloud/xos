@@ -2,7 +2,7 @@ import os
 from django.db import models
 from core.models import PlCoreBase
 from core.models.plcorebase import StrippedCharField
-from core.models import Site, SiteDeployment, SitePrivilege
+from core.models.site import Site, SiteDeployment, SitePrivilege
 from core.models import Tag
 from django.contrib.contenttypes.fields import GenericRelation
 

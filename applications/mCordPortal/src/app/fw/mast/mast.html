@@ -1,0 +1,32 @@
+<!--Mast HTML-->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button ng-if="page.curr !== 'login'" type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#/home">
+                <img src="/imgs/logo.png">
+            </a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse" close-on-route-change>
+            <ul ng-if="page.curr !== 'login'" class="nav navbar-nav pull-right">
+                <li ng-class="{active: page.curr === 'dashboard'}">
+                    <a href="#/home">Home</a>
+                </li>
+                <li ng-class="{active: page.curr === 'user'}">
+                    <a href="#/user">User</a>
+                </li>
+                <li ng-class="{active: page.curr === 'bundle'}">
+                    <a href="#/bundle">Services</a>
+                </li>
+                <li ng-click="logout()">
+                    <a href="#/contact">Logout</a>
+                </li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>

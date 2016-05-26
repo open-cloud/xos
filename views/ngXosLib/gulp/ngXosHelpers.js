@@ -85,6 +85,7 @@ module.exports = function(options){
       module: {
         glob: [
           options.xosHelperSource + '*.js',
+          options.xosHelperSource + 'services/helpers/**/*.js',
           options.xosHelperSource + 'services/*.js',
           options.xosHelperSource + 'ui_components/**/*.js'
         ],
@@ -115,9 +116,7 @@ module.exports = function(options){
   gulp.task('docs', ['makeDocs', 'serveDocs'], function(){
     
     var files = [
-      options.xosHelperSource + '*.js',
-      options.xosHelperSource + 'services/*.js',
-      options.xosHelperSource + 'ui_components/**/*.js'
+      options.xosHelperSource + '**/*.js'
     ];
 
     gulp.watch(files, ['makeDocs']);

@@ -1,0 +1,265 @@
+
+@import './vars.scss';
+@import '../bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+@import './bootstrap_overrides.scss';
+@import './loader.scss';
+
+/* Global styles
+-------------------------------------------------- */
+
+body {
+  background-color: #fafafa;
+  background-image: url('../imgs/content_inner_bg.png');
+}
+
+/* Navigation styles
+-------------------------------------------------- */
+nav {
+  .navbar-brand {
+    padding-top: 0;
+    img {
+      width: 130px;
+    }
+  }
+
+  @media (max-width: $screen-sm-min){
+    .navbar-nav.pull-right{
+      float: none !important;
+    }
+  }
+
+  li:hover,
+  li.active {
+    border-bottom: 2px solid $brand-primary;
+  }
+
+  li {
+    border-bottom: 2px solid transparent;
+
+    a {
+      padding-top: 10px !important;
+      padding-bottom: 10px !important;
+      margin-top: 5px;
+    }
+  }
+}
+
+body {
+  padding-top: 60px;
+}
+
+#icon-defs {
+  display: none;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  margin: 0px;
+  padding: 0px;
+}
+
+html, body {
+  position: relative;
+  min-height: 100%;
+  height: 100%;
+}
+
+.app-wrapper {
+  position: relative;
+}
+
+[ng-view] {
+  position: absolute;
+  width: 100%;
+}
+
+[ng-view],
+.app-wrapper {
+  min-height: 100%;
+  height: 100%;
+}
+
+[ng-view] .container {
+  padding-bottom: 30px;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 30px;
+  line-height: 30px;
+  background-color: #f5f5f5;
+  z-index: 100;
+  box-shadow: 0 10px 5px 10px gray;
+}
+
+/* Tables styles
+-------------------------------------------------- */
+.table {
+  .avatar > img {
+    max-width: 50px;
+  }
+
+  td {
+    vertical-align: middle !important;
+  }
+}
+
+/* Buttons addictional styles
+-------------------------------------------------- */
+.btn-primary-border {
+  @include button-variant($btn-primary-bg, $btn-primary-color, $btn-primary-border);
+}
+
+/* Login page styles
+-------------------------------------------------- */
+.login {
+  background: url('../imgs/login.jpg');
+  background-size: contain;
+  min-height: 100%;
+  background-repeat: no-repeat ;
+  background-position: center ;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .login-wrapper {
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 5px 5px 15px #666;
+    width: 260px;
+    padding: 20px;
+  }
+
+  @media (max-width: $screen-sm-min){
+    .login-wrapper{
+      width: 100%;
+    }
+  }
+}
+
+/* User page styles
+-------------------------------------------------- */
+user-updated-tick {
+  .icon-saved {
+    background-image: url('../../../imgs/icon-saved.gif');
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-size: cover;
+  }
+}
+
+  /* Bundle page styles
+  -------------------------------------------------- */
+  [bundle-available] {
+    margin-top: 20px;
+  }
+
+  img {
+    animation: fadein 2s ease-in-out;
+  }
+
+
+/* ng-view-animation
+-------------------------------------------------- */
+.fade {
+  opacity: 1;
+}
+.fade.ng-enter,
+.fade.ng-leave {
+  transition: all .5s ease-in-out;
+}
+.fade.ng-enter {
+  opacity: 0;
+}
+.fade.ng-enter-active {
+  opacity: 1;
+}
+.fade.ng-leave {
+  opacity: 1;
+}
+.fade.ng-leave-active {
+  opacity: 0;
+}
+
+  /* ng-show-animation
+  -------------------------------------------------- */
+
+  .animate.ng-hide-add {
+    animation:0.5s slideOutRight ease-in-out;
+  }
+  .animate.ng-hide-remove {
+    animation:0.5s slideInRight ease-in-out;
+  }
+
+  /* ng-repeat-animation
+  -------------------------------------------------- */
+  .animate-repeat.ng-move,
+  .animate-repeat.ng-enter,
+  .animate-repeat.ng-leave {
+    transition:all linear 0.5s;
+  }
+
+  .animate-repeat.ng-leave.ng-leave-active,
+  .animate-repeat.ng-move,
+  .animate-repeat.ng-enter {
+    opacity:0;
+    animation: 0.5s slideOutRight ease-in-out;
+  }
+
+  .animate-repeat.ng-leave,
+  .animate-repeat.ng-move.ng-move-active,
+  .animate-repeat.ng-enter.ng-enter-active {
+    opacity:1;
+    height:60px;
+    animation: 0.5s slideInRight ease-in-out;
+  }
+
+  .animate-repeat.ng-enter-stagger,
+  .animate-repeat.ng-leave-stagger{
+    transition-delay: 0.1s;
+    animation-delay: 0.1s;
+  }
+
+  /* animations
+  -------------------------------------------------- */
+
+  @keyframes slideOutRight {
+    from {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+      transform: translate3d(100%, 0, 0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translate3d(100%, 0, 0);
+      opacity: 0;
+    }
+
+    to {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+  }
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: scale3d(.3, .3, .3);
+  }
+  50% {
+    transform: scale3d(1, 1, 1);
+  }
+  to   { opacity: 1; }
+}
+

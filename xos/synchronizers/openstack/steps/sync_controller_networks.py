@@ -56,8 +56,21 @@ class SyncControllerNetworks(OpenStackSyncStep):
             # If a subnet is already specified (pass in by the creator), then
             # use that rather than auto-generating one.
             cidr = controller_network.subnet.strip()
+            print "CIDR_MS", cidr
         else:
             cidr = self.alloc_subnet(controller_network.pk)
+            print "CIDR_AMS", cidr
+
+        if controller_network.network.start_ip and controller_network.network.start_ip.strip():
+            start_ip = controller_network.network.start_ip.strip()
+        else:
+            start_ip = None
+
+        if controller_network.network.end_ip and controller_network.network.end_ip.strip():
+            end_ip = controller_network.network.end_ip.strip()
+        else:
+            end_ip = None
+
         self.cidr=cidr
         slice = controller_network.network.owner
 
@@ -72,6 +85,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
                     'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
                     'cidr':cidr,
                     'gateway':self.alloc_gateway(cidr),
+                    'start_ip':start_ip,
+                    'end_ip':end_ip,
                     'use_vtn':getattr(Config(), "networking_use_vtn", False),
                     'delete':False
                     }

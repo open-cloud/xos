@@ -1,0 +1,19 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+  tasks:
+
+  - name: write message
+    shell: echo "{{ display_message }}" > /var/tmp/index.html
+
+  - name: setup s1u interface config
+    shell: ./start_3gpp_int.sh eth1 {{ s1u_tag }} {{ s1u_ip }}/24 
+
+  - name: setup s1mme interface config
+    shell: ./start_3gpp_int.sh eth2 {{ s1mme_tag }} {{ s1mme_ip }}/24 
+
+  - name: setup rru interface config
+    shell: ./start_3gpp_int.sh eth3 {{ rru_tag }} {{ rru_ip }}/24 
