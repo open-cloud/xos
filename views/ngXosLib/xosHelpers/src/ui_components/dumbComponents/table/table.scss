@@ -23,4 +23,22 @@ xos-table {
     opacity:1;
     animation: 0.5s slideInRight ease-in-out;
   }
+
+  td dl {
+    margin-bottom: 0;
+
+    dt {
+      width: auto !important;
+      margin-right: 10px;
+    }
+    
+    dt:after {
+      /*display: block;*/
+      content: ':';
+    }
+
+    dd {
+      margin-left: 0 !important;
+    }
+  }
 }

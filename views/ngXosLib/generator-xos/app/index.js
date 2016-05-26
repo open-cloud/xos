@@ -11,56 +11,28 @@ module.exports = generators.Base.extend({
     return string.replace(/^./, string[0].toUpperCase());
   },
   prompting: {
-    name:function(){
+    name: function(){
       var done = this.async();
       this.prompt({
-        type    : 'input',
-        name    : 'name',
-        message : 'Your project name',
-        default : this.config.get('name') // value set in .yo-rc.json
+        type: 'input',
+        name: 'name',
+        message: 'Your project name',
+        default: this.config.get('name') // value set in .yo-rc.json
       }, function (answers) {
         // TODO check if this view already exist
         config.name = answers.name;
-        done();
-      }.bind(this));
-    },
-    host:function(){
-      var done = this.async();
-      this.prompt({
-        type    : 'input',
-        name    : 'host',
-        message : 'Your project remote host (with port)'
-      }, function (answers) {
-        config.host = answers.host;
-        done();
-      }.bind(this));
-    },
-    token:function(){
-      var done = this.async();
-      this.prompt({
-        type    : 'input',
-        name    : 'token',
-        message : 'Insert your active session token'
-      }, function (answers) {
-        config.token = answers.token;
-        done();
-      }.bind(this));
-    },
-    session:function(){
-      var done = this.async();
-      this.prompt({
-        type    : 'input',
-        name    : 'session',
-        message : 'Insert your active session id'
-      }, function (answers) {
-        config.session = answers.session;
         done();
       }.bind(this));
     }
   },
   writing: {
     rcFiles: function(){
-      userName = user.git.name().split(' ');
+      if (!user.git.name()){
+        userName = ['', '']
+      }
+      else {
+        userName = user.git.name().split(' ');
+      }
       this.fs.copy(this.templatePath('.bowerrc'), this.destinationPath(`${this.config.get('folder')}/${config.name}/.bowerrc`));
       this.fs.copy(this.templatePath('.gitignore'), this.destinationPath(`${this.config.get('folder')}/${config.name}/.gitignore`));
     },
@@ -68,21 +40,14 @@ module.exports = generators.Base.extend({
       this.fs.copyTpl(
         this.templatePath('package.json'),
         this.destinationPath(`${this.config.get('folder')}/${config.name}/package.json`),
-        { name: config.name, author: {name:user.git.name()} }
-      );
-    },
-    envConfig: function(){
-      this.fs.copyTpl(
-        this.templatePath('env/default.js'),
-        this.destinationPath(`${this.config.get('folder')}/${config.name}/env/default.js`),
-        { host: config.host, token: config.token, session: config.session }
+        { name: config.name, author: {name: user.git.name()} }
       );
     },
     bowerJson: function(){
       this.fs.copyTpl(
         this.templatePath('bower.json'),
         this.destinationPath(`${this.config.get('folder')}/${config.name}/bower.json`),
-        { name: config.name, author: {name:user.git.name(), email: user.git.email()} }
+        { name: config.name, author: {name: user.git.name(), email: user.git.email()} }
       );
     },
     index: function(){
@@ -120,7 +85,7 @@ module.exports = generators.Base.extend({
       this.fs.copyTpl(
         this.templatePath('gulp/*.js'),
         this.destinationPath(`${this.config.get('folder')}/${config.name}/gulp`),
-        {name:config.name, fileName: this._fistCharToUpper(config.name)}
+        {name: config.name, fileName: this._fistCharToUpper(config.name)}
       );
       this.fs.copy(this.templatePath('gulpfile.js'), this.destinationPath(`${this.config.get('folder')}/${config.name}/gulpfile.js`));
     },
@@ -147,10 +112,10 @@ module.exports = generators.Base.extend({
   install: function(){
     var done = this.async();
     this.prompt({
-      type    : 'confirm',
-      name    : 'deps',
-      message : 'Install dependecies?',
-      default : false // value set in .yo-rc.json
+      type: 'confirm',
+      name: 'deps',
+      message: 'Install dependecies?',
+      default: false // value set in .yo-rc.json
     }, function (answers) {
       if(answers.deps){
         process.chdir(`${this.config.get('folder')}/${config.name}`);

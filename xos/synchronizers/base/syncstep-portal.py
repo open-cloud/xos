@@ -5,6 +5,7 @@ from xos.config import Config
 from xos.logger import Logger, logging
 from synchronizers.base.steps import *
 from django.db.models import F, Q
+from django.utils import timezone
 from core.models import * 
 from django.db import reset_queries
 import json
@@ -141,7 +142,7 @@ class SyncStep(object):
                         o.delete(purge=True)
                     else:
                         self.sync_record(o)
-                        o.enacted = datetime.now() # Is this the same timezone? XXX
+                        o.enacted = timezone.now() # Is this the same timezone? XXX
                         scratchpad = {'next_run':0, 'exponent':0}
                         o.backend_register = json.dumps(scratchpad)
                         o.backend_status = "1 - OK"

@@ -88,7 +88,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
     def get_cluster_configuration(self, o):
         instance = self.get_instance(o)
         if not instance:
-           raise "No instance for ONOS App"
+           raise Exception("No instance for ONOS App")
         node_ips = [socket.gethostbyname(instance.node.name)]
 
         ipPrefix = ".".join(node_ips[0].split(".")[:3]) + ".*"
@@ -100,7 +100,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
     def get_dynamic_parameter_value(self, o, param):
         instance = self.get_instance(o)
         if not instance:
-           raise "No instance for ONOS App"
+           raise Exception("No instance for ONOS App")
         if param == 'rabbit_host':
             return instance.controller.rabbit_host
         if param == 'rabbit_user':
@@ -242,6 +242,100 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         return json.dumps(data, indent=4, sort_keys=True)
 
+    def get_volt_network_config(self, o, attrs):
+        data = {
+            "devices" : {
+                "of:1000000000000001" : {
+                    "accessDevice" : {
+                        "uplink" : "2",
+                        "vlan"   : "222",
+                    },
+                    "basic" : {
+                        "driver" : "pmc-olt"
+                    }
+                }
+            }
+        }
+        return json.dumps(data, indent=4, sort_keys=True)
+
+    def get_volt_component_config(self, o, attrs):
+        data = {
+            "org.ciena.onos.ext_notifier.KafkaNotificationBridge":{
+                "rabbit.user": "<rabbit_user>",
+                "rabbit.password": "<rabbit_password>",
+                "rabbit.host": "<rabbit_host>",
+                "publish.kafka": "false",
+                "publish.rabbit": "true",
+                "volt.events.rabbit.topic": "notifications.info",
+                "volt.events.rabbit.exchange": "voltlistener",
+                "volt.events.opaque.info": "{project_id: <keystone_tenant_id>, user_id: <keystone_user_id>}",
+                "publish.volt.events": "true"
+            }
+        }
+        return json.dumps(data, indent=4, sort_keys=True)
+
+    def get_vrouter_network_config(self, o, attrs):
+        # From the onosproject wiki:
+        # https://wiki.onosproject.org/display/ONOS/vRouter
+        data = {
+            "devices" : {
+                "of:00000000000000b1" : {
+                    "basic" : {
+                        "driver" : "softrouter"
+                    }
+                }
+            },
+            "ports" : {
+                "of:00000000000000b1/1" : {
+                    "interfaces" : [
+                        {
+                            "name" : "b1-1",
+                            "ips"  : [ "10.0.1.2/24" ],
+                            "mac"  : "00:00:00:00:00:01"
+                        }
+                    ]
+                },
+                "of:00000000000000b1/2" : {
+                    "interfaces" : [
+                        {
+                            "name" : "b1-2",
+                            "ips"  : [ "10.0.2.2/24" ],
+                            "mac"  : "00:00:00:00:00:01"
+                        }
+                    ]
+                },
+                "of:00000000000000b1/3" : {
+                    "interfaces" : [
+                        {
+                            "name" : "b1-3",
+                            "ips"  : [ "10.0.3.2/24" ],
+                            "mac"  : "00:00:00:00:00:01"
+                        }
+                    ]
+                },
+                "of:00000000000000b1/4" : {
+                    "interfaces" : [
+                        {
+                            "name" : "b1-4",
+                            "ips"  : [ "10.0.4.2/24" ],
+                            "mac"  : "00:00:00:00:00:02",
+                            "vlan" : "100"
+                        }
+                    ]
+                }
+            },
+            "apps" : {
+                "org.onosproject.router" : {
+                    "router" : {
+                        "controlPlaneConnectPoint" : "of:00000000000000b1/5",
+                        "ospfEnabled" : "true",
+                        "interfaces" : [ "b1-1", "b1-2", "b1-2", "b1-4" ]
+                    }
+                }
+            }
+        }
+        return json.dumps(data, indent=4, sort_keys=True)
+
     def write_configs(self, o):
         o.config_fns = []
         o.rest_configs = []
@@ -279,17 +373,29 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             o.early_rest_configs.append( {"endpoint": endpoint, "fn": fn} )
 
         # Generate config files and save them to the appropriate tenant attributes
-        autogen = []
+        configs = []
         for key, value in attrs.iteritems():
             if key == "autogenerate" and value:
-                autogen.append(value)
-        for label in autogen:
+                for config in value.split(','):
+                    configs.append(config.strip())
+
+        for label in configs:
             config = None
             value = None
             if label == "vtn-network-cfg":
-            # Generate the VTN config file... where should this live?
+                # Generate the VTN config file... where should this live?
                 config = "rest_onos/v1/network/configuration/"
                 value = self.get_vtn_config(o, attrs)
+            elif label == "volt-network-cfg":
+                config = "rest_onos/v1/network/configuration/"
+                value = self.get_volt_network_config(o, attrs)
+            elif label == "volt-component-cfg":
+                config = "component_config"
+                value = self.get_volt_component_config(o, attrs)
+            elif label == "vrouter-network-cfg":
+                config = "rest_onos/v1/network/configuration/"
+                value = self.get_vrouter_network_config(o, attrs)
+
             if config:
                 tas = TenantAttribute.objects.filter(tenant=o, name=config)
                 if tas:

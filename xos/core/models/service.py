@@ -510,7 +510,11 @@ class LeastLoadedNodeScheduler(Scheduler):
 
     def pick(self):
         from core.models import Node
-        nodes = Node.objects.all()
+        if not self.slice.default_node:
+            nodes = list(Node.objects.all())
+            nodes = sorted(nodes, key=lambda node: node.instances.all().count())
+        else:
+            nodes = list(Node.objects.filter(name = self.slice.default_node))
 
         if self.label:
             nodes = nodes.filter(nodelabels__name=self.label)
@@ -523,20 +527,13 @@ class LeastLoadedNodeScheduler(Scheduler):
 
         # TODO: logic to filter nodes by which nodes are up, and which
         #   nodes the slice can instantiate on.
-        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
+#        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
         return [nodes[0], None]
 
 
 class ContainerVmScheduler(Scheduler):
     # This scheduler picks a VM in the slice with the fewest containers inside
     # of it. If no VMs are suitable, then it creates a VM.
-
-    # this is a hack and should be replaced by something smarter...
-    LOOK_FOR_IMAGES = ["ubuntu-vcpe4",        # ONOS demo machine -- preferred vcpe image
-                       "Ubuntu 14.04 LTS",    # portal
-                       "Ubuntu-14.04-LTS",    # ONOS demo machine
-                       "trusty-server-multi-nic",  # CloudLab
-                       ]
 
     MAX_VM_PER_CONTAINER = 10
 
@@ -547,14 +544,11 @@ class ContainerVmScheduler(Scheduler):
     def image(self):
         from core.models import Image
 
-        look_for_images = self.LOOK_FOR_IMAGES
-        for image_name in look_for_images:
-            images = Image.objects.filter(name=image_name)
-            if images:
-                return images[0]
+        # If slice has default_image set then use it
+        if self.slice.default_image:
+            return self.slice.default_image
 
-        raise XOSProgrammingError(
-            "No ContainerVM image (looked for %s)" % str(look_for_images))
+        raise XOPSProgrammingError("Please set a default image for %s" % self.slice.name)
 
     def make_new_instance(self):
         from core.models import Instance, Flavor
@@ -602,15 +596,6 @@ class ContainerVmScheduler(Scheduler):
 
 class TenantWithContainer(Tenant):
     """ A tenant that manages a container """
-
-    # this is a hack and should be replaced by something smarter...
-    LOOK_FOR_IMAGES = ["ubuntu-vcpe4",        # ONOS demo machine -- preferred vcpe image
-                       "Ubuntu 14.04 LTS",    # portal
-                       "Ubuntu-14.04-LTS",    # ONOS demo machine
-                       "trusty-server-multi-nic",  # CloudLab
-                       ]
-
-    LOOK_FOR_CONTAINER_IMAGES = ["docker-vcpe"]
 
     class Meta:
         proxy = True
@@ -694,18 +679,11 @@ class TenantWithContainer(Tenant):
             raise XOSProgrammingError("provider service has no slice")
         slice = slice[0]
 
-        if slice.default_isolation in ["container", "container_vm"]:
-            look_for_images = self.LOOK_FOR_CONTAINER_IMAGES
-        else:
-            look_for_images = self.LOOK_FOR_IMAGES
+        # If slice has default_image set then use it
+        if slice.default_image:
+            return slice.default_image
 
-        for image_name in look_for_images:
-            images = Image.objects.filter(name=image_name)
-            if images:
-                return images[0]
-
-        raise XOSProgrammingError(
-            "No VPCE image (looked for %s)" % str(look_for_images))
+        raise XOPSProgrammingError("Please set a default image for %s" % self.slice.name)
 
     def save_instance(self, instance):
         # Override this function to do custom pre-save or post-save processing,

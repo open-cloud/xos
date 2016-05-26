@@ -12,6 +12,7 @@ from core.models import Tag
 from django.contrib.contenttypes import generic
 from core.models import Service
 from core.models import Controller
+from core.models.node import Node
 from core.models import Flavor, Image
 from core.models.plcorebase import StrippedCharField
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -40,6 +41,7 @@ class Slice(PlCoreBase):
     # for tenant view
     default_flavor = models.ForeignKey(Flavor, related_name = "slices", null=True, blank=True)
     default_image = models.ForeignKey(Image, related_name = "slices", null=True, blank=True);
+    default_node = models.ForeignKey(Node, related_name = "slices", null=True, blank=True)
     mount_data_sets = StrippedCharField(default="GenBank",null=True, blank=True, max_length=256)
 
     default_isolation = models.CharField(null=False, blank=False, max_length=30, choices=ISOLATION_CHOICES, default="vm")

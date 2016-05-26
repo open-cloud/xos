@@ -3,10 +3,10 @@
 
   angular.module('xos.diagnostic')
   .service('Services', function($resource){
-    return $resource('/xos/services/:id', {id: '@id'});
+    return $resource('/api/core/services/:id', {id: '@id'});
   })
   .service('Tenant', function($resource){
-    return $resource('/xos/tenants', {id: '@id'}, {
+    return $resource('/api/core/tenants', {id: '@id'}, {
       queryVsgInstances: {
         method: 'GET',
         isArray: true,
@@ -124,13 +124,13 @@
     }
   })
   .service('Slice', function($resource){
-    return $resource('/xos/slices', {id: '@id'});
+    return $resource('/api/core/slices', {id: '@id'});
   })
   .service('Instances', function($resource){
-    return $resource('/xos/instances/:id', {id: '@id'});
+    return $resource('/api/core/instances/:id', {id: '@id'});
   })
   .service('Node', function($resource, $q, Instances){
-    return $resource('/xos/nodes', {id: '@id'}, {
+    return $resource('/api/core/nodes', {id: '@id'}, {
       queryWithInstances: {
         method: 'GET',
         isArray: true,
@@ -238,7 +238,7 @@
   .service('SubscriberDevice', function($resource){
     return $resource('/xoslib/rs/subscriber/:id/users/', {id: '@id'});
   })
-  .service('ServiceRelation', function($q, lodash, Services, Tenant, Slice, Instances){
+  .service('ServiceRelation', function($q, _, Services, Tenant, Slice, Instances){
 
     // count the mas depth of an object
     const depthOf = (obj) => {
@@ -256,13 +256,13 @@
 
     // find all the relation defined for a given root
     const findLevelRelation = (tenants, rootId) => {
-      return lodash.filter(tenants, service => {
+      return _.filter(tenants, service => {
         return service.subscriber_service === rootId;
       });
     };
 
     const findSpecificInformation = (tenants, rootId) => {
-      var tenants = lodash.filter(tenants, service => {
+      var tenants = _.filter(tenants, service => {
         return service.provider_service === rootId && service.subscriber_tenant;
       });
 
@@ -280,8 +280,8 @@
     // find all the service defined by a given array of relations
     const findLevelServices = (relations, services) => {
       const levelServices = [];
-      lodash.forEach(relations, (tenant) => {
-        var service = lodash.find(services, {id: tenant.provider_service});
+      _.forEach(relations, (tenant) => {
+        var service = _.find(services, {id: tenant.provider_service});
         levelServices.push(service);
       });
       return levelServices;
@@ -291,7 +291,7 @@
 
       // build an array of unlinked services
       // these are the services that should still placed in the tree
-      var unlinkedServices = lodash.difference(services, [rootService]);
+      var unlinkedServices = _.difference(services, [rootService]);
 
       // find all relations relative to this rootElement
       const levelRelation = findLevelRelation(tenants, rootService.id);
@@ -299,7 +299,7 @@
       const levelServices = findLevelServices(levelRelation, services);
 
       // remove this item from the list (performance
-      unlinkedServices = lodash.difference(unlinkedServices, levelServices);
+      unlinkedServices = _.difference(unlinkedServices, levelServices);
 
       rootService.service_specific_attribute = findSpecificInformation(tenants, rootService.id);
 
@@ -316,12 +316,12 @@
         children: []
       };
 
-      lodash.forEach(levelServices, (service) => {
+      _.forEach(levelServices, (service) => {
         if(service.humanReadableName === 'service_ONOS_vBNG' || service.humanReadableName === 'service_ONOS_vOLT'){
           // remove ONOSes from service chart
           return;
         }
-        let tenant = lodash.find(tenants, {subscriber_tenant: rootTenant.id, provider_service: service.id});
+        let tenant = _.find(tenants, {subscriber_tenant: rootTenant.id, provider_service: service.id});
         tree.children.push(buildLevel(tenants, unlinkedServices, service, tenant, rootService.humanReadableName));
       });
 
@@ -342,8 +342,8 @@
       // find the root service
       // it is the one attached to subsriber_root
       // as now we have only one root so this can work
-      const rootTenant = lodash.find(tenants, {subscriber_root: subscriber.id});
-      const rootService = lodash.find(services, {id: rootTenant.provider_service});
+      const rootTenant = _.find(tenants, {subscriber_root: subscriber.id});
+      const rootService = _.find(services, {id: rootTenant.provider_service});
 
       const serviceTree = buildLevel(tenants, services, rootService, rootTenant);
 
@@ -372,9 +372,9 @@
           service: currentService
         };
 
-        let tenant = lodash.find(tenants, {subscriber_service: currentService.id});
+        let tenant = _.find(tenants, {subscriber_service: currentService.id});
         if(tenant){
-          let next = lodash.find(services, {id: tenant.provider_service});
+          let next = _.find(services, {id: tenant.provider_service});
           response.children = [buildChild(services, tenants, next)];
         }
         else {
@@ -390,7 +390,7 @@
         return response;
       }
 
-      let baseService = lodash.find(services, {id: 3});
+      let baseService = _.find(services, {id: 3});
       
       if(!angular.isDefined(baseService)){
         console.error('Missing Base service!');

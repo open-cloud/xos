@@ -1,0 +1,47 @@
+body.logout img.logo{
+   width: 250px;
+   display: block;
+   margin: 20px auto;
+   padding-top: 20px;
+}
+
+h1.logouth1tag{
+  text-align: center;
+}
+
+.logout #content-main {
+  float: none;
+
+    width: 300px;
+  overflow-x: hidden;
+
+}
+.logout{
+
+  background: rgba(255,255,255,0.82);
+  float: none;
+  height: 330px;
+  margin: 100px auto 0;
+  width: 316px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  padding: 10px 0px 0px 10px;
+
+  .requestDialog.ui-widget input{
+    background-color: rgb(250, 255, 189);
+  }
+  .row + .row {
+    margin-top: 10px;
+  }
+
+  .btn-primary {
+    @include button-variant($btn-primary-color, $btn-primary-bg, $btn-primary-border);
+    background: $btn-primary-bg;
+  }
+  p.logoutptag {
+    margin: 20px 10px 20px;
+    font-size: 16px;
+    text-align: center;
+  }
+}
+

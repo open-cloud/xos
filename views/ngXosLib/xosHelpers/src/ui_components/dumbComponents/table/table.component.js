@@ -22,7 +22,10 @@
     *   columns: [
     *     {
     *       label: 'Human readable name',
-    *       prop: 'Property to read in the model object'
+    *       prop: 'Property to read in the model object',
+    *       type: 'boolean'| 'array'| 'object'| 'custom'| 'date' | 'icon' // see examples for more details
+            formatter: fn(), // receive the whole item if tipe is custom and return a string
+            link: fn() // receive the whole item and return an url
     *     }
     *   ],
     *   classes: 'table table-striped table-bordered',
@@ -37,14 +40,15 @@
           }
         ],
         filter: 'field', // can be by `field` or `fulltext`
-        order: true // whether to show ordering arrows
+        order: true | {field: 'property name', reverse: true | false} // whether to show ordering arrows, or a configuration for a default ordering
     * }
     * ```
     * @param {Array} data The data that should be rendered
     * @element ANY
     * @scope
     * @example
-
+  
+  # Basic usage
   <example module="sampleTable1">
     <file name="index.html">
       <div ng-controller="SampleCtrl1 as vm">
@@ -53,6 +57,9 @@
     </file>
     <file name="script.js">
       angular.module('sampleTable1', ['xos.uiComponents'])
+      .factory('_', function($window){
+        return $window._;
+      })
       .controller('SampleCtrl1', function(){
         this.config = {
           columns: [
@@ -80,7 +87,8 @@
       });
     </file>
   </example>
-
+  
+  # Filtering
   <example module="sampleTable2" animations="true">
     <file name="index.html">
       <div ng-controller="SampleCtrl2 as vm">
@@ -89,6 +97,9 @@
     </file>
     <file name="script.js">
       angular.module('sampleTable2', ['xos.uiComponents', 'ngAnimate'])
+      .factory('_', function($window){
+        return $window._;
+      })
       .controller('SampleCtrl2', function(){
         this.config = {
           columns: [
@@ -129,7 +140,8 @@
       });
     </file>
   </example>
-
+  
+  # Pagination
   <example module="sampleTable3">
     <file name="index.html">
       <div ng-controller="SampleCtrl3 as vm">
@@ -138,6 +150,9 @@
     </file>
     <file name="script.js">
       angular.module('sampleTable3', ['xos.uiComponents'])
+      .factory('_', function($window){
+        return $window._;
+      })
       .controller('SampleCtrl3', function(){
         this.config = {
           columns: [
@@ -171,6 +186,143 @@
           {
             name: 'Tate',
             lastname: 'Spalding'
+          }
+        ]
+      });
+    </file>
+  </example>
+  
+  # Field formatter
+  <example module="sampleTable4">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm">
+        <xos-table data="vm.data" config="vm.config"></xos-table>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleTable4', ['xos.uiComponents'])
+      .factory('_', function($window){
+        return $window._;
+      })
+      .controller('SampleCtrl', function(){
+        this.config = {
+          columns: [
+            {
+              label: 'First Name',
+              prop: 'name',
+              link: item => `https://www.google.it/#q=${item.name}`
+            },
+            {
+              label: 'Enabled',
+              prop: 'enabled',
+              type: 'boolean'
+            },
+            {
+              label: 'Services',
+              prop: 'services',
+              type: 'array'
+            },
+            {
+              label: 'Details',
+              prop: 'details',
+              type: 'object'
+            },
+            {
+              label: 'Created',
+              prop: 'created',
+              type: 'date'
+            },
+            {
+              label: 'Icon',
+              type: 'icon',
+              formatter: item => item.icon //note that this refer to [Bootstrap Glyphicon](http://getbootstrap.com/components/#glyphicons)
+            }
+          ]
+        };
+
+        this.data = [
+          {
+            name: 'John',
+            enabled: true,
+            services: ['Cdn', 'IpTv'],
+            details: {
+              c_tag: '243',
+              s_tag: '444'
+            },
+            created: new Date('December 17, 1995 03:24:00'),
+            icon: 'music'
+          },
+          {
+            name: 'Gili',
+            enabled: false,
+            services: ['Cdn', 'IpTv', 'Cache'],
+            details: {
+              c_tag: '675',
+              s_tag: '893'
+            },
+            created: new Date(),
+            icon: 'camera'
+          }
+        ]
+      });
+    </file>
+  </example>
+
+  # Custom formatter
+  <example module="sampleTable5">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm">
+        <xos-table data="vm.data" config="vm.config"></xos-table>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleTable5', ['xos.uiComponents'])
+      .factory('_', function($window){
+        return $window._;
+      })
+      .controller('SampleCtrl', function(){
+        this.config = {
+          columns: [
+            {
+              label: 'Username',
+              prop: 'username'
+            },
+            {
+              label: 'Features',
+              type: 'custom',
+              formatter: (val) => {
+                
+                let cdnEnabled = val.features.cdn ? 'enabled' : 'disabled';
+                return `
+                  Cdn is ${cdnEnabled},
+                  uplink speed is ${val.features.uplink_speed}
+                  and downlink speed is ${val.features.downlink_speed}
+                `;
+              }
+            }
+          ]
+        };
+
+        this.data = [
+          {
+            username: 'John',
+            features: {
+              "cdn": false,
+              "uplink_speed": 1000000000,
+              "downlink_speed": 1000000000,
+              "uverse": true,
+              "status": "enabled"
+            }
+          },
+          {
+            username: 'Gili',
+            features: {
+              "cdn": true,
+              "uplink_speed": 3000000000,
+              "downlink_speed": 2000000000,
+              "uverse": true,
+              "status": "enabled"
+            }
           }
         ]
       });
@@ -217,17 +369,54 @@
                 <tr>
                   <td ng-repeat="col in vm.columns">
                     <input
+                      ng-if="col.type !== 'boolean'"
                       class="form-control"
                       placeholder="Type to search by {{col.label}}"
                       type="text"
                       ng-model="vm.query[col.prop]"/>
+                    <select
+                      ng-if="col.type === 'boolean'"
+                      class="form-control"
+                      ng-model="vm.query[col.prop]">
+                      <option value="">-</option>
+                      <option value="true">True</option>
+                      <option value="false">False</option>
+                    </select>
                   </td>
                   <td ng-if="vm.config.actions"></td>
                 </tr>
               </tbody>
               <tbody>
                 <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">
-                  <td ng-repeat="col in vm.columns">{{item[col.prop]}}</td>
+                  <td ng-repeat="col in vm.columns" link-wrapper>
+                    <span ng-if="!col.type">{{item[col.prop]}}</span>
+                    <span ng-if="col.type === 'boolean'">
+                      <i class="glyphicon"
+                        ng-class="{'glyphicon-ok': item[col.prop], 'glyphicon-remove': !item[col.prop]}">
+                      </i>
+                    </span>
+                    <span ng-if="col.type === 'date'">
+                      {{item[col.prop] | date:'H:mm MMM d, yyyy'}}
+                    </span>
+                    <span ng-if="col.type === 'array'">
+                      {{item[col.prop] | arrayToList}}
+                    </span>
+                    <span ng-if="col.type === 'object'">
+                      <dl class="dl-horizontal">
+                        <span ng-repeat="(k,v) in item[col.prop]">
+                          <dt>{{k}}</dt>
+                          <dd>{{v}}</dd>
+                        </span>
+                      </dl>
+                    </span>
+                    <span ng-if="col.type === 'custom'">
+                      {{col.formatter(item)}}
+                    </span>
+                    <span ng-if="col.type === 'icon'">
+                      <i class="glyphicon glyphicon-{{col.formatter(item)}}">
+                      </i>
+                    </span>
+                  </td>
                   <td ng-if="vm.config.actions">
                     <a href=""
                       ng-repeat="action in vm.config.actions"
@@ -256,7 +445,7 @@
         `,
         bindToController: true,
         controllerAs: 'vm',
-        controller: function(){
+        controller: function(_){
 
           if(!this.config){
             throw new Error('[xosTable] Please provide a configuration via the "config" attribute');
@@ -264,6 +453,45 @@
 
           if(!this.config.columns){
             throw new Error('[xosTable] Please provide a columns list in the configuration');
+          }
+
+          // handle default ordering
+          if(this.config.order && angular.isObject(this.config.order)){
+            this.reverse = this.config.order.reverse || false;
+            this.orderBy = this.config.order.field || 'id';
+          }
+
+          // if columns with type 'custom' are provided
+          // check that a custom formatte3 is provided too
+          let customCols = _.filter(this.config.columns, {type: 'custom'});
+          if(angular.isArray(customCols) && customCols.length > 0){
+            _.forEach(customCols, (col) => {
+              if(!col.formatter || !angular.isFunction(col.formatter)){
+                throw new Error('[xosTable] You have provided a custom field type, a formatter function should provided too.');
+              }
+            })
+          }
+
+          // if columns with type 'icon' are provided
+          // check that a custom formatte3 is provided too
+          let iconCols = _.filter(this.config.columns, {type: 'icon'});
+          if(angular.isArray(iconCols) && iconCols.length > 0){
+            _.forEach(iconCols, (col) => {
+              if(!col.formatter || !angular.isFunction(col.formatter)){
+                throw new Error('[xosTable] You have provided an icon field type, a formatter function should provided too.');
+              }
+            })
+          }
+
+          // if a link property is passed,
+          // it should be a function
+          let linkedColumns = _.filter(this.config.columns, col => angular.isDefined(col.link));
+          if(angular.isArray(linkedColumns) && linkedColumns.length > 0){
+            _.forEach(linkedColumns, (col) => {
+              if(!angular.isFunction(col.link)){
+                throw new Error('[xosTable] The link property should be a function.');
+              }
+            })
           }
 
           this.columns = this.config.columns;
@@ -282,4 +510,27 @@
         }
       }
     })
+    // TODO move in separate files
+    // TODO test
+    .filter('arrayToList', function(){
+      return (input) => {
+        if(!angular.isArray(input)){
+          return input;
+        }
+        return input.join(', ');
+      }
+    })
+    // TODO test
+    .directive('linkWrapper', function() {
+      return {
+        restrict: 'A',
+        transclude: true,
+        template: `
+          <a ng-if="col.link" href="{{col.link(item)}}">
+            <div ng-transclude></div>
+          </a>
+          <div ng-transclude ng-if="!col.link"></div>
+        `
+      };
+    });
 })();

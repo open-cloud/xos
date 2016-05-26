@@ -10,7 +10,7 @@
   'use strict';
 
   angular.module('xos.ceilometerDashboard')
-    .directive('ceilometerDashboard', function(lodash){
+    .directive('ceilometerDashboard', function(_){
       return {
         restrict: 'E',
         scope: {},
@@ -120,7 +120,7 @@
                 });
                 // end rename things in UI
 
-                this.selectedResources = lodash.groupBy(sliceMeters, 'resource_name');
+                this.selectedResources = _.groupBy(sliceMeters, 'resource_name');
 
                 // hacky
                 if(Ceilometer.selectedResource){
