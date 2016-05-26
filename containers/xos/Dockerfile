@@ -75,7 +75,7 @@ RUN easy_install \
 ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
 
 # Include certificates from Openstack
-ADD containers/xos/local_certs.crt /usr/local/share/ca-certificates/local_certs.crt
+ADD local_certs.crt /usr/local/share/ca-certificates/local_certs.crt
 RUN update-ca-certificates
 
 # Install XOS
