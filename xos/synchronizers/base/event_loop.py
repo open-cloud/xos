@@ -462,6 +462,9 @@ class XOSObserver:
 
         def run_once(self):
                 try:
+                        logger.info('TEO:')
+                        logger.info(S)
+                        logger.info('------------------------------')
                         loop_start = time.time()
                         error_map_file = getattr(Config(), "error_map_path", XOS_DIR + "/error_map.txt")
                         self.error_mapper = ErrorMapper(error_map_file)
