@@ -25,6 +25,7 @@
         'ngAnimate',
         'bugSnag',
         'xos.uiComponents',
+        'RecursionHelper'
       ])
       .config(config)
 

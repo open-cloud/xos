@@ -53,19 +53,14 @@
         return 'boolean';
       }
 
-      // check if a string is a number
-      if(!isNaN(value) && value !== null){
-        return 'number';
-      }
-
       // check if a string is an email
       if(this._isEmail(value)){
         return 'email';
       }
 
       // if null return string
-      if(value === null){
-        return 'string';
+      if(typeof value === 'string' || value === null){
+        return 'text';
       }
 
       return typeof value;

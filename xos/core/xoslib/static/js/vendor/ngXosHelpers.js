@@ -1058,7 +1058,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     * ```
     * @param {mixed} ngModel The field value
     */
-  .directive('xosField', function () {
+  .directive('xosField', ["RecursionHelper", function (RecursionHelper) {
     return {
       restrict: 'E',
       scope: {
@@ -1066,23 +1066,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         field: '=',
         ngModel: '='
       },
-      template: '\n        <label>{{vm.field.label}}</label>\n            <input\n              ng-if="vm.field.type !== \'boolean\' && vm.field.type !== \'object\'"\n              type="{{vm.field.type}}"\n              name="{{vm.name}}"\n              class="form-control"\n              ng-model="vm.ngModel"\n              ng-minlength="vm.field.validators.minlength || 0"\n              ng-maxlength="vm.field.validators.maxlength || 2000"\n              ng-required="vm.field.validators.required || false" />\n            <span class="boolean-field" ng-if="vm.field.type === \'boolean\'">\n              <button\n                class="btn btn-success"\n                ng-show="vm.ngModel"\n                ng-click="vm.ngModel = false">\n                <i class="glyphicon glyphicon-ok"></i>\n              </button>\n              <button\n                class="btn btn-danger"\n                ng-show="!vm.ngModel"\n                ng-click="vm.ngModel = true">\n                <i class="glyphicon glyphicon-remove"></i>\n              </button>\n            </span>\n            <div\n              class="panel panel-default object-field"\n              ng-if="vm.field.type == \'object\' "\n              >\n              <div class="panel-heading">Panel heading without title</div>\n              <div class="panel-body">\n                Panel content\n              </div>\n            </div>\n      ',
+      template: '\n        <label ng-if="vm.field.type !== \'object\'">{{vm.field.label}}</label>\n            <input\n              ng-if="vm.field.type !== \'boolean\' && vm.field.type !== \'object\'"\n              type="{{vm.field.type}}"\n              name="{{vm.name}}"\n              class="form-control"\n              ng-model="vm.ngModel"\n              ng-minlength="vm.field.validators.minlength || 0"\n              ng-maxlength="vm.field.validators.maxlength || 2000"\n              ng-required="vm.field.validators.required || false" />\n            <span class="boolean-field" ng-if="vm.field.type === \'boolean\'">\n              <button\n                class="btn btn-success"\n                ng-show="vm.ngModel"\n                ng-click="vm.ngModel = false">\n                <i class="glyphicon glyphicon-ok"></i>\n              </button>\n              <button\n                class="btn btn-danger"\n                ng-show="!vm.ngModel"\n                ng-click="vm.ngModel = true">\n                <i class="glyphicon glyphicon-remove"></i>\n              </button>\n            </span>\n            <div\n              class="panel panel-default object-field"\n              ng-if="vm.field.type == \'object\' && !vm.isEmptyObject(vm.ngModel)"\n              >\n              <div class="panel-heading">{{vm.field.label}}</div>\n              <div class="panel-body">\n                <div ng-repeat="(k, v) in vm.ngModel">\n                  <xos-field\n                    name="k"\n                    field="{label: k, type: vm.getType(v)}"\n                    ng-model="v">\n                  </xos-field>\n                </div>\n              </div>\n            </div>\n      ',
       bindToController: true,
       controllerAs: 'vm',
-      controller: function controller() {
-        // console.log('Field: ', this.name, this.field.type, this.ngModel);
+      // the compile cicle is needed to support recursion
+      compile: function compile(element) {
+        return RecursionHelper.compile(element);
+      },
+      controller: ["XosFormHelpers", function controller(XosFormHelpers) {
+        // console.log('Field: ', this.name, this.field, this.ngModel);
         if (!this.name) {
           throw new Error('[xosField] Please provide a field name');
         }
         if (!this.field) {
           throw new Error('[xosField] Please provide a field definition');
         }
-        if (!this.ngModel) {
+        if (!angular.isDefined(this.ngModel)) {
           throw new Error('[xosField] Please provide an ng-model');
         }
-      }
+
+        this.getType = XosFormHelpers._getFieldFormat;
+
+        this.isEmptyObject = function (o) {
+          return Object.keys(o).length === 0;
+        };
+      }]
     };
-  });
+  }]);
 })();
 //# sourceMappingURL=../../../maps/ui_components/dumbComponents/field/field.component.js.map
 
@@ -1637,19 +1647,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return 'boolean';
       }
 
-      // check if a string is a number
-      if (!isNaN(value) && value !== null) {
-        return 'number';
-      }
-
       // check if a string is an email
       if (_this._isEmail(value)) {
         return 'email';
       }
 
       // if null return string
-      if (value === null) {
-        return 'string';
+      if (typeof value === 'string' || value === null) {
+        return 'text';
       }
 
       return typeof value === 'undefined' ? 'undefined' : _typeof(value);
@@ -1754,7 +1759,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   * @description this is the module that group all the helpers service and components for XOS
   **/
 
-  angular.module('xos.helpers', ['ngCookies', 'ngResource', 'ngAnimate', 'bugSnag', 'xos.uiComponents']).config(config)
+  angular.module('xos.helpers', ['ngCookies', 'ngResource', 'ngAnimate', 'bugSnag', 'xos.uiComponents', 'RecursionHelper']).config(config)
 
   /**
   * @ngdoc service

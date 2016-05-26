@@ -27,7 +27,7 @@
     * ```
     * @param {mixed} ngModel The field value
     */
-  .directive('xosField', function(){
+  .directive('xosField', function(RecursionHelper){
     return {
       restrict: 'E',
       scope: {
@@ -36,7 +36,7 @@
         ngModel: '='
       },
       template: `
-        <label>{{vm.field.label}}</label>
+        <label ng-if="vm.field.type !== 'object'">{{vm.field.label}}</label>
             <input
               ng-if="vm.field.type !== 'boolean' && vm.field.type !== 'object'"
               type="{{vm.field.type}}"
@@ -62,27 +62,41 @@
             </span>
             <div
               class="panel panel-default object-field"
-              ng-if="vm.field.type == 'object' "
+              ng-if="vm.field.type == 'object' && !vm.isEmptyObject(vm.ngModel)"
               >
-              <div class="panel-heading">Panel heading without title</div>
+              <div class="panel-heading">{{vm.field.label}}</div>
               <div class="panel-body">
-                Panel content
+                <div ng-repeat="(k, v) in vm.ngModel">
+                  <xos-field
+                    name="k"
+                    field="{label: k, type: vm.getType(v)}"
+                    ng-model="v">
+                  </xos-field>
+                </div>
               </div>
             </div>
       `,
       bindToController: true,
       controllerAs: 'vm',
-      controller: function(){
-        // console.log('Field: ', this.name, this.field.type, this.ngModel);
+      // the compile cicle is needed to support recursion
+      compile: function (element) {
+        return RecursionHelper.compile(element);
+      },
+      controller: function(XosFormHelpers){
+        // console.log('Field: ', this.name, this.field, this.ngModel);
         if(!this.name){
           throw new Error('[xosField] Please provide a field name');
         }
         if(!this.field){
           throw new Error('[xosField] Please provide a field definition');
         }
-        if(!this.ngModel){
+        if(!angular.isDefined(this.ngModel)){
           throw new Error('[xosField] Please provide an ng-model');
         }
+
+        this.getType = XosFormHelpers._getFieldFormat;
+
+        this.isEmptyObject = o => Object.keys(o).length === 0;
       }
     }
   });
