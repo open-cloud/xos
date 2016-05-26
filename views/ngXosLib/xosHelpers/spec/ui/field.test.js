@@ -8,13 +8,15 @@
   'use strict';
 
   let element, scope, isolatedScope, rootScope, compile;
-  const compileElement = () => {
+  const compileElement = (el) => {
+    element = el;
 
     if(!scope){
       scope = rootScope.$new();
     }
-
-    element = angular.element('<xos-field name="name" field="field" ng-model="ngModel"></xos-field>');
+    if(!angular.isDefined(element)){
+      element = angular.element('<xos-field name="name" field="field" ng-model="ngModel"></xos-field>');
+    }
     compile(element)(scope);
     scope.$digest();
     isolatedScope = element.isolateScope().vm;
@@ -67,7 +69,7 @@
             type: 'number',
             validators: {}
           };
-          compileElement();
+          compileElement(angular.element('<xos-field name="name" field="field"></xos-field>'));
         }
         expect(errorFunctionWrapper).toThrow(new Error('[xosField] Please provide an ng-model'));
       }));
@@ -173,6 +175,10 @@
           expect($(element).find('.boolean-field > button').length).toEqual(2);
         });
 
+        it('should format labels', () => {
+          expect($(element).find('input[name="foo"]').parent().find('label').text()).toBe('Foo:');
+        });
+
         describe('and the model is empty', () => {
           beforeEach(() => {
             scope.ngModel = {
@@ -181,7 +187,7 @@
           });
 
           it('should not print the panel', () => {
-            console.log($(element).find('.panel.object-field'));
+            // console.log($(element).find('.panel.object-field'));
             expect($(element).find('.panel.object-field')).not.toExist()
           });
         });

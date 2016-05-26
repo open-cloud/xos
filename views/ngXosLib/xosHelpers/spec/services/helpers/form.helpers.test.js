@@ -133,8 +133,14 @@
         });
       });
 
-      it('should convert the fields array in an empty form object', () => {
-        expect(service.parseModelField(fields)).toEqual(modelField);
+      describe('the parseModelField mehtod', () => {
+        it('should convert the fields array in an empty form object', () => {
+          expect(service.parseModelField(fields)).toEqual(modelField);
+        });
+
+        xit('should handle nested config', () => {
+          
+        });
       });
 
       describe('when modelField are provided', () => {
