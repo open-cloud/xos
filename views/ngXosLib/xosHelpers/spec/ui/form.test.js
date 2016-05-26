@@ -7,28 +7,44 @@
 (function () {
   'use strict';
 
+  let element, scope, isolatedScope, rootScope, compile;
+
+  const compileElement = () => {
+
+    if(!scope){
+      scope = rootScope.$new();
+    }
+
+    element = angular.element(`<xos-form config="config" ng-model="model"></xos-form>`);
+    compile(element)(scope);
+    scope.$digest();
+    isolatedScope = element.isolateScope().vm;
+  }
+
   describe('The xos.helper module', function(){
 
     describe('The xos-form component', () => {
 
-      let element, scope, isolatedScope;
 
       beforeEach(module('xos.helpers'));
 
+      beforeEach(inject(($compile, $rootScope) => {
+        rootScope = $rootScope;
+        compile = $compile;
+      }));
+
       it('should throw an error if no config is specified', inject(($compile, $rootScope) => {
         function errorFunctionWrapper(){
-          $compile(angular.element('<xos-form></xos-form>'))($rootScope);
-          $rootScope.$digest();
+          compileElement();
         }
         expect(errorFunctionWrapper).toThrow(new Error('[xosForm] Please provide a configuration via the "config" attribute'));
       }));
 
       it('should throw an error if no actions is specified', inject(($compile, $rootScope) => {
         function errorFunctionWrapper(){
-          let scope = $rootScope.$new();
+          scope = $rootScope.$new();
           scope.config = 'green';
-          $compile(angular.element('<xos-form config="config"></xos-form>'))(scope);
-          $rootScope.$digest();
+          compileElement();
         }
         expect(errorFunctionWrapper).toThrow(new Error('[xosForm] Please provide an action list in the configuration'));
       }));
@@ -37,8 +53,7 @@
         
         let cb = jasmine.createSpy('callback');
 
-        beforeEach(inject(($compile, $rootScope) => {
-
+        beforeEach(inject(($rootScope) => {
 
           scope = $rootScope.$new();
 
@@ -78,10 +93,7 @@
             }
           };
 
-          element = angular.element(`<xos-form config="config" ng-model="model"></xos-form>`);
-          $compile(element)(scope);
-          scope.$digest();
-          isolatedScope = element.isolateScope().vm;
+          compileElement();
         }));
 
         it('should add excluded properties to the list', () => {
@@ -192,6 +204,53 @@
 
             expect(isolatedScope.testForm.age.$valid).toBeFalsy();
             expect(isolatedScope.testForm.age.$error.min).toBeTruthy();
+          });
+        });
+
+        describe('when a deep model is passed', () => {
+
+          beforeEach(inject(($rootScope) => {
+
+            scope = $rootScope.$new();
+
+            scope.config = {
+              exclude: ['excludedField'],
+              formName: 'testForm',
+              actions: [
+                {
+                  label: 'Save',
+                  icon: 'ok', // refers to bootstraps glyphicon
+                  cb: cb,
+                  class: 'success'
+                }
+              ],
+              fields: {
+                object_field: {
+                  field_one: {
+                    label: 'Custom Label'
+                  }
+                }
+              }
+            };
+
+            scope.model = {
+              object_field: {
+                field_one: 'bar',
+                number: 1,
+                email: 'teo@onlab.us'
+              }
+            };
+
+            compileElement();
+          }));
+
+          it('should print nested field', () => {
+            expect($(element).find('input').length).toBe(3);
+          });
+
+          xit('should configure nested fields', () => {
+            let custom_label = $(element).find('input[name=field_one]').parent().find('label');
+            expect(custom_label.text()).toBe('Custom Label');
           });
         });
       });
