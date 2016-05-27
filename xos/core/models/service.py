@@ -75,7 +75,7 @@ class ServiceControllerResource(PlCoreBase):
     KIND_CHOICES = (('models', 'Models'),
                     ('admin', 'Admin'),
                     ('django_library', 'Django Library'),
-                    ('synchronizer', 'Synchronizer Manifest'),
+                    ('synchronizer', 'Synchronizer'),
                     ('rest', 'REST API'),
                     ('tosca_custom_types', 'Tosca Custom Types'),
                     ('tosca_resource', 'Tosca Resource'))
