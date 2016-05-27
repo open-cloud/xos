@@ -87,6 +87,10 @@ topology_template:
 
     service#ONOS_CORD:
       type: tosca.nodes.ONOSService
+      properties:
+          no-delete: true
+          no-create: true
+          no-update: true
 
     vOLT_ONOS_app:
       type: tosca.nodes.ONOSvOLTApp
