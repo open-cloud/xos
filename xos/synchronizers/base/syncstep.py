@@ -10,8 +10,8 @@ from core.models import *
 from django.db import reset_queries
 from synchronizers.base.ansible import *
 from generate.dependency_walker import *
+from diag import update_diag
 
-from time import time
 import json
 import time
 import pdb
@@ -230,6 +230,7 @@ class SyncStep(object):
                     else:
                         new_enacted = timezone.now()
                         self.sync_record(o)
+                        update_diag(syncrecord_start = time.time(), backend_status="1 - Synced Record")
                         o.enacted = new_enacted
                         scratchpad = {'next_run':0, 'exponent':0, 'last_success':time.time()}
                         o.backend_register = json.dumps(scratchpad)
