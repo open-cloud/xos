@@ -1,0 +1,131 @@
+# Dockerfile.base
+# This image isn't used, but installs the prereqs for the other XOS images
+
+FROM       ubuntu:14.04.3
+
+# XXX Workaround for docker bug:
+# https://github.com/docker/docker/issues/6345
+# Kernel 3.15 breaks docker, uss the line below as a workaround
+# until there is a fix
+RUN ln -s -f /bin/true /usr/bin/chfn
+# XXX End workaround
+
+# Install apt packages
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
+    curl \
+    gcc \
+    geoip-database \
+    git \
+    graphviz \
+    graphviz-dev \
+    libgeoip1 \
+    libxslt1-dev \
+    libxslt1.1 \
+    libyaml-dev \
+    m4 \
+    openssh-client \
+    pkg-config \
+    python-ceilometerclient \
+    python-crypto \
+    python-dev \
+    python-glanceclient \
+    python-httplib2 \
+    python-jinja2 \
+    python-keystoneclient \
+    python-neutronclient \
+    python-novaclient \
+    python-paramiko \
+    python-pip \
+    python-psycopg2 \
+    python-pycurl \
+    python-setuptools \
+    python-yaml \
+    rsync \
+    supervisor \
+    tar \
+    wget
+
+# Install python pacakges with pip
+RUN pip install \
+    django==1.7 \
+    django-bitfield \
+    django-crispy-forms \
+    django-encrypted-fields \
+    django-extensions \
+    django-filter==0.11.0 \
+    django-geoposition \
+    django-ipware \
+    django_rest_swagger \
+    django-suit==0.3a1 \
+    django-timezones \
+    djangorestframework==3.3.3 \
+    dnslib \
+    jinja2 \
+    lxml \
+    markdown \
+    netaddr \
+    pyOpenSSL \
+    psycopg2 \
+    python-ceilometerclient \
+    python-dateutil \
+    python-keyczar \
+    python-logstash \
+    pygraphviz \
+    pytz \
+    pyyaml \
+    requests
+
+# Upgrade jinja2
+RUN pip install -U \
+    jinja2
+
+# Installs with Easy install (should be incorporated into pip?)
+RUN easy_install --upgrade httplib2
+
+RUN easy_install \
+    python_gflags \
+    google_api_python_client \
+    httplib2.ca_certs_locater
+
+# jQuery download w/checksum
+ENV JQUERY_VERSION jquery-1.9.1.min.js
+ENV JQUERY_DL_URL http://code.jquery.com/jquery-1.9.1.min.js
+ENV JQUERY_SHA256 c12f6098e641aaca96c60215800f18f5671039aecf812217fab3c0d152f6adb4
+
+RUN wget $JQUERY_DL_URL && \
+  echo "$JQUERY_SHA256  $JQUERY_VERSION" | sha256sum -c - && \ 
+  mv $JQUERY_VERSION /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
+
+# Install custom Ansible
+RUN \
+    git clone -b release1.8.2 git://github.com/ansible/ansible.git /opt/ansible && \
+    git clone -b release1.8.2 git://github.com/ansible/ansible-modules-extras.git /opt/ansible/lib/ansible/modules/extras && \
+    git clone -b release1.8.2 git://github.com/ansible/ansible-modules-extras.git /opt/ansible/v2/ansible/modules/extras && \
+    git clone git://github.com/sb98052/ansible-modules-core.git /opt/ansible/lib/ansible/modules/core && \
+    git clone git://github.com/sb98052/ansible-modules-core.git /opt/ansible/v2/ansible/modules/core && \
+    # git clone uses cached copy, doesn't pick up latest
+    git -C /opt/ansible pull && \
+    git -C /opt/ansible/lib/ansible/modules/core pull && \
+    git -C /opt/ansible/v2/ansible/modules/core pull
+
+RUN mkdir -p /usr/local/share /bin /etc/ansible
+
+COPY conf/ansible-hosts /etc/ansible/hosts
+
+# For Synchronizer
+ENV PHANTOMJS_DL_URL http://phantomjs.googlecode.com/files/phantomjs-1.7.0-linux-x86_64.tar.bz2
+ENV PHANTOMJS_SHA256 a7658f5f2d9464f86891afdb979eb60b754d5f404801db624368ac11e16724d4
+
+RUN curl -fLsS $PHANTOMJS_DL_URL -o phantomjs.tar.bz2 && \
+  echo "$PHANTOMJS_SHA256  phantomjs.tar.bz2" | sha256sum -c - && \ 
+  tar -C /usr/local/share -xjf phantomjs.tar.bz2 && \
+  rm phantomjs.tar.bz2
+
+RUN git clone git://git.planet-lab.org/fofum.git /tmp/fofum && \
+    cd /tmp/fofum; python setup.py install && \
+    rm -rf /tmp/fofum && \
+    tar jxvf /usr/local/share/phantomjs-1.7.0-linux-x86_64.tar.bz2 -C /usr/local/share/ && \
+    rm -f /usr/local/share/phantomjs-1.7.0-linux-x86_64.tar.bz2 && \
+    ln -s /usr/local/share/phantomjs-1.7.0-linux-x86_64 /usr/local/share/phantomjs && \
+    ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
+
