@@ -2,4 +2,7 @@
     "XOS": [
         "ServiceController"
     ], 
+    "ServiceController": [
+        "ServiceControllerResource"
+    ],
 }
