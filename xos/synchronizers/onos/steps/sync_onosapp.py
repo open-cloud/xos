@@ -253,7 +253,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             access_devices = []
             for access in voltdev.access_devices.all():
                 access_device = {
-                    "uplink" : access.uplink
+                    "uplink" : access.uplink,
                     "vlan" : access.vlan
                 }
                 access_devices.append(access_device)
