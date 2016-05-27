@@ -6,6 +6,10 @@ tosca_definitions_version: tosca_simple_yaml_1_0
 include(macros.m4)
 
 node_types:
+    tosca.nodes.XOS:
+        derived_from: tosca.nodes.Root
+        description: The root of XOS
+
     tosca.nodes.Service:
         derived_from: tosca.nodes.Root
         description: >
@@ -16,6 +20,13 @@ node_types:
         properties:
             xos_base_props
             xos_base_service_props
+
+    tosca.nodes.ServiceController:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Service Controller.
+        properties:
+            xos_base_props
 
     tosca.nodes.Tenant:
         derived_from: tosca.nodes.Root
