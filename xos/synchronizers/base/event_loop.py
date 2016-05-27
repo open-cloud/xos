@@ -529,6 +529,7 @@ class XOSObserver:
                         diag = Diag.objects.filter(name=observer_name).first()
                         if (not diag):
                             diag = Diag(name=observer_name)
+                            diag.humanReadableName = observer_name
                         br_str = diag.backend_register
                         br = json.loads(br_str)
                         br['last_run'] = loop_end
