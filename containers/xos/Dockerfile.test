@@ -1,8 +1,13 @@
 FROM       xosproject/xos
 
 # install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-RUN sudo apt-get install -y nodejs
+RUN apt-key add /opt/xos/containers/xos/nodesource.gpg.key
+RUN echo "deb https://deb.nodesource.com/node_4.x trusty main" \
+  > /etc/apt/sources.list.d/nodesource.list
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --force-yes \
+  nodejs
+
 RUN node -v
 
 # install node modules
