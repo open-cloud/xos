@@ -1,0 +1,30 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Onboard the exampleservice
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    exampleservice:
+      type: tosca.nodes.ServiceController
+      base_url: file:/opt/xos/onboard/exampleservice/
+
+    exampleservice_models:
+      type: tosca.nodes.ServiceControllerResource
+      kind: models
+      format: python
+      url: models.py
+
+    exampleservice_admin:
+      type: tosca.nodes.ServiceControllerResource
+      kind: admin
+      format: python
+      url: admin.py
+
+    exampleservice_synchronizer:
+      type: tosca.nodes.ServiceControllerResource
+      kind: synchronizer
+      format: manifest
+      url: synchronizer/manifest
