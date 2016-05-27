@@ -29,6 +29,7 @@ xos_synchronizer_onos:
     volumes:
         - .:/root/setup:ro
         - ./id_rsa:/opt/xos/synchronizers/onos/onos_key:ro  # private key
+        - ../../synchronizers/onos/steps/sync_onosapp.py:/opt/xos/synchronizers/onos/steps/sync_onosapp.py:ro # for development
 
 #xos_synchronizer_vcpe:
 #    image: xosproject/xos-synchronizer-openstack
