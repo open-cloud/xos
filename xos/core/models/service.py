@@ -67,8 +67,7 @@ class AttributeMixin(object):
 class ServiceController(PlCoreBase):
     xos = models.ForeignKey(XOS, related_name='servicecontrolers', help_text="Pointer to XOS", default=get_xos)
     name = StrippedCharField(max_length=30, help_text="Service Name")
-    models_url = models.URLField(max_length=1024, help_text="URL of models.py")
-    admin_url = models.URLField(max_length=1024, help_text="URL of admin.py")
+    base_url = StrippedCharField(max_length=1024, help_text="Base URL, allows use of relative URLs for resources", null=True, blank=True)
 
 class ServiceControllerResource(PlCoreBase):
     KIND_CHOICES = (('models', 'Models'),
@@ -89,7 +88,7 @@ class ServiceControllerResource(PlCoreBase):
     name = StrippedCharField(max_length=30, help_text="Object Name")
     kind = StrippedCharField(choices=KIND_CHOICES, max_length=30)
     format = StrippedCharField(choices=FORMAT_CHOICES, max_length=30)
-    url = models.URLField(max_length=1024, help_text="URL of resource")
+    url = StrippedCharField(max_length=1024, help_text="URL of resource", null=True, blank=True)
 
 class Service(PlCoreBase, AttributeMixin):
     # when subclassing a service, redefine KIND to describe the new service
