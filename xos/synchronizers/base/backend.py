@@ -7,12 +7,16 @@ from synchronizers.base.event_manager import EventListener
 from xos.logger import Logger, logging
 from synchronizers.model_policy import run_policy
 from xos.config import Config
+from django.utils import timezone
+from diag import update_diag
 
 logger = Logger(level=logging.INFO)
 
 class Backend:
 
     def run(self):
+        update_diag(sync_start=time.time(), backend_status="0 - Synchronizer Start")
+
         # start the openstack observer
         observer = XOSObserver()
         observer_thread = threading.Thread(target=observer.run,name='synchronizer')
