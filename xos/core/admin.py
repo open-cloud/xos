@@ -1051,6 +1051,27 @@ class ServiceAdmin(XOSBaseAdmin):
                       ('serviceprivileges', 'Privileges')
                       )
 
+class ServiceControllerResourceInline(XOSTabularInline):
+    model = ServiceControllerResource
+    fields = ['name', 'kind', 'format', 'url']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-resources'
+
+class ServiceControllerAdmin(XOSBaseAdmin):
+    list_display = ("backend_status_icon", "name",)
+    list_display_links = ('backend_status_icon', 'name',)
+    fieldList = ["backend_status_text", "name", "xos", "base_url"]
+    fieldsets = [
+        (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
+    inlines = [ServiceControllerResourceInline]
+    readonly_fields = ('backend_status_text', )
+
+    user_readonly_fields = fieldList
+
+    suit_form_tabs = (('general', 'Service Details'),
+                      ('resources', 'Resources'),
+                      )
+
 
 class SiteNodeInline(XOSTabularInline):
     model = Node
@@ -2407,6 +2428,7 @@ admin.site.register(Controller, ControllerAdmin)
 admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
 admin.site.register(Service, ServiceAdmin)
+admin.site.register(ServiceController, ServiceControllerAdmin)
 #admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Port, PortAdmin)
