@@ -243,18 +243,33 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         return json.dumps(data, indent=4, sort_keys=True)
 
     def get_volt_network_config(self, o, attrs):
-        data = {
-            "devices" : {
-                "of:1000000000000001" : {
-                    "accessDevice" : {
-                        "uplink" : "2",
-                        "vlan"   : "222",
-                    },
-                    "basic" : {
-                        "driver" : "pmc-olt"
-                    }
+        try:
+            volt = VOLTService.get_service_objects().all()[0]
+        except:
+            return None
+
+        devices = []
+        for voltdev in volt.volt_devices.all():
+            access_devices = []
+            for access in voltdev.access_devices.all():
+                access_device = {
+                    "uplink" : access.uplink
+                    "vlan" : access.vlan
+                }
+                access_devices.append(access_device)
+
+            device = {
+                voltdev.openflow_id : {
+                    "accessDevice" : access_devices
+                },
+                "basic" : {
+                    "driver" : voltdev.driver
                 }
             }
+            devices.append(device)
+
+        data = {
+            "devices" : devices
         }
         return json.dumps(data, indent=4, sort_keys=True)
 
