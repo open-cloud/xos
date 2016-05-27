@@ -11,36 +11,9 @@ topology_template:
       type: tosca.nodes.ServiceController
       properties:
           base_url: file:/opt/xos/onboard/exampleservice/
-
-    exampleservice_models:
-      type: tosca.nodes.ServiceControllerResource
-      properties:
-          kind: models
-          format: python
-          url: models.py
-      requirements:
-          - controller:
-              node: exampleservice
-              relationship: tosca.relationships.UsedByController
-
-    exampleservice_admin:
-      type: tosca.nodes.ServiceControllerResource
-      properties:
-          kind: admin
-          format: python
-          url: admin.py
-      requirements:
-          - controller:
-              node: exampleservice
-              relationship: tosca.relationships.UsedByController
-
-    exampleservice_synchronizer:
-      type: tosca.nodes.ServiceControllerResource
-      properties:
-          kind: synchronizer
-          format: manifest
-          url: synchronizer/manifest
-      requirements:
-          - controller:
-              node: exampleservice
-              relationship: tosca.relationships.UsedByController
+          # The following will concatenate with base_url automatically, if
+          # base_url is non-null.
+          models: models.py
+          admin: admin.py
+          synchronizer: manifest
+          tosca_custom_types: exampleservice.yaml
