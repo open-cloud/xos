@@ -527,16 +527,17 @@ class XOSObserver:
                         try:
                             observer_name = Config().observer_name
                         except:
-                            observer_name = ''
+                            observer_name = 'global'
 
                         diag = Diag.objects.filter(name=observer_name).first()
-                        if (diag):
-                            br_str = diag.backend_register
-                            br = json.loads(br_str)
-                            br['last_run'] = loop_end
-                            br['last_duration'] = loop_end - loop_start
-                            diag.backend_register = json.dumps(br)
-                            diag.save() 
+                        if (not diag):
+                            diag = Diag(name=observer_name)
+                        br_str = diag.backend_register
+                        br = json.loads(br_str)
+                        br['last_run'] = loop_end
+                        br['last_duration'] = loop_end - loop_start
+                        diag.backend_register = json.dumps(br)
+                        diag.save()
                 except Exception, e:
                         logger.error('Core error. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % e)
                         logger.log_exc("Exception in observer run loop")
