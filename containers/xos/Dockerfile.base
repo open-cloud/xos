@@ -119,13 +119,11 @@ ENV PHANTOMJS_SHA256 a7658f5f2d9464f86891afdb979eb60b754d5f404801db624368ac11e16
 RUN curl -fLsS $PHANTOMJS_DL_URL -o phantomjs.tar.bz2 && \
   echo "$PHANTOMJS_SHA256  phantomjs.tar.bz2" | sha256sum -c - && \ 
   tar -C /usr/local/share -xjf phantomjs.tar.bz2 && \
+  ln -s /usr/local/share/phantomjs-* /usr/local/share/phantomjs && \
+  ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs && \
   rm phantomjs.tar.bz2
 
 RUN git clone git://git.planet-lab.org/fofum.git /tmp/fofum && \
     cd /tmp/fofum; python setup.py install && \
-    rm -rf /tmp/fofum && \
-    tar jxvf /usr/local/share/phantomjs-1.7.0-linux-x86_64.tar.bz2 -C /usr/local/share/ && \
-    rm -f /usr/local/share/phantomjs-1.7.0-linux-x86_64.tar.bz2 && \
-    ln -s /usr/local/share/phantomjs-1.7.0-linux-x86_64 /usr/local/share/phantomjs && \
-    ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
+    rm -rf /tmp/fofum
 
