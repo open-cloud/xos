@@ -27,6 +27,29 @@ node_types:
             An XOS Service Controller.
         properties:
             xos_base_props
+            base_url:
+                type: string
+                required: false
+                description: Base url, to allow resources to use relative URLs
+
+    tosca.nodes.ServiceControllerResource:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Service Resource.
+        properties:
+            xos_base_props
+            kind:
+                type: string
+                required: false
+                description: models, admin, django_library, synchronizer, rest, tosca_custom_types, or tosca_resource
+            format:
+                type: string
+                required: false
+                description: python, manifest, or docker
+            url:
+                type: string
+                required: false
+                description: url of resource, may be relative to base_url or absolute
 
     tosca.nodes.Tenant:
         derived_from: tosca.nodes.Root
@@ -975,6 +998,12 @@ node_types:
         derived_from: tosca.relationships.Root
 
     tosca.relationships.TagsObject:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.HasResource:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.UsedByController:
         derived_from: tosca.relationships.Root
 
     tosca.capabilities.xos.Service:
