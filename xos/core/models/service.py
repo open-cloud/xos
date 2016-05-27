@@ -1,12 +1,20 @@
 import json
 from operator import attrgetter
 
-from core.models import PlCoreBase, PlCoreBaseManager, SingletonModel
+from core.models import PlCoreBase, PlCoreBaseManager, SingletonModel, XOS
 from core.models.plcorebase import StrippedCharField
 from django.db import models
 from xos.exceptions import *
 
 COARSE_KIND = "coarse"
+
+def get_xos():
+    xos = XOS.objects.all()
+
+    if xos:
+       return xos[0]
+    else:
+       return None
 
 
 class AttributeMixin(object):
@@ -56,6 +64,32 @@ class AttributeMixin(object):
                                             None,
                                             attrname))
 
+class ServiceController(PlCoreBase):
+    xos = models.ForeignKey(XOS, related_name='servicecontrolers', help_text="Pointer to XOS", default=get_xos)
+    name = StrippedCharField(max_length=30, help_text="Service Name")
+    models_url = models.URLField(max_length=1024, help_text="URL of models.py")
+    admin_url = models.URLField(max_length=1024, help_text="URL of admin.py")
+
+class ServiceControllerResource(PlCoreBase):
+    KIND_CHOICES = (('models', 'Models'),
+                    ('admin', 'Admin'),
+                    ('django_library', 'Django Library'),
+                    ('synchronizer', 'Synchronizer Manifest'),
+                    ('rest', 'REST API'),
+                    ('tosca_custom_types', 'Tosca Custom Types'),
+                    ('tosca_resource', 'Tosca Resource'))
+
+    FORMAT_CHOICES = (('python', 'Python'),
+                      ('manifest', 'Manifest'),
+                      ('docker', 'Docker Container'))
+
+    service_controller = models.ForeignKey(ServiceController, related_name='servicecontrolerresources',
+                                help_text="The Service Controller this resource is associated with")
+
+    name = StrippedCharField(max_length=30, help_text="Object Name")
+    kind = StrippedCharField(choices=KIND_CHOICES, max_length=30)
+    format = StrippedCharField(choices=FORMAT_CHOICES, max_length=30)
+    url = models.URLField(max_length=1024, help_text="URL of resource")
 
 class Service(PlCoreBase, AttributeMixin):
     # when subclassing a service, redefine KIND to describe the new service
@@ -80,6 +114,9 @@ class Service(PlCoreBase, AttributeMixin):
     service_specific_id = StrippedCharField(
         max_length=30, blank=True, null=True)
     service_specific_attribute = models.TextField(blank=True, null=True)
+
+    controller = models.ForeignKey(ServiceController, related_name='services',
+                                help_text="The Service Controller this Service uses")
 
     def __init__(self, *args, **kwargs):
         # for subclasses, set the default kind appropriately
