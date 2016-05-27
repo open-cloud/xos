@@ -82,7 +82,8 @@ class ServiceControllerResource(PlCoreBase):
 
     FORMAT_CHOICES = (('python', 'Python'),
                       ('manifest', 'Manifest'),
-                      ('docker', 'Docker Container'))
+                      ('docker', 'Docker Container'),
+                      ('yaml', 'YAML'))
 
     service_controller = models.ForeignKey(ServiceController, related_name='servicecontrolerresources',
                                 help_text="The Service Controller this resource is associated with")
