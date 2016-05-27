@@ -110,7 +110,7 @@ RUN \
 
 RUN mkdir -p /usr/local/share /bin /etc/ansible
 
-COPY conf/ansible-hosts /etc/ansible/hosts
+COPY ansible-hosts /etc/ansible/hosts
 
 # For Synchronizer
 ENV PHANTOMJS_DL_URL http://phantomjs.googlecode.com/files/phantomjs-1.7.0-linux-x86_64.tar.bz2
