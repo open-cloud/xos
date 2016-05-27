@@ -462,9 +462,6 @@ class XOSObserver:
 
         def run_once(self):
                 try:
-                        logger.info('TEO:')
-                        logger.info(S)
-                        logger.info('------------------------------')
                         loop_start = time.time()
                         error_map_file = getattr(Config(), "error_map_path", XOS_DIR + "/error_map.txt")
                         self.error_mapper = ErrorMapper(error_map_file)
@@ -537,7 +534,7 @@ class XOSObserver:
                         br['last_run'] = loop_end
                         br['last_duration'] = loop_end - loop_start
                         diag.backend_register = json.dumps(br)
-                        diag.save()
+                        diag.save() 
                 except Exception, e:
                         logger.error('Core error. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % e)
                         logger.log_exc("Exception in observer run loop")
