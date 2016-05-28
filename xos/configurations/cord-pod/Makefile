@@ -2,6 +2,7 @@
 xos: up bootstrap
 
 up:
+	sudo docker-compose build
 	sudo docker-compose up -d
 	../common/wait_for_xos_port.sh 80
 
@@ -77,6 +78,7 @@ local_containers:
 		cat $$CRT >> ../../../containers/xos/local_certs.crt ;\
 		echo "" >> ../../../containers/xos/local_certs.crt ;\
 	done
+	cd ../../../containers/xos; make base
 	cd ../../../containers/xos; make devel
 	cd ../../../containers/synchronizer; make
 
