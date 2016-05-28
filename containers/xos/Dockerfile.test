@@ -1,7 +1,8 @@
 FROM       xosproject/xos
 
 # install nodejs
-RUN apt-key add /opt/xos/containers/xos/nodesource.gpg.key
+COPY containers/xos/nodesource.gpg.key /tmp/nodesource.gpg.key
+RUN apt-key add /tmp/nodesource.gpg.key
 RUN echo "deb https://deb.nodesource.com/node_4.x trusty main" \
   > /etc/apt/sources.list.d/nodesource.list
 

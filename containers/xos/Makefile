@@ -14,7 +14,7 @@
 
 NO_DOCKER_CACHE    ?= false
 
-CONTAINER_NAME	   ?= xos-server
+CONTAINER_NAME     ?= xos-server
 IMAGE_NAME         ?= xosproject/xos
 
 XOS_GIT_REPO       ?= git://github.com/open-cloud/xos.git
@@ -38,11 +38,11 @@ custom:
 
 devel:
 	sudo docker build  --no-cache=${NO_DOCKER_CACHE} --rm \
-	-f containers/xos/Dockerfile.devel -t ${IMAGE_NAME} ../..
+	-f Dockerfile.devel -t ${IMAGE_NAME} ../..
 
 test:
 	sudo docker build  --no-cache=${NO_DOCKER_CACHE} --rm \
-	-f containers/xos/Dockerfile.test -t xosproject/xos-test ../..
+	-f Dockerfile.test -t xosproject/xos-test ../..
 
 run:
 	sudo docker run -d --name ${CONTAINER_NAME} -p 80:8000 \
