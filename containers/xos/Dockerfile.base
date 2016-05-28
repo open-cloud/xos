@@ -44,7 +44,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     rsync \
     supervisor \
     tar \
-    wget
+    wget \
+ && rm -rf /var/lib/apt/lists/*
 
 # Install python pacakges with pip
 RUN pip install \
@@ -107,9 +108,8 @@ RUN \
     # git clone uses cached copy, doesn't pick up latest
     git -C /opt/ansible pull && \
     git -C /opt/ansible/lib/ansible/modules/core pull && \
-    git -C /opt/ansible/v2/ansible/modules/core pull
-
-RUN mkdir -p /usr/local/share /bin /etc/ansible
+    git -C /opt/ansible/v2/ansible/modules/core pull && \
+    mkdir -p /usr/local/share /bin /etc/ansible
 
 COPY ansible-hosts /etc/ansible/hosts
 
