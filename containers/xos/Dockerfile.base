@@ -106,7 +106,8 @@ RUN git clone $HT_REPO_URL /tmp/heat-translator && \
     git checkout $HT_BRANCH && \
     mkdir -p /opt/tosca && \
     mv /tmp/heat-translator/translator /opt/tosca/translator && \
-    touch /opt/tosca/translator/__init__.py
+    touch /opt/tosca/translator/__init__.py && \
+    rm -rf /tmp/heat-translator
 
 # Install custom Ansible
 RUN \
