@@ -2,14 +2,16 @@ FROM       xosproject/xos
 
 # install nodejs
 COPY containers/xos/nodesource.gpg.key /tmp/nodesource.gpg.key
-RUN apt-key add /tmp/nodesource.gpg.key
-RUN echo "deb https://deb.nodesource.com/node_4.x trusty main" \
-  > /etc/apt/sources.list.d/nodesource.list
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --force-yes \
-  nodejs
+RUN apt-key add /tmp/nodesource.gpg.key && \
+    echo "deb https://deb.nodesource.com/node_4.x trusty main" \
+    > /etc/apt/sources.list.d/nodesource.list
+
+RUN apt-get update && apt-get install -y --force-yes nodejs && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN node -v
 
 # install node modules
 # RUN cd /opt/xos/tests/api; npm install
+
