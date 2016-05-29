@@ -95,8 +95,19 @@ ENV JQUERY_DL_URL http://code.jquery.com/jquery-1.9.1.min.js
 ENV JQUERY_SHA256 c12f6098e641aaca96c60215800f18f5671039aecf812217fab3c0d152f6adb4
 
 RUN wget $JQUERY_DL_URL && \
-  echo "$JQUERY_SHA256  $JQUERY_VERSION" | sha256sum -c - && \ 
+  echo "$JQUERY_SHA256  $JQUERY_VERSION" | sha256sum -c - && \
   mv $JQUERY_VERSION /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
+
+# Install heat-translator for TOSCA support
+ENV HT_REPO_URL https://github.com/openstack/heat-translator.git
+ENV HT_REVISION a951b93c16e54046ed2d233d814860181c772e30
+
+RUN git clone $HT_REPO_URL /tmp/heat-translator && \
+    cd /tmp/heat-translator && \
+    git checkout $HT_BRANCH && \
+    mkdir -p /opt/tosca && \
+    mv /tmp/heat-translator/translator /opt/tosca/translator && \
+    touch /opt/tosca/translator/__init__.py
 
 # Install custom Ansible
 RUN \
@@ -118,7 +129,7 @@ ENV PHANTOMJS_DL_URL http://phantomjs.googlecode.com/files/phantomjs-1.7.0-linux
 ENV PHANTOMJS_SHA256 a7658f5f2d9464f86891afdb979eb60b754d5f404801db624368ac11e16724d4
 
 RUN curl -fLsS $PHANTOMJS_DL_URL -o phantomjs.tar.bz2 && \
-  echo "$PHANTOMJS_SHA256  phantomjs.tar.bz2" | sha256sum -c - && \ 
+  echo "$PHANTOMJS_SHA256  phantomjs.tar.bz2" | sha256sum -c - && \
   tar -C /usr/local/share -xjf phantomjs.tar.bz2 && \
   ln -s /usr/local/share/phantomjs-* /usr/local/share/phantomjs && \
   ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs && \
