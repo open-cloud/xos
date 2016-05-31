@@ -99,11 +99,11 @@ RUN wget $JQUERY_DL_URL && \
 
 # Install heat-translator for TOSCA support
 ENV HT_REPO_URL https://github.com/openstack/heat-translator.git
-ENV HT_REVISION a951b93c16e54046ed2d233d814860181c772e30
+ENV HT_REF a951b93c16e54046ed2d233d814860181c772e30
 
 RUN git clone $HT_REPO_URL /tmp/heat-translator && \
     cd /tmp/heat-translator && \
-    git checkout $HT_BRANCH && \
+    git checkout $HT_REF && \
     mkdir -p /opt/tosca && \
     mv /tmp/heat-translator/translator /opt/tosca/translator && \
     echo > /opt/tosca/translator/__init__.py && \
