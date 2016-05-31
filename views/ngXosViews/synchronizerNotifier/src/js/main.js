@@ -50,6 +50,8 @@ angular.module('xos.synchronizerNotifier', [
     diags.forEach(d => {
       let status = JSON.parse(d.backend_register);
       status.last_run = new Date(status.last_run * 1000);
+      status.last_synchronizer_start = new Date(status.last_synchronizer_start * 1000);
+      status.last_syncrecord_start = status.last_syncrecord_start ? new Date(status.last_syncrecord_start * 1000) : null;
       $rootScope.$broadcast(`diag`, {
         name: d.name,
         updated: d.updated,
@@ -77,11 +79,23 @@ angular.module('xos.synchronizerNotifier', [
 
     let gap = 5 * 60 * 1000; /* ms */
     // let gap = 2;
-
-    if (((new Date()) - status.last_run) > gap){
-      return false;
+    if(status.last_run > status.last_synchronizer_start){
+      // the synchronizer has finished
+      return true;
     }
-    return true;
+    else {
+      // the synchronizer is running
+      if(!status.last_syncrecord_start){
+        // but no step have been completed
+        return false;
+      }
+      else if (((new Date()) - status.last_syncrecord_start) > gap){
+        return false;
+      }
+      else{
+        return true;
+      }
+    }
   }
 
   $interval(() => {
@@ -105,13 +119,15 @@ angular.module('xos.synchronizerNotifier', [
     templateUrl: 'templates/sync-status.tpl.html',
     controller: function($log, $rootScope, Diag){
       Diag.start();
-      // this.showNotificationPanel = true;
+      this.showNotificationPanel = true;
       this.synchronizers = {};
 
       this.showNoSync = true;
 
       $rootScope.$on('diag', (e, d) => {
-        // $log.info('Received event: ', d);
+        if(d.name === 'vcpe'){
+          $log.info('Received event: ', d.info.last_run, d.info.last_synchronizer_start);
+        }
         this.synchronizers[d.name] = d;
         this.showNoSync = false;
         if(Object.keys(this.synchronizers).length === 0){
