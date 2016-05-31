@@ -7,13 +7,7 @@
 // (works only for local environment as both application are served on the same domain)
 
 module.exports = {
-<<<<<<< HEAD:views/ngXosViews/mcordTopology/env/default.js
-  host: 'http://xos.dev:9999/',
-  xoscsrftoken: 's1hmvk8d66UwxnRlDze64FrswXBeHjRD',
-  xossessionid: '4qgqwp46w5ln4q24vitc8f5gx6i66wyk'
-=======
   host: '',
   xoscsrftoken: '',
   xossessionid: ''
->>>>>>> 74fe714324996695b966f12157943b90f059a614:views/ngXosViews/openVPNDashboard/env/default.js
 };

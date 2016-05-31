@@ -11,7 +11,7 @@ describe('The User List', () => {
     
     httpBackend = $httpBackend;
     // Setting up mock request
-    $httpBackend.expectGET('/api/tenant/cord/subscriber/?no_hyperlinks=1').respond([
+    $httpBackend.expectGET('/api/core/users/?no_hyperlinks=1').respond([
       {
         email: 'teo@onlab.us',
         firstname: 'Matteo',
@@ -20,7 +20,7 @@ describe('The User List', () => {
     ]);
   
     scope = $rootScope.$new();
-    element = angular.element('<truckroll></truckroll>');
+    element = angular.element('<users-list></users-list>');
     $compile(element)(scope);
     scope.$digest();
     isolatedScope = element.isolateScope().vm;
@@ -28,7 +28,10 @@ describe('The User List', () => {
 
   it('should load 1 subscriber', () => {
     httpBackend.flush();
-    expect(isolatedScope.subscribers.length).toBe(1);
+    expect(isolatedScope.users.length).toBe(1);
+    expect(isolatedScope.users[0].email).toEqual('teo@onlab.us');
+    expect(isolatedScope.users[0].firstname).toEqual('Matteo');
+    expect(isolatedScope.users[0].lastname).toEqual('Scandolo');
   });
 
 });

@@ -317,12 +317,12 @@
                     type: 'icon',
                     formatter: item => {
                       switch (item['label-1']){
-                      case 1:
-                        return 'ok';
-                      case 2:
-                        return 'remove';
-                      case 3:
-                        return 'plus'
+                        case 1:
+                          return 'ok';
+                        case 2:
+                          return 'remove';
+                        case 3:
+                          return 'plus'
                       }
                     }
                   }

@@ -14,8 +14,7 @@
     "test",
     "tests"
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "jquery": "2.1.4",
     "angular-mocks": "1.4.7",
@@ -26,7 +25,9 @@
     "angular-resource": "1.4.7",
     "lodash": "~4.11.1",
     "bootstrap-css": "3.3.6",
-    "angular-chart.js": "~0.10.2",
-    "d3": "~3.5.17"
+    "angular-chart.js": "~0.10.2"
+  },
+  "resolutions": {
+    "angular": "1.4.7"
   }
 }
