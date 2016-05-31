@@ -22,6 +22,7 @@ var files = bowerComponents.concat([
   'xosHelpers/src/**/*.module.js',
   'xosHelpers/src/**/*.js',
   `xosHelpers/spec/**/${testFiles}.test.js`
+  // 'xosHelpers/spec/ui/smart-pie.test.js'
 ]);
 
 module.exports = function(config) {

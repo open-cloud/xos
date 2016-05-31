@@ -1,6 +1,6 @@
 (function () {
   angular.module('xos.diagnostic')
-  .service('RackHelper', function(serviceTopologyConfig, _){
+  .service('RackHelper', function(serviceTopologyConfig, lodash){
 
     this.getComputeNodeLabelSize = () => {
       return serviceTopologyConfig.computeNode.labelHeight + (serviceTopologyConfig.instance.margin * 2)
@@ -11,7 +11,7 @@
     * They are placed in rows of 2 with 5px margin on each side.
     */
    
-    this.getComputeNodeSize = _.memoize((instances) => {
+    this.getComputeNodeSize = lodash.memoize((instances) => {
       const width = (serviceTopologyConfig.instance.margin * 3) + (serviceTopologyConfig.instance.width *2);
 
       const rows = Math.round(instances.length / 2);
@@ -32,7 +32,7 @@
       let width = 0;
       let height = serviceTopologyConfig.computeNode.margin;
 
-      _.forEach(nodes, (node) => {
+      lodash.forEach(nodes, (node) => {
         let [nodeWidth, nodeHeight] = this.getComputeNodeSize(node.instances);
 
         width = nodeWidth + (serviceTopologyConfig.computeNode.margin * 2);
@@ -69,7 +69,7 @@
 
       const x = serviceTopologyConfig.computeNode.margin;
 
-      let previousElEight = _.reduce(nodes.slice(0, position), (val, node) => {
+      let previousElEight = lodash.reduce(nodes.slice(0, position), (val, node) => {
         return val + this.getComputeNodeSize(node.instances)[1]
       }, 0);
 

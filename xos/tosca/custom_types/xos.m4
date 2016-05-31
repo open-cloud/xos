@@ -572,7 +572,6 @@ node_types:
             image:
                 type: tosca.capabilities.xos.Image
         properties:
-            xos_base_props
             kind:
                 type: string
                 required: false

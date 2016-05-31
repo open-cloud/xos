@@ -85,9 +85,6 @@ topology_template:
           no-delete: true
           no-update: true
 
-    image#vsg-1.0:
-      type: tosca.nodes.Image
-
     mysite:
       type: tosca.nodes.Site
 
@@ -126,9 +123,6 @@ topology_template:
           - management:
               node: management
               relationship: tosca.relationships.ConnectsToNetwork
-          - image:
-              node: image#vsg-1.0
-              relationship: tosca.relationships.DefaultImage
 
     # Let's add a user who can be administrator of the household
     johndoe@myhouse.com:
@@ -141,9 +135,6 @@ topology_template:
           - site:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
-          - dependency:
-                node: mysite_vsg
-                relationship: tosca.relationships.DependsOn
 
     # A subscriber
     My House:
@@ -212,6 +203,3 @@ topology_template:
             - subscriber:
                 node: My House
                 relationship: tosca.relationships.BelongsToSubscriber
-            - dependency:
-                node: mysite_vsg
-                relationship: tosca.relationships.DependsOn
