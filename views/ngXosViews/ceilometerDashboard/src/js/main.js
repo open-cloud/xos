@@ -3,6 +3,7 @@
 angular.module('xos.ceilometerDashboard', [
   'ngResource',
   'ngCookies',
+  'ngLodash',
   'ui.router',
   'xos.helpers',
   'ngAnimate',

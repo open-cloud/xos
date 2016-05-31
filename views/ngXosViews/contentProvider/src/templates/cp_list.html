@@ -1,4 +1,4 @@
-<!-- <xos-table data="vm.contentProviderList" config="vm.config"/> -->
+<xos-table data="vm.contentProviderList" config="vm.config"/>
 
 <table class="table table-striped" ng-show="vm.contentProviderList.length > 0">
   <thead>
@@ -22,7 +22,7 @@
       {$ item.enabled $}
     </td>
     <td class="text-right">
-      <a ng-click="vm.deleteCp(item.id)" class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i></a></td>
+      <a ng-click="vm.deleteCp(item.id)" class="btn btn-danger"><i class="icon icon-remove"></i></a></td>
   </tr>
 </table>
 <div class="alert alert-error" ng-show="vm.contentProviderList.length == 0">

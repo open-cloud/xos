@@ -28,6 +28,7 @@ module.exports = function(config) {
     files: bowerComponents.concat([
       '../../../xos/core/xoslib/static/js/vendor/ngXosVendor.js',
       '../../../xos/core/xoslib/static/js/vendor/ngXosHelpers.js',
+      '../../../xos/core/xoslib/static/js/xosApi.js',
       'src/js/**/*.js',
       'spec/**/*.mock.js',
       'spec/**/*.test.js',
