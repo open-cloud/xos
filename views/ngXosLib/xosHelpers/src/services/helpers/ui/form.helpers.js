@@ -21,6 +21,7 @@
     * @returns {boolean} If the string match an email format
     **/
 
+
     this._isEmail = (text) => {
       var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
       return re.test(text);
@@ -81,7 +82,8 @@
     *   'field-name': {
     *     label: 'Label',
     *     type: 'number', //typeof field
-    *     validators: {} // see xosForm for more details
+    *     validators: {}, // see xosForm for more details
+    *     hint: 'A Custom hint for the field'
     *   }
     * }
     * ```
@@ -97,7 +99,8 @@
         form[f] = {
           label: (customField[f] && customField[f].label) ? `${customField[f].label}:` : LabelFormatter.format(f),
           type: (customField[f] && customField[f].type) ? customField[f].type : this._getFieldFormat(model[f]),
-          validators: (customField[f] && customField[f].validators) ? customField[f].validators : {}
+          validators: (customField[f] && customField[f].validators) ? customField[f].validators : {},
+          hint: (customField[f] && customField[f].hint)? customField[f].hint : ''
         };
 
         if(form[f].type === 'date'){
