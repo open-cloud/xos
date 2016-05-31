@@ -7,7 +7,7 @@ RUN update-ca-certificates
 # Install XOS
 ADD xos /opt/xos
 
-RUN chmod +x /opt/xos/tools/xos-manage && \
+RUN chmod +x /opt/xos/tools/xos-manage && sync && \
     /opt/xos/tools/xos-manage genkeys
 
 EXPOSE 8000
