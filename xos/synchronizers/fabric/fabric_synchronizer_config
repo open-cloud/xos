@@ -1,0 +1,10 @@
+[observer]
+name=vtn
+dependency_graph=/opt/xos/synchronizers/fabric/model-deps
+steps_dir=/opt/xos/synchronizers/fabric/steps
+sys_dir=/opt/xos/synchronizers/fabric/sys
+deleters_dir=/opt/xos/synchronizers/fabric/deleters
+log_file=console
+driver=openstack
+pretend=False
+backoff_disabled=True

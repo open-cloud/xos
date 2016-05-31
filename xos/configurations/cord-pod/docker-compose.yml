@@ -101,6 +101,21 @@ xos_synchronizer_vtr:
             max-size: "100k"
             max-file: "5"
 
+xos_synchronizer_fabric:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/fabric/fabric-synchronizer.py -C /opt/xos/synchronizers/fabric/fabric_synchronizer_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: fabric
+    links:
+        - xos_db
+    volumes:
+        - .:/root/setup:ro
+    log_driver: "json-file"
+    log_opt:
+            max-size: "100k"
+            max-file: "5"
+
 xos:
     command: python /opt/xos/manage.py runserver 0.0.0.0:80 --insecure --makemigrations
     image: xosproject/xos
@@ -120,4 +135,3 @@ xos:
     log_opt:
             max-size: "100k"
             max-file: "5"
-

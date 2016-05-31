@@ -2,18 +2,22 @@
 xos: up bootstrap
 
 up:
-	sudo docker-compose up -d
+	touch id_rsa id_rsa.pub
+	sudo docker-compose up -d db xos xos_synchronizer_fabric
 	../common/wait_for_xos_port.sh 80
 
 bootstrap: nodes.yaml images.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/setup.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/images.yaml
 
 vtn: vtn-external.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/vtn-external.yaml
+
+fabric: fabric.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/fabric.yaml
 
 cord: vsg_custom_images
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/mgmt-net.yaml
@@ -33,6 +37,9 @@ images.yaml:
 
 vtn-external.yaml:
 	export SETUPDIR=.; bash ./make-vtn-external-yaml.sh
+
+fabric.yaml:
+	export SETUPDIR=.; bash ./fabric-yaml.sh
 
 virtualbng_json:
 	export SETUPDIR=.; bash ./make-virtualbng-json.sh
@@ -79,4 +86,3 @@ local_containers:
 	done
 	cd ../../../containers/xos; make devel
 	cd ../../../containers/synchronizer; make
-
