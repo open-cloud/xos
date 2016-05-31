@@ -23,7 +23,7 @@ XOS_GIT_BRANCH     ?= master
 TOSCA_CONFIG_PATH  ?= /opt/xos/configurations/opencloud/opencloud.yaml
 
 base:
-	sudo docker build  --no-cache=${NO_DOCKER_CACHE} --rm \
+	sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm \
 	-f Dockerfile.base -t xosproject/xos-base .
 
 build:
@@ -37,11 +37,11 @@ custom:
 	-f Dockerfile -t ${IMAGE_NAME} .
 
 devel:
-	sudo docker build  --no-cache=${NO_DOCKER_CACHE} --rm \
+	sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm \
 	-f Dockerfile.devel -t ${IMAGE_NAME} ../..
 
 test:
-	sudo docker build  --no-cache=${NO_DOCKER_CACHE} --rm \
+	sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm \
 	-f Dockerfile.test -t xosproject/xos-test ../..
 
 run:
