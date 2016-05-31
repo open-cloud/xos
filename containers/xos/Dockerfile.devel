@@ -7,12 +7,8 @@ RUN update-ca-certificates
 # Install XOS
 ADD xos /opt/xos
 
-RUN chmod +x /opt/xos/tools/xos-manage
-RUN /opt/xos/tools/xos-manage genkeys
-
-# install Tosca engine
-RUN chmod +x /opt/xos/tosca/run.py
-RUN bash /opt/xos/tosca/install_tosca.sh
+RUN chmod +x /opt/xos/tools/xos-manage && \
+    /opt/xos/tools/xos-manage genkeys
 
 EXPOSE 8000
 
