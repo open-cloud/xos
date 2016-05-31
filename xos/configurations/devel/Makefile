@@ -1,8 +1,8 @@
 MYIP:=$(shell hostname -i)
 
-cloudlab: common_cloudlab xos
+cloudlab: common_cloudlab containers xos
 
-devstack: upgrade_pkgs common_devstack xos
+devstack: upgrade_pkgs common_devstack containers xos
 
 xos:
 	sudo MYIP=$(MYIP) docker-compose up -d
