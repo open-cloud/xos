@@ -74,24 +74,27 @@
     return {
       restrict: 'E',
       scope: {
-        errors: '='
+        field: '=',
+        form: '='
       },
       template: `
         <div ng-cloak>
-          <!-- <pre>{{vm.errors.email | json}}</pre> -->
-          <xos-alert config="vm.config" show="vm.errors.required !== undefined && vm.errors.required !== false">
+           <!--<pre>{{vm.field | json}}</pre>-->
+           <!--<pre>{{vm.form.$submitted | json}}</pre>-->
+           <!--<pre>{{vm.field.$error.required !== false}}</pre>-->
+          <xos-alert config="vm.config" show="vm.field.$error.required !== undefined && vm.field.$error.required !== false  && (vm.field.$touched || vm.form.$submitted)">
             Field required
           </xos-alert>
-          <xos-alert config="vm.config" show="vm.errors.email !== undefined && vm.errors.email !== false">
+          <xos-alert config="vm.config" show="vm.field.$error.email !== undefined && vm.field.$error.email !== false && (vm.field.$touched || vm.form.$submitted)">
             This is not a valid email
           </xos-alert>
-          <xos-alert config="vm.config" show="vm.errors.minlength !== undefined && vm.errors.minlength !== false">
+          <xos-alert config="vm.config" show="vm.field.$error.minlength !== undefined && vm.field.$error.minlength !== false && (vm.field.$touched || vm.form.$submitted)">
             Too short
           </xos-alert>
-          <xos-alert config="vm.config" show="vm.errors.maxlength !== undefined && vm.errors.maxlength !== false">
+          <xos-alert config="vm.config" show="vm.field.$error.maxlength !== undefined && vm.field.$error.maxlength !== false && (vm.field.$touched || vm.form.$submitted)">
             Too long
           </xos-alert>
-          <xos-alert config="vm.config" show="vm.errors.custom !== undefined && vm.errors.custom !== false">
+          <xos-alert config="vm.config" show="vm.field.$error.custom !== undefined && vm.field.$error.custom !== false && (vm.field.$touched || vm.form.$submitted)">
             Field invalid
           </xos-alert>
         </div>
