@@ -3,7 +3,7 @@
     <i class="glyphicon glyphicon-inbox"></i>
   </div>
   <div class="notification-panel panel panel-default" ng-show="vm.showNotificationPanel">
-    <ul class="list-group" ng-show="vm.showNoSync">
+    <ul class="list-group" ng-show="!vm.showNoSync">
       <li class="list-group-item" ng-repeat="(syncName, syncStatus) in vm.synchronizers">
         <span class="badge" ng-class="{success: syncStatus.status, danger: !syncStatus.status}">
           <span ng-show="syncStatus.status"><i class="glyphicon glyphicon-ok"></i></span>
