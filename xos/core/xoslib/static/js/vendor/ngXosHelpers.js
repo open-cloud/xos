@@ -1397,6 +1397,161 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  *
  * Visit http://guide.xosproject.org/devguide/addview/ for more information
  *
+ * Created by teone on 5/25/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosField
+    * @restrict E
+    * @description The xos-field directive.
+    * This component decide, give a field wich kind of input it need to print.
+    * @param {string} name The field name
+    * @param {object} field The field configuration:
+    * ```
+    * {
+    *   label: 'Label',
+    *   type: 'number', //typeof field
+    *   validators: {} // see xosForm for more details
+    * }
+    * ```
+    * @param {mixed} ngModel The field value
+    *
+    * @example
+    
+    # Basic Example
+    
+      <example module="sampleField1">
+        <file name="script.js">
+          angular.module('sampleField1', ['xos.uiComponents'])
+          .factory('_', function($window){
+            return $window._;
+          })
+          .controller('SampleCtrl', function(){
+            this.name = 'input-name';
+            this.field = {label: 'My String Value:', type: 'string'};
+            this.model = 'my string';
+          });
+        </file>
+        <file name="index.html">
+          <div ng-controller="SampleCtrl as vm">
+            <xos-field ng-model="vm.model" name="vm.name" field="vm.field"></xos-field>
+          </div>
+        </file>
+      </example>
+      
+      # Possible Values
+       <example module="sampleField2">
+        <file name="script.js">
+          angular.module('sampleField2', ['xos.uiComponents'])
+          .factory('_', function($window){
+            return $window._;
+          })
+          .controller('SampleCtrl', function(){
+            this.field1 = {
+              name: 'number-field',
+              field: {label: 'My Number Value:', type: 'number'},
+              model: 2
+            };
+             this.field2 = {
+              name: 'date-field',
+              field: {label: 'My Date Value:', type: 'date'},
+              model: new Date()
+            };
+             this.field3 = {
+              name: 'boolean-field',
+              field: {label: 'My Boolean Value:', type: 'boolean'},
+              model: true
+            };
+             this.field4 = {
+              name: 'email-field',
+              field: {label: 'My Email Value:', type: 'email'},
+              model: 'sample@domain.us'
+            };
+          });
+        </file>
+        <file name="index.html">
+          <div ng-controller="SampleCtrl as vm">
+            <xos-field ng-model="vm.field1.model" name="vm.field1.name" field="vm.field1.field"></xos-field>
+            <xos-field ng-model="vm.field2.model" name="vm.field2.name" field="vm.field2.field"></xos-field>
+            <xos-field ng-model="vm.field3.model" name="vm.field3.name" field="vm.field3.field"></xos-field>
+            <xos-field ng-model="vm.field4.model" name="vm.field4.name" field="vm.field4.field"></xos-field>
+          </div>
+        </file>
+      </example>
+       # This element is recursive
+       <example module="sampleField3">
+        <file name="script.js">
+          angular.module('sampleField3', ['xos.uiComponents'])
+          .factory('_', function($window){
+            return $window._;
+          })
+          .controller('SampleCtrl', function(){
+            this.name = 'input-name';
+            this.field = {label: 'My Object Value:', type: 'object'};
+            this.model = {
+              name: 'Jhon',
+              age: '25',
+              email: 'jhon@thewall.ru',
+              active: true
+            };
+          });
+        </file>
+        <file name="index.html">
+          <div ng-controller="SampleCtrl as vm">
+            <xos-field ng-model="vm.model" name="vm.name" field="vm.field"></xos-field>
+          </div>
+        </file>
+      </example>
+    */
+  .directive('xosField', ["RecursionHelper", function (RecursionHelper) {
+    return {
+      restrict: 'E',
+      scope: {
+        name: '=',
+        field: '=',
+        ngModel: '='
+      },
+      template: '\n        <label ng-if="vm.field.type !== \'object\'">{{vm.field.label}}</label>\n            <input\n              ng-if="vm.field.type !== \'boolean\' && vm.field.type !== \'object\'"\n              type="{{vm.field.type}}"\n              name="{{vm.name}}"\n              class="form-control"\n              ng-model="vm.ngModel"\n              ng-minlength="vm.field.validators.minlength || 0"\n              ng-maxlength="vm.field.validators.maxlength || 2000"\n              ng-required="vm.field.validators.required || false" />\n            <span class="boolean-field" ng-if="vm.field.type === \'boolean\'">\n              <button\n                class="btn btn-success"\n                ng-show="vm.ngModel"\n                ng-click="vm.ngModel = false">\n                <i class="glyphicon glyphicon-ok"></i>\n              </button>\n              <button\n                class="btn btn-danger"\n                ng-show="!vm.ngModel"\n                ng-click="vm.ngModel = true">\n                <i class="glyphicon glyphicon-remove"></i>\n              </button>\n            </span>\n            <div\n              class="panel panel-default object-field"\n              ng-if="vm.field.type == \'object\' && !vm.isEmptyObject(vm.ngModel)"\n              >\n              <div class="panel-heading">{{vm.field.label}}</div>\n              <div class="panel-body">\n                <div ng-repeat="(k, v) in vm.ngModel">\n                  <xos-field\n                    name="k"\n                    field="{label: vm.formatLabel(k), type: vm.getType(v)}"\n                    ng-model="v">\n                  </xos-field>\n                </div>\n              </div>\n            </div>\n      ',
+      bindToController: true,
+      controllerAs: 'vm',
+      // the compile cicle is needed to support recursion
+      compile: function compile(element) {
+        return RecursionHelper.compile(element);
+      },
+      controller: ["$attrs", "XosFormHelpers", "LabelFormatter", function controller($attrs, XosFormHelpers, LabelFormatter) {
+        // console.log('Field: ', this.name, this.field, this.ngModel);
+        if (!this.name) {
+          throw new Error('[xosField] Please provide a field name');
+        }
+        if (!this.field) {
+          throw new Error('[xosField] Please provide a field definition');
+        }
+        if (!$attrs.ngModel) {
+          throw new Error('[xosField] Please provide an ng-model');
+        }
+
+        this.getType = XosFormHelpers._getFieldFormat;
+        this.formatLabel = LabelFormatter.format;
+
+        this.isEmptyObject = function (o) {
+          return Object.keys(o).length === 0;
+        };
+      }]
+    };
+  }]);
+})();
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
  * Created by teone on 4/15/16.
  */
 
@@ -1529,6 +1684,203 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 })();
 //# sourceMappingURL=../../../maps/ui_components/dumbComponents/alert/alert.component.js.map
 
+'use strict';
+
+(function () {
+  'use strict';
+
+  /**
+  * @ngdoc service
+  * @name xos.uiComponents.LabelFormatter
+  * @description This factory define a set of helper function to format label started from an object property
+  **/
+
+  angular.module('xos.uiComponents').factory('LabelFormatter', labelFormatter);
+
+  function labelFormatter() {
+
+    var _formatByUnderscore = function _formatByUnderscore(string) {
+      return string.split('_').join(' ').trim();
+    };
+
+    var _formatByUppercase = function _formatByUppercase(string) {
+      return string.split(/(?=[A-Z])/).map(function (w) {
+        return w.toLowerCase();
+      }).join(' ');
+    };
+
+    var _capitalize = function _capitalize(string) {
+      return string.slice(0, 1).toUpperCase() + string.slice(1);
+    };
+
+    var format = function format(string) {
+      string = _formatByUnderscore(string);
+      string = _formatByUppercase(string);
+
+      string = _capitalize(string).replace(/\s\s+/g, ' ') + ':';
+      return string.replace('::', ':');
+    };
+
+    return {
+      // test export
+      _formatByUnderscore: _formatByUnderscore,
+      _formatByUppercase: _formatByUppercase,
+      _capitalize: _capitalize,
+      // export to use
+      format: format
+    };
+  }
+})();
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+(function () {
+
+  angular.module('xos.uiComponents')
+
+  /**
+  * @ngdoc service
+  * @name xos.uiComponents.XosFormHelpers
+  * @requires xos.uiComponents.LabelFormatter
+  * @requires xos.helpers._
+  **/
+
+  .service('XosFormHelpers', ["_", "LabelFormatter", function (_, LabelFormatter) {
+    var _this = this;
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#_isEmail
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Return true if the string is an email address
+    * @param {string} text The string to be evaluated
+    * @returns {boolean} If the string match an email format
+    **/
+
+    this._isEmail = function (text) {
+      var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+      return re.test(text);
+    };
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#_getFieldFormat
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Return the type of the input
+    * @param {mixed} value The data to be evaluated
+    * @returns {string} The type of the input
+    **/
+
+    this._getFieldFormat = function (value) {
+
+      if (angular.isArray(value)) {
+        return 'array';
+      }
+
+      // check if is date
+      if (_.isDate(value) || !Number.isNaN(Date.parse(value)) && new Date(value).getTime() > 631180800000) {
+        return 'date';
+      }
+
+      // check if is boolean
+      // isNaN(false) = false, false is a number (0), true is a number (1)
+      if (typeof value === 'boolean') {
+        return 'boolean';
+      }
+
+      // check if a string is an email
+      if (_this._isEmail(value)) {
+        return 'email';
+      }
+
+      // if null return string
+      if (typeof value === 'string' || value === null) {
+        return 'text';
+      }
+
+      return typeof value === 'undefined' ? 'undefined' : _typeof(value);
+    };
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#buildFormStructure
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Return the type of the input
+    * @param {object} modelField An object containing one property for each field of the model
+    * @param {object} customField An object containing one property for each field custom field
+    * @param {object} model The actual model on wich build the form structure (it is used to determine the type of the input)
+    * @returns {object} An object describing the form structure in the form of:
+    * ```
+    * {
+    *   'field-name': {
+    *     label: 'Label',
+    *     type: 'number', //typeof field
+    *     validators: {}, // see xosForm for more details
+    *     hint: 'A Custom hint for the field'
+    *   }
+    * }
+    * ```
+    **/
+
+    this.buildFormStructure = function (modelField, customField, model) {
+
+      modelField = Object.keys(modelField).length > 0 ? modelField : customField; //if no model field are provided, check custom
+      customField = customField || {};
+
+      return _.reduce(Object.keys(modelField), function (form, f) {
+
+        form[f] = {
+          label: customField[f] && customField[f].label ? customField[f].label + ':' : LabelFormatter.format(f),
+          type: customField[f] && customField[f].type ? customField[f].type : _this._getFieldFormat(model[f]),
+          validators: customField[f] && customField[f].validators ? customField[f].validators : {},
+          hint: customField[f] && customField[f].hint ? customField[f].hint : ''
+        };
+
+        if (form[f].type === 'date') {
+          model[f] = new Date(model[f]);
+        }
+
+        if (form[f].type === 'number') {
+          model[f] = parseInt(model[f], 10);
+        }
+
+        return form;
+      }, {});
+    };
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#parseModelField
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Helpers for buildFormStructure, convert a list of model properties in an object used to build the form structure, eg:
+    * ```
+    * // input:
+    * ['id', 'name'm 'mail']
+    *
+    * // output
+    * {
+    *   id: {},
+    *   name: {},
+    *   mail: {}
+    * }
+    * ```
+    * @param {array} fields An array of fields representing the model properties
+    * @returns {object} An object containing one property for each field of the model
+    **/
+
+    this.parseModelField = function (fields) {
+      return _.reduce(fields, function (form, f) {
+        form[f] = {};
+        return form;
+      }, {});
+    };
+  }]);
+})();
 'use strict';
 
 (function () {
@@ -2109,6 +2461,66 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   }]);
 })();
 //# sourceMappingURL=../maps/services/service_graph.service.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.helpers').factory('Notification', function () {
+    return window.Notification;
+  })
+  /**
+  * @ngdoc service
+  * @name xos.helpers.xosNotification
+  * @description This factory define a set of helper function to trigger desktop notification
+  **/
+  .service('xosNotification', ["$q", "$log", "Notification", function ($q, $log, Notification) {
+    var _this = this;
+
+    this.checkPermission = function () {
+      var deferred = $q.defer();
+      Notification.requestPermission().then(function (permission) {
+        if (permission === 'granted') {
+          deferred.resolve(permission);
+        } else {
+          deferred.reject(permission);
+        }
+      });
+      return deferred.promise;
+    };
+
+    this.sendNotification = function (title, options) {
+      var notification = new Notification(title, options);
+      notification.onerror = function (err) {
+        $log.error(err);
+      };
+    };
+
+    /**
+    * @ngdoc method
+    * @name xos.helpers.xosNotification#notify
+    * @methodOf xos.helpers.xosNotification
+    * @description
+    * This method will check for user permission and if granted will send a browser notification.
+    * @param {string} title The notification title
+    * @param {object} options The notification options: `{icon: 'url', body: 'Notification body'}`
+    **/
+
+    this.notify = function (title, options) {
+      if (!('Notification' in window)) {
+        $log.info('This browser does not support desktop notification');
+      } else if (Notification.permission !== 'granted') {
+        _this.checkPermission().then(function () {
+          return _this.sendNotification(title, options);
+        });
+      } else if (Notification.permission === 'granted') {
+        _this.sendNotification(title, options);
+      }
+    };
+  }]);
+})();
+//# sourceMappingURL=../maps/services/notification.service.js.map
 
 'use strict';
 

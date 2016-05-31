@@ -1,7 +1,6 @@
 (function() {
   'use strict';
 
-
   angular
   .module('xos.helpers')
   .factory('Notification', function(){
