@@ -356,7 +356,7 @@ class AgentPortMapping(PlCoreBase):
     class Meta:
         app_label = "cord"
 
-    access_agent = models.ForeignKey(AccessAgent, related_name='access_devices')
+    access_agent = models.ForeignKey(AccessAgent, related_name='port_mappings')
     mac = models.CharField(max_length=32, help_text="MAC Address", null=True, blank=True)
     port = models.CharField(max_length=32, help_text="Openflow port ID", null=True, blank=True)
 
