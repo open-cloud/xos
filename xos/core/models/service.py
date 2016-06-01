@@ -510,7 +510,11 @@ class LeastLoadedNodeScheduler(Scheduler):
 
     def pick(self):
         from core.models import Node
-        nodes = Node.objects.all()
+        if not self.slice.default_node:
+            nodes = list(Node.objects.all())
+            nodes = sorted(nodes, key=lambda node: node.instances.all().count())
+        else:
+            nodes = list(Node.objects.filter(name = self.slice.default_node))
 
         if self.label:
             nodes = nodes.filter(nodelabels__name=self.label)
@@ -523,7 +527,7 @@ class LeastLoadedNodeScheduler(Scheduler):
 
         # TODO: logic to filter nodes by which nodes are up, and which
         #   nodes the slice can instantiate on.
-        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
+#        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
         return [nodes[0], None]
 
 

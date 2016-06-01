@@ -1,0 +1,30 @@
+{
+  "name": "xos-mcordTopology",
+  "version": "0.0.0",
+  "authors": [
+    "Matteo Scandolo <teo@onlab.us>"
+  ],
+  "description": "The mcordTopology view",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/js/vendor/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.5.16"
+  },
+  "devDependencies": {
+    "jquery": "2.1.4",
+    "angular-mocks": "1.4.7",
+    "angular": "1.4.7",
+    "angular-ui-router": "0.2.15",
+    "angular-cookies": "1.4.7",
+    "angular-resource": "1.4.7",
+    "lodash": "^3.10.1",
+    "bootstrap-css": "2.3.2"
+  }
+}

@@ -45,4 +45,4 @@ RUN git clone git://git.planet-lab.org/fofum.git /tmp/fofum && \
 # Supervisor
 COPY conf/synchronizer.conf /etc/supervisor/conf.d/
 
-CMD update-ca-certificates && /usr/bin/supervisord -c /etc/supervisor/conf.d/synchronizer.conf
+CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/synchronizer.conf

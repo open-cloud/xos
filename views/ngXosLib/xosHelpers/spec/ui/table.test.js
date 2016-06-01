@@ -153,7 +153,6 @@
 
               it('should render a dropdown for filtering', () => {
                 let td1 = $(element).find('table tbody tr td')[0];
-                console.log(td1);
                 expect(td1).toContainElement('select');
                 expect(td1).not.toContainElement('input');
               });

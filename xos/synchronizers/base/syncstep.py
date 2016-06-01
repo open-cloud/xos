@@ -229,8 +229,16 @@ class SyncStep(object):
                         o.delete(purge=True)
                     else:
                         new_enacted = timezone.now()
+                        try:
+                            run_always = self.run_always
+                        except AttributeError:
+                            run_always = False
+
                         self.sync_record(o)
-                        o.enacted = new_enacted
+
+                        if (not run_always):
+                            o.enacted = new_enacted
+
                         scratchpad = {'next_run':0, 'exponent':0, 'last_success':time.time()}
                         o.backend_register = json.dumps(scratchpad)
                         o.backend_status = "1 - OK"
