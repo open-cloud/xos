@@ -24,9 +24,16 @@
         'ngResource',
         'ngAnimate',
         'bugSnag',
-        'xos.uiComponents',
+        'xos.uiComponents'
       ])
       .config(config)
+
+      /**
+      * @ngdoc service
+      * @name xos.helpers._
+      * @description Wrap [lodash](https://lodash.com/docs) in an Angular Service
+      **/
+
       .factory('_', $window => $window._ );
 
   function config($httpProvider, $interpolateProvider, $resourceProvider) {

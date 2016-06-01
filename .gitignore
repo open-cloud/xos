@@ -4,7 +4,12 @@
 profile
 *.moved-aside
 .idea
+setup/*
+setup/id_rsa/*
 xos/configurations/frontend/Dockerfile
+xos/configurations/mcord/admin-openrc.sh
+xos/configurations/setup/*
+xos/configurations/common/*
 xos/core/xoslib/karma-*
 xos/core/xoslib/docs
 xos/core/xoslib/coverage
@@ -16,4 +21,5 @@ npm-debug.log
 xos/core/static/*.css
 !xos/core/static/xos.css
 .DS_Store
-xos/configurations/setup
+xos/configurations/setup/
+migrations/

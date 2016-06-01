@@ -50,7 +50,6 @@
 
     it('should calculate horizontal position for each element', () => {
       let [el0x, el1x, el2x, el3x, el4x] = Service.computeElementPosition(svgWidth);
-      console.log(x1, el1x);
       expect(el0x).toBeSimilar(svgWidth - (x0 + (Config.elWidths[0] / 2)));
       expect(el1x).toBeSimilar(svgWidth - (x1 + (Config.elWidths[1] / 2)));
       expect(el2x).toBeSimilar(svgWidth - (x2 + (Config.elWidths[2] / 2)));

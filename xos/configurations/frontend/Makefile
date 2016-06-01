@@ -29,10 +29,22 @@ enter-xos:
 django-restart:
 	sudo docker exec frontend_xos_1 touch /opt/xos/xos/settings.py
 
+clean-config-folder:
+	sudo docker exec frontend_xos_1 rm -f /opt/xos/xos_configuration/xos_mcord_config
+	sudo docker exec frontend_xos_1 rm -f /opt/xos/xos_configuration/xos_cord_config
+
 mock-cord-pod:
-	echo "make sure to add '../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro' to volumes section of docker-compose.yml"
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/mgmt-net.yaml
-	sudo docker-compose run xos bash -c "echo somekey > /opt/xos/synchronizers/vcpe/vcpe_public_key; python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/cord-vtn-vsg.yaml"
 	sudo docker exec frontend_xos_1 cp /opt/xos/configurations/cord-pod/xos_cord_config /opt/xos/xos_configuration/
+	sudo docker exec frontend_xos_1 touch /opt/xos/xos/settings.py
+
+
+
+mock-mcord:
+	# check this
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/mgmt-net.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/mocks/mcord.yaml
+	sudo docker exec frontend_xos_1 cp /opt/xos/configurations/mcord/xos_mcord_config /opt/xos/xos_configuration/
 	sudo docker exec frontend_xos_1 touch /opt/xos/xos/settings.py

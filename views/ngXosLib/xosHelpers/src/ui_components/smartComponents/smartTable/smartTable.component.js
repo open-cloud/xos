@@ -228,7 +228,7 @@
               return p == 'id' || p == 'validators'
             });
 
-            // TODO move out cb
+            // TODO move out cb,  non sense triggering a lot of times
             if(angular.isArray(this.config.hiddenFields)){
               props = _.difference(props, this.config.hiddenFields)
             }
@@ -236,13 +236,20 @@
             let labels = props.map(p => LabelFormatter.format(p));
 
             props.forEach((p, i) => {
-              this.tableConfig.columns.push({
+              let fieldConfig = {
                 label: labels[i],
                 prop: p
-              });
+              };
+
+              if(typeof item[p] !== 'string' && typeof item[p] !== 'undefined'){
+                fieldConfig.type = typeof item[p];
+              }
+
+              this.tableConfig.columns.push(fieldConfig);
             });
 
             // build form structure
+            // TODO move in a pure function for testing purposes
             props.forEach((p, i) => {
               this.formConfig.fields[p] = {
                 label: LabelFormatter.format(labels[i]).replace(':', ''),

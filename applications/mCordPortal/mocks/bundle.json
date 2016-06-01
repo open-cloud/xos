@@ -1,0 +1,29 @@
+{
+  "bundle": {
+    "id": "family",
+    "name": "Advanced Bundle",
+    "functions": [
+      {
+        "id": "cache",
+        "name": "Cache",
+        "desc": "Caching Service.",
+        "params": {}
+      },
+      {
+        "id": "firewall",
+        "name": "Firewall",
+        "desc": "Normal firewall protection.",
+        "params": {}
+      },
+      {
+        "id": "video",
+        "name": "Video Optimization",
+        "desc": "Optimization for the video download."
+      }
+    ]
+  },
+  "bundles": [
+    { "id": "basic", "name": "Basic Bundle" },
+    { "id": "family", "name": "Advanced Bundle" }
+  ]
+}
