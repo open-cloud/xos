@@ -265,9 +265,9 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                 for port_mapping in agent.access_devices.objects.all():
                     olts[port_mapping.port] = port_mapping.mac
                 agent_config = {
-                    "olts" : olts
+                    "olts" : olts,
                     "mac" : agent.mac
-                }            
+                }
 
             device = {
                 voltdev.openflow_id : {
