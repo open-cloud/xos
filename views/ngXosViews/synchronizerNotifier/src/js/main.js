@@ -56,8 +56,8 @@ angular.module('xos.synchronizerNotifier', [
   this.getSyncStatus = (status) => {
 
     const now = new Date();
-    // let gap = 15 * 60 * 1000; /* ms */
-    const gap = 1 * 60 * 1000;
+    let gap = 15 * 60 * 1000; /* ms */
+    // const gap = 1 * 60 * 1000; // for demo use 1 minute
     // if all of this values are older than 15 min,
     // probably something is wrong
     if (
@@ -98,10 +98,8 @@ angular.module('xos.synchronizerNotifier', [
       $rootScope.$on('diag', (e, d) => {
         this.synchronizers[d.name] = d;
 
-
         // if errored
         if(!d.status){
-          console.log(d.name, XosUserPrefs.getSynchronizerNotificationStatus(d.name));
           // and not already notified
           if(!XosUserPrefs.getSynchronizerNotificationStatus(d.name)){
             xosNotification.notify('CORD Synchronizer', {
