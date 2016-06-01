@@ -46,9 +46,12 @@ test-tosca: restore-initial-db-status
 	sudo docker-compose run xos bash -c "cd /opt/xos/tosca/tests; python ./alltests.py"
 
 base-container: 
+	cd ../../../containers/xos; make base
+
+devel-container: base-container
 	cd ../../../containers/xos; make devel
 
-containers: base-container
+containers: devel-container
 	cd ../../../containers/xos; make test
 
 stop:
