@@ -56,7 +56,7 @@ angular.module('xos.synchronizerNotifier', [
   this.getSyncStatus = (status) => {
 
     const now = new Date();
-    let gap = 15 * 60 * 1000; /* ms */
+    const gap = 15 * 60 * 1000; /* ms */
     // const gap = 1 * 60 * 1000; // for demo use 1 minute
     // if all of this values are older than 15 min,
     // probably something is wrong
@@ -79,7 +79,7 @@ angular.module('xos.synchronizerNotifier', [
         this.sendEvents(diags);
       });
     }
-  }, 6 * 1000);
+  }, 5 * 60 * 1000);
 })
 .directive('syncStatus', function() {
   return {
@@ -90,7 +90,9 @@ angular.module('xos.synchronizerNotifier', [
     templateUrl: 'templates/sync-status.tpl.html',
     controller: function($log, $rootScope, Diag, xosNotification, XosUserPrefs){
       Diag.start();
-      this.showNotificationPanel = true;
+      // to debug set this to true,
+      // the panel will be opened by default
+      // this.showNotificationPanel = true;
       this.synchronizers = {};
 
       this.showNoSync = true;
