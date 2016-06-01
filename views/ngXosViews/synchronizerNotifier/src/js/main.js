@@ -79,7 +79,7 @@ angular.module('xos.synchronizerNotifier', [
         this.sendEvents(diags);
       });
     }
-  }, 10000);
+  }, 6 * 1000);
 })
 .directive('syncStatus', function() {
   return {
@@ -88,31 +88,31 @@ angular.module('xos.synchronizerNotifier', [
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/sync-status.tpl.html',
-    controller: function($log, $rootScope, Diag, xosNotification){
+    controller: function($log, $rootScope, Diag, xosNotification, XosUserPrefs){
       Diag.start();
       this.showNotificationPanel = true;
       this.synchronizers = {};
-
-      const notified = {};
 
       this.showNoSync = true;
 
       $rootScope.$on('diag', (e, d) => {
         this.synchronizers[d.name] = d;
 
+
         // if errored
         if(!d.status){
+          console.log(d.name, XosUserPrefs.getSynchronizerNotificationStatus(d.name));
           // and not already notified
-          if(!notified[d.name]){
-            xosNotification.notify('CORD Synchronizer Error', {
-              icon: '/xos/core/static/cord-logo.png',
-              body: `The ${d.name} synchronizer has stopped.`
+          if(!XosUserPrefs.getSynchronizerNotificationStatus(d.name)){
+            xosNotification.notify('CORD Synchronizer', {
+              icon: '/static/cord-logo.png',
+              body: `The ${d.name} synchronizer has not performed actions in the last 15 minutes.`
             });
           }
-          notified[d.name] = true;
+          XosUserPrefs.setSynchronizerNotificationStatus(d.name, true);
         }
         else {
-          notified[d.name] = false;
+          XosUserPrefs.setSynchronizerNotificationStatus(d.name, false);
         }
 
         // hide list if empty

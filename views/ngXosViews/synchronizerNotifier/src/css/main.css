@@ -3,7 +3,8 @@
   #xosSynchronizerNotifier .alert {
     margin-bottom: 0px !important; }
   #xosSynchronizerNotifier .sync-status-container {
-    position: relative; }
+    position: relative;
+    z-index: 200; }
   #xosSynchronizerNotifier .notification-panel {
     position: absolute;
     width: 200px; }
