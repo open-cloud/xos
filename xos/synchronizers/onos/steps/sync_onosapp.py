@@ -259,7 +259,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                 }
                 access_devices.append(access_device)
 
-             if voltdev.access_agent:
+            if voltdev.access_agent:
                 agent = voltdev.access_agent
                 olts = {}
                 for port_mapping in agent.access_devices.objects.all():
