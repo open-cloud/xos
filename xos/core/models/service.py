@@ -5,6 +5,7 @@ from core.models import PlCoreBase, PlCoreBaseManager, SingletonModel, XOS
 from core.models.plcorebase import StrippedCharField
 from django.db import models
 from xos.exceptions import *
+import urlparse
 
 COARSE_KIND = "coarse"
 
@@ -65,7 +66,7 @@ class AttributeMixin(object):
                                             attrname))
 
 class ServiceController(PlCoreBase):
-    xos = models.ForeignKey(XOS, related_name='servicecontrolers', help_text="Pointer to XOS", default=get_xos)
+    xos = models.ForeignKey(XOS, related_name='service_controllers', help_text="Pointer to XOS", default=get_xos)
     name = StrippedCharField(max_length=30, help_text="Service Name")
     base_url = StrippedCharField(max_length=1024, help_text="Base URL, allows use of relative URLs for resources", null=True, blank=True)
 
@@ -85,7 +86,7 @@ class ServiceControllerResource(PlCoreBase):
                       ('docker', 'Docker Container'),
                       ('yaml', 'YAML'))
 
-    service_controller = models.ForeignKey(ServiceController, related_name='servicecontrolerresources',
+    service_controller = models.ForeignKey(ServiceController, related_name='service_controller_resources',
                                 help_text="The Service Controller this resource is associated with")
 
     name = StrippedCharField(max_length=30, help_text="Object Name")
@@ -94,6 +95,13 @@ class ServiceControllerResource(PlCoreBase):
     url = StrippedCharField(max_length=1024, help_text="URL of resource", null=True, blank=True)
 
     def __unicode__(self): return u'%s' % (self.name)
+
+    @property
+    def full_url(self):
+        if self.service_controller and self.service_controller.base_url:
+            return urlparse.urljoin(self.service_controller.base_url, self.url)
+        else:
+            return self.url
 
 class Service(PlCoreBase, AttributeMixin):
     # when subclassing a service, redefine KIND to describe the new service

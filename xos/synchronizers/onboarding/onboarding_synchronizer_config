@@ -28,6 +28,7 @@ steps_dir=/opt/xos/synchronizers/onboarding/steps
 deleters_dir=/opt/xos/synchronizers/onboarding/deleters
 log_file=console
 driver=None
+backoff_disabled=True
 
 [feefie]
 client_id='vicci_dev_central'

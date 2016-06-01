@@ -10,7 +10,7 @@ topology_template:
     exampleservice:
       type: tosca.nodes.ServiceController
       properties:
-          base_url: file:/opt/xos/onboard/exampleservice/
+          base_url: file:///opt/xos/onboard/exampleservice/
           # The following will concatenate with base_url automatically, if
           # base_url is non-null.
           models: models.py
