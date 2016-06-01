@@ -55,26 +55,21 @@ angular.module('xos.synchronizerNotifier', [
 
   this.getSyncStatus = (status) => {
 
-    // let gap = 5 * 60 * 1000; /* ms */
-    let gap = 1 * 60 * 1000;
-    // if(status.last_run > status.last_synchronizer_start){
-    //   // the synchronizer has finished
-    //   return true;
-    // }
-    // else {
-      // the synchronizer is running
-      // if(status.last_syncrecord_start){
-      //   // but no step have been completed
-      //   return false;
-      // }
-      // else
-      if (((new Date()) - status.last_syncrecord_start) > gap){
-        return false;
-      }
-      else{
-        return true;
-      }
-    // }
+    const now = new Date();
+    // let gap = 15 * 60 * 1000; /* ms */
+    const gap = 1 * 60 * 1000;
+    // if all of this values are older than 15 min,
+    // probably something is wrong
+    if (
+      (now - status.last_synchronizer_start) > gap &&
+      (now - status.last_syncrecord_start) > gap &&
+      (now - status.last_run) > gap
+    ){
+      return false;
+    }
+    else{
+      return true;
+    }
   }
 
   $interval(() => {
@@ -100,27 +95,20 @@ angular.module('xos.synchronizerNotifier', [
 
       const notified = {};
 
-      // xosNotification.notify('test', {icon: 'http://localhost:8888/static/cord-logo.png', body: 'Diag'});
-
       this.showNoSync = true;
 
       $rootScope.$on('diag', (e, d) => {
-        // console.log(d.name);
-        if(d.name === 'global'){
-          $log.info('Received event: ', d.info.last_syncrecord_start);
-        }
         this.synchronizers[d.name] = d;
 
+        // if errored
         if(!d.status){
-          
+          // and not already notified
           if(!notified[d.name]){
-            console.log('sent notify');
             xosNotification.notify('CORD Synchronizer Error', {
-              icon: 'http://localhost:8888/static/cord-logo.png',
-              body: `[DEBUG] The ${d.name} synchronizer has stopped.`
+              icon: '/xos/core/static/cord-logo.png',
+              body: `The ${d.name} synchronizer has stopped.`
             });
           }
-
           notified[d.name] = true;
         }
         else {

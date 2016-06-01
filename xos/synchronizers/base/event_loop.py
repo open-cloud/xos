@@ -524,7 +524,7 @@ class XOSObserver:
                         try:
                             observer_name = Config().observer_name
                         except:
-                            observer_name = 'global'
+                            observer_name = 'openstack'
 
                         diag = Diag.objects.filter(name=observer_name).first()
                         if (not diag):

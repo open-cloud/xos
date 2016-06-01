@@ -9,5 +9,5 @@
     width: 200px; }
   #xosSynchronizerNotifier sync-status .badge.success {
     background-color: #5cb85c; }
-  #xosSynchronizerNotifier sync-status .badge.danger {
-    background-color: #d9534f; }
+  #xosSynchronizerNotifier sync-status .badge.warning {
+    background-color: #f0ad4e; }
