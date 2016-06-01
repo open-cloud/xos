@@ -12,6 +12,7 @@ RUN ln -s -f /bin/true /usr/bin/chfn
 
 # Install apt packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
+    apt-transport-https \
     curl \
     gcc \
     geoip-database \
