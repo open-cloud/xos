@@ -1,0 +1,14 @@
+#xosSynchronizerNotifier {
+  float: left; }
+  #xosSynchronizerNotifier .alert {
+    margin-bottom: 0px !important; }
+  #xosSynchronizerNotifier .sync-status-container {
+    position: relative;
+    z-index: 200; }
+  #xosSynchronizerNotifier .notification-panel {
+    position: absolute;
+    width: 200px; }
+  #xosSynchronizerNotifier sync-status .badge.success {
+    background-color: #5cb85c; }
+  #xosSynchronizerNotifier sync-status .badge.warning {
+    background-color: #f0ad4e; }

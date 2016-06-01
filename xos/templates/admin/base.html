@@ -1,4 +1,4 @@
-﻿{% load admin_static %}{% load suit_tags %}{% load url from future %}
+﻿{% load admin_static %}{% load suit_tags core_tags %}{% load url from future %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
@@ -148,6 +148,7 @@
                     {% endblock %}
 
                     {% if user.is_active and user.is_staff %}
+                    {% notification %}
                       <div id="user-tools">
                         {% trans 'Welcome,' %}
                         <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">{{user.email}}</a>

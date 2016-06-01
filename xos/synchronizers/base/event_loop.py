@@ -28,6 +28,8 @@ from toposort import toposort
 from synchronizers.base.error_mapper import *
 from synchronizers.openstack.openstacksyncstep import OpenStackSyncStep
 from synchronizers.base.steps.sync_object import SyncObject
+from django.utils import timezone
+from diag import update_diag
 
 # Load app models
 
@@ -521,20 +523,10 @@ class XOSObserver:
 
                         loop_end = time.time()
 
-                        try:
-                            observer_name = Config().observer_name
-                        except:
-                            observer_name = ''
+                        update_diag(loop_end=loop_end, loop_start=loop_start, backend_status="1 - Bottom Of Loop")
 
-                        diag = Diag.objects.filter(name=observer_name).first()
-                        if (diag):
-                            br_str = diag.backend_register
-                            br = json.loads(br_str)
-                            br['last_run'] = loop_end
-                            br['last_duration'] = loop_end - loop_start
-                            diag.backend_register = json.dumps(br)
-                            diag.save() 
                 except Exception, e:
                         logger.error('Core error. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % e)
                         logger.log_exc("Exception in observer run loop")
                         traceback.print_exc()
+                        update_diag(backend_status="2 - Exception in Event Loop")

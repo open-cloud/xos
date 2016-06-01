@@ -2404,6 +2404,15 @@ class AddressPoolInline(XOSTabularInline):
     def has_add_permission(self, request):
         return False
 
+class DiagAdmin(XOSBaseAdmin):
+    list_display = ("name", "backend_status", "backend_register")
+    list_display_links = ('name',)
+
+    fieldsets = [
+        (None, {'fields': ['name', 'backend_status', 'backend_register'],
+                'classes':['suit-tab suit-tab-general']}),
+    ]
+
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)
 # ... and, since we're not using Django's builtin permissions,
@@ -2448,3 +2457,4 @@ if True:
     admin.site.register(TenantRole, TenantRoleAdmin)
     admin.site.register(TenantAttribute, TenantAttributeAdmin)
     admin.site.register(AddressPool, AddressPoolAdmin)
+    admin.site.register(Diag, DiagAdmin)

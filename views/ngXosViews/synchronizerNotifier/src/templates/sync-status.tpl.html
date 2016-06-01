@@ -1,0 +1,21 @@
+<div class="sync-status-container">
+  <div class="btn btn-default" ng-click="vm.showNotificationPanel = !vm.showNotificationPanel">
+    <i class="glyphicon glyphicon-inbox"></i>
+  </div>
+  <div class="notification-panel panel panel-default" ng-show="vm.showNotificationPanel">
+    <ul class="list-group" ng-show="!vm.showNoSync">
+      <li class="list-group-item" ng-repeat="(syncName, syncStatus) in vm.synchronizers">
+        <span class="badge" ng-class="{success: syncStatus.status, warning: !syncStatus.status}">
+          <span ng-show="syncStatus.status"><i class="glyphicon glyphicon-ok"></i></span>
+          <span ng-hide="syncStatus.status"><i class="glyphicon glyphicon-time"></i></span>
+        </span>
+        <b>{{syncName}}</b>
+        <br/>
+        <small><i>{{syncStatus.info.last_run | date:'mediumTime'}}</i></small>
+      </li>
+    </ul>
+    <div class="alert alert-info" ng-show="vm.showNoSync">
+      No syncronizers are running.
+    </div>
+  </div>
+</div>

@@ -204,7 +204,7 @@ class PlCoreBase(models.Model, PlModelMixIn):
     policed = models.DateTimeField(null=True, blank=True, default=None)
 
     # This is a scratchpad used by the Observer
-    backend_register = models.CharField(max_length=140,
+    backend_register = models.CharField(max_length=1024,
                                       default="{}", null=True)
 
     backend_status = models.CharField(max_length=1024,

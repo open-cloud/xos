@@ -1,0 +1,130 @@
+# Dockerfile.base
+# This image isn't used, but installs the prereqs for the other XOS images
+
+FROM       ubuntu:14.04.4
+
+# XXX Workaround for docker bug:
+# https://github.com/docker/docker/issues/6345
+# Kernel 3.15 breaks docker, uss the line below as a workaround
+# until there is a fix
+RUN ln -s -f /bin/true /usr/bin/chfn
+# XXX End workaround
+
+# Install apt packages
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
+    apt-transport-https \
+    curl \
+    gcc \
+    geoip-database \
+    git \
+    graphviz \
+    graphviz-dev \
+    libgeoip1 \
+    libxslt1-dev \
+    libxslt1.1 \
+    libyaml-dev \
+    m4 \
+    openssh-client \
+    pkg-config \
+    python-ceilometerclient \
+    python-crypto \
+    python-dev \
+    python-glanceclient \
+    python-httplib2 \
+    python-jinja2 \
+    python-keystoneclient \
+    python-netaddr \
+    python-neutronclient \
+    python-novaclient \
+    python-paramiko \
+    python-pip \
+    python-psycopg2 \
+    python-pycurl \
+    python-setuptools \
+    python-yaml \
+    rsync \
+    software-properties-common \
+    supervisor \
+    tar \
+    wget \
+ && rm -rf /var/lib/apt/lists/*
+
+# Install python pacakges with pip
+RUN pip install \
+    ca-certs-locater \
+    "django>=1.8,<1.8.99" \
+    django-bitfield \
+    django-crispy-forms \
+    django-encrypted-fields \
+    django-extensions \
+    django-filter \
+    django-geoposition \
+    django-ipware \
+    django-suit==0.3a3 \
+    django-timezones \
+    django_rest_swagger \
+    djangorestframework==3.3.3 \
+    dnslib \
+    google-api-python-client \
+    httplib2 \
+    jinja2 \
+    lxml \
+    markdown \
+    netaddr \
+    psycopg2 \
+    pyOpenSSL \
+    pygraphviz \
+    python-ceilometerclient \
+    python-dateutil \
+    python-gflags \
+    python-keyczar \
+    python-logstash \
+    pygraphviz \
+    pytz \
+    pyyaml \
+    requests
+
+# Required for ansible 2.x OpenStack os_* modules
+RUN pip install --upgrade pbr && \
+    pip install --upgrade six && \
+    pip install shade
+
+# Install ansible 2.x (has to be done after installing `software-properties-common`)
+RUN add-apt-repository ppa:ansible/ansible
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
+    ansible \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY ansible-hosts /etc/ansible/hosts
+
+# jQuery download w/checksum
+ENV JQUERY_DL_URL http://code.jquery.com/jquery-1.12.4.min.js
+ENV JQUERY_SHA256 668b046d12db350ccba6728890476b3efee53b2f42dbb84743e5e9f1ae0cc404
+
+RUN wget $JQUERY_DL_URL -o jquery.min.js && \
+  echo "$JQUERY_SHA256  jquery.min.js" | sha256sum -c - && \
+  mv jquery.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/jquery.min.js
+
+# Install heat-translator for TOSCA support
+ENV HT_REPO_URL https://github.com/openstack/heat-translator.git
+ENV HT_REF a951b93c16e54046ed2d233d814860181c772e30
+
+RUN git clone $HT_REPO_URL /tmp/heat-translator && \
+    cd /tmp/heat-translator && \
+    git checkout $HT_REF && \
+    mkdir -p /opt/tosca && \
+    mv /tmp/heat-translator/translator /opt/tosca/translator && \
+    echo > /opt/tosca/translator/__init__.py && \
+    rm -rf /tmp/heat-translator
+
+# For Synchronizer
+ENV PHANTOMJS_DL_URL https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+ENV PHANTOMJS_SHA256 86dd9a4bf4aee45f1a84c9f61cf1947c1d6dce9b9e8d2a907105da7852460d2f
+
+RUN curl -fLsS $PHANTOMJS_DL_URL -o phantomjs.tar.bz2 && \
+  echo "$PHANTOMJS_SHA256  phantomjs.tar.bz2" | sha256sum -c - && \
+  tar -C /usr/local/share -xjf phantomjs.tar.bz2 && \
+  ln -s /usr/local/share/phantomjs-* /usr/local/share/phantomjs && \
+  ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs && \
+  rm phantomjs.tar.bz2
+
