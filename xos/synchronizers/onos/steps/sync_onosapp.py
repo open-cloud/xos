@@ -272,10 +272,10 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             device = {
                 voltdev.openflow_id : {
                     "accessDevice" : access_devices,
-                    "accessAgent" : agent_config
-                },
-                "basic" : {
-                    "driver" : voltdev.driver
+                    "accessAgent" : agent_config,
+                    "basic" : {
+                        "driver" : voltdev.driver
+                    }
                 }
             }
             devices.append(device)
