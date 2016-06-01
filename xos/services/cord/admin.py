@@ -94,11 +94,6 @@ class VOLTTenantAdmin(ReadOnlyAwareAdmin):
     def queryset(self, request):
         return VOLTTenant.get_tenant_objects_by_user(request.user)
 
-    volt_service = models.ForeignKey(VOLTService, related_name='volt_devices')
-    openflow_id = models.CharField(max_length=254, help_text="OpenFlow ID", null=True, blank=True)
-    driver = models.CharField(max_length=254, help_text="driver", null=True, blank=True)
-    access_agent = models.ForeignKey("AccessAgent", related_name='access_devices', blank=True, null=True)
-
 class AccessDeviceInline(XOSTabularInline):
     model = AccessDevice
     fields = ['volt_device','uplink','vlan']
