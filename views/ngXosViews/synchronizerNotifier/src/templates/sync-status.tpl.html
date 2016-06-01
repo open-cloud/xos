@@ -5,9 +5,9 @@
   <div class="notification-panel panel panel-default" ng-show="vm.showNotificationPanel">
     <ul class="list-group" ng-show="!vm.showNoSync">
       <li class="list-group-item" ng-repeat="(syncName, syncStatus) in vm.synchronizers">
-        <span class="badge" ng-class="{success: syncStatus.status, danger: !syncStatus.status}">
+        <span class="badge" ng-class="{success: syncStatus.status, warning: !syncStatus.status}">
           <span ng-show="syncStatus.status"><i class="glyphicon glyphicon-ok"></i></span>
-          <span ng-hide="syncStatus.status"><i class="glyphicon glyphicon-remove"></i></span>
+          <span ng-hide="syncStatus.status"><i class="glyphicon glyphicon-time"></i></span>
         </span>
         <b>{{syncName}}</b>
         <br/>
