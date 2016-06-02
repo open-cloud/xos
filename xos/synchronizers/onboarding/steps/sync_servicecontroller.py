@@ -29,7 +29,7 @@ class SyncServiceController(SyncStep, XOSBuilder):
     def sync_record(self, sc):
         logger.info("Sync'ing ServiceController %s" % sc)
 
-        dockerfiles = [self.create_ui_dockerfile()]
+        dockerfiles = [self.create_synchronizer_dockerfile(sc)]
         tenant_fields = {"dockerfiles": dockerfiles,
                          "build_dir": self.build_dir,
                          "ansible_tag": sc.__class__.__name__ + "_" + str(sc.id)}
