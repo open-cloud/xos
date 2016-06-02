@@ -35,4 +35,6 @@ class XOSServiceController(XOSResource):
         self.postprocess_resource_prop(obj, "admin", "python")
         self.postprocess_resource_prop(obj, "tosca_custom_types", "yaml")
         self.postprocess_resource_prop(obj, "synchronizer", "manifest")
+        self.postprocess_resource_prop(obj, "private_key", "raw")
+        self.postprocess_resource_prop(obj, "public_key", "raw")
 
