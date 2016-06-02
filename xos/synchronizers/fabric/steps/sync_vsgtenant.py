@@ -10,6 +10,7 @@ from core.models import Image, ControllerImages
 from xos.logger import observer_logger as logger
 from synchronizers.base.ansible import *
 from services.cord.models import VSGTenant
+from services.fabric.models import FabricService
 import json
 
 class SyncVSGTenant(SyncStep):
@@ -19,6 +20,14 @@ class SyncVSGTenant(SyncStep):
     playbook='sync_vsgtenant.yaml'
 
     def get_fabric_onos_service(self):
+        fos = None
+        fs = FabricService.get_service_objects().all()[0]
+        if fs.subscribed_tenants.exists():
+            app = fs.subscribed_tenants.all()[0]
+            if app.provider_service:
+                ps = app.provider_service
+                fos = ONOSService(id=ps.id)
+        return fos
 
     def get_node_tag(self, o, node, tagname):
         tags = Tag.select_by_content_object(node).filter(name=tagname)
