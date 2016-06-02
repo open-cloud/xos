@@ -40,7 +40,7 @@ vtn-external.yaml:
 	export SETUPDIR=.; bash ./make-vtn-external-yaml.sh
 
 fabric.yaml:
-	export SETUPDIR=.; bash ./fabric-yaml.sh
+	export SETUPDIR=.; bash ./make-fabric-yaml.sh
 
 virtualbng_json:
 	export SETUPDIR=.; bash ./make-virtualbng-json.sh
