@@ -827,7 +827,7 @@ if (! window.XOSLIB_LOADED) {
         define_model(this, {urlRoot: CORDSUBSCRIBER_API,
                             modelName: "cordSubscriber",
                             relatedCollections: {"cordUsers": "subscriber"},
-                            listFields: ["id", "service_specific_id", "vlan_id", "routeable_subnet"],
+                            listFields: ["id", "service_specific_id", "routeable_subnet"],
                             detailFields: ["id", "service_specific_id", "vcpe_id", "image_name", "instance_name",
                                            "firewall_enable", "firewall_rules", "url_filter_enable", "url_filter_rules", "cdn_enable",
                                            "nat_ip", "lan_ip", "wan_ip", "private_ip",
