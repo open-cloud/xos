@@ -10,6 +10,9 @@ frontend:
 
 containers:
 	cd ../../../containers/xos; make devel
+	cd ../../../containers/synchronizer; make
+	cd ../../../containers/onboarding_synchronizer; make
+	#cd ../../../containers/xos; make devel
 
 stop:
 	sudo docker-compose stop
@@ -50,3 +53,10 @@ mock-mcord:
 	sudo docker-compose run xos bash -c "echo somekey > /opt/xos/synchronizers/vcpe/vcpe_public_key; python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/cord-vtn-vsg.yaml"
 	sudo docker exec frontend_xos_1 cp /opt/xos/configurations/mcord/xos_mcord_config /opt/xos/xos_configuration/
 	sudo docker exec frontend_xos_1 touch /opt/xos/xos/settings.py
+
+exampleservice:
+	mkdir -p key_import
+	# fake keys are fine
+	echo somekey > key_import/exampleservice_rsa
+	echo somekey > key_import/exampleservice_rsa.pub
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/onboard/exampleservice/exampleservice-onboard.yaml
