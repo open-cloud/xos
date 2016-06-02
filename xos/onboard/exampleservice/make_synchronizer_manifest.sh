@@ -1,3 +1,3 @@
 #! /bin/bash
-find synchronizer -type f | cut -b 14- > synchronizer_manifest
+find synchronizer -type f > synchronizer_manifest
 
