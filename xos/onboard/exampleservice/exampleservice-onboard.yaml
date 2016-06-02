@@ -18,3 +18,4 @@ topology_template:
           synchronizer: synchronizer/manifest
           tosca_custom_types: exampleservice.yaml
           private_key: file:///opt/xos/key_import/exampleservice_rsa
+          public_key: file:///opt/xos/key_import/exampleservice_rsa.pub
