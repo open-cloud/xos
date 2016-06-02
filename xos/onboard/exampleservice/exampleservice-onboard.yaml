@@ -15,5 +15,5 @@ topology_template:
           # base_url is non-null.
           models: models.py
           admin: admin.py
-          synchronizer: synchronizer_manifest
+          synchronizer: synchronizer/manifest
           tosca_custom_types: exampleservice.yaml
