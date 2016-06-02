@@ -29,41 +29,44 @@
           </div>
           <div class="col-xs-2">
             <a class="btn"
-              ng-click="vm.errors.required = !vm.errors.required"
-              ng-class="{'btn-default': !vm.errors.required, 'btn-success': vm.errors.required}">
+              ng-click="vm.field.$error.required = !vm.field.$error.required"
+              ng-class="{'btn-default': !vm.field.$error.required, 'btn-success': vm.field.$error.required}">
               Required
             </a>
           </div>
           <div class="col-xs-2">
             <a class="btn"
-              ng-click="vm.errors.email = !vm.errors.email"
-              ng-class="{'btn-default': !vm.errors.email, 'btn-success': vm.errors.email}">
+              ng-click="vm.field.$error.email = !vm.field.$error.email"
+              ng-class="{'btn-default': !vm.field.$error.email, 'btn-success': vm.field.$error.email}">
               Email
             </a>
           </div>
           <div class="col-xs-2">
             <a class="btn"
-              ng-click="vm.errors.minlength = !vm.errors.minlength"
-              ng-class="{'btn-default': !vm.errors.minlength, 'btn-success': vm.errors.minlength}">
+              ng-click="vm.field.$error.minlength = !vm.field.$error.minlength"
+              ng-class="{'btn-default': !vm.field.$error.minlength, 'btn-success': vm.field.$error.minlength}">
               Min Length
             </a>
           </div>
           <div class="col-xs-2">
             <a class="btn"
-              ng-click="vm.errors.maxlength = !vm.errors.maxlength"
-              ng-class="{'btn-default': !vm.errors.maxlength, 'btn-success': vm.errors.maxlength}">
+              ng-click="vm.field.$error.maxlength = !vm.field.$error.maxlength"
+              ng-class="{'btn-default': !vm.field.$error.maxlength, 'btn-success': vm.field.$error.maxlength}">
               Max Length
             </a>
           </div>
         </div>
-        <xos-validation errors="vm.errors"></xos-validation>
+        <xos-validation field ="vm.field" form = "vm.form"></xos-validation>
       </div>
     </file>
     <file name="script.js">
       angular.module('sampleValidation', ['xos.uiComponents'])
       .controller('SampleCtrl', function(){
-        this.errors = {
-          email: false
+        this.field = {
+          $error: {}
+        };
+        this.form= {
+        $submitted:true
         }
       });
     </file>
@@ -79,19 +82,22 @@
       },
       template: `
         <div ng-cloak>
+           <!--<pre>{{vm.field | json}}</pre>-->
+           <!--<pre>{{vm.form.$submitted | json}}</pre>-->
+           <!--<pre>{{vm.field.$error.required !== false}}</pre>-->
           <xos-alert config="vm.config" show="vm.field.$error.required !== undefined && vm.field.$error.required !== false  && (vm.field.$touched || vm.form.$submitted)">
             Field required
           </xos-alert>
-          <xos-alert config="vm.config" show="vm.field.$error.email !== undefined && vm.field.$error.email !== false  && (vm.field.$touched || vm.form.$submitted)">
+          <xos-alert config="vm.config" show="vm.field.$error.email !== undefined && vm.field.$error.email !== false && (vm.field.$touched || vm.form.$submitted)">
             This is not a valid email
           </xos-alert>
-          <xos-alert config="vm.config" show="vm.field.$error.minlength !== undefined && vm.field.$error.minlength !== false  && (vm.field.$touched || vm.form.$submitted)">
+          <xos-alert config="vm.config" show="vm.field.$error.minlength !== undefined && vm.field.$error.minlength !== false && (vm.field.$touched || vm.form.$submitted)">
             Too short
           </xos-alert>
-          <xos-alert config="vm.config" show="vm.field.$error.maxlength !== undefined && vm.field.$error.maxlength !== false  && (vm.field.$touched || vm.form.$submitted)">
+          <xos-alert config="vm.config" show="vm.field.$error.maxlength !== undefined && vm.field.$error.maxlength !== false && (vm.field.$touched || vm.form.$submitted)">
             Too long
           </xos-alert>
-          <xos-alert config="vm.config" show="vm.field.$error.custom !== undefined && vm.field.$error.custom !== false  && (vm.field.$touched || vm.form.$submitted)">
+          <xos-alert config="vm.config" show="vm.field.$error.custom !== undefined && vm.field.$error.custom !== false && (vm.field.$touched || vm.form.$submitted)">
             Field invalid
           </xos-alert>
         </div>
