@@ -97,12 +97,32 @@ class XOSBuilder(object):
 
     # stuff that has to do with building
 
+    def create_xos_app_data(self, dockerfile, app_list, migration_list):
+        if not os.path.exists(os.path.join(self.build_dir,"opt/xos/xos")):
+            os.makedirs(os.path.join(self.build_dir,"opt/xos/xos"))
+
+        if app_list:
+            dockerfile.append("COPY opt/xos/xos/xosbuilder_app_list /opt/xos/xos/xosbuilder_app_list")
+            file(os.path.join(self.build_dir, "opt/xos/xos/xosbuilder_app_list"), "w").write("\n".join(app_list)+"\n")
+
+        if migration_list:
+            dockerfile.append("COPY opt/xos/xos/xosbuilder_migration_list /opt/xos/xos/xosbuilder_migration_list")
+            file(os.path.join(self.build_dir, "opt/xos/xos/xosbuilder_migration_list"), "w").write("\n".join(migration_list)+"\n")
+
     def create_ui_dockerfile(self):
         dockerfile_fn = "Dockerfile.UI"
+
+        app_list = []
+        migration_list = []
 
         dockerfile = ["FROM %s" % self.source_ui_image]
         for controller in ServiceController.objects.all():
             dockerfile = dockerfile + self.get_controller_docker_lines(controller, self.UI_KINDS)
+            if controller.service_controller_resources.filter(kind="models").exists():
+                app_list.append("services." + controller.name)
+                migration_list.append(controller.name)
+
+        self.create_xos_app_data(dockerfile, app_list, migration_list)
 
         file(os.path.join(self.build_dir, dockerfile_fn), "w").write("\n".join(dockerfile)+"\n")
 
