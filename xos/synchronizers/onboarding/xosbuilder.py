@@ -14,7 +14,8 @@ logger = Logger(level=logging.INFO)
 
 class XOSBuilder(object):
     UI_KINDS=["models", "admin", "django_library", "rest", "tosca_custom_types", "tosca_resource"]
-    SYNC_KINDS=["synchronizer"]
+    SYNC_CONTROLLER_KINDS=["synchronizer"]
+    SYNC_ALLCONTROLLER_KINDS=["models", "django_library"]
 
     def __init__(self):
         self.source_ui_image = "xosproject/xos"
@@ -102,17 +103,17 @@ class XOSBuilder(object):
 
     # stuff that has to do with building
 
-    def create_xos_app_data(self, dockerfile, app_list, migration_list):
+    def create_xos_app_data(self, name, dockerfile, app_list, migration_list):
         if not os.path.exists(os.path.join(self.build_dir,"opt/xos/xos")):
             os.makedirs(os.path.join(self.build_dir,"opt/xos/xos"))
 
         if app_list:
-            dockerfile.append("COPY opt/xos/xos/xosbuilder_app_list /opt/xos/xos/xosbuilder_app_list")
-            file(os.path.join(self.build_dir, "opt/xos/xos/xosbuilder_app_list"), "w").write("\n".join(app_list)+"\n")
+            dockerfile.append("COPY opt/xos/xos/%s_xosbuilder_app_list /opt/xos/xos/xosbuilder_app_list" % name)
+            file(os.path.join(self.build_dir, "opt/xos/xos/%s_xosbuilder_app_list") % name, "w").write("\n".join(app_list)+"\n")
 
         if migration_list:
-            dockerfile.append("COPY opt/xos/xos/xosbuilder_migration_list /opt/xos/xos/xosbuilder_migration_list")
-            file(os.path.join(self.build_dir, "opt/xos/xos/xosbuilder_migration_list"), "w").write("\n".join(migration_list)+"\n")
+            dockerfile.append("COPY opt/xos/xos/%s_xosbuilder_migration_list /opt/xos/xos/xosbuilder_migration_list" % name)
+            file(os.path.join(self.build_dir, "opt/xos/xos/%s_xosbuilder_migration_list") % name, "w").write("\n".join(migration_list)+"\n")
 
     def create_ui_dockerfile(self):
         dockerfile_fn = "Dockerfile.UI"
@@ -127,7 +128,7 @@ class XOSBuilder(object):
                 app_list.append("services." + controller.name)
                 migration_list.append(controller.name)
 
-        self.create_xos_app_data(dockerfile, app_list, migration_list)
+        self.create_xos_app_data("ui", dockerfile, app_list, migration_list)
 
         file(os.path.join(self.build_dir, dockerfile_fn), "w").write("\n".join(dockerfile)+"\n")
 
@@ -135,13 +136,26 @@ class XOSBuilder(object):
                 "docker_image_name": "xosproject/xos-ui"}
 
     def create_synchronizer_dockerfile(self, controller):
-        lines = self.get_controller_docker_lines(controller, self.SYNC_KINDS)
-        if not lines:
+        # bake in the synchronizer from this controller
+        sync_lines = self.get_controller_docker_lines(controller, self.SYNC_CONTROLLER_KINDS)
+        if not sync_lines:
             return []
 
         dockerfile_fn = "Dockerfile.%s" % controller.name
         dockerfile = ["FROM %s" % self.source_sync_image]
-        dockerfile = dockerfile + lines
+
+        # Now bake in models from this controller as well as the others
+        # It's important to bake all services in, because some services'
+        # synchronizers may depend on models from another service.
+        app_list = []
+        for c in ServiceController.objects.all():
+            dockerfile = dockerfile + self.get_controller_docker_lines(c, self.SYNC_ALLCONTROLLER_KINDS)
+            if controller.service_controller_resources.filter(kind="models").exists():
+                app_list.append("services." + controller.name)
+
+        self.create_xos_app_data(controller.name, dockerfile, app_list, None)
+
+        dockerfile = dockerfile + sync_lines
         file(os.path.join(self.build_dir, dockerfile_fn), "w").write("\n".join(dockerfile)+"\n")
 
         return {"dockerfile_fn": dockerfile_fn,
