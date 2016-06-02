@@ -11,7 +11,7 @@ xos_db:
 #        org.xosproject.target: swarm
 
 xos:
-    image: xosproject/xos
+    image: xosproject/xos-test
     command: python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
     #command: sleep 86400    # For interactive session
     ports:
