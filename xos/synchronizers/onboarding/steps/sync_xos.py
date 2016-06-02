@@ -6,6 +6,7 @@ from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
 from core.models import XOS
 from xos.logger import Logger, logging
+from synchronizers.base.ansible import run_template
 
 # xosbuilder will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")
@@ -19,14 +20,22 @@ class SyncXOS(SyncStep, XOSBuilder):
     provides=[XOS]
     observes=XOS
     requested_interval=0
+    playbook = "sync_xos.yaml"
 
     def __init__(self, **args):
         SyncStep.__init__(self, **args)
         XOSBuilder.__init__(self)
 
-    def sync_record(self, scr):
-        logger.info("Sync'ing XOS %s" % scr)
-        self.build_xos()
+    def sync_record(self, xos):
+        logger.info("Sync'ing XOS %s" % xos)
+
+        dockerfiles = [self.create_ui_dockerfile()]
+        tenant_fields = {"dockerfiles": dockerfiles,
+                         "build_dir": self.build_dir,
+                         "ansible_tag": xos.__class__.__name__ + "_" + str(xos.id)}
+
+        path="XOS"
+        res = run_template(self.playbook, tenant_fields, path=path)
 
     def delete_record(self, m):
         pass

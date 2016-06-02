@@ -106,7 +106,8 @@ class XOSBuilder(object):
 
         file(os.path.join(self.build_dir, dockerfile_fn), "w").write("\n".join(dockerfile)+"\n")
 
-        return [dockerfile_fn]
+        return {"dockerfile_fn": dockerfile_fn,
+                "docker_image_name": "xosproject/xos-ui"}
 
     def create_synchronizer_dockerfile(self, controller):
         lines = self.get_controller_docker_lines(controller, self.SYNC_KINDS)
@@ -118,20 +119,15 @@ class XOSBuilder(object):
         dockerfile = dockerfile + lines
         file(os.path.join(self.build_dir, dockerfile_fn), "w").writelines(dockerfile)
 
-        return [dockerfile_fn]
+        return {"dockerfile_fn": dockerfile_fn,
+                "docker_image_name": "xosproject/xos-synchronizer-%s" % controller.name}
 
-    def run_docker(self, dockerfile_fn):
-        pass
-
-    def build_xos(self):
-        dockerfiles=[]
-        dockerfiles = dockerfiles + self.create_ui_dockerfile()
-
-        for controller in ServiceController.objects.all():
-            dockerfiles = dockerfiles + self.create_synchronizer_dockerfile(controller)
-
-        for dockerfile in dockerfiles:
-            self.run_docker(dockerfile)
+#    def build_xos(self):
+#        dockerfiles=[]
+#        dockerfiles.append(self.create_ui_dockerfile())
+#
+#        for controller in ServiceController.objects.all():
+#            dockerfiles.append(self.create_synchronizer_dockerfile(controller))
 
 
 
