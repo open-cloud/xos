@@ -64,11 +64,6 @@ class VOLTTenantList(XOSListCreateAPIView):
         if service_specific_id is not None:
             queryset = queryset.filter(service_specific_id=service_specific_id)
 
-#        vlan_id = self.request.query_params.get('vlan_id', None)
-#        if vlan_id is not None:
-#            ids = [x.id for x in queryset if x.get_attribute("vlan_id", None)==vlan_id]
-#            queryset = queryset.filter(id__in=ids)
-
         c_tag = self.request.query_params.get('c_tag', None)
         if c_tag is not None:
             ids = [x.id for x in queryset if x.get_attribute("c_tag", None)==c_tag]

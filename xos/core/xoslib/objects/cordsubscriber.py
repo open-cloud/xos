@@ -39,7 +39,6 @@ class CordSubscriber(CordSubscriberRoot):
                      # ("cdn_enable", "vcpe.cdn_enable"),
                      # uplink_speed, downlink_speed, status, enable_uverse
 
-                     ("vlan_id", "volt.vlan_id"),      # XXX remove this
                      ("c_tag", "volt.c_tag"),
                      ("s_tag", "volt.s_tag"),
 
