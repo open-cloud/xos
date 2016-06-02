@@ -13,7 +13,7 @@ from xos.logger import Logger, logging
 logger = Logger(level=logging.INFO)
 
 class XOSBuilder(object):
-    UI_KINDS=["models", "admin", "django_library", "rest", "tosca_custom_types", "tosca_resource"]
+    UI_KINDS=["models", "admin", "django_library", "rest", "tosca_custom_types", "tosca_resource","public_key"]
     SYNC_CONTROLLER_KINDS=["synchronizer", "private_key", "public_key"]
     SYNC_ALLCONTROLLER_KINDS=["models", "django_library"]
 
