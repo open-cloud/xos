@@ -1,0 +1,8 @@
+steps/sync_exampletenant.py
+steps/roles/install_apache/tasks/main.yml
+steps/roles/create_index/templates/index.html.j2
+steps/roles/create_index/tasks/main.yml
+steps/exampletenant_playbook.yaml
+exampleservice-synchronizer.py
+model-deps
+exampleservice_config
