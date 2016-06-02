@@ -197,6 +197,13 @@ INSTALLED_APPS = (
     'rest_framework_swagger',
 )
 
+# add services that were configured by xosbuilder to INSTALLED_APPS
+if os.path.exists("/opt/xos/xos/app_list"):
+    for line in file("/opt/xos/xos/app_list").readlines():
+        line = line.strip()
+        if line:
+            INSTALLED_APPS = list(INSTALLED_APPS) + [line]
+
 if DJANGO_VERSION[1] >= 7:
     # if django >= 1.7, then change the admin module
     INSTALLED_APPS = list(INSTALLED_APPS)
@@ -243,6 +250,8 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
+        },'django.db.backends': {
+            'level': 'WARNING',
         },
     }
 }
