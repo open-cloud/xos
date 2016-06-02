@@ -3,7 +3,7 @@ xos: up bootstrap
 
 up:
 	touch id_rsa id_rsa.pub
-	sudo docker-compose up -d db xos xos_synchronizer_fabric
+	sudo docker-compose up -d xos_db xos xos_synchronizer_fabric
 	../common/wait_for_xos_port.sh 80
 
 bootstrap: nodes.yaml images.yaml
