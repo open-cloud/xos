@@ -9,6 +9,7 @@ from core.models import Controller
 from core.models import Image, ControllerImages
 from xos.logger import observer_logger as logger
 from synchronizers.base.ansible import *
+from services.cord.models import VSGTenant
 import json
 
 class SyncVSGTenant(SyncStep):
@@ -16,6 +17,12 @@ class SyncVSGTenant(SyncStep):
     observes = VSGTenant
     requested_interval=30
     playbook='sync_vsgtenant.yaml'
+
+    def get_fabric_onos_service(self):
+
+    def get_node_tag(self, o, node, tagname):
+        tags = Tag.select_by_content_object(node).filter(name=tagname)
+        return tags[0].value
 
     def fetch_pending(self, deleted):
         if (not deleted):
@@ -34,6 +41,8 @@ class SyncVSGTenant(SyncStep):
         wan_mac = vsgtenant.wan_container_mac
 
         # Look up location - it's tagged on the nodes
+        node = vsgtenant.instance.node
+        location = self.get_node_tag(o, node, "location")
 
         # Figure out: is it a POST or DELETE?
 

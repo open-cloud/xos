@@ -26,7 +26,7 @@ topology_template:
     service#fabric:
       type: tosca.nodes.FabricService
       properties:
-          view_url: /admin/fabric/fabricservice/$id$/
+          view_url: /admin/fabric/fabricservice/\$id\$/
           replaces: service_fabric
 
 
@@ -68,5 +68,4 @@ cat >> $FN <<EOF
               relationship: tosca.relationships.UsedByService
       properties:
           dependencies:
-          autogenerate: fabric-network-cfg
 EOF
