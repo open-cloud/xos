@@ -28,27 +28,6 @@ angular.module('xos.subscribers', [
       this.smartTableConfig = {
         resource: 'Subscribers'
       };
-
-      this.model = {
-        label: {
-          name: 'aaa'
-        },
-        empty: {}
-      }
-      this.config = {
-        exclude: ['password', 'last_login'],
-        formName: 'sampleForm',
-        actions: [
-          {
-            label: 'Save',
-            icon: 'ok', // refers to bootstraps glyphicon
-            cb: (user) => { // receive the model
-              console.log(user);
-            },
-            class: 'success'
-          }
-        ]
-      };
     }
   };
 });

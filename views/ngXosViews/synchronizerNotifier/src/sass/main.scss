@@ -1,0 +1,32 @@
+@import '../../../../style/sass/lib/_variables.scss';
+
+#xosSynchronizerNotifier {
+  
+  float: left;
+
+  .alert {
+    margin-bottom: 0px !important;
+  }
+
+  .sync-status-container {
+    position: relative;
+    z-index: 200;
+  }
+
+  .notification-panel {
+    position: absolute;
+    width: 200px;
+  }
+
+  sync-status {
+    .badge {
+      &.success {
+        background-color: $brand-success;
+      }
+
+      &.warning {
+        background-color: $brand-warning;
+      }
+    }
+  }
+}

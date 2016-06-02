@@ -26,6 +26,99 @@
     * }
     * ```
     * @param {mixed} ngModel The field value
+    *
+    * @example
+    
+    # Basic Example
+    
+      <example module="sampleField1">
+        <file name="script.js">
+          angular.module('sampleField1', ['xos.uiComponents'])
+          .factory('_', function($window){
+            return $window._;
+          })
+          .controller('SampleCtrl', function(){
+            this.name = 'input-name';
+            this.field = {label: 'My String Value:', type: 'string'};
+            this.model = 'my string';
+          });
+        </file>
+        <file name="index.html">
+          <div ng-controller="SampleCtrl as vm">
+            <xos-field ng-model="vm.model" name="vm.name" field="vm.field"></xos-field>
+          </div>
+        </file>
+      </example>
+      
+      # Possible Values
+
+      <example module="sampleField2">
+        <file name="script.js">
+          angular.module('sampleField2', ['xos.uiComponents'])
+          .factory('_', function($window){
+            return $window._;
+          })
+          .controller('SampleCtrl', function(){
+            this.field1 = {
+              name: 'number-field',
+              field: {label: 'My Number Value:', type: 'number'},
+              model: 2
+            };
+
+            this.field2 = {
+              name: 'date-field',
+              field: {label: 'My Date Value:', type: 'date'},
+              model: new Date()
+            };
+
+            this.field3 = {
+              name: 'boolean-field',
+              field: {label: 'My Boolean Value:', type: 'boolean'},
+              model: true
+            };
+
+            this.field4 = {
+              name: 'email-field',
+              field: {label: 'My Email Value:', type: 'email'},
+              model: 'sample@domain.us'
+            };
+          });
+        </file>
+        <file name="index.html">
+          <div ng-controller="SampleCtrl as vm">
+            <xos-field ng-model="vm.field1.model" name="vm.field1.name" field="vm.field1.field"></xos-field>
+            <xos-field ng-model="vm.field2.model" name="vm.field2.name" field="vm.field2.field"></xos-field>
+            <xos-field ng-model="vm.field3.model" name="vm.field3.name" field="vm.field3.field"></xos-field>
+            <xos-field ng-model="vm.field4.model" name="vm.field4.name" field="vm.field4.field"></xos-field>
+          </div>
+        </file>
+      </example>
+
+      # This element is recursive
+
+      <example module="sampleField3">
+        <file name="script.js">
+          angular.module('sampleField3', ['xos.uiComponents'])
+          .factory('_', function($window){
+            return $window._;
+          })
+          .controller('SampleCtrl', function(){
+            this.name = 'input-name';
+            this.field = {label: 'My Object Value:', type: 'object'};
+            this.model = {
+              name: 'Jhon',
+              age: '25',
+              email: 'jhon@thewall.ru',
+              active: true
+            };
+          });
+        </file>
+        <file name="index.html">
+          <div ng-controller="SampleCtrl as vm">
+            <xos-field ng-model="vm.model" name="vm.name" field="vm.field"></xos-field>
+          </div>
+        </file>
+      </example>
     */
   .directive('xosField', function(RecursionHelper){
     return {
@@ -69,7 +162,7 @@
                 <div ng-repeat="(k, v) in vm.ngModel">
                   <xos-field
                     name="k"
-                    field="{label: k, type: vm.getType(v)}"
+                    field="{label: vm.formatLabel(k), type: vm.getType(v)}"
                     ng-model="v">
                   </xos-field>
                 </div>
@@ -82,7 +175,7 @@
       compile: function (element) {
         return RecursionHelper.compile(element);
       },
-      controller: function(XosFormHelpers){
+      controller: function($attrs, XosFormHelpers, LabelFormatter){
         // console.log('Field: ', this.name, this.field, this.ngModel);
         if(!this.name){
           throw new Error('[xosField] Please provide a field name');
@@ -90,11 +183,12 @@
         if(!this.field){
           throw new Error('[xosField] Please provide a field definition');
         }
-        if(!angular.isDefined(this.ngModel)){
+        if(!$attrs.ngModel){
           throw new Error('[xosField] Please provide an ng-model');
         }
 
         this.getType = XosFormHelpers._getFieldFormat;
+        this.formatLabel = LabelFormatter.format;
 
         this.isEmptyObject = o => Object.keys(o).length === 0;
       }

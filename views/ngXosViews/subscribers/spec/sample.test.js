@@ -1,7 +1,17 @@
 'use strict';
 
-describe('The User List', () => {
+describe('The Subscriber View', () => {
   
+  const subscribersList = [
+    {
+      humanReadableName: 'cordSubscriber-1',
+      features: {cdn: false, uplink_speed: 1000000000, downlink_speed: 1000000000, uverse: true, status: 'enabled'},
+      id: 1,
+      identity: {account_num: '123', name: 'Stanford'},
+      related: {}
+    }
+  ];
+
   var scope, element, isolatedScope, httpBackend;
 
   beforeEach(module('xos.subscribers'));
@@ -10,28 +20,34 @@ describe('The User List', () => {
   beforeEach(inject(function($httpBackend, $compile, $rootScope){
     
     httpBackend = $httpBackend;
-    // Setting up mock request
-    $httpBackend.expectGET('/api/core/users/?no_hyperlinks=1').respond([
-      {
-        email: 'matteo.scandolo@gmail.com',
-        firstname: 'Matteo',
-        lastname: 'Scandolo' 
-      }
-    ]);
+    
+    httpBackend.whenGET('/api/tenant/cord/subscriber/?no_hyperlinks=1').respond(subscribersList);
   
     scope = $rootScope.$new();
-    element = angular.element('<users-list></users-list>');
+    element = angular.element('<subscribers-list></subscribers-list>');
     $compile(element)(scope);
     scope.$digest();
     isolatedScope = element.isolateScope().vm;
   }));
 
-  xit('should load 1 users', () => {
+  it('should load 1 subscriber', () => {
+    // this
     httpBackend.flush();
-    expect(isolatedScope.users.length).toBe(1);
-    expect(isolatedScope.users[0].email).toEqual('matteo.scandolo@gmail.com');
-    expect(isolatedScope.users[0].firstname).toEqual('Matteo');
-    expect(isolatedScope.users[0].lastname).toEqual('Scandolo');
+    scope.$digest();
+    let table = $(element).find('table');
+    let tr = table.find('tbody:last-child tr');
+    // let tds = $(tr[1]).find('td');
+    // console.log(tr);
+    expect(tr.length).toBe(1);
+    // expect($(tds[0]).html()).toBe('cordSubscriber-1')
+  });
+
+  it('should configure xos-smart-table', () => {
+    expect(isolatedScope.smartTableConfig).toEqual({resource: 'Subscribers'});
+  });
+
+  it('should render xos-smart-table', () => {
+    expect($(element).find('xos-smart-table').length).toBe(1);
   });
 
 });

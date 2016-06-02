@@ -21,6 +21,7 @@
   "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^6.3.3",
+    "babel-polyfill": "^6.9.0",
     "browser-sync": "^2.9.11",
     "css-mqpacker": "^4.0.0",
     "csswring": "^4.2.1",
@@ -48,6 +49,7 @@
     "jasmine-core": "~2.3.4",
     "karma": "^0.13.14",
     "karma-babel-preprocessor": "~5.2.2",
+    "karma-chrome-launcher": "^1.0.1",
     "karma-coverage": "^0.5.3",
     "karma-jasmine": "~0.3.6",
     "karma-mocha-reporter": "~1.1.1",
