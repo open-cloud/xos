@@ -79,12 +79,15 @@ class ServiceControllerResource(PlCoreBase):
                     ('synchronizer', 'Synchronizer'),
                     ('rest', 'REST API'),
                     ('tosca_custom_types', 'Tosca Custom Types'),
-                    ('tosca_resource', 'Tosca Resource'))
+                    ('tosca_resource', 'Tosca Resource'),
+                    ('private_key', 'Private Key'),
+                    ('public_key', 'Public Key'))
 
     FORMAT_CHOICES = (('python', 'Python'),
                       ('manifest', 'Manifest'),
                       ('docker', 'Docker Container'),
-                      ('yaml', 'YAML'))
+                      ('yaml', 'YAML'),
+                      ('raw', 'raw'))
 
     service_controller = models.ForeignKey(ServiceController, related_name='service_controller_resources',
                                 help_text="The Service Controller this resource is associated with")
