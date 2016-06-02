@@ -58,7 +58,7 @@ done
 
 cat >> $FN <<EOF
     Fabric_ONOS_app:
-      type: tosca.nodes.ONOSFabricApp
+      type: tosca.nodes.ONOSApp
       requirements:
           - onos_tenant:
               node: service#ONOS_Fabric
