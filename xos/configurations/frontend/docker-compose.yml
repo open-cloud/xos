@@ -21,16 +21,33 @@ xos:
     volumes:
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config
       - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
-      - ../../core/xoslib:/opt/xos/core/xoslib
-      - ../../tosca:/opt/xos/tosca
-      - ../../core/static:/opt/xos/core/static
-      - ../../core/dashboard:/opt/xos/core/dashboard
-      - ../../core/templatetags:/opt/xos/core/templatetags
-      - ../../core/views:/opt/xos/core/views
-      - ../../templates:/opt/xos/templates
-      - ../../configurations:/opt/xos/configurations
-      - ../../xos:/opt/xos/xos
-      - ../../api:/opt/xos/api
-      - ../../core/views:/opt/xos/core/views
-      - ../../services:/opt/xos/services
+#      - ../../core/xoslib:/opt/xos/core/xoslib
+#      - ../../tosca:/opt/xos/tosca
+#      - ../../core/static:/opt/xos/core/static
+#      - ../../core/dashboard:/opt/xos/core/dashboard
+#      - ../../core/templatetags:/opt/xos/core/templatetags
+#      - ../../core/views:/opt/xos/core/views
+#      - ../../templates:/opt/xos/templates
+#      - ../../configurations:/opt/xos/configurations
+#      - ../../xos:/opt/xos/xos
+#      - ../../api:/opt/xos/api
+#      - ../../core/views:/opt/xos/core/views
+#      - ../../services:/opt/xos/services
 
+xos_synchronizer_onboarding:
+    image: xosproject/xos-synchronizer-onboarding
+    #command: bash -c "sleep 120; python /opt/xos/synchronizers/onboarding/onboarding-synchronizer.py -C /root/setup/files/onboarding_synchronizer_config"
+    command: sleep 86400
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: onboarding
+    links:
+        - xos_db
+    volumes:
+        - .:/root/setup:ro
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./key_import:/opt/xos/key_import
+    log_driver: "json-file"
+    log_opt:
+            max-size: "100k"
+            max-file: "5"
