@@ -1,4 +1,4 @@
-FN=$SETUPDIR/vtn-external.yaml
+FN=$SETUPDIR/fabric.yaml
 
 rm -f $FN
 
