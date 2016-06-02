@@ -25,10 +25,13 @@ nova_enabled=True
 name=onboarding
 dependency_graph=/opt/xos/synchronizers/onboarding/model-deps
 steps_dir=/opt/xos/synchronizers/onboarding/steps
+sys_dir=/opt/xos/synchronizers/onboarding/sys
 deleters_dir=/opt/xos/synchronizers/onboarding/deleters
 log_file=console
 driver=None
 backoff_disabled=True
+pretend=False
+save_ansible_output=True
 
 [feefie]
 client_id='vicci_dev_central'
