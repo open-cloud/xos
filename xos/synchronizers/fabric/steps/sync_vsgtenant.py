@@ -27,7 +27,7 @@ class SyncVSGTenant(SyncStep):
             app = fs.subscribed_tenants.all()[0]
             if app.provider_service:
                 ps = app.provider_service
-                fos = ONOSService.get_service_objects().filter(id=ps.id)
+                fos = ONOSService.get_service_objects().filter(id=ps.id)[0]
         return fos
 
     def get_node_tag(self, node, tagname):
