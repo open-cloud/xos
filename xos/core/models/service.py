@@ -548,7 +548,7 @@ class ContainerVmScheduler(Scheduler):
         if self.slice.default_image:
             return self.slice.default_image
 
-        raise XOPSProgrammingError("Please set a default image for %s" % self.slice.name)
+        raise XOSProgrammingError("Please set a default image for %s" % self.slice.name)
 
     def make_new_instance(self):
         from core.models import Instance, Flavor
@@ -683,7 +683,7 @@ class TenantWithContainer(Tenant):
         if slice.default_image:
             return slice.default_image
 
-        raise XOPSProgrammingError("Please set a default image for %s" % self.slice.name)
+        raise XOSProgrammingError("Please set a default image for %s" % self.slice.name)
 
     def save_instance(self, instance):
         # Override this function to do custom pre-save or post-save processing,
