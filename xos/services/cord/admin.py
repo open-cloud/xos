@@ -94,6 +94,59 @@ class VOLTTenantAdmin(ReadOnlyAwareAdmin):
     def get_queryset(self, request):
         return VOLTTenant.get_tenant_objects_by_user(request.user)
 
+class AccessDeviceInline(XOSTabularInline):
+    model = AccessDevice
+    fields = ['volt_device','uplink','vlan']
+    readonly_fields = []
+    extra = 0
+#    max_num = 0
+    suit_classes = 'suit-tab suit-tab-accessdevices'
+
+#    @property
+#    def selflink_reverse_path(self):
+#        return "admin:cord_volttenant_change"
+
+class VOLTDeviceAdmin(ReadOnlyAwareAdmin):
+    list_display = ('backend_status_icon', 'name', 'openflow_id', 'driver' )
+    list_display_links = ('backend_status_icon', 'name', 'openflow_id')
+    fieldsets = [ (None, {'fields': ['backend_status_text','name','volt_service','openflow_id','driver','access_agent'],
+                          'classes':['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text',)
+    inlines = [AccessDeviceInline]
+
+    suit_form_tabs = (('general','Details'), ('accessdevices','Access Devices'))
+
+class AccessDeviceAdmin(ReadOnlyAwareAdmin):
+    list_display = ('backend_status_icon', 'id', 'volt_device', 'uplink', 'vlan' )
+    list_display_links = ('backend_status_icon', 'id')
+    fieldsets = [ (None, {'fields': ['backend_status_text','volt_device','uplink','vlan'],
+                          'classes':['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text',)
+
+    suit_form_tabs = (('general','Details'),)
+
+class AgentPortMappingInline(XOSTabularInline):
+    model = AgentPortMapping
+    fields = ['access_agent', 'mac', 'port']
+    readonly_fields = []
+    extra = 0
+#    max_num = 0
+    suit_classes = 'suit-tab suit-tab-accessportmaps'
+
+#    @property
+#    def selflink_reverse_path(self):
+#        return "admin:cord_volttenant_change"
+
+class AccessAgentAdmin(ReadOnlyAwareAdmin):
+    list_display = ('backend_status_icon', 'name', 'mac' )
+    list_display_links = ('backend_status_icon', 'name')
+    fieldsets = [ (None, {'fields': ['backend_status_text','name','volt_service','mac'],
+                          'classes':['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text',)
+    inlines= [AgentPortMappingInline]
+
+    suit_form_tabs = (('general','Details'), ('accessportmaps', 'Port Mappings'))
+
 #-----------------------------------------------------------------------------
 # vCPE
 #-----------------------------------------------------------------------------
@@ -406,6 +459,10 @@ class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
 
 admin.site.register(VOLTService, VOLTServiceAdmin)
 admin.site.register(VOLTTenant, VOLTTenantAdmin)
+admin.site.register(VOLTDevice, VOLTDeviceAdmin)
+admin.site.register(AccessDevice, AccessDeviceAdmin)
+admin.site.register(AccessAgent, AccessAgentAdmin)
+
 admin.site.register(VSGService, VSGServiceAdmin)
 admin.site.register(VSGTenant, VSGTenantAdmin)
 admin.site.register(VBNGService, VBNGServiceAdmin)

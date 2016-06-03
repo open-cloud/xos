@@ -130,11 +130,9 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         else:
             logger.info("neither bbs_slice nor bbs_server is configured in the vCPE",extra=o.tologdict())
 
-        vlan_ids = []
         s_tags = []
         c_tags = []
         if o.volt:
-            vlan_ids.append(o.volt.vlan_id)  # XXX remove this
             s_tags.append(o.volt.s_tag)
             c_tags.append(o.volt.c_tag)
 
@@ -146,15 +144,14 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         safe_macs=[]
         if vcpe_service.url_filter_kind == "safebrowsing":
             if o.volt and o.volt.subscriber:
-                for user in o.volt.subscriber.users:
+                for user in o.volt.subscriber.devices:
                     level = user.get("level",None)
                     mac = user.get("mac",None)
                     if level in ["G", "PG"]:
                         if mac:
                             safe_macs.append(mac)
 
-        fields = {"vlan_ids": vlan_ids,   # XXX remove this
-                "s_tags": s_tags,
+        fields = {"s_tags": s_tags,
                 "c_tags": c_tags,
                 "dnsdemux_ip": dnsdemux_ip,
                 "cdn_prefixes": cdn_prefixes,
@@ -199,7 +196,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         if o.volt and o.volt.subscriber:
             url_filter_enable = o.volt.subscriber.url_filter_enable
             url_filter_level = o.volt.subscriber.url_filter_level
-            url_filter_users = o.volt.subscriber.users
+            url_filter_users = o.volt.subscriber.devices
 
         if service.url_filter_kind == "broadbandshield":
             # disable url_filter if there are no bbs_addrs

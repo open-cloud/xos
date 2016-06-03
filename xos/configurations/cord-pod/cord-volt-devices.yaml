@@ -1,0 +1,47 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Just enough Tosca to get the vSG slice running on the CORD POD
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    service#volt:
+      type: tosca.nodes.VOLTService
+      properties:
+          no-create: True
+          no-delete: True
+          no-update: True
+
+    voltdev-1:
+      type: tosca.nodes.VOLTDevice
+      properties:
+            driver: pmc-olt
+            openflow_id: of:1000000000000001
+            access_devices: >
+              2 222,
+              3 223,
+              4 224
+      requirements:
+          - volt_service:
+              node: service#volt
+              relationship: tosca.relationships.MemberOfService
+          - access_agent:
+              node: agent-1
+              relationship: tosca.relationships.UsesAgent
+
+    agent-1:
+      type: tosca.nodes.AccessAgent
+      properties:
+          mac: AA:BB:CC:DD:EE:FF
+          port_mappings: >
+            of:0000000000000002/2 DE:AD:BE:EF:BA:11,
+            of:0000000000000002/3 BE:EF:DE:AD:BE:EF
+      requirements:
+          - volt_service:
+              node: service#volt
+              relationship: tosca.relationships.MemberOfService
+
+
+

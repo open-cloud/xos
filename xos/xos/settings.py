@@ -244,6 +244,8 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
+        },'django.db.backends': {
+            'level': 'WARNING',
         },
     }
 }

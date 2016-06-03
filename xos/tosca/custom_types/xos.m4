@@ -309,6 +309,16 @@ node_types:
                 required: true
                 description: MAC address for this device.
 
+    tosca.nodes.VOLTService:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: The vOLT Service
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_props
+            xos_base_service_props
+
     tosca.nodes.VOLTTenant:
         derived_from: tosca.nodes.Root
         description: >
@@ -324,6 +334,58 @@ node_types:
                 type: string
                 required: false
                 description: c_tag, identifies which subscriber within s_tag
+
+    tosca.nodes.VOLTDevice:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: A vOLT Device.
+        properties:
+            xos_base_props
+            openflow_id:
+                type: string
+                required: false
+                description: openflow id
+            driver:
+                type: string
+                required: false
+                description: driver name
+            access_devices:
+                type: string
+                required: false
+                description: list of access devices, in format "uplink vlan", multiple entries separated by commas
+
+# XXX - uncomment if we want access device to be specified as separate Tosca
+# objects, rather than encoding them into VOLTDevice.access_devices
+#    tosca.nodes.AccessDevice:
+#        derived_from: tosca.nodes.Root
+#        description: >
+#            CORD: A vOLT Access Device.
+#        properties:
+#            xos_base_props
+#            uplink:
+#               type: integer
+#               required: false
+#               description: uplink
+#            vlan:
+#               type: integer
+#               required: false
+#               description: vlan
+
+    tosca.nodes.AccessAgent:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: A vOLT Access Agent.
+        properties:
+            xos_base_props
+            mac:
+                type: string
+                required: false
+                description: mac address
+            port_mappings:
+                type: string
+                required: false
+                description: list of port mappings, in format "port mac", multiple entries separated by commas
+
 
     tosca.nodes.User:
         derived_from: tosca.nodes.Root
@@ -964,6 +1026,12 @@ node_types:
         derived_from: tosca.relationships.Root
 
     tosca.relationships.TagsObject:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.MemberOfDevice:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.UsesAgent:
         derived_from: tosca.relationships.Root
 
     tosca.capabilities.xos.Service:
