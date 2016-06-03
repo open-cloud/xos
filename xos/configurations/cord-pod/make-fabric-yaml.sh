@@ -67,5 +67,5 @@ cat >> $FN <<EOF
               node: service#fabric
               relationship: tosca.relationships.UsedByService
       properties:
-          dependencies:
+          dependencies: org.onosproject.lldpprovider, org.onosproject.hostprovider, org.onosproject.openflow-base, org.onosproject.openflow, org.onosproject.drivers, org.onosproject.segmentrouting
 EOF

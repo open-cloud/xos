@@ -35,6 +35,10 @@ class SyncVSGTenant(SyncStep):
         return tags[0].value
 
     def fetch_pending(self, deleted):
+        fs = FabricService.get_service_objects().all()[0]
+        if not fs.autoconfig:
+            return None
+
         if (not deleted):
             objs = VSGTenant.get_tenant_objects().filter(Q(lazy_blocked=False))
         else:

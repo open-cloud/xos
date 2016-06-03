@@ -27,4 +27,6 @@ class FabricService(Service):
         verbose_name = "Fabric Service"
         proxy = True
 
+    simple_attributes = ( ("autoconfig": True) )
 
+FabricService.setup_simple_attributes()

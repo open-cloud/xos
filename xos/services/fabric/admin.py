@@ -35,7 +35,7 @@ class FabricServiceAdmin(ReadOnlyAwareAdmin):
     verbose_name_plural = "Fabric Services"
     list_display = ("backend_status_icon", "name", "enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", ],
+    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", "autoconfig", ],
                          'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
@@ -60,4 +60,3 @@ class FabricServiceAdmin(ReadOnlyAwareAdmin):
         return FabricService.get_service_objects_by_user(request.user)
 
 admin.site.register(FabricService, FabricServiceAdmin)
-
