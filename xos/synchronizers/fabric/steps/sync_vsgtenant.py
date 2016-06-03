@@ -62,7 +62,7 @@ class SyncVSGTenant(SyncStep):
                         'rest_hostname': rest_hostname,
                         'rest_port': rest_port,
                         'rest_json': rest_json,
-                        'ansible_tag': '%s@%s'%(vsgtenant.name), # name of ansible playbook
+                        'ansible_tag': '%s'%(str(vsgtenant)), # name of ansible playbook
                         }
 
 	return image_fields
