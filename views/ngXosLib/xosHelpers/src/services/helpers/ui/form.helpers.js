@@ -100,9 +100,12 @@
           label: (customField[f] && customField[f].label) ? `${customField[f].label}:` : LabelFormatter.format(f),
           type: (customField[f] && customField[f].type) ? customField[f].type : this._getFieldFormat(model[f]),
           validators: (customField[f] && customField[f].validators) ? customField[f].validators : {},
-          hint: (customField[f] && customField[f].hint)? customField[f].hint : ''
+          hint: (customField[f] && customField[f].hint)? customField[f].hint : '',
         };
 
+        if(customField[f] && customField[f].options){
+          form[f].options = customField[f].options;
+        }
         if(form[f].type === 'date'){
           model[f] = new Date(model[f]);
         }
