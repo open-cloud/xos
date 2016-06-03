@@ -46,7 +46,7 @@ class SyncVSGTenant(SyncStep):
         wan_ip = vsgtenant.wan_container_ip
         wan_mac = vsgtenant.wan_container_mac
 
-        fos = get_fabric_onos_service()
+        fos = self.get_fabric_onos_service()
 
         # Look up location - it's tagged on the nodes
         node = vsgtenant.instance.node
