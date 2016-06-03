@@ -17,7 +17,8 @@ acord: cord exampleservice
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/acord/ceilometer.yaml
 
 exampleservice:
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/acord/acord-exampleservice.yaml
+	#Ensure exampleservice is enabled in xos/tools/xos-manage and xos/settings.py file before uncommenting below lines
+	#sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/acord/acord-exampleservice.yaml
 
 containers:
 	cd ../../../containers/xos; make devel

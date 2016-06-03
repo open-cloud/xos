@@ -31,18 +31,19 @@ xos_synchronizer_monitoring_channel:
     volumes:
         - ../setup/id_rsa:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key:ro  # private key
 
-xos_synchronizer_exampleservice:
-    image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120; python /opt/xos/synchronizers/exampleservice/exampleservice-synchronizer.py -C /opt/xos/synchronizers/exampleservice/exampleservice_config"
-    labels:
-        org.xosproject.kind: synchronizer
-        org.xosproject.target: exampleservice
-    links:
-        - xos_db
-    volumes:
-        - ../setup:/root/setup:ro
-        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
-        - ../setup/id_rsa:/opt/xos/synchronizers/exampleservice/exampleservice_private_key:ro
+#Ensure exampleservice is enabled in xos/tools/xos-manage and xos/settings.py file before uncommenting below lines
+#xos_synchronizer_exampleservice:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "sleep 120; python /opt/xos/synchronizers/exampleservice/exampleservice-synchronizer.py -C /opt/xos/synchronizers/exampleservice/exampleservice_config"
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: exampleservice
+#    links:
+#        - xos_db
+#    volumes:
+#        - ../setup:/root/setup:ro
+#        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+#        - ../setup/id_rsa:/opt/xos/synchronizers/exampleservice/exampleservice_private_key:ro
 
 # FUTURE
 #xos_swarm_synchronizer:
@@ -63,4 +64,4 @@ xos:
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
       - ./xos_cord_config:/opt/xos/xos_configuration/xos_cord_config:ro
       - ../setup/id_rsa.pub:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key:ro
-      - ../setup/id_rsa.pub:/opt/xos/synchronizers/exampleservice/exampleservice_public_key:ro
+#      - ../setup/id_rsa.pub:/opt/xos/synchronizers/exampleservice/exampleservice_public_key:ro
