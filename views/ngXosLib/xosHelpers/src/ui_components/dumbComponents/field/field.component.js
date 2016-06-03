@@ -130,8 +130,10 @@
       },
       template: `
         <label ng-if="vm.field.type !== 'object'">{{vm.field.label}}</label>
+        <!--<pre>{{vm.field.options | json}}</pre>-->
+        <!--<pre>{{vm.ngModel | json}}</pre>-->
             <input
-              ng-if="vm.field.type !== 'boolean' && vm.field.type !== 'object'"
+              ng-if="vm.field.type !== 'boolean' && vm.field.type !== 'object' && vm.field.type !== 'select'"
               type="{{vm.field.type}}"
               name="{{vm.name}}"
               class="form-control"
@@ -139,6 +141,12 @@
               ng-minlength="vm.field.validators.minlength || 0"
               ng-maxlength="vm.field.validators.maxlength || 2000"
               ng-required="vm.field.validators.required || false" />
+              <select class="form-control" ng-if ="vm.field.type === 'select'"
+                name = "{{vm.name}}"
+                ng-options="item.id as item.label for item in vm.field.options track by item.id"
+                ng-model="vm.ngModel"
+                ng-required="vm.field.validators.required || false">
+                </select>
             <span class="boolean-field" ng-if="vm.field.type === 'boolean'">
               <button
                 class="btn btn-success"
