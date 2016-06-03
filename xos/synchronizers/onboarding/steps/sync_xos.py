@@ -29,6 +29,8 @@ class SyncXOS(SyncStep, XOSBuilder):
     def sync_record(self, xos):
         logger.info("Sync'ing XOS %s" % xos)
 
+        self.create_docker_compose()
+
         dockerfiles = [self.create_ui_dockerfile()]
         tenant_fields = {"dockerfiles": dockerfiles,
                          "build_dir": self.build_dir,
