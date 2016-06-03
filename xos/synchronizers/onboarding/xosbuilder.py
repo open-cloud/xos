@@ -1,5 +1,6 @@
 import os
 import base64
+import jinja2
 import string
 import sys
 import urllib2
@@ -7,7 +8,7 @@ import urlparse
 import xmlrpclib
 
 from xos.config import Config
-from core.models import Service, ServiceController, ServiceControllerResource
+from core.models import Service, ServiceController, ServiceControllerResource, XOS
 from xos.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
@@ -162,6 +163,42 @@ class XOSBuilder(object):
 
         return {"dockerfile_fn": dockerfile_fn,
                 "docker_image_name": "xosproject/xos-synchronizer-%s" % controller.name}
+
+    def create_docker_compose(self):
+         xos = XOS.objects.all()[0]
+
+         volume_list = [] # FINISH ME
+
+         containers = {}
+
+         containers["xos_db"] = \
+                            {"image": "xosproject/xos-postgres",
+                             "expose": [5432]}
+
+         containers["xos_ui"] = \
+                            {"image": "xosproject/xos-ui",
+                             "command": "python /opt/xos/manage.py runserver 0.0.0.0:%d --insecure --makemigrations" % xos.ui_port,
+                             "ports": {"%d"%xos.ui_port : "%d"%xos.ui_port},
+                             "links": ["xos_db"],
+                             "volumes": volume_list}
+
+         for c in ServiceController.objects.all():
+             containers["xos_synchronizer_%s" % c.name] = \
+                            {"image": "xosproject/xos-synchronizer-%s" % controller.name,
+                             "command": 'bash -c "sleep 120; bash /opt/xos/synchronizers/%s/run.sh"',
+                             "links": ["xos_db"],
+                             "volumes": volume_list}
+
+         vars = { "containers": containers }
+
+         template_loader = jinja2.FileSystemLoader( "/opt/xos/synchronizers/onboarding/templates/" )
+         template_env = jinja2.Environment(loader=template_loader)
+         template = template_env.get_template("docker-compose.yml.j2")
+         buffer = template.render(vars)
+
+         if not os.path.exists("/opt/xos/synchronizers/onboarding/docker-compose"):
+             os.makedirs("/opt/xos/synchronizers/onboarding/docker-compose")
+         file("/opt/xos/synchronizers/onboarding/docker-compose/docker-compose.yml", "w").write(buffer)
 
 #    def build_xos(self):
 #        dockerfiles=[]

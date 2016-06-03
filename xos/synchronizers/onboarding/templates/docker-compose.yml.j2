@@ -1,0 +1,37 @@
+{% for container_name, container in containers.iteritems() %}
+
+{{ container_name}}:
+  image: {{ container.image }}
+{%- if container.command %}
+  command: {{ container.command }}
+{%- endif %}
+{%- if container.ports %}
+  ports:
+{%- for src,dest in container.ports.iteritems() %}
+    - "{{ src }}:{{ dest }}"
+{%- endfor %}
+{%- endif %}
+{%- if container.links %}
+  lines:
+{%- for link in container.links %}
+    - {{ link }}
+{%- endfor %}
+{%- endif %}
+{%- if container.volumes %}
+{%- for volume in container.volumes %}
+  volumes:
+{%- if volume.read_only %}
+    - {{ volume.host_path }}:{ volume.container_path }}:ro
+{%- else %}
+    - {{ volume.host_path }}:{ volume.container_path }}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- if container.expose %}
+  expose:
+{%- for expose in container.expose %}
+    - "{{ expose }}"
+{%- endfor %}
+{%- endif %}
+
+{%- endfor %}
