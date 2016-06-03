@@ -164,7 +164,7 @@
         <ng-form name="vm.{{vm.config.formName || 'form'}}">
           <div class="form-group" ng-repeat="(name, field) in vm.formField">
             <xos-field name="name" field="field" ng-model="vm.ngModel[name]"></xos-field>
-            <xos-validation errors="vm[vm.config.formName || 'form'][name].$error"></xos-validation>
+            <xos-validation field="vm[vm.config.formName || 'form'][name]" form="vm[vm.config.formName || 'form']"></xos-validation>
           </div>
           <div class="form-group" ng-if="vm.config.actions">
             <button role="button" href=""
