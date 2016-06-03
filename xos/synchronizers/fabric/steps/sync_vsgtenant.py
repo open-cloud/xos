@@ -67,8 +67,9 @@ class SyncVSGTenant(SyncStep):
 
         rest_json = json.dumps(data, indent=4)
 
-        logger.error("object is %s" % fos)
+        logger.error("object is %s" % fos.name)
         logger.error("rest_hostname is %s" % fos.rest_hostname)
+        logger.error("rest_port is %s" % fos.rest_port)
 
         fields = {
             'rest_hostname': fos.rest_hostname,
