@@ -186,11 +186,13 @@
             type: 'number',
             hint: 'Test Hint'
           },
-          select:{
+          select: {
             label: 'Select Label',
             type: 'select',
             hint: 'Select Hint',
-            options:{}
+            options: [
+              {id: 1, label: 'something'}
+            ]
           }
         };
 
@@ -231,12 +233,14 @@
             validators: {},
             hint: 'Test Hint'
           },
-           select:{
+          select: {
             label: 'Select Label:',
             type: 'select',
             hint: 'Select Hint',
             validators: {},
-            options:{}
+            options: [
+              {id: 1, label: 'something'}
+            ]
           }
         };
 
