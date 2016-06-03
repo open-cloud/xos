@@ -77,6 +77,13 @@ topology_template:
           no-create: true
           no-update: true
 
+    service#ONOS_Fabric:
+      type: tosca.nodes.ONOSService
+      properties:
+          no-delete: true
+          no-create: true
+          no-update: true
+
     vOLT_ONOS_app:
       type: tosca.nodes.ONOSvOLTApp
       requirements:
