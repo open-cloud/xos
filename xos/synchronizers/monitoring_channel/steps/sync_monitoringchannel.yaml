@@ -66,13 +66,21 @@
 #      dest=/etc/resolv.conf
 {% endif %}
 
+# FIXME: Temporary workaround to delete the monitoring-channel_ceilometer_proxy_config file always 
+# to trigger ansible notify handlers in the following task. 
+# Due to some issue, ansible "changed" flag is set to false even though there is a change of 
+# ceilometer configuration file, because of which the configuration change is not reflecting in 
+# ceilometer containers 
+#  - file: path=/usr/local/share/monitoring-channel-{{ unique_id }}_ceilometer_proxy_config state=absent
+
   - name: ceilometer proxy config
     template: src=/opt/xos/synchronizers/monitoring_channel/templates/ceilometer_proxy_config.j2 dest=/usr/local/share/monitoring-channel-{{ unique_id }}_ceilometer_proxy_config mode=0777
     notify:
-#    - restart monitoring-channel
-     - stop monitoring-channel
-     - remove container
-     - start monitoring-channel
+     - copy ceilo-config-file
+     - restart monitoring-channel container
+#     - stop monitoring-channel
+#     - remove container
+#     - start monitoring-channel
 
   - name: Monitoring channel upstart
     template: src=/opt/xos/synchronizers/monitoring_channel/templates/monitoring-channel.conf.j2 dest=/etc/init/monitoring-channel-{{ unique_id }}.conf
@@ -118,6 +126,12 @@
 {% endif %}
 
   handlers:
+  - name: copy ceilo-config-file
+    shell: docker cp /usr/local/share/monitoring-channel-{{ unique_id }}_ceilometer_proxy_config monitoring-channel-{{ unique_id }}:/usr/local/share/ceilometer_proxy_config
+
+  - name: restart monitoring-channel container
+    shell: docker restart monitoring-channel-{{ unique_id }}
+
   - name: restart monitoring-channel
     shell: service monitoring-channel-{{ unique_id }} stop; sleep 1; service monitoring-channel-{{ unique_id }} start
 
