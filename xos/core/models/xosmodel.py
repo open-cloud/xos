@@ -5,8 +5,12 @@ from core.models.plcorebase import StrippedCharField
 
 # XOS: Serves as the root of the build system
 
+
+
 class XOS(PlCoreBase):
     name = StrippedCharField(max_length=200, unique=True, help_text="Name of XOS", default="XOS")
+    ui_port = models.IntegerField(help_text="Port for XOS UI", default=80)
+    db_container_name = StrippedCharField(max_length=200, help_text="name of XOS db container", default="xos_db")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -25,5 +29,13 @@ class XOS(PlCoreBase):
                scr.save()
             service_controller.save()
         self.save()
+
+class XOSVolume(PlCoreBase):
+    xos = models.ForeignKey(XOS, related_name='volumes', help_text="The XOS object for this Volume")
+    container_path=StrippedCharField(max_length=1024, unique=True, help_text="Path of Volume in Container")
+    host_path=StrippedCharField(max_length=1024, help_text="Path of Volume in Host")
+    read_only=models.BooleanField(default=False, help_text="True if mount read-only")
+
+    def __unicode__(self): return u'%s' % (self.container_path)
 
 

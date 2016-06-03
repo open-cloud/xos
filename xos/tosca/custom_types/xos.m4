@@ -10,6 +10,20 @@ node_types:
         derived_from: tosca.nodes.Root
         description: The root of XOS
 
+    tosca.nodes.XOSVolume:
+        derived_from: tosca.nodes.Root
+        description: A volume that should be attached to the XOS docker container
+        properties:
+            xos_base_props
+            host_path:
+                type: string
+                required: false
+                description: path of resource on host
+            read_only:
+                type: boolean
+                required: false
+                description: True if mount read only
+
     tosca.nodes.Service:
         derived_from: tosca.nodes.Root
         description: >
@@ -1028,6 +1042,9 @@ node_types:
         derived_from: tosca.relationships.Root
 
     tosca.relationships.UsedByController:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.UsedByXOS:
         derived_from: tosca.relationships.Root
 
     tosca.capabilities.xos.Service:

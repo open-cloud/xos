@@ -1,0 +1,31 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Onboard the exampleservice
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    xos:
+      type: tosca.nodes.XOS
+
+    /opt/xos/xos_configuration/xos_common_config:
+      type: tosca.nodes.XOSVolume
+      properties:
+          host_path: { path_join: [ SELF, CONFIG_DIR, ../common/xos_common_config, ENV_VAR ] }
+          read_only: false
+      requirements:
+          - xos:
+             node: xos
+             relationship: tosca.relationships.UsedByXOS
+
+    /opt/xos/xos_configuration/xos_vtn_config:
+      type: tosca.nodes.XOSVolume
+      properties:
+          host_path: { path_join: [ SELF, CONFIG_DIR, ../vtn/files/xos_vtn_config, ENV_VAR ] }
+          read_only: true
+      requirements:
+          - xos:
+              node: xos
+              relationship: tosca.relationships.UsedByXOS
