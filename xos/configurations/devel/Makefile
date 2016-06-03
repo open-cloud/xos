@@ -12,9 +12,18 @@ xos:
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/cloudlab-openstack.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 
-containers:
-	cd ../../../containers/xos; make devel
-	cd ../../../containers/synchronizer; make
+base:
+	make -C ../../../containers/xos base
+
+local_containers:
+	echo "" > ../../../containers/xos/local_certs.crt
+	for CRT in /usr/local/share/ca-certificates/* ; do \
+		echo Adding Certificate: $$CRT ;\
+		cat $$CRT >> ../../../containers/xos/local_certs.crt ;\
+		echo "" >> ../../../containers/xos/local_certs.crt ;\
+	done
+	make -C ../../../containers/xos devel
+	make -C ../../../containers/synchronizer
 
 common_cloudlab:
 	make -C ../common -f Makefile.cloudlab
@@ -43,8 +52,3 @@ enter-synchronizer:
 upgrade_pkgs:
 	sudo pip install httpie --upgrade
 
-rebuild_xos:
-	make -C ../../../containers/xos devel
-
-rebuild_synchronizer:
-	make -C ../../../containers/synchronizer
