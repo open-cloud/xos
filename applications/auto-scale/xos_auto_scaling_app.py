@@ -17,6 +17,12 @@ xos_instances_info_map = {}
 
 use_kafka = True
 
+XOS_ENDPOINT = '130.127.133.58:9999'
+KAFKA_SERVER_IP = '130.127.133.58'
+KAFKA_SERVER_PORT = '9092'
+KAFKA_TOPIC = 'auto-scale'
+LOCAL_KAFKA_TARGET_URL = 'kafka://'+KAFKA_SERVER_IP+':'+KAFKA_SERVER_PORT+'?topic='+KAFKA_TOPIC
+
 if use_kafka:
    import kafka
    from kafka import TopicPartition
@@ -31,7 +37,7 @@ def autoscaledata():
     return response
 
 def acquire_xos_monitoring_channel():
-    url = "http://ctl:9999/xoslib/monitoringchannel/"
+    url = "http://"+XOS_ENDPOINT+"/api/tenant/ceilometer/monitoringchannel/"
     admin_auth=("padmin@vicci.org", "letmein")   # use your XOS username and password
     monitoring_channels = requests.get(url, auth=admin_auth).json()
     ceilometer_url = None
@@ -85,7 +91,7 @@ SCALE_DOWN_ALARM = 'scale_down'
 
 def loadAllXosTenantInfo():
     print "SRIKANTH: Loading all XOS tenant info"
-    url = "http://ctl:9999/xos/controllerslices/"
+    url = "http://"+XOS_ENDPOINT+"/xos/controllerslices/"
     admin_auth=("padmin@vicci.org", "letmein")   # use your XOS username and password
     controller_slices = requests.get(url, auth=admin_auth).json()
     for cslice in controller_slices:
@@ -101,7 +107,7 @@ def loadAllXosTenantInfo():
 
 def loadAllXosInstanceInfo():
     print "SRIKANTH: Loading all XOS instance info"
-    url = "http://ctl:9999/xos/instances/"
+    url = "http://"+XOS_ENDPOINT+"/xos/instances/"
     admin_auth=("padmin@vicci.org", "letmein")   # use your XOS username and password
     xos_instances = requests.get(url, auth=admin_auth).json()
     for instance in xos_instances:
@@ -148,7 +154,7 @@ def handle_adjust_scale(project, adjust):
         return
     print "SRIKANTH: SCALE %s for Project %s, Slice=%s, Service=%s from current=%d to new=%d" % (adjust, project, xos_slice, xos_service, current_instances, current_instances+1 if (adjust=='up') else current_instances-1)
     query_params = {'service':xos_service, 'slice_hint':xos_slice, 'scale':current_instances+1 if (adjust=='up') else current_instances-1}
-    url = "http://ctl:9999/xoslib/serviceadjustscale/"
+    url = "http://"+XOS_ENDPOINT+"/xoslib/serviceadjustscale/"
     admin_auth=("padmin@vicci.org", "letmein")   # use your XOS username and password
     response = requests.get(url, params=query_params, auth=admin_auth).json()
     print "SRIKANTH: XOS adjust_scale response: %s" % response
@@ -233,7 +239,7 @@ def read_notification_from_ceilometer(host,port):
 
 def process_notification_from_ceilometer(sample):
          if sample['counter_name'] == 'instance':
-             if 'delete' in sample['resource_metadata']['event_type']:
+             if ('event_type' in sample['resource_metadata'].keys()) and ('delete' in sample['resource_metadata']['event_type']):
 	          xosTenantInfo = getXosTenantInfo(sample['project_id'])
                   xosResourceInfo = getXosInstanceInfo(sample['resource_id'])
                   print "SRIKANTH: Project %s Instance %s is getting deleted" % (xosTenantInfo['slice'] if xosTenantInfo['slice'] else sample['project_id'],xosResourceInfo) 
@@ -305,8 +311,8 @@ def main():
    loadAllXosInstanceInfo()
    ceilometer_url = monitoring_channel['ceilometer_url']
    if use_kafka:
-       thread.start_new(read_notification_from_ceilometer_over_kafka, ("10.11.10.1","9092","auto-scale",))
-       subscribe_data = {"sub_info":"cpu_util","app_id":"xos_auto_scale","target":"kafka://10.11.10.1:9092?topic=auto-scale"}
+       thread.start_new(read_notification_from_ceilometer_over_kafka, (KAFKA_SERVER_IP,KAFKA_SERVER_PORT,KAFKA_TOPIC,))
+       subscribe_data = {"sub_info":"cpu_util","app_id":"xos_auto_scale","target":LOCAL_KAFKA_TARGET_URL}
    else:
        thread.start_new(read_notification_from_ceilometer,(UDP_IP,UDP_PORT,))
        subscribe_data = {"sub_info":"cpu_util","app_id":"xos_auto_scale","target":"udp://10.11.10.1:12346"}
@@ -317,7 +323,10 @@ def main():
    if (not 'sucess' in response.text) and (not 'already exists' in response.text):
        print 'SRIKANTH: Ceilometer meter "cpu_util" Subscription unsuccessful...Exiting'
        return
-   subscribe_data = {"sub_info":"instance","app_id":"xos_auto_scale2","target":"udp://10.11.10.1:12346"}
+   if use_kafka:
+        subscribe_data = {"sub_info":"instance","app_id":"xos_auto_scale2","target":LOCAL_KAFKA_TARGET_URL}
+   else:
+        subscribe_data = {"sub_info":"instance","app_id":"xos_auto_scale2","target":"udp://10.11.10.1:12346"}
    subscribe_url = ceilometer_url + 'v2/subscribe'
    response = requests.post(subscribe_url, data=json.dumps(subscribe_data))
    print 'SRIKANTH: Ceilometer meter "instance" Subscription status:%s' % response.text

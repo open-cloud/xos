@@ -1,0 +1,56 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup the ExampleService on the ACORD setup
+
+imports:
+   - custom_types/xos.yaml
+   - custom_types/exampleservice.yaml
+
+topology_template:
+  node_templates:
+
+    mysite:
+      type: tosca.nodes.Site
+
+    trusty-server-multi-nic:
+      type: tosca.nodes.Image
+
+    m1.small:
+      type: tosca.nodes.Flavor
+
+    mysite_exampleservice:
+      description: This slice holds the ExampleService
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - exmapleservice:
+              node: service_example
+              relationship: tosca.relationships.MemberOfService
+          - default_image:
+                node: trusty-server-multi-nic
+                relationship: tosca.relationships.DefaultImage
+          - m1.small:
+                node: m1.small
+                relationship: tosca.relationships.DefaultFlavor
+
+    service_example:
+      type: tosca.nodes.ExampleService
+      properties:
+          view_url: /admin/exampleservice/exampleservice/$id$/
+          kind: exampleservice
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/synchronizers/exampleservice/exampleservice_private_key
+          service_message: hello
+      artifacts:
+          pubkey: /opt/xos/synchronizers/exampleservice/exampleservice_public_key
+
+    exampletenant1:
+        type: tosca.nodes.ExampleTenant
+        properties:
+            tenant_message: world
+        requirements:
+          - tenant:
+              node: service_example
+              relationship: tosca.relationships.TenantOfService
