@@ -29,7 +29,7 @@ class SyncVSGTenant(SyncStep):
                 fos = ONOSService(id=ps.id)
         return fos
 
-    def get_node_tag(self, o, node, tagname):
+    def get_node_tag(self, node, tagname):
         tags = Tag.select_by_content_object(node).filter(name=tagname)
         return tags[0].value
 
@@ -51,7 +51,7 @@ class SyncVSGTenant(SyncStep):
 
         # Look up location - it's tagged on the nodes
         node = vsgtenant.instance.node
-        location = self.get_node_tag(o, node, "location")
+        location = self.get_node_tag(node, "location")
 
         # Figure out: is it a POST or DELETE?
 
