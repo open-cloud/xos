@@ -10,6 +10,7 @@ from core.models import Image, ControllerImages
 from xos.logger import observer_logger as logger
 from synchronizers.base.ansible import *
 from services.cord.models import VSGTenant
+from services.onos.models import ONOSService
 from services.fabric.models import FabricService
 import json
 
