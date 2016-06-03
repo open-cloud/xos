@@ -43,29 +43,37 @@ class SyncVSGTenant(SyncStep):
 
     def map_sync_inputs(self, vsgtenant):
 
-        rest_hostname = "onos-fabric"
-        rest_port = 8181
-
         wan_ip = vsgtenant.wan_container_ip
         wan_mac = vsgtenant.wan_container_mac
+
+        fos = get_fabric_onos_service()
 
         # Look up location - it's tagged on the nodes
         node = vsgtenant.instance.node
         location = self.get_node_tag(node, "location")
 
-        # Figure out: is it a POST or DELETE?
+        # Is it a POST or DELETE?
 
         # Create JSON
-        rest_json = ""
+        data = {
+            "%s/-1"%wan_mac : {
+                "basic" : {
+                    "ips" : [ wan_ip ],
+                    "location" : location
+                }
+            }
+        }
 
-        image_fields = {
-                        'rest_hostname': rest_hostname,
-                        'rest_port': rest_port,
-                        'rest_json': rest_json,
-                        'ansible_tag': '%s'%(str(vsgtenant)), # name of ansible playbook
-                        }
+        rest_json = json.dumps(data, indent=4)
 
-	return image_fields
+        fields = {
+            'rest_hostname': fos.rest_hostname,
+            'rest_port': fos.rest_port,
+            'rest_json': rest_json,
+            'rest_endpoint': "onos/v1/network/configuration/hosts",
+            'ansible_tag': '%s'%(str(vsgtenant)), # name of ansible playbook
+        }
+        return fields
 
     def map_sync_outputs(self, controller_image, res):
         pass

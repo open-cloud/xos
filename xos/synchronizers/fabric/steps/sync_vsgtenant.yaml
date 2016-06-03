@@ -4,12 +4,13 @@
   vars:
     rest_hostname: {{ rest_hostname }}
     rest_port: {{ rest_port }}
+    rest_endpoint: {{ rest_endpoint }}
     rest_json: {{ rest_json }}
 
   tasks:
   - name: Call Fabric REST API
     uri:
-      url: http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
+      url: http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/{{ '{{' }} rest_endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
       body: "{{ '{{' }} rest_json {{ '}}' }}"
       body_format: raw
       method: POST
