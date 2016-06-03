@@ -79,7 +79,6 @@ RUN pip install \
     python-gflags \
     python-keyczar \
     python-logstash \
-    pygraphviz \
     pytz \
     pyyaml \
     requests
@@ -101,7 +100,7 @@ COPY ansible-hosts /etc/ansible/hosts
 ENV JQUERY_DL_URL http://code.jquery.com/jquery-1.12.4.min.js
 ENV JQUERY_SHA256 668b046d12db350ccba6728890476b3efee53b2f42dbb84743e5e9f1ae0cc404
 
-RUN wget $JQUERY_DL_URL -o jquery.min.js && \
+RUN curl -fLsS $JQUERY_DL_URL -o jquery.min.js && \
   echo "$JQUERY_SHA256  jquery.min.js" | sha256sum -c - && \
   mv jquery.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/jquery.min.js
 
