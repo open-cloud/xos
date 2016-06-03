@@ -12,6 +12,5 @@ class FabricService(Service):
     class Meta:
         app_label = "fabric"
         verbose_name = "Fabric Service"
-        proxy = True
 
     autoconfig = models.BooleanField(default=True, help_text="Autoconfigure the fabric")
