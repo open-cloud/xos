@@ -82,7 +82,7 @@
       },
       template: `
         <div ng-cloak>
-           <!--<pre>{{vm.field | json}}</pre>-->
+           <pre>{{vm.field | json}}</pre>
            <!--<pre>{{vm.form.$submitted | json}}</pre>-->
            <!--<pre>{{vm.field.$error.required !== false}}</pre>-->
           <xos-alert config="vm.config" show="vm.field.$error.required !== undefined && vm.field.$error.required !== false  && (vm.field.$touched || vm.form.$submitted)">
