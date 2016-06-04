@@ -113,6 +113,7 @@ class VBBUComponentForm(forms.ModelForm):
 
     class Meta:
         model = VBBUComponent
+        fields = '__all__'
 
 # Define the admin form for the tenant. This uses a similar structure as the
 # service but uses HelloWorldTenantCompleteForm to change the python behavior.
