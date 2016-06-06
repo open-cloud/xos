@@ -103,13 +103,16 @@
             label: 'Label',
             type: 'select',
             validators: {},
-            options:[{
-                  id:0,
-                      label:"---Site---"
-                },{
-                  id:1,
-                      label:"---Site1---"
-                }]
+            options: [
+              {
+                id: 0,
+                label: '---Site---'
+              },
+              {
+                id: 1,
+                label: '---Site1---'
+              }
+            ]
           };
           scope.ngModel = 'label';
           compileElement();

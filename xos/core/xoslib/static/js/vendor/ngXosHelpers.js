@@ -31,234 +31,208 @@
 
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
- * Created by teone on 3/24/16.
- */
-
 (function () {
   'use strict';
+
+  /**
+  * @ngdoc service
+  * @name xos.uiComponents.LabelFormatter
+  * @description This factory define a set of helper function to format label started from an object property
+  **/
+
+  angular.module('xos.uiComponents').factory('LabelFormatter', labelFormatter);
+
+  function labelFormatter() {
+
+    var _formatByUnderscore = function _formatByUnderscore(string) {
+      return string.split('_').join(' ').trim();
+    };
+
+    var _formatByUppercase = function _formatByUppercase(string) {
+      return string.split(/(?=[A-Z])/).map(function (w) {
+        return w.toLowerCase();
+      }).join(' ');
+    };
+
+    var _capitalize = function _capitalize(string) {
+      return string.slice(0, 1).toUpperCase() + string.slice(1);
+    };
+
+    var format = function format(string) {
+      string = _formatByUnderscore(string);
+      string = _formatByUppercase(string);
+
+      string = _capitalize(string).replace(/\s\s+/g, ' ') + ':';
+      return string.replace('::', ':');
+    };
+
+    return {
+      // test export
+      _formatByUnderscore: _formatByUnderscore,
+      _formatByUppercase: _formatByUppercase,
+      _capitalize: _capitalize,
+      // export to use
+      format: format
+    };
+  }
+})();
+//# sourceMappingURL=../../../maps/services/helpers/ui/label_formatter.service.js.map
+
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+(function () {
 
   angular.module('xos.uiComponents')
 
   /**
-  * @ngdoc directive
-  * @name xos.uiComponents.directive:xosSmartTable
-  * @link xos.uiComponents.directive:xosTable xosTable
-  * @link xos.uiComponents.directive:xosForm xosForm
-  * @restrict E
-  * @description The xos-table directive
-  * @param {Object} config The configuration for the component,
-  * it is composed by the name of an angular [$resource](https://docs.angularjs.org/api/ngResource/service/$resource)
-  * and an array of fields that shouldn't be printed.
-  * ```
-  * {
-      resource: 'Users',
-      hiddenFields: []
-    }
-  * ```
-  * @scope
-  * @example
-    <example module="sampleSmartTable">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl as vm">
-        <xos-smart-table config="vm.config"></xos-smart-table>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('sampleSmartTable', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
-      // This is only for documentation purpose
-      .run(function($httpBackend, _){
-        let datas = [{id: 1, name: 'Jhon', surname: 'Doe'}];
-        let count = 1;
-          let paramsUrl = new RegExp(/\/test\/(.+)/);
-          $httpBackend.whenDELETE(paramsUrl, undefined, ['id']).respond((method, url, data, headers, params) => {
-          data = angular.fromJson(data);
-          let id = url.match(paramsUrl)[1];
-          _.remove(datas, (d) => {
-            return d.id === parseInt(id);
-          })
-          return [204];
-        });
-          $httpBackend.whenGET('/test').respond(200, datas)
-        $httpBackend.whenPOST('/test').respond((method, url, data) => {
-          data = angular.fromJson(data);
-          data.id = ++count;
-          datas.push(data);
-          return [201, data, {}];
-        });
-      })
-      .factory('_', function($window){
-        return $window._;
-      })
-      .service('SampleResource', function($resource){
-        return $resource('/test/:id', {id: '@id'});
-      })
-      // End of documentation purpose, example start
-      .controller('SampleCtrl', function(){
-        this.config = {
-          resource: 'SampleResource'
-        };
-      });
-    </file>
-  </example>
-  */
+  * @ngdoc service
+  * @name xos.uiComponents.XosFormHelpers
+  * @requires xos.uiComponents.LabelFormatter
+  * @requires xos.helpers._
+  **/
 
-  .directive('xosSmartTable', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        config: '='
-      },
-      template: '\n        <div class="row" ng-show="vm.data.length > 0">\n          <div class="col-xs-12 text-right">\n            <a href="" class="btn btn-success" ng-click="vm.createItem()">\n              Add\n            </a>\n          </div>\n        </div>\n        <div class="row">\n          <div class="col-xs-12 table-responsive">\n            <xos-table config="vm.tableConfig" data="vm.data"></xos-table>\n          </div>\n        </div>\n        <div class="panel panel-default" ng-show="vm.detailedItem">\n          <div class="panel-heading">\n            <div class="row">\n              <div class="col-xs-11">\n                <h3 class="panel-title" ng-show="vm.detailedItem.id">Update {{vm.config.resource}} {{vm.detailedItem.id}}</h3>\n                <h3 class="panel-title" ng-show="!vm.detailedItem.id">Create {{vm.config.resource}} item</h3>\n              </div>\n              <div class="col-xs-1">\n                <a href="" ng-click="vm.cleanForm()">\n                  <i class="glyphicon glyphicon-remove pull-right"></i>\n                </a>\n              </div>\n            </div>\n          </div>\n          <div class="panel-body">\n            <xos-form config="vm.formConfig" ng-model="vm.detailedItem"></xos-form>\n          </div>\n        </div>\n        <xos-alert config="{type: \'success\', closeBtn: true}" show="vm.responseMsg">{{vm.responseMsg}}</xos-alert>\n        <xos-alert config="{type: \'danger\', closeBtn: true}" show="vm.responseErr">{{vm.responseErr}}</xos-alert>\n      ',
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: ["$injector", "LabelFormatter", "_", "XosFormHelpers", function controller($injector, LabelFormatter, _, XosFormHelpers) {
-        var _this = this;
+  .service('XosFormHelpers', ["_", "LabelFormatter", function (_, LabelFormatter) {
+    var _this = this;
 
-        // TODO
-        // - Validate the config (what if resource does not exist?)
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#_isEmail
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Return true if the string is an email address
+    * @param {string} text The string to be evaluated
+    * @returns {boolean} If the string match an email format
+    **/
 
-        // NOTE
-        // Corner case
-        // - if response is empty, how can we generate a form ?
-
-        this.responseMsg = false;
-        this.responseErr = false;
-
-        this.tableConfig = {
-          columns: [],
-          actions: [{
-            label: 'delete',
-            icon: 'remove',
-            cb: function cb(item) {
-              _this.Resource.delete({ id: item.id }).$promise.then(function () {
-                _.remove(_this.data, function (d) {
-                  return d.id === item.id;
-                });
-                _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully deleted';
-              }).catch(function (err) {
-                _this.responseErr = err.data.detail || 'Error while deleting ' + _this.config.resource + ' with id ' + item.id;
-              });
-            },
-            color: 'red'
-          }, {
-            label: 'details',
-            icon: 'search',
-            cb: function cb(item) {
-              _this.detailedItem = item;
-            }
-          }],
-          classes: 'table table-striped table-bordered table-responsive',
-          filter: 'field',
-          order: true,
-          pagination: {
-            pageSize: 10
-          }
-        };
-
-        this.formConfig = {
-          exclude: this.config.hiddenFields,
-          fields: {},
-          formName: this.config.resource + 'Form',
-          actions: [{
-            label: 'Save',
-            icon: 'ok',
-            cb: function cb(item) {
-              var p = void 0;
-              var isNew = true;
-
-              if (item.id) {
-                p = item.$update();
-                isNew = false;
-              } else {
-                p = item.$save();
-              }
-
-              p.then(function (res) {
-                if (isNew) {
-                  _this.data.push(angular.copy(res));
-                }
-                delete _this.detailedItem;
-                _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully saved';
-              }).catch(function (err) {
-                _this.responseErr = err.data.detail || 'Error while saving ' + _this.config.resource + ' with id ' + item.id;
-              });
-            },
-            class: 'success'
-          }]
-        };
-
-        this.cleanForm = function () {
-          delete _this.detailedItem;
-        };
-
-        this.createItem = function () {
-          _this.detailedItem = new _this.Resource();
-        };
-
-        this.Resource = $injector.get(this.config.resource);
-
-        var getData = function getData() {
-          _this.Resource.query().$promise.then(function (res) {
-
-            if (!res[0]) {
-              return;
-            }
-
-            var item = res[0];
-            var props = Object.keys(item);
-
-            _.remove(props, function (p) {
-              return p == 'id' || p == 'validators';
-            });
-
-            // TODO move out cb,  non sense triggering a lot of times
-            if (angular.isArray(_this.config.hiddenFields)) {
-              props = _.difference(props, _this.config.hiddenFields);
-            }
-
-            var labels = props.map(function (p) {
-              return LabelFormatter.format(p);
-            });
-
-            props.forEach(function (p, i) {
-              var fieldConfig = {
-                label: labels[i],
-                prop: p
-              };
-
-              if (typeof item[p] !== 'string' && typeof item[p] !== 'undefined') {
-                fieldConfig.type = _typeof(item[p]);
-              }
-
-              _this.tableConfig.columns.push(fieldConfig);
-            });
-
-            // build form structure
-            // TODO move in a pure function for testing purposes
-            props.forEach(function (p, i) {
-              _this.formConfig.fields[p] = {
-                label: LabelFormatter.format(labels[i]).replace(':', ''),
-                type: XosFormHelpers._getFieldFormat(item[p])
-              };
-            });
-
-            _this.data = res;
-          });
-        };
-
-        getData();
-      }]
+    this._isEmail = function (text) {
+      var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+      return re.test(text);
     };
-  });
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#_getFieldFormat
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Return the type of the input
+    * @param {mixed} value The data to be evaluated
+    * @returns {string} The type of the input
+    **/
+
+    this._getFieldFormat = function (value) {
+
+      if (angular.isArray(value)) {
+        return 'array';
+      }
+
+      // check if is date
+      if (_.isDate(value) || !Number.isNaN(Date.parse(value)) && new Date(value).getTime() > 631180800000) {
+        return 'date';
+      }
+
+      // check if is boolean
+      // isNaN(false) = false, false is a number (0), true is a number (1)
+      if (typeof value === 'boolean') {
+        return 'boolean';
+      }
+
+      // check if a string is an email
+      if (_this._isEmail(value)) {
+        return 'email';
+      }
+
+      // if null return string
+      if (typeof value === 'string' || value === null) {
+        return 'text';
+      }
+
+      return typeof value === 'undefined' ? 'undefined' : _typeof(value);
+    };
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#buildFormStructure
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Return the type of the input
+    * @param {object} modelField An object containing one property for each field of the model
+    * @param {object} customField An object containing one property for each field custom field
+    * @param {object} model The actual model on wich build the form structure (it is used to determine the type of the input)
+    * @returns {object} An object describing the form structure in the form of:
+    * ```
+    * {
+    *   'field-name': {
+    *     label: 'Label',
+    *     type: 'number', //typeof field
+    *     validators: {}, // see xosForm for more details
+    *     hint: 'A Custom hint for the field'
+    *   }
+    * }
+    * ```
+    **/
+
+    this.buildFormStructure = function (modelField, customField, model) {
+
+      // modelField = Object.keys(modelField).length > 0 ? modelField : customField; //if no model field are provided, check custom
+      modelField = angular.extend(modelField, customField);
+      customField = customField || {};
+
+      return _.reduce(Object.keys(modelField), function (form, f) {
+
+        form[f] = {
+          label: customField[f] && customField[f].label ? customField[f].label + ':' : LabelFormatter.format(f),
+          type: customField[f] && customField[f].type ? customField[f].type : _this._getFieldFormat(model[f]),
+          validators: customField[f] && customField[f].validators ? customField[f].validators : {},
+          hint: customField[f] && customField[f].hint ? customField[f].hint : ''
+        };
+
+        if (customField[f] && customField[f].options) {
+          form[f].options = customField[f].options;
+        }
+        if (form[f].type === 'date') {
+          model[f] = new Date(model[f]);
+        }
+
+        if (form[f].type === 'number') {
+          model[f] = parseInt(model[f], 10);
+        }
+
+        return form;
+      }, {});
+    };
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#parseModelField
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Helpers for buildFormStructure, convert a list of model properties in an object used to build the form structure, eg:
+    * ```
+    * // input:
+    * ['id', 'name'm 'mail']
+    *
+    * // output
+    * {
+    *   id: {},
+    *   name: {},
+    *   mail: {}
+    * }
+    * ```
+    * @param {array} fields An array of fields representing the model properties
+    * @returns {object} An object containing one property for each field of the model
+    **/
+
+    this.parseModelField = function (fields) {
+      return _.reduce(fields, function (form, f) {
+        form[f] = {};
+        return form;
+      }, {});
+    };
+  }]);
 })();
-//# sourceMappingURL=../../../maps/ui_components/smartComponents/smartTable/smartTable.component.js.map
+//# sourceMappingURL=../../../maps/services/helpers/ui/form.helpers.js.map
 
 'use strict';
 
@@ -456,13 +430,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
 
         var prepareData = function prepareData(data) {
-          // $timeout(() => {
           // group data
           var grouped = groupData(data);
           _this.data = formatData(grouped);
           // create labels
           _this.labels = formatLabels(grouped);
-          // }, 10);
         };
 
         if (this.config.resource) {
@@ -510,6 +482,237 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   });
 })();
 //# sourceMappingURL=../../../maps/ui_components/smartComponents/smartPie/smartPie.component.js.map
+
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 3/24/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+  * @ngdoc directive
+  * @name xos.uiComponents.directive:xosSmartTable
+  * @link xos.uiComponents.directive:xosTable xosTable
+  * @link xos.uiComponents.directive:xosForm xosForm
+  * @restrict E
+  * @description The xos-table directive
+  * @param {Object} config The configuration for the component,
+  * it is composed by the name of an angular [$resource](https://docs.angularjs.org/api/ngResource/service/$resource)
+  * and an array of fields that shouldn't be printed.
+  * ```
+  * {
+      resource: 'Users',
+      hiddenFields: []
+    }
+  * ```
+  * @scope
+  * @example
+    <example module="sampleSmartTable">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm">
+        <xos-smart-table config="vm.config"></xos-smart-table>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleSmartTable', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
+      // This is only for documentation purpose
+      .run(function($httpBackend, _){
+        let datas = [{id: 1, name: 'Jhon', surname: 'Doe'}];
+        let count = 1;
+          let paramsUrl = new RegExp(/\/test\/(.+)/);
+          $httpBackend.whenDELETE(paramsUrl, undefined, ['id']).respond((method, url, data, headers, params) => {
+          data = angular.fromJson(data);
+          let id = url.match(paramsUrl)[1];
+          _.remove(datas, (d) => {
+            return d.id === parseInt(id);
+          })
+          return [204];
+        });
+          $httpBackend.whenGET('/test').respond(200, datas)
+        $httpBackend.whenPOST('/test').respond((method, url, data) => {
+          data = angular.fromJson(data);
+          data.id = ++count;
+          datas.push(data);
+          return [201, data, {}];
+        });
+      })
+      .factory('_', function($window){
+        return $window._;
+      })
+      .service('SampleResource', function($resource){
+        return $resource('/test/:id', {id: '@id'});
+      })
+      // End of documentation purpose, example start
+      .controller('SampleCtrl', function(){
+        this.config = {
+          resource: 'SampleResource'
+        };
+      });
+    </file>
+  </example>
+  */
+
+  .directive('xosSmartTable', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        config: '='
+      },
+      template: '\n        <div class="row" ng-show="vm.data.length > 0">\n          <div class="col-xs-12 text-right">\n            <a href="" class="btn btn-success" ng-click="vm.createItem()">\n              Add\n            </a>\n          </div>\n        </div>\n        <div class="row">\n          <div class="col-xs-12 table-responsive">\n            <xos-table config="vm.tableConfig" data="vm.data"></xos-table>\n          </div>\n        </div>\n        <div class="panel panel-default" ng-show="vm.detailedItem">\n          <div class="panel-heading">\n            <div class="row">\n              <div class="col-xs-11">\n                <h3 class="panel-title" ng-show="vm.detailedItem.id">Update {{vm.config.resource}} {{vm.detailedItem.id}}</h3>\n                <h3 class="panel-title" ng-show="!vm.detailedItem.id">Create {{vm.config.resource}} item</h3>\n              </div>\n              <div class="col-xs-1">\n                <a href="" ng-click="vm.cleanForm()">\n                  <i class="glyphicon glyphicon-remove pull-right"></i>\n                </a>\n              </div>\n            </div>\n          </div>\n          <div class="panel-body">\n            <xos-form config="vm.formConfig" ng-model="vm.detailedItem"></xos-form>\n          </div>\n        </div>\n        <xos-alert config="{type: \'success\', closeBtn: true}" show="vm.responseMsg">{{vm.responseMsg}}</xos-alert>\n        <xos-alert config="{type: \'danger\', closeBtn: true}" show="vm.responseErr">{{vm.responseErr}}</xos-alert>\n      ',
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$injector", "LabelFormatter", "_", "XosFormHelpers", function controller($injector, LabelFormatter, _, XosFormHelpers) {
+        var _this = this;
+
+        // TODO
+        // - Validate the config (what if resource does not exist?)
+
+        // NOTE
+        // Corner case
+        // - if response is empty, how can we generate a form ?
+
+        this.responseMsg = false;
+        this.responseErr = false;
+
+        this.tableConfig = {
+          columns: [],
+          actions: [{
+            label: 'delete',
+            icon: 'remove',
+            cb: function cb(item) {
+              _this.Resource.delete({ id: item.id }).$promise.then(function () {
+                _.remove(_this.data, function (d) {
+                  return d.id === item.id;
+                });
+                _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully deleted';
+              }).catch(function (err) {
+                _this.responseErr = err.data.detail || 'Error while deleting ' + _this.config.resource + ' with id ' + item.id;
+              });
+            },
+            color: 'red'
+          }, {
+            label: 'details',
+            icon: 'search',
+            cb: function cb(item) {
+              _this.detailedItem = item;
+            }
+          }],
+          classes: 'table table-striped table-bordered table-responsive',
+          filter: 'field',
+          order: true,
+          pagination: {
+            pageSize: 10
+          }
+        };
+
+        this.formConfig = {
+          exclude: this.config.hiddenFields,
+          fields: {},
+          formName: this.config.resource + 'Form',
+          actions: [{
+            label: 'Save',
+            icon: 'ok',
+            cb: function cb(item) {
+              var p = void 0;
+              var isNew = true;
+
+              if (item.id) {
+                p = item.$update();
+                isNew = false;
+              } else {
+                p = item.$save();
+              }
+
+              p.then(function (res) {
+                if (isNew) {
+                  _this.data.push(angular.copy(res));
+                }
+                delete _this.detailedItem;
+                _this.responseMsg = _this.config.resource + ' with id ' + item.id + ' successfully saved';
+              }).catch(function (err) {
+                _this.responseErr = err.data.detail || 'Error while saving ' + _this.config.resource + ' with id ' + item.id;
+              });
+            },
+            class: 'success'
+          }]
+        };
+
+        this.cleanForm = function () {
+          delete _this.detailedItem;
+        };
+
+        this.createItem = function () {
+          _this.detailedItem = new _this.Resource();
+        };
+
+        this.Resource = $injector.get(this.config.resource);
+
+        var getData = function getData() {
+          _this.Resource.query().$promise.then(function (res) {
+
+            if (!res[0]) {
+              return;
+            }
+
+            var item = res[0];
+            var props = Object.keys(item);
+
+            _.remove(props, function (p) {
+              return p === 'id' || p === 'validators';
+            });
+
+            // TODO move out cb,  non sense triggering a lot of times
+            if (angular.isArray(_this.config.hiddenFields)) {
+              props = _.difference(props, _this.config.hiddenFields);
+            }
+
+            var labels = props.map(function (p) {
+              return LabelFormatter.format(p);
+            });
+
+            props.forEach(function (p, i) {
+              var fieldConfig = {
+                label: labels[i],
+                prop: p
+              };
+
+              if (typeof item[p] !== 'string' && typeof item[p] !== 'undefined') {
+                fieldConfig.type = _typeof(item[p]);
+              }
+
+              _this.tableConfig.columns.push(fieldConfig);
+            });
+
+            // build form structure
+            // TODO move in a pure function for testing purposes
+            props.forEach(function (p, i) {
+              _this.formConfig.fields[p] = {
+                label: LabelFormatter.format(labels[i]).replace(':', ''),
+                type: XosFormHelpers._getFieldFormat(item[p])
+              };
+            });
+
+            _this.data = res;
+          });
+        };
+
+        getData();
+      }]
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/smartComponents/smartTable/smartTable.component.js.map
 
 'use strict';
 
@@ -595,7 +798,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         field: '=',
         form: '='
       },
-      template: '\n        <div ng-cloak>\n           <!--<pre>{{vm.field | json}}</pre>-->\n           <!--<pre>{{vm.form.$submitted | json}}</pre>-->\n           <!--<pre>{{vm.field.$error.required !== false}}</pre>-->\n          <xos-alert config="vm.config" show="vm.field.$error.required !== undefined && vm.field.$error.required !== false  && (vm.field.$touched || vm.form.$submitted)">\n            Field required\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.email !== undefined && vm.field.$error.email !== false && (vm.field.$touched || vm.form.$submitted)">\n            This is not a valid email\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.minlength !== undefined && vm.field.$error.minlength !== false && (vm.field.$touched || vm.form.$submitted)">\n            Too short\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.maxlength !== undefined && vm.field.$error.maxlength !== false && (vm.field.$touched || vm.form.$submitted)">\n            Too long\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.custom !== undefined && vm.field.$error.custom !== false && (vm.field.$touched || vm.form.$submitted)">\n            Field invalid\n          </xos-alert>\n        </div>\n      ',
+      template: '\n        <div ng-cloak>\n          <xos-alert config="vm.config" show="vm.field.$error.required !== undefined && vm.field.$error.required !== false  && (vm.field.$touched || vm.form.$submitted)">\n            Field required\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.email !== undefined && vm.field.$error.email !== false && (vm.field.$touched || vm.form.$submitted)">\n            This is not a valid email\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.minlength !== undefined && vm.field.$error.minlength !== false && (vm.field.$touched || vm.form.$submitted)">\n            Too short\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.maxlength !== undefined && vm.field.$error.maxlength !== false && (vm.field.$touched || vm.form.$submitted)">\n            Too long\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.custom !== undefined && vm.field.$error.custom !== false && (vm.field.$touched || vm.form.$submitted)">\n            Field invalid\n          </xos-alert>\n        </div>\n      ',
       transclude: true,
       bindToController: true,
       controllerAs: 'vm',
@@ -1326,7 +1529,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
           var diff = _.difference(Object.keys(model), _this.excludedField);
           var modelField = XosFormHelpers.parseModelField(diff);
+          console.log(modelField, _this.config.fields, model);
           _this.formField = XosFormHelpers.buildFormStructure(modelField, _this.config.fields, model);
+          console.log(_this.formField);
         });
       }]
     };
@@ -1629,210 +1834,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   });
 })();
 //# sourceMappingURL=../../../maps/ui_components/dumbComponents/alert/alert.component.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  /**
-  * @ngdoc service
-  * @name xos.uiComponents.LabelFormatter
-  * @description This factory define a set of helper function to format label started from an object property
-  **/
-
-  angular.module('xos.uiComponents').factory('LabelFormatter', labelFormatter);
-
-  function labelFormatter() {
-
-    var _formatByUnderscore = function _formatByUnderscore(string) {
-      return string.split('_').join(' ').trim();
-    };
-
-    var _formatByUppercase = function _formatByUppercase(string) {
-      return string.split(/(?=[A-Z])/).map(function (w) {
-        return w.toLowerCase();
-      }).join(' ');
-    };
-
-    var _capitalize = function _capitalize(string) {
-      return string.slice(0, 1).toUpperCase() + string.slice(1);
-    };
-
-    var format = function format(string) {
-      string = _formatByUnderscore(string);
-      string = _formatByUppercase(string);
-
-      string = _capitalize(string).replace(/\s\s+/g, ' ') + ':';
-      return string.replace('::', ':');
-    };
-
-    return {
-      // test export
-      _formatByUnderscore: _formatByUnderscore,
-      _formatByUppercase: _formatByUppercase,
-      _capitalize: _capitalize,
-      // export to use
-      format: format
-    };
-  }
-})();
-//# sourceMappingURL=../../../maps/services/helpers/ui/label_formatter.service.js.map
-
-'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-(function () {
-
-  angular.module('xos.uiComponents')
-
-  /**
-  * @ngdoc service
-  * @name xos.uiComponents.XosFormHelpers
-  * @requires xos.uiComponents.LabelFormatter
-  * @requires xos.helpers._
-  **/
-
-  .service('XosFormHelpers', ["_", "LabelFormatter", function (_, LabelFormatter) {
-    var _this = this;
-
-    /**
-    * @ngdoc method
-    * @name xos.uiComponents.XosFormHelpers#_isEmail
-    * @methodOf xos.uiComponents.XosFormHelpers
-    * @description
-    * Return true if the string is an email address
-    * @param {string} text The string to be evaluated
-    * @returns {boolean} If the string match an email format
-    **/
-
-    this._isEmail = function (text) {
-      var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
-      return re.test(text);
-    };
-
-    /**
-    * @ngdoc method
-    * @name xos.uiComponents.XosFormHelpers#_getFieldFormat
-    * @methodOf xos.uiComponents.XosFormHelpers
-    * @description
-    * Return the type of the input
-    * @param {mixed} value The data to be evaluated
-    * @returns {string} The type of the input
-    **/
-
-    this._getFieldFormat = function (value) {
-
-      if (angular.isArray(value)) {
-        return 'array';
-      }
-
-      // check if is date
-      if (_.isDate(value) || !Number.isNaN(Date.parse(value)) && new Date(value).getTime() > 631180800000) {
-        return 'date';
-      }
-
-      // check if is boolean
-      // isNaN(false) = false, false is a number (0), true is a number (1)
-      if (typeof value === 'boolean') {
-        return 'boolean';
-      }
-
-      // check if a string is an email
-      if (_this._isEmail(value)) {
-        return 'email';
-      }
-
-      // if null return string
-      if (typeof value === 'string' || value === null) {
-        return 'text';
-      }
-
-      return typeof value === 'undefined' ? 'undefined' : _typeof(value);
-    };
-
-    /**
-    * @ngdoc method
-    * @name xos.uiComponents.XosFormHelpers#buildFormStructure
-    * @methodOf xos.uiComponents.XosFormHelpers
-    * @description
-    * Return the type of the input
-    * @param {object} modelField An object containing one property for each field of the model
-    * @param {object} customField An object containing one property for each field custom field
-    * @param {object} model The actual model on wich build the form structure (it is used to determine the type of the input)
-    * @returns {object} An object describing the form structure in the form of:
-    * ```
-    * {
-    *   'field-name': {
-    *     label: 'Label',
-    *     type: 'number', //typeof field
-    *     validators: {}, // see xosForm for more details
-    *     hint: 'A Custom hint for the field'
-    *   }
-    * }
-    * ```
-    **/
-
-    this.buildFormStructure = function (modelField, customField, model) {
-
-      modelField = Object.keys(modelField).length > 0 ? modelField : customField; //if no model field are provided, check custom
-      customField = customField || {};
-
-      return _.reduce(Object.keys(modelField), function (form, f) {
-
-        form[f] = {
-          label: customField[f] && customField[f].label ? customField[f].label + ':' : LabelFormatter.format(f),
-          type: customField[f] && customField[f].type ? customField[f].type : _this._getFieldFormat(model[f]),
-          validators: customField[f] && customField[f].validators ? customField[f].validators : {},
-          hint: customField[f] && customField[f].hint ? customField[f].hint : ''
-        };
-
-        if (customField[f] && customField[f].options) {
-          form[f].options = customField[f].options;
-        }
-        if (form[f].type === 'date') {
-          model[f] = new Date(model[f]);
-        }
-
-        if (form[f].type === 'number') {
-          model[f] = parseInt(model[f], 10);
-        }
-
-        return form;
-      }, {});
-    };
-
-    /**
-    * @ngdoc method
-    * @name xos.uiComponents.XosFormHelpers#parseModelField
-    * @methodOf xos.uiComponents.XosFormHelpers
-    * @description
-    * Helpers for buildFormStructure, convert a list of model properties in an object used to build the form structure, eg:
-    * ```
-    * // input:
-    * ['id', 'name'm 'mail']
-    *
-    * // output
-    * {
-    *   id: {},
-    *   name: {},
-    *   mail: {}
-    * }
-    * ```
-    * @param {array} fields An array of fields representing the model properties
-    * @returns {object} An object containing one property for each field of the model
-    **/
-
-    this.parseModelField = function (fields) {
-      return _.reduce(fields, function (form, f) {
-        form[f] = {};
-        return form;
-      }, {});
-    };
-  }]);
-})();
-//# sourceMappingURL=../../../maps/services/helpers/ui/form.helpers.js.map
 
 'use strict';
 
