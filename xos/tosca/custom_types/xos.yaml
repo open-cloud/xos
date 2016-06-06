@@ -24,6 +24,32 @@ node_types:
     tosca.nodes.XOS:
         derived_from: tosca.nodes.Root
         description: The root of XOS
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
+            ui_port:
+                type: integer
+                required: false
+                description: TCP port of user interface
+            bootstrap_ui_port:
+                type: integer
+                required: false
+                descrption: TCP port of bootstrap user interface
+
 
     tosca.nodes.XOSVolume:
         derived_from: tosca.nodes.Root
