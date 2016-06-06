@@ -1,0 +1,9 @@
+@import '../../../../style/sass/lib/_variables.scss';
+@import '../../../../../views/style/sass/bootstrap/bootstrap/_variables.scss';
+
+
+#xosTenant {
+  a{
+    margin-bottom: $form-group-margin-bottom;
+  }
+}
