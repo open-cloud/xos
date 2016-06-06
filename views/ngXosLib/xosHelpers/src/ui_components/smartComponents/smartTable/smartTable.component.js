@@ -225,7 +225,7 @@
             let props = Object.keys(item);
 
             _.remove(props, p => {
-              return p == 'id' || p == 'validators'
+              return p === 'id' || p === 'validators'
             });
 
             // TODO move out cb,  non sense triggering a lot of times

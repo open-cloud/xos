@@ -198,13 +198,11 @@
         const formatLabels = (data) => angular.isFunction(this.config.labelFormatter) ? this.config.labelFormatter(Object.keys(data)) : Object.keys(data);
 
         const prepareData = (data) => {
-          // $timeout(() => {
-            // group data
-            let grouped = groupData(data);
-            this.data = formatData(grouped);
-            // create labels
-            this.labels = formatLabels(grouped);
-          // }, 10);
+          // group data
+          let grouped = groupData(data);
+          this.data = formatData(grouped);
+          // create labels
+          this.labels = formatLabels(grouped);
         }
 
         if(this.config.resource){

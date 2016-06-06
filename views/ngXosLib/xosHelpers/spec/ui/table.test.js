@@ -31,22 +31,22 @@
         rootScope = $rootScope;
       }));
 
-      it('should throw an error if no config is specified', inject(($compile, $rootScope) => {
+      it('should throw an error if no config is specified', () => {
         function errorFunctionWrapper(){
           compileElement();
         }
         expect(errorFunctionWrapper).toThrow(new Error('[xosTable] Please provide a configuration via the "config" attribute'));
-      }));
+      });
 
-      it('should throw an error if no config columns are specified', inject(($compile, $rootScope) => {
+      it('should throw an error if no config columns are specified', () => {
         function errorFunctionWrapper(){
           // setup the parent scope
-          scope = $rootScope.$new();
+          scope = rootScope.$new();
           scope.config = 'green';
           compileElement();
         }
         expect(errorFunctionWrapper).toThrow(new Error('[xosTable] Please provide a columns list in the configuration'));
-      }));
+      });
 
       describe('when basicly configured', function() {
 

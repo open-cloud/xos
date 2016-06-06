@@ -23,7 +23,7 @@ base:
 
 local_containers:
 	echo "" > ../../../containers/xos/local_certs.crt
-	for CRT in $$(/usr/local/share/ca-certificates/*) ; do \
+	for CRT in $$(ls /usr/local/share/ca-certificates/*) ; do \
 		echo Adding Certificate: $$CRT ;\
 		cat $$CRT >> ../../../containers/xos/local_certs.crt ;\
 		echo "" >> ../../../containers/xos/local_certs.crt ;\
