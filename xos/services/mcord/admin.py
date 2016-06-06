@@ -161,12 +161,11 @@ class VPGWCComponentForm(forms.ModelForm):
 
     class Meta:
         model = VPGWCComponent
-
+        fields = '__all__'
 
 
 # Define the admin form for the tenant. This uses a similar structure as the
 # service but uses HelloWorldTenantCompleteForm to change the python behavior.
-
 
 class VBBUComponentAdmin(ReadOnlyAwareAdmin):
     verbose_name = "vBBU Component"
