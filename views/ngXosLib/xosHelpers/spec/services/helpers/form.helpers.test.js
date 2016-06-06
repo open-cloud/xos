@@ -17,8 +17,7 @@
         'name',
         'mail',
         'active',
-        'created',
-        'custom'
+        'created'
       ];
 
       let modelField = {
@@ -26,8 +25,7 @@
         name: {},
         mail: {},
         active: {},
-        created: {},
-        custom: {}
+        created: {}
       };
 
       let model = {
@@ -40,6 +38,14 @@
       };
 
       let customField = {
+        id: {
+          label: 'Id',
+          type: 'number',
+          validators: {
+            required: true
+          },
+          hint: ''
+        },
         custom: {
           label: 'Custom Label',
           type: 'number',
@@ -52,7 +58,9 @@
         id: {
           label: 'Id:',
           type: 'number',
-          validators: {},
+          validators: {
+            required: true
+          },
           hint: ''
         },
         name: {
@@ -152,7 +160,35 @@
 
       describe('when modelField are provided', () => {
         it('should combine modelField and customField in a form object', () => {
-          expect(service.buildFormStructure(modelField, customField, model)).toEqual(formObject);
+          const form = service.buildFormStructure(modelField, customField, model);
+          expect(form).toEqual(formObject);
+        });
+
+        it('should override modelField properties whith customField properties', () => {
+          const customFieldOverride = {
+            id: {
+              hint: 'something',
+              type: 'select',
+              options: [
+                {id: 1, label: 'one'},
+                {id: 2, label: 'two'}
+              ],
+              validators: {
+                required: true
+              }
+            }
+          };
+          const form = service.buildFormStructure({id: {}}, customFieldOverride, model);
+          
+          expect(form).toEqual({
+            id: {
+              label: 'Id:',
+              validators: {required: true},
+              hint: customFieldOverride.id.hint,
+              type: customFieldOverride.id.type,
+              options: customFieldOverride.id.options
+            }
+          });
         });
       });
 
