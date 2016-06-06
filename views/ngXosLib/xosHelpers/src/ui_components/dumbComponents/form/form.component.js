@@ -161,10 +161,14 @@
         ngModel: '='
       },
       template: `
-        <ng-form name="vm.{{vm.config.formName || 'form'}}">
+        <form name="vm.{{vm.config.formName || 'form'}}" novalidate>
           <div class="form-group" ng-repeat="(name, field) in vm.formField">
+          <!--{{vm.ngModel[name] | json}}-->
             <xos-field name="name" field="field" ng-model="vm.ngModel[name]"></xos-field>
-            <xos-validation field="vm[vm.config.formName || 'form'][name]" form="vm[vm.config.formName || 'form']"></xos-validation>
+            <!--<pre>{{vm[vm.config.formName] || 'form'  | json }}</pre>-->
+            <!--{{field}}-->
+            <xos-validation field="vm[vm.config.formName || 'form'][name]" form = "vm[vm.config.formName || 'form']"></xos-validation>
+            <div class="alert alert-info" ng-show="(field.hint).length >0" role="alert">{{field.hint}}</div>
           </div>
           <div class="form-group" ng-if="vm.config.actions">
             <button role="button" href=""
@@ -175,8 +179,9 @@
               <i class="glyphicon glyphicon-{{action.icon}}"></i>
               {{action.label}}
             </button>
+
           </div>
-        </ng-form>
+        </form>
       `,
       bindToController: true,
       controllerAs: 'vm',

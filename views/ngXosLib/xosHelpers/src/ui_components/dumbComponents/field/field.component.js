@@ -130,7 +130,7 @@
       },
       template: `
         <label ng-if="vm.field.type !== 'object'">{{vm.field.label}}</label>
-        <!--<pre>{{vm.field.options | json}}</pre>-->
+        <!--<pre>{{vm.field | json}}</pre>-->
         <!--<pre>{{vm.ngModel | json}}</pre>-->
             <input
               ng-if="vm.field.type !== 'boolean' && vm.field.type !== 'object' && vm.field.type !== 'select'"
@@ -148,18 +148,18 @@
                 ng-required="vm.field.validators.required || false">
                 </select>
             <span class="boolean-field" ng-if="vm.field.type === 'boolean'">
-              <button
+              <a
                 class="btn btn-success"
                 ng-show="vm.ngModel"
                 ng-click="vm.ngModel = false">
                 <i class="glyphicon glyphicon-ok"></i>
-              </button>
-              <button
+              </a>
+              <a
                 class="btn btn-danger"
                 ng-show="!vm.ngModel"
                 ng-click="vm.ngModel = true">
                 <i class="glyphicon glyphicon-remove"></i>
-              </button>
+              </a>
             </span>
             <div
               class="panel panel-default object-field"
