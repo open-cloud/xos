@@ -92,6 +92,42 @@
         });
       });
 
+
+
+
+      describe('when a option is selected in dropdown', () => {
+        beforeEach(() => {
+          scope = rootScope.$new();
+          scope.name = 'label';
+          scope.field = {
+            label: 'Label',
+            type: 'select',
+            validators: {},
+            options: [
+              {
+                id: 0,
+                label: '---Site---'
+              },
+              {
+                id: 1,
+                label: '---Site1---'
+              }
+            ]
+          };
+          scope.ngModel = 'label';
+          compileElement();
+        });
+
+        it('No of select elements', () => {
+          expect($(element).find('select').children('option').length).toEqual(3);
+        });
+
+        it('should show a selected value', () => {
+          var elem =  angular.element($(element).find('select').children('option')[1]);
+          expect(elem.text()).toEqual('---Site---');
+        });
+      });
+
       describe('when a number input is passed', () => {
         beforeEach(() => {
           scope = rootScope.$new();

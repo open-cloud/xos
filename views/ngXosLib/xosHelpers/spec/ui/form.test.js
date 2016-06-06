@@ -33,21 +33,21 @@
         compile = $compile;
       }));
 
-      it('should throw an error if no config is specified', inject(($compile, $rootScope) => {
+      it('should throw an error if no config is specified', () => {
         function errorFunctionWrapper(){
           compileElement();
         }
         expect(errorFunctionWrapper).toThrow(new Error('[xosForm] Please provide a configuration via the "config" attribute'));
-      }));
+      });
 
-      it('should throw an error if no actions is specified', inject(($compile, $rootScope) => {
+      it('should throw an error if no actions is specified', () => {
         function errorFunctionWrapper(){
-          scope = $rootScope.$new();
+          scope = rootScope.$new();
           scope.config = 'green';
           compileElement();
         }
         expect(errorFunctionWrapper).toThrow(new Error('[xosForm] Please provide an action list in the configuration'));
-      }));
+      });
 
       describe('when correctly configured', () => {
         

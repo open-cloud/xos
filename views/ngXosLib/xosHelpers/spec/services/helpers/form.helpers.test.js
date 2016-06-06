@@ -185,6 +185,14 @@
             label: 'Custom Label',
             type: 'number',
             hint: 'Test Hint'
+          },
+          select: {
+            label: 'Select Label',
+            type: 'select',
+            hint: 'Select Hint',
+            options: [
+              {id: 1, label: 'something'}
+            ]
           }
         };
 
@@ -224,19 +232,29 @@
             type: 'number',
             validators: {},
             hint: 'Test Hint'
+          },
+          select: {
+            label: 'Select Label:',
+            type: 'select',
+            hint: 'Select Hint',
+            validators: {},
+            options: [
+              {id: 1, label: 'something'}
+            ]
           }
         };
 
         let empty_model = {5: 'Nan'}
 
         it('should create a form object', () => {
-          let res = service.buildFormStructure(empty_modelField, empty_customFields, empty_model)
+          let res = service.buildFormStructure(empty_modelField, empty_customFields, empty_model);
           expect(res.id).toEqual(empty_formObject.id);
           expect(res.name).toEqual(empty_formObject.name);
           expect(res.mail).toEqual(empty_formObject.mail);
           expect(res.active).toEqual(empty_formObject.active);
           expect(res.created).toEqual(empty_formObject.created);
           expect(res.custom).toEqual(empty_formObject.custom);
+          expect(res.select).toEqual(empty_formObject.select);
           expect(res).toEqual(empty_formObject);
         });
       });
