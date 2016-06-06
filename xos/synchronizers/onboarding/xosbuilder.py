@@ -182,6 +182,12 @@ class XOSBuilder(object):
                              "links": ["xos_db"],
                              "volumes": volume_list}
 
+         containers["xos_bootstrap_ui"] = {"image": "xosproject/xos-ui",
+                             "command": "python /opt/xos/manage.py runserver 0.0.0.0:%d --insecure --makemigrations" % xos.bootstrap_ui_port,
+                             "ports": {"%d"%xos.bootstrap_ui_port : "%d"%xos.bootstrap_ui_port},
+                             "links": ["xos_db"],
+                             "volumes": volume_list}
+
          for c in ServiceController.objects.all():
              containers["xos_synchronizer_%s" % c.name] = \
                             {"image": "xosproject/xos-synchronizer-%s" % controller.name,

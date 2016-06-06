@@ -10,6 +10,7 @@ from core.models.plcorebase import StrippedCharField
 class XOS(PlCoreBase):
     name = StrippedCharField(max_length=200, unique=True, help_text="Name of XOS", default="XOS")
     ui_port = models.IntegerField(help_text="Port for XOS UI", default=80)
+    bootstrap_ui_port = models.IntegerField(help_text="Port for XOS UI", default=81)
     db_container_name = StrippedCharField(max_length=200, help_text="name of XOS db container", default="xos_db")
 
     def __unicode__(self):  return u'%s' % (self.name)

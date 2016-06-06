@@ -9,6 +9,17 @@ node_types:
     tosca.nodes.XOS:
         derived_from: tosca.nodes.Root
         description: The root of XOS
+        properties:
+            xos_base_props
+            ui_port:
+                type: integer
+                required: false
+                description: TCP port of user interface
+            bootstrap_ui_port:
+                type: integer
+                required: false
+                descrption: TCP port of bootstrap user interface
+
 
     tosca.nodes.XOSVolume:
         derived_from: tosca.nodes.Root

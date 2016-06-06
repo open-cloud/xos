@@ -1,14 +1,18 @@
 MYIP:=$(shell hostname -i)
 CONFIG_DIR:=$(shell pwd)
+DOCKER_COMPOSE_YML=./onboarding_docker_compose/docker-compose.yml
 
-frontend:
+frontend: bootstrap
+	sudo docker-compose -f docker-compose-bootstrap.yml run -e CONFIG_DIR=$(CONFIG_DIR) xos_bootstrap_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/frontend/xos.yaml
+	bash ../common/wait_for_xos_port.sh 9999
+	sudo docker-compose -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
+	sudo docker-compose -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
+	sudo docker-compose -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
+
+bootstrap:
 	sudo make -f ../common/Makefile.prereqs
-	sudo docker-compose up -d
-	bash ../common/wait_for_xos.sh
-	sudo docker-compose run -e CONFIG_DIR=$(CONFIG_DIR) xos python /opt/xos/tosca/run.py none /opt/xos/configurations/frontend/xos.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
+	sudo docker-compose -f docker-compose-bootstrap.yml up -d
+	bash ../common/wait_for_xos_port.sh 9998
 
 containers:
 	cd ../../../containers/xos; make devel
@@ -61,4 +65,4 @@ exampleservice:
 	# fake keys are fine
 	echo somekey > key_import/exampleservice_rsa
 	echo somekey > key_import/exampleservice_rsa.pub
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/onboard/exampleservice/exampleservice-onboard.yaml
+	sudo docker-compose run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/onboard/exampleservice/exampleservice-onboard.yaml

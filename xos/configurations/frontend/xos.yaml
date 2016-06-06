@@ -9,6 +9,9 @@ topology_template:
   node_templates:
     xos:
       type: tosca.nodes.XOS
+      properties:
+        ui_port: 9999
+        bootstrap_ui_port: 9998
 
     /opt/xos/xos_configuration/xos_common_config:
       type: tosca.nodes.XOSVolume
