@@ -43,7 +43,8 @@
         custom: {
           label: 'Custom Label',
           type: 'number',
-          validators: {}
+          validators: {},
+          hint: 'Test Hint'
         }
       };
 
@@ -51,32 +52,38 @@
         id: {
           label: 'Id:',
           type: 'number',
-          validators: {}
+          validators: {},
+          hint: ''
         },
         name: {
           label: 'Name:',
           type: 'text',
-          validators: {}
+          validators: {},
+          hint: ''
         },
         mail: {
           label: 'Mail:',
           type: 'email',
-          validators: {}
+          validators: {},
+          hint: ''
         },
         active: {
           label: 'Active:',
           type: 'boolean',
-          validators: {}
+          validators: {},
+          hint: ''
         },
         created: {
           label: 'Created:',
           type: 'date',
-          validators: {}
+          validators: {},
+          hint: ''
         },
         custom: {
           label: 'Custom Label:',
           type: 'number',
-          validators: {}
+          validators: {},
+          hint: 'Test Hint'
         }
       };
 
@@ -133,8 +140,14 @@
         });
       });
 
-      it('should convert the fields array in an empty form object', () => {
-        expect(service.parseModelField(fields)).toEqual(modelField);
+      describe('the parseModelField mehtod', () => {
+        it('should convert the fields array in an empty form object', () => {
+          expect(service.parseModelField(fields)).toEqual(modelField);
+        });
+
+        xit('should handle nested config', () => {
+          
+        });
       });
 
       describe('when modelField are provided', () => {
@@ -170,7 +183,8 @@
           },
           custom: {
             label: 'Custom Label',
-            type: 'number'
+            type: 'number',
+            hint: 'Test Hint'
           }
         };
 
@@ -178,32 +192,38 @@
           id: {
             label: 'Id:',
             type: 'number',
-            validators: {}
+            validators: {},
+            hint: ''
           },
           name: {
             label: 'Name:',
             type: 'text',
-            validators: {}
+            validators: {},
+            hint: ''
           },
           mail: {
             label: 'Mail:',
             type: 'email',
-            validators: {}
+            validators: {},
+            hint: ''
           },
           active: {
             label: 'Active:',
             type: 'boolean',
-            validators: {}
+            validators: {},
+            hint: ''
           },
           created: {
             label: 'Created:',
             type: 'date',
-            validators: {}
+            validators: {},
+            hint: ''
           },
           custom: {
             label: 'Custom Label:',
             type: 'number',
-            validators: {}
+            validators: {},
+            hint: 'Test Hint'
           }
         };
 

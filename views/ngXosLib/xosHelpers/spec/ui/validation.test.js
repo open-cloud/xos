@@ -7,27 +7,46 @@
 (function () {
   'use strict';
 
+  let compile, element, scope, isolatedScope;
+
+  const compileElement = (el) => {
+    element = el;
+
+    if(!scope){
+      scope = rootScope.$new();
+    }
+    if(!angular.isDefined(element)){
+      element = angular.element('<xos-validation field="field" form="form"></xos-validation>');
+    }
+    compile(element)(scope);
+    scope.$digest();
+    isolatedScope = element.isolateScope().vm;
+  }
+
   describe('The xos.helper module', function(){
     describe('The xos-validation component', () => {
 
-      let element, scope, isolatedScope;
-
       beforeEach(module('xos.helpers'));
 
-      beforeEach(inject(($compile, $rootScope) => {
+      describe('when the form has no errors', () => {
+        beforeEach(inject(($compile, $rootScope) => {
+          compile = $compile;
+          scope = $rootScope.$new();
 
-        scope = $rootScope.$new();
+          scope.field = {
+            $error: {}
+          };
 
-        scope.errors = {};
+          scope.form = {
+            $submitted: true
+          }
 
-        element = angular.element(`<xos-validation errors="errors"></xos-validation>`);
-        $compile(element)(scope);
-        scope.$digest();
-        isolatedScope = element.isolateScope().vm;
-      }));
+          compileElement();
+        }));
 
-      it('should not show an alert', () => {
-        expect($(element).find('xos-alert > .alert')[0]).toHaveClass('ng-hide');
+        it('should not show an alert by default', () => {
+          expect($(element).find('xos-alert > .alert')[0]).toHaveClass('ng-hide');
+        });
       });
 
       let availableErrors = [
@@ -56,8 +75,8 @@
       // use a loop to generate similar test
       availableErrors.forEach((e, i) => {
         it(`should show an alert for ${e.type} errors`, () => {
-          scope.errors[e.type] = true;
-          scope.$digest();
+          scope.field.$error[e.type] = true;
+          compileElement();
           let alert = $(element).find('xos-alert > .alert')[i];
           expect(alert).not.toHaveClass('ng-hide');
           expect(alert).toHaveText(e.message);

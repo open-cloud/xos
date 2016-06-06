@@ -18,6 +18,7 @@ from services.onos.models import ONOSService, ONOSApp
 from xos.logger import Logger, logging
 from services.vrouter.models import VRouterService
 from services.vtn.models import VTNService
+from services.cord.models import VOLTService, VOLTDevice, AccessDevice
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")
@@ -243,18 +244,44 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         return json.dumps(data, indent=4, sort_keys=True)
 
     def get_volt_network_config(self, o, attrs):
-        data = {
-            "devices" : {
-                "of:1000000000000001" : {
-                    "accessDevice" : {
-                        "uplink" : "2",
-                        "vlan"   : "222",
-                    },
-                    "basic" : {
-                        "driver" : "pmc-olt"
-                    }
+        try:
+            volt = VOLTService.get_service_objects().all()[0]
+        except:
+            return None
+
+        devices = []
+        for voltdev in volt.volt_devices.all():
+            access_devices = []
+            for access in voltdev.access_devices.all():
+                access_device = {
+                    "uplink" : access.uplink,
+                    "vlan" : access.vlan
+                }
+                access_devices.append(access_device)
+
+            if voltdev.access_agent:
+                agent = voltdev.access_agent
+                olts = {}
+                for port_mapping in agent.port_mappings.all():
+                    olts[port_mapping.port] = port_mapping.mac
+                agent_config = {
+                    "olts" : olts,
+                    "mac" : agent.mac
+                }
+
+            device = {
+                voltdev.openflow_id : {
+                    "accessDevice" : access_devices,
+                    "accessAgent" : agent_config
+                },
+                "basic" : {
+                    "driver" : voltdev.driver
                 }
             }
+            devices.append(device)
+
+        data = {
+            "devices" : devices
         }
         return json.dumps(data, indent=4, sort_keys=True)
 

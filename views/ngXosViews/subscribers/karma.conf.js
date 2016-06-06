@@ -26,6 +26,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: bowerComponents.concat([
+      'node_modules/babel-polyfill/dist/polyfill.js',
       '../../../xos/core/xoslib/static/js/vendor/ngXosVendor.js',
       '../../../xos/core/xoslib/static/js/vendor/ngXosHelpers.js',
       'src/js/**/*.js',
@@ -78,7 +79,10 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
+    browsers: [
+      'PhantomJS',
+      'Chrome'
+    ],
 
 
     // Continuous Integration mode
