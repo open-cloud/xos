@@ -19,12 +19,12 @@
 {%- endfor %}
 {%- endif %}
 {%- if container.volumes %}
-{%- for volume in container.volumes %}
   volumes:
+{%- for volume in container.volumes %}
 {%- if volume.read_only %}
-    - {{ volume.host_path }}:{ volume.container_path }}:ro
+    - {{ volume.host_path }}:{{ volume.container_path }}:ro
 {%- else %}
-    - {{ volume.host_path }}:{ volume.container_path }}
+    - {{ volume.host_path }}:{{ volume.container_path }}
 {%- endif %}
 {%- endfor %}
 {%- endif %}
