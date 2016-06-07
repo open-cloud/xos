@@ -49,6 +49,10 @@ node_types:
                 type: integer
                 required: false
                 descrption: TCP port of bootstrap user interface
+            container_base_name:
+                type: string
+                required: false
+                description: Base name for containers
 
 
     tosca.nodes.XOSVolume:
