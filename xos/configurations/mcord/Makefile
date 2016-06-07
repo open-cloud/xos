@@ -31,6 +31,9 @@ enter-os:
 enter-vbbu:
 	sudo docker exec -it mcord_xos_synchronizer_vbbu_1 bash
 
+enter-vpgwc:
+	sudo docker exec -it mcord_xos_synchronizer_vpgwc_1 bash
+
 upgrade_pkgs:
 	sudo pip install httpie --upgrade
 

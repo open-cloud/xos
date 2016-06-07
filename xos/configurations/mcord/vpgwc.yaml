@@ -32,7 +32,7 @@ node_types:
                 description: Do not allow Tosca to update this object
             kind:
                 type: string
-                default: RAN
+                default: VPGWC_KIND
                 description: Type of service.
             view_url:
                 type: string
@@ -62,36 +62,6 @@ node_types:
                 required: false
                 description: Version number of Service.
 
-    tosca.nodes.VBBUComponent:
-        derived_from: tosca.nodes.Root
-        description: >
-            CORD: vBBU Component of MCORD Service.
-        properties:
-            kind:
-                type: string
-                default: RAN 
-                description: Kind of component
-            s1u_tag:
-                type: string
-                required: false
-                default: 901
-                description: VTN stag port-name
-            s1mme_tag:
-                type: string
-                required: false
-                default: 900
-                description: VTN stag port-name
-            rru_tag:
-                type: string
-                required: false
-                default: 999 
-                description: VTN stag port-name
-            display_message:
-                type: string
-                required: false
-                default: New vBBU Component 
-                description: Just a message 
-                
     tosca.nodes.VPGWCComponent:
         derived_from: tosca.nodes.Root
         description: >
@@ -99,7 +69,7 @@ node_types:
         properties:
             kind:
                 type: string
-                default: VPGWC_KIND
+                default: VPGWC_KIND 
                 description: Kind of component
             s5s8_pgw_tag:
                 type: string
@@ -109,28 +79,17 @@ node_types:
             display_message:
                 type: string
                 required: false
-                default: New vPGWc Component 
+                default: New vPGWC Component 
                 description: Just a message 
+                
 
 topology_template:
   node_templates:
-    vBBU:
-      type: tosca.nodes.MCORDService
-      requirements:
-      properties:
-          kind: RAN
-          icon_url: /static/mCordServices/service_server.png
-          view_url: /admin/mcord/vbbucomponent
-          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
-          private_key_fn: /opt/xos/configurations/mcord/mcord_private_key
-      artifacts:
-          pubkey: /opt/xos/configurations/mcord/mcord_public_key
-
     vPGWC:
       type: tosca.nodes.MCORDService
       requirements:
       properties:
-          kind: vEPC
+          kind: VPGWC_KIND
           icon_url: /static/mCordServices/service_server.png
           view_url: /admin/mcord/vpgwccomponent
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
@@ -160,66 +119,6 @@ topology_template:
 #          no-delete: true
 #          no-update: true
 
-    lan_3gpp_s1mme_network:
-      type: tosca.nodes.network.Network.XOS
-      properties:
-          ip_version: 4
-          labels: lan_3gpp_s1uc_net
-          cidr: 172.16.1.0/24
-          start_ip: 172.16.1.3
-          end_ip: 172.16.1.12
-          gateway_ip: 172.16.1.1
-      requirements:
-          - network_template:
-              node: External
-              relationship: tosca.relationships.UsesNetworkTemplate
-          - owner:
-              node: mysite_mobile_net
-              relationship: tosca.relationships.MemberOfSlice
-          - connection:
-              node: mysite_vbbu_slice1
-              relationship: tosca.relationships.ConnectsToSlice
-
-    lan_3gpp_s1u_network:
-      type: tosca.nodes.network.Network.XOS
-      properties:
-          ip_version: 4
-          labels: lan_3gpp_s1u_net
-          cidr: 172.16.2.0/24
-          start_ip: 172.16.2.3
-          end_ip: 172.16.2.12
-          gateway_ip: 172.16.16.1
-      requirements:
-          - network_template:
-              node: External
-              relationship: tosca.relationships.UsesNetworkTemplate
-          - owner:
-              node: mysite_mobile_net
-              relationship: tosca.relationships.MemberOfSlice
-          - connection:
-              node: mysite_vbbu_slice1
-              relationship: tosca.relationships.ConnectsToSlice
-
-    lan_rru_network:
-      type: tosca.nodes.network.Network.XOS
-      properties:
-          ip_version: 4
-          labels: lan_rru_net
-          cidr: 172.16.0.0/24
-          start_ip: 172.16.0.3
-          end_ip: 172.16.0.12
-          gateway_ip: 172.16.0.1
-      requirements:
-          - network_template:
-              node: External
-              relationship: tosca.relationships.UsesNetworkTemplate
-          - owner:
-              node: mysite_mobile_net
-              relationship: tosca.relationships.MemberOfSlice
-          - connection:
-              node: mysite_vbbu_slice1
-              relationship: tosca.relationships.ConnectsToSlice
-
     lan_3gpp_s5s8_pgw_network:
       type: tosca.nodes.network.Network.XOS
       properties:
@@ -242,9 +141,6 @@ topology_template:
 
     mysite:
       type: tosca.nodes.Site
-
-    mcord-bbu-multi-nic:
-      type: tosca.nodes.Image
 
     mcord-vpgwc-onos-multi-nic:
       type: tosca.nodes.Image
@@ -269,30 +165,6 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
 
-    mysite_vbbu_slice1:
-      description: vBBU Service Slice 1
-      type: tosca.nodes.Slice
-      requirements:
-          - vBBU:
-              node: vBBU
-              relationship: tosca.relationships.MemberOfService
-          - site:
-              node: mysite
-              relationship: tosca.relationships.MemberOfSite
-          - default_image:
-                node: mcord-bbu-multi-nic 
-                relationship: tosca.relationships.DefaultImage
-          - default_flavor:
-                node: m1.xlarge
-                relationship: tosca.relationships.DefaultFlavor
-          - management:
-              node: management
-              relationship: tosca.relationships.ConnectsToNetwork
-      properties:
-          network: noauto
-#          default_flavor: m1.xlarge
-          default_node: computeBBU2 
-
     mysite_vpgwc_slice1:
       description: vPGWC Service Slice 1
       type: tosca.nodes.Slice
@@ -314,8 +186,8 @@ topology_template:
               relationship: tosca.relationships.ConnectsToNetwork
       properties:
           network: noauto
-          default_node: compute10
-
+          default_node: compute10 
+    
     mysite_VPGWC_Component:
       description: MCORD Service default Component
       type: tosca.nodes.VPGWCComponent
@@ -329,4 +201,3 @@ topology_template:
       properties:
           display_message: vPGWC looks good!
           s5s8_pgw_tag: 300
-
