@@ -31,4 +31,9 @@ RUN curl -fSL "https://${DOCKER_BUCKET}/builds/Linux/x86_64/docker-$DOCKER_VERSI
 # parent's docker build system, making the images available for
 # instantiation on the parent. 
 
+# Now install docker-compose
+
+RUN bash -c "curl -L https://github.com/docker/compose/releases/download/1.5.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose"
+RUN chmod +x /usr/local/bin/docker-compose
+
 CMD update-ca-certificates && /usr/bin/supervisord -c /etc/supervisor/conf.d/synchronizer.conf
