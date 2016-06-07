@@ -184,6 +184,14 @@ node_types:
                 type: string
                 required: false
                 description: url of tosca custom_types
+            rest_service:
+                type: string
+                required: false
+                description: url of REST API service file
+            rest_tenant:
+                type: string
+                required: false
+                description: url of REST API tenant file
             private_key:
                 type: string
                 required: false

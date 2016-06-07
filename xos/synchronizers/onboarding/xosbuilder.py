@@ -34,6 +34,8 @@ class XOSBuilder(object):
                      "synchronizer": "%s/synchronizers/%s/" % (xos_base, service_name),
                      "tosca_custom_types": "%s/tosca/custom_types/" % (xos_base),
                      "tosca_resource": "%s/tosca/resources/" % (xos_base),
+                     "rest_service": "%s/api/service/" % (xos_base),
+                     "rest_tenant": "%s/api/service/" % (xos_base),
                      "private_key": "%s/services/%s/keys" % (xos_base, service_name),
                      "public_key": "%s/services/%s/keys/" % (xos_base, service_name)}
         return base_dirs[scr.kind]
