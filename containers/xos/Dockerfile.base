@@ -46,6 +46,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     software-properties-common \
     supervisor \
     tar \
+    unzip \
     wget \
  && rm -rf /var/lib/apt/lists/*
 
@@ -96,13 +97,32 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
 
 COPY ansible-hosts /etc/ansible/hosts
 
-# jQuery download w/checksum
+# jQuery
 ENV JQUERY_DL_URL http://code.jquery.com/jquery-1.12.4.min.js
 ENV JQUERY_SHA256 668b046d12db350ccba6728890476b3efee53b2f42dbb84743e5e9f1ae0cc404
 
 RUN curl -fLsS $JQUERY_DL_URL -o jquery.min.js && \
-  echo "$JQUERY_SHA256  jquery.min.js" | sha256sum -c - && \
-  mv jquery.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/jquery.min.js
+    echo "$JQUERY_SHA256  jquery.min.js" | sha256sum -c - && \
+    mv jquery.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
+
+# jQueryUI
+ENV JQUERYUI_DL_URL https://jqueryui.com/resources/download/jquery-ui-1.11.4.zip
+ENV JQUERYUI_SHA256 503e4c0f109bf627aff87a424edc760608ec15e4a6e37f217a083ca682543e32
+
+RUN curl -fLsS $JQUERYUI_DL_URL -o jquery-ui.zip && \
+    echo "$JQUERYUI_SHA256  jquery-ui.zip" | sha256sum -c - && \
+    unzip jquery-ui.zip && \
+    mv jquery-ui-*/jquery-ui.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/ && \
+    rm -rf jquery-ui.zip jquery-ui-*
+
+ENV JQUERYUI_THEMES_DL_URL http://jqueryui.com/resources/download/jquery-ui-themes-1.11.4.zip
+ENV JQUERYUI_THEMES_SHA256 df2b9cb084095ea24129a6a54587a1d9d7ae4bcd68bf5ea2957eb3d4d18fe884
+
+RUN curl -fLsS $JQUERYUI_THEMES_DL_URL -o jquery-ui-themes.zip && \
+    echo "$JQUERYUI_THEMES_SHA256  jquery-ui-themes.zip" | sha256sum -c - && \
+    unzip jquery-ui-themes.zip && \
+    mv jquery-ui-themes-*/themes/smoothness/jquery-ui.min.css /usr/local/lib/python2.7/dist-packages/suit/static/suit/css/ && \
+    rm -rf jquery-ui-themes.zip jquery-ui-themes-*
 
 # Install heat-translator for TOSCA support
 ENV HT_REPO_URL https://github.com/openstack/heat-translator.git
