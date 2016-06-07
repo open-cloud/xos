@@ -167,7 +167,11 @@ class XOSBuilder(object):
     def create_docker_compose(self):
          xos = XOS.objects.all()[0]
 
-         volume_list = [] # FINISH ME
+         volume_list = []
+         for volume in xos.volumes.all():
+             volume_list.append({"host_path": volume.host_path,
+                                 "container_path": volume.container_path,
+                                 "read_only": volume.read_only})
 
          containers = {}
 
