@@ -12,7 +12,7 @@ topology_template:
       properties:
         ui_port: 9999
         bootstrap_ui_port: 9998
-        container_base_name: frontend
+        docker_project_name: frontend
 
     /opt/xos/xos_configuration/xos_common_config:
       type: tosca.nodes.XOSVolume

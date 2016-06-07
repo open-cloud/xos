@@ -19,10 +19,10 @@ node_types:
                 type: integer
                 required: false
                 descrption: TCP port of bootstrap user interface
-            container_base_name:
+            docker_project_name:
                 type: string
                 required: false
-                description: Base name for containers
+                description: Docker project name
 
 
     tosca.nodes.XOSVolume:
