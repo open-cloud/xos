@@ -1,6 +1,7 @@
 {% for container_name, container in containers.iteritems() %}
 
 {{ container_name}}:
+#  container_name: {{ container.container_base_name }}_{{ container_name }}_1
   image: {{ container.image }}
 {%- if container.command %}
   command: {{ container.command }}
@@ -12,7 +13,7 @@
 {%- endfor %}
 {%- endif %}
 {%- if container.links %}
-  lines:
+  links:
 {%- for link in container.links %}
     - {{ link }}
 {%- endfor %}

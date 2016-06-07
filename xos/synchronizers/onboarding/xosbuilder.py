@@ -173,16 +173,19 @@ class XOSBuilder(object):
 
          containers["xos_db"] = \
                             {"image": "xosproject/xos-postgres",
+                             "container_base_name": xos.container_base_name,
                              "expose": [5432]}
 
          containers["xos_ui"] = \
                             {"image": "xosproject/xos-ui",
+                             "container_base_name": xos.container_base_name,
                              "command": "python /opt/xos/manage.py runserver 0.0.0.0:%d --insecure --makemigrations" % xos.ui_port,
                              "ports": {"%d"%xos.ui_port : "%d"%xos.ui_port},
                              "links": ["xos_db"],
                              "volumes": volume_list}
 
          containers["xos_bootstrap_ui"] = {"image": "xosproject/xos-ui",
+                             "container_base_name": xos.container_base_name,
                              "command": "python /opt/xos/manage.py runserver 0.0.0.0:%d --insecure --makemigrations" % xos.bootstrap_ui_port,
                              "ports": {"%d"%xos.bootstrap_ui_port : "%d"%xos.bootstrap_ui_port},
                              "links": ["xos_db"],
@@ -191,6 +194,7 @@ class XOSBuilder(object):
          for c in ServiceController.objects.all():
              containers["xos_synchronizer_%s" % c.name] = \
                             {"image": "xosproject/xos-synchronizer-%s" % controller.name,
+                             "container_base_name": xos.container_base_name,
                              "command": 'bash -c "sleep 120; bash /opt/xos/synchronizers/%s/run.sh"',
                              "links": ["xos_db"],
                              "volumes": volume_list}

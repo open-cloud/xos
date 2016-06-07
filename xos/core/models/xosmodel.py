@@ -12,6 +12,7 @@ class XOS(PlCoreBase):
     ui_port = models.IntegerField(help_text="Port for XOS UI", default=80)
     bootstrap_ui_port = models.IntegerField(help_text="Port for XOS UI", default=81)
     db_container_name = StrippedCharField(max_length=200, help_text="name of XOS db container", default="xos_db")
+    container_base_name = StrippedCharField(max_length=200, help_text="base name for containers")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
