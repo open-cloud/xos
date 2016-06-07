@@ -37,4 +37,6 @@ class XOSServiceController(XOSResource):
         self.postprocess_resource_prop(obj, "synchronizer", "manifest")
         self.postprocess_resource_prop(obj, "private_key", "raw")
         self.postprocess_resource_prop(obj, "public_key", "raw")
+        self.postprocess_resource_prop(obj, "rest_service", "python")
+        self.postprocess_resource_prop(obj, "rest_tenant", "python")
 
