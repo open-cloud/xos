@@ -15,6 +15,6 @@
       shell: chdir={{ build_dir }} docker build -f {{ dockerfile.dockerfile_fn }} --rm -t {{ dockerfile.docker_image_name }} .
     {% endfor %}
 
-#  - build_dockers:
-#    shell: docker build -f {{ '{{' }} item.dockerfile_fn {{ '}}' }} --rm -t {{ '{{' }} item.docker_image_name {{ '}}' }} .
-#    with items: "dockerfiles"
+    - name: run docker-compose
+      shell: docker-compose -p {{ docker_project_name }} -f /opt/xos/synchronizers/onboarding/docker-compose/docker-compose.yml up -d
+

@@ -34,6 +34,7 @@ class SyncXOS(SyncStep, XOSBuilder):
         dockerfiles = [self.create_ui_dockerfile()]
         tenant_fields = {"dockerfiles": dockerfiles,
                          "build_dir": self.build_dir,
+                         "docker_project_name": xos.docker_project_name,
                          "ansible_tag": xos.__class__.__name__ + "_" + str(xos.id)}
 
         path="XOS"
