@@ -36,6 +36,13 @@ restore-initial-db-status:
 	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
 
+	# sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/setup.yaml
+	# sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/nodes.yaml
+	# sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/images.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/mgmt-net.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/test-standalone/services.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/cord-volt-devices.yaml
+
 
 test: restore-initial-db-status
 	# RUN TESTS
@@ -44,6 +51,9 @@ test: restore-initial-db-status
 
 test-tosca: restore-initial-db-status
 	sudo docker-compose run xos bash -c "cd /opt/xos/tosca/tests; python ./alltests.py"
+
+test-ui: restore-initial-db-status
+	sudo docker exec -u root -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/ui-e2e; python xos-e2e-test.py"
 
 base-container: 
 	cd ../../../containers/xos; make base
