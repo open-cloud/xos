@@ -41,5 +41,15 @@
         username: {{ admin_user }}
         password: {{ admin_password }}
         project_name: {{ admin_project }}
+
+  # until we get 'no-gateway-ip' arg to os_subnet, in Ansible 2.2
+  - command:
+      neutron \
+      --os-auth-url {{ endpoint }} \
+      --os-username {{ admin_user }} \
+      --os-password {{ admin_password }} \
+      --os-tenant-name {{ admin_project }} \
+      subnet-update --no-gateway {{ subnet_name }}
+
 {% endif %}
 
