@@ -267,104 +267,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  *
  * Visit http://guide.xosproject.org/devguide/addview/ for more information
  *
- * Created by teone on 4/15/16.
- */
-
-(function () {
-  'use strict';
-
-  angular.module('xos.uiComponents')
-
-  /**
-    * @ngdoc directive
-    * @name xos.uiComponents.directive:xosValidation
-    * @restrict E
-    * @description The xos-validation directive
-    * @param {Object} errors The error object
-    * @element ANY
-    * @scope
-  * @example
-  <example module="sampleValidation">
-    <file name="index.html">
-      <div ng-controller="SampleCtrl as vm">
-        <div class="row">
-          <div class="col-xs-12">
-            <label>Set an error type:</label>
-          </div>
-          <div class="col-xs-2">
-            <a class="btn"
-              ng-click="vm.field.$error.required = !vm.field.$error.required"
-              ng-class="{'btn-default': !vm.field.$error.required, 'btn-success': vm.field.$error.required}">
-              Required
-            </a>
-          </div>
-          <div class="col-xs-2">
-            <a class="btn"
-              ng-click="vm.field.$error.email = !vm.field.$error.email"
-              ng-class="{'btn-default': !vm.field.$error.email, 'btn-success': vm.field.$error.email}">
-              Email
-            </a>
-          </div>
-          <div class="col-xs-2">
-            <a class="btn"
-              ng-click="vm.field.$error.minlength = !vm.field.$error.minlength"
-              ng-class="{'btn-default': !vm.field.$error.minlength, 'btn-success': vm.field.$error.minlength}">
-              Min Length
-            </a>
-          </div>
-          <div class="col-xs-2">
-            <a class="btn"
-              ng-click="vm.field.$error.maxlength = !vm.field.$error.maxlength"
-              ng-class="{'btn-default': !vm.field.$error.maxlength, 'btn-success': vm.field.$error.maxlength}">
-              Max Length
-            </a>
-          </div>
-        </div>
-        <xos-validation field ="vm.field" form = "vm.form"></xos-validation>
-      </div>
-    </file>
-    <file name="script.js">
-      angular.module('sampleValidation', ['xos.uiComponents'])
-      .controller('SampleCtrl', function(){
-        this.field = {
-          $error: {}
-        };
-        this.form= {
-        $submitted:true
-        }
-      });
-    </file>
-  </example>
-    */
-
-  .directive('xosValidation', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        field: '=',
-        form: '='
-      },
-      template: '\n        <div ng-cloak>\n          <xos-alert config="vm.config" show="vm.field.$error.required !== undefined && vm.field.$error.required !== false  && (vm.field.$touched || vm.form.$submitted)">\n            Field required\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.email !== undefined && vm.field.$error.email !== false && (vm.field.$touched || vm.form.$submitted)">\n            This is not a valid email\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.minlength !== undefined && vm.field.$error.minlength !== false && (vm.field.$touched || vm.form.$submitted)">\n            Too short\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.maxlength !== undefined && vm.field.$error.maxlength !== false && (vm.field.$touched || vm.form.$submitted)">\n            Too long\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.custom !== undefined && vm.field.$error.custom !== false && (vm.field.$touched || vm.form.$submitted)">\n            Field invalid\n          </xos-alert>\n        </div>\n      ',
-      transclude: true,
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: function controller() {
-        this.config = {
-          type: 'danger'
-        };
-      }
-    };
-  });
-})();
-//# sourceMappingURL=../../../maps/ui_components/dumbComponents/validation/validation.component.js.map
-
-'use strict';
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
  * Created by teone on 3/24/16.
  */
 
@@ -606,6 +508,104 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   });
 })();
 //# sourceMappingURL=../../../maps/ui_components/smartComponents/smartPie/smartPie.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 4/15/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosValidation
+    * @restrict E
+    * @description The xos-validation directive
+    * @param {Object} errors The error object
+    * @element ANY
+    * @scope
+  * @example
+  <example module="sampleValidation">
+    <file name="index.html">
+      <div ng-controller="SampleCtrl as vm">
+        <div class="row">
+          <div class="col-xs-12">
+            <label>Set an error type:</label>
+          </div>
+          <div class="col-xs-2">
+            <a class="btn"
+              ng-click="vm.field.$error.required = !vm.field.$error.required"
+              ng-class="{'btn-default': !vm.field.$error.required, 'btn-success': vm.field.$error.required}">
+              Required
+            </a>
+          </div>
+          <div class="col-xs-2">
+            <a class="btn"
+              ng-click="vm.field.$error.email = !vm.field.$error.email"
+              ng-class="{'btn-default': !vm.field.$error.email, 'btn-success': vm.field.$error.email}">
+              Email
+            </a>
+          </div>
+          <div class="col-xs-2">
+            <a class="btn"
+              ng-click="vm.field.$error.minlength = !vm.field.$error.minlength"
+              ng-class="{'btn-default': !vm.field.$error.minlength, 'btn-success': vm.field.$error.minlength}">
+              Min Length
+            </a>
+          </div>
+          <div class="col-xs-2">
+            <a class="btn"
+              ng-click="vm.field.$error.maxlength = !vm.field.$error.maxlength"
+              ng-class="{'btn-default': !vm.field.$error.maxlength, 'btn-success': vm.field.$error.maxlength}">
+              Max Length
+            </a>
+          </div>
+        </div>
+        <xos-validation field ="vm.field" form = "vm.form"></xos-validation>
+      </div>
+    </file>
+    <file name="script.js">
+      angular.module('sampleValidation', ['xos.uiComponents'])
+      .controller('SampleCtrl', function(){
+        this.field = {
+          $error: {}
+        };
+        this.form= {
+        $submitted:true
+        }
+      });
+    </file>
+  </example>
+    */
+
+  .directive('xosValidation', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        field: '=',
+        form: '='
+      },
+      template: '\n        <div ng-cloak>\n          <xos-alert config="vm.config" show="vm.field.$error.required !== undefined && vm.field.$error.required !== false  && (vm.field.$touched || vm.form.$submitted)">\n            Field required\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.email !== undefined && vm.field.$error.email !== false && (vm.field.$touched || vm.form.$submitted)">\n            This is not a valid email\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.minlength !== undefined && vm.field.$error.minlength !== false && (vm.field.$touched || vm.form.$submitted)">\n            Too short\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.maxlength !== undefined && vm.field.$error.maxlength !== false && (vm.field.$touched || vm.form.$submitted)">\n            Too long\n          </xos-alert>\n          <xos-alert config="vm.config" show="vm.field.$error.custom !== undefined && vm.field.$error.custom !== false && (vm.field.$touched || vm.form.$submitted)">\n            Field invalid\n          </xos-alert>\n        </div>\n      ',
+      transclude: true,
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: function controller() {
+        this.config = {
+          type: 'danger'
+        };
+      }
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/dumbComponents/validation/validation.component.js.map
 
 'use strict';
 
@@ -1324,9 +1324,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
           var diff = _.difference(Object.keys(model), _this.excludedField);
           var modelField = XosFormHelpers.parseModelField(diff);
-          console.log(modelField, _this.config.fields, model);
           _this.formField = XosFormHelpers.buildFormStructure(modelField, _this.config.fields, model);
-          console.log(_this.formField);
         });
       }]
     };
@@ -1460,7 +1458,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         field: '=',
         ngModel: '='
       },
-      template: '\n        <label ng-if="vm.field.type !== \'object\'">{{vm.field.label}}</label>\n        <!--<pre>{{vm.field | json}}</pre>-->\n        <!--<pre>{{vm.ngModel | json}}</pre>-->\n            <input\n              ng-if="vm.field.type !== \'boolean\' && vm.field.type !== \'object\' && vm.field.type !== \'select\'"\n              type="{{vm.field.type}}"\n              name="{{vm.name}}"\n              class="form-control"\n              ng-model="vm.ngModel"\n              ng-minlength="vm.field.validators.minlength || 0"\n              ng-maxlength="vm.field.validators.maxlength || 2000"\n              ng-required="vm.field.validators.required || false" />\n              <select class="form-control" ng-if ="vm.field.type === \'select\'"\n                name = "{{vm.name}}"\n                ng-options="item.id as item.label for item in vm.field.options track by item.id"\n                ng-model="vm.ngModel"\n                ng-required="vm.field.validators.required || false">\n                </select>\n            <span class="boolean-field" ng-if="vm.field.type === \'boolean\'">\n              <a\n                class="btn btn-success"\n                ng-show="vm.ngModel"\n                ng-click="vm.ngModel = false">\n                <i class="glyphicon glyphicon-ok"></i>\n              </a>\n              <a\n                class="btn btn-danger"\n                ng-show="!vm.ngModel"\n                ng-click="vm.ngModel = true">\n                <i class="glyphicon glyphicon-remove"></i>\n              </a>\n            </span>\n            <div\n              class="panel panel-default object-field"\n              ng-if="vm.field.type == \'object\' && !vm.isEmptyObject(vm.ngModel)"\n              >\n              <div class="panel-heading">{{vm.field.label}}</div>\n              <div class="panel-body">\n                <div ng-repeat="(k, v) in vm.ngModel">\n                  <xos-field\n                    name="k"\n                    field="{label: vm.formatLabel(k), type: vm.getType(v)}"\n                    ng-model="v">\n                  </xos-field>\n                </div>\n              </div>\n            </div>\n      ',
+      template: '\n        <label ng-if="vm.field.type !== \'object\'">{{vm.field.label}}</label>\n        <!--<pre>{{vm.field.options[0].id | json}}</pre>-->\n        <!--<pre>{{vm.ngModel | json}}</pre>-->\n            <input\n              ng-if="vm.field.type !== \'boolean\' && vm.field.type !== \'object\' && vm.field.type !== \'select\'"\n              type="{{vm.field.type}}"\n              name="{{vm.name}}"\n              class="form-control"\n              ng-model="vm.ngModel"\n              ng-minlength="vm.field.validators.minlength || 0"\n              ng-maxlength="vm.field.validators.maxlength || 2000"\n              ng-required="vm.field.validators.required || false" />\n              <select class="form-control" ng-if ="vm.field.type === \'select\'"\n                name = "{{vm.name}}"\n                ng-options="item.id as item.label for item in vm.field.options"\n                ng-model="vm.ngModel"\n                ng-required="vm.field.validators.required || false">\n                </select>\n            <span class="boolean-field" ng-if="vm.field.type === \'boolean\'">\n              <a\n                class="btn btn-success"\n                ng-show="vm.ngModel"\n                ng-click="vm.ngModel = false">\n                <i class="glyphicon glyphicon-ok"></i>\n              </a>\n              <a\n                class="btn btn-danger"\n                ng-show="!vm.ngModel"\n                ng-click="vm.ngModel = true">\n                <i class="glyphicon glyphicon-remove"></i>\n              </a>\n            </span>\n            <div\n              class="panel panel-default object-field"\n              ng-if="vm.field.type == \'object\' && !vm.isEmptyObject(vm.ngModel)"\n              >\n              <div class="panel-heading">{{vm.field.label}}</div>\n              <div class="panel-body">\n                <div ng-repeat="(k, v) in vm.ngModel">\n                  <xos-field\n                    name="k"\n                    field="{label: vm.formatLabel(k), type: vm.getType(v)}"\n                    ng-model="v">\n                  </xos-field>\n                </div>\n              </div>\n            </div>\n      ',
       bindToController: true,
       controllerAs: 'vm',
       // the compile cicle is needed to support recursion
@@ -1478,7 +1476,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (!$attrs.ngModel) {
           throw new Error('[xosField] Please provide an ng-model');
         }
-
+        if (this.field.type === 'select' && !this.ngModel) {
+          this.ngModel = this.field.options[0].id;
+        }
         this.getType = XosFormHelpers._getFieldFormat;
         this.formatLabel = LabelFormatter.format;
 
