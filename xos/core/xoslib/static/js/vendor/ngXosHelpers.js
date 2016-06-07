@@ -31,460 +31,6 @@
 
 'use strict';
 
-(function () {
-  'use strict';
-
-  /**
-  * @ngdoc service
-  * @name xos.uiComponents.LabelFormatter
-  * @description This factory define a set of helper function to format label started from an object property
-  **/
-
-  angular.module('xos.uiComponents').factory('LabelFormatter', labelFormatter);
-
-  function labelFormatter() {
-
-    var _formatByUnderscore = function _formatByUnderscore(string) {
-      return string.split('_').join(' ').trim();
-    };
-
-    var _formatByUppercase = function _formatByUppercase(string) {
-      return string.split(/(?=[A-Z])/).map(function (w) {
-        return w.toLowerCase();
-      }).join(' ');
-    };
-
-    var _capitalize = function _capitalize(string) {
-      return string.slice(0, 1).toUpperCase() + string.slice(1);
-    };
-
-    var format = function format(string) {
-      string = _formatByUnderscore(string);
-      string = _formatByUppercase(string);
-
-      string = _capitalize(string).replace(/\s\s+/g, ' ') + ':';
-      return string.replace('::', ':');
-    };
-
-    return {
-      // test export
-      _formatByUnderscore: _formatByUnderscore,
-      _formatByUppercase: _formatByUppercase,
-      _capitalize: _capitalize,
-      // export to use
-      format: format
-    };
-  }
-})();
-//# sourceMappingURL=../../../maps/services/helpers/ui/label_formatter.service.js.map
-
-'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-(function () {
-
-  angular.module('xos.uiComponents')
-
-  /**
-  * @ngdoc service
-  * @name xos.uiComponents.XosFormHelpers
-  * @requires xos.uiComponents.LabelFormatter
-  * @requires xos.helpers._
-  **/
-
-  .service('XosFormHelpers', ["_", "LabelFormatter", function (_, LabelFormatter) {
-    var _this = this;
-
-    /**
-    * @ngdoc method
-    * @name xos.uiComponents.XosFormHelpers#_isEmail
-    * @methodOf xos.uiComponents.XosFormHelpers
-    * @description
-    * Return true if the string is an email address
-    * @param {string} text The string to be evaluated
-    * @returns {boolean} If the string match an email format
-    **/
-
-    this._isEmail = function (text) {
-      var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
-      return re.test(text);
-    };
-
-    /**
-    * @ngdoc method
-    * @name xos.uiComponents.XosFormHelpers#_getFieldFormat
-    * @methodOf xos.uiComponents.XosFormHelpers
-    * @description
-    * Return the type of the input
-    * @param {mixed} value The data to be evaluated
-    * @returns {string} The type of the input
-    **/
-
-    this._getFieldFormat = function (value) {
-
-      if (angular.isArray(value)) {
-        return 'array';
-      }
-
-      // check if is date
-      if (_.isDate(value) || !Number.isNaN(Date.parse(value)) && new Date(value).getTime() > 631180800000) {
-        return 'date';
-      }
-
-      // check if is boolean
-      // isNaN(false) = false, false is a number (0), true is a number (1)
-      if (typeof value === 'boolean') {
-        return 'boolean';
-      }
-
-      // check if a string is an email
-      if (_this._isEmail(value)) {
-        return 'email';
-      }
-
-      // if null return string
-      if (typeof value === 'string' || value === null) {
-        return 'text';
-      }
-
-      return typeof value === 'undefined' ? 'undefined' : _typeof(value);
-    };
-
-    /**
-    * @ngdoc method
-    * @name xos.uiComponents.XosFormHelpers#buildFormStructure
-    * @methodOf xos.uiComponents.XosFormHelpers
-    * @description
-    * Return the type of the input
-    * @param {object} modelField An object containing one property for each field of the model
-    * @param {object} customField An object containing one property for each field custom field
-    * @param {object} model The actual model on wich build the form structure (it is used to determine the type of the input)
-    * @returns {object} An object describing the form structure in the form of:
-    * ```
-    * {
-    *   'field-name': {
-    *     label: 'Label',
-    *     type: 'number', //typeof field
-    *     validators: {}, // see xosForm for more details
-    *     hint: 'A Custom hint for the field'
-    *   }
-    * }
-    * ```
-    **/
-
-    this.buildFormStructure = function (modelField, customField, model) {
-
-      // modelField = Object.keys(modelField).length > 0 ? modelField : customField; //if no model field are provided, check custom
-      modelField = angular.extend(modelField, customField);
-      customField = customField || {};
-
-      return _.reduce(Object.keys(modelField), function (form, f) {
-
-        form[f] = {
-          label: customField[f] && customField[f].label ? customField[f].label + ':' : LabelFormatter.format(f),
-          type: customField[f] && customField[f].type ? customField[f].type : _this._getFieldFormat(model[f]),
-          validators: customField[f] && customField[f].validators ? customField[f].validators : {},
-          hint: customField[f] && customField[f].hint ? customField[f].hint : ''
-        };
-
-        if (customField[f] && customField[f].options) {
-          form[f].options = customField[f].options;
-        }
-        if (form[f].type === 'date') {
-          model[f] = new Date(model[f]);
-        }
-
-        if (form[f].type === 'number') {
-          model[f] = parseInt(model[f], 10);
-        }
-
-        return form;
-      }, {});
-    };
-
-    /**
-    * @ngdoc method
-    * @name xos.uiComponents.XosFormHelpers#parseModelField
-    * @methodOf xos.uiComponents.XosFormHelpers
-    * @description
-    * Helpers for buildFormStructure, convert a list of model properties in an object used to build the form structure, eg:
-    * ```
-    * // input:
-    * ['id', 'name'm 'mail']
-    *
-    * // output
-    * {
-    *   id: {},
-    *   name: {},
-    *   mail: {}
-    * }
-    * ```
-    * @param {array} fields An array of fields representing the model properties
-    * @returns {object} An object containing one property for each field of the model
-    **/
-
-    this.parseModelField = function (fields) {
-      return _.reduce(fields, function (form, f) {
-        form[f] = {};
-        return form;
-      }, {});
-    };
-  }]);
-})();
-//# sourceMappingURL=../../../maps/services/helpers/ui/form.helpers.js.map
-
-'use strict';
-
-/**
- * © OpenCORD
- *
- * Visit http://guide.xosproject.org/devguide/addview/ for more information
- *
- * Created by teone on 3/24/16.
- */
-
-(function () {
-  'use strict';
-
-  angular.module('xos.uiComponents')
-  /**
-    * @ngdoc directive
-    * @name xos.uiComponents.directive:xosSmartPie
-    * @restrict E
-    * @description The xos-table directive
-    * @param {Object} config The configuration for the component,
-    * it is composed by the name of an angular [$resource](https://docs.angularjs.org/api/ngResource/service/$resource)
-    * and a field name that is used to group the data.
-    * ```
-    * {
-        resource: 'Users',
-        groupBy: 'fieldName',
-        classes: 'my-custom-class',
-        labelFormatter: (labels) => {
-          // here you can format your label,
-          // you should return an array with the same order
-          return labels;
-        }
-      }
-    * ```
-    * @scope
-    * @example
-    
-    Displaying Local data
-      <example module="sampleSmartPieLocal">
-      <file name="index.html">
-        <div ng-controller="SampleCtrlLocal as vm">
-          <xos-smart-pie config="vm.configLocal"></xos-smart-pie>
-        </div>
-      </file>
-      <file name="script.js">
-        angular.module('sampleSmartPieLocal', ['xos.uiComponents'])
-        .factory('_', function($window){
-          return $window._;
-        })
-        .controller('SampleCtrlLocal', function($timeout){
-          
-          this.datas = [
-            {id: 1, first_name: 'Jon', last_name: 'aaa', category: 2},
-            {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 1},
-            {id: 3, first_name: 'Aria', last_name: 'Stark', category: 2}
-          ];
-            this.configLocal = {
-            data: [],
-            groupBy: 'category',
-            classes: 'local',
-            labelFormatter: (labels) => {
-              return labels.map(l => l === '1' ? 'North' : 'Dragon');
-            }
-          };
-          
-          $timeout(() => {
-            // this need to be triggered in this way just because of ngDoc,
-            // otherwise you can assign data directly in the config
-            this.configLocal.data = this.datas;
-          }, 1)
-        });
-      </file>
-    </example>
-      Fetching data from API
-      <example module="sampleSmartPieResource">
-      <file name="index.html">
-        <div ng-controller="SampleCtrl as vm">
-          <xos-smart-pie config="vm.config"></xos-smart-pie>
-        </div>
-      </file>
-      <file name="script.js">
-        angular.module('sampleSmartPieResource', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
-        .controller('SampleCtrl', function(){
-          this.config = {
-            resource: 'SampleResource',
-            groupBy: 'category',
-            classes: 'resource',
-            labelFormatter: (labels) => {
-              return labels.map(l => l === '1' ? 'North' : 'Dragon');
-            }
-          };
-        });
-      </file>
-      <file name="backendPoll.js">
-        angular.module('sampleSmartPieResource')
-        .run(function($httpBackend, _){
-          let datas = [
-            {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
-            {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
-            {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1}
-          ];
-            $httpBackend.whenGET('/test').respond(200, datas)
-        })
-        .factory('_', function($window){
-          return $window._;
-        })
-        .service('SampleResource', function($resource){
-          return $resource('/test/:id', {id: '@id'});
-        })
-      </file>
-    </example>
-      Polling data from API
-      <example module="sampleSmartPiePoll">
-      <file name="index.html">
-        <div ng-controller="SampleCtrl as vm">
-          <xos-smart-pie config="vm.config"></xos-smart-pie>
-        </div>
-      </file>
-      <file name="script.js">
-        angular.module('sampleSmartPiePoll', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
-        .controller('SampleCtrl', function(){
-          this.config = {
-            resource: 'SampleResource',
-            groupBy: 'category',
-            poll: 2,
-            labelFormatter: (labels) => {
-              return labels.map(l => l === '1' ? 'Active' : 'Banned');
-            }
-          };
-        });
-      </file>
-      <file name="backend.js">
-        angular.module('sampleSmartPiePoll')
-        .run(function($httpBackend, _){
-          let mock = [
-            [
-              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
-              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
-              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1},
-              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 1}
-            ],
-              [
-              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
-              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
-              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 2},
-              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 2}
-            ],
-              [
-              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
-              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
-              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1},
-              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 2}
-            ]
-          ];
-          $httpBackend.whenGET('/test').respond(function(method, url, data, headers, params) {
-            return [200, mock[Math.round(Math.random() * 3)]];
-          });
-        })
-        .factory('_', function($window){
-          return $window._;
-        })
-        .service('SampleResource', function($resource){
-          return $resource('/test/:id', {id: '@id'});
-        })
-      </file>
-    </example>
-    */
-  .directive('xosSmartPie', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        config: '='
-      },
-      template: '\n        <canvas\n          class="chart chart-pie {{vm.config.classes}}"\n          chart-data="vm.data" chart-labels="vm.labels"\n          chart-legend="{{vm.config.legend}}">\n        </canvas>\n      ',
-      bindToController: true,
-      controllerAs: 'vm',
-      controller: ["$injector", "$interval", "$scope", "$timeout", "_", function controller($injector, $interval, $scope, $timeout, _) {
-        var _this = this;
-
-        if (!this.config.resource && !this.config.data) {
-          throw new Error('[xosSmartPie] Please provide a resource or an array of data in the configuration');
-        }
-
-        var groupData = function groupData(data) {
-          return _.groupBy(data, _this.config.groupBy);
-        };
-        var formatData = function formatData(data) {
-          return _.reduce(Object.keys(data), function (list, group) {
-            return list.concat(data[group].length);
-          }, []);
-        };
-        var formatLabels = function formatLabels(data) {
-          return angular.isFunction(_this.config.labelFormatter) ? _this.config.labelFormatter(Object.keys(data)) : Object.keys(data);
-        };
-
-        var prepareData = function prepareData(data) {
-          // group data
-          var grouped = groupData(data);
-          _this.data = formatData(grouped);
-          // create labels
-          _this.labels = formatLabels(grouped);
-        };
-
-        if (this.config.resource) {
-          (function () {
-
-            _this.Resource = $injector.get(_this.config.resource);
-            var getData = function getData() {
-              _this.Resource.query().$promise.then(function (res) {
-
-                if (!res[0]) {
-                  return;
-                }
-
-                prepareData(res);
-              });
-            };
-
-            getData();
-
-            if (_this.config.poll) {
-              $interval(function () {
-                getData();
-              }, _this.config.poll * 1000);
-            }
-          })();
-        } else {
-          $scope.$watch(function () {
-            return _this.config.data;
-          }, function (data) {
-            if (data) {
-              prepareData(_this.config.data);
-            }
-          }, true);
-        }
-
-        $scope.$on('create', function (event, chart) {
-          console.log('create: ' + chart.id);
-        });
-
-        $scope.$on('destroy', function (event, chart) {
-          console.log('destroy: ' + chart.id);
-        });
-      }]
-    };
-  });
-})();
-//# sourceMappingURL=../../../maps/ui_components/smartComponents/smartPie/smartPie.component.js.map
-
-'use strict';
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 /**
@@ -811,6 +357,255 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   });
 })();
 //# sourceMappingURL=../../../maps/ui_components/dumbComponents/validation/validation.component.js.map
+
+'use strict';
+
+/**
+ * © OpenCORD
+ *
+ * Visit http://guide.xosproject.org/devguide/addview/ for more information
+ *
+ * Created by teone on 3/24/16.
+ */
+
+(function () {
+  'use strict';
+
+  angular.module('xos.uiComponents')
+  /**
+    * @ngdoc directive
+    * @name xos.uiComponents.directive:xosSmartPie
+    * @restrict E
+    * @description The xos-table directive
+    * @param {Object} config The configuration for the component,
+    * it is composed by the name of an angular [$resource](https://docs.angularjs.org/api/ngResource/service/$resource)
+    * and a field name that is used to group the data.
+    * ```
+    * {
+        resource: 'Users',
+        groupBy: 'fieldName',
+        classes: 'my-custom-class',
+        labelFormatter: (labels) => {
+          // here you can format your label,
+          // you should return an array with the same order
+          return labels;
+        }
+      }
+    * ```
+    * @scope
+    * @example
+    
+    Displaying Local data
+      <example module="sampleSmartPieLocal">
+      <file name="index.html">
+        <div ng-controller="SampleCtrlLocal as vm">
+          <xos-smart-pie config="vm.configLocal"></xos-smart-pie>
+        </div>
+      </file>
+      <file name="script.js">
+        angular.module('sampleSmartPieLocal', ['xos.uiComponents'])
+        .factory('_', function($window){
+          return $window._;
+        })
+        .controller('SampleCtrlLocal', function($timeout){
+          
+          this.datas = [
+            {id: 1, first_name: 'Jon', last_name: 'aaa', category: 2},
+            {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 1},
+            {id: 3, first_name: 'Aria', last_name: 'Stark', category: 2}
+          ];
+            this.configLocal = {
+            data: [],
+            groupBy: 'category',
+            classes: 'local',
+            labelFormatter: (labels) => {
+              return labels.map(l => l === '1' ? 'North' : 'Dragon');
+            }
+          };
+          
+          $timeout(() => {
+            // this need to be triggered in this way just because of ngDoc,
+            // otherwise you can assign data directly in the config
+            this.configLocal.data = this.datas;
+          }, 1)
+        });
+      </file>
+    </example>
+      Fetching data from API
+      <example module="sampleSmartPieResource">
+      <file name="index.html">
+        <div ng-controller="SampleCtrl as vm">
+          <xos-smart-pie config="vm.config"></xos-smart-pie>
+        </div>
+      </file>
+      <file name="script.js">
+        angular.module('sampleSmartPieResource', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
+        .controller('SampleCtrl', function(){
+          this.config = {
+            resource: 'SampleResource',
+            groupBy: 'category',
+            classes: 'resource',
+            labelFormatter: (labels) => {
+              return labels.map(l => l === '1' ? 'North' : 'Dragon');
+            }
+          };
+        });
+      </file>
+      <file name="backendPoll.js">
+        angular.module('sampleSmartPieResource')
+        .run(function($httpBackend, _){
+          let datas = [
+            {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
+            {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
+            {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1}
+          ];
+            $httpBackend.whenGET('/test').respond(200, datas)
+        })
+        .factory('_', function($window){
+          return $window._;
+        })
+        .service('SampleResource', function($resource){
+          return $resource('/test/:id', {id: '@id'});
+        })
+      </file>
+    </example>
+      Polling data from API
+      <example module="sampleSmartPiePoll">
+      <file name="index.html">
+        <div ng-controller="SampleCtrl as vm">
+          <xos-smart-pie config="vm.config"></xos-smart-pie>
+        </div>
+      </file>
+      <file name="script.js">
+        angular.module('sampleSmartPiePoll', ['xos.uiComponents', 'ngResource', 'ngMockE2E'])
+        .controller('SampleCtrl', function(){
+          this.config = {
+            resource: 'SampleResource',
+            groupBy: 'category',
+            poll: 2,
+            labelFormatter: (labels) => {
+              return labels.map(l => l === '1' ? 'Active' : 'Banned');
+            }
+          };
+        });
+      </file>
+      <file name="backend.js">
+        angular.module('sampleSmartPiePoll')
+        .run(function($httpBackend, _){
+          let mock = [
+            [
+              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
+              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
+              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1},
+              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 1}
+            ],
+              [
+              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
+              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
+              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 2},
+              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 2}
+            ],
+              [
+              {id: 1, first_name: 'Jon', last_name: 'Snow', category: 1},
+              {id: 2, first_name: 'Danaerys', last_name: 'Targaryen', category: 2},
+              {id: 3, first_name: 'Aria', last_name: 'Stark', category: 1},
+              {id: 3, first_name: 'Tyrion', last_name: 'Lannister', category: 2}
+            ]
+          ];
+          $httpBackend.whenGET('/test').respond(function(method, url, data, headers, params) {
+            return [200, mock[Math.round(Math.random() * 3)]];
+          });
+        })
+        .factory('_', function($window){
+          return $window._;
+        })
+        .service('SampleResource', function($resource){
+          return $resource('/test/:id', {id: '@id'});
+        })
+      </file>
+    </example>
+    */
+  .directive('xosSmartPie', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        config: '='
+      },
+      template: '\n        <canvas\n          class="chart chart-pie {{vm.config.classes}}"\n          chart-data="vm.data" chart-labels="vm.labels"\n          chart-legend="{{vm.config.legend}}">\n        </canvas>\n      ',
+      bindToController: true,
+      controllerAs: 'vm',
+      controller: ["$injector", "$interval", "$scope", "$timeout", "_", function controller($injector, $interval, $scope, $timeout, _) {
+        var _this = this;
+
+        if (!this.config.resource && !this.config.data) {
+          throw new Error('[xosSmartPie] Please provide a resource or an array of data in the configuration');
+        }
+
+        var groupData = function groupData(data) {
+          return _.groupBy(data, _this.config.groupBy);
+        };
+        var formatData = function formatData(data) {
+          return _.reduce(Object.keys(data), function (list, group) {
+            return list.concat(data[group].length);
+          }, []);
+        };
+        var formatLabels = function formatLabels(data) {
+          return angular.isFunction(_this.config.labelFormatter) ? _this.config.labelFormatter(Object.keys(data)) : Object.keys(data);
+        };
+
+        var prepareData = function prepareData(data) {
+          // group data
+          var grouped = groupData(data);
+          _this.data = formatData(grouped);
+          // create labels
+          _this.labels = formatLabels(grouped);
+        };
+
+        if (this.config.resource) {
+          (function () {
+
+            _this.Resource = $injector.get(_this.config.resource);
+            var getData = function getData() {
+              _this.Resource.query().$promise.then(function (res) {
+
+                if (!res[0]) {
+                  return;
+                }
+
+                prepareData(res);
+              });
+            };
+
+            getData();
+
+            if (_this.config.poll) {
+              $interval(function () {
+                getData();
+              }, _this.config.poll * 1000);
+            }
+          })();
+        } else {
+          $scope.$watch(function () {
+            return _this.config.data;
+          }, function (data) {
+            if (data) {
+              prepareData(_this.config.data);
+            }
+          }, true);
+        }
+
+        $scope.$on('create', function (event, chart) {
+          console.log('create: ' + chart.id);
+        });
+
+        $scope.$on('destroy', function (event, chart) {
+          console.log('destroy: ' + chart.id);
+        });
+      }]
+    };
+  });
+})();
+//# sourceMappingURL=../../../maps/ui_components/smartComponents/smartPie/smartPie.component.js.map
 
 'use strict';
 
@@ -1834,6 +1629,210 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   });
 })();
 //# sourceMappingURL=../../../maps/ui_components/dumbComponents/alert/alert.component.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  /**
+  * @ngdoc service
+  * @name xos.uiComponents.LabelFormatter
+  * @description This factory define a set of helper function to format label started from an object property
+  **/
+
+  angular.module('xos.uiComponents').factory('LabelFormatter', labelFormatter);
+
+  function labelFormatter() {
+
+    var _formatByUnderscore = function _formatByUnderscore(string) {
+      return string.split('_').join(' ').trim();
+    };
+
+    var _formatByUppercase = function _formatByUppercase(string) {
+      return string.split(/(?=[A-Z])/).map(function (w) {
+        return w.toLowerCase();
+      }).join(' ');
+    };
+
+    var _capitalize = function _capitalize(string) {
+      return string.slice(0, 1).toUpperCase() + string.slice(1);
+    };
+
+    var format = function format(string) {
+      string = _formatByUnderscore(string);
+      string = _formatByUppercase(string);
+
+      string = _capitalize(string).replace(/\s\s+/g, ' ') + ':';
+      return string.replace('::', ':');
+    };
+
+    return {
+      // test export
+      _formatByUnderscore: _formatByUnderscore,
+      _formatByUppercase: _formatByUppercase,
+      _capitalize: _capitalize,
+      // export to use
+      format: format
+    };
+  }
+})();
+//# sourceMappingURL=../../../maps/services/helpers/ui/label_formatter.service.js.map
+
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+(function () {
+
+  angular.module('xos.uiComponents')
+
+  /**
+  * @ngdoc service
+  * @name xos.uiComponents.XosFormHelpers
+  * @requires xos.uiComponents.LabelFormatter
+  * @requires xos.helpers._
+  **/
+
+  .service('XosFormHelpers', ["_", "LabelFormatter", function (_, LabelFormatter) {
+    var _this = this;
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#_isEmail
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Return true if the string is an email address
+    * @param {string} text The string to be evaluated
+    * @returns {boolean} If the string match an email format
+    **/
+
+    this._isEmail = function (text) {
+      var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+      return re.test(text);
+    };
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#_getFieldFormat
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Return the type of the input
+    * @param {mixed} value The data to be evaluated
+    * @returns {string} The type of the input
+    **/
+
+    this._getFieldFormat = function (value) {
+
+      if (angular.isArray(value)) {
+        return 'array';
+      }
+
+      // check if is date
+      if (_.isDate(value) || !Number.isNaN(Date.parse(value)) && new Date(value).getTime() > 631180800000) {
+        return 'date';
+      }
+
+      // check if is boolean
+      // isNaN(false) = false, false is a number (0), true is a number (1)
+      if (typeof value === 'boolean') {
+        return 'boolean';
+      }
+
+      // check if a string is an email
+      if (_this._isEmail(value)) {
+        return 'email';
+      }
+
+      // if null return string
+      if (typeof value === 'string' || value === null) {
+        return 'text';
+      }
+
+      return typeof value === 'undefined' ? 'undefined' : _typeof(value);
+    };
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#buildFormStructure
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Return the type of the input
+    * @param {object} modelField An object containing one property for each field of the model
+    * @param {object} customField An object containing one property for each field custom field
+    * @param {object} model The actual model on wich build the form structure (it is used to determine the type of the input)
+    * @returns {object} An object describing the form structure in the form of:
+    * ```
+    * {
+    *   'field-name': {
+    *     label: 'Label',
+    *     type: 'number', //typeof field
+    *     validators: {}, // see xosForm for more details
+    *     hint: 'A Custom hint for the field'
+    *   }
+    * }
+    * ```
+    **/
+
+    this.buildFormStructure = function (modelField, customField, model) {
+
+      modelField = angular.extend(modelField, customField);
+      customField = customField || {};
+
+      return _.reduce(Object.keys(modelField), function (form, f) {
+
+        form[f] = {
+          label: customField[f] && customField[f].label ? customField[f].label + ':' : LabelFormatter.format(f),
+          type: customField[f] && customField[f].type ? customField[f].type : _this._getFieldFormat(model[f]),
+          validators: customField[f] && customField[f].validators ? customField[f].validators : {},
+          hint: customField[f] && customField[f].hint ? customField[f].hint : ''
+        };
+
+        if (customField[f] && customField[f].options) {
+          form[f].options = customField[f].options;
+        }
+        if (form[f].type === 'date') {
+          model[f] = new Date(model[f]);
+        }
+
+        if (form[f].type === 'number') {
+          model[f] = parseInt(model[f], 10);
+        }
+
+        return form;
+      }, {});
+    };
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#parseModelField
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Helpers for buildFormStructure, convert a list of model properties in an object used to build the form structure, eg:
+    * ```
+    * // input:
+    * ['id', 'name'm 'mail']
+    *
+    * // output
+    * {
+    *   id: {},
+    *   name: {},
+    *   mail: {}
+    * }
+    * ```
+    * @param {array} fields An array of fields representing the model properties
+    * @returns {object} An object containing one property for each field of the model
+    **/
+
+    this.parseModelField = function (fields) {
+      return _.reduce(fields, function (form, f) {
+        form[f] = {};
+        return form;
+      }, {});
+    };
+  }]);
+})();
+//# sourceMappingURL=../../../maps/services/helpers/ui/form.helpers.js.map
 
 'use strict';
 

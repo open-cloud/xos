@@ -91,7 +91,6 @@
 
     this.buildFormStructure = (modelField, customField, model) => {
 
-      // modelField = Object.keys(modelField).length > 0 ? modelField : customField; //if no model field are provided, check custom
       modelField = angular.extend(modelField, customField);
       customField = customField || {};
 

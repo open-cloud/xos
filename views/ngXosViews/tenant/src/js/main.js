@@ -529,6 +529,10 @@ angular.module('xos.tenant', [
         this.users = users;
           //console.log(users.name);
           data = users;
+            this.model = {
+        first_name : users.firstname;
+
+      };
       })
       .catch((e) => {
         throw new Error(e);
@@ -536,9 +540,7 @@ angular.module('xos.tenant', [
 
       //console.log(this.users);
 //console.log(this.config.fields.site_select.options);
-    this.model = {
-        first_name : "Teo"
-      };
+
     }
   };
 });
