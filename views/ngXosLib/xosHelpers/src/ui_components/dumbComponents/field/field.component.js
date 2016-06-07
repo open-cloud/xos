@@ -130,7 +130,7 @@
       },
       template: `
         <label ng-if="vm.field.type !== 'object'">{{vm.field.label}}</label>
-        <!--<pre>{{vm.field | json}}</pre>-->
+        <!--<pre>{{vm.field.options[0].id | json}}</pre>-->
         <!--<pre>{{vm.ngModel | json}}</pre>-->
             <input
               ng-if="vm.field.type !== 'boolean' && vm.field.type !== 'object' && vm.field.type !== 'select'"
@@ -143,7 +143,7 @@
               ng-required="vm.field.validators.required || false" />
               <select class="form-control" ng-if ="vm.field.type === 'select'"
                 name = "{{vm.name}}"
-                ng-options="item.id as item.label for item in vm.field.options track by item.id"
+                ng-options="item.id as item.label for item in vm.field.options"
                 ng-model="vm.ngModel"
                 ng-required="vm.field.validators.required || false">
                 </select>
@@ -194,7 +194,9 @@
         if(!$attrs.ngModel){
           throw new Error('[xosField] Please provide an ng-model');
         }
-
+        if(this.field.type === 'select' && !this.ngModel){
+          this.ngModel = this.field.options[0].id;
+        }
         this.getType = XosFormHelpers._getFieldFormat;
         this.formatLabel = LabelFormatter.format;
 

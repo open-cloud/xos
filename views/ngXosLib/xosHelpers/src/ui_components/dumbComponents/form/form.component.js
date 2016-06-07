@@ -213,9 +213,7 @@
 
           let diff = _.difference(Object.keys(model), this.excludedField);
           let modelField = XosFormHelpers.parseModelField(diff);
-          console.log(modelField, this.config.fields, model);
           this.formField = XosFormHelpers.buildFormStructure(modelField, this.config.fields, model);
-          console.log(this.formField);
         });
 
       }
