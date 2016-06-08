@@ -178,7 +178,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         data = {
             "apps" : {
-                "org.opencord.vtn" : {
+                "org.onosproject.cordvtn" : {
                     "cordvtn" : {
                         "privateGatewayMac" : privateGatewayMac,
                         "localManagementIp": localManagementIp,
