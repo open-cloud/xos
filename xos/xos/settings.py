@@ -198,8 +198,8 @@ INSTALLED_APPS = (
 )
 
 # add services that were configured by xosbuilder to INSTALLED_APPS
-if os.path.exists("/opt/xos/xos/app_list"):
-    for line in file("/opt/xos/xos/app_list").readlines():
+if os.path.exists("/opt/xos/xos/xosbuilder_app_list"):
+    for line in file("/opt/xos/xos/xosbuilder_app_list").readlines():
         line = line.strip()
         if line:
             INSTALLED_APPS = list(INSTALLED_APPS) + [line]
