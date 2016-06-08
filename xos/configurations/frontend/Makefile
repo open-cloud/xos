@@ -71,6 +71,6 @@ mock-mcord:
 exampleservice:
 	mkdir -p key_import
 	# fake keys are fine
-	echo somekey > key_import/exampleservice_rsa
-	echo somekey > key_import/exampleservice_rsa.pub
+	sudo bash -c "echo somekey > key_import/exampleservice_rsa"
+	sudo bash -c "echo somekey > key_import/exampleservice_rsa.pub"
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/onboard/exampleservice/exampleservice-onboard.yaml
