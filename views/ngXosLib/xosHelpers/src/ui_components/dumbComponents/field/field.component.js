@@ -152,8 +152,6 @@
       },
       template: `
         <label ng-if="vm.field.type !== 'object'">{{vm.field.label}}</label>
-        <!--<pre>{{vm.field.options | json}}</pre>-->
-        <!--<pre>{{vm.ngModel | json}}</pre>-->
             <input
               ng-if="vm.field.type !== 'boolean' && vm.field.type !== 'object' && vm.field.type !== 'select'"
               type="{{vm.field.type}}"
@@ -217,7 +215,7 @@
         return RecursionHelper.compile(element);
       },
       controller: function($attrs, XosFormHelpers, LabelFormatter){
-        // console.log('Field: ', this.name, this.field, this.ngModel);
+
         if(!this.name){
           throw new Error('[xosField] Please provide a field name');
         }
