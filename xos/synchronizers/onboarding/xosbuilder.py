@@ -14,7 +14,7 @@ from xos.logger import Logger, logging
 logger = Logger(level=logging.INFO)
 
 class XOSBuilder(object):
-    UI_KINDS=["models", "admin", "django_library", "rest", "tosca_custom_types", "tosca_resource","public_key"]
+    UI_KINDS=["models", "admin", "django_library", "rest_service", "rest_tenant", "tosca_custom_types", "tosca_resource","public_key"]
     SYNC_CONTROLLER_KINDS=["synchronizer", "private_key", "public_key"]
     SYNC_ALLCONTROLLER_KINDS=["models", "django_library"]
 
@@ -35,7 +35,7 @@ class XOSBuilder(object):
                      "tosca_custom_types": "%s/tosca/custom_types/" % (xos_base),
                      "tosca_resource": "%s/tosca/resources/" % (xos_base),
                      "rest_service": "%s/api/service/" % (xos_base),
-                     "rest_tenant": "%s/api/service/" % (xos_base),
+                     "rest_tenant": "%s/api/tenant/" % (xos_base),
                      "private_key": "%s/services/%s/keys" % (xos_base, service_name),
                      "public_key": "%s/services/%s/keys/" % (xos_base, service_name)}
         return base_dirs[scr.kind]
@@ -99,12 +99,28 @@ class XOSBuilder(object):
             return ["ADD %s /%s" % (build_fn, build_fn)]
 
     def get_controller_docker_lines(self, controller, kinds):
+        need_service_init_py = False
         dockerfile=[]
         for scr in controller.service_controller_resources.all():
             if scr.kind in kinds:
                 lines = self.get_docker_lines(scr)
                 dockerfile = dockerfile + lines
+            if scr.kind in ["admin", "models"]:
+                need_service_init_py = True
+
+        if need_service_init_py:
+            file(os.path.join(self.build_dir, "opt/xos/empty__init__.py"),"w").write("")
+            dockerfile.append("ADD opt/xos/empty__init__.py /opt/xos/services/%s/__init__.py" % controller.name)
+
         return dockerfile
+
+    def check_controller_unready(self, controller):
+        unready_resources=[]
+        for scr in controller.service_controller_resources.all():
+            if (not scr.backend_status) or (not scr.backend_status.startswith("1")):
+                unready_resources.append(scr)
+
+        return unready_resources
 
     # stuff that has to do with building
 
@@ -128,6 +144,10 @@ class XOSBuilder(object):
 
         dockerfile = ["FROM %s" % self.source_ui_image]
         for controller in ServiceController.objects.all():
+            if self.check_controller_unready(controller):
+                 logger.warning("Controller %s has unready resources" % str(controller))
+                 continue
+
             dockerfile = dockerfile + self.get_controller_docker_lines(controller, self.UI_KINDS)
             if controller.service_controller_resources.filter(kind="models").exists():
                 app_list.append("services." + controller.name)
@@ -195,8 +215,12 @@ class XOSBuilder(object):
                              "volumes": volume_list}
 
          for c in ServiceController.objects.all():
+             if self.check_controller_unready(c):
+                 logger.warning("Controller %s has unready resources" % str(c))
+                 continue
+
              containers["xos_synchronizer_%s" % c.name] = \
-                            {"image": "xosproject/xos-synchronizer-%s" % controller.name,
+                            {"image": "xosproject/xos-synchronizer-%s" % c.name,
                              "command": 'bash -c "sleep 120; bash /opt/xos/synchronizers/%s/run.sh"',
                              "links": ["xos_db"],
                              "volumes": volume_list}
