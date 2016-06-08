@@ -221,7 +221,7 @@ class XOSBuilder(object):
 
              containers["xos_synchronizer_%s" % c.name] = \
                             {"image": "xosproject/xos-synchronizer-%s" % c.name,
-                             "command": 'bash -c "sleep 120; bash /opt/xos/synchronizers/%s/run.sh"',
+                             "command": 'bash -c "sleep 120; cd /opt/xos/synchronizers/%s; bash ./run.sh"' % c.name,
                              "links": ["xos_db"],
                              "volumes": volume_list}
 
