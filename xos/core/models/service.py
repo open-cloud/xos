@@ -72,6 +72,14 @@ class ServiceController(PlCoreBase):
 
     def __unicode__(self): return u'%s' % (self.name)
 
+    def save(self, *args, **kwargs):
+       super(ServiceController, self).save(*args, **kwargs)
+
+       if self.xos:
+           # force XOS to rebuild
+           # XXX somewhat hackish XXX
+           self.xos.save(update_fields=["updated"])
+
 class ServiceControllerResource(PlCoreBase):
     KIND_CHOICES = (('models', 'Models'),
                     ('admin', 'Admin'),
