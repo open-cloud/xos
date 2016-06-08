@@ -29,6 +29,10 @@ class SyncServiceController(SyncStep, XOSBuilder):
     def sync_record(self, sc):
         logger.info("Sync'ing ServiceController %s" % sc)
 
+        unready = self.check_controller_unready(sc)
+        if unready:
+            raise Exception("Controller %s has unready resources: %s" % (str(sc), ",".join([str(x) for x in unready])))
+
         dockerfiles = [self.create_synchronizer_dockerfile(sc)]
         tenant_fields = {"dockerfiles": dockerfiles,
                          "build_dir": self.build_dir,
