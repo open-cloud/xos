@@ -132,7 +132,8 @@ class Service(PlCoreBase, AttributeMixin):
     service_specific_attribute = models.TextField(blank=True, null=True)
 
     controller = models.ForeignKey(ServiceController, related_name='services',
-                                help_text="The Service Controller this Service uses")
+                                help_text="The Service Controller this Service uses",
+                                null=True, blank=True)
 
     def __init__(self, *args, **kwargs):
         # for subclasses, set the default kind appropriately
