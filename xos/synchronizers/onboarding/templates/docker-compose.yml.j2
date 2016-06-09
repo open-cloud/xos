@@ -18,6 +18,12 @@
     - {{ link }}
 {%- endfor %}
 {%- endif %}
+{%- if container.external_links %}
+  external_links:
+{%- for link in container.external_links %}
+    - {{ link }}
+{%- endfor %}
+{%- endif %}
 {%- if container.volumes %}
   volumes:
 {%- for volume in container.volumes %}
