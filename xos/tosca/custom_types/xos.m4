@@ -23,6 +23,10 @@ node_types:
                 type: string
                 required: false
                 description: Docker project name
+            enable_build:
+                type: boolean
+                required: false
+                description: True if XOS build should be enabled
 
 
     tosca.nodes.XOSVolume:

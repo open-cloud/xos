@@ -3,7 +3,7 @@ import sys
 import base64
 from django.db.models import F, Q
 from xos.config import Config
-from synchronizers.base.syncstep import SyncStep
+from synchronizers.base.syncstep import SyncStep, DeferredException
 from core.models import XOS, ServiceController
 from xos.logger import Logger, logging
 from synchronizers.base.ansible import run_template
@@ -28,6 +28,9 @@ class SyncServiceController(SyncStep, XOSBuilder):
 
     def sync_record(self, sc):
         logger.info("Sync'ing ServiceController %s" % sc)
+
+        if sc.xos and (not sc.xos.enable_build):
+            raise DeferredException("XOS build is currently disabled")
 
         unready = self.check_controller_unready(sc)
         if unready:

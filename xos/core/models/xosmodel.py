@@ -13,6 +13,7 @@ class XOS(PlCoreBase):
     bootstrap_ui_port = models.IntegerField(help_text="Port for XOS UI", default=81)
     db_container_name = StrippedCharField(max_length=200, help_text="name of XOS db container", default="xos_db")
     docker_project_name = StrippedCharField(max_length=200, help_text="docker project name")
+    enable_build = models.BooleanField(help_text="True if Onboarding Synchronizer should build XOS as necessary", default=True)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
