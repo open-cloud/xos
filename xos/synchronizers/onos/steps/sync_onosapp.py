@@ -226,7 +226,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                 "dataPlaneIntf": dataPlaneIntf,
                 "dataPlaneIp": dataPlaneIp
             }
-            data["apps"]["org.onosproject.cordvtn"]["cordvtn"]["nodes"].append(node_dict)
+            data["apps"]["org.opencord.vtn"]["cordvtn"]["nodes"].append(node_dict)
 
         # Generate apps->org.onosproject.cordvtn->cordvtn->publicGateways
         # Pull the gateway information from vRouter
@@ -239,7 +239,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                     "gatewayIp": gatewayIp,
                     "gatewayMac": gatewayMac
                 }
-                data["apps"]["org.onosproject.cordvtn"]["cordvtn"]["publicGateways"].append(gateway_dict)
+                data["apps"]["org.oopencord.vtn"]["cordvtn"]["publicGateways"].append(gateway_dict)
 
         return json.dumps(data, indent=4, sort_keys=True)
 
@@ -530,6 +530,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         if self.is_no_container(o):
             # There is no machine to SSH to, so use the synchronizer's
             # run_template method directly.
+            logger.log("install_dependencies: %s"%fields["install_dependencies"])
             run_template("sync_onosapp_nocontainer.yaml", fields)
         else:
             super(SyncONOSApp, self).run_playbook(o, fields)
