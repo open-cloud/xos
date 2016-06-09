@@ -18,7 +18,7 @@ class SyncVSGTenant(SyncStep):
     provides=[VSGTenant]
     observes = VSGTenant
     requested_interval=30
-    playbook='sync_vsgtenant.yaml'
+    playbook='sync_host.yaml'
 
     def get_fabric_onos_service(self):
         fos = None
