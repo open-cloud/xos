@@ -3,6 +3,24 @@ xos_db:
     expose:
         - "5432"
 
+xos_synchronizer_onboarding:
+    image: xosproject/xos-synchronizer-onboarding
+    #command: bash -c "sleep 120; python /opt/xos/synchronizers/onboarding/onboarding-synchronizer.py -C /root/setup/files/onboarding_synchronizer_config"
+    command: sleep 86400
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: onboarding
+    links:
+        - xos_db
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./key_import:/opt/xos/key_import:ro
+        - ./onboarding-docker-compose:/opt/xos/synchronizers/onboarding/docker-compose
+    log_driver: "json-file"
+    log_opt:
+            max-size: "100k"
+            max-file: "5"
+
 xos_synchronizer_openstack:
     command: bash -c "sleep 120; python /opt/xos/synchronizers/openstack/xos-synchronizer.py"
     image: xosproject/xos-synchronizer-openstack
@@ -101,21 +119,21 @@ xos_synchronizer_vtr:
             max-size: "100k"
             max-file: "5"
 
-xos:
-    command: python /opt/xos/manage.py runserver 0.0.0.0:80 --insecure --makemigrations
+xos_bootstrap_ui:
+    command: python /opt/xos/manage.py runserver 0.0.0.0:81 --insecure --makemigrations
     image: xosproject/xos
     links:
         - xos_db
     ports:
-        - "80:80"
+        - "81:81"
     volumes:
-        - .:/root/setup:ro
+#        - .:/root/setup:ro
         - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
         - ./xos_cord_config:/opt/xos/xos_configuration/xos_cord_config:ro
         - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
-        - ./id_rsa.pub:/opt/xos/synchronizers/onos/onos_key.pub:ro
-        - ./id_rsa.pub:/opt/xos/synchronizers/vcpe/vcpe_public_key:ro
-        - ./id_rsa.pub:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key:ro
+#        - ./id_rsa.pub:/opt/xos/synchronizers/onos/onos_key.pub:ro
+#        - ./id_rsa.pub:/opt/xos/synchronizers/vcpe/vcpe_public_key:ro
+#        - ./id_rsa.pub:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key:ro
     log_driver: "json-file"
     log_opt:
             max-size: "100k"
