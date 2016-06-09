@@ -12,7 +12,7 @@ topology_template:
       properties:
         ui_port: 80
         bootstrap_ui_port: 81
-        docker_project_name: cord-pod
+        docker_project_name: cordpod
 
     /opt/xos/xos_configuration/xos_common_config:
       type: tosca.nodes.XOSVolume
