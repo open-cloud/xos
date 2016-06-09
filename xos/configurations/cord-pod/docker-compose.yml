@@ -38,8 +38,8 @@ xos_synchronizer_onos:
             max-size: "100k"
             max-file: "5"
     extra_hosts:
-	- "node1.opencloud.us:1.2.3.4"
-	- "node2.opencloud.us:1.2.3.5"
+        - "node1.opencloud.us:1.2.3.4"
+        - "node2.opencloud.us:1.2.3.5"
 
 xos_synchronizer_vcpe:
     image: xosproject/xos-synchronizer-openstack
