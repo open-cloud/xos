@@ -499,7 +499,7 @@ class XOSObserver:
                                 schedule = self.ordered_steps if not deletion else reversed(self.ordered_steps)
 
                                 for S in schedule:
-                                        thread = threading.Thread(target=self.sync, args=(S, deletion))
+                                        thread = threading.Thread(target=self.sync, name='synchronizer', args=(S, deletion))
 
                                         logger.info('Deletion=%r...'%deletion)
                                         threads.append(thread)

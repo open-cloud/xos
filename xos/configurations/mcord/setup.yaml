@@ -166,12 +166,6 @@ topology_template:
           icon_url: /static/mCordServices/service_server.png
           kind: vEPC
 
-    vPGW:
-      type: tosca.nodes.Service
-      properties:
-          view_url: /mcord/?service=vPGW
-          icon_url: /static/mCordServices/service_server.png
-          kind: vEPC
 
     # EDGE
     Cache:
@@ -223,10 +217,10 @@ topology_template:
           icon_url: /static/mCordServices/service_server.png
           kind: vEPC
 
-    vPGW:
+    vPGWC:
       type: tosca.nodes.Service
       properties:
-          view_url: /mcord/?service=vPGW
+          view_url: /mcord/?service=vPGWC
           icon_url: /static/mCordServices/service_server.png
           kind: vEPC
 

@@ -40,6 +40,25 @@ xos_synchronizer_vbbu:
         - "compute9:10.102.81.9"
         - "compute10:10.102.81.10"
 
+xos_synchronizer_vpgwc:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/vpgwc/vpgwc-synchronizer.py -C /opt/xos/synchronizers/vpgwc/vpgwc_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: vpgwc 
+    links:
+        - xos_db
+    volumes:
+        - ../setup/id_rsa_mcord:/opt/xos/configurations/mcord/mcord_private_key:ro  # private key
+        - ../setup/id_rsa_mcord.pub:/opt/xos/configurations/mcord/mcord_public_key:ro  # public key
+        - ../setup:/root/setup:ro
+    extra_hosts:
+        - "controller:10.102.81.3"
+        - "computeBBU1:10.102.81.6"
+        - "computeBBU2:10.102.81.7"
+        - "compute9:10.102.81.9"
+        - "compute10:10.102.81.10"
+
 # FUTURE
 #xos_swarm_synchronizer:
 #    image: xosproject/xos-swarm-synchronizer
