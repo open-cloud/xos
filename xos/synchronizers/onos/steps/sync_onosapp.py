@@ -530,6 +530,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         if self.is_no_container(o):
             # There is no machine to SSH to, so use the synchronizer's
             # run_template method directly.
+            logger.info("dependencies: %s"%fields["dependencies"])
             logger.info("install_dependencies: %s"%fields["install_dependencies"])
             run_template("sync_onosapp_nocontainer.yaml", fields)
         else:
