@@ -5,8 +5,8 @@ xos_db:
 
 xos_synchronizer_onboarding:
     image: xosproject/xos-synchronizer-onboarding
-    #command: bash -c "sleep 120; python /opt/xos/synchronizers/onboarding/onboarding-synchronizer.py -C /root/setup/files/onboarding_synchronizer_config"
-    command: sleep 86400
+    command: bash -c "cd /opt/xos/synchronizers/onboarding; ./run.sh"
+    #command: sleep 86400
     labels:
         org.xosproject.kind: synchronizer
         org.xosproject.target: onboarding

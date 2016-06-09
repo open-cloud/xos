@@ -1,6 +1,7 @@
+CONFIG_DIR:=$(shell pwd)
 DOCKER_COMPOSE_YML=./onboarding-docker-compose/docker-compose.yml
 BOOTSTRAP_YML=./docker-compose-bootstrap.yml
-DOCKER_PROJECT=cord-pod
+DOCKER_PROJECT=cordpod
 
 .PHONY: xos
 xos: prereqs bootstrap onboarding podconfig
@@ -17,25 +18,25 @@ bootstrap:
 
 onboarding:
 	echo "[ONBOARDING]"
-	bash ../common/wait_for_xos_port.sh 80
 	# on-board any services here
-	bash ../common/wait_for_onboarding_ready.sh 9998 xos
+	bash ../common/wait_for_onboarding_ready.sh 81 xos
+	bash ../common/wait_for_xos_port.sh 80
 
 podconfig: nodes.yaml images.yaml
 	echo "[PODCONFIG]"
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/setup.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/images.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/setup.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/images.yaml
 
 vtn: vtn-external.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/vtn-external.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/vtn-external.yaml
 
 cord: vsg_custom_images
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/mgmt-net.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-vtn-vsg.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-volt-devices.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/mgmt-net.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-vtn-vsg.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-volt-devices.yaml
 
 exampleservice:
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/pod-exampleservice.yaml
@@ -97,4 +98,4 @@ local_containers:
 	done
 	cd ../../../containers/xos; make devel
 	cd ../../../containers/synchronizer; make
-
+	cd ../../../containers/onboarding_synchronizer; make
