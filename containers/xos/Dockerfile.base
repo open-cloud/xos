@@ -136,14 +136,3 @@ RUN git clone $HT_REPO_URL /tmp/heat-translator && \
     echo > /opt/tosca/translator/__init__.py && \
     rm -rf /tmp/heat-translator
 
-# For Synchronizer
-ENV PHANTOMJS_DL_URL https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-ENV PHANTOMJS_SHA256 86dd9a4bf4aee45f1a84c9f61cf1947c1d6dce9b9e8d2a907105da7852460d2f
-
-RUN curl -fLsS $PHANTOMJS_DL_URL -o phantomjs.tar.bz2 && \
-  echo "$PHANTOMJS_SHA256  phantomjs.tar.bz2" | sha256sum -c - && \
-  tar -C /usr/local/share -xjf phantomjs.tar.bz2 && \
-  ln -s /usr/local/share/phantomjs-* /usr/local/share/phantomjs && \
-  ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs && \
-  rm phantomjs.tar.bz2
-
