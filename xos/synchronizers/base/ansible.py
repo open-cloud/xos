@@ -101,7 +101,7 @@ def get_playbook_fn(opts, path):
 def run_template(name, opts, path='', expected_num=None, ansible_config=None, ansible_hosts=None, run_ansible_script=None):
     template = os_template_env.get_template(name)
     buffer = template.render(opts)
-    logger.info(buffer)
+    observer_logger.info(buffer)
 
     (opts, fqp) = get_playbook_fn(opts, path)
     
