@@ -16,9 +16,15 @@ topology_template:
     m1.small:
       type: tosca.nodes.Flavor
 
+    m1.xlarge:
+      type: tosca.nodes.Flavor
+
     MyDeployment:
       type: tosca.nodes.Deployment
       requirements:
+          - m1.xlarge:
+             node: m1.large
+             relationship: tosca.relationships.SupportsFlavor
           - m1.large:
              node: m1.large
              relationship: tosca.relationships.SupportsFlavor
