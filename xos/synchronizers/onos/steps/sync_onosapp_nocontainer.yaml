@@ -18,17 +18,29 @@
          body: "{{ '{{' }} lookup('file', '{{ files_dir }}/{{ rest_config.fn }}') {{ '}}' }}"
 {% endfor %}
 {% endif %}
-{% if early_rest_configs %}
-    early_rest_configs:
-{% for early_rest_config in early_rest_configs %}
-       - endpoint: {{ early_rest_config.endpoint }}
-         body: "{{ '{{' }} lookup('file', '{{ files_dir }}/{{ early_rest_config.fn }}') {{ '}}' }}"
+{% if install_dependencies %}
+    install_dependencies:
+{% for install_dependency in install_dependencies %}
+       - endpoint: "onos/v1/applications"
+         body: '{"url" : “{{ install_dependency }}", "activate" : "false" }'
 {% endfor %}
 {% endif %}
     rest_hostname: {{ rest_hostname }}
     rest_port: {{ rest_port }}
 
   tasks:
+{% if install_dependencies %}
+  - name: Install ONOS apps by URL
+    uri:
+      url: http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
+      body: "{{ '{{' }} item.body {{ '}}' }}"
+      body_format: raw
+      method: POST
+      user: karaf
+      password: karaf
+    with_items: "install_dependencies"
+{% endif %}
+
 {% if dependencies %}
   - name: Add dependencies to ONOS
     uri:
