@@ -22,7 +22,7 @@
     install_dependencies:
 {% for install_dependency in install_dependencies %}
        - endpoint: "onos/v1/applications"
-         body: '{"url" : “{{ install_dependency }}", "activate" : "false" }'
+         body: '{"url" : "{{ install_dependency }}", "activate" : "false" }'
 {% endfor %}
 {% endif %}
     rest_hostname: {{ rest_hostname }}
