@@ -60,10 +60,12 @@ vtn_network_cfg_json:
 	export SETUPDIR=.; bash ./make-vtn-networkconfig-json.sh
 
 stop:
-	sudo MYIP=$(MYIP) docker-compose stop
+	test ! -s $(DOCKER_COMPOSE_YML) || sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) stop
+	sudo docker-compose -f $(BOOTSTRAP_YML) stop
 
 rm:
-	sudo MYIP=$(MYIP) docker-compose rm
+	test ! -s $(DOCKER_COMPOSE_YML) || sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) rm
+	sudo docker-compose -f $(BOOTSTRAP_YML) rm
 
 showlogs:
 	sudo MYIP=$(MYIP) docker-compose logs
