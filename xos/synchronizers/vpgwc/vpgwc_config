@@ -1,0 +1,40 @@
+# Required by XOS
+[db]
+name=xos
+user=postgres
+password=password
+host=localhost
+port=5432
+
+# Required by XOS
+[api]
+nova_enabled=True
+
+# Sets options for the observer
+[observer]
+# Optional name
+name=vpgwc
+# This is the location to the dependency graph you generate
+dependency_graph=/opt/xos/synchronizers/vpgwc/model-deps
+# The location of your SyncSteps
+steps_dir=/opt/xos/synchronizers/vpgwc/steps
+# A temporary directory that will be used by ansible
+sys_dir=/opt/xos/synchronizers/vpgwc/sys
+# Location of the file to save logging messages to the backend log is often used
+logfile=/var/log/xos_backend.log
+# If this option is true, then nothing will change, we simply pretend to run
+pretend=False
+# If this is False then XOS will use an exponential backoff when the observer
+# fails, since we will be waiting for an instance, we don't want this.
+backoff_disabled=True
+# We want the output from ansible to be logged
+save_ansible_output=True
+# This determines how we SSH to a client, if this is set to True then we try
+# to ssh using the instance name as a proxy, if this is disabled we ssh using
+# the NAT IP of the instance. On CloudLab the first option will fail so we must
+# set this to False
+proxy_ssh=True
+proxy_ssh_key=/root/setup/id_rsa
+proxy_ssh_user=root
+[networking]
+use_vtn=True
