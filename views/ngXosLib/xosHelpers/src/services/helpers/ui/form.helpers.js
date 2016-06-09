@@ -91,7 +91,6 @@
 
     this.buildFormStructure = (modelField, customField, model) => {
 
-      // modelField = Object.keys(modelField).length > 0 ? modelField : customField; //if no model field are provided, check custom
       modelField = angular.extend(modelField, customField);
       customField = customField || {};
 
@@ -106,6 +105,9 @@
 
         if(customField[f] && customField[f].options){
           form[f].options = customField[f].options;
+        }
+        if(customField[f] && customField[f].properties){
+          form[f].properties = customField[f].properties;
         }
         if(form[f].type === 'date'){
           model[f] = new Date(model[f]);

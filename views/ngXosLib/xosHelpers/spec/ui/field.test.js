@@ -59,6 +59,18 @@
         expect(errorFunctionWrapper).toThrow(new Error('[xosField] Please provide a field definition'));
       }));
 
+      it('should throw an error if no field type is passed', inject(($compile, $rootScope) => {
+        function errorFunctionWrapper(){
+          // setup the parent scope
+          scope = $rootScope.$new();
+          scope.name = 'label';
+          scope.ngModel = 1;
+          scope.field = {label: 'Label:'}
+          compileElement();
+        }
+        expect(errorFunctionWrapper).toThrow(new Error('[xosField] Please provide a type in the field definition'));
+      }));
+
       it('should throw an error if no field model is passed', inject(($compile, $rootScope) => {
         function errorFunctionWrapper(){
           // setup the parent scope
@@ -223,8 +235,35 @@
           });
 
           it('should not print the panel', () => {
-            // console.log($(element).find('.panel.object-field'));
             expect($(element).find('.panel.object-field')).not.toExist()
+          });
+
+          describe('but field is configured', () => {
+            beforeEach(() => {
+              scope.field.properties = {
+                foo: {
+                  label: 'FooLabel:',
+                  type: 'string',
+                  validators: {
+                    required: true
+                  }
+                },
+                bar: {
+                  type: 'number'
+                }
+              };
+              compileElement();
+            });
+            it('should render panel and configured fields', () => {
+              expect($(element).find('.panel.object-field')).toExist();
+              expect($(element).find('input[name="foo"]').parent().find('label').text()).toBe('FooLabel:');
+              expect($(element).find('input[name="foo"]')).toHaveAttr('type', 'string');
+              expect($(element).find('input[name="foo"]')).toHaveAttr('required');
+
+              expect($(element).find('input[name="bar"]').parent().find('label').text()).toBe('Bar:');
+              expect($(element).find('input[name="bar"]')).toHaveAttr('type', 'number');
+
+            });
           });
         });
       });
