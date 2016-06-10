@@ -38,7 +38,7 @@ class SyncPorts(OpenStackSyncStep):
         auth = {'username': caller.email,
                 'password': caller.remote_password,
                 'tenant': slice.name}
-        client = OpenStackClient(controller=controller, **auth) # cacert=self.config.nova_ca_ssl_cert,
+        client = OpenStackClient(controller=controller, cacert=self.config.nova_ca_ssl_cert, **auth)
         driver = OpenStackDriver(client=client)
 
         return driver
