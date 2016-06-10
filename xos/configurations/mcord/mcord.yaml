@@ -124,7 +124,7 @@ topology_template:
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/configurations/mcord/mcord_private_key
       artifacts:
-          pubkey: /opt/xos/configurations/mcord/mcord_public_key
+          pubkey: /opt/xos/configurations/mcord/mcord_public_key.pub
 
     vPGWC:
       type: tosca.nodes.MCORDService
@@ -136,7 +136,7 @@ topology_template:
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/configurations/mcord/mcord_private_key
       artifacts:
-          pubkey: /opt/xos/configurations/mcord/mcord_public_key
+          pubkey: /opt/xos/configurations/mcord/mcord_public_key.pub
 
     m1.xlarge:
       type: tosca.nodes.Flavor
