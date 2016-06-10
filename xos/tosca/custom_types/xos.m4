@@ -1065,6 +1065,12 @@ node_types:
     tosca.relationships.TagsObject:
         derived_from: tosca.relationships.Root
 
+    tosca.relationships.MemberOfDevice:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.UsesAgent:
+        derived_from: tosca.relationships.Root
+
     tosca.relationships.HasResource:
         derived_from: tosca.relationships.Root
 
