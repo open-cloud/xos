@@ -1,24 +1,42 @@
+CONFIG_DIR:=$(shell pwd)
+DOCKER_COMPOSE_YML=./onboarding-docker-compose/docker-compose.yml
+BOOTSTRAP_YML=./docker-compose-bootstrap.yml
+DOCKER_PROJECT=cordpod
+
 .PHONY: xos
-xos: up bootstrap
+xos: prereqs bootstrap onboarding podconfig
 
-up:
-	sudo docker-compose up -d
-	../common/wait_for_xos_port.sh 80
+prereqs:
+	sudo make -f ../common/Makefile.prereqs
 
-bootstrap: nodes.yaml images.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/setup.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/images.yaml
+bootstrap:
+	echo "[BOOTSTRAP]"
+	sudo rm -f onboarding-docker-compose/docker-compose.yml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f docker-compose-bootstrap.yml up -d
+	bash ../common/wait_for_xos_port.sh 81
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run -e CONFIG_DIR=$(CONFIG_DIR) xos_bootstrap_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/cord-pod/xos.yaml
+
+onboarding:
+	echo "[ONBOARDING]"
+	# on-board any services here
+	bash ../common/wait_for_onboarding_ready.sh 81 xos
+	bash ../common/wait_for_xos_port.sh 80
+
+podconfig: nodes.yaml images.yaml
+	echo "[PODCONFIG]"
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/setup.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/images.yaml
 
 vtn: vtn-external.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/vtn-external.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/vtn-external.yaml
 
 cord: vsg_custom_images
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/mgmt-net.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-vtn-vsg.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-volt-devices.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/mgmt-net.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-vtn-vsg.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-volt-devices.yaml
 
 exampleservice:
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/pod-exampleservice.yaml
@@ -42,10 +60,12 @@ vtn_network_cfg_json:
 	export SETUPDIR=.; bash ./make-vtn-networkconfig-json.sh
 
 stop:
-	sudo MYIP=$(MYIP) docker-compose stop
+	test ! -s $(DOCKER_COMPOSE_YML) || sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) stop
+	sudo docker-compose -f $(BOOTSTRAP_YML) stop
 
 rm:
-	sudo MYIP=$(MYIP) docker-compose rm
+	test ! -s $(DOCKER_COMPOSE_YML) || sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) rm
+	sudo docker-compose -f $(BOOTSTRAP_YML) rm
 
 showlogs:
 	sudo MYIP=$(MYIP) docker-compose logs
@@ -80,4 +100,4 @@ local_containers:
 	done
 	cd ../../../containers/xos; make devel
 	cd ../../../containers/synchronizer; make
-
+	cd ../../../containers/onboarding_synchronizer; make

@@ -21,7 +21,6 @@ class SyncInstanceUsingAnsible(SyncStep):
     # observes=VSGTenant
     # requested_interval=0
     # template_name = "sync_vcpetenant.yaml"
-    # service_key_name = "/opt/xos/observers/vcpe/vcpe_private_key"
 
     def __init__(self, **args):
         SyncStep.__init__(self, **args)
@@ -96,7 +95,10 @@ class SyncInstanceUsingAnsible(SyncStep):
                        "username": "ubuntu",
                        "ssh_ip": instance.get_ssh_ip(),
                      }
-            key_name = self.service_key_name
+            if (instance.slice) and (instance.slice.service) and (instance.slice.service.private_key_fn):
+                key_name = instance.slice.service.private_key_fn
+            else:
+                raise Exception("Make sure to set private_key_fn in the service")
         elif (instance.isolation == "container"):
             # container on bare metal
             node = self.get_node(instance)
