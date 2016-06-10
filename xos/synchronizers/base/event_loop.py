@@ -462,6 +462,36 @@ class XOSObserver:
 
         def run_once(self):
                 try:
+                        # django implodes if the database connection is closed by docker-compose
+                        try:
+                            diag = Diag.objects.filter(name="foo").first()
+                        except Exception, e:
+                            import traceback
+                            from django import db
+                            if "connection already closed" in traceback.format_exc():
+                               logger.error("XXX connection already closed")
+                               try:
+                                   if db.connection:
+                                       db.connection.close()
+                               except:
+                                    logger.error("XXX we failed to fix the failure(1)")
+                                    traceback.print_exc()
+                               try:
+                                    db.close_connection()
+                               except:
+                                    logger.error("XXX we failed to fix the failure(2)")
+                                    traceback.print_exc()
+                               try:
+                                    if db.connection and db.connection.connection:
+                                        db.connection.connection.close()
+                                        db.connection.connection = None
+                               except:
+                                    logger.error("XXX we failed to fix the failure(3)")
+                                    traceback.print_exc()
+                            else:
+                               logger.error("XXX some other error")
+                               traceback.print_exc()
+
                         loop_start = time.time()
                         error_map_file = getattr(Config(), "error_map_path", XOS_DIR + "/error_map.txt")
                         self.error_mapper = ErrorMapper(error_map_file)
