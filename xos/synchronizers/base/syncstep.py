@@ -141,6 +141,8 @@ class SyncStep(object):
 
 
     def sync_record(self, o):
+        logger.info("Sync_record called for %s %s" % (o.__class__.__name__, str(o)))
+
         try:
             controller = o.get_controller()
             controller_register = json.loads(controller.backend_register)

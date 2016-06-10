@@ -348,9 +348,11 @@ class XOSObserver:
 				if (step_status[d] is STEP_STATUS_WORKING):
                                         logger.info("  step %s wait on dep %s" % (step.__name__, d))
 					cond.wait()
+                                        logger.info("  step %s wait on dep %s cond returned" % (step.__name__, d))
 				elif step_status[d] == STEP_STATUS_OK:
 					go = True
 				else:
+                                        logger.info("  step %s has failed dep %s" % (step.__name__, d))
 					go = False
                         		failed_dep = d
 				cond.release()
@@ -360,6 +362,7 @@ class XOSObserver:
 			go = True
 
 		if (not go):
+                        logger.info("Step %s skipped" % step.__name__)
                         self.consolePrint(bcolors.FAIL + "Step %r skipped on %r" % (step,failed_dep) + bcolors.ENDC)
                         # SMBAKER: sync_step was not defined here, so I changed
                         #    this from 'sync_step' to 'step'. Verify.
@@ -415,7 +418,7 @@ class XOSObserver:
 					if failed_objects:
 						self.failed_step_objects.update(failed_objects)
 
-                                        logger.info("Step %r succeeded" % sync_step.__name__)
+                                        logger.info("Step %r succeeded, deletion=%s" % (sync_step.__name__, deletion))
                                         self.consolePrint(bcolors.OKGREEN + "Step %r succeeded" % sync_step.__name__ + bcolors.ENDC)
 					my_status = STEP_STATUS_OK
 					self.update_run_time(sync_step,deletion)
@@ -461,36 +464,26 @@ class XOSObserver:
 
                     self.run_once()
 
+        def check_db_connection_okay(self):
+            # django implodes if the database connection is closed by docker-compose
+            try:
+                diag = Diag.objects.filter(name="foo").first()
+            except Exception, e:
+                from django import db
+                if "connection already closed" in traceback.format_exc():
+                   logger.error("XXX connection already closed")
+                   try:
+#                       if db.connection:
+#                           db.connection.close()
+                       db.close_connection()
+                   except:
+                        logger.log_exc("XXX we failed to fix the failure")
+                else:
+                   logger.log_exc("XXX some other error")
+
         def run_once(self):
                 try:
-                        # django implodes if the database connection is closed by docker-compose
-                        try:
-                            diag = Diag.objects.filter(name="foo").first()
-                        except Exception, e:
-                            from django import db
-                            if "connection already closed" in traceback.format_exc():
-                               logger.error("XXX connection already closed")
-                               try:
-                                   if db.connection:
-                                       db.connection.close()
-                               except:
-                                    logger.error("XXX we failed to fix the failure(1)")
-                                    traceback.print_exc()
-                               try:
-                                    db.close_connection()
-                               except:
-                                    logger.error("XXX we failed to fix the failure(2)")
-                                    traceback.print_exc()
-                               try:
-                                    if db.connection and db.connection.connection:
-                                        db.connection.connection.close()
-                                        db.connection.connection = None
-                               except:
-                                    logger.error("XXX we failed to fix the failure(3)")
-                                    traceback.print_exc()
-                            else:
-                               logger.error("XXX some other error")
-                               traceback.print_exc()
+                        self.check_db_connection_okay()
 
                         loop_start = time.time()
                         error_map_file = getattr(Config(), "error_map_path", XOS_DIR + "/error_map.txt")
