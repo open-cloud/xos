@@ -1,0 +1,23 @@
+# Required by XOS
+[db]
+name=xos
+user=postgres
+password=password
+host=localhost
+port=5432
+
+# Required by XOS
+[api]
+nova_enabled=True
+
+# Sets options for the synchronizer
+[observer]
+name=fabric
+dependency_graph=/opt/xos/synchronizers/fabric/model-deps
+steps_dir=/opt/xos/synchronizers/fabric/steps
+sys_dir=/opt/xos/synchronizers/fabric/sys
+logfile=console
+pretend=False
+backoff_disabled=True
+save_ansible_output=True
+proxy_ssh=False
