@@ -149,58 +149,131 @@ angular.module('xos.tenant', [
     bindToController: true,
     controllerAs: 'cs',
     templateUrl: 'templates/createslice.html',
-    controller: function(Slices, SlicesPlus, $stateParams){
+    controller: function(Slices, SlicesPlus, Sites, Images, $stateParams, $http, $state){
       //var sites;
       //console.log(this.users.name);
 
       //console.log(this.config);
       this.config = {
-        exclude: ['password', 'last_login'],
+        exclude: ['site', 'password', 'last_login', 'mount_data_sets', 'default_flavor', 'creator', 'exposed_ports', 'networks', 'omf_friendly', 'omf_friendly', 'no_sync', 'no_policy', 'lazy_blocked', 'write_protect', 'deleted', 'backend_status', 'backend_register', 'policed', 'enacted', 'updated', 'created', 'validators', 'humanReadableName'],
         formName: 'SliceDetails',
+        feedback: {
+          show: false,
+          message: 'Form submitted successfully !!!',
+          type: 'success'
+        },
         actions: [
           {
             label: 'Save',
             icon: 'ok', // refers to bootstraps glyphicon
-            cb: (user) => { // receive the model
-              console.log(user);
+            cb: (model, form) => { // receive the model
+              if (form.$valid )
+              {
+                if(model.id){
+                  var pr = Slices.update(model).$promise;
+                }
+                else{
+                  var pr = Slices.save(model).$promise;
+                }
+                pr.then((users) => {
+                  this.users = users;
+                  data = users;
+                  this.model = data;
+                  this.config.feedback.show = true;
+                  $state.go('site',{id : this.model.site});
+                })
+                .catch((e) => {
+                  this.config.feedback.show = true;
+                  this.config.feedback.type='danger';
+                  if(e.data)
+                  {
+                    console.log(e.data.detail);
+                    this.config.feedback.message = e.data.detail;
+                  }
+                  else {
+                    this.config.feedback.message=e.statusText;}
+                });
+              }
             },
             class: 'success'
           },  {
             label: 'Save and continue editing',
             icon: 'ok', // refers to bootstraps glyphicon
-            cb: (user) => { // receive the model
-              console.log(user);
+            cb: (model, form) => { // receive the model
+              if (form.$valid )
+              {
+                if(model.id){
+                  var pr = Slices.update(model).$promise;
+                }
+                else{
+                  var pr = Slices.save(model).$promise;
+                }
+                pr.then((users) => {
+                  this.users = users;
+                  data = users;
+                  this.model = data;
+                  this.config.feedback.show = true;
+                })
+                .catch((e) => {
+                  this.config.feedback.show = true;
+                  this.config.feedback.type='danger';
+                  if(e.data)
+                  {
+                    console.log(e.data.detail);
+                    this.config.feedback.message = e.data.detail;
+                  }
+                  else {
+                    this.config.feedback.message=e.statusText;}
+                });
+              }
             },
             class: 'primary'
           },
           {
             label: 'Save and add another',
             icon: 'ok', // refers to bootstraps glyphicon
-            cb: (user) => { // receive the model
-              console.log(user);
+            cb: (model, form) => { // receive the model
+              if (form.$valid )
+              {
+                if(model.id){
+                  var pr = Slices.update(model).$promise;
+                }
+                else{
+                  var pr = Slices.save(model).$promise;
+                }
+                pr.then((users) => {
+                  this.users = users;
+                  data = users;
+                  this.model = data;
+                  this.config.feedback.show = true;
+                })
+                .catch((e) => {
+                  this.config.feedback.show = true;
+                  this.config.feedback.type='danger';
+                  if(e.data)
+                  {
+                    console.log(e.data.detail);
+                    this.config.feedback.message = e.data.detail;
+                  }
+                  else {
+                    this.config.feedback.message=e.statusText;}
+                });
+              }
             },
             class: 'primary'
           }
         ],
         fields:
         {
-          site_select: {
+          site: {
             label: 'Site',
             type: 'select',
             validators: { required: true},
             hint: 'The Site this Slice belongs to',
-            options: [
-              {
-                id: 0,
-                label: '---Site---'
-              },
-              {
-                id: 1,
-                label: '---Site1---'
-              }]
+            options: []
 
           },
-          first_name: {
+          name: {
             label: 'Name',
             type: 'string',
             hint: 'The Name of the Slice',
@@ -208,7 +281,7 @@ angular.module('xos.tenant', [
               required: true
             }
           },
-          service_class: {
+          serviceClass: {
             label: 'ServiceClass',
             type: 'select',
             validators: {required: true},
@@ -283,12 +356,7 @@ angular.module('xos.tenant', [
             label: 'Default image',
             type: 'select',
             validators: { required: false},
-            options: [
-              {
-                id: 0,
-                label: 'trusty-server-multi-nic'
-              }
-            ]
+            options: []
           },
           network: {
             label: 'Network',
@@ -316,27 +384,48 @@ angular.module('xos.tenant', [
 
         }
       };
-
+      //console.log(this.config.exclude);
       var data;
+      Images.query().$promise
+          .then((users) => {
+            this.users = users;
+            data = this.users;
+            this.optionValImg = this.setData(data, {field1: 'id', field2: 'name'});
+            this.config.fields['default_image'].options = this.optionValImg;
+          })
+          .catch((e) => {
+            throw new Error(e);
+          });
+
+      // Use this method for select by seting object in fields variable of format { field1 : "val1", field2 : "val2"}
+      this.setData = (data, fields) => {
+        var i;
+        var retObj=[];
+        for(i = 0; i<data.length; i++){
+          var optVal = {id: data[i][fields.field1], label: data[i][fields.field2]};
+          retObj.push(optVal);
+
+        }
+        //console.log(retObj);
+        return retObj;
+      };
+
       // retrieving user list
+
       if ($stateParams.id)
       {
+        delete this.config.fields['site'];
+        this.config.exclude.push('site');
+
+        //console.log(this.config.exclude);
+
         Slices.get({id: $stateParams.id}).$promise
           .then((users) => {
             this.users = users;
             data = users;
-            this.model = {
-              first_name: data.name,
-              service_class: data.serviceClass,
-              enabled: data.enabled,
-              description: data.description,
-              service: data.service,
-              slice_url: data.slice_url,
-              max_instances: data.max_instances,
-              default_isolation: data.default_isolation,
-              default_image: data.default_image,
-              network: data.network
-            };
+            delete data.networks;
+
+            this.model = data;
           })
           .catch((e) => {
             throw new Error(e);
@@ -344,7 +433,36 @@ angular.module('xos.tenant', [
       }
       else
       {
+
+
         this.model = {};
+        $http.get('/xoslib/tenantview/').
+        success((data) => {
+          this.userList = data;
+          console.log(this.userList);
+          //this.model={}
+          this.model['creator'] = this.userList.current_user_id;
+
+        });
+
+
+
+
+
+
+        Sites.query().$promise
+      .then((users) => {
+        this.users_site = users;
+        //console.log(users);
+        this.optionVal = this.setData(this.users_site, {field1: 'id', field2: 'name'});
+        this.config.fields['site'].options = this.optionVal;
+        //= this.optionVal;
+
+      })
+      .catch((e) => {
+        throw new Error(e);
+      });
+
       }
     }
   };

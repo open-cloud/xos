@@ -130,7 +130,7 @@
           expect($(element).find('[name="email"]')).toHaveAttr('type', 'email');
         });
 
-        describe('the boolean field', () => {
+        describe('the boolean field test', () => {
 
           let setFalse, setTrue;
 
@@ -140,6 +140,7 @@
           });
 
           it('should change value to false', () => {
+            console.log(isolatedScope.ngModel.enabled);
             expect(isolatedScope.ngModel.enabled).toEqual(true);
             setFalse.click()
             expect(isolatedScope.ngModel.enabled).toEqual(false);

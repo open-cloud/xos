@@ -53,7 +53,7 @@ module.exports = function(options){
           if(
             // to be removed, deprecated API
             // req.url.indexOf('/xos/') !== -1 ||
-            // req.url.indexOf('/xoslib/') !== -1 ||
+             req.url.indexOf('/xoslib/tenant') !== -1 ||
             // req.url.indexOf('/hpcapi/') !== -1 ||
             req.url.indexOf('/api/') !== -1
           ){
