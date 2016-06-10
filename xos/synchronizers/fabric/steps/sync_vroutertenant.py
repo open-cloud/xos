@@ -14,7 +14,7 @@ from services.onos.models import ONOSService
 from services.fabric.models import FabricService
 import json
 
-class SyncVSGTenant(SyncStep):
+class SyncVRouterTenant(SyncStep):
     provides=[VRouterTenant]
     observes = VRouterTenant
     requested_interval=30
@@ -37,7 +37,9 @@ class SyncVSGTenant(SyncStep):
     def fetch_pending(self, deleted):
         fs = FabricService.get_service_objects().all()[0]
         if not fs.autoconfig:
-            return None
+            retur
+
+n None
 
         if (not deleted):
             objs = VRouterTenant.get_tenant_objects().filter(Q(lazy_blocked=False))
@@ -64,13 +66,13 @@ class SyncVSGTenant(SyncStep):
             if (sub.kind == 'vCPE'):
                 instance_id = sub.get_attribute("instance_id")
                 if instance_id:
-                    instance = Instance.objects.filter(id=instance_id)
+                    instance = Instance.objects.filter(id=instance_id)[0]
                     name = str(sub)
         else:
             # Maybe the VRouterTenant is for an instance
             instance_id = vroutertenant.get_attribute("tenant_for_instance_id")
             if instance_id: 
-                instance = Instance.objects.filter(id=instance_id)
+                instance = Instance.objects.filter(id=instance_id)[0]
                 name = str(instance)
 
         node = instance.node
