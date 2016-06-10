@@ -171,15 +171,18 @@
             <div class="alert alert-info" ng-show="(field.hint).length >0" role="alert">{{field.hint}}</div>
           </div>
           <div class="form-group" ng-if="vm.config.actions">
+            <!--<pre>{{vm.config.feedback}} | json</pre>-->
+
+          <xos-alert config="vm.config.feedback" show="vm.config.feedback.show">{{vm.config.feedback.message}}</xos-alert>
+
             <button role="button" href=""
               ng-repeat="action in vm.config.actions"
-              ng-click="action.cb(vm.ngModel)"
+              ng-click="action.cb(vm.ngModel, vm[vm.config.formName || 'form'])"
               class="btn btn-{{action.class}}"
               title="{{action.label}}">
               <i class="glyphicon glyphicon-{{action.icon}}"></i>
               {{action.label}}
             </button>
-
           </div>
         </form>
       `,
@@ -202,15 +205,27 @@
 
 
         this.formField = [];
-        $scope.$watch(() => this.ngModel, (model) => {
+        $scope.$watch(() => this.config, ()=> {
 
+
+
+          if(!this.ngModel){
+            return;
+          }
+          let diff = _.difference(Object.keys(this.ngModel), this.excludedField);
+          let modelField = XosFormHelpers.parseModelField(diff);
+          this.formField = XosFormHelpers.buildFormStructure(modelField, this.config.fields, this.ngModel);
+
+
+        } ,true);
+
+
+        $scope.$watch(() => this.ngModel, (model) => {
           // empty from old stuff
           this.formField = {};
-
           if(!model){
             return;
           }
-
           let diff = _.difference(Object.keys(model), this.excludedField);
           let modelField = XosFormHelpers.parseModelField(diff);
           this.formField = XosFormHelpers.buildFormStructure(modelField, this.config.fields, model);
