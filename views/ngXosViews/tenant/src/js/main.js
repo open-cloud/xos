@@ -110,6 +110,7 @@ angular.module('xos.tenant', [
     controllerAs: 'sl',
     templateUrl: 'templates/slicelist.html',
     controller: function(SlicesPlus, $stateParams){
+      this.siteId  = $stateParams.id;
       this.tableConfig = {
         columns: [
           {
@@ -133,7 +134,7 @@ angular.module('xos.tenant', [
         site: $stateParams.id
       }).$promise
       .then((users) => {
-        this.users = users;
+        this.sliceList = users;
       })
       .catch((e) => {
         throw new Error(e);
