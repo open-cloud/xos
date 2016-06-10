@@ -1,0 +1,48 @@
+{% for container_name, container in containers.iteritems() %}
+
+{{ container_name}}:
+#  container_name: {{ container.container_base_name }}_{{ container_name }}_1
+  image: {{ container.image }}
+{%- if container.command %}
+  command: {{ container.command }}
+{%- endif %}
+{%- if container.ports %}
+  ports:
+{%- for src,dest in container.ports.iteritems() %}
+    - "{{ src }}:{{ dest }}"
+{%- endfor %}
+{%- endif %}
+{%- if container.links %}
+  links:
+{%- for link in container.links %}
+    - {{ link }}
+{%- endfor %}
+{%- endif %}
+{%- if container.external_links %}
+  external_links:
+{%- for link in container.external_links %}
+    - {{ link }}
+{%- endfor %}
+{%- endif %}
+{%- if container.volumes %}
+  volumes:
+{%- for volume in container.volumes %}
+{%- if volume.read_only %}
+    - {{ volume.host_path }}:{{ volume.container_path }}:ro
+{%- else %}
+    - {{ volume.host_path }}:{{ volume.container_path }}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- if container.expose %}
+  expose:
+{%- for expose in container.expose %}
+    - "{{ expose }}"
+{%- endfor %}
+{%- endif %}
+  log_driver: "json-file"
+  log_opt:
+    max-size: "100k"
+    max-file: "5"
+
+{%- endfor %}
