@@ -74,7 +74,8 @@ class KeystoneClient(Client):
             self.client = keystone_client.Client(username=self.username,
                                                  password=self.password,
                                                  tenant_name=self.tenant,
-                                                 auth_url=self.url
+                                                 auth_url=self.url,
+                                                 cacert=self.cacert
                                                 )
 
     @require_enabled
@@ -94,7 +95,9 @@ class Glance(Client):
                                                    username=self.username,
                                                    password=self.password,
                                                    tenant=self.tenant,
-                                                   auth_url=self.url)
+                                                   auth_url=self.url,
+                                                   cacert=self.cacert
+                                                   )
     @require_enabled
     def __getattr__(self, name):
         return getattr(self.client, name)
@@ -127,6 +130,7 @@ class NovaClient(Client):
                     extensions=[],
                     service_type='compute',
                     service_name='',
+                    cacert=self.cacert
                     )
 
     @require_enabled
@@ -162,7 +166,8 @@ class NeutronClient(Client):
                                                 password=self.password,
                                                 tenant_name=self.tenant,
                                                 auth_url=self.url,
-                                                ca_cert=self.cacert)
+                                                cacert=self.cacert
+                                                )
     @require_enabled
     def connect(self, *args, **kwds):
         self.__init__(*args, **kwds)
