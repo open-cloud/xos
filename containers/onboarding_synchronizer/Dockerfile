@@ -9,7 +9,8 @@ FROM       xosproject/xos-synchronizer-openstack
 
 # This container must be started in privileged mode. 
 
-RUN apt-get install -y curl iptables 
+RUN apt-get install -y curl
+# iptables 
 ENV DOCKER_BUCKET=get.docker.com
 ENV DOCKER_VERSION=1.8.3
 ENV DOCKER_SHA256=f024bc65c45a3778cf07213d26016075e8172de8f6e4b5702bedde06c241650f
