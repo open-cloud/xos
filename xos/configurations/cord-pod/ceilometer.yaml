@@ -124,6 +124,7 @@ topology_template:
           kind: ceilometer
           ceilometer_pub_sub_url: http://10.11.10.1:4455/
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key
       artifacts:
           pubkey: /opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key
 
