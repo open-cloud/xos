@@ -15,7 +15,7 @@ from services.fabric.models import FabricService
 import json
 
 class SyncVSGTenant(SyncStep):
-    provides=[VSGTenant]
+    provides=[]
     observes = VSGTenant
     requested_interval=30
     playbook='sync_host.yaml'
