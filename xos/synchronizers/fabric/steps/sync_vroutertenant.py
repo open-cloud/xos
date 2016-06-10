@@ -60,7 +60,7 @@ class SyncVRouterTenant(SyncStep):
         #
         # Do we have a vCPE subscriber_tenant?
         if (vroutertenant.subscriber_tenant):
-            sub = self.vroutertenant.subscriber_tenant
+            sub = vroutertenant.subscriber_tenant
             if (sub.kind == 'vCPE'):
                 instance_id = sub.get_attribute("instance_id")
                 if instance_id:
