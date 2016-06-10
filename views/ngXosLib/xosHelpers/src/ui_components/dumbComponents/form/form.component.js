@@ -171,8 +171,6 @@
             <div class="alert alert-info" ng-show="(field.hint).length >0" role="alert">{{field.hint}}</div>
           </div>
           <div class="form-group" ng-if="vm.config.actions">
-            <!--<pre>{{vm.config.feedback}} | json</pre>-->
-
           <xos-alert config="vm.config.feedback" show="vm.config.feedback.show">{{vm.config.feedback.message}}</xos-alert>
 
             <button role="button" href=""
@@ -196,6 +194,14 @@
 
         if(!this.config.actions){
           throw new Error('[xosForm] Please provide an action list in the configuration');
+        }
+
+        if(!this.config.feedback){
+          this.config.feedback =  {
+            show: false,
+            message: 'Form submitted successfully !!!',
+            type: 'success'
+          }
         }
 
         this.excludedField = ['id', 'validators', 'created', 'updated', 'deleted', 'backend_status'];
