@@ -37,9 +37,7 @@ class SyncVRouterTenant(SyncStep):
     def fetch_pending(self, deleted):
         fs = FabricService.get_service_objects().all()[0]
         if not fs.autoconfig:
-            retur
-
-n None
+            return None
 
         if (not deleted):
             objs = VRouterTenant.get_tenant_objects().filter(Q(lazy_blocked=False))
