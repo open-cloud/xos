@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-.PHONY: xos
-xos: up bootstrap
-
-up:
-	touch id_rsa id_rsa.pub
-	sudo docker-compose up -d
-	../common/wait_for_xos_port.sh 80
-=======
 CONFIG_DIR:=$(shell pwd)
 DOCKER_COMPOSE_YML=./onboarding-docker-compose/docker-compose.yml
 BOOTSTRAP_YML=./docker-compose-bootstrap.yml
 DOCKER_PROJECT=cordpod
->>>>>>> master
 
 .PHONY: xos
 xos: prereqs bootstrap onboarding podconfig
@@ -116,7 +106,4 @@ local_containers:
 	done
 	cd ../../../containers/xos; make devel
 	cd ../../../containers/synchronizer; make
-<<<<<<< HEAD
-=======
 	cd ../../../containers/onboarding_synchronizer; make
->>>>>>> master
