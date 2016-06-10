@@ -9,6 +9,7 @@ import threading
 import json
 import pdb
 import pprint
+import traceback
 
 
 from datetime import datetime
@@ -466,7 +467,6 @@ class XOSObserver:
                         try:
                             diag = Diag.objects.filter(name="foo").first()
                         except Exception, e:
-                            import traceback
                             from django import db
                             if "connection already closed" in traceback.format_exc():
                                logger.error("XXX connection already closed")
