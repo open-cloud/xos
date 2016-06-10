@@ -477,7 +477,7 @@ class XOSObserver:
                    try:
 #                       if db.connection:
 #                           db.connection.close()
-                       db.close_connection()
+                       db.close_old_connections()
                    except:
                         logger.log_exc("XXX we failed to fix the failure")
                 else:
