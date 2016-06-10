@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  let compile, element, scope, isolatedScope;
+  let compile, element, scope;
 
   const compileElement = (el) => {
     element = el;
@@ -20,7 +20,6 @@
     }
     compile(element)(scope);
     scope.$digest();
-    isolatedScope = element.isolateScope().vm;
   }
 
   describe('The xos.helper module', function(){

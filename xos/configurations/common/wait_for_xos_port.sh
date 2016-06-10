@@ -10,7 +10,7 @@ then
     exit 1
 fi 
 
-echo "Waiting for XOS to come up"
+echo "Waiting for XOS to start listening on port $1"
 until curl 0.0.0.0:$1 &> /dev/null
 do
     sleep 1

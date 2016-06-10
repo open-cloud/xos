@@ -6,6 +6,43 @@ tosca_definitions_version: tosca_simple_yaml_1_0
 include(macros.m4)
 
 node_types:
+    tosca.nodes.XOS:
+        derived_from: tosca.nodes.Root
+        description: The root of XOS
+        properties:
+            xos_base_props
+            ui_port:
+                type: integer
+                required: false
+                description: TCP port of user interface
+            bootstrap_ui_port:
+                type: integer
+                required: false
+                descrption: TCP port of bootstrap user interface
+            docker_project_name:
+                type: string
+                required: false
+                description: Docker project name
+            enable_build:
+                type: boolean
+                required: false
+                description: True if XOS build should be enabled
+
+
+    tosca.nodes.XOSVolume:
+        derived_from: tosca.nodes.Root
+        description: A volume that should be attached to the XOS docker container
+        properties:
+            xos_base_props
+            host_path:
+                type: string
+                required: false
+                description: path of resource on host
+            read_only:
+                type: boolean
+                required: false
+                description: True if mount read only
+
     tosca.nodes.Service:
         derived_from: tosca.nodes.Root
         description: >
@@ -16,6 +53,68 @@ node_types:
         properties:
             xos_base_props
             xos_base_service_props
+
+    tosca.nodes.ServiceController:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Service Controller.
+        properties:
+            xos_base_props
+            base_url:
+                type: string
+                required: false
+                description: Base url, to allow resources to use relative URLs
+            models:
+                type: string
+                required: false
+                description: url of models.py
+            admin:
+                type: string
+                required: false
+                description: url of admin.py
+            synchronizer:
+                type: string
+                required: false
+                description: url of synchronizer manifest
+            tosca_custom_types:
+                type: string
+                required: false
+                description: url of tosca custom_types
+            rest_service:
+                type: string
+                required: false
+                description: url of REST API service file
+            rest_tenant:
+                type: string
+                required: false
+                description: url of REST API tenant file
+            private_key:
+                type: string
+                required: false
+                description: private key
+            public_key:
+                type: string
+                required: false
+                description: public key
+
+    tosca.nodes.ServiceControllerResource:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Service Resource.
+        properties:
+            xos_base_props
+            kind:
+                type: string
+                required: false
+                description: models, admin, django_library, synchronizer, rest, tosca_custom_types, or tosca_resource
+            format:
+                type: string
+                required: false
+                description: python, manifest, or docker
+            url:
+                type: string
+                required: false
+                description: url of resource, may be relative to base_url or absolute
 
     tosca.nodes.Tenant:
         derived_from: tosca.nodes.Root
@@ -1032,6 +1131,15 @@ node_types:
         derived_from: tosca.relationships.Root
 
     tosca.relationships.UsesAgent:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.HasResource:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.UsedByController:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.UsedByXOS:
         derived_from: tosca.relationships.Root
 
     tosca.capabilities.xos.Service:

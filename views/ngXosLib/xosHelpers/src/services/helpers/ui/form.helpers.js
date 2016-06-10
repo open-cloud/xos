@@ -91,7 +91,7 @@
 
     this.buildFormStructure = (modelField, customField, model) => {
 
-      modelField = Object.keys(modelField).length > 0 ? modelField : customField; //if no model field are provided, check custom
+      modelField = angular.extend(modelField, customField);
       customField = customField || {};
 
       return _.reduce(Object.keys(modelField), (form, f) => {
@@ -100,9 +100,15 @@
           label: (customField[f] && customField[f].label) ? `${customField[f].label}:` : LabelFormatter.format(f),
           type: (customField[f] && customField[f].type) ? customField[f].type : this._getFieldFormat(model[f]),
           validators: (customField[f] && customField[f].validators) ? customField[f].validators : {},
-          hint: (customField[f] && customField[f].hint)? customField[f].hint : ''
+          hint: (customField[f] && customField[f].hint)? customField[f].hint : '',
         };
 
+        if(customField[f] && customField[f].options){
+          form[f].options = customField[f].options;
+        }
+        if(customField[f] && customField[f].properties){
+          form[f].properties = customField[f].properties;
+        }
         if(form[f].type === 'date'){
           model[f] = new Date(model[f]);
         }

@@ -1,12 +1,21 @@
 import json
 from operator import attrgetter
 
-from core.models import PlCoreBase, PlCoreBaseManager, SingletonModel
+from core.models import PlCoreBase, PlCoreBaseManager, SingletonModel, XOS
 from core.models.plcorebase import StrippedCharField
 from django.db import models
 from xos.exceptions import *
+import urlparse
 
 COARSE_KIND = "coarse"
+
+def get_xos():
+    xos = XOS.objects.all()
+
+    if xos:
+       return xos[0]
+    else:
+       return None
 
 
 class AttributeMixin(object):
@@ -56,6 +65,55 @@ class AttributeMixin(object):
                                             None,
                                             attrname))
 
+class ServiceController(PlCoreBase):
+    xos = models.ForeignKey(XOS, related_name='service_controllers', help_text="Pointer to XOS", default=get_xos)
+    name = StrippedCharField(max_length=30, help_text="Service Name")
+    base_url = StrippedCharField(max_length=1024, help_text="Base URL, allows use of relative URLs for resources", null=True, blank=True)
+
+    def __unicode__(self): return u'%s' % (self.name)
+
+    def save(self, *args, **kwargs):
+       super(ServiceController, self).save(*args, **kwargs)
+
+       if self.xos:
+           # force XOS to rebuild
+           # XXX somewhat hackish XXX
+           self.xos.save(update_fields=["updated"])
+
+class ServiceControllerResource(PlCoreBase):
+    KIND_CHOICES = (('models', 'Models'),
+                    ('admin', 'Admin'),
+                    ('django_library', 'Django Library'),
+                    ('synchronizer', 'Synchronizer'),
+                    ('rest_service', 'REST API (service)'),
+                    ('rest_tenant', 'REST API (tenant)'),
+                    ('tosca_custom_types', 'Tosca Custom Types'),
+                    ('tosca_resource', 'Tosca Resource'),
+                    ('private_key', 'Private Key'),
+                    ('public_key', 'Public Key'))
+
+    FORMAT_CHOICES = (('python', 'Python'),
+                      ('manifest', 'Manifest'),
+                      ('docker', 'Docker Container'),
+                      ('yaml', 'YAML'),
+                      ('raw', 'raw'))
+
+    service_controller = models.ForeignKey(ServiceController, related_name='service_controller_resources',
+                                help_text="The Service Controller this resource is associated with")
+
+    name = StrippedCharField(max_length=30, help_text="Object Name")
+    kind = StrippedCharField(choices=KIND_CHOICES, max_length=30)
+    format = StrippedCharField(choices=FORMAT_CHOICES, max_length=30)
+    url = StrippedCharField(max_length=1024, help_text="URL of resource", null=True, blank=True)
+
+    def __unicode__(self): return u'%s' % (self.name)
+
+    @property
+    def full_url(self):
+        if self.service_controller and self.service_controller.base_url:
+            return urlparse.urljoin(self.service_controller.base_url, self.url)
+        else:
+            return self.url
 
 class Service(PlCoreBase, AttributeMixin):
     # when subclassing a service, redefine KIND to describe the new service
@@ -80,6 +138,10 @@ class Service(PlCoreBase, AttributeMixin):
     service_specific_id = StrippedCharField(
         max_length=30, blank=True, null=True)
     service_specific_attribute = models.TextField(blank=True, null=True)
+
+    controller = models.ForeignKey(ServiceController, related_name='services',
+                                help_text="The Service Controller this Service uses",
+                                null=True, blank=True)
 
     def __init__(self, *args, **kwargs):
         # for subclasses, set the default kind appropriately
@@ -548,7 +610,7 @@ class ContainerVmScheduler(Scheduler):
         if self.slice.default_image:
             return self.slice.default_image
 
-        raise XOPSProgrammingError("Please set a default image for %s" % self.slice.name)
+        raise XOSProgrammingError("Please set a default image for %s" % self.slice.name)
 
     def make_new_instance(self):
         from core.models import Instance, Flavor
@@ -683,7 +745,7 @@ class TenantWithContainer(Tenant):
         if slice.default_image:
             return slice.default_image
 
-        raise XOPSProgrammingError("Please set a default image for %s" % self.slice.name)
+        raise XOSProgrammingError("Please set a default image for %s" % self.slice.name)
 
     def save_instance(self, instance):
         # Override this function to do custom pre-save or post-save processing,

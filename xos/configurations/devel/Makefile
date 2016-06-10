@@ -1,8 +1,8 @@
 MYIP:=$(shell hostname -i)
 
-cloudlab: common_cloudlab containers xos
+cloudlab: common_cloudlab local_containers xos
 
-devstack: upgrade_pkgs common_devstack containers xos
+devstack: upgrade_pkgs common_devstack local_containers xos
 
 xos:
 	sudo MYIP=$(MYIP) docker-compose up -d
@@ -12,15 +12,24 @@ xos:
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/cloudlab-openstack.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 
-containers:
-	cd ../../../containers/xos; make devel
-	cd ../../../containers/synchronizer; make
-
 common_cloudlab:
 	make -C ../common -f Makefile.cloudlab
 
 common_devstack:
 	make -C ../common -f Makefile.devstack
+
+base:
+	make -C ../../../containers/xos base
+
+local_containers:
+	echo "" > ../../../containers/xos/local_certs.crt
+	for CRT in $$(ls /usr/local/share/ca-certificates/*) ; do \
+		echo Adding Certificate: $$CRT ;\
+		cat $$CRT >> ../../../containers/xos/local_certs.crt ;\
+		echo "" >> ../../../containers/xos/local_certs.crt ;\
+	done
+	make -C ../../../containers/xos devel
+	make -C ../../../containers/synchronizer
 
 stop:
 	sudo MYIP=$(MYIP) docker-compose stop
@@ -43,8 +52,3 @@ enter-synchronizer:
 upgrade_pkgs:
 	sudo pip install httpie --upgrade
 
-rebuild_xos:
-	make -C ../../../containers/xos devel
-
-rebuild_synchronizer:
-	make -C ../../../containers/synchronizer

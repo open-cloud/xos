@@ -31,4 +31,14 @@ class Migration(migrations.Migration):
             },
             bases=('core.tenantwithcontainer',),
         ),
+        migrations.CreateModel(
+            name='VPGWCComponent',
+            fields=[
+            ],
+            options={
+                'verbose_name': 'VPGWC MCORD Service Component',
+                'proxy': True,
+            },
+            bases=('core.tenantwithcontainer',),
+        ),
     ]

@@ -92,6 +92,25 @@ node_types:
                 default: New vBBU Component 
                 description: Just a message 
                 
+    tosca.nodes.VPGWCComponent:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: vPGWC Component of MCORD Service.
+        properties:
+            kind:
+                type: string
+                default: VPGWC_KIND
+                description: Kind of component
+            s5s8_pgw_tag:
+                type: string
+                required: false
+                default: 300
+                description: VTN stag port-name
+            display_message:
+                type: string
+                required: false
+                default: New vPGWc Component 
+                description: Just a message 
 
 topology_template:
   node_templates:
@@ -102,6 +121,18 @@ topology_template:
           kind: RAN
           icon_url: /static/mCordServices/service_server.png
           view_url: /admin/mcord/vbbucomponent
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/configurations/mcord/mcord_private_key
+      artifacts:
+          pubkey: /opt/xos/configurations/mcord/mcord_public_key
+
+    vPGWC:
+      type: tosca.nodes.MCORDService
+      requirements:
+      properties:
+          kind: vEPC
+          icon_url: /static/mCordServices/service_server.png
+          view_url: /admin/mcord/vpgwccomponent
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/configurations/mcord/mcord_private_key
       artifacts:
@@ -189,10 +220,33 @@ topology_template:
               node: mysite_vbbu_slice1
               relationship: tosca.relationships.ConnectsToSlice
 
+    lan_3gpp_s5s8_pgw_network:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: lan_3gpp_s5s8_pgw_net
+          cidr: 172.17.1.0/24
+          start_ip: 172.17.1.2
+          end_ip: 172.17.1.8
+          gateway_ip: 172.17.1.1
+      requirements:
+          - network_template:
+              node: External
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_mobile_net
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vpgwc_slice1
+              relationship: tosca.relationships.ConnectsToSlice
+
     mysite:
       type: tosca.nodes.Site
 
     mcord-bbu-multi-nic:
+      type: tosca.nodes.Image
+
+    mcord-vpgwc-onos-multi-nic:
       type: tosca.nodes.Image
 
     mysite_management:
@@ -238,4 +292,41 @@ topology_template:
           network: noauto
 #          default_flavor: m1.xlarge
           default_node: computeBBU2 
-    
+
+    mysite_vpgwc_slice1:
+      description: vPGWC Service Slice 1
+      type: tosca.nodes.Slice
+      requirements:
+          - vPGWC:
+              node: vPGWC
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - default_image:
+                node: mcord-vpgwc-onos-multi-nic 
+                relationship: tosca.relationships.DefaultImage
+          - default_flavor:
+                node: m1.xlarge
+                relationship: tosca.relationships.DefaultFlavor
+          - management:
+              node: management
+              relationship: tosca.relationships.ConnectsToNetwork
+      properties:
+          network: noauto
+          default_node: compute10
+
+    mysite_VPGWC_Component:
+      description: MCORD Service default Component
+      type: tosca.nodes.VPGWCComponent
+      requirements:
+          - provider_service:
+              node: vPGWC
+              relationship: tosca.relationships.MemberOfService
+          - vpgwc_slice:
+              node: mysite_vpgwc_slice1
+              relationship: tosca.relationships.MemberOfSlice
+      properties:
+          display_message: vPGWC looks good!
+          s5s8_pgw_tag: 300
+

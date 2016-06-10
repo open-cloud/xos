@@ -12,7 +12,8 @@
     "doc": "gulp docs; cd ./docs",
     "doc:ci": "gulp makeDocs;",
     "build": "gulp vendor && gulp helpers",
-    "dev": "gulp dev"
+    "dev": "gulp dev",
+    "lint": "eslint xosHelpers/"
   },
   "author": "Matteo Scandolo",
   "license": "ISC",
