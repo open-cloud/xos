@@ -3,14 +3,14 @@ xos: up bootstrap
 
 up:
 	touch id_rsa id_rsa.pub
-	sudo docker-compose up -d xos_db xos xos_synchronizer_fabric
+	sudo docker-compose up -d
 	../common/wait_for_xos_port.sh 80
 
 bootstrap: nodes.yaml images.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/setup.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/images.yaml
 
 vtn: vtn-external.yaml
