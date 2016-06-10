@@ -80,6 +80,10 @@ node_types:
                 type: string
                 required: false
                 description: url of tosca custom_types
+            tosca_resource:
+                type: string
+                required: false
+                description: url of tosca resource
             rest_service:
                 type: string
                 required: false
