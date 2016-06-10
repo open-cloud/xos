@@ -110,6 +110,7 @@ angular.module('xos.tenant', [
     controllerAs: 'sl',
     templateUrl: 'templates/slicelist.html',
     controller: function(SlicesPlus, $stateParams){
+      this.siteId  = $stateParams.id;
       this.tableConfig = {
         columns: [
           {
@@ -133,7 +134,7 @@ angular.module('xos.tenant', [
         site: $stateParams.id
       }).$promise
       .then((users) => {
-        this.users = users;
+        this.sliceList = users;
       })
       .catch((e) => {
         throw new Error(e);
@@ -149,7 +150,7 @@ angular.module('xos.tenant', [
     bindToController: true,
     controllerAs: 'cs',
     templateUrl: 'templates/createslice.html',
-    controller: function(Slices, SlicesPlus, Sites, Images, $stateParams, $http, $state){
+    controller: function(Slices, SlicesPlus, Sites, Images, $stateParams, $http, $state, $q){
       //var sites;
       //console.log(this.users.name);
 
@@ -167,98 +168,26 @@ angular.module('xos.tenant', [
             label: 'Save',
             icon: 'ok', // refers to bootstraps glyphicon
             cb: (model, form) => { // receive the model
-              if (form.$valid )
-              {
-                if(model.id){
-                  var pr = Slices.update(model).$promise;
-                }
-                else{
-                  var pr = Slices.save(model).$promise;
-                }
-                pr.then((users) => {
-                  this.users = users;
-                  data = users;
-                  this.model = data;
-                  this.config.feedback.show = true;
-                  $state.go('site',{id : this.model.site});
-                })
-                .catch((e) => {
-                  this.config.feedback.show = true;
-                  this.config.feedback.type='danger';
-                  if(e.data)
-                  {
-                    console.log(e.data.detail);
-                    this.config.feedback.message = e.data.detail;
-                  }
-                  else {
-                    this.config.feedback.message=e.statusText;}
-                });
-              }
+              saveform(model, form).then(()=> {
+                $state.go('site', {id: this.model.site});
+              });
             },
             class: 'success'
           },  {
             label: 'Save and continue editing',
             icon: 'ok', // refers to bootstraps glyphicon
             cb: (model, form) => { // receive the model
-              if (form.$valid )
-              {
-                if(model.id){
-                  var pr = Slices.update(model).$promise;
-                }
-                else{
-                  var pr = Slices.save(model).$promise;
-                }
-                pr.then((users) => {
-                  this.users = users;
-                  data = users;
-                  this.model = data;
-                  this.config.feedback.show = true;
-                })
-                .catch((e) => {
-                  this.config.feedback.show = true;
-                  this.config.feedback.type='danger';
-                  if(e.data)
-                  {
-                    console.log(e.data.detail);
-                    this.config.feedback.message = e.data.detail;
-                  }
-                  else {
-                    this.config.feedback.message=e.statusText;}
-                });
-              }
+              saveform(model,form);
             },
             class: 'primary'
           },
           {
             label: 'Save and add another',
             icon: 'ok', // refers to bootstraps glyphicon
-            cb: (model, form) => { // receive the model
-              if (form.$valid )
-              {
-                if(model.id){
-                  var pr = Slices.update(model).$promise;
-                }
-                else{
-                  var pr = Slices.save(model).$promise;
-                }
-                pr.then((users) => {
-                  this.users = users;
-                  data = users;
-                  this.model = data;
-                  this.config.feedback.show = true;
-                })
-                .catch((e) => {
-                  this.config.feedback.show = true;
-                  this.config.feedback.type='danger';
-                  if(e.data)
-                  {
-                    console.log(e.data.detail);
-                    this.config.feedback.message = e.data.detail;
-                  }
-                  else {
-                    this.config.feedback.message=e.statusText;}
-                });
-              }
+            cb: (model, form) => {
+             saveform(model,form).then(()=> {
+               $state.go('createslice',{site : this.model.site,id : ''});
+             });
             },
             class: 'primary'
           }
@@ -327,7 +256,8 @@ angular.module('xos.tenant', [
             }
           },
           max_instances: {
-            type: 'Max Instances',
+            label: 'Max Instances',
+            type: 'number',
             validators: {
               required: false,
               min: 0
@@ -423,7 +353,6 @@ angular.module('xos.tenant', [
           .then((users) => {
             this.users = users;
             data = users;
-            delete data.networks;
 
             this.model = data;
           })
@@ -464,6 +393,42 @@ angular.module('xos.tenant', [
       });
 
       }
+
+      var  saveform = (model,form) =>
+      { // receive the model
+        var deferred = $q.defer();
+        delete model.networks;
+              if (form.$valid )
+              {
+                if(model.id){
+                  var pr = Slices.update(model).$promise;
+                }
+                else{
+                  var pr = Slices.save(model).$promise;
+                }
+                pr.then((users) => {
+                  this.model = users;
+                  //data = users;
+                  //this.model = this.users;
+                  this.config.feedback.show = true;
+                  deferred.resolve(this.model);
+                })
+                .catch((e) => {
+                  this.config.feedback.show = true;
+                  this.config.feedback.type='danger';
+                  if(e.data && e.data.detail )
+                  {
+                    this.config.feedback.message = e.data.detail;
+                  }
+                  else {
+                    this.config.feedback.message=e.statusText;
+                  }
+                  deferred.reject(e);
+                });
+              }
+
+              return  deferred.promise;
+            }
     }
   };
 });

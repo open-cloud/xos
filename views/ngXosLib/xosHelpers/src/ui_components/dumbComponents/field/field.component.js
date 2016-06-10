@@ -148,13 +148,13 @@
                 ng-required="vm.field.validators.required || false">
                 </select>
             <span class="boolean-field" ng-if="vm.field.type === 'boolean'">
-              <a
+              <a href="#"
                 class="btn btn-success"
                 ng-show="vm.ngModel"
                 ng-click="vm.ngModel = false">
                 <i class="glyphicon glyphicon-ok"></i>
               </a>
-              <a
+              <a href="#"
                 class="btn btn-danger"
                 ng-show="!vm.ngModel"
                 ng-click="vm.ngModel = true">
