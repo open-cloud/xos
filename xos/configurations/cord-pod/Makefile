@@ -33,6 +33,9 @@ podconfig: nodes.yaml images.yaml
 vtn: vtn-external.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/vtn-external.yaml
 
+fabric: fabric.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/fabric.yaml
+
 cord: vsg_custom_images
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/mgmt-net.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-vtn-vsg.yaml
@@ -52,6 +55,9 @@ images.yaml:
 
 vtn-external.yaml:
 	export SETUPDIR=.; bash ./make-vtn-external-yaml.sh
+
+fabric.yaml:
+	export SETUPDIR=.; bash ./make-fabric-yaml.sh
 
 virtualbng_json:
 	export SETUPDIR=.; bash ./make-virtualbng-json.sh
