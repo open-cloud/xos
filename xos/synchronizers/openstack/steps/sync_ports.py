@@ -28,7 +28,7 @@ class SyncPorts(OpenStackSyncStep):
         # ports to instances if the port's tenant does not match
         # the instance's tenant.
 
-        # A bunch of stuff to compensate for OpenStackDriver.client_driveR()
+        # A bunch of stuff to compensate for OpenStackDriver.client_driver()
         # not being in working condition.
         from openstack_xos.client import OpenStackClient
         from openstack_xos.driver import OpenStackDriver
@@ -38,7 +38,7 @@ class SyncPorts(OpenStackSyncStep):
         auth = {'username': caller.email,
                 'password': caller.remote_password,
                 'tenant': slice.name}
-        client = OpenStackClient(controller=controller, cacert=self.config.nova_ca_ssl_cert, **auth)
+        client = OpenStackClient(controller=controller, **auth)
         driver = OpenStackDriver(client=client)
 
         return driver

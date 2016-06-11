@@ -1,5 +1,7 @@
 import urlparse
 try:
+    from keystoneauth1.identity import v2 as keystoneauth_v2
+    from keystoneauth1 import session as keystone_session
     from keystoneclient.v2_0 import client as keystone_client
     #from glance import client as glance_client
     import glanceclient
@@ -62,7 +64,10 @@ class Client:
         if endpoint:
             self.endpoint = endpoint
 
-        self.cacert = cacert
+        if cacert:
+            self.cacert = cacert
+        else:
+            self.cacert = getattr(Config(), "nova_ca_ssl_cert", "None")
 
         #if '@' in self.username:
         #    self.username = self.username[:self.username.index('@')]
@@ -71,12 +76,13 @@ class KeystoneClient(Client):
     def __init__(self, *args, **kwds):
         Client.__init__(self, *args, **kwds)
         if has_openstack:
-            self.client = keystone_client.Client(username=self.username,
-                                                 password=self.password,
-                                                 tenant_name=self.tenant,
-                                                 auth_url=self.url,
-                                                 cacert=self.cacert
-                                                )
+            auth = keystoneauth_v2.Password(username=self.username,
+                                            password=self.password,
+                                            tenant_name=self.tenant,
+                                            auth_url=self.url,
+                                            )
+            sess = keystone_session.Session(auth=auth, verify=self.cacert, )
+            self.client = keystone_client.Client(session=sess)
 
     @require_enabled
     def connect(self, *args, **kwds):
@@ -166,7 +172,7 @@ class NeutronClient(Client):
                                                 password=self.password,
                                                 tenant_name=self.tenant,
                                                 auth_url=self.url,
-                                                cacert=self.cacert
+                                                ca_cert=self.cacert
                                                 )
     @require_enabled
     def connect(self, *args, **kwds):
@@ -188,9 +194,8 @@ class OpenStackClient:
         url_parsed = urlparse.urlparse(self.keystone.url)
         hostname = url_parsed.netloc.split(':')[0]
         token = self.keystone.client.tokens.authenticate(username=self.keystone.username, password=self.keystone.password, tenant_name=self.keystone.tenant)
-        glance_endpoint = self.keystone.service_catalog.url_for(service_type='image', endpoint_type='publicURL')
-        
-        self.glanceclient = GlanceClient('1', endpoint=glance_endpoint, token=token.id, **kwds)
+#        glance_endpoint = self.keystone.client.service_catalog.url_for(service_type='image', endpoint_type='publicURL')
+#        self.glanceclient = GlanceClient('1', endpoint=glance_endpoint, token=token.id, **kwds)
         self.nova = NovaClient(*args, **kwds)
         # self.nova_db = NovaDB(*args, **kwds)
         self.neutron = NeutronClient(*args, **kwds)

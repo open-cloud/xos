@@ -63,7 +63,7 @@ stop:
 	test ! -s $(DOCKER_COMPOSE_YML) || sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) stop
 	sudo docker-compose -f $(BOOTSTRAP_YML) stop
 
-rm:
+rm: stop
 	test ! -s $(DOCKER_COMPOSE_YML) || sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) rm
 	sudo docker-compose -f $(BOOTSTRAP_YML) rm
 
