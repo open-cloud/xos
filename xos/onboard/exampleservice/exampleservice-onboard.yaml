@@ -17,6 +17,7 @@ topology_template:
           admin: admin.py
           synchronizer: synchronizer/manifest
           tosca_custom_types: exampleservice.yaml
+          tosca_resource: tosca/resources/exampleservice.py, tosca/resources/exampletenant.py
           rest_service: api/service/exampleservice.py
           rest_tenant: api/tenant/exampletenant.py
           private_key: file:///opt/xos/key_import/exampleservice_rsa
