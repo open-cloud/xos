@@ -19,6 +19,14 @@ bootstrap:
 onboarding:
 	echo "[ONBOARDING]"
 	# on-board any services here
+	sudo cp id_rsa key_import/vsg_rsa
+	sudo cp id_rsa.pub key_import/vsg_rsa.pub
+	sudo cp id_rsa key_import/volt_rsa
+	sudo cp id_rsa.pub key_import/volt_rsa.pub
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/onboard/volt/volt-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/onboard/vsg/vsg-onboard.yaml
+	bash ../common/wait_for_onboarding_ready.sh 81 services/volt
+	bash ../common/wait_for_onboarding_ready.sh 81 services/vsg
 	bash ../common/wait_for_onboarding_ready.sh 81 xos
 	bash ../common/wait_for_xos_port.sh 80
 
