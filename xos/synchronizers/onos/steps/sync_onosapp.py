@@ -18,7 +18,7 @@ from services.onos.models import ONOSService, ONOSApp
 from xos.logger import Logger, logging
 from services.vrouter.models import VRouterService
 from services.vtn.models import VTNService
-from services.cord.models import VOLTService, VOLTDevice, AccessDevice
+from services.volt.models import VOLTService, VOLTDevice, AccessDevice
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")

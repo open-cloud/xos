@@ -6,10 +6,9 @@ import base64
 from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
-from core.models import Service, Port, Controller, Tag
+from core.models import Service, Port, Controller, Tag, Tenant
 from core.models.service import COARSE_KIND
-from services.cord.models import VSGTenant
-from services.cord.models import Tenant
+from services.vsg.models import VSGTenant
 from xos.logger import Logger, logging
 from requests.auth import HTTPBasicAuth
 

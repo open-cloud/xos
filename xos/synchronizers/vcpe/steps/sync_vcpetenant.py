@@ -10,7 +10,7 @@ from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
 from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice, Tag
-from services.cord.models import VSGService, VSGTenant, VOLTTenant
+from services.vsg.models import VSGService, VSGTenant
 from services.hpc.models import HpcService, CDNPrefix
 from xos.logger import Logger, logging
 
