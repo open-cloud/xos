@@ -180,6 +180,10 @@ node_types:
                 type: string
                 required: false
                 description: url of admin.py
+            admin_template:
+                type: string
+                required: false
+                description: url of admin html template
             synchronizer:
                 type: string
                 required: false

@@ -83,6 +83,7 @@ class ServiceController(PlCoreBase):
 class ServiceControllerResource(PlCoreBase):
     KIND_CHOICES = (('models', 'Models'),
                     ('admin', 'Admin'),
+                    ('admin_template', 'Admin Template'),
                     ('django_library', 'Django Library'),
                     ('synchronizer', 'Synchronizer'),
                     ('rest_service', 'REST API (service)'),

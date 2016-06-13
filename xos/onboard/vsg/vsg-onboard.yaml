@@ -15,6 +15,7 @@ topology_template:
           # base_url is non-null.
           models: models.py
           admin: admin.py
+          admin_template: templates/vcpeadmin.html
           synchronizer: synchronizer/manifest
           #tosca_custom_types: exampleservice.yaml
           tosca_resource: tosca/resources/vcpeservice.py

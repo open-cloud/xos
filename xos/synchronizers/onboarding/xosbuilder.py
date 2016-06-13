@@ -30,6 +30,7 @@ class XOSBuilder(object):
         service_name = scr.service_controller.name
         base_dirs = {"models": "%s/services/%s/" % (xos_base, service_name),
                      "admin": "%s/services/%s/" % (xos_base, service_name),
+                     "admin_template": "%s/services/%s/templates/" % (xos_base, service_name),
                      "django_library": "%s/services/%s/" % (xos_base, service_name),
                      "synchronizer": "%s/synchronizers/%s/" % (xos_base, service_name),
                      "tosca_custom_types": "%s/tosca/custom_types/" % (xos_base),
