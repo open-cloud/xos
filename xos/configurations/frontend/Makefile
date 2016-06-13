@@ -21,7 +21,7 @@ bootstrap:
 onboarding:
 	echo "[ONBOARDING]"
 	# on-board any services here
-	bash ../common/wait_for_onboarding_ready.sh $(XOS_BOOTSTRAP_PORT)
+	bash ../common/wait_for_onboarding_ready.sh $(XOS_BOOTSTRAP_PORT) xos
 	bash ../common/wait_for_xos_port.sh $(XOS_UI_PORT)
 
 frontendconfig:
