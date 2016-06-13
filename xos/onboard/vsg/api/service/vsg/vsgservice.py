@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from core.models import *
 from django.forms import widgets
 from django.conf.urls import patterns, url
-from services.cord.models import VSGService
+from services.vsg.models import VSGService
 from api.xosapi_helpers import PlusModelSerializer, XOSViewSet, ReadOnlyField
 from django.shortcuts import get_object_or_404
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied

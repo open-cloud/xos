@@ -7,7 +7,7 @@ from translator.toscalib.tosca_template import ToscaTemplate
 import pdb
 
 from core.models import User, TenantRootPrivilege, TenantRootRole
-from services.cord.models import CordSubscriberRoot
+from services.volt.models import CordSubscriberRoot
 
 from xosresource import XOSResource
 
