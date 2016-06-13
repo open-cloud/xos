@@ -20,7 +20,7 @@ if (not os.path.exists("core")):
       sys.exit(-1)
 
 # defaults
-apps = ["core", "services.hpc", "services.cord", "services.requestrouter", "services.onos"]
+apps = ["core", "services.hpc", "services.requestrouter", "services.onos"]
 output = "-json"
 
 # syntax: dmdot [-json | -dot] [app_name]
