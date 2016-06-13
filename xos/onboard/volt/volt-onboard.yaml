@@ -15,6 +15,7 @@ topology_template:
           # base_url is non-null.
           models: models.py
           admin: admin.py
+          admin_template: templates/voltadmin.html
           synchronizer: synchronizer/manifest
           #tosca_custom_types: exampleservice.yaml
           tosca_resource: tosca/resources/voltdevice.py, tosca/resources/voltservice.py, tosca/resources/CORDSubscriber.py, tosca/resources/CORDUser.py, tosca/resources/VOLTTenant.py
