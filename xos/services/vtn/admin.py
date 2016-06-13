@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from services.cord.models import *
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
@@ -14,7 +13,6 @@ from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadO
 from core.middleware import get_request
 
 from services.vtn.models import *
-from services.cord.models import CordSubscriberRoot
 
 from functools import update_wrapper
 from django.contrib.admin.views.main import ChangeList
