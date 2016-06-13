@@ -16,10 +16,8 @@ topology_template:
           models: models.py
           admin: admin.py
           admin_template: templates/voltadmin.html
-          synchronizer: synchronizer/manifest
-          #tosca_custom_types: exampleservice.yaml
+          #synchronizer: synchronizer/manifest
           tosca_resource: tosca/resources/voltdevice.py, tosca/resources/voltservice.py, tosca/resources/CORDSubscriber.py, tosca/resources/CORDUser.py, tosca/resources/VOLTTenant.py, tosca/resources/accessagent.py, tosca/resources/accessdevice.py
-          #rest_service: api/service/exampleservice.py
           rest_tenant: subdirectory:cord api/tenant/cord/volt.py, subdirectory:cord api/tenant/cord/subscriber.py
           private_key: file:///opt/xos/key_import/volt_rsa
           public_key: file:///opt/xos/key_import/volt_rsa.pub
