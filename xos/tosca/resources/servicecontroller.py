@@ -29,7 +29,7 @@ class XOSServiceController(XOSResource):
                     parts=value.split()
                     for part in parts[:-1]:
                        if ":" in part:
-                           (lhs, rhs) = part.split(1)
+                           (lhs, rhs) = part.split(":", 1)
                            if lhs=="subdirectory":
                                subdirectory=rhs
                            else:
