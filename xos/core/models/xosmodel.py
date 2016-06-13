@@ -14,6 +14,7 @@ class XOS(PlCoreBase):
     db_container_name = StrippedCharField(max_length=200, help_text="name of XOS db container", default="xos_db")
     docker_project_name = StrippedCharField(max_length=200, help_text="docker project name")
     enable_build = models.BooleanField(help_text="True if Onboarding Synchronizer should build XOS as necessary", default=True)
+    frontend_only = models.BooleanField(help_text="If True, XOS will not start synchronizer containers", default=False)
 
     def __unicode__(self):  return u'%s' % (self.name)
 

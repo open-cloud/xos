@@ -57,6 +57,10 @@ node_types:
                 type: boolean
                 required: false
                 description: True if XOS build should be enabled
+            frontend_only:
+                type: boolean
+                required: false
+                description: True if XOS should not start synchronizer containers
 
 
     tosca.nodes.XOSVolume:

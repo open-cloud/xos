@@ -224,17 +224,18 @@ class XOSBuilder(object):
 #                             "links": ["xos_db"],
 #                             "volumes": volume_list}
 
-         for c in ServiceController.objects.all():
-             if self.check_controller_unready(c):
-                 logger.warning("Controller %s has unready resources" % str(c))
-                 continue
+         if not xos.frontend_only:
+             for c in ServiceController.objects.all():
+                 if self.check_controller_unready(c):
+                     logger.warning("Controller %s has unready resources" % str(c))
+                     continue
 
-             containers["xos_synchronizer_%s" % c.name] = \
-                            {"image": "xosproject/xos-synchronizer-%s" % c.name,
-                             "command": 'bash -c "sleep 120; cd /opt/xos/synchronizers/%s; bash ./run.sh"' % c.name,
-                             #"external_links": [db_container_name],
-                             "links": ["xos_db"],
-                             "volumes": volume_list}
+                 containers["xos_synchronizer_%s" % c.name] = \
+                                {"image": "xosproject/xos-synchronizer-%s" % c.name,
+                                 "command": 'bash -c "sleep 120; cd /opt/xos/synchronizers/%s; bash ./run.sh"' % c.name,
+                                 #"external_links": [db_container_name],
+                                 "links": ["xos_db"],
+                                 "volumes": volume_list}
 
          vars = { "containers": containers }
 
