@@ -56,21 +56,21 @@ xos_synchronizer_onos:
             max-size: "100k"
             max-file: "5"
 
-xos_synchronizer_vcpe:
-    image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120; cp /root/setup/node_key /opt/xos/synchronizers/vcpe/; chmod 0600 /opt/xos/synchronizers/vcpe/node_key; python /opt/xos/synchronizers/vcpe/vcpe-synchronizer.py -C /root/setup/files/vcpe_synchronizer_config"
-    labels:
-        org.xosproject.kind: synchronizer
-        org.xosproject.target: vcpe
-    links:
-        - xos_db
-    volumes:
-        - .:/root/setup:ro
-        - ./id_rsa:/opt/xos/synchronizers/vcpe/vcpe_private_key:ro  # private key
-    log_driver: "json-file"
-    log_opt:
-            max-size: "100k"
-            max-file: "5"
+#xos_synchronizer_vcpe:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "sleep 120; cp /root/setup/node_key /opt/xos/synchronizers/vcpe/; chmod 0600 /opt/xos/synchronizers/vcpe/node_key; python /opt/xos/synchronizers/vcpe/vcpe-synchronizer.py -C /root/setup/files/vcpe_synchronizer_config"
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: vcpe
+#    links:
+#        - xos_db
+#    volumes:
+#        - .:/root/setup:ro
+#        - ./id_rsa:/opt/xos/synchronizers/vcpe/vcpe_private_key:ro  # private key
+#    log_driver: "json-file"
+#    log_opt:
+#            max-size: "100k"
+#            max-file: "5"
 
 xos_synchronizer_vtn:
     image: xosproject/xos-synchronizer-openstack
@@ -103,21 +103,21 @@ xos_synchronizer_monitoring_channel:
             max-size: "100k"
             max-file: "5"
 
-xos_synchronizer_vtr:
-    image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120; cp /root/setup/node_key /opt/xos/synchronizers/vtr/; chmod 0600 /opt/xos/synchronizers/vtr/node_key; python /opt/xos/synchronizers/vtr/vtr-synchronizer.py -C /root/setup/files/vtr_synchronizer_config"
-    labels:
-        org.xosproject.kind: synchronizer
-        org.xosproject.target: vtr
-    links:
-        - xos_db
-    volumes:
-        - .:/root/setup:ro
-        - ./id_rsa:/opt/xos/synchronizers/vtr/vcpe_private_key:ro  # private key
-    log_driver: "json-file"
-    log_opt:
-            max-size: "100k"
-            max-file: "5"
+#xos_synchronizer_vtr:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "sleep 120; cp /root/setup/node_key /opt/xos/synchronizers/vtr/; chmod 0600 /opt/xos/synchronizers/vtr/node_key; python /opt/xos/synchronizers/vtr/vtr-synchronizer.py -C /root/setup/files/vtr_synchronizer_config"
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: vtr
+#    links:
+#        - xos_db
+#    volumes:
+#        - .:/root/setup:ro
+#        - ./id_rsa:/opt/xos/synchronizers/vtr/vcpe_private_key:ro  # private key
+#    log_driver: "json-file"
+#    log_opt:
+#            max-size: "100k"
+#            max-file: "5"
 
 xos_bootstrap_ui:
     command: python /opt/xos/manage.py runserver 0.0.0.0:81 --insecure --makemigrations
