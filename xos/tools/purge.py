@@ -4,8 +4,6 @@ sys.path.append("/opt/xos")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import django
 from core.models import *
-from services.hpc.models import *
-from services.cord.models import *
 django.setup()
 
 def purge(cls):
