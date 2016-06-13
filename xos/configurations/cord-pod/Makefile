@@ -42,7 +42,12 @@ cord: vsg_custom_images
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-volt-devices.yaml
 
 exampleservice:
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/pod-exampleservice.yaml
+	sudo cp id_rsa key_import/exampleservice_rsa
+	sudo cp id_rsa.pub key_import/exampleservice_rsa.pub
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/onboard/exampleservice/exampleservice-onboard.yaml
+	bash ../common/wait_for_onboarding_ready.sh 81 xos
+	bash ../common/wait_for_xos_port.sh 80
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/pod-exampleservice.yaml
 
 cord-ceilometer: ceilometer_custom_images cord
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/ceilometer.yaml
