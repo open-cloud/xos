@@ -6,7 +6,6 @@ from rest_framework import generics
 from rest_framework import status
 from core.models import *
 from django.forms import widgets
-from services.cord.models import CordSubscriberRoot
 from services.vtr.models import VTRTenant, VTRService
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
 from api.xosapi_helpers import PlusModelSerializer, XOSViewSet, ReadOnlyField
