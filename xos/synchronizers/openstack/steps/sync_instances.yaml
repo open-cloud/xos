@@ -19,6 +19,7 @@
       timeout: 200
       userdata: "{{ user_data }}"
       config_drive: yes
+      auto_ip: no
       nics:
       {% for nic in nics %}
           - {{ nic.kind }}-id: {{ nic.value }}
