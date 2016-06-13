@@ -182,7 +182,6 @@ INSTALLED_APPS = (
     'django_extensions',
     'core',
     'services.hpc',
-    'services.cord',
     'services.mcord',
     'services.onos',
     'services.ceilometer',
