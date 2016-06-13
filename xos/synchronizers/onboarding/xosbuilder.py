@@ -38,7 +38,12 @@ class XOSBuilder(object):
                      "rest_tenant": "%s/api/tenant/" % (xos_base),
                      "private_key": "%s/services/%s/keys" % (xos_base, service_name),
                      "public_key": "%s/services/%s/keys/" % (xos_base, service_name)}
-        return base_dirs[scr.kind]
+        dest_dir = base_dirs[scr.kind]
+
+        if scr.subdirectory:
+            dest_dir = os.path.join(dest_dir, scr.subdirectory)
+
+        return dest_dir
 
     def get_build_fn(self, scr):
         dest_dir = self.get_dest_dir(scr)

@@ -19,21 +19,37 @@ class XOSServiceController(XOSResource):
         if values:
             for i,value in enumerate(values.split(",")):
                 value = value.strip()
+                subdirectory = None
 
                 name=kind
                 if i>0:
                     name = "%s_%d" %( name, i)
 
+                if (" " in value):
+                    parts=value.split():
+                    for part in parts[:-1]:
+                       if ":" in part:
+                           (lhs, rhs) = part.split(1)
+                           if lhs=="subdirectory":
+                               subdirectory=rhs
+                           else:
+                               raise Exception("Malformed value %s" % value)
+                       else:
+                           raise Exception("Malformed value %s" % value)
+                    value = parts[-1]
+
+
                 scr = ServiceControllerResource.objects.filter(service_controller=obj, name=name, kind=kind, format=format)
                 if scr:
                     scr=scr[0]
-                    if scr.url != value:
+                    if (scr.url != value) or (scr.subdirectory!=subdirectory):
                         self.info("updating resource %s" % kind)
                         scr.url = value
+                        scr.subdirectory = subdirectory
                         scr.save()
                 else:
                     self.info("adding resource %s" % kind)
-                    scr = ServiceControllerResource(service_controller=obj, name=name, kind=kind, format=format, url=value)
+                    scr = ServiceControllerResource(service_controller=obj, name=name, kind=kind, format=format, url=value, subdirectory=subdirectory)
                     scr.save()
 
     def postprocess(self, obj):

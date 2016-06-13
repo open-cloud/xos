@@ -102,6 +102,7 @@ class ServiceControllerResource(PlCoreBase):
                                 help_text="The Service Controller this resource is associated with")
 
     name = StrippedCharField(max_length=30, help_text="Object Name")
+    subdirectory = StrippedCharField(max_length=1024, help_text="optional subdirectory", null=True, blank=True)
     kind = StrippedCharField(choices=KIND_CHOICES, max_length=30)
     format = StrippedCharField(choices=FORMAT_CHOICES, max_length=30)
     url = StrippedCharField(max_length=1024, help_text="URL of resource", null=True, blank=True)
