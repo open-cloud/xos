@@ -230,12 +230,18 @@ class XOSBuilder(object):
                      logger.warning("Controller %s has unready resources" % str(c))
                      continue
 
-                 containers["xos_synchronizer_%s" % c.name] = \
-                                {"image": "xosproject/xos-synchronizer-%s" % c.name,
-                                 "command": 'bash -c "sleep 120; cd /opt/xos/synchronizers/%s; bash ./run.sh"' % c.name,
-                                 #"external_links": [db_container_name],
-                                 "links": ["xos_db"],
-                                 "volumes": volume_list}
+                 if c.service_controller_resources.filter(kind="synchronizer").exists():
+                     if c.synchronizer_run and c.synchronizer_config:
+                         command = 'bash -c "sleep 120; cd /opt/xos/synchronizers/%s; python ./%s -C %s" % (c.name, c.synchronizer_run, c.synchronizer_config)
+                     else:
+                         command = 'bash -c "sleep 120; cd /opt/xos/synchronizers/%s; bash ./run.sh"' % c.name
+
+                     containers["xos_synchronizer_%s" % c.name] = \
+                                    {"image": "xosproject/xos-synchronizer-%s" % c.name,
+                                     "command": command,
+                                     #"external_links": [db_container_name],
+                                     "links": ["xos_db"],
+                                     "volumes": volume_list}
 
          vars = { "containers": containers }
 
