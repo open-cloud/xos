@@ -37,7 +37,7 @@ class XOSBuilder(object):
                      "tosca_resource": "%s/tosca/resources/" % (xos_base),
                      "rest_service": "%s/api/service/" % (xos_base),
                      "rest_tenant": "%s/api/tenant/" % (xos_base),
-                     "private_key": "%s/services/%s/keys" % (xos_base, service_name),
+                     "private_key": "%s/services/%s/keys/" % (xos_base, service_name),
                      "public_key": "%s/services/%s/keys/" % (xos_base, service_name)}
         dest_dir = base_dirs[scr.kind]
 
