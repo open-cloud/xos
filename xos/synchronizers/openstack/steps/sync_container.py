@@ -10,7 +10,6 @@ from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from synchronizers.base.syncstep import SyncStep, DeferredException
 from synchronizers.base.ansible import run_template_ssh
 from core.models import Service, Slice, Instance
-from services.onos.models import ONOSService, ONOSApp
 from xos.logger import Logger, logging
 
 # hpclibrary will be in steps/..

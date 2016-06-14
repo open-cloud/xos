@@ -27,6 +27,10 @@ node_types:
                 type: boolean
                 required: false
                 description: True if XOS build should be enabled
+            frontend_only:
+                type: boolean
+                required: false
+                description: True if XOS should not start synchronizer containers
 
 
     tosca.nodes.XOSVolume:
@@ -72,10 +76,22 @@ node_types:
                 type: string
                 required: false
                 description: url of admin.py
+            admin_template:
+                type: string
+                required: false
+                description: url of admin html template
             synchronizer:
                 type: string
                 required: false
                 description: url of synchronizer manifest
+            synchronizer_run:
+                type: string
+                required: false
+                description: synchronizer run command
+            synchronizer_config:
+                type: string
+                required: false
+                description: synchronizer config filename
             tosca_custom_types:
                 type: string
                 required: false
