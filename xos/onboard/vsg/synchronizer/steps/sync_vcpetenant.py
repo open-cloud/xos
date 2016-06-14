@@ -66,7 +66,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         dnsdemux_ip = None
         cdn_prefixes = []
 
-        cdn_config_fn = "/opt/xos/synchronizers/vcpe/cdn_config"
+        cdn_config_fn = "/opt/xos/synchronizers/vsg/cdn_config"
         if os.path.exists(cdn_config_fn):
             # manual CDN configuration
             #   the first line is the address of dnsredir

@@ -128,7 +128,7 @@
 #    when: cron_job_pids_count.stdout == "0"
 
 #  - name: Copy cron job to destination
-#    copy: src=/opt/xos/synchronizers/vcpe/vcpe_stats_notifier.py
+#    copy: src=/opt/xos/synchronizers/vsg/vcpe_stats_notifier.py
 #      dest=/usr/local/sbin/vcpe_stats_notifier.py
 #    when: cron_job_pids_count.stdout == "0"
 
@@ -144,10 +144,10 @@
 {% endif %}
 
   - name: vCPE upstart
-    template: src=/opt/xos/synchronizers/vcpe/templates/vcpe.conf.j2 dest=/etc/init/{{ container_name }}.conf
+    template: src=/opt/xos/synchronizers/vsg/templates/vcpe.conf.j2 dest=/etc/init/{{ container_name }}.conf
 
   - name: vCPE startup script
-    template: src=/opt/xos/synchronizers/vcpe/templates/start-vcpe-vtn.sh.j2 dest=/usr/local/sbin/start-{{ container_name }}.sh mode=0755
+    template: src=/opt/xos/synchronizers/vsg/templates/start-vcpe-vtn.sh.j2 dest=/usr/local/sbin/start-{{ container_name }}.sh mode=0755
     notify:
 #    - restart vcpe
      - stop vcpe
@@ -158,17 +158,17 @@
     file: path=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe state=directory owner=root group=root
 
   - name: vCPE basic dnsmasq config
-    copy: src=/opt/xos/synchronizers/vcpe/files/vcpe.dnsmasq dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/vcpe.conf owner=root group=root
+    copy: src=/opt/xos/synchronizers/vsg/files/vcpe.dnsmasq dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/vcpe.conf owner=root group=root
     notify:
     - restart dnsmasq
 
   - name: dnsmasq config
-    template: src=/opt/xos/synchronizers/vcpe/templates/dnsmasq_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/servers.conf owner=root group=root
+    template: src=/opt/xos/synchronizers/vsg/templates/dnsmasq_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/servers.conf owner=root group=root
     notify:
     - restart dnsmasq
 
   - name: dnsmasq "safe" config
-    template: src=/opt/xos/synchronizers/vcpe/templates/dnsmasq_safe_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe/servers.conf owner=root group=root
+    template: src=/opt/xos/synchronizers/vsg/templates/dnsmasq_safe_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe/servers.conf owner=root group=root
     notify:
     - restart dnsmasq
 
@@ -176,12 +176,12 @@
     file: path=/var/container_volumes/{{ container_name }}/mount state=directory owner=root group=root
 
   - name: redirection rules for safe DNS
-    template: src=/opt/xos/synchronizers/vcpe/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/mount/before.rules owner=root group=root mode=0644
+    template: src=/opt/xos/synchronizers/vsg/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/mount/before.rules owner=root group=root mode=0644
     notify:
     - reload ufw
 
   - name: base ufw setup uses /etc/rc.local
-    template: src=/opt/xos/synchronizers/vcpe/templates/rc.local.j2 dest=/var/container_volumes/{{ container_name }}/mount/rc.local owner=root group=root mode=0755
+    template: src=/opt/xos/synchronizers/vsg/templates/rc.local.j2 dest=/var/container_volumes/{{ container_name }}/mount/rc.local owner=root group=root mode=0755
     notify:
     - rerun /etc/rc.local
 
@@ -189,7 +189,7 @@
     file: path=/var/container_volumes/{{ container_name }}/usr/local/sbin state=directory
 
   - name: bandwidth limit script
-    template: src=/opt/xos/synchronizers/vcpe/templates/bwlimit.sh.j2 dest=/var/container_volumes/{{ container_name }}/usr/local/sbin/bwlimit.sh owner=root group=root mode=0755
+    template: src=/opt/xos/synchronizers/vsg/templates/bwlimit.sh.j2 dest=/var/container_volumes/{{ container_name }}/usr/local/sbin/bwlimit.sh owner=root group=root mode=0755
     notify:
     - reset bwlimits
 
@@ -197,7 +197,7 @@
     file: path=/var/container_volumes/{{ container_name }}/etc/service/message state=directory
 
   - name: copy simple webserver
-    copy: src=/opt/xos/synchronizers/vcpe/files/etc/service/ dest=/var/container_volumes/{{ container_name }}/etc/service/ owner=root group=root
+    copy: src=/opt/xos/synchronizers/vsg/files/etc/service/ dest=/var/container_volumes/{{ container_name }}/etc/service/ owner=root group=root
     when: status != "enabled"
 
   - name: make webserver script executable
@@ -205,7 +205,7 @@
     when: status != "enabled"
 
   - name: generate the message page
-    template: src=/opt/xos/synchronizers/vcpe/templates/message.html.j2 dest=/var/container_volumes/{{ container_name }}/etc/service/message/message.html owner=root group=root mode=0644
+    template: src=/opt/xos/synchronizers/vsg/templates/message.html.j2 dest=/var/container_volumes/{{ container_name }}/etc/service/message/message.html owner=root group=root mode=0644
     when: status != "enabled"
     #notify: restart vcpe
 
