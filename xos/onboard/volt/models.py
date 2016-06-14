@@ -242,7 +242,7 @@ class VOLTTenant(Tenant):
             return
 
         if self.vcpe is None:
-            from service.vsg import VSGService, VSGTenant
+            from services.vsg.models import VSGService, VSGTenant
             vsgServices = VSGService.get_service_objects().all()
             if not vsgServices:
                 raise XOSConfigurationError("No VSG Services available")
@@ -277,7 +277,7 @@ class VOLTTenant(Tenant):
             self.vcpe.delete()
 
     def cleanup_orphans(self):
-        from service.vsg import VSGTenant
+        from services.vsg.models import VSGTenant
         # ensure vOLT only has one vCPE
         cur_vcpe = self.vcpe
         for vcpe in list(self.get_subscribed_tenants(VSGTenant)):
