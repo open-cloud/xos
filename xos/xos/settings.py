@@ -189,7 +189,7 @@ INSTALLED_APPS = (
     'services.syndicate_storage',
     'services.openvpn',
 #    'services.vtr',
-    'services.vrouter',
+#    'services.vrouter',
 #    'services.vtn',
 #    'services.fabric',
     'geoposition',
