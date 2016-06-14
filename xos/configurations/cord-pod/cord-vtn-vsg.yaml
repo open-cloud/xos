@@ -26,9 +26,9 @@ topology_template:
           kind: vOLT
           replaces: service_volt
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
-          private_key_fn: /opt/xos/services/vsg/keys/volt_rsa
+          private_key_fn: /opt/xos/services/volt/keys/volt_rsa
       artifacts:
-          pubkey: /opt/xos/services/vsg/keys/volt_rsa.pub
+          pubkey: /opt/xos/services/volt/keys/volt_rsa.pub
 
     addresses_vsg:
       type: tosca.nodes.AddressPool
