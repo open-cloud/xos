@@ -9,7 +9,7 @@ from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
 from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice, Tag
-from services.vsg.models import VSGService
+from services.vsg.models import VSGService, VCPE_KIND
 from services.vtr.models import VTRService, VTRTenant
 from services.hpc.models import HpcService, CDNPrefix
 from xos.logger import Logger, logging
@@ -27,7 +27,7 @@ class SyncVTRTenant(SyncInstanceUsingAnsible):
     observes=VTRTenant
     requested_interval=0
     template_name = "sync_vtrtenant.yaml"
-    service_key_name = "/opt/xos/synchronizers/vtr/vcpe_private_key"
+    #service_key_name = "/opt/xos/services/vtr/vcpe_private_key"
 
     def __init__(self, *args, **kwargs):
         super(SyncVTRTenant, self).__init__(*args, **kwargs)
@@ -65,6 +65,15 @@ class SyncVTRTenant(SyncInstanceUsingAnsible):
             return o.target.volt.vcpe.instance
         else:
             return None
+
+    def get_key_name(self, instance):
+        if instance.slice.service and (instance.slice.service.kind==VCPE_KIND):
+            # We need to use the vsg service's private key. Onboarding won't
+            # by default give us another service's private key, so let's assume
+            # onboarding has been configured to add vsg_rsa to the vtr service.
+            return "/opt/xos/services/vtr/keys/vsg_rsa"
+        else:
+            raise Exception("VTR doesn't know how to get the private key for this instance")
 
     def get_extra_attributes(self, o):
         vtr_service = self.get_vtr_service(o)
