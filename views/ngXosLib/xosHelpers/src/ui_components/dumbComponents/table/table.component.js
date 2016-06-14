@@ -445,7 +445,6 @@
           <div ng-show="vm.loader == true">
             <div class="loader"></div>
           </div>
-          <pre>{{vm.loader | json}}</pre>
         `,
         bindToController: true,
         controllerAs: 'vm',
