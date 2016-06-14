@@ -1,0 +1,10 @@
+manifest
+vtn-synchronizer.py
+steps/sync_tenant.py
+steps/sync_port_addresses.py
+start.sh
+stop.sh
+model-deps
+supervisor/vtn-observer.conf
+run.sh
+vtn_synchronizer_config
