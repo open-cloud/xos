@@ -14,7 +14,7 @@ from xos.logger import Logger, logging
 logger = Logger(level=logging.INFO)
 
 class XOSBuilder(object):
-    UI_KINDS=["models", "admin", "django_library", "rest_service", "rest_tenant", "tosca_custom_types", "tosca_resource","public_key"]
+    UI_KINDS=["models", "admin", "admin_template", "django_library", "rest_service", "rest_tenant", "tosca_custom_types", "tosca_resource","public_key"]
     SYNC_CONTROLLER_KINDS=["synchronizer", "private_key", "public_key"]
     SYNC_ALLCONTROLLER_KINDS=["models", "django_library"]
 

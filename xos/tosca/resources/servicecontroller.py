@@ -56,6 +56,7 @@ class XOSServiceController(XOSResource):
         # allow these common resource to be specified directly by the ServiceController tosca object
         self.postprocess_resource_prop(obj, "models", "python")
         self.postprocess_resource_prop(obj, "admin", "python")
+        self.postprocess_resource_prop(obj, "admin_template", "raw")
         self.postprocess_resource_prop(obj, "tosca_custom_types", "yaml")
         self.postprocess_resource_prop(obj, "tosca_resource", "python")
         self.postprocess_resource_prop(obj, "synchronizer", "manifest")
