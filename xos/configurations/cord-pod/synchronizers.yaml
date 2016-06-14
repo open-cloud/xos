@@ -11,4 +11,4 @@ topology_template:
       type: tosca.nodes.ServiceController
       properties:
         no-create: true
-        synchronizer_config: /root/setup/files/vsg_synchronizer_config
+        synchronizer_config: /root/setup/files/vcpe_synchronizer_config

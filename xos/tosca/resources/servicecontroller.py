@@ -12,7 +12,7 @@ from xosresource import XOSResource
 class XOSServiceController(XOSResource):
     provides = "tosca.nodes.ServiceController"
     xos_model = ServiceController
-    copyin_props = ["base_url"]
+    copyin_props = ["base_url", "synchronizer_run", "synchronizer_config"]
 
     def postprocess_resource_prop(self, obj, kind, format):
         values = self.get_property(kind)
