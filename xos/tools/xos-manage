@@ -144,11 +144,11 @@ function makemigrations {
     python ./manage.py makemigrations syndicate_storage
     python ./manage.py makemigrations mcord
     python ./manage.py makemigrations ceilometer
-    python ./manage.py makemigrations onos
+#    python ./manage.py makemigrations onos
     python ./manage.py makemigrations openvpn
 #    python ./manage.py makemigrations vtr
     python ./manage.py makemigrations vrouter
-    python ./manage.py makemigrations vtn
+#    python ./manage.py makemigrations vtn
     python ./manage.py makemigrations fabric
     #python ./manage.py makemigrations servcomp
 
