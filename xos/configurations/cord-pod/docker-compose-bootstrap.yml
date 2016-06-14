@@ -40,21 +40,21 @@ xos_synchronizer_openstack:
             max-size: "100k"
             max-file: "5"
 
-xos_synchronizer_onos:
-    image: xosproject/xos-synchronizer-openstack
-    command: bash -c "python /opt/xos/synchronizers/onos/onos-synchronizer.py -C /opt/xos/synchronizers/onos/onos_synchronizer_config"
-    labels:
-        org.xosproject.kind: synchronizer
-        org.xosproject.target: onos
-    links:
-        - xos_db
-    volumes:
-        - .:/root/setup:ro
-        - ./id_rsa:/opt/xos/synchronizers/onos/onos_key:ro  # private key
-    log_driver: "json-file"
-    log_opt:
-            max-size: "100k"
-            max-file: "5"
+#xos_synchronizer_onos:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "python /opt/xos/synchronizers/onos/onos-synchronizer.py -C /opt/xos/synchronizers/onos/onos_synchronizer_config"
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: onos
+#    links:
+#        - xos_db
+#    volumes:
+#        - .:/root/setup:ro
+#        - ./id_rsa:/opt/xos/synchronizers/onos/onos_key:ro  # private key
+#    log_driver: "json-file"
+#    log_opt:
+#            max-size: "100k"
+#            max-file: "5"
 
 #xos_synchronizer_vcpe:
 #    image: xosproject/xos-synchronizer-openstack
@@ -72,20 +72,20 @@ xos_synchronizer_onos:
 #            max-size: "100k"
 #            max-file: "5"
 
-xos_synchronizer_vtn:
-    image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120; python /opt/xos/synchronizers/vtn/vtn-synchronizer.py -C /opt/xos/synchronizers/vtn/vtn_synchronizer_config"
-    labels:
-        org.xosproject.kind: synchronizer
-        org.xosproject.target: vtn
-    links:
-        - xos_db
-    volumes:
-        - .:/root/setup:ro
-    log_driver: "json-file"
-    log_opt:
-            max-size: "100k"
-            max-file: "5"
+#xos_synchronizer_vtn:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "sleep 120; python /opt/xos/synchronizers/vtn/vtn-synchronizer.py -C /opt/xos/synchronizers/vtn/vtn_synchronizer_config"
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: vtn
+#    links:
+#        - xos_db
+#    volumes:
+#        - .:/root/setup:ro
+#    log_driver: "json-file"
+#    log_opt:
+#            max-size: "100k"
+#            max-file: "5"
 
 xos_synchronizer_monitoring_channel:
     image: xosproject/xos-synchronizer-openstack
