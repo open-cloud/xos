@@ -7,21 +7,19 @@ imports:
 
 topology_template:
   node_templates:
-    servicecontroller#vsg:
+    servicecontroller#vtn:
       type: tosca.nodes.ServiceController
       properties:
-          base_url: file:///opt/xos/onboard/vsg/
+          base_url: file:///opt/xos/onboard/vtn/
           # The following will concatenate with base_url automatically, if
           # base_url is non-null.
           models: models.py
           admin: admin.py
-          admin_template: templates/vcpeadmin.html
+          admin_template: templates/vtnadmin.html
           synchronizer: synchronizer/manifest
-          synchronizer_run: vcpe-synchronizer.py
-          #tosca_custom_types: exampleservice.yaml
-          tosca_resource: tosca/resources/vcpeservice.py
-          rest_service: subdirectory:vsg api/service/vsg/vsgservice.py
-          rest_tenant: subdirectory:cord api/tenant/cord/vsg.py
-          private_key: file:///opt/xos/key_import/vsg_rsa
-          public_key: file:///opt/xos/key_import/vsg_rsa.pub
+          synchronizer_run: vtn-synchronizer.py
+          tosca_resource: tosca/resources/vtnservice.py
+          rest_service: api/service/vsg/vtn.py
+          #private_key: file:///opt/xos/key_import/vsg_rsa
+          #public_key: file:///opt/xos/key_import/vsg_rsa.pub
 
