@@ -108,6 +108,9 @@ class ServiceControllerResource(PlCoreBase):
     format = StrippedCharField(choices=FORMAT_CHOICES, max_length=30)
     url = StrippedCharField(max_length=1024, help_text="URL of resource", null=True, blank=True)
 
+    synchronizer_run = StrippedCharField(max_length=1024, help_text="synchronizer run command", null=True, blank=True)
+    synchronizer_config = StrippedCharField(max_length=1024, help_text="synchronizer config file", null=True, blank=True)
+
     def __unicode__(self): return u'%s' % (self.name)
 
     @property

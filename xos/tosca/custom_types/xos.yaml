@@ -192,6 +192,14 @@ node_types:
                 type: string
                 required: false
                 description: url of synchronizer manifest
+            synchronizer_run:
+                type: string
+                required: false
+                description: synchronizer run command
+            synchronizer_config:
+                type: string
+                required: false
+                description: synchronizer config filename
             tosca_custom_types:
                 type: string
                 required: false
