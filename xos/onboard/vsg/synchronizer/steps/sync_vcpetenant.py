@@ -31,7 +31,6 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
     observes=VSGTenant
     requested_interval=0
     template_name = "sync_vcpetenant.yaml"
-    service_key_name = "/opt/xos/synchronizers/vcpe/vcpe_private_key"
 
     def __init__(self, *args, **kwargs):
         super(SyncVSGTenant, self).__init__(*args, **kwargs)
