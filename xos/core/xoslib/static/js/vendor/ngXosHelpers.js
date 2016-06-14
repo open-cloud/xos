@@ -1168,12 +1168,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             class: 'success'
           }
     *   ],
+    *   feedback: {
+          show: false,
+          message: 'Form submitted successfully !!!',
+          type: 'success'  //refers to bootstrap class
+        },
     *   fields: {
     *     field_name: {
     *       label: 'Field Label',
-    *       type: 'string' // options are: [date, boolean, number, email, string],
+    *       type: 'string' // options are: [date, boolean, number, email, string, select],
     *       validators: {
-    *         minlength: number,
+    *               minlength: number,
               maxlength: number,
               required: boolean,
               min: number,
@@ -1230,22 +1235,30 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     Configuration defined form
     <example module="sampleForm1">
     <file name="script.js">
-      angular.module('sampleForm1', ['xos.uiComponents'])
+      angular.module('sampleForm1', ['xos.uiComponents','ngResource', 'ngMockE2E'])
       .factory('_', function($window){
         return $window._;
       })
-      .controller('SampleCtrl1', function(){
+      .controller('SampleCtrl1', function(SampleResource){
+  
         this.model = {
         };
           this.config = {
           exclude: ['password', 'last_login'],
           formName: 'sampleForm1',
+          feedback: {
+            show: false,
+            message: 'Form submitted successfully !!!',
+            type: 'success'
+          },
           actions: [
             {
               label: 'Save',
               icon: 'ok', // refers to bootstraps glyphicon
               cb: (user) => { // receive the model
                 console.log(user);
+                this.config.feedback.show = true;
+                this.config.feedback.type='success';
               },
               class: 'success'
             }
@@ -1272,10 +1285,39 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 min: 21
               }
             },
-          }
+              site: {
+            label: 'Site',
+            type: 'select',
+            validators: { required: true},
+            hint: 'The Site this Slice belongs to',
+            options: []
+            },
+         }
         };
+        SampleResource.query().$promise
+          .then((users) => {
+          //this.users_site = users;
+        //console.log(users);
+          this.optionVal = users;
+          this.config.fields['site'].options = this.optionVal;
+        //= this.optionVal;
+        })
+      .catch((e) => {
+        throw new Error(e);
       });
+        });
     </file>
+   <file name="backend.js">
+     angular.module('sampleForm1')
+     .run(function($httpBackend, _){
+        let datas = [{id: 1, label: 'site1'},{id: 4, label: 'site4'},{id: 3, label: 'site3'}];
+        let paramsUrl = new RegExp(/\/test\/(.+)/);
+        $httpBackend.whenGET('/test').respond(200, datas)
+      })
+      .service('SampleResource', function($resource){
+        return $resource('/test/:id', {id: '@id'});
+      });
+      </file>
     <file name="index.html">
       <div ng-controller="SampleCtrl1 as vm">
         <xos-form ng-model="vm.model" config="vm.config"></xos-form>
@@ -1291,7 +1333,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         config: '=',
         ngModel: '='
       },
-      template: '\n        <form name="vm.{{vm.config.formName || \'form\'}}" novalidate>\n          <div class="form-group" ng-repeat="(name, field) in vm.formField">\n          <!--{{vm.ngModel[name] | json}}-->\n            <xos-field name="name" field="field" ng-model="vm.ngModel[name]"></xos-field>\n            <!--<pre>{{vm[vm.config.formName] || \'form\'  | json }}</pre>-->\n            <!--{{field}}-->\n            <xos-validation field="vm[vm.config.formName || \'form\'][name]" form = "vm[vm.config.formName || \'form\']"></xos-validation>\n            <div class="alert alert-info" ng-show="(field.hint).length >0" role="alert">{{field.hint}}</div>\n          </div>\n          <div class="form-group" ng-if="vm.config.actions">\n            <!--<pre>{{vm.config.feedback}} | json</pre>-->\n\n          <xos-alert config="vm.config.feedback" show="vm.config.feedback.show">{{vm.config.feedback.message}}</xos-alert>\n\n            <button role="button" href=""\n              ng-repeat="action in vm.config.actions"\n              ng-click="action.cb(vm.ngModel, vm[vm.config.formName || \'form\'])"\n              class="btn btn-{{action.class}}"\n              title="{{action.label}}">\n              <i class="glyphicon glyphicon-{{action.icon}}"></i>\n              {{action.label}}\n            </button>\n          </div>\n        </form>\n      ',
+      template: '\n        <form name="vm.{{vm.config.formName || \'form\'}}" novalidate>\n          <div class="form-group" ng-repeat="(name, field) in vm.formField">\n          <!--{{vm.ngModel[name] | json}}-->\n            <xos-field name="name" field="field" ng-model="vm.ngModel[name]"></xos-field>\n            <!--<pre>{{vm[vm.config.formName] || \'form\'  | json }}</pre>-->\n            <!--{{field}}-->\n            <xos-validation field="vm[vm.config.formName || \'form\'][name]" form = "vm[vm.config.formName || \'form\']"></xos-validation>\n            <div class="alert alert-info" ng-show="(field.hint).length >0" role="alert">{{field.hint}}</div>\n          </div>\n          <div class="form-group" ng-if="vm.config.actions">\n          <xos-alert config="vm.config.feedback" show="vm.config.feedback.show">{{vm.config.feedback.message}}</xos-alert>\n\n            <button role="button" href=""\n              ng-repeat="action in vm.config.actions"\n              ng-click="action.cb(vm.ngModel, vm[vm.config.formName || \'form\'])"\n              class="btn btn-{{action.class}}"\n              title="{{action.label}}">\n              <i class="glyphicon glyphicon-{{action.icon}}"></i>\n              {{action.label}}\n            </button>\n          </div>\n        </form>\n      ',
       bindToController: true,
       controllerAs: 'vm',
       controller: ["$scope", "$log", "_", "XosFormHelpers", function controller($scope, $log, _, XosFormHelpers) {

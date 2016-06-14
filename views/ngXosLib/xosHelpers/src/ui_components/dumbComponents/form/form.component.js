@@ -32,12 +32,17 @@
             class: 'success'
           }
     *   ],
+    *   feedback: {
+          show: false,
+          message: 'Form submitted successfully !!!',
+          type: 'success'  //refers to bootstrap class
+        },
     *   fields: {
     *     field_name: {
     *       label: 'Field Label',
-    *       type: 'string' // options are: [date, boolean, number, email, string],
+    *       type: 'string' // options are: [date, boolean, number, email, string, select],
     *       validators: {
-    *         minlength: number,
+    *               minlength: number,
               maxlength: number,
               required: boolean,
               min: number,
@@ -97,23 +102,32 @@
 
   <example module="sampleForm1">
     <file name="script.js">
-      angular.module('sampleForm1', ['xos.uiComponents'])
+      angular.module('sampleForm1', ['xos.uiComponents','ngResource', 'ngMockE2E'])
       .factory('_', function($window){
         return $window._;
       })
-      .controller('SampleCtrl1', function(){
+      .controller('SampleCtrl1', function(SampleResource){
+
+
         this.model = {
         };
 
         this.config = {
           exclude: ['password', 'last_login'],
           formName: 'sampleForm1',
+          feedback: {
+            show: false,
+            message: 'Form submitted successfully !!!',
+            type: 'success'
+          },
           actions: [
             {
               label: 'Save',
               icon: 'ok', // refers to bootstraps glyphicon
               cb: (user) => { // receive the model
                 console.log(user);
+                this.config.feedback.show = true;
+                this.config.feedback.type='success';
               },
               class: 'success'
             }
@@ -140,9 +154,42 @@
                 min: 21
               }
             },
-          }
+
+            site: {
+            label: 'Site',
+            type: 'select',
+            validators: { required: true},
+            hint: 'The Site this Slice belongs to',
+            options: []
+            },
+         }
         };
+        SampleResource.query().$promise
+          .then((users) => {
+          //this.users_site = users;
+        //console.log(users);
+          this.optionVal = users;
+          this.config.fields['site'].options = this.optionVal;
+        //= this.optionVal;
+
+      })
+      .catch((e) => {
+        throw new Error(e);
       });
+
+      });
+    </file>
+   <file name="backend.js">
+     angular.module('sampleForm1')
+     .run(function($httpBackend, _){
+        let datas = [{id: 1, label: 'site1'},{id: 4, label: 'site4'},{id: 3, label: 'site3'}];
+        let paramsUrl = new RegExp(/\/test\/(.+)/);
+        $httpBackend.whenGET('/test').respond(200, datas)
+      })
+      .service('SampleResource', function($resource){
+        return $resource('/test/:id', {id: '@id'});
+      });
+
     </file>
     <file name="index.html">
       <div ng-controller="SampleCtrl1 as vm">
