@@ -19,7 +19,7 @@ topology_template:
           synchronizer: synchronizer/manifest
           synchronizer_run: vtn-synchronizer.py
           tosca_resource: tosca/resources/vtnservice.py
-          rest_service: api/service/vsg/vtn.py
+          rest_service: api/service/vtn.py
           #private_key: file:///opt/xos/key_import/vsg_rsa
           #public_key: file:///opt/xos/key_import/vsg_rsa.pub
 
