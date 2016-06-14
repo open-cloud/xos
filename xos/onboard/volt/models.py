@@ -184,14 +184,14 @@ class VOLTService(Service):
     KIND = VOLT_KIND
 
     class Meta:
-        app_label = "cord"
+        app_label = "volt"
         verbose_name = "vOLT Service"
 
 class VOLTTenant(Tenant):
     KIND = VOLT_KIND
 
     class Meta:
-        app_label = "cord"
+        app_label = "volt"
         verbose_name = "vOLT Tenant"
 
     s_tag = models.IntegerField(null=True, blank=True, help_text="s-tag")
@@ -323,7 +323,7 @@ def model_policy_volt(pk):
 
 class VOLTDevice(PlCoreBase):
     class Meta:
-        app_label = "cord"
+        app_label = "volt"
 
     name = models.CharField(max_length=254, help_text="name of device", null=False, blank=False)
     volt_service = models.ForeignKey(VOLTService, related_name='volt_devices')
@@ -335,7 +335,7 @@ class VOLTDevice(PlCoreBase):
 
 class AccessDevice(PlCoreBase):
     class Meta:
-        app_label = "cord"
+        app_label = "volt"
 
     volt_device = models.ForeignKey(VOLTDevice, related_name='access_devices')
     uplink = models.IntegerField(null=True, blank=True)
@@ -345,7 +345,7 @@ class AccessDevice(PlCoreBase):
 
 class AccessAgent(PlCoreBase):
     class Meta:
-        app_label = "cord"
+        app_label = "volt"
 
     name = models.CharField(max_length=254, help_text="name of agent", null=False, blank=False)
     volt_service = models.ForeignKey(VOLTService, related_name='access_agents')
@@ -355,7 +355,7 @@ class AccessAgent(PlCoreBase):
 
 class AgentPortMapping(PlCoreBase):
     class Meta:
-        app_label = "cord"
+        app_label = "volt"
 
     access_agent = models.ForeignKey(AccessAgent, related_name='port_mappings')
     mac = models.CharField(max_length=32, help_text="MAC Address", null=True, blank=True)

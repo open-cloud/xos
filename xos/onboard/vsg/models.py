@@ -42,7 +42,7 @@ class VSGService(Service):
         super(VSGService, self).__init__(*args, **kwargs)
 
     class Meta:
-        app_label = "cord"
+        app_label = "vsg"
         verbose_name = "vSG Service"
         proxy = True
 
