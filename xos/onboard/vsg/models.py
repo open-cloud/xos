@@ -128,7 +128,7 @@ class VSGTenant(TenantWithContainer):
 
     @property
     def volt(self):
-        from services.volt import VOLTTenant
+        from services.volt.models import VOLTTenant
         if not self.subscriber_tenant:
             return None
         volts = VOLTTenant.objects.filter(id=self.subscriber_tenant.id)

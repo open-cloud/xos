@@ -209,7 +209,7 @@ class VOLTTenant(Tenant):
 
     @property
     def vcpe(self):
-        from services.vsg import VSGTenant
+        from services.vsg.models import VSGTenant
         vcpe = self.get_newest_subscribed_tenant(VSGTenant)
         if not vcpe:
             return None
