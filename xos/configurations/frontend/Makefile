@@ -77,8 +77,8 @@ onboard-cord-pod:
 	sudo bash -c "echo somekey > key_import/vsg_rsa.pub"
 	sudo bash -c "echo somekey > key_import/volt_rsa"
 	sudo bash -c "echo somekey > key_import/volt_rsa.pub"
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/onboard/volt/volt-onboard.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/onboard/vsg/vsg-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/volt/volt-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vsg/vsg-onboard.yaml
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/volt
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/vsg
 	bash ../common/wait_for_onboarding_ready.sh $(XOS_BOOTSTRAP_PORT) xos
