@@ -54,7 +54,7 @@
             return [204];
           });
 
-          $httpBackend.whenGET('/test').respond(200, datas)
+          $httpBackend.whenGET('/test').respond(200, [])
           $httpBackend.whenPOST('/test').respond((method, url, data) => {
             data = angular.fromJson(data);
             data.id = ++count;
@@ -218,6 +218,7 @@
           .then((res) => {
 
             if(!res[0]){
+              this.data = res;
               return;
             }
 
