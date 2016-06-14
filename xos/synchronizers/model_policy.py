@@ -3,10 +3,11 @@ from django.dispatch import receiver
 import pdb
 from generate.dependency_walker import *
 from synchronizers.openstack import model_policies
-from xos.logger import logger
+from xos.logger import Logger, logging
 from datetime import datetime
 from django.utils import timezone
 import time
+import traceback
 from core.models import *
 from django.db import reset_queries
 from django.db.transaction import atomic
@@ -14,6 +15,8 @@ from django.db.models import F, Q
 
 modelPolicyEnabled = True
 bad_instances=[]
+
+logger = Logger(level=logging.INFO)
 
 def EnableModelPolicy(x):
     global modelPolicyEnabled
@@ -40,9 +43,10 @@ def update_dep(d, o):
         if (save_fields):
             d.save(update_fields=save_fields)
     except AttributeError,e:
+        logger.log_exc("AttributeError in update_dep")
         raise e
     except Exception,e:
-            logger.info('Could not save %r. Exception: %r'%(d,e), extra=d.tologdict())
+        logger.log_exc("Exception in update_dep")
 
 def delete_if_inactive(d, o):
     try:
@@ -75,7 +79,7 @@ def execute_model_policy(instance, deleted):
 
     try:
         policy_handler = getattr(model_policies, policy_name, None)
-        logger.error("POLICY HANDLER: %s %s" % (policy_name, policy_handler))
+        logger.info("MODEL POLICY: handler %s %s" % (policy_name, policy_handler))
         if policy_handler is not None:
             if (deleted):
                 try:
@@ -84,23 +88,45 @@ def execute_model_policy(instance, deleted):
                     pass
             else:
                 policy_handler.handle(instance)
+        logger.info("MODEL POLICY: completed handler %s %s" % (policy_name, policy_handler))
     except:
-        logger.log_exc("Model Policy Error:")
+        logger.log_exc("MODEL POLICY: Exception when running handler")
 
     try:
         instance.policed=timezone.now()
         instance.save(update_fields=['policed'])
     except:
-        logging.error('Object %r is defective'%instance)
+        logger.log_exc('MODEL POLICY: Object %r is defective'%instance)
         bad_instances.append(instance)
 
 def noop(o,p):
         pass
 
+def check_db_connection_okay():
+    # django implodes if the database connection is closed by docker-compose
+    from django import db
+    try:
+        db.connection.cursor()
+        #diag = Diag.objects.filter(name="foo").first()
+    except Exception, e:
+        if "connection already closed" in traceback.format_exc():
+           logger.error("XXX connection already closed")
+           try:
+#               if db.connection:
+#                   db.connection.close()
+               db.close_connection()
+           except:
+                logger.log_exc("XXX we failed to fix the failure")
+        else:
+           logger.log_exc("XXX some other error")
+
 def run_policy():
     while (True):
         start = time.time()
-        run_policy_once()
+        try:
+            run_policy_once()
+        except:
+            logger.log_exc("MODEL_POLICY: Exception in run_policy()")
         if (time.time()-start<1):
             time.sleep(1)
 
@@ -109,6 +135,10 @@ def run_policy_once():
         models = [Controller, Site, SitePrivilege, Image, ControllerSlice, ControllerSite, ControllerUser, User, Slice, Network, Instance, SlicePrivilege]
         objects = []
         deleted_objects = []
+
+        logger.info("MODEL POLICY: run_policy_once()")
+
+        check_db_connection_okay()
 
         for m in models:
             res = m.objects.filter((Q(policed__lt=F('updated')) | Q(policed=None)) & Q(no_policy=False))
@@ -137,4 +167,6 @@ def run_policy_once():
             reset_queries()
         except:
             # this shouldn't happen, but in case it does, catch it...
-            logger.log_exc("exception in reset_queries")
+            logger.log_exc("MODEL POLICY: exception in reset_queries")
+
+        logger.info("MODEL POLICY: finished run_policy_once()")

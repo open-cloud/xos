@@ -1,0 +1,203 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup MCORD-related services.
+
+imports:
+   - custom_types/xos.yaml
+
+node_types:
+
+    tosca.nodes.MCORDService:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Service object. Services may be listed in the Service
+            directory and may be linked together via Tenancy Relationships.
+        capabilities:
+            scalable:
+                type: tosca.capabilities.Scalable
+            service:
+                type: tosca.capabilities.xos.Service
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+            kind:
+                type: string
+                default: VPGWC_KIND
+                description: Type of service.
+            view_url:
+                type: string
+                required: false
+                description: URL to follow when icon is clicked in the Service Directory.
+            icon_url:
+                type: string
+                required: false
+                description: ICON to display in the Service Directory.
+            enabled:
+                type: boolean
+                default: true
+            published:
+                type: boolean
+                default: true
+                description: If True then display this Service in the Service Directory.
+            public_key:
+                type: string
+                required: false
+                description: Public key to install into Instances to allows Services to SSH into them.
+            private_key_fn:
+                type: string
+                required: false
+                description: Location of private key file
+            versionNumber:
+                type: string
+                required: false
+                description: Version number of Service.
+
+    tosca.nodes.VPGWCComponent:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: vPGWC Component of MCORD Service.
+        properties:
+            kind:
+                type: string
+                default: VPGWC_KIND 
+                description: Kind of component
+            s5s8_pgw_tag:
+                type: string
+                required: false
+                default: 300
+                description: VTN stag port-name
+            display_message:
+                type: string
+                required: false
+                default: New vPGWC Component 
+                description: Just a message 
+                
+
+topology_template:
+  node_templates:
+    vPGWC:
+      type: tosca.nodes.MCORDService
+      requirements:
+      properties:
+          kind: VPGWC_KIND
+          icon_url: /static/mCordServices/service_server.png
+          view_url: /admin/mcord/vpgwccomponent
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/configurations/mcord/mcord_private_key
+      artifacts:
+          pubkey: /opt/xos/configurations/mcord/mcord_public_key
+
+    m1.xlarge:
+      type: tosca.nodes.Flavor
+
+    Private:
+      type: tosca.nodes.NetworkTemplate
+
+    External:
+      type: tosca.nodes.NetworkTemplate
+
+    management_template:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: private
+          translation: none
+
+    management:
+      type: tosca.nodes.network.Network.XOS
+#      properties:
+#          no-create: true
+#          no-delete: true
+#          no-update: true
+
+    lan_3gpp_s5s8_pgw_network:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: lan_3gpp_s5s8_pgw_net
+          cidr: 172.17.1.0/24
+          start_ip: 172.17.1.2
+          end_ip: 172.17.1.8
+          gateway_ip: 172.17.1.1
+      requirements:
+          - network_template:
+              node: External
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_mobile_net
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vpgwc_slice1
+              relationship: tosca.relationships.ConnectsToSlice
+
+    mysite:
+      type: tosca.nodes.Site
+
+    mcord-vpgwc-onos-multi-nic:
+      type: tosca.nodes.Image
+
+    mysite_management:
+      description: This slice exists solely to own the management network
+      type: tosca.nodes.Slice
+      properties:
+          network: noauto
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_mobile_net:
+      description: This slice exists solely to own the mobile network
+      type: tosca.nodes.Slice
+      properties:
+          network: noauto
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_vpgwc_slice1:
+      description: vPGWC Service Slice 1
+      type: tosca.nodes.Slice
+      requirements:
+          - vPGWC:
+              node: vPGWC
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - default_image:
+                node: mcord-vpgwc-onos-multi-nic 
+                relationship: tosca.relationships.DefaultImage
+          - default_flavor:
+                node: m1.xlarge
+                relationship: tosca.relationships.DefaultFlavor
+          - management:
+              node: management
+              relationship: tosca.relationships.ConnectsToNetwork
+      properties:
+          network: noauto
+          default_node: compute10 
+    
+    mysite_VPGWC_Component:
+      description: MCORD Service default Component
+      type: tosca.nodes.VPGWCComponent
+      requirements:
+          - provider_service:
+              node: vPGWC
+              relationship: tosca.relationships.MemberOfService
+          - vpgwc_slice:
+              node: mysite_vpgwc_slice1
+              relationship: tosca.relationships.MemberOfSlice
+      properties:
+          display_message: vPGWC looks good!
+          s5s8_pgw_tag: 300
