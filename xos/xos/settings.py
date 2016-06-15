@@ -184,7 +184,7 @@ INSTALLED_APPS = (
     'services.hpc',
     'services.mcord',
 #    'services.onos',
-    'services.ceilometer',
+#    'services.ceilometer',
     'services.requestrouter',
     'services.syndicate_storage',
     'services.openvpn',

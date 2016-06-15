@@ -143,7 +143,7 @@ function makemigrations {
     python ./manage.py makemigrations requestrouter
     python ./manage.py makemigrations syndicate_storage
     python ./manage.py makemigrations mcord
-    python ./manage.py makemigrations ceilometer
+#    python ./manage.py makemigrations ceilometer
 #    python ./manage.py makemigrations onos
     python ./manage.py makemigrations openvpn
 #    python ./manage.py makemigrations vtr
