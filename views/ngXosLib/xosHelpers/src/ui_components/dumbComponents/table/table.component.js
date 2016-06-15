@@ -387,7 +387,7 @@
                 </tr>
               </tbody>
               <tbody>
-                <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">
+                <tr ng-repeat="item in vm.data | filter:vm.query:vm.comparator | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">
                   <td ng-repeat="col in vm.columns" link-wrapper>
                     <span ng-if="!col.type">{{item[col.prop]}}</span>
                     <span ng-if="col.type === 'boolean'">
@@ -448,7 +448,9 @@
         `,
         bindToController: true,
         controllerAs: 'vm',
-        controller: function(_, $scope){
+        controller: function(_, $scope, Comparator){
+
+          this.comparator = Comparator;
 
           this.loader = true;
 
