@@ -26,7 +26,7 @@
             last_name: 'Snow',
             hidden_field: 'hidden'
           }
-        ]
+        ];
 
         jasmine.addMatchers({
           toBeInstanceOf: function() {

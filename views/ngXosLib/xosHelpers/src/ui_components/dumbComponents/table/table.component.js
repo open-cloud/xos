@@ -338,7 +338,7 @@
           config: '='
         },
         template: `
-          <div ng-show="vm.data.length > 0">
+          <div ng-show="vm.data.length > 0 && vm.loader == false">
             <div class="row" ng-if="vm.config.filter == 'fulltext'">
               <div class="col-xs-12">
                 <input
@@ -437,15 +437,26 @@
               change="vm.goToPage">
               </xos-pagination>
           </div>
-          <div ng-show="vm.data.length == 0 || !vm.data">
+          <div ng-show="(vm.data.length == 0 || !vm.data) && vm.loader == false">
              <xos-alert config="{type: 'info'}">
               No data to show.
             </xos-alert>
           </div>
+          <div ng-show="vm.loader == true">
+            <div class="loader"></div>
+          </div>
         `,
         bindToController: true,
         controllerAs: 'vm',
-        controller: function(_){
+        controller: function(_, $scope){
+
+          this.loader = true;
+
+          $scope.$watch(() => this.data, data => {
+            if(angular.isDefined(data)){
+              this.loader = false;
+            }
+          });
 
           if(!this.config){
             throw new Error('[xosTable] Please provide a configuration via the "config" attribute');
