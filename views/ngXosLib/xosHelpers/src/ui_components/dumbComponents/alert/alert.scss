@@ -1,6 +1,8 @@
 @import '../../../styles/animations.scss';
 
 xos-alert {
+  margin-top: $form-group-margin-bottom;
+  display: block;
 
   /* when hiding */
   .ng-hide-add         { animation:0.5s fadeOutDown ease-in-out; }

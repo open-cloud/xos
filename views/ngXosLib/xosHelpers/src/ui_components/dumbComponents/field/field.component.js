@@ -163,23 +163,23 @@
               ng-required="vm.field.validators.required || false" />
               <select class="form-control" ng-if ="vm.field.type === 'select'"
                 name = "{{vm.name}}"
-                ng-options="item.id as item.label for item in vm.field.options track by item.id"
+                ng-options="item.id as item.label for item in vm.field.options"
                 ng-model="vm.ngModel"
                 ng-required="vm.field.validators.required || false">
                 </select>
             <span class="boolean-field" ng-if="vm.field.type === 'boolean'">
-              <button
+              <a href="#"
                 class="btn btn-success"
                 ng-show="vm.ngModel"
                 ng-click="vm.ngModel = false">
                 <i class="glyphicon glyphicon-ok"></i>
-              </button>
-              <button
+              </a>
+              <a href="#"
                 class="btn btn-danger"
                 ng-show="!vm.ngModel"
                 ng-click="vm.ngModel = true">
                 <i class="glyphicon glyphicon-remove"></i>
-              </button>
+              </a>
             </span>
             <div
               class="panel panel-default object-field"
@@ -228,7 +228,6 @@
         if(!$attrs.ngModel){
           throw new Error('[xosField] Please provide an ng-model');
         }
-
         this.getType = XosFormHelpers._getFieldFormat;
         this.formatLabel = LabelFormatter.format;
 
