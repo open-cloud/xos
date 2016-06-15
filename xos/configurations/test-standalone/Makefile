@@ -22,8 +22,8 @@ endef
 export TRUNCATE_FN
 
 prepare: xos
-	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm install --production"
-	sudo docker exec teststandalone_xos_1 pip install dredd_hooks
+	sudo docker exec -i teststandalone_xos_ui_1 bash -c "cd /opt/xos/tests/api; npm install --production"
+	sudo docker exec teststandalone_xos_ui_1 pip install dredd_hooks
 
 xos: prereqs bootstrap onboarding
 
@@ -40,14 +40,20 @@ bootstrap:
 onboarding:
 	echo "[ONBOARDING]"
 	bash ../common/wait_for_onboarding_ready.sh 9998 xos
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/common/enable-onboarding.yaml
+	sudo bash -c "echo somekey > key_import/vsg_rsa"
+	sudo bash -c "echo somekey > key_import/vsg_rsa.pub"
+	sudo bash -c "echo somekey > key_import/volt_rsa"
+	sudo bash -c "echo somekey > key_import/volt_rsa.pub"
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/common/disable-onboarding.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vrouter/vrouter-onboard.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/volt/volt-onboard.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vsg/vsg-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vtr/vtr-onboard.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/common/enable-onboarding.yaml
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/vrouter
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/volt
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/vsg
+	bash ../common/wait_for_onboarding_ready.sh 9998 services/vtr
 	bash ../common/wait_for_onboarding_ready.sh 9998 xos
 	bash ../common/wait_for_xos_port.sh 9999
 
@@ -58,19 +64,19 @@ restore-initial-db-status:
 	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT setval('core_deployment_id_seq', 1)" >/dev/null 2>&1
 	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT setval('core_flavor_id_seq', 1)" >/dev/null 2>&1
 	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "SELECT setval('core_service_id_seq', 1)" >/dev/null 2>&1
-	sudo docker-compose run xos python /opt/xos/manage.py --noobserver --nomodelpolicy loaddata /opt/xos/core/fixtures/core_initial_data.json
-	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/manage.py --noobserver --nomodelpolicy loaddata /opt/xos/core/fixtures/core_initial_data.json
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/common/fixtures.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/common/mydeployment.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
 
 
 test: restore-initial-db-status
 	# RUN TESTS
-	sudo docker cp ../../../apiary.apib teststandalone_xos_1:/opt/xos/tests/api/apiary.apib
-	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm test"
+	sudo docker cp ../../../apiary.apib teststandalone_xos_ui_1:/opt/xos/tests/api/apiary.apib
+	sudo docker exec -i teststandalone_xos_ui_1 bash -c "cd /opt/xos/tests/api; npm test"
 
 test-tosca: restore-initial-db-status
-	sudo docker-compose run xos bash -c "cd /opt/xos/tosca/tests; python ./alltests.py"
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui bash -c "cd /opt/xos/tosca/tests; python ./alltests.py"
 
 base-container: 
 	cd ../../../containers/xos; make base
@@ -84,19 +90,21 @@ containers: devel-container
 	cd ../../../containers/xos; make test
 
 stop:
-	sudo docker-compose stop
+	test ! -s $(DOCKER_COMPOSE_YML) || sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) stop
+	sudo docker-compose -f $(BOOTSTRAP_YML) stop
 
 showlogs:
 	sudo docker-compose logs
 
 rm: stop
-	sudo docker-compose rm -f
+	test ! -s $(DOCKER_COMPOSE_YML) || sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) rm
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) rm
 
 docker-clean:
 	sudo docker rm -f $(shell sudo docker ps -aq)
 
 enter-xos:
-	sudo docker exec -ti teststandalone_xos_1 bash
+	sudo docker exec -ti teststandalone_xos_ui_1 bash
 
 enter-xos-db:
 	sudo docker exec -ti teststandalone_xos_db_1 bash
