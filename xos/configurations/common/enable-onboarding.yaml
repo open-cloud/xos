@@ -12,6 +12,5 @@ topology_template:
       properties:
         no-create: true
         no-delete: true
-        no-update: true
         enable_build: true
 
