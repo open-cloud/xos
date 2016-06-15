@@ -23,7 +23,7 @@
 
   .service('XosUserPrefs', function($cookies){
 
-    let userPrefs = $cookies.get('xosUserPrefs') ? JSON.parse($cookies.get('xosUserPrefs')) : {};
+    let userPrefs = $cookies.get('xosUserPrefs') ? angular.fromJson($cookies.get('xosUserPrefs')) : {};
 
     /**
     * @ngdoc method
@@ -34,7 +34,7 @@
     * @returns {object} The user preferences
     **/
     this.getAll = () => {
-      userPrefs = $cookies.get('xosUserPrefs') ? JSON.parse($cookies.get('xosUserPrefs')) : {};
+      userPrefs = $cookies.get('xosUserPrefs') ? angular.fromJson($cookies.get('xosUserPrefs')) : {};
       return userPrefs;
     };
 
@@ -47,7 +47,7 @@
     * @param {object} prefs The user preferences
     **/
     this.setAll = (prefs) => {
-      $cookies.put('xosUserPrefs', JSON.stringify(prefs));
+      $cookies.put('xosUserPrefs', angular.toJson(prefs));
     };
 
     /**

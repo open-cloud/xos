@@ -1,5 +1,7 @@
 // TODO write tests for log
 
+/* eslint-disable  angular/ng_window_service*/
+
 angular.module('xos.helpers')
 .config([ '$provide', function( $provide )
 {
@@ -11,7 +13,7 @@ angular.module('xos.helpers')
 
     const isLogEnabled = () => {
       return window.location.href.indexOf('debug=true') >= 0;
-    }
+    };
     // Save the original $log.debug()
     let logFn = $delegate.log;
     let infoFn = $delegate.info;
@@ -34,7 +36,7 @@ angular.module('xos.helpers')
         args[0] = `[${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}] ${args[0]}`;
 
         // HACK awfull fix for angular mock implementation whithin jasmine test failing issue
-        if (typeof $delegate.reset === 'function' && !($delegate.debug.logs instanceof Array)) {
+        if (angular.isFunction($delegate.reset) && !($delegate.debug.logs instanceof Array)) {
           // if we are within the mock and did not reset yet, we call it to avoid issue
           // console.log('mock log impl fix to avoid logs array not existing...');
           $delegate.reset();

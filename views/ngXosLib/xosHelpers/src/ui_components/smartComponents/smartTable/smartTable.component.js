@@ -242,7 +242,7 @@
                 prop: p
               };
 
-              if(typeof item[p] !== 'string' && typeof item[p] !== 'undefined'){
+              if(angular.isString(item[p]) && typeof item[p] !== 'undefined'){
                 fieldConfig.type = typeof item[p];
               }
 
