@@ -19,7 +19,6 @@ let vendorFiles = fs.readdirSync(vendorDir);
 viewFiles = viewFiles
               .filter(f => f.indexOf('xosAdminSite') === -1)
               .filter(f => f.indexOf('xosCord') === -1)
-              .filter(f => f.indexOf('xosTenant') === -1)
               .filter(f => f.indexOf('xosHpc') === -1);
 
 viewFiles = viewFiles.filter(f => f.indexOf('js') >= 0).filter(f => f.match(/^xos[A-Z][a-z]+/)).map(f => `${viewDir}${f}`);
