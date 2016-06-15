@@ -60,7 +60,7 @@
       }
 
       // if null return string
-      if(typeof value === 'string' || value === null){
+      if(angular.isString(value) || value === null){
         return 'text';
       }
 

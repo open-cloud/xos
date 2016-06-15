@@ -14,13 +14,13 @@
     if(!scope){
       scope = rootScope.$new();
     }
-    if(!angular.isDefined(element)){
+    if(angular.isUndefined(element)){
       element = angular.element('<xos-field name="name" field="field" ng-model="ngModel"></xos-field>');
     }
     compile(element)(scope);
     scope.$digest();
     isolatedScope = element.isolateScope().vm;
-  }
+  };
 
   describe('The xos.helper module', function(){
 
@@ -104,9 +104,6 @@
         });
       });
 
-
-
-
       describe('when a option is selected in dropdown', () => {
         beforeEach(() => {
           scope = rootScope.$new();
@@ -126,17 +123,18 @@
               }
             ]
           };
-          scope.ngModel = 'label';
+          scope.ngModel = 0;
           compileElement();
         });
 
         it('No of select elements', () => {
-          expect($(element).find('select').children('option').length).toEqual(3);
+          expect($(element).find('select').children('option').length).toEqual(2);
         });
 
-        it('should show a selected value', () => {
-          var elem =  angular.element($(element).find('select').children('option')[1]);
+        it('should show the selected value', () => {
+          var elem =  angular.element($(element).find('select').children('option')[0]);
           expect(elem.text()).toEqual('---Site---');
+          expect(elem).toHaveAttr('selected');
         });
       });
 
@@ -158,7 +156,7 @@
         });
       });
 
-      describe('when a boolean input is passed', () => {
+      xdescribe('when a boolean input is passed', () => {
         beforeEach(() => {
           scope = rootScope.$new();
           scope.name = 'label';
@@ -220,7 +218,7 @@
 
         it('should print the right input type for each property', () => {
           expect($(element).find('input').length).toBe(2);
-          expect($(element).find('.boolean-field > button').length).toEqual(2);
+          expect($(element).find('.boolean-field > a').length).toEqual(2);
         });
 
         it('should format labels', () => {

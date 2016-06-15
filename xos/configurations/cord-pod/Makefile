@@ -65,6 +65,14 @@ cord: vsg_custom_images
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-vtn-vsg.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-volt-devices.yaml
 
+clean-nodes:
+	rm -f nodes.yaml
+
+update-nodes: nodes.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
+
+new-nodes: clean-nodes update-nodes vtn
+
 exampleservice:
 	sudo cp id_rsa key_import/exampleservice_rsa
 	sudo cp id_rsa.pub key_import/exampleservice_rsa.pub

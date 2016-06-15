@@ -1,122 +1,17 @@
-<script src="{{ STATIC_URL }}/js/vendor/underscore-min.js"></script>
-<script src="{{ STATIC_URL }}/js/vendor/backbone.js"></script>
-<script src="{{ STATIC_URL }}/js/vendor/backbone.syphon.js"></script>
-<script src="{{ STATIC_URL }}/js/vendor/backbone.wreqr.js"></script>
-<script src="{{ STATIC_URL }}/js/vendor/backbone.babysitter.js"></script>
-<script src="{{ STATIC_URL }}/js/vendor/backbone.marionette.js"></script>
+<!-- browserSync -->
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/xosTenantDashboard.css' %}" media="all" >
-<link rel="stylesheet" type="text/css" href="{% static 'css/xosAdminSite.css' %}" media="all" >
+<!-- endcss -->
+<!-- inject:css -->
+<link rel="stylesheet" href="/static/css/xosTenant.css">
+<!-- endinject -->
 
-<script src="{{ STATIC_URL }}/js/xoslib/xos-util.js"></script>
-<script src="{{ STATIC_URL }}/js/xoslib/xos-defaults.js"></script>
-<script src="{{ STATIC_URL }}/js/xoslib/xos-validators.js"></script>
-<script src="{{ STATIC_URL }}/js/xoslib/xos-backbone.js"></script>
-<script src="{{ STATIC_URL }}/js/xoslib/xosHelper.js"></script>
-<script src="{{ STATIC_URL }}/js/picker.js"></script>
-<script src="{{ STATIC_URL }}/js/xosTenant.js"></script>
 
-<script type="text/template" id="xos-tenant-buttons-template">
-  <div class="box save-box">
-    <button class="btn btn-high btn-success btn-tenant-create">Create New Slice</button>
-    <button class="btn btn-high btn-danger btn-tenant-delete">Delete Slice</button>
-    <button class="btn btn-high btn-primary btn-tenant-add-user">Edit Users</button>
-    <button class="btn btn-high btn-primary btn-tenant-download-ssh">SSH Commands</button>
-    <button class="btn btn-high btn-success btn-tenant-save">Save</button>
-  </div>
-</script>
-
-<script type="text/template" id="xos-tenant-buttons-noslice-template">
-  <div class="box save-box">
-    <button class="btn btn-high btn-tenant-create">Create New Slice</button>
-  </div>
-</script>
-
-<script type="text/template" id="xos-log-template">
-  <tr id="<%= logMessageId %>" class="xos-log xos-<%= statusclass %>">
-     <td><%= what %><br>
-         <%= status %> <%= statusText %>
-     </td>
-  </tr>
-</script>
-
-<script type="text/template" id="tenant-sanity-check">
-    Tenant view sanity check failed:
-       <ul>
-       <% for (index in errors) { %>
-           <li><%= errors[index] %></li>
-       <% } %>
-       </ul>
-       Steps to correct issues in the tenant view:
-       <ol>
-       <li>Make sure that the tenant view is linked to at least one deployment. You
-           may find the list of dashboard views at <a href="/admin/core/dashboardview/">here</a>.
-           Deployments currently attached to the tenant view are: <%= blessed_deployment_names.join(",") %>
-           </li>
-       <li>Make sure that at least one Image and one Flavor is attached to a tenant view deployment.</li>
-       <li>Make sure at least one Site is attached to a tenant view deployment.</li>
-       <li>Make sure at least one of the Sites has one or more nodes attached to it.</li>
-       </ol>
-</script>
-
-<script type="text/template" id="tenant-edit-users">
-    <%= xosPickerTemplate({pickedItems: model.usersBuffer,
-                          unpickedItems: array_subtract(xos.tenant().current_user_site_users, model.usersBuffer),
-                          id: "users",
-                          fieldName: "users",
-                          detailView: detailView,
-                          lookupFunc: function(x) { return array_pair_lookup(x,
-                                                     $.merge($.merge([], xos.tenant().current_user_site_user_names), model.user_namesOrig),
-                                                     $.merge($.merge([], xos.tenant().current_user_site_users), model.usersOrig)); },
-                          } ) %>
-</script>
-
-<div id="xos-confirm-dialog" title="Confirmation Required">
-  Are you sure about this?
+<div ng-app="xos.tenant" id="xosTenant" class="container-fluid">
+   <div ui-view></div>
 </div>
 
-<div id="tenant-addslice-dialog" title="Create New Slice">
-<div id="tenant-addslice-interior"></div>
-</div>
 
-<div id="tenant-edit-users-dialog" title="Edit Users">
-<div id="tenant-edit-users-interior"></div>
-</div>
-
-<div id="tenant-ssh-commands-dialog" title="SSH Commands">
-<div id="tenant-ssh-commands-interior"></div>
-</div>
-
-<div id="xos-error-dialog" title="Error Message">
-</div>
-
-<div id="xos-tenant-view-panel"> <!-- contentPanel"> -->
-<div id="contentTitle">
-</div>
-<div id="contentButtonPanel">
-
-<div id="rightButtonPanel"></div>
-
-<div class="box" id="logPanel">
-<table id="logTable">
-<tbody>
-</tbody>
-</table> <!-- end logTable -->
-</div> <!-- end logPanel -->
-</div> <!-- end contentButtonPanel -->
-
-<div id="contentInner">
-
-<div id="tenantSliceSelector">
-</div>
-<div id="tenantSummary">
-</div>
-<div id="tenantSiteList">
-</div>
-<div id="tenantButtons">
-</div>
-
-</div> <!-- end contentInner -->
-</div> <!-- end contentPanel -->
-
-{% include 'xosAdmin.html' %}
+<!-- endjs -->
+<!-- inject:js -->
+<script src="/static/js/xosTenant.js"></script>
+<!-- endinject -->

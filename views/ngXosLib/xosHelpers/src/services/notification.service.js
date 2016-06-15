@@ -1,3 +1,4 @@
+/* eslint-disable  angular/ng_window_service*/
 (function() {
   'use strict';
 

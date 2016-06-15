@@ -48,7 +48,7 @@
         expect(errorFunctionWrapper).toThrow(new Error('[xosTable] Please provide a columns list in the configuration'));
       });
 
-      describe('when basicly configured', function() {
+      describe('when basically configured', function() {
 
         beforeEach(inject(function ($compile, $rootScope) {
 
@@ -221,6 +221,7 @@
                 {categories: ['Film', 'Music']}
               ];
               scope.config = {
+                filter: 'field',
                 columns: [
                   {
                     label: 'Categories',
@@ -232,8 +233,13 @@
               compileElement();
             });
             it('should render a comma separated list', () => {
-              let td1 = $(element).find('tbody tr:first-child')[0];
+              let td1 = $(element).find('tbody:last-child tr:first-child')[0];
               expect($(td1).text().trim()).toEqual('Film, Music');
+            });
+
+            it('should not render the filter field', () => {
+              let filter = $(element).find('tbody tr td')[0];
+              expect($(filter)).not.toContainElement('input');
             });
           });
 
@@ -248,6 +254,7 @@
                 }
               ];
               scope.config = {
+                filter: 'field',
                 columns: [
                   {
                     label: 'Categories',
@@ -259,7 +266,7 @@
               compileElement();
             });
             it('should render a list of key-values', () => {
-              let td = $(element).find('tbody tr:first-child')[0];
+              let td = $(element).find('tbody:last-child tr:first-child')[0];
               let ageLabel = $(td).find('dl dt')[0];
               let ageValue = $(td).find('dl dd')[0];
               let heightLabel = $(td).find('dl dt')[1];
@@ -268,6 +275,11 @@
               expect($(ageValue).text().trim()).toEqual('20');
               expect($(heightLabel).text().trim()).toEqual('height');
               expect($(heightValue).text().trim()).toEqual('50');
+            });
+
+            it('should not render the filter field', () => {
+              let filter = $(element).find('tbody tr td')[0];
+              expect($(filter)).not.toContainElement('input');
             });
           });
 
