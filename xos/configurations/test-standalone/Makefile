@@ -77,6 +77,8 @@ base-container:
 
 devel-container: base-container
 	cd ../../../containers/xos; make devel
+	cd ../../../containers/synchronizer; make
+	cd ../../../containers/onboarding_synchronizer; make
 
 containers: devel-container
 	cd ../../../containers/xos; make test
