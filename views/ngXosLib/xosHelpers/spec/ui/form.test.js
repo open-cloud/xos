@@ -157,59 +157,6 @@
           });
         });
 
-        // NOTE not sure why this tests are failing
-        xdescribe('the custom validation options', () => {
-          beforeEach(() => {
-            scope.config.fields.first_name.validators = {
-              minlength: 10,
-              maxlength: 15,
-              required: true
-            };
-
-            scope.config.fields.age = {
-              validators: {
-                min: 10,
-                max: 20
-              }
-            };
-
-            scope.$digest();
-          });
-
-          it('should validate required', () => {
-            scope.model.first_name = null;
-            scope.$digest();
-
-            expect(isolatedScope.testForm.first_name.$valid).toBeFalsy();
-            expect(isolatedScope.testForm.first_name.$error.required).toBeTruthy();
-          });
-
-          it('should validate minlength', () => {
-            scope.model.first_name = 'short';
-            scope.$digest();
-
-            expect(isolatedScope.testForm.first_name.$valid).toBeFalsy();
-            expect(isolatedScope.testForm.first_name.$error.minlength).toBeTruthy();
-          });
-
-          it('should validate maxlength', () => {
-            scope.model.first_name = 'this is way too long!';
-            scope.$digest();
-
-            expect(isolatedScope.testForm.first_name.$valid).toBeFalsy();
-            expect(isolatedScope.testForm.first_name.$error.maxlength).toBeTruthy();
-          });
-
-          it('should validate min', () => {
-            // not validating min and max for now
-            scope.model.age = 8;
-            scope.$digest();
-
-            expect(isolatedScope.testForm.age.$valid).toBeFalsy();
-            expect(isolatedScope.testForm.age.$error.min).toBeTruthy();
-          });
-        });
-
         describe('when a deep model is passed', () => {
 
           beforeEach(inject(($rootScope) => {
