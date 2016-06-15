@@ -180,18 +180,17 @@
           expect($(element).find('.boolean-field > a').length).toEqual(2)
         });
 
-        // NOTE .click is not working anymore
-        xit('should change value to false', () => {
+        it('should change value to false', () => {
           expect(isolatedScope.ngModel).toEqual(true);
-          setFalse.click()
+          clickElement(setFalse[0]);
           expect(isolatedScope.ngModel).toEqual(false);
         });
 
-        xit('should change value to true', () => {
+        it('should change value to true', () => {
           isolatedScope.ngModel = false;
           scope.$apply();
           expect(isolatedScope.ngModel).toEqual(false);
-          setTrue.click()
+          clickElement(setTrue[0]);
           expect(isolatedScope.ngModel).toEqual(true);
         });
       });
@@ -319,9 +318,7 @@
             expect(input).not.toHaveClass('ng-invalid');
           });
         });
-        
       });
-
     });
   });
 })();

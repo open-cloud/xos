@@ -171,13 +171,13 @@
               <a href="#"
                 class="btn btn-success"
                 ng-show="vm.ngModel"
-                ng-click="vm.setBooleanVal(false)">
+                ng-click="vm.ngModel = false">
                 <i class="glyphicon glyphicon-ok"></i>
               </a>
               <a href="#"
                 class="btn btn-danger"
                 ng-show="!vm.ngModel"
-                ng-click="vm.setBooleanVal(true)">
+                ng-click="vm.ngModel = true">
                 <i class="glyphicon glyphicon-remove"></i>
               </a>
             </span>
@@ -215,11 +215,6 @@
         return RecursionHelper.compile(element);
       },
       controller: function($attrs, XosFormHelpers, LabelFormatter){
-
-        this.setBooleanVal = (val) => {
-          console.log(`Setting ngModel to: ${val}`);
-          this.ngModel = val;
-        }
 
         if(!this.name){
           throw new Error('[xosField] Please provide a field name');
