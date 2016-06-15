@@ -3,26 +3,32 @@ xos_db:
     expose:
         - "5432"
 
-# FUTURE
-#xos_swarm_synchronizer:
-#    image: xosproject/xos-swarm-synchronizer
-#    labels:
-#        org.xosproject.kind: synchronizer
-#        org.xosproject.target: swarm
-
-xos:
-    image: xosproject/xos-test
-    command: python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
-    #command: sleep 86400    # For interactive session
+xos_bootstrap_ui:
+    image: xosproject/xos
+    command: python /opt/xos/manage.py runserver 0.0.0.0:9998 --insecure --makemigrations
     ports:
-        - "9999:8000"
+        - "9998:9998"
     links:
         - xos_db
     volumes:
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config
-      - ../../core/xoslib:/opt/xos/core/xoslib
-      - ../../core/static:/opt/xos/core/static
-      - ../../templates/admin:/opt/xos/templates/admin
-      - ../../configurations:/opt/xos/configurations
-      - ../../tests:/opt/xos/tests
-      - ../../api:/opt/xos/api
+      - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
+
+xos_synchronizer_onboarding:
+    image: xosproject/xos-synchronizer-onboarding
+    command: bash -c "cd /opt/xos/synchronizers/onboarding; ./run.sh"
+#    command: sleep 86400
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: onboarding
+    links:
+        - xos_db
+    volumes:
+#        - .:/root/setup:ro
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./key_import:/opt/xos/key_import:ro
+        - ./onboarding-docker-compose:/opt/xos/synchronizers/onboarding/docker-compose
+    log_driver: "json-file"
+    log_opt:
+            max-size: "100k"
+            max-file: "5"
