@@ -209,6 +209,7 @@ class CordSubscriberRootForm(forms.ModelForm):
 
     class Meta:
         model = CordSubscriberRoot
+        fields = '__all__'
 
 class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id',  'name', )
