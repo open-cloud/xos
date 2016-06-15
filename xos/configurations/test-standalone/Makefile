@@ -1,4 +1,10 @@
 MYIP:=$(shell hostname -i)
+CONFIG_DIR:=$(shell pwd)
+DOCKER_COMPOSE_YML=./onboarding-docker-compose/docker-compose.yml
+BOOTSTRAP_YML=./docker-compose-bootstrap.yml
+DOCKER_PROJECT=teststandalone
+XOS_BOOTSTRAP_PORT=9998
+XOS_UI_PORT=9999
 
 define TRUNCATE_FN
 	CREATE OR REPLACE FUNCTION truncate_tables(username IN VARCHAR) RETURNS void AS $$$$
@@ -19,10 +25,31 @@ prepare: xos
 	sudo docker exec -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/api; npm install --production"
 	sudo docker exec teststandalone_xos_1 pip install dredd_hooks
 
-xos:
+xos: prereqs bootstrap onboarding
+
+prereqs:
 	sudo make -f ../common/Makefile.prereqs
-	sudo docker-compose up -d
-	bash ../common/wait_for_xos.sh
+
+bootstrap:
+	echo "[BOOTSTRAP]"
+	sudo rm -f onboarding-docker-compose/docker-compose.yml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f docker-compose-bootstrap.yml up -d
+	bash ../common/wait_for_xos_port.sh 9998
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run -e CONFIG_DIR=$(CONFIG_DIR) xos_bootstrap_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/test-standalone/xos.yaml
+
+onboarding:
+	echo "[ONBOARDING]"
+	bash ../common/wait_for_onboarding_ready.sh 9998 xos
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/common/enable-onboarding.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vrouter/vrouter-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/volt/volt-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vsg/vsg-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/common/enable-onboarding.yaml
+	bash ../common/wait_for_onboarding_ready.sh 9998 services/vrouter
+	bash ../common/wait_for_onboarding_ready.sh 9998 services/volt
+	bash ../common/wait_for_onboarding_ready.sh 9998 services/vsg
+	bash ../common/wait_for_onboarding_ready.sh 9998 xos
+	bash ../common/wait_for_xos_port.sh 9999
 
 restore-initial-db-status:
 	sudo docker exec teststandalone_xos_db_1 psql -U postgres -d xos -c "$$TRUNCATE_FN" >/dev/null 2>&1
