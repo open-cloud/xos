@@ -82,6 +82,21 @@ class SyncInstanceUsingAnsible(SyncStep):
     def get_node_key(self, node):
         return "/root/setup/node_key"
 
+    def get_key_name(self, instance):
+        if instance.isolation=="vm":
+            if (instance.slice) and (instance.slice.service) and (instance.slice.service.private_key_fn):
+                key_name = instance.slice.service.private_key_fn
+            else:
+                raise Exception("Make sure to set private_key_fn in the service")
+        elif instance.isolation=="container":
+            node = self.get_node(instance)
+            key_name = self.get_node_key(node)
+        else:
+            # container in VM
+            key_name = instance.parent.slice.service.private_key_fn
+
+        return key_name
+
     def get_ansible_fields(self, instance):
         # return all of the fields that tell Ansible how to talk to the context
         # that's setting up the container.
@@ -95,10 +110,7 @@ class SyncInstanceUsingAnsible(SyncStep):
                        "username": "ubuntu",
                        "ssh_ip": instance.get_ssh_ip(),
                      }
-            if (instance.slice) and (instance.slice.service) and (instance.slice.service.private_key_fn):
-                key_name = instance.slice.service.private_key_fn
-            else:
-                raise Exception("Make sure to set private_key_fn in the service")
+
         elif (instance.isolation == "container"):
             # container on bare metal
             node = self.get_node(instance)
@@ -110,7 +122,6 @@ class SyncInstanceUsingAnsible(SyncStep):
                        "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
                        # ssh_ip is not used for container-on-metal
                      }
-            key_name = self.get_node_key(node)
         else:
             # container in a VM
             if not instance.parent:
@@ -128,8 +139,8 @@ class SyncInstanceUsingAnsible(SyncStep):
                        "ssh_ip": instance.parent.get_ssh_ip(),
                        "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
                          }
-            key_name = instance.parent.slice.service.private_key_fn
 
+        key_name = self.get_key_name(instance)
         if not os.path.exists(key_name):
             raise Exception("Node key %s does not exist" % key_name)
 
