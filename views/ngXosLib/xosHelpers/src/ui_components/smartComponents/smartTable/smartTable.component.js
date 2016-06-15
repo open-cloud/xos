@@ -218,6 +218,7 @@
           .then((res) => {
 
             if(!res[0]){
+              this.data = res;
               return;
             }
 

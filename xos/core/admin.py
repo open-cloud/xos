@@ -1034,7 +1034,7 @@ class ServiceAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", "kind",
                     "versionNumber", "enabled", "published")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldList = ["backend_status_text", "name", "kind", "description", "versionNumber", "enabled", "published",
+    fieldList = ["backend_status_text", "name", "kind", "description", "controller", "versionNumber", "enabled", "published",
                  "view_url", "icon_url", "public_key", "private_key_fn", "service_specific_attribute", "service_specific_id"]
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
@@ -1049,6 +1049,27 @@ class ServiceAdmin(XOSBaseAdmin):
                       ('serviceattrs', 'Additional Attributes'),
                       ('servicetenants', 'Tenancy'),
                       ('serviceprivileges', 'Privileges')
+                      )
+
+class ServiceControllerResourceInline(XOSTabularInline):
+    model = ServiceControllerResource
+    fields = ['name', 'kind', 'format', 'url']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-resources'
+
+class ServiceControllerAdmin(XOSBaseAdmin):
+    list_display = ("backend_status_icon", "name",)
+    list_display_links = ('backend_status_icon', 'name',)
+    fieldList = ["backend_status_text", "name", "xos", "base_url", "synchronizer_run", "synchronizer_config"]
+    fieldsets = [
+        (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
+    inlines = [ServiceControllerResourceInline]
+    readonly_fields = ('backend_status_text', )
+
+    user_readonly_fields = fieldList
+
+    suit_form_tabs = (('general', 'Service Details'),
+                      ('resources', 'Resources'),
                       )
 
 
@@ -2416,6 +2437,7 @@ admin.site.register(Controller, ControllerAdmin)
 admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
 admin.site.register(Service, ServiceAdmin)
+admin.site.register(ServiceController, ServiceControllerAdmin)
 #admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Port, PortAdmin)

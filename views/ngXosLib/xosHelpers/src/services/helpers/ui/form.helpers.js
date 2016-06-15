@@ -106,6 +106,9 @@
         if(customField[f] && customField[f].options){
           form[f].options = customField[f].options;
         }
+        if(customField[f] && customField[f].properties){
+          form[f].properties = customField[f].properties;
+        }
         if(form[f].type === 'date'){
           model[f] = new Date(model[f]);
         }

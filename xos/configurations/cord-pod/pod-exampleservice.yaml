@@ -79,10 +79,10 @@ topology_template:
           view_url: /admin/exampleservice/exampleservice/$id$/
           kind: exampleservice
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
-          private_key_fn: /opt/xos/synchronizers/exampleservice/exampleservice_private_key
+          private_key_fn: /opt/xos/services/exampleservice/keys/exampleservice_rsa
           service_message: hello
       artifacts:
-          pubkey: /opt/xos/synchronizers/exampleservice/exampleservice_public_key
+          pubkey: /opt/xos/services/exampleservice/keys/exampleservice_rsa.pub
 
     tenant#exampletenant1:
         type: tosca.nodes.ExampleTenant

@@ -1,0 +1,13 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+  tasks:
+
+  - name: write message
+    shell: echo "{{ display_message }}" > /var/tmp/index.html
+
+  - name: setup s5s8_pgw interface config
+    shell: ./start_3gpp_int.sh eth1 {{ s5s8_pgw_tag }} {{ s5s8_pgw_ip }}/24 

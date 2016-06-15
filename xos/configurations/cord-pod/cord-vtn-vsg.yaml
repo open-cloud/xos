@@ -25,6 +25,10 @@ topology_template:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
           replaces: service_volt
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/services/volt/keys/volt_rsa
+      artifacts:
+          pubkey: /opt/xos/services/volt/keys/volt_rsa.pub
 
     addresses_vsg:
       type: tosca.nodes.AddressPool
@@ -50,11 +54,11 @@ topology_template:
           view_url: /admin/cord/vsgservice/$id$/
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
-          private_key_fn: /opt/xos/synchronizers/vcpe/vcpe_private_key
+          private_key_fn: /opt/xos/services/vsg/keys/vsg_rsa
 #          node_label: label_vsg
           replaces: service_vsg
       artifacts:
-          pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
+          pubkey: /opt/xos/services/vsg/keys/vsg_rsa.pub
 
     service#vrouter:
       type: tosca.nodes.VRouterService
@@ -69,23 +73,15 @@ topology_template:
               node: addresses_exampleservice-public
               relationship: tosca.relationships.ProvidesAddresses
 
-    service#fabric:
-      type: tosca.nodes.FabricService
-      properties:
-          view_url: /admin/fabric/fabricservice/$id$/
-          replaces: service_fabric
-
-    service#ONOS_Fabric:
-      type: tosca.nodes.ONOSService
-      requirements:
-      properties:
-          kind: onos
-          view_url: /admin/onos/onosservice/$id$/
-          no_container: true
-          rest_hostname: onos-fabric
-          replaces: service_ONOS_Fabric
 
     service#ONOS_CORD:
+      type: tosca.nodes.ONOSService
+      properties:
+          no-delete: true
+          no-create: true
+          no-update: true
+
+    service#ONOS_Fabric:
       type: tosca.nodes.ONOSService
       properties:
           no-delete: true

@@ -189,6 +189,17 @@ class XOSResource(object):
 
         raise Exception("artifact %s not found" % name)
 
+    def intrinsic_path_join(self, obj=None, name=None, varname=None, method=None):
+        if obj!="SELF":
+            raise Exception("only SELF is supported for get_artifact first arg")
+        if method!="ENV_VAR":
+            raise Exception("only ENV_VAR is supported for get_artifact fourth arg")
+
+        if not (name in os.environ):
+            raise Exception("environment variable %s not found" % name)
+
+        return os.path.join(os.environ[name], varname)
+
     def try_intrinsic_function(self, v):
         try:
             jsv = v.replace("'", '"')
@@ -205,6 +216,8 @@ class XOSResource(object):
             return self.intrinsic_get_artifact(*jsv["get_artifact"])
         elif "get_script_env" in jsv:
             return self.intrinsic_get_script_env(*jsv["get_script_env"])
+        elif "path_join" in jsv:
+            return self.intrinsic_path_join(*jsv["path_join"])
 
         return v
 

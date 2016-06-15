@@ -142,16 +142,23 @@ function makemigrations {
     python ./manage.py makemigrations hpc
     python ./manage.py makemigrations requestrouter
     python ./manage.py makemigrations syndicate_storage
-    python ./manage.py makemigrations cord
     python ./manage.py makemigrations mcord
     python ./manage.py makemigrations ceilometer
-    python ./manage.py makemigrations onos
+#    python ./manage.py makemigrations onos
     python ./manage.py makemigrations openvpn
-    python ./manage.py makemigrations vtr
-    python ./manage.py makemigrations vrouter
-    python ./manage.py makemigrations vtn
-    python ./manage.py makemigrations fabric
+#    python ./manage.py makemigrations vtr
+#    python ./manage.py makemigrations vrouter
+#    python ./manage.py makemigrations vtn
+#    python ./manage.py makemigrations fabric
     #python ./manage.py makemigrations servcomp
+
+    if [[ -e /opt/xos/xos/xosbuilder_migration_list ]]; then
+        cat /opt/xos/xos/xosbuilder_migration_list | while read line; do
+            if [[ ! -z "$line" ]]; then
+                python ./manage.py makemigrations $line
+            fi
+        done
+    fi
 }
 
 function remigrate {
