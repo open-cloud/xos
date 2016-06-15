@@ -228,9 +228,6 @@
         if(!$attrs.ngModel){
           throw new Error('[xosField] Please provide an ng-model');
         }
-        if(this.field.type === 'select' && !this.ngModel ){
-          //this.ngModel = this.field.options[0].id;
-        }
         this.getType = XosFormHelpers._getFieldFormat;
         this.formatLabel = LabelFormatter.format;
 

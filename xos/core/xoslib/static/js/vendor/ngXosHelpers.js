@@ -1346,7 +1346,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         config: '=',
         ngModel: '='
       },
-      template: '\n        <form name="vm.{{vm.config.formName || \'form\'}}" novalidate>\n          <div class="form-group" ng-repeat="(name, field) in vm.formField">\n          <!--{{vm.ngModel[name] | json}}-->\n            <xos-field name="name" field="field" ng-model="vm.ngModel[name]"></xos-field>\n            <!--<pre>{{vm[vm.config.formName] || \'form\'  | json }}</pre>-->\n            <!--{{field}}-->\n            <xos-validation field="vm[vm.config.formName || \'form\'][name]" form = "vm[vm.config.formName || \'form\']"></xos-validation>\n            <div class="alert alert-info" ng-show="(field.hint).length >0" role="alert">{{field.hint}}</div>\n          </div>\n          <div class="form-group" ng-if="vm.config.actions">\n          <xos-alert config="vm.config.feedback" show="vm.config.feedback.show">{{vm.config.feedback.message}}</xos-alert>\n\n            <button role="button" href=""\n              ng-repeat="action in vm.config.actions"\n              ng-click="action.cb(vm.ngModel, vm[vm.config.formName || \'form\'])"\n              class="btn btn-{{action.class}}"\n              title="{{action.label}}">\n              <i class="glyphicon glyphicon-{{action.icon}}"></i>\n              {{action.label}}\n            </button>\n          </div>\n        </form>\n      ',
+      template: '\n        <form name="vm.{{vm.config.formName || \'form\'}}" novalidate>\n          <div class="form-group" ng-repeat="(name, field) in vm.formField">\n            <xos-field name="name" field="field" ng-model="vm.ngModel[name]"></xos-field>\n            <xos-validation field="vm[vm.config.formName || \'form\'][name]" form = "vm[vm.config.formName || \'form\']"></xos-validation>\n            <div class="alert alert-info" ng-show="(field.hint).length >0" role="alert">{{field.hint}}</div>\n          </div>\n          <div class="form-group" ng-if="vm.config.actions">\n          <xos-alert config="vm.config.feedback" show="vm.config.feedback.show">{{vm.config.feedback.message}}</xos-alert>\n\n            <button role="button" href=""\n              ng-repeat="action in vm.config.actions"\n              ng-click="action.cb(vm.ngModel, vm[vm.config.formName || \'form\'])"\n              class="btn btn-{{action.class}}"\n              title="{{action.label}}">\n              <i class="glyphicon glyphicon-{{action.icon}}"></i>\n              {{action.label}}\n            </button>\n          </div>\n        </form>\n      ',
       bindToController: true,
       controllerAs: 'vm',
       controller: ["$scope", "$log", "_", "XosFormHelpers", function controller($scope, $log, _, XosFormHelpers) {
@@ -1570,9 +1570,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
         if (!$attrs.ngModel) {
           throw new Error('[xosField] Please provide an ng-model');
-        }
-        if (this.field.type === 'select' && !this.ngModel) {
-          //this.ngModel = this.field.options[0].id;
         }
         this.getType = XosFormHelpers._getFieldFormat;
         this.formatLabel = LabelFormatter.format;
