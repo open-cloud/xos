@@ -253,22 +253,16 @@
           this.excludedField = this.excludedField.concat(this.config.exclude);
         }
 
-
         this.formField = [];
+
         $scope.$watch(() => this.config, ()=> {
-
-
-
           if(!this.ngModel){
             return;
           }
           let diff = _.difference(Object.keys(this.ngModel), this.excludedField);
           let modelField = XosFormHelpers.parseModelField(diff);
           this.formField = XosFormHelpers.buildFormStructure(modelField, this.config.fields, this.ngModel);
-
-
-        } ,true);
-
+        }, true);
 
         $scope.$watch(() => this.ngModel, (model) => {
           // empty from old stuff

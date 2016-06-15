@@ -15,7 +15,7 @@
     if(!scope){
       scope = rootScope.$new();
     }
-    if(!angular.isDefined(element)){
+    if(angular.isUndefined(element)){
       element = angular.element('<xos-validation field="field" form="form"></xos-validation>');
     }
     compile(element)(scope);

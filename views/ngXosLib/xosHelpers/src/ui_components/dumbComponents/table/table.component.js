@@ -388,7 +388,7 @@
               </tbody>
               <tbody>
                 <tr ng-repeat="item in vm.data | filter:vm.query:vm.comparator | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">
-                  <td ng-repeat="col in vm.columns" link-wrapper>
+                  <td ng-repeat="col in vm.columns" xos-link-wrapper>
                     <span ng-if="!col.type">{{item[col.prop]}}</span>
                     <span ng-if="col.type === 'boolean'">
                       <i class="glyphicon"
@@ -534,7 +534,7 @@
       }
     })
     // TODO test
-    .directive('linkWrapper', function() {
+    .directive('xosLinkWrapper', function() {
       return {
         restrict: 'A',
         transclude: true,
