@@ -1,22 +1,8 @@
 from core.models import Slice, SlicePrivilege, SliceRole, Instance, Site, Node, User
-from services.cord.models import VOLTTenant, CordSubscriberRoot
+from services.volt.models import VOLTTenant, CordSubscriberRoot
 from plus import PlusObjectMixin
 from operator import itemgetter, attrgetter
 from rest_framework.exceptions import APIException
-
-"""
-import os
-import sys
-sys.path.append("/opt/xos")
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
-import django
-from core.models import *
-from services.hpc.models import *
-from services.cord.models import *
-django.setup()
-from core.xoslib.objects.cordsubscriber import CordSubscriber
-c=CordSubscriber.get_tenant_objects().select_related().all()[0]
-"""
 
 class CordSubscriber(CordSubscriberRoot):
     class Meta:

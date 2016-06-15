@@ -1,0 +1,16 @@
+---
+# exampletenant_playbook
+
+- hosts: "{{ instance_name }}"
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+  gather_facts: no
+  vars:
+    - tenant_message: "{{ tenant_message }}"
+    - service_message: "{{ service_message }}"
+
+  roles:
+    - install_apache
+    - create_index
+

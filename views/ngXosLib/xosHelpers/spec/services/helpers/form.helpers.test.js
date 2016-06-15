@@ -229,6 +229,23 @@
             options: [
               {id: 1, label: 'something'}
             ]
+          },
+          object: {
+            label: 'Object Label',
+            type: 'object',
+            hint: 'Object Hint',
+            properties: {
+              foo: {
+                type: 'string',
+                label: 'FooLabel',
+                validators: {
+                  required: true
+                }
+              },
+              bar: {
+                type: 'number'
+              }
+            }
           }
         };
 
@@ -277,6 +294,24 @@
             options: [
               {id: 1, label: 'something'}
             ]
+          },
+          object: {
+            label: 'Object Label:',
+            type: 'object',
+            hint: 'Object Hint',
+            validators: {},
+            properties: {
+              foo: {
+                type: 'string',
+                label: 'FooLabel',
+                validators: {
+                  required: true
+                }
+              },
+              bar: {
+                type: 'number'
+              }
+            }
           }
         };
 
@@ -291,6 +326,7 @@
           expect(res.created).toEqual(empty_formObject.created);
           expect(res.custom).toEqual(empty_formObject.custom);
           expect(res.select).toEqual(empty_formObject.select);
+          expect(res.object).toEqual(empty_formObject.object);
           expect(res).toEqual(empty_formObject);
         });
       });

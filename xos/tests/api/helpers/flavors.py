@@ -9,8 +9,6 @@ sys.path.append("/opt/xos")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import django
 from core.models import *
-from services.cord.models import *
-from services.vtr.models import *
 import urllib2
 import json
 django.setup()
