@@ -64,7 +64,6 @@ angular.module('xos.tenant', [
       })
       .then((users) => {
         this.slices = users;
-        //console.log(this.sites,this.slices);
         this.site_list = this.returnData(this.sites, this.slices);
       })
       .catch((e) => {
@@ -73,8 +72,6 @@ angular.module('xos.tenant', [
 
 
       this.returnData = (sites, slices) => {
-        //console.log(sites,slices);
-        //console.log(sites.length)
         var i, j=0;
         var site_list=[];
 
@@ -93,11 +90,9 @@ angular.module('xos.tenant', [
             'instance_total': instance_t,
             'instance_total_ready': instance_t_r
           };
-          //console.log(sites[i].id);
           site_list.push(data_sites);
         }
         return site_list;
-        //this.site_list = site_list;
       }
     }
   };
@@ -151,10 +146,6 @@ angular.module('xos.tenant', [
     controllerAs: 'cs',
     templateUrl: 'templates/createslice.html',
     controller: function(Slices, SlicesPlus, Sites, Images, $stateParams, $http, $state, $q){
-      //var sites;
-      //console.log(this.users.name);
-
-      //console.log(this.config);
       this.config = {
         exclude: ['site', 'password', 'last_login', 'mount_data_sets', 'default_flavor', 'creator', 'exposed_ports', 'networks', 'omf_friendly', 'omf_friendly', 'no_sync', 'no_policy', 'lazy_blocked', 'write_protect', 'deleted', 'backend_status', 'backend_register', 'policed', 'enacted', 'updated', 'created', 'validators', 'humanReadableName'],
         formName: 'SliceDetails',
@@ -185,9 +176,9 @@ angular.module('xos.tenant', [
             label: 'Save and add another',
             icon: 'ok', // refers to bootstraps glyphicon
             cb: (model, form) => {
-             saveform(model,form).then(()=> {
-               $state.go('createslice',{site : this.model.site,id : ''});
-             });
+              saveform(model,form).then(()=> {
+                $state.go('createslice',{site : this.model.site,id : ''});
+              });
             },
             class: 'primary'
           }
@@ -314,7 +305,6 @@ angular.module('xos.tenant', [
 
         }
       };
-      //console.log(this.config.exclude);
       var data;
       Images.query().$promise
           .then((users) => {
@@ -336,7 +326,6 @@ angular.module('xos.tenant', [
           retObj.push(optVal);
 
         }
-        //console.log(retObj);
         return retObj;
       };
 
@@ -346,8 +335,6 @@ angular.module('xos.tenant', [
       {
         delete this.config.fields['site'];
         this.config.exclude.push('site');
-
-        //console.log(this.config.exclude);
 
         Slices.get({id: $stateParams.id}).$promise
           .then((users) => {
@@ -368,8 +355,6 @@ angular.module('xos.tenant', [
         $http.get('/xoslib/tenantview/').
         success((data) => {
           this.userList = data;
-          console.log(this.userList);
-          //this.model={}
           this.model['creator'] = this.userList.current_user_id;
 
         });
@@ -382,7 +367,6 @@ angular.module('xos.tenant', [
         Sites.query().$promise
       .then((users) => {
         this.users_site = users;
-        //console.log(users);
         this.optionVal = this.setData(this.users_site, {field1: 'id', field2: 'name'});
         this.config.fields['site'].options = this.optionVal;
         //= this.optionVal;
@@ -398,37 +382,37 @@ angular.module('xos.tenant', [
       { // receive the model
         var deferred = $q.defer();
         delete model.networks;
-              if (form.$valid )
-              {
-                if(model.id){
-                  var pr = Slices.update(model).$promise;
-                }
-                else{
-                  var pr = Slices.save(model).$promise;
-                }
-                pr.then((users) => {
-                  this.model = users;
-                  //data = users;
-                  //this.model = this.users;
-                  this.config.feedback.show = true;
-                  deferred.resolve(this.model);
-                })
-                .catch((e) => {
-                  this.config.feedback.show = true;
-                  this.config.feedback.type='danger';
-                  if(e.data && e.data.detail )
-                  {
-                    this.config.feedback.message = e.data.detail;
-                  }
-                  else {
-                    this.config.feedback.message=e.statusText;
-                  }
-                  deferred.reject(e);
-                });
-              }
-
-              return  deferred.promise;
+        if (form.$valid )
+        {
+          if(model.id){
+            var pr = Slices.update(model).$promise;
+          }
+          else{
+            var pr = Slices.save(model).$promise;
+          }
+          pr.then((users) => {
+            this.model = users;
+            //data = users;
+            //this.model = this.users;
+            this.config.feedback.show = true;
+            deferred.resolve(this.model);
+          })
+          .catch((e) => {
+            this.config.feedback.show = true;
+            this.config.feedback.type='danger';
+            if(e.data && e.data.detail )
+            {
+              this.config.feedback.message = e.data.detail;
             }
+            else {
+              this.config.feedback.message=e.statusText;
+            }
+            deferred.reject(e);
+          });
+        }
+
+        return  deferred.promise;
+      }
     }
   };
 });
