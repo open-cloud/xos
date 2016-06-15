@@ -17,6 +17,7 @@ topology_template:
           admin: admin.py
           admin_template: templates/vtradmin.html
           synchronizer: synchronizer/manifest
+          synchronizer_run: vtr-synchronizer.py
           rest_tenant: api/tenant/truckroll.py
           private_key: file:///opt/xos/key_import/vsg_rsa
           public_key: file:///opt/xos/key_import/vsg_rsa.pub
