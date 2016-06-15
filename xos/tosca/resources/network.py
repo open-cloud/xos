@@ -72,8 +72,8 @@ class XOSNetwork(XOSResource):
             if existing_tenancy:
                 self.info("Tenancy relationship from %s to %s already exists" % (str(obj), str(provider_service)))
             else:
-                from services.vrouter.models import VROUTER_KIND, VRouterService
-                if provider_service.kind == VROUTER_KIND:
+                if provider_service.kind == "vROUTER":
+                    from services.vrouter.models import VRouterService
                     tenancy = VRouterService.objects.get(id=provider_service.id).get_tenant(address_pool_name="addresses_"+obj.name, subscriber_network=obj)
                     tenancy.save()
                     obj.subnet = tenancy.cidr

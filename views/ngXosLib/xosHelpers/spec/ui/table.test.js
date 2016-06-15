@@ -124,15 +124,22 @@
                     label: 'Label 1',
                     prop: 'label-1',
                     type: 'boolean'
+                  },
+                  {
+                    label: 'Label 2',
+                    prop: 'label-2',
+                    type: 'boolean'
                   }
                 ]
               };
               scope.data = [
                 {
-                  'label-1': true
+                  'label-1': true,
+                  'label-2': 1
                 },
                 {
-                  'label-1': false
+                  'label-1': false,
+                  'label-2': 0
                 }
               ];
               compileElement();
@@ -155,6 +162,30 @@
                 let td1 = $(element).find('table tbody tr td')[0];
                 expect(td1).toContainElement('select');
                 expect(td1).not.toContainElement('input');
+              });
+
+              it('should correctly filter results', () => {
+                isolatedScope.query = {
+                  'label-1': false
+                };
+                scope.$digest();
+                expect(isolatedScope.query['label-1']).toBeFalsy();
+                var tr = $(element).find('tbody:last-child > tr');
+                var icon = $(tr[0]).find('td i');
+                expect(tr.length).toEqual(1);
+                expect(icon).toHaveClass('glyphicon-remove');
+              });
+
+              it('should correctly filter results if the field is in the form of 0|1', () => {
+                isolatedScope.query = {
+                  'label-2': false
+                };
+                scope.$digest();
+                expect(isolatedScope.query['label-1']).toBeFalsy();
+                var tr = $(element).find('tbody:last-child > tr');
+                var icon = $(tr[0]).find('td i');
+                expect(tr.length).toEqual(1);
+                expect(icon).toHaveClass('glyphicon-remove');
               });
             });
           });

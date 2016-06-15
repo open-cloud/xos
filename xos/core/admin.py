@@ -1062,7 +1062,7 @@ class ServiceControllerResourceInline(XOSTabularInline):
 class ServiceControllerAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name",)
     list_display_links = ('backend_status_icon', 'name',)
-    fieldList = ["backend_status_text", "name", "xos", "base_url"]
+    fieldList = ["backend_status_text", "name", "xos", "base_url", "synchronizer_run", "synchronizer_config"]
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
     inlines = [ServiceControllerResourceInline]
