@@ -18,7 +18,7 @@ topology_template:
           admin_template: templates/ceilometeradmin.html, templates/sflowadmin.html
           synchronizer: synchronizer/manifest
           synchronizer_run: monitoring_channel_synchronizer.py
-          tosca_resource: tosca/resources/ceilometerservice.py, tosca/resources/ceilometertenant.py
+          tosca_resource: tosca/resources/ceilometerservice.py, tosca/resources/ceilometertenant.py, tosca/resources/sflowservice.py
           rest_tenant: subdirectory:ceilometer api/tenant/ceilometer/monitoringchannel.py
           private_key: file:///opt/xos/key_import/monitoring_channel_rsa
           public_key: file:///opt/xos/key_import/monitoring_channel_rsa.pub
