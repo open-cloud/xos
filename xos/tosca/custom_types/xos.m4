@@ -23,6 +23,10 @@ node_types:
                 type: string
                 required: false
                 description: Docker project name
+            source_ui_image:
+                type: string
+                required: false
+                description: Source UI docker image name
             enable_build:
                 type: boolean
                 required: false

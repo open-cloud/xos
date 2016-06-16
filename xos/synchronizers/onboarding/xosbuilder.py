@@ -19,7 +19,6 @@ class XOSBuilder(object):
     SYNC_ALLCONTROLLER_KINDS=["models", "django_library"]
 
     def __init__(self):
-        self.source_ui_image = "xosproject/xos"
         self.source_sync_image = "xosproject/xos-synchronizer-openstack"
         self.build_dir = "/opt/xos/BUILD/"
 
@@ -183,12 +182,13 @@ class XOSBuilder(object):
             file(os.path.join(self.build_dir, "opt/xos/xos/%s_xosbuilder_migration_list") % name, "w").write("\n".join(migration_list)+"\n")
 
     def create_ui_dockerfile(self):
+        xos = XOS.objects.all()[0]
         dockerfile_fn = "Dockerfile.UI"
 
         app_list = []
         migration_list = []
 
-        dockerfile = ["FROM %s" % self.source_ui_image]
+        dockerfile = ["FROM %s" % xos.source_ui_image]
         script = []
         for controller in ServiceController.objects.all():
             if self.check_controller_unready(controller):
