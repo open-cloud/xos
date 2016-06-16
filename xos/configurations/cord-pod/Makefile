@@ -20,7 +20,7 @@ onboarding:
 	echo "[ONBOARDING]"
 	# on-board any services here
 	bash ../common/wait_for_onboarding_ready.sh 81 xos
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/cord-pod/disable-onboarding.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/common/disable-onboarding.yaml
 	sudo cp id_rsa key_import/vsg_rsa
 	sudo cp id_rsa.pub key_import/vsg_rsa.pub
 	sudo cp id_rsa key_import/volt_rsa
@@ -35,7 +35,7 @@ onboarding:
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/fabric/fabric-onboard.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vtr/vtr-onboard.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/cord-pod/synchronizers.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/cord-pod/enable-onboarding.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/common/enable-onboarding.yaml
 	bash ../common/wait_for_onboarding_ready.sh 81 services/vrouter
 	bash ../common/wait_for_onboarding_ready.sh 81 services/volt
 	bash ../common/wait_for_onboarding_ready.sh 81 services/vsg
@@ -73,16 +73,27 @@ update-nodes: nodes.yaml
 
 new-nodes: clean-nodes update-nodes vtn
 
-exampleservice:
-	sudo cp id_rsa key_import/exampleservice_rsa
-	sudo cp id_rsa.pub key_import/exampleservice_rsa.pub
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/onboard/exampleservice/exampleservice-onboard.yaml
-	bash ../common/wait_for_onboarding_ready.sh 81 xos
-	bash ../common/wait_for_xos_port.sh 80
+exampleservice: onboard-exampleservice
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/pod-exampleservice.yaml
 
-cord-ceilometer: ceilometer_custom_images cord
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/ceilometer.yaml
+onboard-exampleservice:
+	sudo cp id_rsa key_import/exampleservice_rsa
+	sudo cp id_rsa.pub key_import/exampleservice_rsa.pub
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/exampleservice/exampleservice-onboard.yaml
+	bash ../common/wait_for_onboarding_ready.sh 81 services/exampleservice
+	bash ../common/wait_for_onboarding_ready.sh 81 xos
+	bash ../common/wait_for_xos_port.sh 80
+
+cord-ceilometer: ceilometer_custom_images cord onboard-ceilometer
+	sudo docker-compose  -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/ceilometer.yaml
+
+onboard-ceilometer:
+	sudo cp id_rsa key_import/monitoring_channel_rsa
+	sudo cp id_rsa.pub key_import/monitoring_channel_rsa.pub
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/ceilometer/ceilometer-onboard.yaml
+	bash ../common/wait_for_onboarding_ready.sh 81 services/ceilometer
+	bash ../common/wait_for_onboarding_ready.sh 81 xos
+	bash ../common/wait_for_xos_port.sh 80
 
 nodes.yaml:
 	export SETUPDIR=.; bash ../common/make-nodes-yaml.sh
