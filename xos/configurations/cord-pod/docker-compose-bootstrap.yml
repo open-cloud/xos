@@ -87,21 +87,21 @@ xos_synchronizer_openstack:
 #            max-size: "100k"
 #            max-file: "5"
 
-xos_synchronizer_monitoring_channel:
-    image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120; python /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer.py -C /root/setup/files/monitoring_channel_synchronizer_config"
-    labels:
-        org.xosproject.kind: synchronizer
-        org.xosproject.target: monitoring_channel
-    links:
-        - xos_db
-    volumes:
-        - .:/root/setup:ro
-        - ./id_rsa:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key:ro  # private key
-    log_driver: "json-file"
-    log_opt:
-            max-size: "100k"
-            max-file: "5"
+#xos_synchronizer_monitoring_channel:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "sleep 120; python /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer.py -C /root/setup/files/monitoring_channel_synchronizer_config"
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: monitoring_channel
+#    links:
+#        - xos_db
+#    volumes:
+#        - .:/root/setup:ro
+#        - ./id_rsa:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key:ro  # private key
+#    log_driver: "json-file"
+#    log_opt:
+#            max-size: "100k"
+#            max-file: "5"
 
 #xos_synchronizer_vtr:
 #    image: xosproject/xos-synchronizer-openstack
