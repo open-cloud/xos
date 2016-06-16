@@ -7,24 +7,23 @@
 (function () {
   'use strict';
 
-  let element, scope, isolatedScope, rootScope, compile;
-  const compileElement = (el) => {
-    element = el;
-
-    if(!scope){
-      scope = rootScope.$new();
-    }
-    if(angular.isUndefined(element)){
-      element = angular.element('<xos-field name="name" field="field" ng-model="ngModel"></xos-field>');
-    }
-    compile(element)(scope);
-    scope.$digest();
-    isolatedScope = element.isolateScope().vm;
-  };
-
   describe('The xos.helper module', function(){
 
     describe('The xosField component', () => {
+      let element, scope, isolatedScope, rootScope, compile;
+      const compileElement = (el) => {
+        element = el;
+
+        if(!scope){
+          scope = rootScope.$new();
+        }
+        if(angular.isUndefined(element)){
+          element = angular.element('<xos-field name="name" field="field" ng-model="ngModel"></xos-field>');
+        }
+        compile(element)(scope);
+        scope.$digest();
+        isolatedScope = element.isolateScope().vm;
+      };
 
       beforeEach(module('xos.helpers'));
 
@@ -93,7 +92,9 @@
           scope.field = {
             label: 'Label',
             type: 'text',
-            validators: {}
+            validators: {
+              custom: 'fake'
+            }
           };
           scope.ngModel = 'label';
           compileElement();
@@ -101,6 +102,12 @@
 
         it('should print a text field', () => {
           expect($(element).find('[name="label"]')).toHaveAttr('type', 'text');
+        });
+
+        it('should attach the custom validator directive', () => {
+          let input = $(element).find('[name="label"]');
+          expect(input).toHaveAttr('xos-custom-validator');
+          expect(input).toHaveAttr('custom-validator', 'vm.field.validators.custom || null');
         });
       });
 
@@ -180,18 +187,17 @@
           expect($(element).find('.boolean-field > a').length).toEqual(2)
         });
 
-        // NOTE .click is not working anymore
-        xit('should change value to false', () => {
+        it('should change value to false', () => {
           expect(isolatedScope.ngModel).toEqual(true);
-          setFalse.click()
+          clickElement(setFalse[0]);
           expect(isolatedScope.ngModel).toEqual(false);
         });
 
-        xit('should change value to true', () => {
+        it('should change value to true', () => {
           isolatedScope.ngModel = false;
           scope.$apply();
           expect(isolatedScope.ngModel).toEqual(false);
-          setTrue.click()
+          clickElement(setTrue[0]);
           expect(isolatedScope.ngModel).toEqual(true);
         });
       });
@@ -267,7 +273,6 @@
         });
       });
 
-      // NOTE not sure why this tests are failing
       describe('when validation options are passed', () => {
         let input;
         describe('given a a text field', () => {
@@ -319,9 +324,7 @@
             expect(input).not.toHaveClass('ng-invalid');
           });
         });
-        
       });
-
     });
   });
 })();

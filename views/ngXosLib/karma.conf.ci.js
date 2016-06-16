@@ -42,15 +42,12 @@ var files = [
   // loading ngMock
   'template.module.js',
   `./bower_components/angular-mocks/angular-mocks.js`,
-
-  // loading templates
-  `../../xos/core/xoslib/dashboards/xosDiagnostic.html`,
-
 ]
 .concat(vendorFiles)
 .concat(viewFiles)
 .concat([
   // loading tests
+  `xosHelpers/spec/test_helpers.js`,
   `../ngXosViews/*/spec/*.test.js`,
   `../ngXosViews/*/spec/**/*.mock.js`,
   'xosHelpers/spec/**/*.test.js'
