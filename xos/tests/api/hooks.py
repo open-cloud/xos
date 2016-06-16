@@ -19,7 +19,7 @@ django.setup()
 
 
 def doLogin(username, password):
-    url = "http://127.0.0.1:8000/xoslib/login?username=%s&password=%s" % (username, password)
+    url = "http://127.0.0.1:9999/xoslib/login?username=%s&password=%s" % (username, password)
     res = urllib2.urlopen(url).read()
     parsed = json.loads(res)
     return {'token': parsed['xoscsrftoken'], 'sessionid': parsed['xossessionid']}
