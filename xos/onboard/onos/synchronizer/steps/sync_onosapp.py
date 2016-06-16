@@ -178,7 +178,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         data = {
             "apps" : {
-                "org.onosproject.cordvtn" : {
+                "org.opencord.vtn" : {
                     "cordvtn" : {
                         "privateGatewayMac" : privateGatewayMac,
                         "localManagementIp": localManagementIp,
@@ -226,7 +226,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                 "dataPlaneIntf": dataPlaneIntf,
                 "dataPlaneIp": dataPlaneIp
             }
-            data["apps"]["org.onosproject.cordvtn"]["cordvtn"]["nodes"].append(node_dict)
+            data["apps"]["org.opencord.vtn"]["cordvtn"]["nodes"].append(node_dict)
 
         # Generate apps->org.onosproject.cordvtn->cordvtn->publicGateways
         # Pull the gateway information from vRouter
@@ -239,7 +239,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                     "gatewayIp": gatewayIp,
                     "gatewayMac": gatewayMac
                 }
-                data["apps"]["org.onosproject.cordvtn"]["cordvtn"]["publicGateways"].append(gateway_dict)
+                data["apps"]["org.oopencord.vtn"]["cordvtn"]["publicGateways"].append(gateway_dict)
 
         return json.dumps(data, indent=4, sort_keys=True)
 
@@ -399,6 +399,8 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             file(os.path.join(o.files_dir, fn),"w").write(" " +value)
             o.early_rest_configs.append( {"endpoint": endpoint, "fn": fn} )
 
+
+
         # Generate config files and save them to the appropriate tenant attributes
         configs = []
         for key, value in attrs.iteritems():
@@ -491,6 +493,11 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         else:
             fields["dependencies"] = []
 
+        if o.install_dependencies:
+            fields["install_dependencies"] = [x.strip() for x in o.install_dependencies.split(",")]
+        else:
+            fields["install_dependencies"] = []
+
         return fields
 
     def get_extra_attributes_full(self, o):
@@ -502,11 +509,6 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         fields["early_rest_configs"] = o.early_rest_configs
         fields["component_configs"] = o.component_configs
         fields["node_key_fn"] = o.node_key_fn
-
-        if o.install_dependencies:
-            fields["install_dependencies"] = [x.strip() for x in o.install_dependencies.split(",")]
-        else:
-            fields["install_dependencies"] = []
 
         if (instance.isolation=="container"):
             fields["ONOS_container"] = "%s-%s" % (instance.slice.name, str(instance.id))
