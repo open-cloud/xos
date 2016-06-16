@@ -256,9 +256,9 @@ class XOSBuilder(object):
 
          containers = {}
 
-         containers["xos_db"] = \
-                            {"image": "xosproject/xos-postgres",
-                             "expose": [5432]}
+#         containers["xos_db"] = \
+#                            {"image": "xosproject/xos-postgres",
+#                             "expose": [5432]}
 
          db_container_name = xos.docker_project_name + "_xos_db_1"
 
@@ -266,14 +266,14 @@ class XOSBuilder(object):
                             {"image": "xosproject/xos-ui",
                              "command": "python /opt/xos/manage.py runserver 0.0.0.0:%d --insecure --makemigrations" % xos.ui_port,
                              "ports": {"%d"%xos.ui_port : "%d"%xos.ui_port},
-                             "links": ["xos_db"],
-                             #"external_links": [db_container_name],
+                             #"links": ["xos_db"],
+                             "external_links": ["%s:%s" % (db_container_name, "xos_db")],
                              "volumes": volume_list}
 
 #         containers["xos_bootstrap_ui"] = {"image": "xosproject/xos",
 #                             "command": "python /opt/xos/manage.py runserver 0.0.0.0:%d --insecure --makemigrations" % xos.bootstrap_ui_port,
 #                             "ports": {"%d"%xos.bootstrap_ui_port : "%d"%xos.bootstrap_ui_port},
-#                             #"external_links": [db_container_name],
+#                             #"external_links": ["%s:%s" % (db_container_name, "xos_db")],
 #                             "links": ["xos_db"],
 #                             "volumes": volume_list}
 
@@ -292,8 +292,8 @@ class XOSBuilder(object):
                      containers["xos_synchronizer_%s" % c.name] = \
                                     {"image": "xosproject/xos-synchronizer-%s" % c.name,
                                      "command": command,
-                                     #"external_links": [db_container_name],
-                                     "links": ["xos_db"],
+                                     "external_links": ["%s:%s" % (db_container_name, "xos_db")],
+                                     #"links": ["xos_db"],
                                      "volumes": volume_list}
 
          vars = { "containers": containers }
