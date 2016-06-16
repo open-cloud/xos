@@ -23,8 +23,7 @@
 
   describe('The xos.helper module', function(){
     describe('The xos-smart-pie component', () => {
-
-
+      
       beforeEach(module('xos.helpers'));
 
       beforeEach(function(){

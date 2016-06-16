@@ -1,10 +1,12 @@
 @import './animations.scss';
 @import '../../../../../views/style/sass/bootstrap/bootstrap/_variables.scss';
+@import './loader.scss';
 
 @import '../ui_components/dumbComponents/table/table.scss';
 @import '../ui_components/dumbComponents/alert/alert.scss';
 @import '../ui_components/dumbComponents/validation/validation.scss';
 @import '../ui_components/dumbComponents/field/field.scss';
+@import '../ui_components/dumbComponents/form/form.scss';
 
 @import '../ui_components/smartComponents/smartTable/smartTable.scss';
 

@@ -21,6 +21,7 @@ var files = bowerComponents.concat([
   'node_modules/babel-polyfill/dist/polyfill.js',
   'xosHelpers/src/**/*.module.js',
   'xosHelpers/src/**/*.js',
+  `xosHelpers/spec/test_helpers.js`,
   `xosHelpers/spec/**/${testFiles}.test.js`
 ]);
 
@@ -94,7 +95,7 @@ module.exports = function(config) {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: [
       'PhantomJS',
-      // 'Chrome'
+       //'Chrome'
     ],
 
 

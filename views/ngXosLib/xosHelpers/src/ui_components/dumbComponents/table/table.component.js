@@ -338,7 +338,7 @@
           config: '='
         },
         template: `
-          <div ng-show="vm.data.length > 0">
+          <div ng-show="vm.data.length > 0 && vm.loader == false">
             <div class="row" ng-if="vm.config.filter == 'fulltext'">
               <div class="col-xs-12">
                 <input
@@ -369,7 +369,7 @@
                 <tr>
                   <td ng-repeat="col in vm.columns">
                     <input
-                      ng-if="col.type !== 'boolean'"
+                      ng-if="col.type !== 'boolean' && col.type !== 'array' && col.type !== 'object'"
                       class="form-control"
                       placeholder="Type to search by {{col.label}}"
                       type="text"
@@ -387,8 +387,8 @@
                 </tr>
               </tbody>
               <tbody>
-                <tr ng-repeat="item in vm.data | filter:vm.query | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">
-                  <td ng-repeat="col in vm.columns" link-wrapper>
+                <tr ng-repeat="item in vm.data | filter:vm.query:vm.comparator | orderBy:vm.orderBy:vm.reverse | pagination:vm.currentPage * vm.config.pagination.pageSize | limitTo: (vm.config.pagination.pageSize || vm.data.length) track by $index">
+                  <td ng-repeat="col in vm.columns" xos-link-wrapper>
                     <span ng-if="!col.type">{{item[col.prop]}}</span>
                     <span ng-if="col.type === 'boolean'">
                       <i class="glyphicon"
@@ -437,15 +437,28 @@
               change="vm.goToPage">
               </xos-pagination>
           </div>
-          <div ng-show="vm.data.length == 0 || !vm.data">
+          <div ng-show="(vm.data.length == 0 || !vm.data) && vm.loader == false">
              <xos-alert config="{type: 'info'}">
               No data to show.
             </xos-alert>
           </div>
+          <div ng-show="vm.loader == true">
+            <div class="loader"></div>
+          </div>
         `,
         bindToController: true,
         controllerAs: 'vm',
-        controller: function(_){
+        controller: function(_, $scope, Comparator){
+
+          this.comparator = Comparator;
+
+          this.loader = true;
+
+          $scope.$watch(() => this.data, data => {
+            if(angular.isDefined(data)){
+              this.loader = false;
+            }
+          });
 
           if(!this.config){
             throw new Error('[xosTable] Please provide a configuration via the "config" attribute');
@@ -521,7 +534,7 @@
       }
     })
     // TODO test
-    .directive('linkWrapper', function() {
+    .directive('xosLinkWrapper', function() {
       return {
         restrict: 'A',
         transclude: true,

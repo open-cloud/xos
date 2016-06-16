@@ -1,6 +1,8 @@
 (function() {
   'use strict';
-  
+
+  /* eslint-disable angular/ng_module_name */
+
   angular.module('bugSnag', []).factory('$exceptionHandler', function () {
     return function (exception, cause) {
       if( window.Bugsnag ){
@@ -11,6 +13,8 @@
       }
     };
   });
+
+  /* eslint-enable angular/ng_module_name */
 
   /**
   * @ngdoc overview

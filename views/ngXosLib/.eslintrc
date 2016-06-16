@@ -12,7 +12,7 @@
         "es6": true
     },
     "plugins": [
-        //"angular"
+        "angular"
     ],
     "rules": {
         "quotes": [2, "single"],
@@ -28,12 +28,15 @@
         "no-trailing-spaces": [1, { skipBlankLines: true }],
         "no-unused-vars": [1, {"vars": "all", "args": "after-used"}],
         "new-cap": 0,
+        "no-multiple-empty-lines": 2,
 
-        //"angular/ng_module_name": [2, '/^xos\.*[a-z]*$/'],
-        //"angular/ng_controller_name": [2, '/^[a-z].*Ctrl$/'],
+        "angular/ng_module_name": [2, '/^xos\.*[a-z]*$/'],
+//        "angular/ng_controller_name": [2, '/^[a-z].*Ctrl$/'],
         //"angular/ng_service_name": [2, '/^[A-Z].*Service$/'],
-        //"angular/ng_directive_name": [2, '/^[a-z]+[[A-Z].*]*$/'],
-        //"angular/ng_di": [0, "function or array"]
+        "angular/ng_directive_name": [2, '/^[xos[[A-Z].*]*$/'],
+        "angular/ng_di": [0, "function or array"],
+        "angular/ng_angularelement": 0,
+        "angular/ng_on_watch": 1
     },
     "globals" :{
         "angular": true

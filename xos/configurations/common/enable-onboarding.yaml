@@ -1,0 +1,16 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Onboard the exampleservice
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    xos:
+      type: tosca.nodes.XOS
+      properties:
+        no-create: true
+        no-delete: true
+        enable_build: true
+

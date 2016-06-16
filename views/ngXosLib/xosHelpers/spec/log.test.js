@@ -3,6 +3,7 @@
  *
  * Created by teone on 4/18/16.
  */
+/* eslint-disable angular/ng_window_service*/
 
 // TODO write tests for log
 // NODE Actually the code is working, the tests are not.
@@ -12,9 +13,9 @@
 
   xdescribe('The xos.helper module', function(){
 
-    let log;
+    let log, window;
 
-    var mockLog;
+    let mockLog;
 
     beforeEach(function() {
       mockLog = jasmine.createSpyObj('logMock', ['info']);
@@ -28,8 +29,9 @@
       });
     });
 
-    beforeEach(inject(($log) => {
+    beforeEach(inject(($log, $window) => {
       log = $log;
+      window = $window;
       // log.reset();
     }));
 

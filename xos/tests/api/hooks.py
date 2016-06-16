@@ -9,7 +9,8 @@ sys.path.append("/opt/xos")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import django
 from core.models import *
-from services.cord.models import *
+from services.volt.models import *
+from services.vsg.models import *
 from services.vtr.models import *
 import urllib2
 import json
@@ -18,7 +19,7 @@ django.setup()
 
 
 def doLogin(username, password):
-    url = "http://127.0.0.1:8000/xoslib/login?username=%s&password=%s" % (username, password)
+    url = "http://127.0.0.1:9999/xoslib/login?username=%s&password=%s" % (username, password)
     res = urllib2.urlopen(url).read()
     parsed = json.loads(res)
     return {'token': parsed['xoscsrftoken'], 'sessionid': parsed['xossessionid']}

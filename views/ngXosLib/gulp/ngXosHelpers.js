@@ -68,9 +68,9 @@ module.exports = function(options){
 
     var ngOptions = {
       scripts: [].concat([
-        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-mocks.js',
         `./${options.ngXosVendor}ngXosVendor.js`,
         `./${options.ngXosVendor}ngXosHelpers.js`,
+          'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-mocks.js',
       ]),
       styles: [
         `./${options.ngXosStyles}xosNgLib.css`,
@@ -107,7 +107,7 @@ module.exports = function(options){
         baseDir: './docs',
         routes: {
           '/xos/core/xoslib/static/js/vendor': options.ngXosVendor,
-          '/xos/core/static': options.ngXosStyles
+          '/xos/core/static': options.ngXosStyles,
         }
       }
     });
