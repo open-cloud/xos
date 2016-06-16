@@ -17,7 +17,7 @@ class XOSXOS(XOSResource):
 class XOSVolume(XOSResource):
     provides = "tosca.nodes.XOSVolume"
     xos_model = XOSVolume
-    copyin_props = ["host_path"]
+    copyin_props = ["host_path", "read_only"]
     name_field = "container_path"
 
     def get_xos_args(self, throw_exception=True):
