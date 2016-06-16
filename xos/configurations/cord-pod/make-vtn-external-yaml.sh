@@ -67,7 +67,7 @@ for NODE in $NODES; do
       type: tosca.nodes.Tag
       properties:
           name: dataPlaneIntf
-          value: veth1
+          value: fabric
       requirements:
           - target:
               node: $NODE
