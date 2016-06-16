@@ -18,13 +18,6 @@
          body: "{{ '{{' }} lookup('file', '{{ files_dir }}/{{ rest_config.fn }}') {{ '}}' }}"
 {% endfor %}
 {% endif %}
-{% if install_dependencies %}
-    install_dependencies:
-{% for install_dependency in install_dependencies %}
-       - endpoint: "onos/v1/applications"
-         url: "{{ install_dependency }}"
-{% endfor %}
-{% endif %}
     rest_hostname: {{ rest_hostname }}
     rest_port: {{ rest_port }}
 
@@ -32,14 +25,18 @@
 {% if install_dependencies %}
   # Couldn't figure out how to get uri module to accept JSON in a string
   - name: Install ONOS apps by URL
-    command: curl -sS --user onos:rocks -X POST -HContent-Type:application/json -d '{ "url" : {{ '{{' }} item.url {{ '}}' }} , "activate" : "false" }' http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/{{ '{{' }} item.endpoint {{ '}}' }}
-    with_items: "install_dependencies"
+    command: curl -sS --user onos:rocks -X POST -HContent-Type:application/json -d '{ "url" : {{ '{{' }} item.url {{ '}}' }} , "activate" : "false" }' http://{{ rest_hostname }}:{{ rest_port }}/{{ '{{' }} item.endpoint {{ '}}' }}
+    with_items:
+       {% for install_dependency in install_dependencies %}
+       - endpoint: "onos/v1/applications"
+         url: "{{ install_dependency }}"
+       {% endfor %}
 {% endif %}
 
 {% if dependencies %}
   - name: Add dependencies to ONOS
     uri:
-      url: http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/onos/v1/applications/{{ '{{' }} item {{ '}}' }}/active
+      url: http://{{ rest_hostname }}:{{ rest_port }}/onos/v1/applications/{{ '{{' }} item {{ '}}' }}/active
       method: POST
       user: karaf
       password: karaf
@@ -54,7 +51,7 @@
 # vOLT will re-read its net config; vbng may not.
   - name: Add ONOS configuration values
     uri:
-      url: http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
+      url: http://{{ rest_hostname }}:{{ rest_port }}/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
       body: "{{ '{{' }} item.body {{ '}}' }}"
       body_format: raw
       method: POST
