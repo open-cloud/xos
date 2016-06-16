@@ -153,13 +153,6 @@ def createTestSubscriber():
 
     # print 'vcpe network relation added'
 
-    # vbng service
-    vbng_service = VBNGService()
-    vbng_service.name = 'service_vbng'
-    vbng_service.save()
-
-    # print 'vbng_service creater'
-
     # volt tenant
     vt = VOLTTenant(subscriber=subscriber.id, id=1)
     vt.s_tag = "222"
