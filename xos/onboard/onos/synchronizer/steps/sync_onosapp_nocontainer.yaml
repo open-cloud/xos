@@ -22,7 +22,7 @@
     install_dependencies:
 {% for install_dependency in install_dependencies %}
        - endpoint: "onos/v1/applications"
-         body: '{"url" : "{{ install_dependency }}", "activate" : "false" }'
+         url: "{{ install_dependency }}"
 {% endfor %}
 {% endif %}
     rest_hostname: {{ rest_hostname }}
@@ -30,14 +30,9 @@
 
   tasks:
 {% if install_dependencies %}
+  # Couldn't figure out how to get uri module to accept JSON in a string
   - name: Install ONOS apps by URL
-    uri:
-      url: http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
-      body: "{{ '{{' }} item.body | to_json {{ '}}' }}"
-      body_format: json
-      method: POST
-      user: karaf
-      password: karaf
+    command: curl -sS --user onos:rocks -X POST -HContent-Type:application/json -d '{ "url" : {{ '{{' }} item.url {{ '}}' }} , "activate" : "false" }' http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/{{ '{{' }} item.endpoint {{ '}}' }}
     with_items: "install_dependencies"
 {% endif %}
 
