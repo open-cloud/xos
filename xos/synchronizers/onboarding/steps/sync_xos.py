@@ -29,6 +29,9 @@ class SyncXOS(SyncStep, XOSBuilder):
     def sync_record(self, xos):
         logger.info("Sync'ing XOS %s" % xos)
 
+        if not xos.docker_project_name:
+            raise Exception("xos.docker_project_name is not set")
+
         if (not xos.enable_build):
             raise DeferredException("XOS build is currently disabled")
 
