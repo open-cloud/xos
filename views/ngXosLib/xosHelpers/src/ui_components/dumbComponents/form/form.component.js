@@ -46,7 +46,11 @@
               maxlength: number,
               required: boolean,
               min: number,
-              max: number
+              max: number,
+              custom: (value) => {
+                // do your validation here and return true | false
+                // alternatively you can return an array [errorName, true|false]
+              }
     *       }
     *     }
     *   }

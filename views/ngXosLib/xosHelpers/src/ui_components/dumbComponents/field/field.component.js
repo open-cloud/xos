@@ -153,6 +153,7 @@
       template: `
         <label ng-if="vm.field.type !== 'object'">{{vm.field.label}}</label>
             <input
+              xos-custom-validator custom-validator="vm.field.validators.custom || null"
               ng-if="vm.field.type !== 'boolean' && vm.field.type !== 'object' && vm.field.type !== 'select'"
               type="{{vm.field.type}}"
               name="{{vm.name}}"
@@ -234,5 +235,45 @@
         this.isEmptyObject = o => o ? Object.keys(o).length === 0 : true;
       }
     }
+  })
+
+/**
+ * @ngdoc directive
+ * @name xos.uiComponents.directive:xosCustomValidator
+ * @restrict A
+ * @description The xosCustomValidator directive.
+ * This component apply a custom validation function
+ * @param {function} customValidator The function that execute the validation.
+ *
+ * You should do your validation here and return true | false,
+ * or alternatively you can return an array [errorName, true|false]
+ */
+  .directive('xosCustomValidator', function(){
+    return {
+      restrict: 'A',
+      scope: {
+        fn: '=customValidator'
+      },
+      require: 'ngModel',
+      link: function(scope, element, attr, ctrl){
+        if(!angular.isFunction(scope.fn)){
+          return;
+        }
+
+        function customValidatorWrapper(ngModelValue) {
+          const valid = scope.fn(ngModelValue);
+          if(angular.isArray(valid)){
+            // ES6 spread rocks over fn.apply()
+            ctrl.$setValidity(...valid);
+          }
+          else{
+            ctrl.$setValidity('customValidation', valid);
+          }
+          return ngModelValue;
+        }
+
+        ctrl.$parsers.push(customValidatorWrapper);
+      }
+    };
   });
 })();
