@@ -18,8 +18,7 @@ let vendorFiles = fs.readdirSync(vendorDir);
 // hack to avoid testing backbone implementation (they need to be removed)
 viewFiles = viewFiles
               .filter(f => f.indexOf('xosAdminSite') === -1)
-              .filter(f => f.indexOf('xosCord') === -1)
-              .filter(f => f.indexOf('xosHpc') === -1);
+              .filter(f => f.indexOf('xosCord') === -1);
 
 viewFiles = viewFiles.filter(f => f.indexOf('js') >= 0).filter(f => f.match(/^xos[A-Z][a-z]+/)).map(f => `${viewDir}${f}`);
 
@@ -99,7 +98,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['dots', 'junit', 'coverage'],
+    reporters: ['dots', 'mocha', 'junit', 'coverage'],
 
     junitReporter: {
       outputDir: 'test-result',
