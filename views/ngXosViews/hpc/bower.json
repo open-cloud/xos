@@ -1,0 +1,33 @@
+{
+  "name": "xos-hpc",
+  "version": "0.0.0",
+  "authors": [
+    "Matteo Scandolo <matteo.scandolo@gmail.com>"
+  ],
+  "description": "The hpc view",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/js/vendor/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+    "jquery": "2.1.4",
+    "angular-mocks": "1.4.7",
+    "angular": "1.4.7",
+    "angular-ui-router": "0.2.15",
+    "angular-cookies": "1.4.7",
+    "angular-animate": "1.4.7",
+    "angular-resource": "1.4.7",
+    "lodash": "~4.11.1",
+    "bootstrap-css": "3.3.6",
+    "angular-chart.js": "~0.10.2",
+    "d3": "~3.5.17",
+    "angular-recursion": "~1.0.5"
+  }
+}
