@@ -81,8 +81,12 @@ DO NOT EDIT. This file was automatically generated at
 		if filename:
 			try:
 				if os.path.isdir(filename):
-					config_list = list(reversed(os.listdir(filename)))
- 					config_list.remove('README.md')
+					config_list = list(sorted(os.listdir(filename)))
+                                        config_list = [x for x in config_list if not x.endswith(".md")]
+                                        if "xos_common_config" in config_list:
+                                            # move xos_common_config to the front of the list
+                                            config_list.remove("xos_common_config")
+                                            config_list=["xos_common_config"] + config_list
 					config_list = [os.path.join(filename, s) for s in config_list]
 					self.config.read(config_list)
 				else:

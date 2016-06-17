@@ -20,7 +20,7 @@ topology_template:
           synchronizer_run: onos-synchronizer.py
           #tosca_custom_types: exampleservice.yaml
           tosca_resource: tosca/resources/onosservice.py, tosca/resources/onosapp.py
-          rest_service: subdirectory:vsg api/service/onos.py
+          rest_service: api/service/onos.py
           rest_tenant: subdirectory:onos api/tenant/onos/app.py
           private_key: file:///opt/xos/key_import/onos_rsa
           public_key: file:///opt/xos/key_import/onos_rsa.pub
