@@ -42,7 +42,7 @@
     *       label: 'Field Label',
     *       type: 'string' // options are: [date, boolean, number, email, string, select],
     *       validators: {
-    *               minlength: number,
+    *         minlength: number,
               maxlength: number,
               required: boolean,
               min: number,

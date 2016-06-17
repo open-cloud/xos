@@ -369,7 +369,7 @@
                 <tr>
                   <td ng-repeat="col in vm.columns">
                     <input
-                      ng-if="col.type !== 'boolean' && col.type !== 'array' && col.type !== 'object'"
+                      ng-if="col.type !== 'boolean' && col.type !== 'array' && col.type !== 'object' && col.type !== 'custom'"
                       class="form-control"
                       placeholder="Type to search by {{col.label}}"
                       type="text"

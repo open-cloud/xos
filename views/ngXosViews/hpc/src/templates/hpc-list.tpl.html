@@ -1,0 +1,28 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-10">
+            <h1>Request Routers</h1>
+        </div>
+        <div class="col-xs-2 text-right">
+            <a href="" ng-click="vm.fetch()" class="btn btn-primary btn-reload">
+                <i class="glyphicon glyphicon-refresh"></i>
+                Refresh
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <xos-table config="vm.routerConfig" data="vm.routers"></xos-table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <h1>HyperCache</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <xos-table config="vm.cacheConfig" data="vm.caches"></xos-table>
+        </div>
+    </div>
+</div>

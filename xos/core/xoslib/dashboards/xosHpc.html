@@ -1,37 +1,16 @@
-<script src="{{ STATIC_URL }}/js/vendor/underscore-min.js"></script>
-<script src="{{ STATIC_URL }}/js/vendor/backbone.js"></script>
-<script src="{{ STATIC_URL }}/js/vendor/backbone.syphon.js"></script>
-<script src="{{ STATIC_URL }}/js/vendor/backbone.wreqr.js"></script>
-<script src="{{ STATIC_URL }}/js/vendor/backbone.babysitter.js"></script>
-<script src="{{ STATIC_URL }}/js/vendor/backbone.marionette.js"></script>
+<!-- browserSync -->
 
-<link rel="stylesheet" type="text/css" href="{% static 'suit/css/jquery-ui.min.css' %}" media="all" >
-<link rel="stylesheet" type="text/css" href="{% static 'css/xosTenantDashboard.css' %}" media="all" >
-<link rel="stylesheet" type="text/css" href="{% static 'css/xosAdminSite.css' %}" media="all" >
+<!-- endcss -->
+<!-- inject:css -->
+<link rel="stylesheet" href="/static/css/xosHpc.css">
+<!-- endinject -->
 
-<script src="{{ STATIC_URL }}/js/xoslib/xos-util.js"></script>
-<script src="{{ STATIC_URL }}/js/xoslib/xos-defaults.js"></script>
-<script src="{{ STATIC_URL }}/js/xoslib/xos-validators.js"></script>
-<script src="{{ STATIC_URL }}/js/xoslib/xos-backbone.js"></script>
-<script src="{{ STATIC_URL }}/js/xoslib/xosHelper.js"></script>
-<script src="{{ STATIC_URL }}/js/xosHpc.js"></script>
-
-<div id="xos-hpc-view-panel"> <!-- contentPanel"> -->
-<div id="contentTitle">
+<div ng-app="xos.hpc" id="xosHpc" class="container-fluid">
+  <div ui-view></div>
 </div>
 
-<div id="contentInner">
 
-<dic id="warnings"></div>
-
-<h2>Request Routers</h2>
-<div id="xos-hpc-dns"></div>
-
-<br>
-<h2>HyperCache</h2>
-<div id="xos-hpc-hpc"></div>
-
-</div> <!-- end contentInner -->
-</div> <!-- end contentPanel -->
-
-{% include 'xosAdmin.html' %}
+<!-- endjs -->
+<!-- inject:js -->
+<script src="/static/js/xosHpc.js"></script>
+<!-- endinject -->
