@@ -10,18 +10,24 @@ var wiredep = require('wiredep').stream;
 var httpProxy = require('http-proxy');
 var del = require('del');
 var sass = require('gulp-sass');
+var fs = require('fs');
+var path = require('path');
 
 const environment = process.env.NODE_ENV;
 
-if (environment){
-  var conf = require(`../env/${environment}.js`);
-}
-else{
-  var conf = require('../env/default.js')
+if(!fs.existsSync(path.join(__dirname, `../../../env/${environment || 'default'}.js`))){
+  if(!environment){
+    throw new Error('You should define a default.js config in /views/env folder.');
+  }
+  else{
+    throw new Error(`Since you are loading a custom environment, you should define a ${environment}.js config in /views/env folder.`);
+  }
 }
 
+var conf = require(path.join(__dirname, `../../../env/${environment || 'default'}.js`));
+
 var proxy = httpProxy.createProxyServer({
-  target: conf.host || 'http://0.0.0.0:9999'
+  target: conf.host
 });
 
 

@@ -1,21 +1,6 @@
 (function() {
   'use strict';
 
-  /* eslint-disable angular/ng_module_name */
-
-  angular.module('bugSnag', []).factory('$exceptionHandler', function () {
-    return function (exception, cause) {
-      if( window.Bugsnag ){
-        Bugsnag.notifyException(exception, {diagnostics: {cause: cause}});
-      }
-      else{
-        console.error(exception, cause, exception.stack);
-      }
-    };
-  });
-
-  /* eslint-enable angular/ng_module_name */
-
   /**
   * @ngdoc overview
   * @name xos.helpers
@@ -27,7 +12,6 @@
         'ngCookies',
         'ngResource',
         'ngAnimate',
-        'bugSnag',
         'xos.uiComponents'
       ])
       .config(config)

@@ -15,6 +15,7 @@ echo "Waiting for XOS to create file $1"
 until find $1 &> /dev/null
 do
     sleep 1
+    echo -ne "."
     RUNNING_CONTAINER=`sudo docker ps|grep "xos"|awk '{print $$NF}'`
     if [[ $RUNNING_CONTAINER == "" ]]; then
         echo Container may have failed. check with \"make showlogs\'

@@ -43,7 +43,7 @@ angular.module('xos.tenant', [
           {
             label: 'Site1',
             prop: 'name',
-            link: item => `/#/site/${item.id}`
+            link: item => `#/site/${item.id}`
           },
           {
             label: 'Allocated',
@@ -111,7 +111,7 @@ angular.module('xos.tenant', [
           {
             label: 'Slice List',
             prop: 'name',
-            link: item => `/#/site/${item.site}/slice/${item.id}`
+            link: item => `#/site/${item.site}/slice/${item.id}`
           },
           {
             label: 'Allocated',

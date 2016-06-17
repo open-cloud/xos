@@ -23,4 +23,5 @@ xos/core/static/*.css
 .DS_Store
 xos/configurations/setup/
 migrations/
-xos/configurations/frontend/onboarding-docker-compose/
+onboarding-docker-compose/
+key_import/
