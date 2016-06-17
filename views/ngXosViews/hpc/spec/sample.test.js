@@ -1,6 +1,6 @@
 'use strict';
 
-describe('The User List', () => {
+describe('The Hpc View', () => {
   
   var scope, element, isolatedScope, httpBackend;
 
@@ -8,30 +8,17 @@ describe('The User List', () => {
   beforeEach(module('templates'));
 
   beforeEach(inject(function($httpBackend, $compile, $rootScope){
-    
-    httpBackend = $httpBackend;
-    // Setting up mock request
-    $httpBackend.expectGET('/api/core/users/?no_hyperlinks=1').respond([
-      {
-        email: 'matteo.scandolo@gmail.com',
-        firstname: 'Matteo',
-        lastname: 'Scandolo' 
-      }
-    ]);
-  
+
     scope = $rootScope.$new();
-    element = angular.element('<users-list></users-list>');
+    element = angular.element('<hpcs-list></hpcs-list>');
     $compile(element)(scope);
     scope.$digest();
     isolatedScope = element.isolateScope().vm;
   }));
 
-  it('should load 1 users', () => {
-    httpBackend.flush();
-    expect(isolatedScope.users.length).toBe(1);
-    expect(isolatedScope.users[0].email).toEqual('matteo.scandolo@gmail.com');
-    expect(isolatedScope.users[0].firstname).toEqual('Matteo');
-    expect(isolatedScope.users[0].lastname).toEqual('Scandolo');
+  it('should define 2 tables', () => {
+    expect(isolatedScope.routerConfig).toBeDefined();
+    expect(isolatedScope.cacheConfig).toBeDefined();
   });
 
 });
