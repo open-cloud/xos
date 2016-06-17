@@ -8,7 +8,6 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
-from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, TenantRootTenantInline, TenantRootPrivilegeInline, TenantAttrAsTabInline
 from core.middleware import get_request
@@ -45,6 +44,7 @@ class ONOSServiceForm(forms.ModelForm):
 
     class Meta:
         model = ONOSService
+        fields = '__all__'
 
 class ONOSServiceAdmin(ReadOnlyAwareAdmin):
     model = ONOSService
@@ -71,7 +71,7 @@ class ONOSServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('onosadmin.html', 'top', 'administration'),
                            )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return ONOSService.get_service_objects_by_user(request.user)
 
 class ONOSAppForm(forms.ModelForm):
@@ -103,6 +103,7 @@ class ONOSAppForm(forms.ModelForm):
 
     class Meta:
         model = ONOSApp
+        fields = '__all__'
 
 class ONOSAppAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'name', )
@@ -116,7 +117,7 @@ class ONOSAppAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs = (('general','Details'), ('tenantattrs', 'Attributes'))
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return ONOSApp.get_tenant_objects_by_user(request.user)
 
 admin.site.register(ONOSService, ONOSServiceAdmin)

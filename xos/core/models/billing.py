@@ -5,7 +5,6 @@ from django.db import models
 from core.models import PlCoreBase, Site, Slice, Instance, Deployment
 from core.models.plcorebase import StrippedCharField
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
 from django.db.models import Sum
 from django.utils import timezone
 

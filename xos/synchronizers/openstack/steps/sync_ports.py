@@ -12,7 +12,7 @@ class SyncPorts(OpenStackSyncStep):
     provides=[Port]
     observes=Port
 
-    #     The way it works is to enumerate the all of the ports that quantum
+    #     The way it works is to enumerate the all of the ports that neutron
     #     has, and then work backward from each port's network-id to determine
     #     which Network is associated from the port.
 
@@ -28,17 +28,17 @@ class SyncPorts(OpenStackSyncStep):
         # ports to instances if the port's tenant does not match
         # the instance's tenant.
 
-        # A bunch of stuff to compensate for OpenStackDriver.client_driveR()
+        # A bunch of stuff to compensate for OpenStackDriver.client_driver()
         # not being in working condition.
-        from openstack.client import OpenStackClient
-        from openstack.driver import OpenStackDriver
+        from openstack_xos.client import OpenStackClient
+        from openstack_xos.driver import OpenStackDriver
         controller = port.instance.node.site_deployment.controller
         slice = port.instance.slice
         caller = port.network.owner.creator
         auth = {'username': caller.email,
                 'password': caller.remote_password,
                 'tenant': slice.name}
-        client = OpenStackClient(controller=controller, **auth) # cacert=self.config.nova_ca_ssl_cert,
+        client = OpenStackClient(controller=controller, **auth)
         driver = OpenStackDriver(client=client)
 
         return driver
@@ -78,7 +78,7 @@ class SyncPorts(OpenStackSyncStep):
                 continue
             try:
                 driver = self.driver.admin_driver(controller = controller)
-                ports = driver.shell.quantum.list_ports()["ports"]
+                ports = driver.shell.neutron.list_ports()["ports"]
             except:
                 logger.log_exc("failed to get ports from controller %s" % controller)
                 continue
@@ -90,7 +90,7 @@ class SyncPorts(OpenStackSyncStep):
             # in the data model, so build up a list of which ids map to which network
             # templates.
             try:
-                neutron_networks = driver.shell.quantum.list_networks()["networks"]
+                neutron_networks = driver.shell.neutron.list_networks()["networks"]
             except:
                 print "failed to get networks from controller %s" % controller
                 continue
@@ -136,7 +136,7 @@ class SyncPorts(OpenStackSyncStep):
 
             if network.template.shared_network_name:
                 # If it's a shared network template, then more than one network
-                # object maps to the quantum network. We have to do a whole bunch
+                # object maps to the neutron network. We have to do a whole bunch
                 # of extra work to find the right one.
                 networks = network.template.network_set.all()
                 network = None
@@ -198,7 +198,7 @@ class SyncPorts(OpenStackSyncStep):
                     if neutron_port_name:
                         args["name"] = neutron_port_name
 
-                    neutron_port = driver.shell.quantum.create_port({"port": args})["port"]
+                    neutron_port = driver.shell.neutron.create_port({"port": args})["port"]
                     port.port_id = neutron_port["id"]
                     if neutron_port["fixed_ips"]:
                         port.ip = neutron_port["fixed_ips"][0]["ip_address"]
@@ -220,7 +220,7 @@ class SyncPorts(OpenStackSyncStep):
             logger.info("calling openstack to destroy port %s" % port.port_id)
             try:
                 driver = self.get_driver(port)
-                driver.shell.quantum.delete_port(port.port_id)
+                driver.shell.neutron.delete_port(port.port_id)
             except:
                 logger.log_exc("failed to delete port %s from neutron" % port.port_id)
                 return

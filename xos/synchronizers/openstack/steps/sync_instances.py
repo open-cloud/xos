@@ -119,7 +119,7 @@ class SyncInstances(OpenStackSyncStep):
 
         #driver = self.driver.client_driver(caller=instance.creator, tenant=instance.slice.name, controller=instance.controllerNetwork)
         driver = self.driver.admin_driver(tenant='admin', controller=instance.node.site_deployment.controller)
-        nets = driver.shell.quantum.list_networks()['networks']
+        nets = driver.shell.neutron.list_networks()['networks']
         for net in nets:
             if net['name'] in network_templates:
                 nics.append({"kind": "net", "value": net['id'], "network": None})
@@ -169,7 +169,7 @@ class SyncInstances(OpenStackSyncStep):
                      'domain': controller.domain,
                      'admin_user': instance.creator.email,
                      'admin_password': instance.creator.remote_password,
-                     'admin_tenant': instance.slice.name,
+                     'project_name': instance.slice.name,
                      'tenant': instance.slice.name,
                      'tenant_description': instance.slice.description,
                      'name':instance_name,
@@ -184,11 +184,11 @@ class SyncInstances(OpenStackSyncStep):
 
 
     def map_sync_outputs(self, instance, res):
-	instance_id = res[0]['info']['OS-EXT-SRV-ATTR:instance_name']
+	instance_id = res[0]['openstack']['OS-EXT-SRV-ATTR:instance_name']
         instance_uuid = res[0]['id']
 
 	try:
-            hostname = res[0]['info']['OS-EXT-SRV-ATTR:hypervisor_hostname']
+            hostname = res[0]['openstack']['OS-EXT-SRV-ATTR:hypervisor_hostname']
             ip = socket.gethostbyname(hostname)
             instance.ip = ip
         except:

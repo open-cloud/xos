@@ -8,7 +8,6 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
-from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, TenantRootTenantInline, TenantRootPrivilegeInline, TenantAttrAsTabInline
 from core.middleware import get_request
@@ -33,6 +32,7 @@ class CeilometerServiceForm(forms.ModelForm):
 
     class Meta:
         model = CeilometerService
+        fields = '__all__'
 
 class CeilometerServiceAdmin(ReadOnlyAwareAdmin):
     model = CeilometerService
@@ -59,7 +59,7 @@ class CeilometerServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('ceilometeradmin.html', 'top', 'administration'),
                            )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return CeilometerService.get_service_objects_by_user(request.user)
 
 class MonitoringChannelForm(forms.ModelForm):
@@ -86,6 +86,7 @@ class MonitoringChannelForm(forms.ModelForm):
 
     class Meta:
         model = MonitoringChannel
+        fields = '__all__'
 
 class MonitoringChannelAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', )
@@ -111,7 +112,7 @@ class MonitoringChannelAdmin(ReadOnlyAwareAdmin):
             obj.delete()
     delete_selected_objects.short_description = "Delete Selected MonitoringChannel Objects"
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return MonitoringChannel.get_tenant_objects_by_user(request.user)
 
 class SFlowServiceForm(forms.ModelForm):
@@ -136,6 +137,7 @@ class SFlowServiceForm(forms.ModelForm):
 
     class Meta:
         model = SFlowService
+        fields = '__all__'
 
 class SFlowServiceAdmin(ReadOnlyAwareAdmin):
     model = SFlowService
@@ -162,7 +164,7 @@ class SFlowServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('sflowadmin.html', 'top', 'administration'),
                            )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return SFlowService.get_service_objects_by_user(request.user)
 
 class SFlowTenantForm(forms.ModelForm):
@@ -191,6 +193,7 @@ class SFlowTenantForm(forms.ModelForm):
 
     class Meta:
         model = SFlowTenant
+        fields = '__all__'
 
 class SFlowTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'creator', 'listening_endpoint' )
@@ -204,7 +207,7 @@ class SFlowTenantAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs = (('general','Details'), ('tenantattrs', 'Attributes'))
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return SFlowTenant.get_tenant_objects_by_user(request.user)
 
 admin.site.register(CeilometerService, CeilometerServiceAdmin)

@@ -11,7 +11,7 @@ from core.models.slice import *
 from core.models.instance import Instance
 from xos.logger import observer_logger as logger
 from synchronizers.base.ansible import *
-from openstack.driver import OpenStackDriver
+from openstack_xos.driver import OpenStackDriver
 from xos.config import Config
 import json
 

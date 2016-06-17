@@ -4,7 +4,7 @@ from core.models import PlCoreBase
 from core.models import Service
 from core.models.plcorebase import StrippedCharField
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 # Create your models here.
 
@@ -18,7 +18,7 @@ class Tag(PlCoreBase):
     # The required fields to do a ObjectType lookup, and object_id assignment
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     def __unicode__(self):
         return self.name

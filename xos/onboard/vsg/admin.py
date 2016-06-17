@@ -57,6 +57,7 @@ class VSGServiceForm(forms.ModelForm):
 
     class Meta:
         model = VSGService
+        fields = '__all__'
 
 class VSGServiceAdmin(ReadOnlyAwareAdmin):
     model = VSGService
@@ -129,6 +130,7 @@ class VSGTenantForm(forms.ModelForm):
 
     class Meta:
         model = VSGTenant
+        fields = '__all__'
 
 class VSGTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )

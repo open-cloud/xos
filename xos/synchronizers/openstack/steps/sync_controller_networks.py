@@ -13,7 +13,7 @@ from core.models.slice import *
 from core.models.instance import Instance
 from xos.logger import observer_logger as logger
 from synchronizers.base.ansible import *
-from openstack.driver import OpenStackDriver
+from openstack_xos.driver import OpenStackDriver
 from xos.config import Config
 import json
 
@@ -77,8 +77,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
         network_fields = {'endpoint':controller_network.controller.auth_url,
                     'endpoint_v3': controller_network.controller.auth_url_v3,
                     'admin_user':slice.creator.email,
-                    'tenant_name':slice.name,
                     'admin_password':slice.creator.remote_password,
+                    'admin_project':slice.name,
                     'domain': controller_network.controller.domain,
                     'name':network_name,
                     'subnet_name':subnet_name,
@@ -93,8 +93,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
         return network_fields
 
     def map_sync_outputs(self, controller_network,res):
-        network_id = res[0]['id']
-        subnet_id = res[1]['id']
+        network_id = res[0]['network']['id']
+        subnet_id = res[1]['subnet']['id']
         controller_network.net_id = network_id
         controller_network.subnet = self.cidr
         controller_network.subnet_id = subnet_id

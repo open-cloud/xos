@@ -7,7 +7,6 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
-from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, TenantRootTenantInline, TenantRootPrivilegeInline
 from core.middleware import get_request
@@ -60,6 +59,7 @@ class VTNServiceForm(forms.ModelForm):
 
     class Meta:
         model = VTNService
+        fields = '__all__'
 
 class VTNServiceAdmin(ReadOnlyAwareAdmin):
     model = VTNService
@@ -87,7 +87,7 @@ class VTNServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = ( # ('vtnadmin.html', 'top', 'administration'),
                            ) #('hpctools.html', 'top', 'tools') )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VTNService.get_service_objects_by_user(request.user)
 
 admin.site.register(VTNService, VTNServiceAdmin)

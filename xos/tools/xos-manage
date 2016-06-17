@@ -128,7 +128,7 @@ function genkeys {
     mkdir -p private_keys
     echo "Generating keys"
 	keyczart create --location=private_keys --name="OpenCloud" --purpose=crypt --asymmetric=rsa
-	keyczart addkey --location=private_keys --status=primary --size=1024
+	keyczart addkey --location=private_keys --status=primary --size=2048
 	keyczart pubkey --location=private_keys --destination=public_keys
     if [[ ! -f public_keys/1 ]]; then
         echo "FAILED to create keys"

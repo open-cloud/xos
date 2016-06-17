@@ -8,7 +8,6 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
-from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.models import AddressPool
 from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, AddressPoolInline
@@ -28,6 +27,7 @@ class VRouterServiceForm(forms.ModelForm):
 
     class Meta:
         model = VRouterService
+        fields = '__all__'
 
 class VRouterServiceAdmin(ReadOnlyAwareAdmin):
     model = VRouterService
@@ -57,7 +57,7 @@ class VRouterServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('vrouteradmin.html', 'top', 'administration'),
                            ) #('hpctools.html', 'top', 'tools') )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VRouterService.get_service_objects_by_user(request.user)
 
 class VRouterTenantForm(forms.ModelForm):
@@ -94,6 +94,7 @@ class VRouterTenantForm(forms.ModelForm):
 
     class Meta:
         model = VRouterTenant
+        fields = '__all__'
 
 class VRouterTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant', 'public_ip' )
@@ -106,7 +107,7 @@ class VRouterTenantAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs = (('general','Details'),)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VRouterTenant.get_tenant_objects_by_user(request.user)
 
 admin.site.register(VRouterService, VRouterServiceAdmin)

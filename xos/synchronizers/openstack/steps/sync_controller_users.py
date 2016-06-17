@@ -25,9 +25,10 @@ class SyncControllerUsers(OpenStackSyncStep):
 
         # All users will have at least the 'user' role at their home site/tenant.
         # We must also check if the user should have the admin role
+        admin_role = getattr(Config(), "nova_admin_role", "admin")
         roles = ['user']
         if controller_user.user.is_admin:
-            roles.append('admin')
+            roles.append(admin_role)
 
         # setup user home site roles at controller
         if not controller_user.user.site:
@@ -52,14 +53,14 @@ class SyncControllerUsers(OpenStackSyncStep):
                 'admin_user': controller_user.controller.admin_user,
                 'admin_password': controller_user.controller.admin_password,
                 'ansible_tag':'%s@%s'%(controller_user.user.email.replace('@','-at-'),controller_user.controller.name),
-                'admin_tenant': controller_user.controller.admin_tenant,
+                'admin_project': controller_user.controller.admin_tenant,
                 'roles':roles,
-                'tenant':controller_user.user.site.login_base
+                'project':controller_user.user.site.login_base
                 }
 	    return user_fields
 
     def map_sync_outputs(self, controller_user, res):
-        controller_user.kuser_id = res[0]['id']
+        controller_user.kuser_id = res[0]['user']['id']
         controller_user.backend_status = '1 - OK'
         controller_user.save()
 

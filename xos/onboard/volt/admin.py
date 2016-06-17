@@ -79,6 +79,7 @@ class VOLTTenantForm(forms.ModelForm):
 
     class Meta:
         model = VOLTTenant
+        fields = '__all__'
 
 class VOLTTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'service_specific_id', 's_tag', 'c_tag', 'subscriber_root' )
@@ -208,6 +209,7 @@ class CordSubscriberRootForm(forms.ModelForm):
 
     class Meta:
         model = CordSubscriberRoot
+        fields = '__all__'
 
 class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id',  'name', )
