@@ -34,3 +34,13 @@ topology_template:
           - xos:
               node: xos
               relationship: tosca.relationships.UsedByXOS
+
+    /opt/xos/core/xoslib/static:
+      type: tosca.nodes.XOSVolume
+      properties:
+          host_path: { path_join: [ SELF, CONFIG_DIR, ../../core/xoslib/static/, ENV_VAR ] }
+          read_only: false
+      requirements:
+          - xos:
+              node: xos
+              relationship: tosca.relationships.UsedByXOS
