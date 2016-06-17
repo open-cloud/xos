@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --force-yes nodejs && \
 
 RUN node -v
 
-# install node modules
-# RUN cd /opt/xos/tests/api; npm install
+RUN pip install selenium
+
+RUN npm install -g phantomjs
 

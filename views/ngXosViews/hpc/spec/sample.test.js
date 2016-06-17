@@ -8,7 +8,8 @@ describe('The Hpc View', () => {
   beforeEach(module('templates'));
 
   beforeEach(inject(function($httpBackend, $compile, $rootScope){
-
+    httpBackend = $httpBackend;
+    httpBackend.whenGET('/xoslib/hpcview?no_hyperlinks=1').respond(200, []);
     scope = $rootScope.$new();
     element = angular.element('<hpcs-list></hpcs-list>');
     $compile(element)(scope);

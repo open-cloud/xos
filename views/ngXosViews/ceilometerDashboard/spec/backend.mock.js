@@ -1,5 +1,5 @@
-'use strict';
 (function () {
+  'use strict';
 
   const meters = [
     {
