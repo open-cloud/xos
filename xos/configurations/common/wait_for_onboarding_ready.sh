@@ -17,6 +17,7 @@ while [[ 1 ]]; do
         echo "$2 is onboarded"
         exit 0
     fi
+    echo -ne "."
     sleep 1
 #    RUNNING_CONTAINER=`sudo docker ps|grep "xos"|awk '{print $$NF}'`
 #    if [[ $RUNNING_CONTAINER == "" ]]; then

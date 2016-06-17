@@ -41,7 +41,7 @@ stop:
 	sudo docker-compose -f $(BOOTSTRAP_YML) stop
 
 showlogs:
-	sudo docker-compose logs
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) logs
 
 rm: stop
 	test ! -s $(DOCKER_COMPOSE_YML) || sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) rm
