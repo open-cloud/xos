@@ -27,12 +27,7 @@ var autoprefixer = require('autoprefixer');
 var mqpacker = require('css-mqpacker');
 var csswring = require('csswring');
 
-const TEMPLATE_FOOTER = `
-angular.module('xos.synchronizerNotifier')
-.run(['$location', function(a){
-  a.path('/');
-}])
-`
+const TEMPLATE_FOOTER = ``;
 
 module.exports = function(options){
   

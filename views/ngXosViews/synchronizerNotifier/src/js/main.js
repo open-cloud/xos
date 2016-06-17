@@ -5,11 +5,6 @@ angular.module('xos.synchronizerNotifier', [
   'ngCookies',
   'xos.helpers'
 ])
-.run(function($rootScope){
-  $rootScope.$on('$locationChangeStart', function(event) {
-    event.preventDefault();
-  });
-})
 .service('Diag', function($rootScope, $http, $q, $interval){
 
   let isRunning = false;
@@ -74,7 +69,7 @@ angular.module('xos.synchronizerNotifier', [
     else{
       return true;
     }
-  }
+  };
 
   $interval(() => {
     if(isRunning){
