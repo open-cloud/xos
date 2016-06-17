@@ -38,6 +38,23 @@ angular.module('xos.hpc', [
     templateUrl: 'templates/hpc-list.tpl.html',
     controller: function(Hpc){
 
+      const secondsToHms = d => {
+        d = Number(d);
+        var h = Math.floor(d / 3600);
+        var m = Math.floor(d % 3600 / 60);
+        var s = Math.floor(d % 3600 % 60);
+        return ((h > 0 ? h + 'h ' + (m < 10 ? '0' :'') :'') + m + 'm ' + (s < 10 ? '0' :'') + s + 's');
+      };
+
+      const toDuration = (property) => {
+        return (item) => {
+          if(!angular.isNumber(item[property])){
+            return item[property]
+          }
+          return secondsToHms(item[property]);
+        }
+      };
+
       this.routerConfig = {
         filter: 'field',
         order: true,
@@ -57,15 +74,19 @@ angular.module('xos.hpc', [
           {
             label: 'Name Servers',
             prop: 'nameservers',
-            type: 'arrray'
+            type: 'array'
           },
           {
             label: 'Dns Demux Config Age',
-            prop: 'dnsdemux_config_age'
+            prop: 'dnsdemux_config_age',
+            type: 'custom',
+            formatter: toDuration('dnsdemux_config_age')
           },
           {
             label: 'Dns Redir Config Age',
-            prop: 'dnsredir_config_age'
+            prop: 'dnsredir_config_age',
+            type: 'custom',
+            formatter: toDuration('dnsredir_config_age')
           }
         ]
       };
@@ -88,20 +109,26 @@ angular.module('xos.hpc', [
           },
           {
             label: 'Config Age',
-            prop: 'config_age'
+            prop: 'config_age',
+            type: 'custom',
+            formatter: toDuration('config_age')
           }
         ]
       };
-      
-      // retrieving user list
-      Hpc.query().$promise
-      .then((hpcs) => {
-        this.routers = hpcs[0].dnsdemux;
-        this.caches = hpcs[0].hpc;
-      })
-      .catch((e) => {
-        throw new Error(e);
-      });
+
+
+      this.fetch = () => {
+        Hpc.query().$promise
+        .then((hpcs) => {
+          this.routers = hpcs[0].dnsdemux;
+          this.caches = hpcs[0].hpc;
+        })
+        .catch((e) => {
+          throw new Error(e);
+        });
+      };
+
+      this.fetch();
     }
   };
 });
