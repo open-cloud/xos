@@ -292,6 +292,7 @@
                 {categories: ['Film', 'Music']}
               ];
               scope.config = {
+                filter: 'field',
                 columns: [
                   {
                     label: 'Categories',
@@ -342,10 +343,16 @@
             });
 
             it('should format data using the formatter property', () => {
-              let td1 = $(element).find('tbody tr:first-child')[0];
+              let td1 = $(element).find('tbody:last-child tr:first-child')[0];
               expect($(td1).text().trim()).toEqual('Formatted Content');
               // the custom formatted should receive the entire object, otherwise is not so custom
               expect(formatterFn).toHaveBeenCalledWith({categories: ['Film', 'Music']});
+            });
+
+            it('should not render the filter field', () => {
+              // displayed value is different from model val, filter would not work
+              let filter = $(element).find('tbody tr td')[0];
+              expect($(filter)).not.toContainElement('input');
             });
           });
 
