@@ -79,10 +79,11 @@ topology_template:
 # Dashboard Views
 # -----------------------------------------------------------------------------
 
-    xsh:
-      type: tosca.nodes.DashboardView
-      properties:
-          url: template:xsh
+# Temporary removed, waiting for a new Angular Base Implementation
+#    xsh:
+#      type: tosca.nodes.DashboardView
+#      properties:
+#          url: template:xsh
 
     Customize:
       type: tosca.nodes.DashboardView

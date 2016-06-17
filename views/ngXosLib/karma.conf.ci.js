@@ -15,11 +15,6 @@ const vendorDir = '../../xos/core/xoslib/static/js/vendor/';
 let viewFiles = fs.readdirSync(viewDir);
 let vendorFiles = fs.readdirSync(vendorDir);
 
-// hack to avoid testing backbone implementation (they need to be removed)
-viewFiles = viewFiles
-              .filter(f => f.indexOf('xosAdminSite') === -1)
-              .filter(f => f.indexOf('xosCord') === -1);
-
 viewFiles = viewFiles.filter(f => f.indexOf('js') >= 0).filter(f => f.match(/^xos[A-Z][a-z]+/)).map(f => `${viewDir}${f}`);
 
 vendorFiles = vendorFiles.filter(f => f.indexOf('js') >= 0).filter(f => f.match(/^xos[A-Z][a-z]+/)).map(f => `${vendorDir}${f}`);
@@ -51,7 +46,6 @@ var files = [
   `../ngXosViews/*/spec/**/*.mock.js`,
   'xosHelpers/spec/**/*.test.js'
 ]);
-
 
 module.exports = function(config) {
 /*eslint-enable*/
@@ -98,7 +92,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['dots', 'mocha', 'junit', 'coverage'],
+    reporters: ['dots', 'junit', 'coverage'],
 
     junitReporter: {
       outputDir: 'test-result',
@@ -126,14 +120,14 @@ module.exports = function(config) {
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: true,
+    autoWatch: false,
 
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: [
       'PhantomJS',
-      // 'Chrome'
+      //'Chrome'
     ],
 
 

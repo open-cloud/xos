@@ -129,7 +129,7 @@ module.exports = function(options){
 
     return gulp.src(bowerDeps)
       .pipe(concat('xosCeilometerDashboardVendor.js'))
-      .pipe(uglify())
+      //.pipe(uglify())
       .pipe(gulp.dest(options.static + 'js/vendor/'));
   });
 

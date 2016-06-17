@@ -5437,7 +5437,7 @@ SELECT pg_catalog.setval('core_controlleruser_id_seq', 1, false);
 --
 
 COPY core_dashboardview (id, created, updated, enacted, policed, backend_register, backend_status, deleted, write_protect, lazy_blocked, no_sync, name, url, enabled) FROM stdin;
-1	2015-02-17 22:06:38.953+00	2015-02-17 22:06:38.953+00	\N	\N	{}	0 - Provisioning in progress	f	f	f	f	xsh	template:xsh	t
+--1	2015-02-17 22:06:38.953+00	2015-02-17 22:06:38.953+00	\N	\N	{}	0 - Provisioning in progress	f	f	f	f	xsh	template:xsh	t
 2	2015-02-17 22:06:39.011+00	2015-02-17 22:06:39.011+00	\N	\N	{}	0 - Provisioning in progress	f	f	f	f	Customize	template:customize	t
 3	2015-02-17 22:06:39.069+00	2015-02-17 22:06:39.244+00	\N	\N	{}	0 - Provisioning in progress	f	f	f	f	Tenant	template:xosTenant	t
 4	2015-02-17 22:06:39.302+00	2015-02-17 22:06:39.302+00	\N	\N	{}	0 - Provisioning in progress	f	f	f	f	Developer	template:xosDeveloper_datatables	t
