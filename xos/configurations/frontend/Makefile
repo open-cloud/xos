@@ -51,34 +51,32 @@ ps:
 	sudo docker-compose ps
 
 enter-xos:
-	sudo docker exec -ti frontend_xos_1 bash
+	sudo docker exec -ti frontend_xos_ui_1 bash
 
 django-restart:
-	sudo docker exec frontend_xos_1 touch /opt/xos/xos/settings.py
+	sudo docker exec frontend_xos_ui_1 touch /opt/xos/xos/settings.py
 
 clean-config-folder:
-	sudo docker exec frontend_xos_1 rm -f /opt/xos/xos_configuration/xos_mcord_config
-	sudo docker exec frontend_xos_1 rm -f /opt/xos/xos_configuration/xos_cord_config
+	sudo docker exec frontend_xos_ui_1 rm -f /opt/xos/xos_configuration/xos_mcord_config
+	sudo docker exec frontend_xos_ui_1 rm -f /opt/xos/xos_configuration/xos_cord_config
 
 mock-cord-pod: onboard-cord-pod
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/mgmt-net.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/cord-vtn-vsg.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/cord-volt-devices.yaml
-	sudo docker exec frontend_xos_1 cp /opt/xos/configurations/cord-pod/xos_cord_config /opt/xos/xos_configuration/
-	sudo docker exec frontend_xos_1 touch /opt/xos/xos/settings.py
+	sudo docker exec frontend_xos_ui_1 cp /opt/xos/configurations/cord-pod/xos_cord_config /opt/xos/xos_configuration/
+	sudo docker exec frontend_xos_ui_1 touch /opt/xos/xos/settings.py
 
 onboard-cord-pod:
-	#sudo cp id_rsa key_import/vsg_rsa
-	#sudo cp id_rsa.pub key_import/vsg_rsa.pub
-	#sudo cp id_rsa key_import/volt_rsa
-	#sudo cp id_rsa.pub key_import/volt_rsa.pub
 	sudo bash -c "echo somekey > key_import/vsg_rsa"
 	sudo bash -c "echo somekey > key_import/vsg_rsa.pub"
 	sudo bash -c "echo somekey > key_import/volt_rsa"
 	sudo bash -c "echo somekey > key_import/volt_rsa.pub"
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vrouter/vrouter-onboard.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/volt/volt-onboard.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vsg/vsg-onboard.yaml
+	bash ../common/wait_for_onboarding_ready.sh 9998 services/vrouter
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/volt
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/vsg
 	bash ../common/wait_for_onboarding_ready.sh $(XOS_BOOTSTRAP_PORT) xos
@@ -89,8 +87,8 @@ mock-mcord:
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord-pod/mgmt-net.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/mocks/mcord.yaml
-	sudo docker exec frontend_xos_1 cp /opt/xos/configurations/mcord/xos_mcord_config /opt/xos/xos_configuration/
-	sudo docker exec frontend_xos_1 touch /opt/xos/xos/settings.py
+	sudo docker exec frontend_xos_ui_1 cp /opt/xos/configurations/mcord/xos_mcord_config /opt/xos/xos_configuration/
+	sudo docker exec frontend_xos_ui_1 touch /opt/xos/xos/settings.py
 
 exampleservice:
 	mkdir -p key_import
