@@ -1,0 +1,16 @@
+services: /opt/xos_services /opt/xos_services/exampleservice
+
+/opt/xos_services:
+	mkdir -p /opt/xos_services
+
+/opt/xos_services/exampleservice:
+	git -C /opt/xos_services clone https://gerrit.opencord.org/p/exampleservice.git
+
+/opt/xos_services/OLT:
+	git -C /opt/xos_services clone https://gerrit.opencord.org/p/olt.git
+
+/opt/xos_services/vtn:
+	git -C /opt/xos_services clone https://gerrit.opencord.org/p/vtn.git
+
+cleanup:
+	rm -rf /opt/xos_services/*
