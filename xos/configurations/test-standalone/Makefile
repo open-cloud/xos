@@ -25,7 +25,7 @@ prepare: xos
 	sudo docker exec -i teststandalone_xos_ui_1 bash -c "cd /opt/xos/tests/api; npm install --production"
 	sudo docker exec teststandalone_xos_ui_1 pip install dredd_hooks
 
-xos: prereqs bootstrap onboarding
+xos: prereqs bootstrap download_services onboarding
 
 prereqs:
 	sudo make -f ../common/Makefile.prereqs
@@ -37,6 +37,12 @@ bootstrap:
 	bash ../common/wait_for_xos_port.sh 9998
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run -e CONFIG_DIR=$(CONFIG_DIR) xos_bootstrap_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/test-standalone/xos.yaml
 
+download_services:
+	make -f ../common/Makefile.services
+
+update_services:
+	make -f ../common/Makefile.services update
+
 onboarding:
 	echo "[ONBOARDING]"
 	bash ../common/wait_for_onboarding_ready.sh 9998 xos
@@ -45,10 +51,10 @@ onboarding:
 	sudo bash -c "echo somekey > key_import/volt_rsa"
 	sudo bash -c "echo somekey > key_import/volt_rsa.pub"
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/common/disable-onboarding.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vrouter/vrouter-onboard.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/volt/volt-onboard.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vsg/vsg-onboard.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vtr/vtr-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vrouter/xos/vrouter-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/volt/xos/volt-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vsg/xos/vsg-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vtr/xos/vtr-onboard.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/common/enable-onboarding.yaml
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/vrouter
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/volt
