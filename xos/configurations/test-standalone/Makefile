@@ -50,6 +50,8 @@ onboarding:
 	sudo bash -c "echo somekey > key_import/vsg_rsa.pub"
 	sudo bash -c "echo somekey > key_import/volt_rsa"
 	sudo bash -c "echo somekey > key_import/volt_rsa.pub"
+	sudo bash -c "echo somekey > key_import/onos_rsa"
+	sudo bash -c "echo somekey > key_import/onos_rsa.pub"
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/common/disable-onboarding.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vrouter/xos/vrouter-onboard.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/olt/xos/volt-onboard.yaml
