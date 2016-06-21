@@ -6,10 +6,16 @@ DOCKER_PROJECT=frontend
 XOS_BOOTSTRAP_PORT=9998
 XOS_UI_PORT=9999
 
-frontend: prereqs bootstrap onboarding frontendconfig
+frontend: prereqs bootstrap download_services onboarding frontendconfig
 
 prereqs:
 	sudo make -f ../common/Makefile.prereqs
+
+download_services:
+	sudo make -f ../common/Makefile.services
+
+update_services:
+	sudo make -f ../common/Makefile.services update
 
 bootstrap:
 	echo "[BOOTSTRAP]"
@@ -77,8 +83,10 @@ onboard-cord-pod:
 	sudo bash -c "echo somekey > key_import/vsg_rsa.pub"
 	sudo bash -c "echo somekey > key_import/volt_rsa"
 	sudo bash -c "echo somekey > key_import/volt_rsa.pub"
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/volt/volt-onboard.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/vsg/vsg-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vrouter/xos/vrouter-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/olt/xos/volt-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vsg/xos/vsg-onboard.yaml
+	bash ../common/wait_for_onboarding_ready.sh 9998 services/vrouter
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/volt
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/vsg
 	bash ../common/wait_for_onboarding_ready.sh $(XOS_BOOTSTRAP_PORT) xos
@@ -97,5 +105,6 @@ exampleservice:
 	# fake keys are fine
 	sudo bash -c "echo somekey > key_import/exampleservice_rsa"
 	sudo bash -c "echo somekey > key_import/exampleservice_rsa.pub"
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/onboard/exampleservice/exampleservice-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos_services/exampleservice/xos/exampleservice-onboard.yaml
+	bash ../common/wait_for_onboarding_ready.sh 9998 services/exampleservice
 	bash ../common/wait_for_onboarding_ready.sh 9998 xos
