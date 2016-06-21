@@ -1,0 +1,89 @@
+[
+    {
+        "humanReadableName": "mysite_vsg-1",
+        "validators": {
+            "policed": [],
+            "creator": [],
+            "ip": [],
+            "image": [
+                "notBlank"
+            ],
+            "backend_register": [
+                "notBlank"
+            ],
+            "flavor": [
+                "notBlank"
+            ],
+            "backend_status": [
+                "notBlank"
+            ],
+            "id": [],
+            "instance_name": [],
+            "slice": [
+                "notBlank"
+            ],
+            "no_sync": [],
+            "node": [
+                "notBlank"
+            ],
+            "userData": [],
+            "updated": [
+                "notBlank"
+            ],
+            "parent": [],
+            "deleted": [],
+            "lazy_blocked": [],
+            "deployment": [
+                "notBlank"
+            ],
+            "enacted": [],
+            "instance_uuid": [],
+            "numberCores": [
+                "notBlank"
+            ],
+            "name": [
+                "notBlank"
+            ],
+            "created": [],
+            "write_protect": [],
+            "isolation": [
+                "notBlank"
+            ],
+            "no_policy": [],
+            "instance_id": [],
+            "volumes": []
+        },
+        "id": 1,
+        "created": "2016-06-20T21:36:36.599139Z",
+        "updated": "2016-06-20T21:36:38.654961Z",
+        "enacted": "2016-06-20T21:37:09.416303Z",
+        "policed": "2016-06-20T21:36:40.179041Z",
+        "backend_register": "{\"next_run\": 0, \"last_success\": 1466458656.696624, \"exponent\": 0}",
+        "backend_status": "1 - OK",
+        "deleted": false,
+        "write_protect": false,
+        "lazy_blocked": false,
+        "no_sync": false,
+        "no_policy": false,
+        "instance_id": "instance-00000001",
+        "instance_uuid": "6cdf8d0b-0468-4ce2-af07-b8d35e0e14cf",
+        "name": "mysite_vsg",
+        "instance_name": "mysite_vsg-1",
+        "ip": "192.168.122.140",
+        "image": 1,
+        "creator": 1,
+        "slice": 2,
+        "deployment": 1,
+        "node": 1,
+        "numberCores": 0,
+        "flavor": 1,
+        "userData": null,
+        "isolation": "vm",
+        "volumes": "/etc/dnsmasq.d,/etc/ufw",
+        "parent": null,
+        "networks": [
+            1,
+            2
+        ]
+    }
+]

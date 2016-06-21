@@ -1,0 +1,216 @@
+[
+  {
+    "humanReadableName": "m1.large",
+    "validators": {
+      "default": [],
+      "updated": [
+        "notBlank"
+      ],
+      "policed": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "deleted": [],
+      "description": [],
+      "no_policy": [],
+      "lazy_blocked": [],
+      "backend_register": [
+        "notBlank"
+      ],
+      "write_protect": [],
+      "flavor": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "order": [
+        "notBlank"
+      ],
+      "id": [],
+      "no_sync": [],
+      "enacted": []
+    },
+    "id": 3,
+    "created": "2016-06-20T21:33:32.126894Z",
+    "updated": "2016-06-20T21:33:36.066908Z",
+    "enacted": null,
+    "policed": null,
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": true,
+    "no_policy": false,
+    "name": "m1.large",
+    "description": null,
+    "flavor": "m1.large",
+    "order": 0,
+    "default": false,
+    "deployments": [
+      1
+    ]
+  },
+  {
+    "humanReadableName": "m1.medium",
+    "validators": {
+      "default": [],
+      "updated": [
+        "notBlank"
+      ],
+      "policed": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "deleted": [],
+      "description": [],
+      "no_policy": [],
+      "lazy_blocked": [],
+      "backend_register": [
+        "notBlank"
+      ],
+      "write_protect": [],
+      "flavor": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "order": [
+        "notBlank"
+      ],
+      "id": [],
+      "no_sync": [],
+      "enacted": []
+    },
+    "id": 2,
+    "created": "2016-06-20T21:33:32.035528Z",
+    "updated": "2016-06-20T21:33:36.089834Z",
+    "enacted": null,
+    "policed": null,
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": true,
+    "no_policy": false,
+    "name": "m1.medium",
+    "description": null,
+    "flavor": "m1.medium",
+    "order": 0,
+    "default": false,
+    "deployments": [
+      1
+    ]
+  },
+  {
+    "humanReadableName": "m1.small",
+    "validators": {
+      "default": [],
+      "updated": [
+        "notBlank"
+      ],
+      "policed": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "deleted": [],
+      "description": [],
+      "no_policy": [],
+      "lazy_blocked": [],
+      "backend_register": [
+        "notBlank"
+      ],
+      "write_protect": [],
+      "flavor": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "order": [
+        "notBlank"
+      ],
+      "id": [],
+      "no_sync": [],
+      "enacted": []
+    },
+    "id": 1,
+    "created": "2016-06-20T21:33:31.974383Z",
+    "updated": "2016-06-20T21:33:36.106941Z",
+    "enacted": null,
+    "policed": null,
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": true,
+    "no_policy": false,
+    "name": "m1.small",
+    "description": null,
+    "flavor": "m1.small",
+    "order": 0,
+    "default": false,
+    "deployments": [
+      1
+    ]
+  },
+  {
+    "humanReadableName": "m1.xlarge",
+    "validators": {
+      "default": [],
+      "updated": [
+        "notBlank"
+      ],
+      "policed": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "deleted": [],
+      "description": [],
+      "no_policy": [],
+      "lazy_blocked": [],
+      "backend_register": [
+        "notBlank"
+      ],
+      "write_protect": [],
+      "flavor": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "order": [
+        "notBlank"
+      ],
+      "id": [],
+      "no_sync": [],
+      "enacted": []
+    },
+    "id": 4,
+    "created": "2016-06-20T21:33:36.234266Z",
+    "updated": "2016-06-20T21:33:36.234121Z",
+    "enacted": null,
+    "policed": null,
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": true,
+    "no_policy": false,
+    "name": "m1.xlarge",
+    "description": null,
+    "flavor": "m1.xlarge",
+    "order": 0,
+    "default": false,
+    "deployments": []
+  }
+]

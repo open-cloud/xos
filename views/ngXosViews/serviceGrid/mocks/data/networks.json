@@ -1,0 +1,166 @@
+[
+  {
+    "humanReadableName": "management",
+    "validators": {
+      "router_id": [],
+      "policed": [],
+      "labels": [],
+      "backend_register": [
+        "notBlank"
+      ],
+      "start_ip": [],
+      "owner": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "id": [],
+      "subnet": [],
+      "subnet_id": [],
+      "end_ip": [],
+      "template": [
+        "notBlank"
+      ],
+      "no_sync": [],
+      "permit_all_slices": [],
+      "updated": [
+        "notBlank"
+      ],
+      "controller_url": [],
+      "controller_parameters": [],
+      "deleted": [],
+      "lazy_blocked": [],
+      "guaranteed_bandwidth": [
+        "notBlank"
+      ],
+      "enacted": [],
+      "autoconnect": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "write_protect": [],
+      "no_policy": [],
+      "network_id": [],
+      "topology_parameters": [],
+      "ports": []
+    },
+    "id": 1,
+    "created": "2016-06-20T21:36:32.006043Z",
+    "updated": "2016-06-20T21:36:32.039571Z",
+    "enacted": null,
+    "policed": "2016-06-20T21:36:32.389397Z",
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": false,
+    "no_policy": false,
+    "name": "management",
+    "template": 4,
+    "subnet": "172.27.0.0/24",
+    "ports": null,
+    "labels": null,
+    "owner": 1,
+    "guaranteed_bandwidth": 0,
+    "permit_all_slices": true,
+    "topology_parameters": null,
+    "controller_url": null,
+    "controller_parameters": null,
+    "network_id": null,
+    "router_id": null,
+    "subnet_id": null,
+    "autoconnect": false,
+    "slices": [
+      2
+    ],
+    "instances": [
+      1
+    ],
+    "routers": []
+  },
+  {
+    "humanReadableName": "mysite_vsg-access",
+    "validators": {
+      "router_id": [],
+      "policed": [],
+      "labels": [],
+      "backend_register": [
+        "notBlank"
+      ],
+      "start_ip": [],
+      "owner": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "id": [],
+      "subnet": [],
+      "subnet_id": [],
+      "end_ip": [],
+      "template": [
+        "notBlank"
+      ],
+      "no_sync": [],
+      "permit_all_slices": [],
+      "updated": [
+        "notBlank"
+      ],
+      "controller_url": [],
+      "controller_parameters": [],
+      "deleted": [],
+      "lazy_blocked": [],
+      "guaranteed_bandwidth": [
+        "notBlank"
+      ],
+      "enacted": [],
+      "autoconnect": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "write_protect": [],
+      "no_policy": [],
+      "network_id": [],
+      "topology_parameters": [],
+      "ports": []
+    },
+    "id": 2,
+    "created": "2016-06-20T21:36:36.439706Z",
+    "updated": "2016-06-20T21:36:36.456977Z",
+    "enacted": null,
+    "policed": "2016-06-20T21:36:37.419444Z",
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": false,
+    "no_policy": false,
+    "name": "mysite_vsg-access",
+    "template": 2,
+    "subnet": "",
+    "ports": null,
+    "labels": null,
+    "owner": 2,
+    "guaranteed_bandwidth": 0,
+    "permit_all_slices": true,
+    "topology_parameters": null,
+    "controller_url": null,
+    "controller_parameters": null,
+    "network_id": null,
+    "router_id": null,
+    "subnet_id": null,
+    "autoconnect": false,
+    "slices": [
+      2
+    ],
+    "instances": [
+      1
+    ],
+    "routers": []
+  }
+]

@@ -70,6 +70,17 @@ topology_template:
               node: xos
               relationship: tosca.relationships.UsedByXOS
 
+    # TOSCA Folder
+    /opt/xos/tosca:
+      type: tosca.nodes.XOSVolume
+      properties:
+          host_path: { path_join: [ SELF, CONFIG_DIR, ../../tosca/, ENV_VAR ] }
+          read_only: false
+      requirements:
+          - xos:
+              node: xos
+              relationship: tosca.relationships.UsedByXOS
+
     # View Folder
     /opt/xos/core/xoslib/static:
       type: tosca.nodes.XOSVolume

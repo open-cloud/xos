@@ -1,0 +1,262 @@
+[
+  {
+    "humanReadableName": "Public shared IPv4",
+    "validators": {
+      "policed": [],
+      "backend_register": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "id": [],
+      "access": [],
+      "shared_network_name": [],
+      "controller_kind": [],
+      "updated": [
+        "notBlank"
+      ],
+      "description": [],
+      "deleted": [],
+      "visibility": [
+        "notBlank"
+      ],
+      "lazy_blocked": [],
+      "guaranteed_bandwidth": [
+        "notBlank"
+      ],
+      "translation": [
+        "notBlank"
+      ],
+      "topology_kind": [
+        "notBlank"
+      ],
+      "enacted": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "write_protect": [],
+      "no_policy": [],
+      "no_sync": [],
+      "shared_network_id": []
+    },
+    "id": 1,
+    "created": "2016-06-23T20:14:16.126918Z",
+    "updated": "2016-06-23T20:14:16.126754Z",
+    "enacted": null,
+    "policed": null,
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": false,
+    "no_policy": false,
+    "name": "Public shared IPv4",
+    "description": null,
+    "guaranteed_bandwidth": 0,
+    "visibility": "private",
+    "translation": "NAT",
+    "access": null,
+    "shared_network_name": "nat-net",
+    "shared_network_id": null,
+    "topology_kind": "bigswitch",
+    "controller_kind": null
+  },
+  {
+    "humanReadableName": "Public dedicated IPv4",
+    "validators": {
+      "policed": [],
+      "backend_register": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "id": [],
+      "access": [],
+      "shared_network_name": [],
+      "controller_kind": [],
+      "updated": [
+        "notBlank"
+      ],
+      "description": [],
+      "deleted": [],
+      "visibility": [
+        "notBlank"
+      ],
+      "lazy_blocked": [],
+      "guaranteed_bandwidth": [
+        "notBlank"
+      ],
+      "translation": [
+        "notBlank"
+      ],
+      "topology_kind": [
+        "notBlank"
+      ],
+      "enacted": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "write_protect": [],
+      "no_policy": [],
+      "no_sync": [],
+      "shared_network_id": []
+    },
+    "id": 3,
+    "created": "2016-06-23T20:14:16.202765Z",
+    "updated": "2016-06-23T20:14:16.202562Z",
+    "enacted": null,
+    "policed": null,
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": false,
+    "no_policy": false,
+    "name": "Public dedicated IPv4",
+    "description": null,
+    "guaranteed_bandwidth": 0,
+    "visibility": "public",
+    "translation": "none",
+    "access": null,
+    "shared_network_name": "ext-net",
+    "shared_network_id": null,
+    "topology_kind": "bigswitch",
+    "controller_kind": null
+  },
+  {
+    "humanReadableName": "management_template",
+    "validators": {
+      "policed": [],
+      "backend_register": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "id": [],
+      "access": [],
+      "shared_network_name": [],
+      "controller_kind": [],
+      "updated": [
+        "notBlank"
+      ],
+      "description": [],
+      "deleted": [],
+      "visibility": [
+        "notBlank"
+      ],
+      "lazy_blocked": [],
+      "guaranteed_bandwidth": [
+        "notBlank"
+      ],
+      "translation": [
+        "notBlank"
+      ],
+      "topology_kind": [
+        "notBlank"
+      ],
+      "enacted": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "write_protect": [],
+      "no_policy": [],
+      "no_sync": [],
+      "shared_network_id": []
+    },
+    "id": 4,
+    "created": "2016-06-23T20:18:19.778090Z",
+    "updated": "2016-06-23T20:18:19.777887Z",
+    "enacted": null,
+    "policed": null,
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": false,
+    "no_policy": false,
+    "name": "management_template",
+    "description": null,
+    "guaranteed_bandwidth": 0,
+    "visibility": "private",
+    "translation": "none",
+    "access": null,
+    "shared_network_name": null,
+    "shared_network_id": null,
+    "topology_kind": "bigswitch",
+    "controller_kind": null
+  },
+  {
+    "humanReadableName": "Private",
+    "validators": {
+      "policed": [],
+      "backend_register": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "id": [],
+      "access": [],
+      "shared_network_name": [],
+      "controller_kind": [],
+      "updated": [
+        "notBlank"
+      ],
+      "description": [],
+      "deleted": [],
+      "visibility": [
+        "notBlank"
+      ],
+      "lazy_blocked": [],
+      "guaranteed_bandwidth": [
+        "notBlank"
+      ],
+      "translation": [
+        "notBlank"
+      ],
+      "topology_kind": [
+        "notBlank"
+      ],
+      "enacted": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "write_protect": [],
+      "no_policy": [],
+      "no_sync": [],
+      "shared_network_id": []
+    },
+    "id": 2,
+    "created": "2016-06-23T20:14:16.178408Z",
+    "updated": "2016-06-23T20:18:24.072523Z",
+    "enacted": null,
+    "policed": null,
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": false,
+    "no_policy": false,
+    "name": "Private",
+    "description": null,
+    "guaranteed_bandwidth": 0,
+    "visibility": "private",
+    "translation": "none",
+    "access": null,
+    "shared_network_name": null,
+    "shared_network_id": null,
+    "topology_kind": "bigswitch",
+    "controller_kind": null
+  }
+]

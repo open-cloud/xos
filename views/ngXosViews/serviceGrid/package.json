@@ -9,7 +9,8 @@
     "build": "gulp",
     "test": "karma start",
     "test:ci": "karma start --single-run",
-    "lint": "eslint src/js/"
+    "lint": "eslint src/js/",
+    "server": "easy-mocker -c ./mocks/diagnostic.conf.json -d ./mocks/data"
   },
   "keywords": [
     "XOS",

@@ -27,7 +27,7 @@ angular.module('xos.serviceGrid', [
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/service-grid.tpl.html',
-    controller: function(Services, _){
+    controller: function(Services, ToscaEncoder, _){
 
       this.tableConfig = {
         columns: [
@@ -65,7 +65,21 @@ angular.module('xos.serviceGrid', [
         filter: 'field',
         order: {
           field: 'name'
-        }
+        },
+        actions: [
+          {
+            label: 'export',
+            icon: 'export',
+            cb: service => {
+              this.tosca = '';
+              ToscaEncoder.serviceToTosca(service)
+                .then(tosca => {
+                  this.showFeedback = true;
+                  this.tosca = tosca;
+                });
+            }
+          }
+        ]
       };
       
       // retrieving user list

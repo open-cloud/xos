@@ -1,0 +1,52 @@
+{
+  "endpoints": [
+    {
+      "url": "images",
+      "base": "api/core/",
+      "methods": ["GET"],
+      "param": "id"
+    },
+    {
+      "url": "instances",
+      "base": "api/core/",
+      "methods": ["GET"],
+      "param": "id"
+    },
+    {
+      "url": "networks",
+      "base": "api/core/",
+      "methods": ["GET"],
+      "param": "id"
+    },
+    {
+      "url": "networktemplates",
+      "base": "api/core/",
+      "methods": ["GET"],
+      "param": "id"
+    },
+    {
+      "url": "services",
+      "base": "api/core/",
+      "methods": ["GET"],
+      "param": "id"
+    },
+    {
+      "url": "sites",
+      "base": "api/core/",
+      "methods": ["GET"],
+      "param": "id"
+    },
+    {
+      "url": "slices",
+      "base": "api/core/",
+      "methods": ["GET"],
+      "param": "id"
+    },
+    {
+      "url": "tenants",
+      "base": "api/core/",
+      "methods": ["GET"],
+      "param": "id"
+    }
+  ]
+}

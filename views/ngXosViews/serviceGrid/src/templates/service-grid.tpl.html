@@ -12,3 +12,15 @@
     </a> -->
   </div>
 </div>
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="alert alert-info" ng-show="vm.showFeedback">
+      Remember that you should copy any key artifact inside the container in <pre>/opt/xos/tosca</pre>!
+    </div>
+  </div>
+</div>
+
+<pre ng-show="vm.tosca">
+{{vm.tosca}}
+</pre>

@@ -1,0 +1,72 @@
+[
+  {
+    "humanReadableName": "mysite",
+    "validators": {
+      "policed": [],
+      "backend_register": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "id": [],
+      "site_url": [
+        "url"
+      ],
+      "location": [
+        "notBlank"
+      ],
+      "hosts_nodes": [],
+      "no_sync": [],
+      "abbreviated_name": [
+        "notBlank"
+      ],
+      "updated": [
+        "notBlank"
+      ],
+      "deleted": [],
+      "lazy_blocked": [],
+      "latitude": [],
+      "is_public": [],
+      "enacted": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "write_protect": [],
+      "no_policy": [],
+      "enabled": [],
+      "longitude": [],
+      "hosts_users": [],
+      "login_base": [
+        "notBlank"
+      ]
+    },
+    "id": 1,
+    "created": "2016-06-20T21:33:36.116579Z",
+    "updated": "2016-06-20T21:36:36.210629Z",
+    "enacted": null,
+    "policed": "2016-06-20T21:36:37.091400Z",
+    "backend_register": "{}",
+    "backend_status": "1 - OK",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": false,
+    "no_policy": false,
+    "name": "mysite",
+    "site_url": "http://xosproject.org/",
+    "enabled": true,
+    "hosts_nodes": true,
+    "hosts_users": true,
+    "location": null,
+    "longitude": null,
+    "latitude": null,
+    "login_base": "mysite",
+    "is_public": true,
+    "abbreviated_name": "",
+    "deployments": [
+      1
+    ]
+  }
+]

@@ -1,0 +1,48 @@
+[
+  {
+    "humanReadableName": "nova-compute-1",
+    "validators": {
+      "updated": [
+        "notBlank"
+      ],
+      "policed": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "deleted": [],
+      "no_policy": [],
+      "site": [],
+      "lazy_blocked": [],
+      "backend_register": [
+        "notBlank"
+      ],
+      "write_protect": [],
+      "site_deployment": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "id": [],
+      "no_sync": [],
+      "enacted": []
+    },
+    "id": 1,
+    "created": "2016-06-20T21:33:43.532833Z",
+    "updated": "2016-06-20T21:37:46.435545Z",
+    "enacted": null,
+    "policed": null,
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": true,
+    "no_policy": false,
+    "name": "nova-compute-1",
+    "site_deployment": 1,
+    "site": 1,
+    "nodelabels": []
+  }
+]

@@ -1,0 +1,514 @@
+[
+   {
+      "humanReadableName": "fabric",
+      "validators": {
+         "service_specific_attribute": [],
+         "policed": [],
+         "view_url": [],
+         "backend_register": [
+            "notBlank"
+         ],
+         "backend_status": [
+            "notBlank"
+         ],
+         "id": [],
+         "private_key_fn": [],
+         "icon_url": [],
+         "no_sync": [],
+         "updated": [
+            "notBlank"
+         ],
+         "description": [],
+         "deleted": [],
+         "lazy_blocked": [],
+         "versionNumber": [],
+         "service_specific_id": [],
+         "enacted": [],
+         "public_key": [],
+         "kind": [
+            "notBlank"
+         ],
+         "name": [
+            "notBlank"
+         ],
+         "created": [],
+         "write_protect": [],
+         "no_policy": [],
+         "enabled": [],
+         "controller": [],
+         "published": []
+      },
+      "id": 3,
+      "created": "2016-06-20T21:35:56.788935Z",
+      "updated": "2016-06-20T21:35:56.788499Z",
+      "enacted": null,
+      "policed": null,
+      "backend_register": "{}",
+      "backend_status": "0 - Provisioning in progress",
+      "deleted": false,
+      "write_protect": false,
+      "lazy_blocked": false,
+      "no_sync": false,
+      "no_policy": false,
+      "description": null,
+      "enabled": true,
+      "kind": "fabric",
+      "name": "fabric",
+      "versionNumber": null,
+      "published": true,
+      "view_url": "/admin/fabric/fabricservice/$id$/",
+      "icon_url": null,
+      "public_key": null,
+      "private_key_fn": null,
+      "service_specific_id": null,
+      "service_specific_attribute": null
+   },
+   {
+      "humanReadableName": "ONOS_Fabric",
+      "validators": {
+         "service_specific_attribute": [],
+         "policed": [],
+         "view_url": [],
+         "backend_register": [
+            "notBlank"
+         ],
+         "backend_status": [
+            "notBlank"
+         ],
+         "id": [],
+         "private_key_fn": [],
+         "icon_url": [],
+         "no_sync": [],
+         "updated": [
+            "notBlank"
+         ],
+         "description": [],
+         "deleted": [],
+         "lazy_blocked": [],
+         "versionNumber": [],
+         "service_specific_id": [],
+         "enacted": [],
+         "public_key": [],
+         "kind": [
+            "notBlank"
+         ],
+         "name": [
+            "notBlank"
+         ],
+         "created": [],
+         "write_protect": [],
+         "no_policy": [],
+         "enabled": [],
+         "controller": [],
+         "published": []
+      },
+      "id": 4,
+      "created": "2016-06-20T21:35:56.810806Z",
+      "updated": "2016-06-20T21:35:56.810649Z",
+      "enacted": "2016-06-20T21:36:04.658726Z",
+      "policed": null,
+      "backend_register": "{\"next_run\": 0, \"last_success\": 1466458564.69207, \"exponent\": 0}",
+      "backend_status": "1 - OK",
+      "deleted": false,
+      "write_protect": false,
+      "lazy_blocked": false,
+      "no_sync": false,
+      "no_policy": false,
+      "description": null,
+      "enabled": true,
+      "kind": "onos",
+      "name": "ONOS_Fabric",
+      "versionNumber": null,
+      "published": true,
+      "view_url": "/admin/onos/onosservice/$id$/",
+      "icon_url": null,
+      "public_key": null,
+      "private_key_fn": null,
+      "service_specific_id": null,
+      "service_specific_attribute": "{\"no_container\": true, \"rest_hostname\": \"onos-fabric\"}"
+   },
+   {
+      "humanReadableName": "vrouter",
+      "validators": {
+         "service_specific_attribute": [],
+         "policed": [],
+         "view_url": [],
+         "backend_register": [
+            "notBlank"
+         ],
+         "backend_status": [
+            "notBlank"
+         ],
+         "id": [],
+         "private_key_fn": [],
+         "icon_url": [],
+         "no_sync": [],
+         "updated": [
+            "notBlank"
+         ],
+         "description": [],
+         "deleted": [],
+         "lazy_blocked": [],
+         "versionNumber": [],
+         "service_specific_id": [],
+         "enacted": [],
+         "public_key": [],
+         "kind": [
+            "notBlank"
+         ],
+         "name": [
+            "notBlank"
+         ],
+         "created": [],
+         "write_protect": [],
+         "no_policy": [],
+         "enabled": [],
+         "controller": [],
+         "published": []
+      },
+      "id": 5,
+      "created": "2016-06-20T21:36:36.240269Z",
+      "updated": "2016-06-20T21:36:36.240062Z",
+      "enacted": null,
+      "policed": null,
+      "backend_register": "{}",
+      "backend_status": "0 - Provisioning in progress",
+      "deleted": false,
+      "write_protect": false,
+      "lazy_blocked": false,
+      "no_sync": false,
+      "no_policy": false,
+      "description": null,
+      "enabled": true,
+      "kind": "vROUTER",
+      "name": "vrouter",
+      "versionNumber": null,
+      "published": true,
+      "view_url": "/admin/vrouter/vrouterservice/$id$/",
+      "icon_url": null,
+      "public_key": null,
+      "private_key_fn": null,
+      "service_specific_id": null,
+      "service_specific_attribute": null
+   },
+   {
+      "humanReadableName": "vsg",
+      "validators": {
+         "service_specific_attribute": [],
+         "policed": [],
+         "view_url": [],
+         "backend_register": [
+            "notBlank"
+         ],
+         "backend_status": [
+            "notBlank"
+         ],
+         "id": [],
+         "private_key_fn": [],
+         "icon_url": [],
+         "no_sync": [],
+         "updated": [
+            "notBlank"
+         ],
+         "description": [],
+         "deleted": [],
+         "lazy_blocked": [],
+         "versionNumber": [],
+         "service_specific_id": [],
+         "enacted": [],
+         "public_key": [],
+         "kind": [
+            "notBlank"
+         ],
+         "name": [
+            "notBlank"
+         ],
+         "created": [],
+         "write_protect": [],
+         "no_policy": [],
+         "enabled": [],
+         "controller": [],
+         "published": []
+      },
+      "id": 6,
+      "created": "2016-06-20T21:36:36.262734Z",
+      "updated": "2016-06-20T21:36:36.262503Z",
+      "enacted": null,
+      "policed": null,
+      "backend_register": "{}",
+      "backend_status": "0 - Provisioning in progress",
+      "deleted": false,
+      "write_protect": false,
+      "lazy_blocked": false,
+      "no_sync": false,
+      "no_policy": false,
+      "description": null,
+      "enabled": true,
+      "kind": "vCPE",
+      "name": "vsg",
+      "versionNumber": null,
+      "published": true,
+      "view_url": "/admin/cord/vsgservice/$id$/",
+      "icon_url": null,
+      "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCl1k9r1G491+ClISp6JOKlNmgBSV5YAvw2Ulh5Mj7XUgLatjHIBID2Ue54kAbCP48LVIAhqVFClPC7PtfVQY9+3mKi+LUJCgkkjR+6IlK/8eVzr1i3BvhLbtifrhKCvdL+d/5Tzxl8C8qCWfnJhVTqGRmVGBDFf4SukCjxF5CMG1naSlkgrINlMNc34IfQ2UAxRSscsEaMiijDQFBwGhJLQzef0r9vfIycnv3Ua/xQ5Pjqtcy/Go6K849wsNNUQ4yMgaUWZ8tmwFuqu4nFC2lI/H8EZN4NBejjMnJs3F6IMb0xe45/r7TXvWEpZ1c/nNwrvOPi/U44VkwMgp/EcRgV smbaker@node.smbaker-xos-test.xos-pg0.wisc.cloudlab.us\n",
+      "private_key_fn": "/opt/xos/services/vsg/keys/vsg_rsa",
+      "service_specific_id": null,
+      "service_specific_attribute": "{\"backend_network_label\": \"hpc_client\"}"
+   },
+   {
+      "humanReadableName": "volt",
+      "validators": {
+         "service_specific_attribute": [],
+         "policed": [],
+         "view_url": [],
+         "backend_register": [
+            "notBlank"
+         ],
+         "backend_status": [
+            "notBlank"
+         ],
+         "id": [],
+         "private_key_fn": [],
+         "icon_url": [],
+         "no_sync": [],
+         "updated": [
+            "notBlank"
+         ],
+         "description": [],
+         "deleted": [],
+         "lazy_blocked": [],
+         "versionNumber": [],
+         "service_specific_id": [],
+         "enacted": [],
+         "public_key": [],
+         "kind": [
+            "notBlank"
+         ],
+         "name": [
+            "notBlank"
+         ],
+         "created": [],
+         "write_protect": [],
+         "no_policy": [],
+         "enabled": [],
+         "controller": [],
+         "published": []
+      },
+      "id": 7,
+      "created": "2016-06-20T21:36:36.468811Z",
+      "updated": "2016-06-20T21:36:36.468645Z",
+      "enacted": null,
+      "policed": null,
+      "backend_register": "{}",
+      "backend_status": "0 - Provisioning in progress",
+      "deleted": false,
+      "write_protect": false,
+      "lazy_blocked": false,
+      "no_sync": false,
+      "no_policy": false,
+      "description": null,
+      "enabled": true,
+      "kind": "vOLT",
+      "name": "volt",
+      "versionNumber": null,
+      "published": true,
+      "view_url": "/admin/cord/voltservice/$id$/",
+      "icon_url": null,
+      "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCl1k9r1G491+ClISp6JOKlNmgBSV5YAvw2Ulh5Mj7XUgLatjHIBID2Ue54kAbCP48LVIAhqVFClPC7PtfVQY9+3mKi+LUJCgkkjR+6IlK/8eVzr1i3BvhLbtifrhKCvdL+d/5Tzxl8C8qCWfnJhVTqGRmVGBDFf4SukCjxF5CMG1naSlkgrINlMNc34IfQ2UAxRSscsEaMiijDQFBwGhJLQzef0r9vfIycnv3Ua/xQ5Pjqtcy/Go6K849wsNNUQ4yMgaUWZ8tmwFuqu4nFC2lI/H8EZN4NBejjMnJs3F6IMb0xe45/r7TXvWEpZ1c/nNwrvOPi/U44VkwMgp/EcRgV smbaker@node.smbaker-xos-test.xos-pg0.wisc.cloudlab.us\n",
+      "private_key_fn": "/opt/xos/services/volt/keys/volt_rsa",
+      "service_specific_id": null,
+      "service_specific_attribute": null
+   },
+   {
+      "humanReadableName": "vtr",
+      "validators": {
+         "service_specific_attribute": [],
+         "policed": [],
+         "view_url": [],
+         "backend_register": [
+            "notBlank"
+         ],
+         "backend_status": [
+            "notBlank"
+         ],
+         "id": [],
+         "private_key_fn": [],
+         "icon_url": [],
+         "no_sync": [],
+         "updated": [
+            "notBlank"
+         ],
+         "description": [],
+         "deleted": [],
+         "lazy_blocked": [],
+         "versionNumber": [],
+         "service_specific_id": [],
+         "enacted": [],
+         "public_key": [],
+         "kind": [
+            "notBlank"
+         ],
+         "name": [
+            "notBlank"
+         ],
+         "created": [],
+         "write_protect": [],
+         "no_policy": [],
+         "enabled": [],
+         "controller": [],
+         "published": []
+      },
+      "id": 8,
+      "created": "2016-06-20T21:36:37.129713Z",
+      "updated": "2016-06-20T21:36:37.129433Z",
+      "enacted": null,
+      "policed": null,
+      "backend_register": "{}",
+      "backend_status": "0 - Provisioning in progress",
+      "deleted": false,
+      "write_protect": false,
+      "lazy_blocked": false,
+      "no_sync": false,
+      "no_policy": false,
+      "description": null,
+      "enabled": true,
+      "kind": "vTR",
+      "name": "vtr",
+      "versionNumber": null,
+      "published": true,
+      "view_url": "/admin/vtr/vtrservice/$id$/",
+      "icon_url": null,
+      "public_key": null,
+      "private_key_fn": null,
+      "service_specific_id": null,
+      "service_specific_attribute": null
+   },
+   {
+      "humanReadableName": "vtn",
+      "validators": {
+         "service_specific_attribute": [],
+         "policed": [],
+         "view_url": [],
+         "backend_register": [
+            "notBlank"
+         ],
+         "backend_status": [
+            "notBlank"
+         ],
+         "id": [],
+         "private_key_fn": [],
+         "icon_url": [],
+         "no_sync": [],
+         "updated": [
+            "notBlank"
+         ],
+         "description": [],
+         "deleted": [],
+         "lazy_blocked": [],
+         "versionNumber": [],
+         "service_specific_id": [],
+         "enacted": [],
+         "public_key": [],
+         "kind": [
+            "notBlank"
+         ],
+         "name": [
+            "notBlank"
+         ],
+         "created": [],
+         "write_protect": [],
+         "no_policy": [],
+         "enabled": [],
+         "controller": [],
+         "published": []
+      },
+      "id": 2,
+      "created": "2016-06-20T21:35:51.964599Z",
+      "updated": "2016-06-20T21:37:46.469766Z",
+      "enacted": null,
+      "policed": null,
+      "backend_register": "{}",
+      "backend_status": "0 - Provisioning in progress",
+      "deleted": false,
+      "write_protect": false,
+      "lazy_blocked": false,
+      "no_sync": false,
+      "no_policy": false,
+      "description": null,
+      "enabled": true,
+      "kind": "VTN",
+      "name": "vtn",
+      "versionNumber": null,
+      "published": true,
+      "view_url": "/admin/vtn/vtnservice/$id$/",
+      "icon_url": null,
+      "public_key": null,
+      "private_key_fn": null,
+      "service_specific_id": null,
+      "service_specific_attribute": "{\"sshUser\": \"root\", \"xosEndpoint\": \"http://xos/\", \"xosPassword\": \"letmein\", \"sshKeyFile\": \"/root/node_key\", \"xosUser\": \"padmin@vicci.org\", \"ovsdbPort\": \"6641\", \"sshPort\": \"22\", \"localManagementIp\": \"172.27.0.1/24\", \"privateGatewayMac\": \"00:00:00:00:00:01\"}"
+   },
+   {
+      "humanReadableName": "ONOS_CORD",
+      "validators": {
+         "service_specific_attribute": [],
+         "policed": [],
+         "view_url": [],
+         "backend_register": [
+            "notBlank"
+         ],
+         "backend_status": [
+            "notBlank"
+         ],
+         "id": [],
+         "private_key_fn": [],
+         "icon_url": [],
+         "no_sync": [],
+         "updated": [
+            "notBlank"
+         ],
+         "description": [],
+         "deleted": [],
+         "lazy_blocked": [],
+         "versionNumber": [],
+         "service_specific_id": [],
+         "enacted": [],
+         "public_key": [],
+         "kind": [
+            "notBlank"
+         ],
+         "name": [
+            "notBlank"
+         ],
+         "created": [],
+         "write_protect": [],
+         "no_policy": [],
+         "enabled": [],
+         "controller": [],
+         "published": []
+      },
+      "id": 1,
+      "created": "2016-06-20T21:35:51.892027Z",
+      "updated": "2016-06-20T21:37:46.417265Z",
+      "enacted": "2016-06-20T21:37:54.037851Z",
+      "policed": null,
+      "backend_register": "{\"next_run\": 0, \"last_success\": 1466458674.061194, \"exponent\": 0}",
+      "backend_status": "1 - OK",
+      "deleted": false,
+      "write_protect": false,
+      "lazy_blocked": false,
+      "no_sync": false,
+      "no_policy": false,
+      "description": null,
+      "enabled": true,
+      "kind": "onos",
+      "name": "ONOS_CORD",
+      "versionNumber": null,
+      "published": true,
+      "view_url": "/admin/onos/onosservice/$id$/",
+      "icon_url": null,
+      "public_key": null,
+      "private_key_fn": null,
+      "service_specific_id": null,
+      "service_specific_attribute": "{\"no_container\": true, \"rest_hostname\": \"onos-cord\"}"
+   }
+]

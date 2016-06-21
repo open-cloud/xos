@@ -1,0 +1,163 @@
+[
+  {
+    "humanReadableName": "mysite_management",
+    "validators": {
+      "default_flavor": [],
+      "policed": [],
+      "creator": [],
+      "site": [
+        "notBlank"
+      ],
+      "max_instances": [
+        "notBlank"
+      ],
+      "backend_register": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "id": [],
+      "network": [],
+      "service": [],
+      "default_isolation": [
+        "notBlank"
+      ],
+      "no_sync": [],
+      "exposed_ports": [],
+      "updated": [
+        "notBlank"
+      ],
+      "description": [],
+      "deleted": [],
+      "slice_url": [
+        "url"
+      ],
+      "serviceClass": [],
+      "lazy_blocked": [],
+      "omf_friendly": [],
+      "mount_data_sets": [],
+      "default_node": [],
+      "enacted": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "write_protect": [],
+      "no_policy": [],
+      "enabled": [],
+      "default_image": []
+    },
+    "id": 1,
+    "created": "2016-06-20T21:36:31.979507Z",
+    "updated": "2016-06-20T21:36:38.635976Z",
+    "enacted": null,
+    "policed": "2016-06-20T21:36:38.787528Z",
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": false,
+    "no_policy": false,
+    "name": "mysite_management",
+    "enabled": true,
+    "omf_friendly": false,
+    "description": "",
+    "slice_url": "",
+    "site": 1,
+    "max_instances": 10,
+    "service": null,
+    "network": "noauto",
+    "exposed_ports": null,
+    "serviceClass": null,
+    "creator": 1,
+    "default_flavor": null,
+    "default_image": null,
+    "mount_data_sets": "GenBank",
+    "default_isolation": "vm",
+    "networks": []
+  },
+  {
+    "humanReadableName": "mysite_vsg",
+    "validators": {
+      "default_flavor": [],
+      "policed": [],
+      "creator": [],
+      "site": [
+        "notBlank"
+      ],
+      "max_instances": [
+        "notBlank"
+      ],
+      "backend_register": [
+        "notBlank"
+      ],
+      "backend_status": [
+        "notBlank"
+      ],
+      "id": [],
+      "network": [],
+      "service": [],
+      "default_isolation": [
+        "notBlank"
+      ],
+      "no_sync": [],
+      "exposed_ports": [],
+      "updated": [
+        "notBlank"
+      ],
+      "description": [],
+      "deleted": [],
+      "slice_url": [
+        "url"
+      ],
+      "serviceClass": [],
+      "lazy_blocked": [],
+      "omf_friendly": [],
+      "mount_data_sets": [],
+      "default_node": [],
+      "enacted": [],
+      "name": [
+        "notBlank"
+      ],
+      "created": [],
+      "write_protect": [],
+      "no_policy": [],
+      "enabled": [],
+      "default_image": []
+    },
+    "id": 2,
+    "created": "2016-06-20T21:36:36.290539Z",
+    "updated": "2016-06-20T21:36:38.625760Z",
+    "enacted": null,
+    "policed": "2016-06-20T21:36:40.119502Z",
+    "backend_register": "{}",
+    "backend_status": "0 - Provisioning in progress",
+    "deleted": false,
+    "write_protect": false,
+    "lazy_blocked": false,
+    "no_sync": false,
+    "no_policy": false,
+    "name": "mysite_vsg",
+    "enabled": true,
+    "omf_friendly": false,
+    "description": "",
+    "slice_url": "",
+    "site": 1,
+    "max_instances": 10,
+    "service": 6,
+    "network": "noauto",
+    "exposed_ports": null,
+    "serviceClass": null,
+    "creator": 1,
+    "default_flavor": null,
+    "default_image": 1,
+    "mount_data_sets": "GenBank",
+    "default_isolation": "vm",
+    "networks": [
+      2,
+      1
+    ]
+  }
+]

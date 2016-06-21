@@ -1,0 +1,612 @@
+[
+    {
+        "humanReadableName": "coarse-tenant-3",
+        "validators": {
+            "service_specific_attribute": [],
+            "policed": [],
+            "backend_register": [
+                "notBlank"
+            ],
+            "backend_status": [
+                "notBlank"
+            ],
+            "id": [],
+            "no_policy": [],
+            "subscriber_service": [],
+            "subscriber_tenant": [],
+            "no_sync": [],
+            "connect_method": [
+                "notBlank"
+            ],
+            "updated": [
+                "notBlank"
+            ],
+            "deleted": [],
+            "lazy_blocked": [],
+            "service_specific_id": [],
+            "subscriber_root": [],
+            "subscriber_user": [],
+            "enacted": [],
+            "kind": [
+                "notBlank"
+            ],
+            "created": [],
+            "write_protect": [],
+            "subscriber_network": [],
+            "provider_service": [
+                "notBlank"
+            ]
+        },
+        "id": 3,
+        "created": "2016-06-20T21:36:36.274049Z",
+        "updated": "2016-06-20T21:36:36.273883Z",
+        "enacted": null,
+        "policed": null,
+        "backend_register": "{}",
+        "backend_status": "0 - Provisioning in progress",
+        "deleted": false,
+        "write_protect": false,
+        "lazy_blocked": false,
+        "no_sync": false,
+        "no_policy": false,
+        "kind": "coarse",
+        "provider_service": 5,
+        "subscriber_service": 6,
+        "subscriber_tenant": null,
+        "subscriber_user": null,
+        "subscriber_root": null,
+        "subscriber_network": null,
+        "service_specific_id": null,
+        "service_specific_attribute": null,
+        "connect_method": "na"
+    },
+    {
+        "humanReadableName": "coarse-tenant-4",
+        "validators": {
+            "service_specific_attribute": [],
+            "policed": [],
+            "backend_register": [
+                "notBlank"
+            ],
+            "backend_status": [
+                "notBlank"
+            ],
+            "id": [],
+            "no_policy": [],
+            "subscriber_service": [],
+            "subscriber_tenant": [],
+            "no_sync": [],
+            "connect_method": [
+                "notBlank"
+            ],
+            "updated": [
+                "notBlank"
+            ],
+            "deleted": [],
+            "lazy_blocked": [],
+            "service_specific_id": [],
+            "subscriber_root": [],
+            "subscriber_user": [],
+            "enacted": [],
+            "kind": [
+                "notBlank"
+            ],
+            "created": [],
+            "write_protect": [],
+            "subscriber_network": [],
+            "provider_service": [
+                "notBlank"
+            ]
+        },
+        "id": 4,
+        "created": "2016-06-20T21:36:36.477159Z",
+        "updated": "2016-06-20T21:36:36.477018Z",
+        "enacted": null,
+        "policed": null,
+        "backend_register": "{}",
+        "backend_status": "0 - Provisioning in progress",
+        "deleted": false,
+        "write_protect": false,
+        "lazy_blocked": false,
+        "no_sync": false,
+        "no_policy": false,
+        "kind": "coarse",
+        "provider_service": 6,
+        "subscriber_service": 7,
+        "subscriber_tenant": null,
+        "subscriber_user": null,
+        "subscriber_root": null,
+        "subscriber_network": null,
+        "service_specific_id": null,
+        "service_specific_attribute": null,
+        "connect_method": "na"
+    },
+    {
+        "humanReadableName": "vOLT-tenant-6",
+        "validators": {
+            "service_specific_attribute": [],
+            "policed": [],
+            "backend_register": [
+                "notBlank"
+            ],
+            "backend_status": [
+                "notBlank"
+            ],
+            "id": [],
+            "no_policy": [],
+            "subscriber_service": [],
+            "subscriber_tenant": [],
+            "no_sync": [],
+            "connect_method": [
+                "notBlank"
+            ],
+            "updated": [
+                "notBlank"
+            ],
+            "deleted": [],
+            "lazy_blocked": [],
+            "service_specific_id": [],
+            "subscriber_root": [],
+            "subscriber_user": [],
+            "enacted": [],
+            "kind": [
+                "notBlank"
+            ],
+            "created": [],
+            "write_protect": [],
+            "subscriber_network": [],
+            "provider_service": [
+                "notBlank"
+            ]
+        },
+        "id": 6,
+        "created": "2016-06-20T21:36:36.533209Z",
+        "updated": "2016-06-20T21:36:36.533060Z",
+        "enacted": null,
+        "policed": null,
+        "backend_register": "{}",
+        "backend_status": "0 - Provisioning in progress",
+        "deleted": false,
+        "write_protect": false,
+        "lazy_blocked": false,
+        "no_sync": false,
+        "no_policy": false,
+        "kind": "vOLT",
+        "provider_service": 7,
+        "subscriber_service": null,
+        "subscriber_tenant": null,
+        "subscriber_user": null,
+        "subscriber_root": 1,
+        "subscriber_network": null,
+        "service_specific_id": "123",
+        "service_specific_attribute": null,
+        "connect_method": "na"
+    },
+    {
+        "humanReadableName": "vCPE-tenant-7",
+        "validators": {
+            "service_specific_attribute": [],
+            "policed": [],
+            "backend_register": [
+                "notBlank"
+            ],
+            "backend_status": [
+                "notBlank"
+            ],
+            "id": [],
+            "no_policy": [],
+            "subscriber_service": [],
+            "subscriber_tenant": [],
+            "no_sync": [],
+            "connect_method": [
+                "notBlank"
+            ],
+            "updated": [
+                "notBlank"
+            ],
+            "deleted": [],
+            "lazy_blocked": [],
+            "service_specific_id": [],
+            "subscriber_root": [],
+            "subscriber_user": [],
+            "enacted": [],
+            "kind": [
+                "notBlank"
+            ],
+            "created": [],
+            "write_protect": [],
+            "subscriber_network": [],
+            "provider_service": [
+                "notBlank"
+            ]
+        },
+        "id": 7,
+        "created": "2016-06-20T21:36:36.556180Z",
+        "updated": "2016-06-20T21:36:37.277167Z",
+        "enacted": "2016-06-20T21:43:30.075930Z",
+        "policed": null,
+        "backend_register": "{\"next_run\": 0, \"last_success\": 1466459040.216983, \"exponent\": 0}",
+        "backend_status": "1 - OK",
+        "deleted": false,
+        "write_protect": false,
+        "lazy_blocked": false,
+        "no_sync": false,
+        "no_policy": false,
+        "kind": "vCPE",
+        "provider_service": 6,
+        "subscriber_service": null,
+        "subscriber_tenant": 6,
+        "subscriber_user": null,
+        "subscriber_root": null,
+        "subscriber_network": null,
+        "service_specific_id": null,
+        "service_specific_attribute": "{\"instance_id\": 1, \"creator_id\": 1, \"last_ansible_hash\": \"30d35de441b1e87e7e6a4fc79834ac56\"}",
+        "connect_method": "na"
+    },
+    {
+        "humanReadableName": "vROUTER-tenant-9",
+        "validators": {
+            "service_specific_attribute": [],
+            "policed": [],
+            "backend_register": [
+                "notBlank"
+            ],
+            "backend_status": [
+                "notBlank"
+            ],
+            "id": [],
+            "no_policy": [],
+            "subscriber_service": [],
+            "subscriber_tenant": [],
+            "no_sync": [],
+            "connect_method": [
+                "notBlank"
+            ],
+            "updated": [
+                "notBlank"
+            ],
+            "deleted": [],
+            "lazy_blocked": [],
+            "service_specific_id": [],
+            "subscriber_root": [],
+            "subscriber_user": [],
+            "enacted": [],
+            "kind": [
+                "notBlank"
+            ],
+            "created": [],
+            "write_protect": [],
+            "subscriber_network": [],
+            "provider_service": [
+                "notBlank"
+            ]
+        },
+        "id": 9,
+        "created": "2016-06-20T21:36:36.677067Z",
+        "updated": "2016-06-20T21:36:36.677678Z",
+        "enacted": null,
+        "policed": null,
+        "backend_register": "{\"next_run\": 1466494205.83568, \"last_failure\": 1466465405.835683, \"last_success\": 1466458621.14023, \"exponent\": 209, \"failures\": 209}",
+        "backend_status": "2 - Exception('Expecting object: line 1 column 1 (char 0) // Socket error: [Errno 111] Connection refused to http://onos-fabric:8181/onos/v1/network/configuration/hosts',)",
+        "deleted": false,
+        "write_protect": false,
+        "lazy_blocked": false,
+        "no_sync": false,
+        "no_policy": false,
+        "kind": "vROUTER",
+        "provider_service": 5,
+        "subscriber_service": null,
+        "subscriber_tenant": 7,
+        "subscriber_user": null,
+        "subscriber_root": null,
+        "subscriber_network": null,
+        "service_specific_id": null,
+        "service_specific_attribute": "{\"public_ip\": \"10.168.0.3\", \"address_pool_id\": 2, \"public_mac\": \"02:42:0a:a8:00:03\"}",
+        "connect_method": "na"
+    },
+    {
+        "humanReadableName": "vROUTER-tenant-8",
+        "validators": {
+            "service_specific_attribute": [],
+            "policed": [],
+            "backend_register": [
+                "notBlank"
+            ],
+            "backend_status": [
+                "notBlank"
+            ],
+            "id": [],
+            "no_policy": [],
+            "subscriber_service": [],
+            "subscriber_tenant": [],
+            "no_sync": [],
+            "connect_method": [
+                "notBlank"
+            ],
+            "updated": [
+                "notBlank"
+            ],
+            "deleted": [],
+            "lazy_blocked": [],
+            "service_specific_id": [],
+            "subscriber_root": [],
+            "subscriber_user": [],
+            "enacted": [],
+            "kind": [
+                "notBlank"
+            ],
+            "created": [],
+            "write_protect": [],
+            "subscriber_network": [],
+            "provider_service": [
+                "notBlank"
+            ]
+        },
+        "id": 8,
+        "created": "2016-06-20T21:36:36.664628Z",
+        "updated": "2016-06-20T21:36:36.665255Z",
+        "enacted": null,
+        "policed": null,
+        "backend_register": "{\"next_run\": 1466494206.981866, \"last_failure\": 1466465406.981868, \"last_success\": 1466458619.671976, \"exponent\": 209, \"failures\": 209}",
+        "backend_status": "2 - Exception('Expecting object: line 1 column 1 (char 0) // Socket error: [Errno 111] Connection refused to http://onos-fabric:8181/onos/v1/network/configuration/hosts',)",
+        "deleted": false,
+        "write_protect": false,
+        "lazy_blocked": false,
+        "no_sync": false,
+        "no_policy": false,
+        "kind": "vROUTER",
+        "provider_service": 5,
+        "subscriber_service": 6,
+        "subscriber_tenant": null,
+        "subscriber_user": null,
+        "subscriber_root": null,
+        "subscriber_network": null,
+        "service_specific_id": null,
+        "service_specific_attribute": "{\"public_ip\": \"10.168.0.2\", \"tenant_for_instance_id\": 1, \"address_pool_id\": 2, \"public_mac\": \"02:42:0a:a8:00:02\"}",
+        "connect_method": "na"
+    },
+    {
+        "humanReadableName": "onos-tenant-1",
+        "validators": {
+            "service_specific_attribute": [],
+            "policed": [],
+            "backend_register": [
+                "notBlank"
+            ],
+            "backend_status": [
+                "notBlank"
+            ],
+            "id": [],
+            "no_policy": [],
+            "subscriber_service": [],
+            "subscriber_tenant": [],
+            "no_sync": [],
+            "connect_method": [
+                "notBlank"
+            ],
+            "updated": [
+                "notBlank"
+            ],
+            "deleted": [],
+            "lazy_blocked": [],
+            "service_specific_id": [],
+            "subscriber_root": [],
+            "subscriber_user": [],
+            "enacted": [],
+            "kind": [
+                "notBlank"
+            ],
+            "created": [],
+            "write_protect": [],
+            "subscriber_network": [],
+            "provider_service": [
+                "notBlank"
+            ]
+        },
+        "id": 1,
+        "created": "2016-06-20T21:35:52.080746Z",
+        "updated": "2016-06-20T21:37:46.517157Z",
+        "enacted": "2016-06-20T21:37:55.377495Z",
+        "policed": null,
+        "backend_register": "{\"next_run\": 0, \"last_success\": 1466458677.529692, \"exponent\": 0}",
+        "backend_status": "1 - OK",
+        "deleted": false,
+        "write_protect": false,
+        "lazy_blocked": false,
+        "no_sync": false,
+        "no_policy": false,
+        "kind": "onos",
+        "provider_service": 1,
+        "subscriber_service": 2,
+        "subscriber_tenant": null,
+        "subscriber_user": null,
+        "subscriber_root": null,
+        "subscriber_network": null,
+        "service_specific_id": null,
+        "service_specific_attribute": "{\"creator_id\": 1, \"dependencies\": \"org.onosproject.drivers, org.onosproject.drivers.ovsdb, org.onosproject.openflow-base, org.onosproject.ovsdb-base, org.onosproject.dhcp, org.onosproject.cordvtn, org.onosproject.olt, org.onosproject.igmp, org.onosproject.cordmcast\", \"name\": \"VTN_ONOS_app\"}",
+        "connect_method": "na"
+    },
+    {
+        "humanReadableName": "onos-tenant-5",
+        "validators": {
+            "service_specific_attribute": [],
+            "policed": [],
+            "backend_register": [
+                "notBlank"
+            ],
+            "backend_status": [
+                "notBlank"
+            ],
+            "id": [],
+            "no_policy": [],
+            "subscriber_service": [],
+            "subscriber_tenant": [],
+            "no_sync": [],
+            "connect_method": [
+                "notBlank"
+            ],
+            "updated": [
+                "notBlank"
+            ],
+            "deleted": [],
+            "lazy_blocked": [],
+            "service_specific_id": [],
+            "subscriber_root": [],
+            "subscriber_user": [],
+            "enacted": [],
+            "kind": [
+                "notBlank"
+            ],
+            "created": [],
+            "write_protect": [],
+            "subscriber_network": [],
+            "provider_service": [
+                "notBlank"
+            ]
+        },
+        "id": 5,
+        "created": "2016-06-20T21:36:36.499094Z",
+        "updated": "2016-06-20T21:36:36.498928Z",
+        "enacted": null,
+        "policed": null,
+        "backend_register": "{\"next_run\": 1466494235.874574, \"failures\": 732, \"last_success\": 1466458599.686363, \"exponent\": 732, \"last_failure\": 1466465435.874577}",
+        "backend_status": "2 - Exception('Ansible playbook failed. // Status code was not [200] // Status code was not [200]',)",
+        "deleted": false,
+        "write_protect": false,
+        "lazy_blocked": false,
+        "no_sync": false,
+        "no_policy": false,
+        "kind": "onos",
+        "provider_service": 1,
+        "subscriber_service": 7,
+        "subscriber_tenant": null,
+        "subscriber_user": null,
+        "subscriber_root": null,
+        "subscriber_network": null,
+        "service_specific_id": null,
+        "service_specific_attribute": "{\"creator_id\": 1, \"dependencies\": \"org.onosproject.openflow-base, org.onosproject.olt, org.ciena.onos.ext_notifier, org.ciena.onos.volt_event_publisher\", \"name\": \"vOLT_ONOS_app\", \"install_dependencies\": \"onos-ext-notifier-1.0-SNAPSHOT.oar, onos-ext-volt-event-publisher-1.0-SNAPSHOT.oar\"}",
+        "connect_method": "na"
+    },
+    {
+        "humanReadableName": "onos-tenant-10",
+        "validators": {
+            "service_specific_attribute": [],
+            "policed": [],
+            "backend_register": [
+                "notBlank"
+            ],
+            "backend_status": [
+                "notBlank"
+            ],
+            "id": [],
+            "no_policy": [],
+            "subscriber_service": [],
+            "subscriber_tenant": [],
+            "no_sync": [],
+            "connect_method": [
+                "notBlank"
+            ],
+            "updated": [
+                "notBlank"
+            ],
+            "deleted": [],
+            "lazy_blocked": [],
+            "service_specific_id": [],
+            "subscriber_root": [],
+            "subscriber_user": [],
+            "enacted": [],
+            "kind": [
+                "notBlank"
+            ],
+            "created": [],
+            "write_protect": [],
+            "subscriber_network": [],
+            "provider_service": [
+                "notBlank"
+            ]
+        },
+        "id": 10,
+        "created": "2016-06-20T21:36:37.094935Z",
+        "updated": "2016-06-20T21:36:37.094764Z",
+        "enacted": null,
+        "policed": null,
+        "backend_register": "{\"next_run\": 1466494237.018397, \"failures\": 732, \"last_success\": 1466458602.833531, \"exponent\": 732, \"last_failure\": 1466465437.0184}",
+        "backend_status": "2 - Exception('Ansible playbook failed. // Socket error: [Errno 111] Connection refused to http://onos-fabric:8181/onos/v1/applications/org.onosproject.vrouter/active',)",
+        "deleted": false,
+        "write_protect": false,
+        "lazy_blocked": false,
+        "no_sync": false,
+        "no_policy": false,
+        "kind": "onos",
+        "provider_service": 4,
+        "subscriber_service": 5,
+        "subscriber_tenant": null,
+        "subscriber_user": null,
+        "subscriber_root": null,
+        "subscriber_network": null,
+        "service_specific_id": null,
+        "service_specific_attribute": "{\"creator_id\": 1, \"dependencies\": \"org.onosproject.vrouter\", \"name\": \"vRouter_ONOS_app\"}",
+        "connect_method": "na"
+    },
+    {
+        "humanReadableName": "onos-tenant-2",
+        "validators": {
+            "service_specific_attribute": [],
+            "policed": [],
+            "backend_register": [
+                "notBlank"
+            ],
+            "backend_status": [
+                "notBlank"
+            ],
+            "id": [],
+            "no_policy": [],
+            "subscriber_service": [],
+            "subscriber_tenant": [],
+            "no_sync": [],
+            "connect_method": [
+                "notBlank"
+            ],
+            "updated": [
+                "notBlank"
+            ],
+            "deleted": [],
+            "lazy_blocked": [],
+            "service_specific_id": [],
+            "subscriber_root": [],
+            "subscriber_user": [],
+            "enacted": [],
+            "kind": [
+                "notBlank"
+            ],
+            "created": [],
+            "write_protect": [],
+            "subscriber_network": [],
+            "provider_service": [
+                "notBlank"
+            ]
+        },
+        "id": 2,
+        "created": "2016-06-20T21:35:56.835440Z",
+        "updated": "2016-06-20T21:35:56.835274Z",
+        "enacted": null,
+        "policed": null,
+        "backend_register": "{\"next_run\": 1466494229.282132, \"failures\": 736, \"last_success\": 1466458566.347982, \"exponent\": 736, \"last_failure\": 1466465429.282135}",
+        "backend_status": "2 - Exception('Ansible playbook failed. // Socket error: [Errno 111] Connection refused to http://onos-fabric:8181/onos/v1/applications/org.onosproject.lldpprovider/active // Socket error: [Errno 111] Connection refused to http://onos-fabric:8181/onos/v1/applications/org.onosproject.hostprovider/active // Socket error: [Errno 111] Connection refused to http://onos-fabric:8181/onos/v1/applications/org.onosproject.openflow-base/active // Socket error: [Errno 111] Connection refused to http://onos-fabric:8181/onos/v1/applications/org.onosproject.openflow/active // Socket error: [Errno 111] Connection refused to http://onos-fabric:8181/onos/v1/applications/org.onosproject.drivers/active // Socket error: [Errno 111] Connection refused to http://onos-fabric:8181/onos/v1/applications/org.onosproject.segmentrouting/active',)",
+        "deleted": false,
+        "write_protect": false,
+        "lazy_blocked": false,
+        "no_sync": false,
+        "no_policy": false,
+        "kind": "onos",
+        "provider_service": 4,
+        "subscriber_service": 3,
+        "subscriber_tenant": null,
+        "subscriber_user": null,
+        "subscriber_root": null,
+        "subscriber_network": null,
+        "service_specific_id": null,
+        "service_specific_attribute": "{\"creator_id\": 1, \"dependencies\": \"org.onosproject.lldpprovider, org.onosproject.hostprovider, org.onosproject.openflow-base, org.onosproject.openflow, org.onosproject.drivers, org.onosproject.segmentrouting\", \"name\": \"Fabric_ONOS_app\"}",
+        "connect_method": "na"
+    }
+]
