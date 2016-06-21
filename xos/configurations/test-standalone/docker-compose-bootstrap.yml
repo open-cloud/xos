@@ -13,7 +13,7 @@ xos_bootstrap_ui:
     volumes:
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config
       - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
-      - /opt/xos_services:/opt/xos_services
+      - ../../../../xos_services:/opt/xos_services
 
 xos_synchronizer_onboarding:
     image: xosproject/xos-synchronizer-onboarding
@@ -28,7 +28,7 @@ xos_synchronizer_onboarding:
         - /var/run/docker.sock:/var/run/docker.sock
         - ./key_import:/opt/xos/key_import:ro
         - ./onboarding-docker-compose:/opt/xos/synchronizers/onboarding/docker-compose
-        - /opt/xos_services:/opt/xos_services
+        - ../../../../xos_services:/opt/xos_services
     log_driver: "json-file"
     log_opt:
             max-size: "100k"

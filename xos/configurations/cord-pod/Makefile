@@ -17,10 +17,10 @@ bootstrap:
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run -e CONFIG_DIR=$(CONFIG_DIR) xos_bootstrap_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/cord-pod/xos.yaml
 
 download_services:
-	sudo make -f ../common/Makefile.services
+	make -f ../common/Makefile.services
 
 update_services:
-	sudo make -f ../common/Makefile.services update
+	make -f ../common/Makefile.services update
 
 onboarding:
 	echo "[ONBOARDING]"

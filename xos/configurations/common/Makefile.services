@@ -1,49 +1,51 @@
-services: /opt/xos_services \
-          /opt/xos_services/exampleservice \
-          /opt/xos_services/olt \
-	  /opt/xos_services/vsg \
-          /opt/xos_services/vtn \
-	  /opt/xos_services/vrouter \
-	  /opt/xos_services/vtr \
-	  /opt/xos_services/onos-service \
-	  /opt/xos_services/fabric
+SERVICE_DIR=../../../../xos_services
 
-/opt/xos_services:
-	mkdir -p /opt/xos_services
+services: $(SERVICE_DIR) \
+          $(SERVICE_DIR)/exampleservice \
+          $(SERVICE_DIR)/olt \
+	  $(SERVICE_DIR)/vsg \
+          $(SERVICE_DIR)/vtn \
+	  $(SERVICE_DIR)/vrouter \
+	  $(SERVICE_DIR)/vtr \
+	  $(SERVICE_DIR)/onos-service \
+	  $(SERVICE_DIR)/fabric
 
-/opt/xos_services/exampleservice:
-	git -C /opt/xos_services clone https://gerrit.opencord.org/p/exampleservice.git
+$(SERVICE_DIR):
+	mkdir -p $(SERVICE_DIR)
 
-/opt/xos_services/olt:
-	git -C /opt/xos_services clone https://gerrit.opencord.org/p/olt.git
+$(SERVICE_DIR)/exampleservice:
+	git -C $(SERVICE_DIR) clone https://gerrit.opencord.org/p/exampleservice.git
 
-/opt/xos_services/vsg:
-	git -C /opt/xos_services clone https://gerrit.opencord.org/p/vsg.git
+$(SERVICE_DIR)/olt:
+	git -C $(SERVICE_DIR) clone https://gerrit.opencord.org/p/olt.git
 
-/opt/xos_services/vtn:
-	git -C /opt/xos_services clone https://gerrit.opencord.org/p/vtn.git
+$(SERVICE_DIR)/vsg:
+	git -C $(SERVICE_DIR) clone https://gerrit.opencord.org/p/vsg.git
 
-/opt/xos_services/vrouter:
-	git -C /opt/xos_services clone https://gerrit.opencord.org/p/vrouter.git
+$(SERVICE_DIR)/vtn:
+	git -C $(SERVICE_DIR) clone https://gerrit.opencord.org/p/vtn.git
 
-/opt/xos_services/vtr:
-	git -C /opt/xos_services clone https://gerrit.opencord.org/p/vtr.git
+$(SERVICE_DIR)/vrouter:
+	git -C $(SERVICE_DIR) clone https://gerrit.opencord.org/p/vrouter.git
 
-/opt/xos_services/onos-service:
-	git -C /opt/xos_services clone https://gerrit.opencord.org/p/onos-service.git
+$(SERVICE_DIR)/vtr:
+	git -C $(SERVICE_DIR) clone https://gerrit.opencord.org/p/vtr.git
 
-/opt/xos_services/fabric:
-	git -C /opt/xos_services clone https://gerrit.opencord.org/p/fabric.git
+$(SERVICE_DIR)/onos-service:
+	git -C $(SERVICE_DIR) clone https://gerrit.opencord.org/p/onos-service.git
+
+$(SERVICE_DIR)/fabric:
+	git -C $(SERVICE_DIR) clone https://gerrit.opencord.org/p/fabric.git
 
 cleanup:
-	rm -rf /opt/xos_services/*
+	rm -rf $(SERVICE_DIR)/*
 
 update:
-	git -C /opt/xos_services/exampleservice pull
-	git -C /opt/xos_services/olt pull
-	git -C /opt/xos_services/vsg pull
-	git -C /opt/xos_services/vtn pull
-	git -C /opt/xos_services/vrouter pull
-	git -C /opt/xos_services/vtr pull
-	git -C /opt/xos_services/onos-service pull
-	git -C /opt/xos_services/fabric pull
+	git -C $(SERVICE_DIR)/exampleservice pull
+	git -C $(SERVICE_DIR)/olt pull
+	git -C $(SERVICE_DIR)/vsg pull
+	git -C $(SERVICE_DIR)/vtn pull
+	git -C $(SERVICE_DIR)/vrouter pull
+	git -C $(SERVICE_DIR)/vtr pull
+	git -C $(SERVICE_DIR)/onos-service pull
+	git -C $(SERVICE_DIR)/fabric pull
