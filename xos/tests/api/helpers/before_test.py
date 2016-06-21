@@ -100,7 +100,7 @@ def createTestSubscriber():
     # print 'vRouter created'
 
     # Site
-    site = Site.objects.get(name='MySite')
+    site = Site.objects.get(name='mysite')
 
     # vSG service
     vsg_service = VSGService()
@@ -206,7 +206,7 @@ def createFlavors():
 
 
 def createSlice():
-    site = Site.objects.get(name='MySite')
+    site = Site.objects.get(name='mysite')
     user = User.objects.get(email="padmin@vicci.org")
 
     sl = Slice(id=1)
@@ -237,7 +237,7 @@ def createImage(name):
 
 
 def createNode(deployment):
-    site = Site.objects.get(name='MySite')
+    site = Site.objects.get(name='mysite')
 
     site_deployment = SiteDeployment(id=1)
     site_deployment.site = site

@@ -100,7 +100,7 @@ def createTestSubscriber():
     print 'vRouter created'
 
     # Site
-    site = Site.objects.get(name='MySite')
+    site = Site.objects.get(name='mysite')
 
     # vSG service
     vsg_service = VSGService()

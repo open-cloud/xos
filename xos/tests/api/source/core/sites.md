@@ -9,7 +9,7 @@ List of the XOS sites
 + Response 200 (application/json)
 
         {
-            "humanReadableName": "MySite",
+            "humanReadableName": "mysite",
             "id": 1,
             "created": "2016-04-29T16:19:03.587770Z",
             "updated": "2016-04-29T16:19:05.651933Z",
