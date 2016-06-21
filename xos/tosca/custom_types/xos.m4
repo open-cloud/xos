@@ -250,6 +250,9 @@ node_types:
             dependencies:
                 type: string
                 required: false
+            install_dependencies:
+                type: string
+                required: false
             rest_onos/v1/network/configuration/:
                 type: string
                 required: false
@@ -264,6 +267,9 @@ node_types:
         properties:
             xos_base_tenant_props
             dependencies:
+                type: string
+                required: false
+            install_dependencies:
                 type: string
                 required: false
             rest_onos/v1/network/configuration/:
