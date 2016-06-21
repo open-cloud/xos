@@ -52,7 +52,7 @@ onboarding:
 	sudo bash -c "echo somekey > key_import/volt_rsa.pub"
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/common/disable-onboarding.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vrouter/xos/vrouter-onboard.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/volt/xos/volt-onboard.yaml
+	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/olt/xos/volt-onboard.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vsg/xos/vsg-onboard.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vtr/xos/vtr-onboard.yaml
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/configurations/common/enable-onboarding.yaml
