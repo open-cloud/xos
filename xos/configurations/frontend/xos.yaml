@@ -13,6 +13,7 @@ topology_template:
         ui_port: 9999
         bootstrap_ui_port: 9998
         docker_project_name: frontend
+        db_container_name: frontendbs_xos_db_1
         frontend_only: true
 
     /opt/xos/xos_configuration/xos_common_config:

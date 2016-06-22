@@ -12,7 +12,7 @@ from xosresource import XOSResource
 class XOSXOS(XOSResource):
     provides = "tosca.nodes.XOS"
     xos_model = XOS
-    copyin_props = ["ui_port", "bootstrap_ui_port", "docker_project_name", "enable_build", "frontend_only", "source_ui_image"]
+    copyin_props = ["ui_port", "bootstrap_ui_port", "docker_project_name", "db_container_name", "enable_build", "frontend_only", "source_ui_image"]
 
 class XOSVolume(XOSResource):
     provides = "tosca.nodes.XOSVolume"

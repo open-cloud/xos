@@ -32,6 +32,9 @@ class SyncXOS(SyncStep, XOSBuilder):
         if not xos.docker_project_name:
             raise Exception("xos.docker_project_name is not set")
 
+        if not xos.db_container_name:
+            raise Exception("xos.db_container_name is not set")
+
         if (not xos.enable_build):
             raise DeferredException("XOS build is currently disabled")
 

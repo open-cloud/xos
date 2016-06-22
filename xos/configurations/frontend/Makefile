@@ -3,6 +3,7 @@ CONFIG_DIR:=$(shell pwd)
 DOCKER_COMPOSE_YML=./onboarding-docker-compose/docker-compose.yml
 BOOTSTRAP_YML=./docker-compose-bootstrap.yml
 DOCKER_PROJECT=frontend
+BOOTSTRAP_PROJECT=frontendbs
 XOS_BOOTSTRAP_PORT=9998
 XOS_UI_PORT=9999
 
@@ -25,9 +26,9 @@ update_services:
 bootstrap:
 	echo "[BOOTSTRAP]"
 	sudo rm -f onboarding-docker-compose/docker-compose.yml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f docker-compose-bootstrap.yml up -d
+	sudo docker-compose -p $(BOOTSTRAP_PROJECT) -f $(BOOTSTRAP_YML) up -d
 	bash ../common/wait_for_xos_port.sh $(XOS_BOOTSTRAP_PORT)
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run -e CONFIG_DIR=$(CONFIG_DIR) xos_bootstrap_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/frontend/xos.yaml
+	sudo docker-compose -p $(BOOTSTRAP_PROJECT) -f $(BOOTSTRAP_YML) run -e CONFIG_DIR=$(CONFIG_DIR) xos_bootstrap_ui python /opt/xos/tosca/run.py none /opt/xos/configurations/frontend/xos.yaml
 
 onboarding:
 	echo "[ONBOARDING]"
@@ -49,14 +50,14 @@ containers:
 
 stop:
 	test ! -s $(DOCKER_COMPOSE_YML) || sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) stop
-	sudo docker-compose -f $(BOOTSTRAP_YML) stop
+	sudo docker-compose -p $(BOOTSTRAP_PROJECT) -f $(BOOTSTRAP_YML) stop
 
 showlogs:
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) logs
+	sudo docker-compose -p $(BOOTSTRAP_PROJECT) -f $(BOOTSTRAP_YML) logs
 
 rm: stop
 	test ! -s $(DOCKER_COMPOSE_YML) || sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) rm
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) rm
+	sudo docker-compose -p $(BOOTSTRAP_PROJECT) -f $(BOOTSTRAP_YML) rm
 
 ps:
 	sudo docker-compose ps
@@ -84,9 +85,9 @@ onboard-cord-pod:
 	sudo bash -c "echo somekey > key_import/vsg_rsa.pub"
 	sudo bash -c "echo somekey > key_import/volt_rsa"
 	sudo bash -c "echo somekey > key_import/volt_rsa.pub"
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vrouter/xos/vrouter-onboard.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/olt/xos/volt-onboard.yaml
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vsg/xos/vsg-onboard.yaml
+	sudo docker-compose -p $(BOOTSTRAP_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vrouter/xos/vrouter-onboard.yaml
+	sudo docker-compose -p $(BOOTSTRAP_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/olt/xos/volt-onboard.yaml
+	sudo docker-compose -p $(BOOTSTRAP_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/vsg/xos/vsg-onboard.yaml
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/vrouter
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/volt
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/vsg
@@ -106,6 +107,6 @@ exampleservice:
 	# fake keys are fine
 	sudo bash -c "echo somekey > key_import/exampleservice_rsa"
 	sudo bash -c "echo somekey > key_import/exampleservice_rsa.pub"
-	sudo docker-compose -p $(DOCKER_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos_services/exampleservice/xos/exampleservice-onboard.yaml
+	sudo docker-compose -p $(BOOTSTRAP_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos_services/exampleservice/xos/exampleservice-onboard.yaml
 	bash ../common/wait_for_onboarding_ready.sh 9998 services/exampleservice
 	bash ../common/wait_for_onboarding_ready.sh 9998 xos

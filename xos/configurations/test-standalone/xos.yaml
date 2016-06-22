@@ -13,6 +13,7 @@ topology_template:
         ui_port: 9999
         bootstrap_ui_port: 9998
         docker_project_name: teststandalone
+        db_container_name: teststandalonebs_xos_db_1
         frontend_only: true
         source_ui_image: xosproject/xos-test
 
