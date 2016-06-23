@@ -22,7 +22,7 @@ topology_template:
               node: service#vsg
               relationship: tosca.relationships.TenantOfService
       properties:
-          view_url: /admin/cord/voltservice/$id$/
+          view_url: /admin/volt/voltservice/$id$/
           kind: vOLT
           replaces: service_volt
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
@@ -51,7 +51,7 @@ topology_template:
               node: service#vrouter
               relationship: tosca.relationships.TenantOfService
       properties:
-          view_url: /admin/cord/vsgservice/$id$/
+          view_url: /admin/vsg/vsgservice/$id$/
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/services/vsg/keys/vsg_rsa
