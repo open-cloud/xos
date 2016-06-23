@@ -99,13 +99,16 @@ onboard-exampleservice:
 cord-ceilometer: ceilometer_custom_images cord onboard-ceilometer
 	sudo docker-compose  -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/ceilometer.yaml
 
-onboard-ceilometer:
+onboard-ceilometer: download-ceilometer
 	sudo cp id_rsa key_import/monitoring_channel_rsa
 	sudo cp id_rsa.pub key_import/monitoring_channel_rsa.pub
-	sudo docker-compose -p $(BOOTSTRAP_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos/onboard/ceilometer/ceilometer-onboard.yaml
+	sudo docker-compose -p $(BOOTSTRAP_PROJECT) -f $(BOOTSTRAP_YML) run xos_bootstrap_ui python /opt/xos/tosca/run.py None /opt/xos_services/monitoring/xos/ceilometer-onboard.yaml
 	bash ../common/wait_for_onboarding_ready.sh 81 services/ceilometer
 	bash ../common/wait_for_onboarding_ready.sh 81 xos
 	bash ../common/wait_for_xos_port.sh 80
+
+download-ceilometer:
+	make -f ../common/Makefile.services monitoring_services
 
 nodes.yaml:
 	export SETUPDIR=.; bash ../common/make-nodes-yaml.sh

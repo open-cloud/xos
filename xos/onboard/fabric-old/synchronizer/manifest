@@ -1,9 +1,0 @@
-manifest
-fabric_synchronizer_config
-steps/sync_host.yaml
-steps/sync_vroutertenant.py
-start.sh
-stop.sh
-model-deps
-run.sh
-fabric-synchronizer.py

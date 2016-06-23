@@ -1,4 +1,0 @@
----
-
-- name: restart openvpn
-  shell: (kill -9 $(cat {{ pki_dir }}/pid) || true) && (openvpn {{ pki_dir }}/server.conf &)

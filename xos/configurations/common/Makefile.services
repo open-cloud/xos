@@ -10,6 +10,8 @@ services: $(SERVICE_DIR) \
 	  $(SERVICE_DIR)/onos-service \
 	  $(SERVICE_DIR)/fabric
 
+monitoring_services: $(SERVICE_DIR)/monitoring
+
 $(SERVICE_DIR):
 	mkdir -p $(SERVICE_DIR)
 
@@ -36,6 +38,9 @@ $(SERVICE_DIR)/onos-service:
 
 $(SERVICE_DIR)/fabric:
 	git -C $(SERVICE_DIR) clone https://gerrit.opencord.org/p/fabric.git
+
+$(SERVICE_DIR)/monitoring:
+	git -C $(SERVICE_DIR) clone https://gerrit.opencord.org/p/monitoring.git
 
 cleanup:
 	rm -rf $(SERVICE_DIR)/*
