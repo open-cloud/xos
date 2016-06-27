@@ -13,7 +13,7 @@ describe('Tenant View', () => {
     httpBackend.whenGET('/api/core/sites/?no_hyperlinks=1').respond(200, []);
     // Setting up mock request
     scope = $rootScope.$new();
-    element = angular.element('<users-list></users-list>');
+    element = angular.element('<site-list></site-list>');
     $compile(element)(scope);
     scope.$digest();
     isolatedScope = element.isolateScope().vm;

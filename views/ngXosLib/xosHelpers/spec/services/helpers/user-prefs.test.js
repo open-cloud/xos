@@ -23,6 +23,7 @@
   describe('The xos.helper module', function(){
 
     describe('The XosUserPrefs service', () => {
+      let service, toscaBase, deffered, SiteSpy, rootScope;
 
       // load the application module
       beforeEach(module('xos.helpers', ($provide) => {
@@ -36,12 +37,19 @@
         spyOn(cookieMock, 'put').and.callThrough();
       }));
 
+      beforeEach(inject(($q, $rootScope) => {
+        rootScope = $rootScope;
+      }));
       it('should exists and have methods', () => {
         expect(service).toBeDefined();
         expect(service.getAll).toBeDefined();
         expect(service.setAll).toBeDefined();
         expect(service.getSynchronizerNotificationStatus).toBeDefined();
         expect(service.setSynchronizerNotificationStatus).toBeDefined();
+        expect(service.setUserDetailsCookie).toBeDefined();
+        expect(service.getUserDetailsCookie).toBeDefined();
+        expect(service.setDataUser).toBeDefined()
+
       });
 
       describe('the getAll method', () => {
@@ -67,6 +75,9 @@
                 first: true,
                 second: false
               }
+            },
+            userData: {
+              userId:1
             }
           }
           cookies.xosUserPrefs = JSON.stringify(syncNotification);
@@ -83,6 +94,15 @@
           });
         });
 
+        describe('the getUserDetailsCookie method', () => {
+          it('should return current user id', (done) => {
+            service.getUserDetailsCookie().$promise.then((res) => {
+              expect(res.userId).toEqual(syncNotification.userData.userId);
+              done();
+            });
+            rootScope.$apply();
+          });
+        });
         describe('the setSynchronizerNotificationStatus', () => {
           
           it('should throw an error if called without synchronizer name', () => {
@@ -98,13 +118,46 @@
             expect(service.getSynchronizerNotificationStatus('first')).toEqual(true);
 
             // should persist the change
-            expect(cookieMock.put).toHaveBeenCalledWith('xosUserPrefs', '{"synchronizers":{"notification":{"first":true,"second":true}}}');
+            expect(cookieMock.put).toHaveBeenCalledWith('xosUserPrefs', '{"synchronizers":{"notification":{"first":true,"second":true}},"userData":{"userId":1}}');
           });
 
           it('should handle empty cookies', () => {
             cookies.xosUserPrefs = '';
             service.setSynchronizerNotificationStatus('second', true);
             expect(service.getSynchronizerNotificationStatus('second')).toEqual(true);
+          });
+        });
+      });
+      describe('the userdetails status', () => {
+        let syncNotification;
+        beforeEach(() => {
+          syncNotification = {
+            synchronizers: {
+              notification: {
+                first: true,
+                second: false
+              }
+            }
+          }
+          cookies.xosUserPrefs = JSON.stringify(syncNotification);
+        });
+        const userData = {
+          userId: 1
+        };
+        beforeEach(inject(($q,Me) => {
+          deffered= $q.defer();
+          spyOn(Me, 'get').and.callFake(function(){
+            return {$promise: deffered.promise};
+          });
+        }));
+        describe('the getUserDetailsCookie method', () => {
+          it('should return current user id', (done) => {
+            service.getUserDetailsCookie().$promise.then((res) => {
+              expect(res.userId).toEqual(userData.userId);
+              done();
+            });
+            deffered.resolve(userData);
+            rootScope.$apply();
           });
         });
       });
