@@ -43,6 +43,8 @@ xos_synchronizer_openstack:
 
 xos_bootstrap_ui:
     command: python /opt/xos/manage.py runserver 0.0.0.0:81 --insecure --makemigrations
+    environment:
+        - CONFIG_DIR
     image: xosproject/xos
     links:
         - xos_db
