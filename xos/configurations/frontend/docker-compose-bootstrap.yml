@@ -6,6 +6,8 @@ xos_db:
 xos_bootstrap_ui:
     image: xosproject/xos
     command: python /opt/xos/manage.py runserver 0.0.0.0:9998 --insecure --makemigrations
+    environment:
+        - CONFIG_DIR
     ports:
         - "9998:9998"
     links:
