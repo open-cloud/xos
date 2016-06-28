@@ -18,17 +18,18 @@ angular.module('xos.helpers')
     let logFn = $delegate.log;
     let infoFn = $delegate.info;
     let warnFn = $delegate.warn;
-    let errorFn = $delegate.error;
+    //let errorFn = $delegate.error;
     let debugFn = $delegate.debug;
 
     // create the replacement function
     const replacement = (fn) => {
       return function(){
-        // console.log(`Is Log Enabled: ${isLogEnabled()}`)
+         //console.log(`Is Log Enabled: ${isLogEnabled()}`)
         if(!isLogEnabled()){
           // console.log('logging is disabled');
           return;
         }
+
         let args    = [].slice.call(arguments);
         let now     = new Date();
 
@@ -43,14 +44,15 @@ angular.module('xos.helpers')
         }
 
         // Call the original with the output prepended with formatted timestamp
-        fn.apply(null, args)
+
+        return fn.apply(null, args)
       };
     };
 
     $delegate.info = replacement(infoFn);
     $delegate.log = replacement(logFn);
     $delegate.warn = replacement(warnFn);
-    $delegate.error = replacement(errorFn);
+    //$delegate.error = replacement(errorFn); // note this will prevent errors to be printed
     $delegate.debug = replacement(debugFn);
 
     return $delegate;
