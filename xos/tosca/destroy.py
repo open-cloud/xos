@@ -24,7 +24,12 @@ def main():
 
     u = User.objects.get(email=username)
 
-    xt = XOSTosca(file(template_name).read(), parent_dir=currentdir, log_to_console=True)
+    if template_name=="-":
+        tosca_source = sys.stdin.read()
+    else:
+        tosca_source = file(template_name).read()
+
+    xt = XOSTosca(tosca_source, parent_dir=currentdir, log_to_console=True)
     xt.destroy(u)
 
 if __name__=="__main__":
