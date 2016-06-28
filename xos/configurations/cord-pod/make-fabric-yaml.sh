@@ -22,6 +22,9 @@ topology_template:
           no_container: true
           rest_hostname: onos-fabric
           replaces: service_ONOS_Fabric
+          rest_onos/v1/network/configuration/: { get_artifact: [ SELF, fabric_network_cfg_json, LOCAL_FILE ] }
+      artifacts:
+          fabric_network_cfg_json: /root/setup/cord-fabric-vr.json
 
     service#fabric:
       type: tosca.nodes.FabricService
@@ -67,5 +70,5 @@ cat >> $FN <<EOF
               node: service#fabric
               relationship: tosca.relationships.UsedByService
       properties:
-          dependencies: org.onosproject.lldpprovider, org.onosproject.hostprovider, org.onosproject.openflow-base, org.onosproject.openflow, org.onosproject.drivers, org.onosproject.segmentrouting
+          dependencies: org.onosproject.drivers, org.onosproject.openflow-base, org.onosproject.netcfghostprovider, org.onosproject.netcfglinksprovider, org.onosproject.segmentrouting, org.onosproject.vrouter, org.onosproject.hostprovider
 EOF

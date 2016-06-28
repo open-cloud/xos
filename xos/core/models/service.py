@@ -327,7 +327,7 @@ class Service(PlCoreBase, AttributeMixin):
 
 class ServiceAttribute(PlCoreBase):
     name = models.CharField(help_text="Attribute Name", max_length=128)
-    value = StrippedCharField(help_text="Attribute Value", max_length=1024)
+    value = models.TextField(help_text="Attribute Value")
     service = models.ForeignKey(Service, related_name='serviceattributes',
                                 help_text="The Service this attribute is associated with")
 

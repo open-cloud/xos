@@ -1,0 +1,161 @@
+{
+    "ports" : {
+    "of:0000000000000001/5" : {
+        "interfaces" : [
+            {
+                "ips" : [ "10.0.1.254/24" ]
+            }
+        ]
+    },
+    "of:0000000000000001/7" : {
+        "interfaces" : [
+            {
+                "ips" : [ "10.0.1.254/24" ]
+            }
+        ]
+    },
+    "of:0000000000000002/5" : {
+        "interfaces" : [
+            {
+                "ips" : [ "10.0.2.254/24" ]
+            }
+        ]
+    },
+    "of:0000000000000002/32" : {
+        "interfaces" : [
+            {
+                "name" : "internet-router",
+                "ips" : [ "10.231.254.202/30" ],
+                "mac" : "00:16:3e:4b:5a:04"
+            }
+        ],
+        "pimInterface" : {
+            "interfaceName" : "internet-router",
+            "enabled" : true,
+            "helloInterval" : 1,
+            "holdTime" : 3,
+            "propagationDelay" : 500,
+            "overrideInterval" : 2500
+         }
+    }
+    },
+    "devices" : {
+        "of:0000000000000001" : {
+            "segmentrouting" : {
+                "name" : "Leaf-R1",
+                "nodeSid" : 101,
+                "routerIp" : "10.0.1.254",
+                "routerMac" : "00:00:00:00:01:80",
+                "isEdgeRouter" : true,
+                "adjacencySids" : []
+            }
+        },
+        "of:0000000000000002" : {
+            "segmentrouting" : {
+                "name" : "Leaf-R2",
+                "nodeSid" : 102,
+                "routerIp" : "10.0.2.254",
+                "routerMac" : "00:00:00:00:02:80",
+                "isEdgeRouter" : true,
+                "adjacencySids" : []
+            }
+        },
+        "of:0000000000000191" : {
+            "segmentrouting" : {
+                "name" : "Spine-R1",
+                "nodeSid" : 103,
+                "routerIp" : "192.168.0.11",
+                "routerMac" : "00:00:01:00:11:80",
+                "isEdgeRouter" : false,
+                "adjacencySids" : []
+            }
+        },
+        "of:0000000000000192" : {
+            "segmentrouting" : {
+                "name" : "Spine-R2",
+                "nodeSid" : 104,
+                "routerIp" : "192.168.0.22",
+                "routerMac" : "00:00:01:00:22:80",
+                "isEdgeRouter" : false,
+                "adjacencySids" : []
+            }
+        }
+    },
+    "hosts" : {},
+    "links" : {
+        "of:0000000000000001/1-of:0000000000000191/1" : {
+            "basic" : {}
+        },
+        "of:0000000000000001/3-of:0000000000000192/1" : {
+            "basic" : {}
+        },
+        "of:0000000000000002/1-of:0000000000000191/3" : {
+            "basic" : {}
+        },
+        "of:0000000000000002/3-of:0000000000000192/3" : {
+            "basic" : {}
+        },
+        "of:0000000000000191/1-of:0000000000000001/1" : {
+            "basic" : {}
+        },
+        "of:0000000000000192/1-of:0000000000000001/3" : {
+            "basic" : {}
+        },
+        "of:0000000000000191/3-of:0000000000000002/1" : {
+            "basic" : {}
+        },
+        "of:0000000000000192/3-of:0000000000000002/3" : {
+            "basic" : {}
+        }
+    },
+    "apps" : {
+        "org.onosproject.core" : {
+            "core" : {
+                "linkDiscoveryMode" : "STRICT"
+            },
+            "multicast": {
+                "ingressVlan": "None",
+                "egressVlan": "None"
+            }
+        },
+        "org.onosproject.segmentrouting" : {
+            "segmentrouting" : {
+                "vRouterMacs" : [
+                    "a4:23:05:34:56:78", "a4:23:05:34:56:79"
+                ],
+                "vRouterId" : "of:0000000000000002",
+                "suppressSubnet" : [
+                    "of:0000000000000002/31", "of:0000000000000002/32"
+                ],
+                "suppressHostByProvider" : [
+                    "org.onosproject.provider.host"
+                ],
+                "suppressHostByPort" : [
+                    "of:0000000000000002/31", "of:0000000000000002/32"
+                ]
+            },
+            "xconnect": {
+                "of:0000000000000001": [
+                    {
+                        "vlan": 10,
+                        "ports": [5, 73],
+                        "name": "OLT1"
+                    },
+                    {
+                        "vlan": 20,
+                        "ports": [5, 89],
+                        "name": "OLT2"
+                    }
+                ]
+            }
+        },
+        "org.onosproject.router" : {
+            "router" : {
+                "controlPlaneConnectPoint" : "of:0000000000000002/31",
+                "ospfEnabled" : "true",
+                "pimEnabled" : "true",
+                "interfaces" : [ "internet-router" ]
+            }
+        }
+    }
+}
