@@ -88,19 +88,20 @@ topology_template:
           no-create: true
           no-update: true
 
-    vOLT_ONOS_app:
-      type: tosca.nodes.ONOSvOLTApp
-      requirements:
-          - onos_tenant:
-              node: service#ONOS_CORD
-              relationship: tosca.relationships.TenantOfService
-          - volt_service:
-              node: service#volt
-              relationship: tosca.relationships.UsedByService
-      properties:
-          install_dependencies: onos-ext-notifier-1.0-SNAPSHOT.oar, onos-ext-volt-event-publisher-1.0-SNAPSHOT.oar
-          dependencies: org.onosproject.openflow-base, org.onosproject.olt, org.ciena.onos.ext_notifier, org.ciena.onos.volt_event_publisher
-          autogenerate: volt-network-cfg
+    # The vOLT ONOS app is not yet fully integrated
+    #vOLT_ONOS_app:
+    #  type: tosca.nodes.ONOSvOLTApp
+    #  requirements:
+    #      - onos_tenant:
+    #          node: service#ONOS_CORD
+    #          relationship: tosca.relationships.TenantOfService
+    #      - volt_service:
+    #          node: service#volt
+    #          relationship: tosca.relationships.UsedByService
+    #  properties:
+    #      install_dependencies: onos-ext-notifier-1.0-SNAPSHOT.oar, onos-ext-volt-event-publisher-1.0-SNAPSHOT.oar
+    #      dependencies: org.onosproject.openflow-base, org.onosproject.olt, org.ciena.onos.ext_notifier, org.ciena.onos.volt_event_publisher
+    #      autogenerate: volt-network-cfg
 
     vRouter_ONOS_app:
       type: tosca.nodes.ONOSvRouterApp
