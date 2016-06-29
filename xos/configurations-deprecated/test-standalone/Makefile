@@ -103,7 +103,7 @@ test-tosca: restore-initial-db-status
 	sudo docker-compose -p $(DOCKER_PROJECT) -f $(DOCKER_COMPOSE_YML) run xos_ui bash -c "cd /opt/xos/tosca/tests; python ./alltests.py"
 
 test-ui: restore-initial-db-status
-	sudo docker exec -u root -i teststandalone_xos_1 bash -c "cd /opt/xos/tests/ui-e2e; python xos-e2e-test.py"
+	sudo docker exec -u root -i teststandalone_xos_ui_1 bash -c "cd /opt/xos/tests/ui-e2e; python xos-e2e-test.py"
 
 base-container: 
 	cd ../../../containers/xos; make base
