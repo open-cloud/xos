@@ -267,3 +267,7 @@ STATISTICS_DRIVER = getattr(config, "statistics_driver", "ceilometer")
 
 # prevents warnings on django 1.7
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+# API key for Google Maps, created by zdw on 2016-06-29. Testing only, not for production
+GEOPOSITION_GOOGLE_MAPS_API_KEY = 'AIzaSyBWAHP9mvLqWLRkVqK8o5wMskaIe9w7DaM'
+
