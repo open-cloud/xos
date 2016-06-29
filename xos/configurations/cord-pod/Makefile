@@ -103,18 +103,18 @@ onboard-exampleservice:
 	bash ../common/wait_for_onboarding_ready.sh 81 xos
 	bash ../common/wait_for_xos_port.sh 80
 
-cord-ceilometer: ceilometer_custom_images cord onboard-ceilometer
-	$(RUN_TOSCA) ceilometer.yaml
+cord-monitoringservice: ceilometer_custom_images cord onboard-monitoringservice
+	$(RUN_TOSCA) monitoringservice.yaml
 
-onboard-ceilometer: download-ceilometer
-	sudo cp id_rsa key_import/monitoring_channel_rsa
-	sudo cp id_rsa.pub key_import/monitoring_channel_rsa.pub
-	$(RUN_TOSCA_BOOTSTRAP) $(SERVICE_DIR)/monitoring/xos/ceilometer-onboard.yaml
-	bash ../common/wait_for_onboarding_ready.sh 81 services/ceilometer
+onboard-monitoringservice: download-monitoringservice
+	sudo cp id_rsa key_import/monitoringservice_rsa
+	sudo cp id_rsa.pub key_import/monitoringservice_rsa.pub
+	$(RUN_TOSCA_BOOTSTRAP) $(SERVICE_DIR)/monitoring/xos/monitoring-onboard.yaml
+	bash ../common/wait_for_onboarding_ready.sh 81 services/monitoring
 	bash ../common/wait_for_onboarding_ready.sh 81 xos
 	bash ../common/wait_for_xos_port.sh 80
 
-download-ceilometer:
+download-monitoringservice:
 	make -f ../common/Makefile.services monitoring_services
 
 nodes.yaml:

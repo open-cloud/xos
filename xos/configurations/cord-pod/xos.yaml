@@ -75,12 +75,12 @@ topology_template:
 #             node: xos
 #             relationship: tosca.relationships.UsedByXOS
 
-    /opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key:
-      type: tosca.nodes.XOSVolume
-      properties:
-          host_path: { path_join: [ SELF, CONFIG_DIR, id_rsa.pub, ENV_VAR ] }                                                      
-          read_only: true
-      requirements:
-          - xos:
-             node: xos
-             relationship: tosca.relationships.UsedByXOS
+#    /opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key:
+#      type: tosca.nodes.XOSVolume
+#      properties:
+#          host_path: { path_join: [ SELF, CONFIG_DIR, id_rsa.pub, ENV_VAR ] }                                                      
+#          read_only: true
+#      requirements:
+#          - xos:
+#             node: xos
+#             relationship: tosca.relationships.UsedByXOS
