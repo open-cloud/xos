@@ -1,5 +1,5 @@
 import os
-from django.db import models
+from django.db import models, transaction
 from core.models import PlCoreBase
 from core.models.plcorebase import StrippedCharField
 
@@ -30,11 +30,12 @@ class XOS(PlCoreBase):
 #        return user.can_update_site(self.site, allow=['tech'])
 
     def rebuild(self):
-        for service_controller in self.service_controllers.all():
-            for scr in service_controller.service_controller_resources.all():
-               scr.save()
-            service_controller.save()
-        self.save()
+        with transaction.atomic():
+            for service_controller in self.service_controllers.all():
+                for scr in service_controller.service_controller_resources.all():
+                   scr.save()
+                service_controller.save()
+            self.save()
 
 class XOSVolume(PlCoreBase):
     xos = models.ForeignKey(XOS, related_name='volumes', help_text="The XOS object for this Volume")

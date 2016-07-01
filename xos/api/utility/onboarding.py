@@ -20,6 +20,7 @@ class OnboardingViewSet(XOSViewSet):
         patterns = [] #super(CordSubscriberViewSet, self).get_urlpatterns(api_path=api_path)
 
         patterns.append( self.list_url("xos/ready/$", {"get": "get_xos_ready"}, "xos_ready") )
+        patterns.append( self.list_url("xos/rebuild/$", {"post": "post_rebuild"}, "xos_rebuild") )
 
         patterns.append( self.list_url("summary/$", {"get": "get_summary"}, "summary") )
 
@@ -41,6 +42,17 @@ class OnboardingViewSet(XOSViewSet):
 
         result = (xos.enacted is not None) and (xos.updated is not None) and (xos.enacted>=xos.updated) and (xos.backend_status.startswith("1"))
         return HttpResponse( json.dumps(result), content_type="application/javascript" )
+
+    def post_rebuild(self, request):
+        xos = XOS.objects.all()
+        if not xos:
+            raise Exception("There is no XOS object")
+
+        xos=xos[0]
+
+        xos.rebuild()
+
+        return Response(True)
 
     def get_summary(self, request):
         result = []
