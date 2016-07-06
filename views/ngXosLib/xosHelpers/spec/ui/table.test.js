@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  var scope, element, isolatedScope, rootScope, compile;
+  var scope, element, isolatedScope, rootScope, compile, filter;
   const compileElement = () => {
 
     if(!scope){
@@ -18,7 +18,7 @@
     compile(element)(scope);
     scope.$digest();
     isolatedScope = element.isolateScope().vm;
-  }
+  };
 
 
   describe('The xos.helper module', function(){
@@ -26,9 +26,10 @@
 
       beforeEach(module('xos.helpers'));
 
-      beforeEach(inject(function ($compile, $rootScope) {
+      beforeEach(inject(function ($compile, $rootScope, $filter) {
         compile = $compile;
         rootScope = $rootScope;
+        filter = $filter;
       }));
 
       it('should throw an error if no config is specified', () => {
@@ -211,7 +212,8 @@
 
             it('should render an formatted date', () => {
               let td1 = $(element).find('tbody tr:first-child td')[0];
-              expect($(td1).text().trim()).toEqual('14:06 Feb 17, 2015');
+              const expectedDate = filter('date')(scope.data[0]['label-1'], 'H:mm MMM d, yyyy');
+              expect($(td1).text().trim()).toEqual(expectedDate);
             });
           });
 
