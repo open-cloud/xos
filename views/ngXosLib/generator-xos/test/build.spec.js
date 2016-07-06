@@ -2,8 +2,10 @@
 var path = require('path');
 var helpers = require('yeoman-test');
 var assert = require('yeoman-assert');
-var exec = require('child_process').exec;
+var P = require('bluebird');
+var execAsync = P.promisify(require('child_process').exec);
 var fs = require('fs');
+var writeFileAsync = P.promisify(fs.writeFile);
 const rimraf = require('rimraf');
 
 const getMillisec = min => min * 60 * 1000;
@@ -12,7 +14,7 @@ const deleteFile = file => {
     // console.log(`deleting: ${file}`);
     fs.unlinkSync(file);
   }
-}
+};
 
 // config files
 const cfg = path.join(__dirname, `../../../env/default.js`);
@@ -34,6 +36,9 @@ describe('The XOS Build script', function(){
   
   this.timeout(getMillisec(5));
 
+  // define timers (give a feedback while commands are running
+  let npmInstall, bowerInstall, appBuild;
+
   before(done => {
     // if `default.js` config is not present
     // create one (we check to avoid screwing up local envs)
@@ -52,43 +57,45 @@ describe('The XOS Build script', function(){
         token: 'test-token',
         session: 'test-session'
       })
-      .on('end', () => {
+      .toPromise()
+      .then(() => {
+      //.on('end', () => {
         process.stdout.write('Installing Node Modules');
-        let npmInstall = setInterval(() => {
+        npmInstall = setInterval(() => {
           process.stdout.write('.');
         }, 1000);
-        exec('npm install', {
-          cwd: sourcePath
-        }, (err) => {
-          clearInterval(npmInstall);
-          process.stdout.write('\nInstalling Bower Components');
-          let bowerInstall = setInterval(() => {
-            process.stdout.write('.');
-          }, 1000);
-          exec('bower install', {
-            cwd: sourcePath
-          }, (err) => {
-            clearInterval(bowerInstall);
-            done(err);
-          });
-        });
-      });
+        return execAsync('npm install', {cwd: sourcePath});
+      })
+      .then(() => {
+        clearInterval(npmInstall);
+        process.stdout.write('\nInstalling Bower Components');
+
+        bowerInstall = setInterval(() => {
+          process.stdout.write('.');
+        }, 1000);
+
+        return execAsync('bower install', {cwd: sourcePath});
+      })
+      .then(() => {
+        clearInterval(bowerInstall);
+        done();
+      })
+      .catch(done);
   });
 
   describe('when no styles or vendors are added', () => {
     
     before((done) => {
       process.stdout.write('\nBuilding App');
-      let appBuild = setInterval(() => {
+      appBuild = setInterval(() => {
         process.stdout.write('.');
       }, 1000);
-      exec(buildCmd, {
-        cwd: sourcePath
-      }, (err) => {
-        console.log(err);
+      execAsync(buildCmd, {cwd: sourcePath})
+      .then(() => {
         clearInterval(appBuild);
-        done(err);
-      });
+        done();
+      })
+      .catch(done);
     });
 
     it('should have build the app', () => {
@@ -103,27 +110,28 @@ describe('The XOS Build script', function(){
   });
 
   describe('when a third party library is added', () => {
+
     before((done) => {
-    process.stdout.write('\nInstalling 3rd party library');
+      process.stdout.write('\nInstalling 3rd party library');
       let bowerInstall = setInterval(() => {
         process.stdout.write('.');
       }, 1000);
-      exec('bower install d3 --save', {
-        cwd: sourcePath
-      }, (err, out) => {
+
+      execAsync('bower install moment --save', {cwd: sourcePath})
+      .then(() => {
         clearInterval(bowerInstall);
         process.stdout.write('\nBuilding App');
-        let appBuild = setInterval(() => {
+        appBuild = setInterval(() => {
           process.stdout.write('.');
         }, 1000);
-        exec(buildCmd, {
-          cwd: sourcePath
-        }, (err) => {
-          console.log(err);
-          clearInterval(appBuild);
-          done(err);
-        }); 
-      });
+
+        return execAsync(buildCmd, {cwd: sourcePath})
+      })
+      .then(() => {
+        clearInterval(appBuild);
+        done();
+      })
+      .catch(done);
     });
 
     it('should have build the app with a vendor file', () => {
@@ -147,23 +155,26 @@ describe('The XOS Build script', function(){
           background: $brand-primary;
         }
       `;
-
-      fs.writeFile(`${sourcePath}src/sass/main.scss`, styleContent, function(err) {
+      
+      writeFileAsync(`${sourcePath}src/sass/main.scss`, styleContent)
+      .then(() => {
         process.stdout.write('\nBuilding the Application');
-        let appBuild = setInterval(() => {
+        appBuild = setInterval(() => {
           process.stdout.write('.');
         }, 1000);
-        exec('bower uninstall d3 --save', {
+
+        return execAsync('bower uninstall moment --save', {cwd: sourcePath});
+      })
+      .then(() => {
+        return execAsync(buildCmd, {
           cwd: sourcePath
-        }, (err, out) => {
-          exec(buildCmd, {
-            cwd: sourcePath
-          }, (err, out) => {
-            clearInterval(appBuild);
-            done();
-          })
-        })
-      });
+        });
+      })
+      .then(() => {
+        clearInterval(appBuild);
+        done();
+      })
+      .catch(done);
     });
 
     it('should have build the app with a css file', () => {

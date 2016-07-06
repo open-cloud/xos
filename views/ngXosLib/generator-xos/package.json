@@ -9,6 +9,7 @@
   "author": "Matteo Scandolo",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.4.1",
     "yeoman-generator": "^0.21.1"
   },
   "files": [

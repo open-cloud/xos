@@ -44,7 +44,7 @@ const yeomanUserMock = {
     name: () => 'Test User',
     email: () => 'test@mail.org'
   }
-}
+};
 
 mockery.enable({
   warnOnReplace: false,
