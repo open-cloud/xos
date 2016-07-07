@@ -25,6 +25,7 @@ class PortForwardingViewSet(XOSViewSet):
     base_name = "portforwarding"
     method_name = "portforwarding"
     method_kind = "viewset"
+    read_only = True
     serializer_class = PortForwardingSerializer
 
     def get_queryset(self):

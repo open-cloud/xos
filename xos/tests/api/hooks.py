@@ -378,5 +378,18 @@ def before_logout_hook(transaction):
 
 
 @hooks.before("Utility > Logout > Log a user out of the system")
-def skip_for_now(transaction):
+def skip_logout(transaction):
     transaction['skip'] = True
+
+
+@hooks.before("Utility > Onboarding > Get service status")
+def skip_onboarding(transaction):
+    transaction['skip'] = True
+
+
+@hooks.after("Utility > Tosca > Load a Tosca recipe")
+def check_tosca(transaction):
+    try:
+        site = Site.objects.get(name='Test Site')
+    except Exception, e:
+        transaction['fail'] = "Test Site has not been created"
