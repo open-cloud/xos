@@ -4,6 +4,8 @@ def handle(network):
 	from core.models import ControllerSlice,ControllerNetwork, Network
 	from collections import defaultdict
 
+        print "MODEL POLICY: network", network
+
         # network = Network.get(network_id)
 	# network controllers are not visible to users. We must ensure
 	# networks are deployed at all deploymets available to their slices.
@@ -21,7 +23,16 @@ def handle(network):
 	for expected_controller in expected_controllers:
 		if network not in network_deploy_lookup or \
 		  expected_controller not in network_deploy_lookup[network]:
-			nd = ControllerNetwork(network=network, controller=expected_controller, lazy_blocked=True)
+                        lazy_blocked=True
+
+                        # check and see if some instance already exists
+                        for networkslice in network.networkslices.all():
+                            if networkslice.slice.instances.filter(node__site_deployment__controller=expected_controller).exists():
+                               print "MODEL_POLICY: network, setting lazy_blocked to false because instance on controller already exists"
+                               lazy_blocked=False
+
+			nd = ControllerNetwork(network=network, controller=expected_controller, lazy_blocked=lazy_blocked)
+                        print "MODEL POLICY: network", network, "create ControllerNetwork", nd, "lazy_blocked", lazy_blocked
                         if network.subnet:
                             # XXX: Possibly unpredictable behavior if there is
                             # more than one ControllerNetwork and the subnet
