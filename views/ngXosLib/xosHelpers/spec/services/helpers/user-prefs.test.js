@@ -48,8 +48,6 @@
         expect(service.setSynchronizerNotificationStatus).toBeDefined();
         expect(service.setUserDetailsCookie).toBeDefined();
         expect(service.getUserDetailsCookie).toBeDefined();
-        expect(service.setDataUser).toBeDefined()
-
       });
 
       describe('the getAll method', () => {
@@ -94,15 +92,6 @@
           });
         });
 
-        describe('the getUserDetailsCookie method', () => {
-          it('should return current user id', (done) => {
-            service.getUserDetailsCookie().$promise.then((res) => {
-              expect(res.userId).toEqual(syncNotification.userData.userId);
-              done();
-            });
-            rootScope.$apply();
-          });
-        });
         describe('the setSynchronizerNotificationStatus', () => {
           
           it('should throw an error if called without synchronizer name', () => {
@@ -128,32 +117,60 @@
           });
         });
       });
+
       describe('the userdetails status', () => {
-        let syncNotification;
-        beforeEach(() => {
-          syncNotification = {
-            synchronizers: {
-              notification: {
-                first: true,
-                second: false
-              }
-            }
-          }
-          cookies.xosUserPrefs = JSON.stringify(syncNotification);
-        });
+        let userdata, meMock;
         const userData = {
-          userId: 1
+          current_user_id: 2
         };
         beforeEach(inject(($q,Me) => {
+          userdata = {
+            userData: {
+              current_user_id:1
+            }
+          }
+          cookies.xosUserPrefs = JSON.stringify(userdata);
           deffered= $q.defer();
-          spyOn(Me, 'get').and.callFake(function(){
-            return {$promise: deffered.promise};
+          meMock = Me;
+          spyOn(meMock, 'get').and.callFake(function(){
+            return deffered.promise;
           });
         }));
-        describe('the getUserDetailsCookie method', () => {
-          it('should return current user id', (done) => {
+        describe('Get user data method' , ()=>{
+          it('it should return the stored data', (done) => {
+            service.getUserDetailsCookie().$promise.then((data) => {
+              expect(data).toEqual(userdata.userData);
+              done();
+            });
+            rootScope.$apply();
+          });
+
+          it('Should call the Api to return the data', (done) => {
+            cookies.xosUserPrefs = JSON.stringify();
             service.getUserDetailsCookie().$promise.then((res) => {
               expect(res.userId).toEqual(userData.userId);
+              expect(meMock.get).toHaveBeenCalled();
+              done();
+            });
+            deffered.resolve(userData);
+            rootScope.$apply();
+          });
+
+        });
+        describe('Set user data method' , ()=>{
+          it('it should save the provided data' , (done) => {
+            service.setUserDetailsCookie(userData).$promise.then(data => {
+              expect(data).toEqual(userData);
+              expect(cookieMock.put).toHaveBeenCalledWith('xosUserPrefs',  '{"userData":{"current_user_id":2}}');
+              done();
+            });
+            rootScope.$apply();
+          });
+          it('Should call the Api to save the data',(done)=>{
+            service.setUserDetailsCookie().$promise.then(data => {
+              expect(meMock.get).toHaveBeenCalled();
+              expect(data).toEqual(userData);
+              expect(cookieMock.put).toHaveBeenCalledWith('xosUserPrefs',  '{"userData":{"current_user_id":2}}');
               done();
             });
             deffered.resolve(userData);

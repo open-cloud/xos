@@ -84,7 +84,7 @@
       var defer = $q.defer();
       let localPref  = this.getAll();
       if(!localPref.userData){
-        this.setUserDetailsCookie(localPref).$promise.then((data)=>{
+        this.setUserDetailsCookie().$promise.then((data)=>{
           defer.resolve(data);
         });
       }
@@ -96,21 +96,6 @@
 
     /**
     * @ngdoc method
-    * @name xos.helpers.XosUserPrefs#setDataUser
-    * @methodOf xos.helpers.XosUserPrefs
-    * @description
-    * Return all the user details from the endpoint (api/utility/me)
-    * @returns {object} The user details
-    **/
-
-    this.setDataUser = ()=>{
-      //var deff = $q.defer();
-      return Me.get().$promise;
-
-    };
-
-    /**
-    * @ngdoc method
     * @name xos.helpers.XosUserPrefs#setUserDetailsCookie
     * @methodOf xos.helpers.XosUserPrefs
     * @description
@@ -118,20 +103,25 @@
     * @param {object} details stored in cookie
     * @param {objects} returns the user details as a promise
     **/
-    this.setUserDetailsCookie = (localPref = localPref)=> {
+    this.setUserDetailsCookie = (userData = null)=> {
 
       var defer = $q.defer();
-      this.setDataUser().then((user)=>{
-        this.model = user;
-        defer.resolve(this.model);
-      }).then(() => {
-        localPref.userData = this.model.data;
-        this.setAll(localPref);
-      })
-      .catch ((e) => {
-        defer.reject(e);
-        throw new Error(e);
-      });
+      let cookies = this.getAll();
+      if (!userData){
+        Me.get().then((user)=> {
+          cookies.userData = user;
+          this.setAll(cookies);
+          defer.resolve(user);
+        })
+        .catch ((e) => {
+          defer.reject(e);
+        });
+      }
+      else {
+        cookies.userData = userData;
+        this.setAll(cookies);
+        defer.resolve(userData);
+      }
       return {$promise: defer.promise};
     }
 
