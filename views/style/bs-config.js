@@ -10,6 +10,6 @@ module.exports = {
     '../../xos/core/static/xos.css',
     '../../xos/xos/**/*.py'
   ],
-  proxy: "xos.dev:9999",
+  proxy: "192.168.46.100:9999",
   open: true
 };
