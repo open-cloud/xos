@@ -59,7 +59,6 @@ def redirect_to_apache(request):
 
 urlpatterns = patterns(
     '',
-    url(r'^observer', 'core.views.observer.Observer', name='observer'),
 
     url(r'^mcord', MCordView.as_view(), name='mcord'),
 
