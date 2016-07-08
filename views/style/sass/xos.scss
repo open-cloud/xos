@@ -135,11 +135,11 @@ body{
 }
 
 .navbar-toggle{
-  border: 1px solid #08C;
+  border: 1px solid $brand-primary;
 }
 
 .navbar-toggle .icon-bar{
-  background: #08C;
+  background: $brand-primary;
 }
 /* ************************* END SIDENAV TOGGLE ************************* */
 
@@ -149,11 +149,9 @@ body{
         width: 66.66666667%;
     }
 }
-/************************* FORM TWEAKS *************************/
+/************************* END FORM TWEAKS *************************/
 
 /*   CSS for jquery Tabs */
-
-
 
 .alignCenter {
     text-align: center !important;
