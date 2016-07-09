@@ -757,10 +757,12 @@ class TenantWithContainer(Tenant):
         # such as creating ports for containers.
         instance.save()
 
-    def pick_least_loaded_instance_in_slice(self, slices):
+    def pick_least_loaded_instance_in_slice(self, slices, image):
         for slice in slices:
             if slice.instances.all().count() > 0:
                 for instance in slice.instances.all():
+                    if instance.image != image:
+                        continue
                     # Pick the first instance that has lesser than 5 tenants
                     if self.count_of_tenants_of_an_instance(instance) < 5:
                         return instance
@@ -795,7 +797,7 @@ class TenantWithContainer(Tenant):
             if self.get_attribute("use_same_instance_for_multiple_tenants", default=False):
                 # Find if any existing instances can be used for this tenant
                 slices = self.provider_service.slices.all()
-                instance = self.pick_least_loaded_instance_in_slice(slices)
+                instance = self.pick_least_loaded_instance_in_slice(slices, self.image)
 
             if not instance:
                 slice = self.provider_service.slices.all()[0]
