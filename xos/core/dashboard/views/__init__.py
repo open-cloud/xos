@@ -3,7 +3,6 @@
 #from simulator import SimulatorView
 #from cdn import DashboardSummaryAjaxView, DashboardAddOrRemoveInstanceView, DashboardAjaxView
 #from analytics import DashboardAnalyticsAjaxView
-#from customize import DashboardCustomize
 #from interactions import DashboardSliceInteractions
 #from test import DashboardUserSiteView
 

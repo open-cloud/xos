@@ -12,7 +12,7 @@ class AdminMixin(object):
     def get_urls(self):
         """Add our dashboard view to the admin urlconf. Deleted the default index."""
         from django.conf.urls import patterns, url
-        from views import DashboardCustomize, DashboardDynamicView, SimulatorView, LoggedInView, \
+        from views import DashboardDynamicView, SimulatorView, LoggedInView, \
                           DashboardUserSiteView,  \
                           TenantViewData, TenantCreateSlice, TenantAddUser,TenantAddOrRemoveInstanceView, TenantPickSitesView, TenantDeleteSliceView, \
                           TenantUpdateSlice, DashboardSliceInteractions, RequestAccessView
@@ -38,8 +38,8 @@ class AdminMixin(object):
                url(r'^dashboardWholePage/(?P<name>\w+)/$', self.admin_view(DashboardDynamicView.as_view()),
                     {"wholePage": True},
                     name="dashboardWholePage"),
-	       url(r'^customize/$', self.admin_view(DashboardCustomize.as_view()),
-                    name="customize"),
+	             # url(r'^customize/$', self.admin_view(DashboardCustomize.as_view()),
+              #       name="customize"),
                url(r'^hpcdashuserslices/', self.admin_view(DashboardUserSiteView.as_view()),
                     name="hpcdashuserslices"),
                url(r'^welcome/$', self.admin_view(DashboardDynamicView.as_view()),
