@@ -2579,7 +2579,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       var deferred = $q.defer();
 
       $http.get('/api/utility/me/').then(function (res) {
-        deferred.resolve(res);
+        deferred.resolve(res.data);
       }).catch(function (e) {
         deferred.reject(e);
       });
