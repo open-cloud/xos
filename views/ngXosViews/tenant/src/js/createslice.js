@@ -252,10 +252,8 @@ angular.module('xos.tenant')
           }
           pr.then((users) => {
             this.model = users;
-            //data = users;
-            //this.model = this.users;
             this.config.feedback.show = true;
-            deferred.resolve(this.model);
+            deferred.resolve(users);
           })
           .catch((e) => {
             this.config.feedback.show = true;

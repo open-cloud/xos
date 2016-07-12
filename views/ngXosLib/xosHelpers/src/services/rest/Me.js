@@ -14,7 +14,7 @@
 
       $http.get('/api/utility/me/')
       .then(res => {
-        deferred.resolve(res);
+        deferred.resolve(res.data);
       })
       .catch(e => {
         deferred.reject(e);
