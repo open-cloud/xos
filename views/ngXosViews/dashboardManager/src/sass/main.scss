@@ -1,0 +1,42 @@
+@import '../../../../style/sass/lib/_variables.scss';
+@import '../../../../style/sass/bootstrap/bootstrap/_variables.scss';
+
+#xosDashboardManager {
+
+  .col-xs-10 + .col-xs-2.text-right {
+    padding-top: $line-height-computed;
+  }
+
+  /* DRAG AND DROP STYLING */
+  ul[dnd-list] {
+    min-height: 42px;
+    border: 1px dashed $brand-primary;
+    padding: $line-height-computed;;
+    margin-bottom: 0;
+
+    li {
+      list-style: none;
+    }
+
+    li:not(:last-child){
+      margin-bottom: $line-height-computed;;
+    }
+
+    li:hover{
+      cursor: pointer;
+    }
+
+    li.dndDraggingSource {
+      display: none;
+    }
+  }
+
+  ul[dnd-list] > li, .dashboard-container {
+    display: block;
+    border: 1px solid $brand-primary;
+    padding: $line-height-computed;
+    a {
+      float: right;
+    }
+  }
+}
