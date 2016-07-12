@@ -5,4 +5,4 @@ WORKDIR /src
 RUN     git clone https://gerrit.opencord.org/p/vtn.git && cd vtn && \
         mvn clean install
 
-CMD bash -c "source /root/.bashrc; onos-app onos-cord-1 install /src/vtn/target/vtn-1.0-SNAPSHOT.oar && onos-app onos-cord-1 activate org.opencord.vtn"
+CMD bash -c "source /root/.bashrc; onos-app onos-cord-1 install /src/vtn/target/vtn-*.oar && onos-app onos-cord-1 activate org.opencord.vtn"
