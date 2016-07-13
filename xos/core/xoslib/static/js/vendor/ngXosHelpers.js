@@ -31,6 +31,310 @@
 
 'use strict';
 
+(function () {
+  'use strict';
+
+  /**
+  * @ngdoc service
+  * @name xos.uiComponents.LabelFormatter
+  * @description This factory define a set of helper function to format label started from an object property
+  **/
+
+  angular.module('xos.uiComponents').factory('LabelFormatter', labelFormatter);
+
+  function labelFormatter() {
+
+    var _formatByUnderscore = function _formatByUnderscore(string) {
+      return string.split('_').join(' ').trim();
+    };
+
+    var _formatByUppercase = function _formatByUppercase(string) {
+      return string.split(/(?=[A-Z])/).map(function (w) {
+        return w.toLowerCase();
+      }).join(' ');
+    };
+
+    var _capitalize = function _capitalize(string) {
+      return string.slice(0, 1).toUpperCase() + string.slice(1);
+    };
+
+    var format = function format(string) {
+      string = _formatByUnderscore(string);
+      string = _formatByUppercase(string);
+
+      string = _capitalize(string).replace(/\s\s+/g, ' ') + ':';
+      return string.replace('::', ':');
+    };
+
+    return {
+      // test export
+      _formatByUnderscore: _formatByUnderscore,
+      _formatByUppercase: _formatByUppercase,
+      _capitalize: _capitalize,
+      // export to use
+      format: format
+    };
+  }
+})();
+//# sourceMappingURL=../../../maps/services/helpers/ui/label_formatter.service.js.map
+
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+(function () {
+
+  angular.module('xos.uiComponents')
+
+  /**
+  * @ngdoc service
+  * @name xos.uiComponents.XosFormHelpers
+  * @requires xos.uiComponents.LabelFormatter
+  * @requires xos.helpers._
+  **/
+
+  .service('XosFormHelpers', ["_", "LabelFormatter", function (_, LabelFormatter) {
+    var _this = this;
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#_isEmail
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Return true if the string is an email address
+    * @param {string} text The string to be evaluated
+    * @returns {boolean} If the string match an email format
+    **/
+
+    this._isEmail = function (text) {
+      var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+      return re.test(text);
+    };
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#_getFieldFormat
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Return the type of the input
+    * @param {mixed} value The data to be evaluated
+    * @returns {string} The type of the input
+    **/
+
+    this._getFieldFormat = function (value) {
+
+      if (angular.isArray(value)) {
+        return 'array';
+      }
+
+      // check if is date
+      if (_.isDate(value) || !Number.isNaN(Date.parse(value)) && new Date(value).getTime() > 631180800000) {
+        return 'date';
+      }
+
+      // check if is boolean
+      // isNaN(false) = false, false is a number (0), true is a number (1)
+      if (typeof value === 'boolean') {
+        return 'boolean';
+      }
+
+      // check if a string is an email
+      if (_this._isEmail(value)) {
+        return 'email';
+      }
+
+      // if null return string
+      if (angular.isString(value) || value === null) {
+        return 'text';
+      }
+
+      return typeof value === 'undefined' ? 'undefined' : _typeof(value);
+    };
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#buildFormStructure
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Return the type of the input
+    * @param {object} modelField An object containing one property for each field of the model
+    * @param {object} customField An object containing one property for each field custom field
+    * @param {object} model The actual model on wich build the form structure (it is used to determine the type of the input)
+    * @returns {object} An object describing the form structure in the form of:
+    * ```
+    * {
+    *   'field-name': {
+    *     label: 'Label',
+    *     type: 'number', //typeof field
+    *     validators: {}, // see xosForm for more details
+    *     hint: 'A Custom hint for the field'
+    *   }
+    * }
+    * ```
+    **/
+
+    this.buildFormStructure = function (modelField, customField, model) {
+
+      modelField = angular.extend(modelField, customField);
+      customField = customField || {};
+
+      return _.reduce(Object.keys(modelField), function (form, f) {
+
+        form[f] = {
+          label: customField[f] && customField[f].label ? customField[f].label + ':' : LabelFormatter.format(f),
+          type: customField[f] && customField[f].type ? customField[f].type : _this._getFieldFormat(model[f]),
+          validators: customField[f] && customField[f].validators ? customField[f].validators : {},
+          hint: customField[f] && customField[f].hint ? customField[f].hint : ''
+        };
+
+        if (customField[f] && customField[f].options) {
+          form[f].options = customField[f].options;
+        }
+        if (customField[f] && customField[f].properties) {
+          form[f].properties = customField[f].properties;
+        }
+        if (form[f].type === 'date') {
+          model[f] = new Date(model[f]);
+        }
+
+        if (form[f].type === 'number') {
+          model[f] = parseInt(model[f], 10);
+        }
+
+        return form;
+      }, {});
+    };
+
+    /**
+    * @ngdoc method
+    * @name xos.uiComponents.XosFormHelpers#parseModelField
+    * @methodOf xos.uiComponents.XosFormHelpers
+    * @description
+    * Helpers for buildFormStructure, convert a list of model properties in an object used to build the form structure, eg:
+    * ```
+    * // input:
+    * ['id', 'name'm 'mail']
+    *
+    * // output
+    * {
+    *   id: {},
+    *   name: {},
+    *   mail: {}
+    * }
+    * ```
+    * @param {array} fields An array of fields representing the model properties
+    * @returns {object} An object containing one property for each field of the model
+    **/
+
+    this.parseModelField = function (fields) {
+      return _.reduce(fields, function (form, f) {
+        form[f] = {};
+        return form;
+      }, {});
+    };
+  }]);
+})();
+//# sourceMappingURL=../../../maps/services/helpers/ui/form.helpers.js.map
+
+'use strict';
+
+(function () {
+  'use strict';
+
+  /**
+   * @ngdoc service
+   * @name xos.uiComponents.Comparator
+   * @description
+   * This factory define a function that replace the native angular.filter comparator.
+   *
+   * It is done to allow the comparation between (0|1) values with booleans.
+   * >Note that this factory return a single function, not an object.
+   *
+   * The tipical usage of this factory is inside an `ng-repeat`
+   * @example
+   * <example module="comparator">
+   *   <file name="index.html">
+   *     <div ng-controller="sample as vm">
+   *       <div class="row">
+   *         <div class="col-xs-6">
+   *           <label>Filter by name:</label>
+   *           <input class="form-control" type="text" ng-model="vm.query.name"/>
+   *         </div>
+   *         <div class="col-xs-6">
+   *           <label>Filter by status:</label>
+   *           <select
+   *            ng-model="vm.query.status"
+   *            ng-options="i for i in [true, false]">
+   *           </select>
+   *         </div>
+   *       </div>
+   *       <div ng-repeat="item in vm.data | filter:vm.query:vm.comparator">
+   *         <div class="row">
+   *           <div class="col-xs-6">{{item.name}}</div>
+   *           <div class="col-xs-6">{{item.status}}</div>
+   *         </div>
+   *       </div>
+   *     </div>
+   *   </file>
+   *   <file name="script.js">
+   *     angular.module('comparator', ['xos.uiComponents'])
+   *     .controller('sample', function(Comparator){
+   *       this.comparator = Comparator;
+   *       this.data = [
+   *         {name: 'Jhon', status: 1},
+   *         {name: 'Jack', status: 0},
+   *         {name: 'Mike', status: 1},
+   *         {name: 'Scott', status: 0}
+   *       ];
+   *     });
+   *   </file>
+   * </example>
+   **/
+
+  angular.module('xos.uiComponents').factory('Comparator', comparator);
+
+  function comparator() {
+
+    return function (actual, expected) {
+
+      if (angular.isUndefined(actual)) {
+        // No substring matching against `undefined`
+        return false;
+      }
+      if (actual === null || expected === null) {
+        // No substring matching against `null`; only match against `null`
+        return actual === expected;
+      }
+      if (angular.isObject(expected) || angular.isObject(actual)) {
+        return angular.equals(expected, actual);
+      }
+
+      if (_.isBoolean(actual) || _.isBoolean(expected)) {
+        if (actual === 0 || actual === 1) {
+          actual = !!actual;
+        }
+        return angular.equals(expected, actual);
+      }
+
+      if (!angular.isString(actual) || !angular.isString(expected)) {
+        if (angular.isDefined(actual.toString) && angular.isDefined(expected.toString)) {
+          actual = actual.toString();
+          expected = expected.toString();
+        } else {
+          return actual === expected;
+        }
+      }
+
+      actual = actual.toLowerCase() + '';
+      expected = expected.toLowerCase() + '';
+      return actual.indexOf(expected) !== -1;
+    };
+  }
+})();
+//# sourceMappingURL=../../../maps/services/helpers/ui/comparator.service.js.map
+
+'use strict';
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 /**
@@ -1615,7 +1919,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             // ES6 spread rocks over fn.apply()
             ctrl.$setValidity.apply(ctrl, _toConsumableArray(valid));
           } else {
-            ctrl.$setValidity('customValidation', valid);
+            ctrl.$setValidity('custom', valid);
           }
           return ngModelValue;
         }
@@ -1765,310 +2069,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   });
 })();
 //# sourceMappingURL=../../../maps/ui_components/dumbComponents/alert/alert.component.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  /**
-  * @ngdoc service
-  * @name xos.uiComponents.LabelFormatter
-  * @description This factory define a set of helper function to format label started from an object property
-  **/
-
-  angular.module('xos.uiComponents').factory('LabelFormatter', labelFormatter);
-
-  function labelFormatter() {
-
-    var _formatByUnderscore = function _formatByUnderscore(string) {
-      return string.split('_').join(' ').trim();
-    };
-
-    var _formatByUppercase = function _formatByUppercase(string) {
-      return string.split(/(?=[A-Z])/).map(function (w) {
-        return w.toLowerCase();
-      }).join(' ');
-    };
-
-    var _capitalize = function _capitalize(string) {
-      return string.slice(0, 1).toUpperCase() + string.slice(1);
-    };
-
-    var format = function format(string) {
-      string = _formatByUnderscore(string);
-      string = _formatByUppercase(string);
-
-      string = _capitalize(string).replace(/\s\s+/g, ' ') + ':';
-      return string.replace('::', ':');
-    };
-
-    return {
-      // test export
-      _formatByUnderscore: _formatByUnderscore,
-      _formatByUppercase: _formatByUppercase,
-      _capitalize: _capitalize,
-      // export to use
-      format: format
-    };
-  }
-})();
-//# sourceMappingURL=../../../maps/services/helpers/ui/label_formatter.service.js.map
-
-'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-(function () {
-
-  angular.module('xos.uiComponents')
-
-  /**
-  * @ngdoc service
-  * @name xos.uiComponents.XosFormHelpers
-  * @requires xos.uiComponents.LabelFormatter
-  * @requires xos.helpers._
-  **/
-
-  .service('XosFormHelpers', ["_", "LabelFormatter", function (_, LabelFormatter) {
-    var _this = this;
-
-    /**
-    * @ngdoc method
-    * @name xos.uiComponents.XosFormHelpers#_isEmail
-    * @methodOf xos.uiComponents.XosFormHelpers
-    * @description
-    * Return true if the string is an email address
-    * @param {string} text The string to be evaluated
-    * @returns {boolean} If the string match an email format
-    **/
-
-    this._isEmail = function (text) {
-      var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
-      return re.test(text);
-    };
-
-    /**
-    * @ngdoc method
-    * @name xos.uiComponents.XosFormHelpers#_getFieldFormat
-    * @methodOf xos.uiComponents.XosFormHelpers
-    * @description
-    * Return the type of the input
-    * @param {mixed} value The data to be evaluated
-    * @returns {string} The type of the input
-    **/
-
-    this._getFieldFormat = function (value) {
-
-      if (angular.isArray(value)) {
-        return 'array';
-      }
-
-      // check if is date
-      if (_.isDate(value) || !Number.isNaN(Date.parse(value)) && new Date(value).getTime() > 631180800000) {
-        return 'date';
-      }
-
-      // check if is boolean
-      // isNaN(false) = false, false is a number (0), true is a number (1)
-      if (typeof value === 'boolean') {
-        return 'boolean';
-      }
-
-      // check if a string is an email
-      if (_this._isEmail(value)) {
-        return 'email';
-      }
-
-      // if null return string
-      if (angular.isString(value) || value === null) {
-        return 'text';
-      }
-
-      return typeof value === 'undefined' ? 'undefined' : _typeof(value);
-    };
-
-    /**
-    * @ngdoc method
-    * @name xos.uiComponents.XosFormHelpers#buildFormStructure
-    * @methodOf xos.uiComponents.XosFormHelpers
-    * @description
-    * Return the type of the input
-    * @param {object} modelField An object containing one property for each field of the model
-    * @param {object} customField An object containing one property for each field custom field
-    * @param {object} model The actual model on wich build the form structure (it is used to determine the type of the input)
-    * @returns {object} An object describing the form structure in the form of:
-    * ```
-    * {
-    *   'field-name': {
-    *     label: 'Label',
-    *     type: 'number', //typeof field
-    *     validators: {}, // see xosForm for more details
-    *     hint: 'A Custom hint for the field'
-    *   }
-    * }
-    * ```
-    **/
-
-    this.buildFormStructure = function (modelField, customField, model) {
-
-      modelField = angular.extend(modelField, customField);
-      customField = customField || {};
-
-      return _.reduce(Object.keys(modelField), function (form, f) {
-
-        form[f] = {
-          label: customField[f] && customField[f].label ? customField[f].label + ':' : LabelFormatter.format(f),
-          type: customField[f] && customField[f].type ? customField[f].type : _this._getFieldFormat(model[f]),
-          validators: customField[f] && customField[f].validators ? customField[f].validators : {},
-          hint: customField[f] && customField[f].hint ? customField[f].hint : ''
-        };
-
-        if (customField[f] && customField[f].options) {
-          form[f].options = customField[f].options;
-        }
-        if (customField[f] && customField[f].properties) {
-          form[f].properties = customField[f].properties;
-        }
-        if (form[f].type === 'date') {
-          model[f] = new Date(model[f]);
-        }
-
-        if (form[f].type === 'number') {
-          model[f] = parseInt(model[f], 10);
-        }
-
-        return form;
-      }, {});
-    };
-
-    /**
-    * @ngdoc method
-    * @name xos.uiComponents.XosFormHelpers#parseModelField
-    * @methodOf xos.uiComponents.XosFormHelpers
-    * @description
-    * Helpers for buildFormStructure, convert a list of model properties in an object used to build the form structure, eg:
-    * ```
-    * // input:
-    * ['id', 'name'm 'mail']
-    *
-    * // output
-    * {
-    *   id: {},
-    *   name: {},
-    *   mail: {}
-    * }
-    * ```
-    * @param {array} fields An array of fields representing the model properties
-    * @returns {object} An object containing one property for each field of the model
-    **/
-
-    this.parseModelField = function (fields) {
-      return _.reduce(fields, function (form, f) {
-        form[f] = {};
-        return form;
-      }, {});
-    };
-  }]);
-})();
-//# sourceMappingURL=../../../maps/services/helpers/ui/form.helpers.js.map
-
-'use strict';
-
-(function () {
-  'use strict';
-
-  /**
-   * @ngdoc service
-   * @name xos.uiComponents.Comparator
-   * @description
-   * This factory define a function that replace the native angular.filter comparator.
-   *
-   * It is done to allow the comparation between (0|1) values with booleans.
-   * >Note that this factory return a single function, not an object.
-   *
-   * The tipical usage of this factory is inside an `ng-repeat`
-   * @example
-   * <example module="comparator">
-   *   <file name="index.html">
-   *     <div ng-controller="sample as vm">
-   *       <div class="row">
-   *         <div class="col-xs-6">
-   *           <label>Filter by name:</label>
-   *           <input class="form-control" type="text" ng-model="vm.query.name"/>
-   *         </div>
-   *         <div class="col-xs-6">
-   *           <label>Filter by status:</label>
-   *           <select
-   *            ng-model="vm.query.status"
-   *            ng-options="i for i in [true, false]">
-   *           </select>
-   *         </div>
-   *       </div>
-   *       <div ng-repeat="item in vm.data | filter:vm.query:vm.comparator">
-   *         <div class="row">
-   *           <div class="col-xs-6">{{item.name}}</div>
-   *           <div class="col-xs-6">{{item.status}}</div>
-   *         </div>
-   *       </div>
-   *     </div>
-   *   </file>
-   *   <file name="script.js">
-   *     angular.module('comparator', ['xos.uiComponents'])
-   *     .controller('sample', function(Comparator){
-   *       this.comparator = Comparator;
-   *       this.data = [
-   *         {name: 'Jhon', status: 1},
-   *         {name: 'Jack', status: 0},
-   *         {name: 'Mike', status: 1},
-   *         {name: 'Scott', status: 0}
-   *       ];
-   *     });
-   *   </file>
-   * </example>
-   **/
-
-  angular.module('xos.uiComponents').factory('Comparator', comparator);
-
-  function comparator() {
-
-    return function (actual, expected) {
-
-      if (angular.isUndefined(actual)) {
-        // No substring matching against `undefined`
-        return false;
-      }
-      if (actual === null || expected === null) {
-        // No substring matching against `null`; only match against `null`
-        return actual === expected;
-      }
-      if (angular.isObject(expected) || angular.isObject(actual)) {
-        return angular.equals(expected, actual);
-      }
-
-      if (_.isBoolean(actual) || _.isBoolean(expected)) {
-        if (actual === 0 || actual === 1) {
-          actual = !!actual;
-        }
-        return angular.equals(expected, actual);
-      }
-
-      if (!angular.isString(actual) || !angular.isString(expected)) {
-        if (angular.isDefined(actual.toString) && angular.isDefined(expected.toString)) {
-          actual = actual.toString();
-          expected = expected.toString();
-        } else {
-          return actual === expected;
-        }
-      }
-
-      actual = actual.toLowerCase() + '';
-      expected = expected.toLowerCase() + '';
-      return actual.indexOf(expected) !== -1;
-    };
-  }
-})();
-//# sourceMappingURL=../../../maps/services/helpers/ui/comparator.service.js.map
 
 'use strict';
 

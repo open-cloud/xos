@@ -70,7 +70,7 @@
           scope.$digest();
           expect(scope.validator).toHaveBeenCalledWith('something');
           expect(input).toHaveClass('ng-invalid');
-          expect(input).toHaveClass('ng-invalid-custom-validation');
+          expect(input).toHaveClass('ng-invalid-custom');
         });
 
         it('should set the field valid', () => {
@@ -78,7 +78,7 @@
           scope.$digest();
           expect(scope.validator).toHaveBeenCalledWith('test');
           expect(input).not.toHaveClass('ng-invalid');
-          expect(input).not.toHaveClass('ng-invalid-custom-validation');
+          expect(input).not.toHaveClass('ng-invalid-custom');
         });
 
         describe('if the validation function return an array', () => {
