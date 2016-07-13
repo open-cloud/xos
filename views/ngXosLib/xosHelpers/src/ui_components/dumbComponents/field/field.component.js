@@ -267,7 +267,7 @@
             ctrl.$setValidity(...valid);
           }
           else{
-            ctrl.$setValidity('customValidation', valid);
+            ctrl.$setValidity('custom', valid);
           }
           return ngModelValue;
         }
