@@ -35,7 +35,7 @@ angular.module('xos.tenant')
             label: 'Save and continue editing',
             icon: 'ok', // refers to bootstraps glyphicon
             cb: (model, form) => { // receive the model
-              saveform(model,form);
+              saveform(model, form);
             },
             class: 'primary'
           },
@@ -43,8 +43,8 @@ angular.module('xos.tenant')
             label: 'Save and add another',
             icon: 'ok', // refers to bootstraps glyphicon
             cb: (model, form) => {
-              saveform(model,form).then(()=> {
-                $state.go('createslice',{site : this.model.site,id : ''});
+              saveform(model, form).then(()=> {
+                $state.go('createslice', { site: this.model.site, id: ''});
               });
             },
             class: 'primary'
@@ -65,7 +65,27 @@ angular.module('xos.tenant')
             type: 'string',
             hint: 'The Name of the Slice',
             validators: {
-              required: true
+              required: true,
+              custom: (value)=>{
+                if(this.model.site){
+                  var options_list = this.config.fields.site.options;
+                  var i;
+                  for (i=0;i<options_list.length;i++){
+                    if(options_list[i].id === this.model.site)
+                    {
+                      if(this.model.name) {
+                        return (this.model.name.toLowerCase().indexOf(options_list[i].label.toLowerCase()) === 0) ;
+                      }
+                      else{
+                        return false;
+                      }
+                    }
+                  }
+                }
+                else{
+                  return false;
+                }
+              }
             }
           },
           serviceClass: {
