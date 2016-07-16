@@ -4,7 +4,17 @@
   /**
   * @ngdoc overview
   * @name xos.helpers
-  * @description this is the module that group all the helpers service and components for XOS
+  * @description
+  * # xos.Helpers
+  * A collection of helpers to work with XOS <br/>
+  * Currently available components are:
+  * - [NoHyperlinks](/#/module/xos.helpers.NoHyperlinks)
+  * - [SetCSRFToken](/#/module/xos.helpers.SetCSRFToken)
+  * - [xosNotification](/#/module/xos.helpers.xosNotification)
+  * - [XosUserPrefs](/#/module/xos.helpers.XosUserPrefs)
+  * <br/><br/>
+  * A set of angular [$resource](https://docs.angularjs.org/api/ngResource/service/$resource) is provided to work with the API.<br>
+  * You can find the documentation [here](#/rest-api)
   **/
 
   angular

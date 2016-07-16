@@ -13,7 +13,8 @@
   * @ngdoc overview
   * @name xos.uiComponents
   * @description
-  * A collection of UI components useful for Dashboard development.
+  * # xos.uiComponents
+  * A collection of UI components useful for Dashboard development. <br/>
   * Currently available components are:
   * - [xosAlert](/#/module/xos.uiComponents.directive:xosAlert)
   * - [xosForm](/#/module/xos.uiComponents.directive:xosForm)

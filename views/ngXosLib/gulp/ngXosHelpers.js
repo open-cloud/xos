@@ -78,11 +78,11 @@ module.exports = function(options){
       ],
       html5Mode: false,
       title: 'XOS Helpers documentation',
-      startPage: '/module',
+      startPage: '/ngXosLib',
     }
 
     return gulpDocs.sections({
-      module: {
+      ngXosLib: {
         glob: [
           options.xosHelperSource + '*.js',
           options.xosHelperSource + 'services/helpers/**/*.js',
@@ -116,7 +116,7 @@ module.exports = function(options){
   gulp.task('docs', ['makeDocs', 'serveDocs'], function(){
     
     var files = [
-      options.xosHelperSource + '**/*.js'
+      options.xosHelperSource + '**/*.js',
     ];
 
     gulp.watch(files, ['makeDocs']);
