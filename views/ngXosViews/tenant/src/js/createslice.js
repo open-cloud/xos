@@ -12,7 +12,7 @@ angular.module('xos.tenant')
     bindToController: true,
     controllerAs: 'cs',
     templateUrl: 'templates/createslice.html',
-    controller: function(Slices, SlicesPlus, Sites, Images, $stateParams, $http, $state, $q, XosUserPrefs){
+    controller: function(Slices, SlicesPlus, Sites, Images, $stateParams, $http, $state, $q, XosUserPrefs,_){
       this.config = {
         exclude: ['site', 'password', 'last_login', 'mount_data_sets', 'default_flavor', 'creator', 'exposed_ports', 'networks', 'omf_friendly', 'omf_friendly', 'no_sync', 'no_policy', 'lazy_blocked', 'write_protect', 'deleted', 'backend_status', 'backend_register', 'policed', 'enacted', 'updated', 'created', 'validators', 'humanReadableName'],
         formName: 'SliceDetails',
@@ -68,23 +68,12 @@ angular.module('xos.tenant')
               required: true,
               custom: (value)=>{
                 if(this.model.site){
-                  var options_list = this.config.fields.site.options;
-                  var i;
-                  for (i=0;i<options_list.length;i++){
-                    if(options_list[i].id === this.model.site)
-                    {
-                      if(this.model.name) {
-                        return (this.model.name.toLowerCase().indexOf(options_list[i].label.toLowerCase()) === 0) ;
-                      }
-                      else{
-                        return false;
-                      }
-                    }
+                  var selectVal = _.find(this.config.fields.site.options,['id',this.model.site]);
+                  if(selectVal && value){
+                    return (value.toLowerCase().indexOf(selectVal.label.toLowerCase()) === 0);
                   }
                 }
-                else{
-                  return false;
-                }
+                return false;
               }
             }
           },
