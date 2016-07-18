@@ -1,8 +1,8 @@
-<ul>
+<ul class = "dashboard-list">
 
     {% for dashboard in dashboards %}
         <li
-            {% if dashboard.id in path %}
+            {% if dashboard.id|stringformat:"i" in path %}
                 class="active"
             {% endif %}
         >
