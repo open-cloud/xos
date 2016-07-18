@@ -68,6 +68,18 @@
            dest=/usr/local/bin/pipework
            mode=0755
 
+      - name: set root password
+        user: 
+          name=root
+          password=yg6TPnPrd0vOE
+          # (note: encrypted password)
+
+      - name: set ubuntu password
+        user:
+          name=ubuntu
+          password=fSKXyilD/wz.6
+          # (note: encrypted password)
+
 # now unmount the image file
 
 - hosts: localhost
