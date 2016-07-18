@@ -1,5 +1,7 @@
 /************************* NAV *************************/
 
+@import "../bootstrap/bootstrap/_variables.scss";
+
 #sidebar-wrapper {
   -webkit-box-shadow: 3px 0px 5px 0px rgba(50, 50, 50, 0.75);
   -moz-box-shadow:    3px 0px 5px 0px rgba(50, 50, 50, 0.75);
@@ -66,6 +68,49 @@
     }
   }
 
+  li{
+    ul.dashboard-list{
+
+
+      li{
+
+          float: none;
+          position: relative;
+
+          // Make the list-items overlay the bottom border
+
+          // Actual tabs (as links)
+          > a {
+            position: relative;
+            display: block;
+            padding: $nav-link-padding;
+            margin-right: 2px;
+            line-height: $line-height-base;
+            border: 1px solid transparent;
+            border-radius: $border-radius-base $border-radius-base 0 0;
+            &:hover,&:focus  {
+              text-decoration: none;
+              background-color: $nav-link-hover-bg;
+            }
+            cursor: pointer;
+
+          }
+
+          // Active state, and its :hover to override normal :hover
+          &.active > a {
+            &,
+            &:hover,
+            &:focus {
+              border-radius: $nav-pills-border-radius;
+              color: $nav-pills-active-link-hover-color;
+              background-color: $nav-pills-active-link-hover-bg;
+              cursor: pointer;
+            }
+          }
+
+      }
+    }
+  }
   [class^="icon-"]{
     background-position: left center;
     width:22px;
