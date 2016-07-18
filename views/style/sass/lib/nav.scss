@@ -9,6 +9,7 @@
 
   .logo{
     max-width: 100%;
+    margin: $default-spacing auto;
   }
 
   a {
@@ -69,45 +70,50 @@
   }
 
   li{
+    a {
+      transition: all .5s ease-in-out;
+    }
     ul.dashboard-list{
-
-
+      padding-left: $default-spacing;
       li{
+        list-style: none;
+        position: relative;
+        margin-top: $default-spacing / 4;
+        margin-bottom: $default-spacing / 4;
+        margin-left: $default-spacing;
 
-          float: none;
-          position: relative;
+        &:before {
+          display: inline-block;
+          font-size: 2em;
+          font-weight: 200;
+          position: absolute;
+          top: 15px;
+          left: -15px;
+          line-height: 0;
+          content: '-';
+          background-color: $nav-pills-active-link-hover-bg;
+        }
+        // Actual tabs (as links)
+        > a {
+          cursor: pointer;
+          display: block;
+          padding: 5px 0px;
+          margin-right: 0;
+          border-radius: $nav-pills-border-radius;
 
-          // Make the list-items overlay the bottom border
-
-          // Actual tabs (as links)
-          > a {
-            position: relative;
-            display: block;
-            padding: $nav-link-padding;
-            margin-right: 2px;
-            line-height: $line-height-base;
-            border: 1px solid transparent;
-            border-radius: $border-radius-base $border-radius-base 0 0;
-            &:hover,&:focus  {
-              text-decoration: none;
-              background-color: $nav-link-hover-bg;
-            }
-            cursor: pointer;
-
+          &:hover,&:focus  {
+            padding-left: 15px;
+            text-decoration: none;
+            background-color: $nav-link-hover-bg;
           }
+        }
 
-          // Active state, and its :hover to override normal :hover
-          &.active > a {
-            &,
-            &:hover,
-            &:focus {
-              border-radius: $nav-pills-border-radius;
-              color: $nav-pills-active-link-hover-color;
-              background-color: $nav-pills-active-link-hover-bg;
-              cursor: pointer;
-            }
-          }
-
+        // Active state, and its :hover to override normal :hover
+        &.active > a {
+          padding-left: 15px;
+          color: $nav-pills-active-link-hover-color;
+          background-color: lighten($nav-pills-active-link-hover-bg, 5%);
+        }
       }
     }
   }

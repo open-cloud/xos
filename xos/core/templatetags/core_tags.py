@@ -13,10 +13,19 @@ def dashboard_list(context):
     if request.user.is_authenticated():
         dashboards = request.user.get_dashboards()
         customize = DashboardView.objects.filter(name="Customize")
-        result_list = list(chain(dashboards, customize))
+        dashboards_list = list(chain(dashboards, customize))
     else:
-        result_list = []
-    return {'dashboards': result_list, 'path': request.path}
+        dashboards_list = []
+
+    active = None
+    for d in dashboards_list:
+        if str(d.id) in request.path:
+            active = d.id
+
+    if active is None and ("/admin/" == request.path or "/" == request.path):
+        active = dashboards[0].id
+
+    return {'dashboards': dashboards_list, 'active': active}
 
 
 @register.inclusion_tag('admin/tags/notification.html', takes_context=True)
