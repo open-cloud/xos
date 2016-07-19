@@ -5,7 +5,14 @@
                 class="active"
             {% endif %}
         >
-            <a href="/admin/dashboard/{{dashboard.id}}">{{ dashboard.name }}</a>{{i}}
+            <a href="/admin/dashboard/{{dashboard.id}}">
+                {% if dashboard.id == active %}
+                    <img src="/static/images/{{dashboard.icon_active}}"></img>
+                {% else %}
+                    <img src="/static/images/{{dashboard.icon}}"></img>
+                {% endif %}
+                {{ dashboard.name }}
+            </a>
         </li>
     {% endfor %}
 </ul>

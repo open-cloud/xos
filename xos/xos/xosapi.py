@@ -39,6 +39,9 @@ def get_REST_patterns():
     # legacy - deprecated
         url(r'^xos/$', api_root),
     
+        url(r'xos/servicecontrollerresources/$', ServiceControllerResourceList.as_view(), name='servicecontrollerresource-list-legacy'),
+        url(r'xos/servicecontrollerresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceControllerResourceDetail.as_view(), name ='servicecontrollerresource-detail-legacy'),
+    
         url(r'xos/serviceattributes/$', ServiceAttributeList.as_view(), name='serviceattribute-list-legacy'),
         url(r'xos/serviceattributes/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceAttributeDetail.as_view(), name ='serviceattribute-detail-legacy'),
     
@@ -141,6 +144,9 @@ def get_REST_patterns():
         url(r'xos/nodelabels/$', NodeLabelList.as_view(), name='nodelabel-list-legacy'),
         url(r'xos/nodelabels/(?P<pk>[a-zA-Z0-9\-]+)/$', NodeLabelDetail.as_view(), name ='nodelabel-detail-legacy'),
     
+        url(r'xos/servicecontrollers/$', ServiceControllerList.as_view(), name='servicecontroller-list-legacy'),
+        url(r'xos/servicecontrollers/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceControllerDetail.as_view(), name ='servicecontroller-detail-legacy'),
+    
         url(r'xos/slicecredentials/$', SliceCredentialList.as_view(), name='slicecredential-list-legacy'),
         url(r'xos/slicecredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceCredentialDetail.as_view(), name ='slicecredential-detail-legacy'),
     
@@ -194,6 +200,9 @@ def get_REST_patterns():
     
         url(r'xos/tenants/$', TenantList.as_view(), name='tenant-list-legacy'),
         url(r'xos/tenants/(?P<pk>[a-zA-Z0-9\-]+)/$', TenantDetail.as_view(), name ='tenant-detail-legacy'),
+    
+        url(r'xos/xoses/$', XOSList.as_view(), name='xos-list-legacy'),
+        url(r'xos/xoses/(?P<pk>[a-zA-Z0-9\-]+)/$', XOSDetail.as_view(), name ='xos-detail-legacy'),
     
         url(r'xos/networkslices/$', NetworkSliceList.as_view(), name='networkslice-list-legacy'),
         url(r'xos/networkslices/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliceDetail.as_view(), name ='networkslice-detail-legacy'),
@@ -249,9 +258,15 @@ def get_REST_patterns():
         url(r'xos/serviceprivileges/$', ServicePrivilegeList.as_view(), name='serviceprivilege-list-legacy'),
         url(r'xos/serviceprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', ServicePrivilegeDetail.as_view(), name ='serviceprivilege-detail-legacy'),
     
+        url(r'xos/xosvolumes/$', XOSVolumeList.as_view(), name='xosvolume-list-legacy'),
+        url(r'xos/xosvolumes/(?P<pk>[a-zA-Z0-9\-]+)/$', XOSVolumeDetail.as_view(), name ='xosvolume-detail-legacy'),
+    
     ) + patterns('',
     # new - use these instead of the above
         url(r'^api/core/$', api_root),
+    
+        url(r'api/core/servicecontrollerresources/$', ServiceControllerResourceList.as_view(), name='servicecontrollerresource-list'),
+        url(r'api/core/servicecontrollerresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceControllerResourceDetail.as_view(), name ='servicecontrollerresource-detail'),
     
         url(r'api/core/serviceattributes/$', ServiceAttributeList.as_view(), name='serviceattribute-list'),
         url(r'api/core/serviceattributes/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceAttributeDetail.as_view(), name ='serviceattribute-detail'),
@@ -355,6 +370,9 @@ def get_REST_patterns():
         url(r'api/core/nodelabels/$', NodeLabelList.as_view(), name='nodelabel-list'),
         url(r'api/core/nodelabels/(?P<pk>[a-zA-Z0-9\-]+)/$', NodeLabelDetail.as_view(), name ='nodelabel-detail'),
     
+        url(r'api/core/servicecontrollers/$', ServiceControllerList.as_view(), name='servicecontroller-list'),
+        url(r'api/core/servicecontrollers/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceControllerDetail.as_view(), name ='servicecontroller-detail'),
+    
         url(r'api/core/slicecredentials/$', SliceCredentialList.as_view(), name='slicecredential-list'),
         url(r'api/core/slicecredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceCredentialDetail.as_view(), name ='slicecredential-detail'),
     
@@ -408,6 +426,9 @@ def get_REST_patterns():
     
         url(r'api/core/tenants/$', TenantList.as_view(), name='tenant-list'),
         url(r'api/core/tenants/(?P<pk>[a-zA-Z0-9\-]+)/$', TenantDetail.as_view(), name ='tenant-detail'),
+    
+        url(r'api/core/xoses/$', XOSList.as_view(), name='xos-list'),
+        url(r'api/core/xoses/(?P<pk>[a-zA-Z0-9\-]+)/$', XOSDetail.as_view(), name ='xos-detail'),
     
         url(r'api/core/networkslices/$', NetworkSliceList.as_view(), name='networkslice-list'),
         url(r'api/core/networkslices/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliceDetail.as_view(), name ='networkslice-detail'),
@@ -463,11 +484,15 @@ def get_REST_patterns():
         url(r'api/core/serviceprivileges/$', ServicePrivilegeList.as_view(), name='serviceprivilege-list'),
         url(r'api/core/serviceprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', ServicePrivilegeDetail.as_view(), name ='serviceprivilege-detail'),
     
+        url(r'api/core/xosvolumes/$', XOSVolumeList.as_view(), name='xosvolume-list'),
+        url(r'api/core/xosvolumes/(?P<pk>[a-zA-Z0-9\-]+)/$', XOSVolumeDetail.as_view(), name ='xosvolume-detail'),
+    
     )
 
 @api_view(['GET'])
 def api_root_legacy(request, format=None):
     return Response({
+        'servicecontrollerresources': reverse('servicecontrollerresource-list-legacy', request=request, format=format),
         'serviceattributes': reverse('serviceattribute-list-legacy', request=request, format=format),
         'controllerimageses': reverse('controllerimages-list-legacy', request=request, format=format),
         'controllersiteprivileges': reverse('controllersiteprivilege-list-legacy', request=request, format=format),
@@ -502,6 +527,7 @@ def api_root_legacy(request, format=None):
         'roles': reverse('role-list-legacy', request=request, format=format),
         'usableobjects': reverse('usableobject-list-legacy', request=request, format=format),
         'nodelabels': reverse('nodelabel-list-legacy', request=request, format=format),
+        'servicecontrollers': reverse('servicecontroller-list-legacy', request=request, format=format),
         'slicecredentials': reverse('slicecredential-list-legacy', request=request, format=format),
         'nodes': reverse('node-list-legacy', request=request, format=format),
         'addresspools': reverse('addresspool-list-legacy', request=request, format=format),
@@ -520,6 +546,7 @@ def api_root_legacy(request, format=None):
         'siteprivileges': reverse('siteprivilege-list-legacy', request=request, format=format),
         'payments': reverse('payment-list-legacy', request=request, format=format),
         'tenants': reverse('tenant-list-legacy', request=request, format=format),
+        'xoses': reverse('xos-list-legacy', request=request, format=format),
         'networkslices': reverse('networkslice-list-legacy', request=request, format=format),
         'accounts': reverse('account-list-legacy', request=request, format=format),
         'tenantroots': reverse('tenantroot-list-legacy', request=request, format=format),
@@ -538,12 +565,14 @@ def api_root_legacy(request, format=None):
         'routers': reverse('router-list-legacy', request=request, format=format),
         'serviceresources': reverse('serviceresource-list-legacy', request=request, format=format),
         'serviceprivileges': reverse('serviceprivilege-list-legacy', request=request, format=format),
+        'xosvolumes': reverse('xosvolume-list-legacy', request=request, format=format),
         
     })
 
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
+        'servicecontrollerresources': reverse('servicecontrollerresource-list', request=request, format=format),
         'serviceattributes': reverse('serviceattribute-list', request=request, format=format),
         'controllerimageses': reverse('controllerimages-list', request=request, format=format),
         'controllersiteprivileges': reverse('controllersiteprivilege-list', request=request, format=format),
@@ -578,6 +607,7 @@ def api_root(request, format=None):
         'roles': reverse('role-list', request=request, format=format),
         'usableobjects': reverse('usableobject-list', request=request, format=format),
         'nodelabels': reverse('nodelabel-list', request=request, format=format),
+        'servicecontrollers': reverse('servicecontroller-list', request=request, format=format),
         'slicecredentials': reverse('slicecredential-list', request=request, format=format),
         'nodes': reverse('node-list', request=request, format=format),
         'addresspools': reverse('addresspool-list', request=request, format=format),
@@ -596,6 +626,7 @@ def api_root(request, format=None):
         'siteprivileges': reverse('siteprivilege-list', request=request, format=format),
         'payments': reverse('payment-list', request=request, format=format),
         'tenants': reverse('tenant-list', request=request, format=format),
+        'xoses': reverse('xos-list', request=request, format=format),
         'networkslices': reverse('networkslice-list', request=request, format=format),
         'accounts': reverse('account-list', request=request, format=format),
         'tenantroots': reverse('tenantroot-list', request=request, format=format),
@@ -614,6 +645,7 @@ def api_root(request, format=None):
         'routers': reverse('router-list', request=request, format=format),
         'serviceresources': reverse('serviceresource-list', request=request, format=format),
         'serviceprivileges': reverse('serviceprivilege-list', request=request, format=format),
+        'xosvolumes': reverse('xosvolume-list', request=request, format=format),
         
     })
 
@@ -671,6 +703,41 @@ class XOSModelSerializer(serializers.ModelSerializer):
                    #print "add", item
                    newModel = through(**{local_fieldName: obj, remote_fieldName: item})
                    newModel.save()
+
+
+
+class ServiceControllerResourceSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ServiceControllerResource
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','service_controller','name','subdirectory','kind','format','url',)
+
+class ServiceControllerResourceIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ServiceControllerResource
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','service_controller','name','subdirectory','kind','format','url',)
+
 
 
 
@@ -836,7 +903,7 @@ class ControllerNetworkSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ControllerNetwork
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','network','controller','net_id','router_id','subnet_id','subnet',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','network','controller','net_id','router_id','subnet_id','subnet','start_ip','stop_ip',)
 
 class ControllerNetworkIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -852,7 +919,7 @@ class ControllerNetworkIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ControllerNetwork
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','network','controller','net_id','router_id','subnet_id','subnet',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','network','controller','net_id','router_id','subnet_id','subnet','start_ip','stop_ip',)
 
 
 
@@ -1420,7 +1487,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Slice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','exposed_ports','serviceClass','creator','default_flavor','default_image','mount_data_sets','default_isolation','networks','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','exposed_ports','serviceClass','creator','default_flavor','default_image','default_node','mount_data_sets','default_isolation','networks','networks',)
 
 class SliceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1444,7 +1511,7 @@ class SliceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Slice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','exposed_ports','serviceClass','creator','default_flavor','default_image','mount_data_sets','default_isolation','networks','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','exposed_ports','serviceClass','creator','default_flavor','default_image','default_node','mount_data_sets','default_isolation','networks','networks',)
 
 
 
@@ -1483,7 +1550,7 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Network
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','autoconnect','slices','slices','instances','routers','routers',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','template','subnet','start_ip','end_ip','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','autoconnect','slices','slices','instances','routers','routers',)
 
 class NetworkIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1519,7 +1586,7 @@ class NetworkIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Network
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','autoconnect','slices','slices','instances','routers','routers',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','template','subnet','start_ip','end_ip','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','autoconnect','slices','slices','instances','routers','routers',)
 
 
 
@@ -1960,6 +2027,41 @@ class NodeLabelIdSerializer(XOSModelSerializer):
 
 
 
+class ServiceControllerSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ServiceController
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','xos','name','base_url','synchronizer_run','synchronizer_config',)
+
+class ServiceControllerIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ServiceController
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','xos','name','base_url','synchronizer_run','synchronizer_config',)
+
+
+
+
 class SliceCredentialSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
@@ -2095,7 +2197,7 @@ class DashboardViewSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = DashboardView
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','url','enabled','controllers','deployments',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','url','enabled','icon','icon_active','controllers','deployments',)
 
 class DashboardViewIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2119,7 +2221,7 @@ class DashboardViewIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = DashboardView
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','url','enabled','controllers','deployments',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','url','enabled','icon','icon_active','controllers','deployments',)
 
 
 
@@ -2654,6 +2756,41 @@ class TenantIdSerializer(XOSModelSerializer):
 
 
 
+class XOSSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = XOS
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','ui_port','bootstrap_ui_port','docker_project_name','db_container_name','enable_build','frontend_only','source_ui_image',)
+
+class XOSIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = XOS
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','ui_port','bootstrap_ui_port','docker_project_name','db_container_name','enable_build','frontend_only','source_ui_image',)
+
+
+
+
 class NetworkSliceSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
@@ -2773,7 +2910,7 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Service
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute','controller',)
 
 class ServiceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2789,7 +2926,7 @@ class ServiceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Service
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute','controller',)
 
 
 
@@ -3300,7 +3437,44 @@ class ServicePrivilegeIdSerializer(XOSModelSerializer):
 
 
 
+class XOSVolumeSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = XOSVolume
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','xos','container_path','host_path','read_only',)
+
+class XOSVolumeIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = XOSVolume
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','xos','container_path','host_path','read_only',)
+
+
+
+
 serializerLookUp = {
+
+                 ServiceControllerResource: ServiceControllerResourceSerializer,
 
                  ServiceAttribute: ServiceAttributeSerializer,
 
@@ -3370,6 +3544,8 @@ serializerLookUp = {
 
                  NodeLabel: NodeLabelSerializer,
 
+                 ServiceController: ServiceControllerSerializer,
+
                  SliceCredential: SliceCredentialSerializer,
 
                  Node: NodeSerializer,
@@ -3405,6 +3581,8 @@ serializerLookUp = {
                  Payment: PaymentSerializer,
 
                  Tenant: TenantSerializer,
+
+                 XOS: XOSSerializer,
 
                  NetworkSlice: NetworkSliceSerializer,
 
@@ -3442,10 +3620,59 @@ serializerLookUp = {
 
                  ServicePrivilege: ServicePrivilegeSerializer,
 
+                 XOSVolume: XOSVolumeSerializer,
+
                  None: None,
                 }
 
 # Based on core/views/*.py
+
+
+class ServiceControllerResourceList(XOSListCreateAPIView):
+    queryset = ServiceControllerResource.objects.select_related().all()
+    serializer_class = ServiceControllerResourceSerializer
+    id_serializer_class = ServiceControllerResourceIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','service_controller','name','subdirectory','kind','format','url',)
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return ServiceControllerResource.select_by_user(self.request.user)
+
+
+class ServiceControllerResourceDetail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = ServiceControllerResource.objects.select_related().all()
+    serializer_class = ServiceControllerResourceSerializer
+    id_serializer_class = ServiceControllerResourceIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return ServiceControllerResource.select_by_user(self.request.user)
+
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
+
 
 
 class ServiceAttributeList(XOSListCreateAPIView):
@@ -3641,7 +3868,7 @@ class ControllerNetworkList(XOSListCreateAPIView):
     serializer_class = ControllerNetworkSerializer
     id_serializer_class = ControllerNetworkIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','network','controller','net_id','router_id','subnet_id','subnet',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','network','controller','net_id','router_id','subnet_id','subnet','start_ip','stop_ip',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -4393,7 +4620,7 @@ class SliceList(XOSListCreateAPIView):
     serializer_class = SliceSerializer
     id_serializer_class = SliceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','exposed_ports','serviceClass','creator','default_flavor','default_image','mount_data_sets','default_isolation','networks','networks',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','exposed_ports','serviceClass','creator','default_flavor','default_image','default_node','mount_data_sets','default_isolation','networks','networks',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -4440,7 +4667,7 @@ class NetworkList(XOSListCreateAPIView):
     serializer_class = NetworkSerializer
     id_serializer_class = NetworkIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','autoconnect','slices','slices','instances','routers','routers',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','template','subnet','start_ip','end_ip','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','autoconnect','slices','slices','instances','routers','routers',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -5046,6 +5273,53 @@ class NodeLabelDetail(XOSRetrieveUpdateDestroyAPIView):
 
 
 
+class ServiceControllerList(XOSListCreateAPIView):
+    queryset = ServiceController.objects.select_related().all()
+    serializer_class = ServiceControllerSerializer
+    id_serializer_class = ServiceControllerIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','xos','name','base_url','synchronizer_run','synchronizer_config',)
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return ServiceController.select_by_user(self.request.user)
+
+
+class ServiceControllerDetail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = ServiceController.objects.select_related().all()
+    serializer_class = ServiceControllerSerializer
+    id_serializer_class = ServiceControllerIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return ServiceController.select_by_user(self.request.user)
+
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
+
+
+
 class SliceCredentialList(XOSListCreateAPIView):
     queryset = SliceCredential.objects.select_related().all()
     serializer_class = SliceCredentialSerializer
@@ -5192,7 +5466,7 @@ class DashboardViewList(XOSListCreateAPIView):
     serializer_class = DashboardViewSerializer
     id_serializer_class = DashboardViewIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','url','enabled','controllers','deployments',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','url','enabled','icon','icon_active','controllers','deployments',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -5892,6 +6166,53 @@ class TenantDetail(XOSRetrieveUpdateDestroyAPIView):
 
 
 
+class XOSList(XOSListCreateAPIView):
+    queryset = XOS.objects.select_related().all()
+    serializer_class = XOSSerializer
+    id_serializer_class = XOSIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','ui_port','bootstrap_ui_port','docker_project_name','db_container_name','enable_build','frontend_only','source_ui_image',)
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return XOS.select_by_user(self.request.user)
+
+
+class XOSDetail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = XOS.objects.select_related().all()
+    serializer_class = XOSSerializer
+    id_serializer_class = XOSIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return XOS.select_by_user(self.request.user)
+
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
+
+
+
 class NetworkSliceList(XOSListCreateAPIView):
     queryset = NetworkSlice.objects.select_related().all()
     serializer_class = NetworkSliceSerializer
@@ -6038,7 +6359,7 @@ class ServiceList(XOSListCreateAPIView):
     serializer_class = ServiceSerializer
     id_serializer_class = ServiceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','private_key_fn','service_specific_id','service_specific_attribute','controller',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -6731,6 +7052,53 @@ class ServicePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
         return ServicePrivilege.select_by_user(self.request.user)
+
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
+
+
+
+class XOSVolumeList(XOSListCreateAPIView):
+    queryset = XOSVolume.objects.select_related().all()
+    serializer_class = XOSVolumeSerializer
+    id_serializer_class = XOSVolumeIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','xos','container_path','host_path','read_only',)
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return XOSVolume.select_by_user(self.request.user)
+
+
+class XOSVolumeDetail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = XOSVolume.objects.select_related().all()
+    serializer_class = XOSVolumeSerializer
+    id_serializer_class = XOSVolumeIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return XOSVolume.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 

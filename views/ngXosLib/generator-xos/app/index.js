@@ -64,7 +64,7 @@ module.exports = generators.Base.extend({
         {fileName: this._fistCharToUpper(config.name)}
       );
     },
-    css: function(){
+    scss: function(){
       this.fs.copyTpl(
         this.templatePath('src/sass/main.scss'),
         this.destinationPath(`${this.config.get('folder')}/${config.name}/src/sass/main.scss`),
@@ -77,6 +77,11 @@ module.exports = generators.Base.extend({
         this.destinationPath(`${this.config.get('folder')}/${config.name}/src/js/main.js`),
         { name: config.name, fileName: this._fistCharToUpper(config.name) }
       );
+    },
+    image: function(){
+      this.fs.copyTpl(
+        this.templatePath('src/icons/README.md'),
+        this.destinationPath(`${this.config.get('folder')}/${config.name}/src/icons/README.md`));
     },
     template: function(){
       this.fs.copy(this.templatePath('src/templates/users-list.tpl.html'), this.destinationPath(`${this.config.get('folder')}/${config.name}/src/templates/users-list.tpl.html`));

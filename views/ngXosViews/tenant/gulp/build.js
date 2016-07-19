@@ -41,7 +41,8 @@ module.exports = function(options){
     return del(
       [
         options.dashboards + 'xosTenant.html',
-        options.static + 'css/xosTenant.css'
+        options.static + 'css/xosTenant.css',
+        options.static + 'images/*'
       ],
       {force: true}
     );
@@ -68,6 +69,12 @@ module.exports = function(options){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xosTenant.css'))
     .pipe(gulp.dest(options.static + 'css/'))
+  });
+
+    // copy images in correct folder
+  gulp.task('copyImages', ['wait'], function(){
+    return gulp.src([`${options.icon}/*.png`])
+    .pipe(gulp.dest(options.static + 'images/'))
   });
 
   // compile and minify scripts
@@ -157,6 +164,7 @@ module.exports = function(options){
       'wiredep',
       'css',
       'copyCss',
+      'copyImages',
       'copyHtml',
       'cleanTmp'
     );
