@@ -42,7 +42,27 @@
             {
               label: 'Save',
               icon: 'ok',
-              cb: (item) => {
+              cb: (item,form) => {
+
+                if (!form.$valid){
+                  return;
+                }
+                if(item.name && item.url && item.custom_icon){
+                  var indexOfXos = item.url.indexOf('xos');
+                  if (indexOfXos>=0){
+                    var dashboard_name = item.url.slice(indexOfXos+3,item.url.length).toLowerCase();
+                    item.icon =dashboard_name.concat('-icon.png');
+                    item.icon_active =dashboard_name.concat('-icon-active.png');
+                  }
+                  else{
+                    item.icon ='default-icon.png';
+                    item.icon_active ='default-icon-active.png';
+                  }
+                }
+                else{
+                  item.icon ='default-icon.png';
+                  item.icon_active ='default-icon-active.png';
+                }
                 this.createOrUpdateDashboard(item);
               },
               class: 'success'
@@ -77,6 +97,9 @@
             },
             enabled: {
               type: 'boolean'
+            },
+            custom_icon: {
+              type: 'boolean'
             }
           }
         };
@@ -99,7 +122,7 @@
             $log.info(e);
             this.formConfig.feedback.show = true;
             this.formConfig.feedback.message = e;
-            this.formConfig.feedback.type = 'error';
+            this.formConfig.feedback.type='danger';
           })
         };
 

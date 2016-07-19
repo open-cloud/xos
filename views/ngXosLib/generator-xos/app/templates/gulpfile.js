@@ -6,6 +6,7 @@ var wrench = require('wrench');
 var options = {
   src: 'src/',
   css: 'src/css/',
+  icon: 'src/icons',
   sass: 'src/sass/',
   scripts: 'src/js/',
   tmp: 'src/.tmp',

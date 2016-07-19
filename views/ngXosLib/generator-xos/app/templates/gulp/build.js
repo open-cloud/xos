@@ -41,7 +41,9 @@ module.exports = function(options){
     return del(
       [
         options.dashboards + 'xos<%= fileName %>.html',
-        options.static + 'css/xos<%= fileName %>.css'
+        options.static + 'css/xos<%= fileName %>.css',
+        options.static + 'images/<%= name %>-icon.png',
+        options.static + 'images/<%= name %>-icon-active.png'
       ],
       {force: true}
     );
@@ -68,6 +70,12 @@ module.exports = function(options){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xos<%= fileName %>.css'))
     .pipe(gulp.dest(options.static + 'css/'))
+  });
+
+  // copy images in correct folder
+  gulp.task('copyImages', ['wait'], function(){
+    return gulp.src([`${options.icon}/<%= name %>-icon.png`,`${options.icon}/<%= name %>-icon-active.png`])
+    .pipe(gulp.dest(options.static + 'images/'))
   });
 
   // compile and minify scripts
@@ -157,6 +165,7 @@ module.exports = function(options){
       'wiredep',
       'css',
       'copyCss',
+      'copyImages',
       'copyHtml',
       'cleanTmp'
     );

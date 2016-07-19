@@ -100,7 +100,9 @@
           padding: 5px 0px;
           margin-right: 0;
           border-radius: $nav-pills-border-radius;
-
+          > img {
+            width:20px;
+          }
           &:hover,&:focus  {
             padding-left: 15px;
             text-decoration: none;

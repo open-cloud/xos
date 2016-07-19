@@ -1856,10 +1856,10 @@ class ControllerDashboardViewInline(XOSTabularInline):
 
 class DashboardViewAdmin(XOSBaseAdmin):
     fieldsets = [('Dashboard View Details',
-                  {'fields': ['backend_status_text', 'name', 'url', 'enabled', 'deployments'],
+                  {'fields': ['backend_status_text', 'name', 'url', 'enabled', 'deployments',"icon","icon_active"],
                    'classes': ['suit-tab suit-tab-general']})
                  ]
-    list_display = ["name", "enabled", "url"]
+    list_display = ["name", "enabled", "url","icon","icon_active"]
     readonly_fields = ('backend_status_text', )
     inlines = [ControllerDashboardViewInline]
 
