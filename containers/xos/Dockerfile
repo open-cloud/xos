@@ -13,6 +13,14 @@ RUN git clone $XOS_GIT_REPO -b $XOS_GIT_BRANCH /tmp/xos && \
     chmod +x /opt/xos/tools/xos-manage && \
     /opt/xos/tools/xos-manage genkeys
 
+# ng-xos-lib download
+
+ENV NG_XOS_LIB_URL https://gerrit.opencord.org/ng-xos-lib
+
+RUN git clone $NG_XOS_LIB_URL /tmp/ng-xos-lib 
+RUN cp /tmp/ng-xos-lib/dist/ngXosHelpers.min.js /opt/xos/core/xoslib/static/js/vendor/ 
+RUN cp /tmp/ng-xos-lib/dist/ngXosVendor.min.js /opt/xos/core/xoslib/static/js/vendor/
+
 EXPOSE 8000
 
 # Set environment variables
