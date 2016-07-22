@@ -1,7 +1,0 @@
-@import '../../../styles/animations.scss';
-@import '../../../../../../style/sass/bootstrap/bootstrap/_variables.scss';
-
-input + xos-validation {
-  margin-top: $form-group-margin-bottom;
-  display: block;
-}
