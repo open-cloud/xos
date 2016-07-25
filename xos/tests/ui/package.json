@@ -22,7 +22,6 @@
     "karma-ng-html2js-preprocessor": "^0.2.0",
     "karma-phantomjs-launcher": "^0.2.1",
     "phantomjs": "^2.1.7",
-    "phantomjs-prebuilt": "^2.1.7",
     "wiredep": "^3.0.0-beta"
   }
 }
