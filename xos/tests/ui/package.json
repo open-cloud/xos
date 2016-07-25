@@ -1,0 +1,28 @@
+{
+  "name": "ui",
+  "version": "1.0.0",
+  "description": "Test configuration for Custom Views",
+  "main": "index.js",
+  "scripts": {
+    "test": "karma start karma.conf.views.js"
+  },
+  "author": "Open Networking Lab",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "babel-polyfill": "^6.7.4",
+    "babel-preset-es2015": "^6.9.0",
+    "jasmine-core": "^2.4.1",
+    "karma": "^1.1.1",
+    "karma-babel-preprocessor": "^6.0.1",
+    "karma-chrome-launcher": "^0.2.3",
+    "karma-coverage": "^0.5.5",
+    "karma-jasmine": "^0.3.8",
+    "karma-junit-reporter": "^0.4.2",
+    "karma-mocha-reporter": "^1.1.3",
+    "karma-ng-html2js-preprocessor": "^0.2.0",
+    "karma-phantomjs-launcher": "^0.2.1",
+    "phantomjs": "^2.1.7",
+    "phantomjs-prebuilt": "^2.1.7",
+    "wiredep": "^3.0.0-beta"
+  }
+}
