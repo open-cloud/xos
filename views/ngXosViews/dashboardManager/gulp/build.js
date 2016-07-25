@@ -41,7 +41,9 @@ module.exports = function(options){
     return del(
       [
         options.dashboards + 'xosDashboardManager.html',
-        options.static + 'css/xosDashboardManager.css'
+        options.static + 'css/xosDashboardManager.css',
+        options.static + 'images/dashboardManager-icon.png',
+        options.static + 'images/dashboardManager-icon-active.png'
       ],
       {force: true}
     );
@@ -68,6 +70,12 @@ module.exports = function(options){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xosDashboardManager.css'))
     .pipe(gulp.dest(options.static + 'css/'))
+  });
+
+  // copy images in correct folder
+  gulp.task('copyImages', ['wait'], function(){
+    return gulp.src([`${options.icon}/dashboardManager-icon.png`,`${options.icon}/dashboardManager-icon-active.png`])
+    .pipe(gulp.dest(options.static + 'images/'))
   });
 
   // compile and minify scripts
@@ -104,7 +112,7 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosDashboardManagerVendor.js',
+            options.static + 'vendor/xosDashboardManagerVendor.js',
             options.static + 'js/xosDashboardManager.js',
             options.static + 'css/xosDashboardManager.css'
           ]),
@@ -130,7 +138,7 @@ module.exports = function(options){
     return gulp.src(bowerDeps)
       .pipe(concat('xosDashboardManagerVendor.js'))
       .pipe(uglify())
-      .pipe(gulp.dest(options.static + 'js/vendor/'));
+      .pipe(gulp.dest(options.static + 'vendor/'));
   });
 
   gulp.task('lint', function () {
@@ -157,6 +165,7 @@ module.exports = function(options){
       'wiredep',
       'css',
       'copyCss',
+      'copyImages',
       'copyHtml',
       'cleanTmp'
     );

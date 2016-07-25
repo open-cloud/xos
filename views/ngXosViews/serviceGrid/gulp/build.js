@@ -41,7 +41,9 @@ module.exports = function(options){
     return del(
       [
         options.dashboards + 'xosServiceGrid.html',
-        options.static + 'css/xosServiceGrid.css'
+        options.static + 'css/xosServiceGrid.css',
+        options.static + 'images/serviceGrid-icon.png',
+        options.static + 'images/serviceGrid-icon-active.png'
       ],
       {force: true}
     );
@@ -68,6 +70,12 @@ module.exports = function(options){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xosServiceGrid.css'))
     .pipe(gulp.dest(options.static + 'css/'))
+  });
+
+  // copy images in correct folder
+  gulp.task('copyImages', ['wait'], function(){
+    return gulp.src([`${options.icon}/serviceGrid-icon.png`,`${options.icon}/serviceGrid-icon-active.png`])
+    .pipe(gulp.dest(options.static + 'images/'))
   });
 
   // compile and minify scripts
@@ -104,7 +112,7 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosServiceGridVendor.js',
+            options.static + 'vendor/xosServiceGridVendor.js',
             options.static + 'js/xosServiceGrid.js',
             options.static + 'css/xosServiceGrid.css'
           ]),
@@ -130,7 +138,7 @@ module.exports = function(options){
     return gulp.src(bowerDeps)
       .pipe(concat('xosServiceGridVendor.js'))
       .pipe(uglify())
-      .pipe(gulp.dest(options.static + 'js/vendor/'));
+      .pipe(gulp.dest(options.static + 'vendor/'));
   });
 
   gulp.task('lint', function () {
@@ -157,6 +165,7 @@ module.exports = function(options){
       'wiredep',
       'css',
       'copyCss',
+      'copyImages',
       'copyHtml',
       'cleanTmp'
     );

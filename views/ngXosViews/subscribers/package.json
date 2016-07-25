@@ -17,7 +17,7 @@
     "XOSlib"
   ],
   "author": "Matteo Scandolo",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^6.3.3",
@@ -49,7 +49,6 @@
     "jasmine-core": "~2.3.4",
     "karma": "^0.13.14",
     "karma-babel-preprocessor": "~5.2.2",
-    "karma-chrome-launcher": "^1.0.1",
     "karma-coverage": "^0.5.3",
     "karma-jasmine": "~0.3.6",
     "karma-mocha-reporter": "~1.1.1",

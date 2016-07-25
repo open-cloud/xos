@@ -2,7 +2,7 @@
   "name": "xos-diagnostic",
   "version": "0.0.0",
   "authors": [
-    "Matteo Scandolo <teo@onlab.us>"
+    "Matteo Scandolo <matteo.scandolo@gmail.com>"
   ],
   "description": "The diagnostic view",
   "license": "MIT",
@@ -14,7 +14,8 @@
     "test",
     "tests"
   ],
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
     "jquery": "2.1.4",
     "angular-mocks": "1.4.7",
@@ -26,9 +27,8 @@
     "lodash": "~4.11.1",
     "bootstrap-css": "3.3.6",
     "angular-chart.js": "~0.10.2",
-    "d3": "~3.5.17"
-  },
-  "resolutions": {
-    "angular": "1.4.7"
+    "d3": "~3.5.17",
+    "angular-recursion": "~1.0.5",
+    "ng-xos-lib": "opencord/ng-xos-lib#~1.0.0"
   }
 }

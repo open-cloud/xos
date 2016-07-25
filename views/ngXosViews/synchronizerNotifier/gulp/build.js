@@ -36,7 +36,9 @@ module.exports = function(options){
     return del(
       [
         options.dashboards + 'xosSynchronizerNotifier.html',
-        options.static + 'css/xosSynchronizerNotifier.css'
+        options.static + 'css/xosSynchronizerNotifier.css',
+        options.static + 'images/synchronizerNotifier-icon.png',
+        options.static + 'images/synchronizerNotifier-icon-active.png'
       ],
       {force: true}
     );
@@ -63,6 +65,12 @@ module.exports = function(options){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xosSynchronizerNotifier.css'))
     .pipe(gulp.dest(options.static + 'css/'))
+  });
+
+  // copy images in correct folder
+  gulp.task('copyImages', ['wait'], function(){
+    return gulp.src([`${options.icon}/synchronizerNotifier-icon.png`,`${options.icon}/synchronizerNotifier-icon-active.png`])
+    .pipe(gulp.dest(options.static + 'images/'))
   });
 
   // compile and minify scripts
@@ -99,7 +107,7 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosSynchronizerNotifierVendor.js',
+            options.static + 'vendor/xosSynchronizerNotifierVendor.js',
             options.static + 'js/xosSynchronizerNotifier.js',
             options.static + 'css/xosSynchronizerNotifier.css'
           ]),
@@ -125,7 +133,7 @@ module.exports = function(options){
     return gulp.src(bowerDeps)
       .pipe(concat('xosSynchronizerNotifierVendor.js'))
       .pipe(uglify())
-      .pipe(gulp.dest(options.static + 'js/vendor/'));
+      .pipe(gulp.dest(options.static + 'vendor/'));
   });
 
   gulp.task('lint', function () {
@@ -152,6 +160,7 @@ module.exports = function(options){
       'wiredep',
       'css',
       'copyCss',
+      'copyImages',
       'copyHtml',
       'cleanTmp'
     );

@@ -16,8 +16,8 @@
     "Angular",
     "XOSlib"
   ],
-  "author": "",
-  "license": "MIT",
+  "author": "Arpit Agarwal",
+  "license": "Apache-2.0",
   "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^6.3.3",

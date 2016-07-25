@@ -41,7 +41,9 @@ module.exports = function(options){
     return del(
       [
         options.dashboards + 'xosHpc.html',
-        options.static + 'css/xosHpc.css'
+        options.static + 'css/xosHpc.css',
+        options.static + 'images/hpc-icon.png',
+        options.static + 'images/hpc-icon-active.png'
       ],
       {force: true}
     );
@@ -68,6 +70,12 @@ module.exports = function(options){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xosHpc.css'))
     .pipe(gulp.dest(options.static + 'css/'))
+  });
+
+  // copy images in correct folder
+  gulp.task('copyImages', ['wait'], function(){
+    return gulp.src([`${options.icon}/hpc-icon.png`,`${options.icon}/hpc-icon-active.png`])
+    .pipe(gulp.dest(options.static + 'images/'))
   });
 
   // compile and minify scripts
@@ -104,7 +112,7 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosHpcVendor.js',
+            options.static + 'vendor/xosHpcVendor.js',
             options.static + 'js/xosHpc.js',
             options.static + 'css/xosHpc.css'
           ]),
@@ -130,7 +138,7 @@ module.exports = function(options){
     return gulp.src(bowerDeps)
       .pipe(concat('xosHpcVendor.js'))
       .pipe(uglify())
-      .pipe(gulp.dest(options.static + 'js/vendor/'));
+      .pipe(gulp.dest(options.static + 'vendor/'));
   });
 
   gulp.task('lint', function () {
@@ -157,6 +165,7 @@ module.exports = function(options){
       'wiredep',
       'css',
       'copyCss',
+      'copyImages',
       'copyHtml',
       'cleanTmp'
     );

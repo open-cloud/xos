@@ -52,13 +52,12 @@ module.exports = function(options){
       server: {
         baseDir: options.src,
         routes: {
-          '/xos/core/xoslib/static/js/vendor': options.helpers,
           '/xos/core/static': options.static + '../../static/'
         },
         middleware: function(req, res, next){
           if(
-            req.url.indexOf('/api/') !== -1 ||
-            req.url.indexOf('/hpcapi/') !== -1
+            req.url.indexOf('/hpcapi/') !== -1 || 
+            req.url.indexOf('/api/') !== -1
           ){
             if(conf.xoscsrftoken && conf.xossessionid){
               req.headers.cookie = `xoscsrftoken=${conf.xoscsrftoken}; xossessionid=${conf.xossessionid}`;
@@ -116,7 +115,7 @@ module.exports = function(options){
         inject(
           gulp.src([
             options.tmp + '**/*.js',
-            options.helpers + 'ngXosHelpers.js'
+            options.helpers + 'ngXosHelpers.min.js'
           ])
           .pipe(angularFilesort()),
           {

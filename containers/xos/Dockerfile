@@ -15,11 +15,13 @@ RUN git clone $XOS_GIT_REPO -b $XOS_GIT_BRANCH /tmp/xos && \
 
 # ng-xos-lib download
 
-ENV NG_XOS_LIB_URL https://gerrit.opencord.org/ng-xos-lib
+ENV NG_XOS_LIB_URL https://github.com/opencord/ng-xos-lib.git
+ENV NG_XOS_LIB_VERSION 1.0.0
 
 RUN git clone $NG_XOS_LIB_URL /tmp/ng-xos-lib 
-RUN cp /tmp/ng-xos-lib/dist/ngXosHelpers.min.js /opt/xos/core/xoslib/static/js/vendor/ 
-RUN cp /tmp/ng-xos-lib/dist/ngXosVendor.min.js /opt/xos/core/xoslib/static/js/vendor/
+RUN cd /tmp/ng-xos-lib && git checkout tags/$NG_XOS_LIB_VERSION
+RUN cp /tmp/ng-xos-lib/dist/ngXosHelpers.min.js /opt/xos/core/xoslib/static/vendor/ 
+RUN cp /tmp/ng-xos-lib/dist/ngXosVendor.min.js /opt/xos/core/xoslib/static/vendor/
 
 EXPOSE 8000
 

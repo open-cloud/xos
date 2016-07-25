@@ -12,7 +12,7 @@ var options = {
   tmp: 'src/.tmp',
   dist: 'dist/',
   api: '../../ngXosLib/api/',
-  helpers: '../../../xos/core/xoslib/static/js/vendor/',
+  helpers: './src/vendor/ng-xos-lib/dist/',
   static: '../../../xos/core/xoslib/static/', // this is the django static folder
   dashboards: '../../../xos/core/xoslib/dashboards/' // this is the django html folder
 };

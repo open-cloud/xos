@@ -11,7 +11,7 @@ const babelPreset = require('babel-preset-es2015');
 const fs = require('fs');
 
 const viewDir = '../../core/xoslib/static/js/';
-const vendorDir = '../../core/xoslib/static/js/vendor/';
+const vendorDir = '../../core/xoslib/static/vendor/';
 let viewFiles = fs.readdirSync(viewDir);
 let vendorFiles = fs.readdirSync(vendorDir);
 

@@ -41,7 +41,9 @@ module.exports = function(options){
     return del(
       [
         options.dashboards + 'xosDiagnostic.html',
-        options.static + 'css/xosDiagnostic.css'
+        options.static + 'css/xosDiagnostic.css',
+        options.static + 'images/diagnostic-icon.png',
+        options.static + 'images/diagnostic-icon-active.png'
       ],
       {force: true}
     );
@@ -68,6 +70,12 @@ module.exports = function(options){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xosDiagnostic.css'))
     .pipe(gulp.dest(options.static + 'css/'))
+  });
+
+  // copy images in correct folder
+  gulp.task('copyImages', ['wait'], function(){
+    return gulp.src([`${options.icon}/diagnostic-icon.png`,`${options.icon}/diagnostic-icon-active.png`])
+    .pipe(gulp.dest(options.static + 'images/'))
   });
 
   // compile and minify scripts
@@ -104,7 +112,7 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosDiagnosticVendor.js',
+            options.static + 'vendor/xosDiagnosticVendor.js',
             options.static + 'js/xosDiagnostic.js',
             options.static + 'css/xosDiagnostic.css'
           ]),
@@ -130,7 +138,7 @@ module.exports = function(options){
     return gulp.src(bowerDeps)
       .pipe(concat('xosDiagnosticVendor.js'))
       .pipe(uglify())
-      .pipe(gulp.dest(options.static + 'js/vendor/'));
+      .pipe(gulp.dest(options.static + 'vendor/'));
   });
 
   gulp.task('lint', function () {
@@ -157,6 +165,7 @@ module.exports = function(options){
       'wiredep',
       'css',
       'copyCss',
+      'copyImages',
       'copyHtml',
       'cleanTmp'
     );

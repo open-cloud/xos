@@ -15,7 +15,7 @@ describe('The User List', () => {
       {
         email: 'jermowery@email.arizona.edu',
         firstname: 'Jeremy',
-        lastname: 'Mowery' 
+        lastname: 'Mowery'
       }
     ]);
   

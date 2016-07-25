@@ -1,5 +1,5 @@
 {
-  "name": "xos-serviceTopology",
+  "name": "xos-diagnostic",
   "version": "1.0.0",
   "description": "Angular Application for XOS, created with generator-xos",
   "scripts": {
@@ -8,8 +8,10 @@
     "dev": "NODE_ENV=mock gulp serve",
     "local": "NODE_ENV=local gulp serve",
     "server": "easy-mocker -c ./mocks/diagnostic.conf.json -d ./mocks/data",
+    "prebuild": "npm install && bower install",
     "build": "gulp",
     "test": "karma start",
+    "test:ci": "karma start --single-run",
     "lint": "eslint src/js/"
   },
   "keywords": [
