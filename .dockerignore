@@ -1,4 +1,5 @@
 views/
 applications/
 xos/tests/api/node_modules
+xos/tests/ui/node_modules
 xos/configurations/cord-pod/images

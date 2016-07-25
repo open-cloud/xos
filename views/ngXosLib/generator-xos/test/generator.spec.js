@@ -9,17 +9,18 @@ const wiredep = require('wiredep');
 
 const firstCharTouppercase = string => string.replace(/^./, string[0].toUpperCase())
 
-// get bower deps installed in ngXosLib
-let bowerDeps = wiredep({
-  cwd: path.join(__dirname, '../../'), // pretending to be in the ngXosLib root
-  exclude: ['Chart.js']
-});
-bowerDeps = bowerDeps.js.map(d => {
-  let path = d.match(/bower_components\/([1-9a-zA-Z\-`.]+)\//);
-  if(path){
-    return path[1];
-  }
-});
+const bowerDeps = [
+  'angular',
+  'angular-ui-router',
+  'angular-resource',
+  'angular-cookies',
+  'angular-animate',
+  'lodash',
+  'angular-chart.js',
+  'd3',
+  'angular-recursion',
+  'ng-xos-lib'
+];
 
 // test values
 const viewName = 'testDashboard';
@@ -100,7 +101,7 @@ describe('Yeoman XOS generator', function () {
     assert.fileContent(`${testPath}gulp/build.js`, `.pipe(concat('xos${fileName}.css'))`)
     assert.fileContent(`${testPath}gulp/build.js`, `.pipe(concat('xos${fileName}.js'))`)
     assert.fileContent(`${testPath}gulp/build.js`, `module: 'xos.${viewName}'`)
-    assert.fileContent(`${testPath}gulp/build.js`, `options.static + 'js/vendor/xos${fileName}Vendor.js'`)
+    assert.fileContent(`${testPath}gulp/build.js`, `options.static + 'vendor/xos${fileName}Vendor.js'`)
     assert.fileContent(`${testPath}gulp/build.js`, `options.static + 'js/xos${fileName}.js'`)
     assert.fileContent(`${testPath}gulp/build.js`, `options.static + 'css/xos${fileName}.css'`)
     assert.fileContent(`${testPath}gulp/build.js`, `.pipe(concat('xos${fileName}Vendor.js'))`)

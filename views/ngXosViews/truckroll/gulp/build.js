@@ -41,7 +41,9 @@ module.exports = function(options){
     return del(
       [
         options.dashboards + 'xosTruckroll.html',
-        options.static + 'css/xosTruckroll.css'
+        options.static + 'css/xosTruckroll.css',
+        options.static + 'images/truckroll-icon.png',
+        options.static + 'images/truckroll-icon-active.png'
       ],
       {force: true}
     );
@@ -68,6 +70,12 @@ module.exports = function(options){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xosTruckroll.css'))
     .pipe(gulp.dest(options.static + 'css/'))
+  });
+
+  // copy images in correct folder
+  gulp.task('copyImages', ['wait'], function(){
+    return gulp.src([`${options.icon}/truckroll-icon.png`,`${options.icon}/truckroll-icon-active.png`])
+    .pipe(gulp.dest(options.static + 'images/'))
   });
 
   // compile and minify scripts
@@ -104,7 +112,7 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosTruckrollVendor.js',
+            options.static + 'vendor/xosTruckrollVendor.js',
             options.static + 'js/xosTruckroll.js',
             options.static + 'css/xosTruckroll.css'
           ]),
@@ -130,7 +138,7 @@ module.exports = function(options){
     return gulp.src(bowerDeps)
       .pipe(concat('xosTruckrollVendor.js'))
       .pipe(uglify())
-      .pipe(gulp.dest(options.static + 'js/vendor/'));
+      .pipe(gulp.dest(options.static + 'vendor/'));
   });
 
   gulp.task('lint', function () {
@@ -157,6 +165,7 @@ module.exports = function(options){
       'wiredep',
       'css',
       'copyCss',
+      'copyImages',
       'copyHtml',
       'cleanTmp'
     );

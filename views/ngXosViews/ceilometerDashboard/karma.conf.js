@@ -11,6 +11,7 @@ var bowerComponents = wiredep( {devDependencies: true} )[ 'js' ].map(function( f
   return path.relative(process.cwd(), file);
 });
 
+
 module.exports = function(config) {
 /*eslint-enable*/
   config.set({
@@ -25,10 +26,9 @@ module.exports = function(config) {
 
 
     // list of files / patterns to load in the browser
-    files: [
-      '../../../xos/core/xoslib/static/js/vendor/ngXosVendor.js',
-      '../../../xos/core/xoslib/static/js/vendor/ngXosHelpers.js',
-    ].concat(bowerComponents).concat([
+    files: ['./src/vendor/ng-xos-lib/dist/ngXosVendor.min.js']
+    .concat(bowerComponents).concat([
+      './src/vendor/ng-xos-lib/dist/ngXosHelpers.min.js',
       'src/js/main.js',
       'src/js/**/*.js',
       'spec/**/*.mock.js',

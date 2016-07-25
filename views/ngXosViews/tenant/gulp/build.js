@@ -42,7 +42,8 @@ module.exports = function(options){
       [
         options.dashboards + 'xosTenant.html',
         options.static + 'css/xosTenant.css',
-        options.static + 'images/*'
+        options.static + 'images/tenant-icon.png',
+        options.static + 'images/tenant-icon-active.png'
       ],
       {force: true}
     );
@@ -71,9 +72,9 @@ module.exports = function(options){
     .pipe(gulp.dest(options.static + 'css/'))
   });
 
-    // copy images in correct folder
+  // copy images in correct folder
   gulp.task('copyImages', ['wait'], function(){
-    return gulp.src([`${options.icon}/*.png`])
+    return gulp.src([`${options.icon}/tenant-icon.png`,`${options.icon}/tenant-icon-active.png`])
     .pipe(gulp.dest(options.static + 'images/'))
   });
 
@@ -111,7 +112,7 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosTenantVendor.js',
+            options.static + 'vendor/xosTenantVendor.js',
             options.static + 'js/xosTenant.js',
             options.static + 'css/xosTenant.css'
           ]),
@@ -137,7 +138,7 @@ module.exports = function(options){
     return gulp.src(bowerDeps)
       .pipe(concat('xosTenantVendor.js'))
       .pipe(uglify())
-      .pipe(gulp.dest(options.static + 'js/vendor/'));
+      .pipe(gulp.dest(options.static + 'vendor/'));
   });
 
   gulp.task('lint', function () {

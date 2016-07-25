@@ -30,6 +30,7 @@ var proxy = httpProxy.createProxyServer({
   target: conf.host
 });
 
+
 proxy.on('error', function(error, req, res) {
   res.writeHead(500, {
     'Content-Type': 'text/plain'
@@ -51,7 +52,6 @@ module.exports = function(options){
       server: {
         baseDir: options.src,
         routes: {
-          '/xos/core/xoslib/static/js/vendor': options.helpers,
           '/xos/core/static': options.static + '../../static/'
         },
         middleware: function(req, res, next){
@@ -115,7 +115,7 @@ module.exports = function(options){
         inject(
           gulp.src([
             options.tmp + '**/*.js',
-            options.helpers + 'ngXosHelpers.js'
+            options.helpers + 'ngXosHelpers.min.js'
           ])
           .pipe(angularFilesort()),
           {

@@ -11,6 +11,9 @@ var bowerComponents = wiredep( {devDependencies: true} )[ 'js' ].map(function( f
   return path.relative(process.cwd(), file);
 });
 
+// add Blob polyfill for Phantom.js
+bowerComponents.push('src/vendor/Blob.js/Blob.js');
+
 module.exports = function(config) {
 /*eslint-enable*/
   config.set({
@@ -26,8 +29,9 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: bowerComponents.concat([
-      '../../../xos/core/xoslib/static/js/vendor/ngXosVendor.js',
-      '../../../xos/core/xoslib/static/js/vendor/ngXosHelpers.js',
+      './src/vendor/ng-xos-lib/dist/ngXosVendor.min.js',
+      './src/vendor/ng-xos-lib/dist/ngXosHelpers.min.js',
+      'src/js/main.js',
       'src/js/**/*.js',
       'spec/**/*.mock.js',
       'spec/**/*.test.js',
@@ -45,6 +49,7 @@ module.exports = function(config) {
     preprocessors: {
       'src/js/**/*.js': ['babel'],
       'spec/**/*.test.js': ['babel'],
+      'spec/**/*.mock.js': ['babel'],
       'src/**/*.html': ['ng-html2js']
     },
 

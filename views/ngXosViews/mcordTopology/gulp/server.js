@@ -10,18 +10,24 @@ var wiredep = require('wiredep').stream;
 var httpProxy = require('http-proxy');
 var del = require('del');
 var sass = require('gulp-sass');
+var fs = require('fs');
+var path = require('path');
 
 const environment = process.env.NODE_ENV;
 
-if (environment){
-  var conf = require(`../env/${environment}.js`);
-}
-else{
-  var conf = require('../env/default.js')
+if(!fs.existsSync(path.join(__dirname, `../../../env/${environment || 'default'}.js`))){
+  if(!environment){
+    throw new Error('You should define a default.js config in /views/env folder.');
+  }
+  else{
+    throw new Error(`Since you are loading a custom environment, you should define a ${environment}.js config in /views/env folder.`);
+  }
 }
 
+var conf = require(path.join(__dirname, `../../../env/${environment || 'default'}.js`));
+
 var proxy = httpProxy.createProxyServer({
-  target: conf.host || 'http://0.0.0.0:9999'
+  target: conf.host
 });
 
 
@@ -35,12 +41,8 @@ proxy.on('error', function(error, req, res) {
 
 module.exports = function(options){
 
-  // open in browser with sync and proxy to 0.0.0.0
   gulp.task('browser', function() {
     browserSync.init({
-      // reloadDelay: 500,
-      // logLevel: 'debug',
-      // logConnections: true,
       startPath: '#/',
       snippetOptions: {
         rule: {
@@ -50,7 +52,7 @@ module.exports = function(options){
       server: {
         baseDir: options.src,
         routes: {
-          '/xos/core/xoslib/static/js/vendor': options.helpers
+          '/xos/core/static': options.static + '../../static/'
         },
         middleware: function(req, res, next){
           if(
@@ -86,6 +88,13 @@ module.exports = function(options){
     gulp.watch(`${options.sass}/**/*.scss`, ['sass'], function(){
       browserSync.reload();
     });
+
+    gulp.watch([
+      options.helpers + 'ngXosHelpers.js',
+      options.static + '../../static/xosNgLib.css'
+    ], function(){
+      browserSync.reload();
+    });
   });
 
   // compile sass
@@ -109,7 +118,7 @@ module.exports = function(options){
         inject(
           gulp.src([
             options.tmp + '**/*.js',
-            options.helpers + 'ngXosHelpers.js'
+            options.helpers + 'ngXosHelpers.min.js'
           ])
           .pipe(angularFilesort()),
           {
@@ -125,7 +134,10 @@ module.exports = function(options){
     return gulp.src(options.src + 'index.html')
       .pipe(
         inject(
-          gulp.src(options.src + 'css/*.css'),
+          gulp.src([
+            options.src + 'css/*.css',
+            options.static + '../../static/xosNgLib.css'
+          ]),
           {
             ignorePath: [options.src]
           }

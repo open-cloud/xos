@@ -28,7 +28,7 @@ const sourcePath = path.join(__dirname, `../../../ngXosViews/${viewName}/`);
 const basePath = '../../../../xos/core/xoslib';
 const destHtml = path.join(__dirname, basePath + '/dashboards/xosTestDashboard.html');
 const destJs = path.join(__dirname, basePath + '/static/js/xosTestDashboard.js');
-const destVendor = path.join(__dirname, basePath + '/static/js/vendor/xosTestDashboardVendor.js');
+const destVendor = path.join(__dirname, basePath + '/static/vendor/xosTestDashboardVendor.js');
 const destCss = path.join(__dirname, basePath + '/static/css/xosTestDashboard.css');
 
 describe('The XOS Build script', function(){
@@ -140,7 +140,7 @@ describe('The XOS Build script', function(){
 
     it('should include only minified files and minified deps in the index', () => {
       assert.fileContent(destHtml, `<script src="/static/js/xos${fileName}.js"></script>`);
-      assert.fileContent(destHtml, `<script src="/static/js/vendor/xos${fileName}Vendor.js"></script>`);
+      assert.fileContent(destHtml, `<script src="/static/vendor/xos${fileName}Vendor.js"></script>`);
       assert.noFileContent(destHtml, `<!-- bower:css -->`);
       assert.noFileContent(destHtml, `<!-- bower:js -->`);
     });

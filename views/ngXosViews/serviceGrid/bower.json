@@ -2,10 +2,10 @@
   "name": "xos-serviceGrid",
   "version": "0.0.0",
   "authors": [
-    "Matteo Scandolo <teo@onlab.us>"
+    "Matteo Scandolo <matteo.scandolo@gmail.com>"
   ],
   "description": "The serviceGrid view",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -32,9 +32,7 @@
     "bootstrap-css": "3.3.6",
     "angular-chart.js": "~0.10.2",
     "d3": "~3.5.17",
-    "angular-recursion": "~1.0.5"
-  },
-  "resolutions": {
-    "lodash": "~4.11.1"
+    "angular-recursion": "~1.0.5",
+    "ng-xos-lib": "opencord/ng-xos-lib#~1.0.0"
   }
 }

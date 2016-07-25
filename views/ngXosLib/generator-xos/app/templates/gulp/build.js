@@ -112,7 +112,7 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xos<%= fileName %>Vendor.js',
+            options.static + 'vendor/xos<%= fileName %>Vendor.js',
             options.static + 'js/xos<%= fileName %>.js',
             options.static + 'css/xos<%= fileName %>.css'
           ]),
@@ -138,7 +138,7 @@ module.exports = function(options){
     return gulp.src(bowerDeps)
       .pipe(concat('xos<%= fileName %>Vendor.js'))
       .pipe(uglify())
-      .pipe(gulp.dest(options.static + 'js/vendor/'));
+      .pipe(gulp.dest(options.static + 'vendor/'));
   });
 
   gulp.task('lint', function () {

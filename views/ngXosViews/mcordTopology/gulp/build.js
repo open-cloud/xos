@@ -41,7 +41,9 @@ module.exports = function(options){
     return del(
       [
         options.dashboards + 'xosMcordTopology.html',
-        options.static + 'css/xosMcordTopology.css'
+        options.static + 'css/xosMcordTopology.css',
+        options.static + 'images/mcordTopology-icon.png',
+        options.static + 'images/mcordTopology-icon-active.png'
       ],
       {force: true}
     );
@@ -68,6 +70,12 @@ module.exports = function(options){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xosMcordTopology.css'))
     .pipe(gulp.dest(options.static + 'css/'))
+  });
+
+  // copy images in correct folder
+  gulp.task('copyImages', ['wait'], function(){
+    return gulp.src([`${options.icon}/mcordTopology-icon.png`,`${options.icon}/mcordTopology-icon-active.png`])
+    .pipe(gulp.dest(options.static + 'images/'))
   });
 
   // compile and minify scripts
@@ -98,13 +106,13 @@ module.exports = function(options){
   gulp.task('copyHtml', function(){
     return gulp.src(options.src + 'index.html')
       // remove dev dependencies from html
-      .pipe(replace(/<!-- bower:css -->(\n.*)*\n<!-- endbower --><!-- endcss -->/, ''))
-      .pipe(replace(/<!-- bower:js -->(\n.*)*\n<!-- endbower --><!-- endjs -->/, ''))
+      .pipe(replace(/<!-- bower:css -->(\n^<link.*)*\n<!-- endbower -->/gmi, ''))
+      .pipe(replace(/<!-- bower:js -->(\n^<script.*)*\n<!-- endbower -->/gmi, ''))
       // injecting minified files
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosMcordTopologyVendor.js',
+            options.static + 'vendor/xosMcordTopologyVendor.js',
             options.static + 'js/xosMcordTopology.js',
             options.static + 'css/xosMcordTopology.css'
           ]),
@@ -130,7 +138,7 @@ module.exports = function(options){
     return gulp.src(bowerDeps)
       .pipe(concat('xosMcordTopologyVendor.js'))
       .pipe(uglify())
-      .pipe(gulp.dest(options.static + 'js/vendor/'));
+      .pipe(gulp.dest(options.static + 'vendor/'));
   });
 
   gulp.task('lint', function () {
@@ -150,12 +158,14 @@ module.exports = function(options){
   gulp.task('build', function() {
     runSequence(
       'clean',
+      'sass',
       'templates',
       'babel',
       'scripts',
       'wiredep',
       'css',
       'copyCss',
+      'copyImages',
       'copyHtml',
       'cleanTmp'
     );

@@ -2,7 +2,7 @@
   "name": "xos-contentProvider",
   "version": "0.0.0",
   "authors": [
-    "Matteo Scandolo <teo@onlab.us>"
+    "Matteo Scandolo <matteo.scandolo@gmail.com>"
   ],
   "description": "The contentProvider view",
   "license": "MIT",
@@ -27,6 +27,8 @@
     "lodash": "~4.11.1",
     "bootstrap-css": "3.3.6",
     "angular-chart.js": "~0.10.2",
-    "d3": "~3.5.17"
+    "d3": "~3.5.17",
+    "angular-recursion": "~1.0.5",
+    "ng-xos-lib": "opencord/ng-xos-lib#~1.0.0"
   }
 }

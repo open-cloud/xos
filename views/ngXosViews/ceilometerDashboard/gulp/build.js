@@ -41,7 +41,9 @@ module.exports = function(options){
     return del(
       [
         options.dashboards + 'xosCeilometerDashboard.html',
-        options.static + 'css/xosCeilometerDashboard.css'
+        options.static + 'css/xosCeilometerDashboard.css',
+        options.static + 'images/ceilometerDashboard-icon.png',
+        options.static + 'images/ceilometerDashboard-icon-active.png'
       ],
       {force: true}
     );
@@ -68,6 +70,12 @@ module.exports = function(options){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xosCeilometerDashboard.css'))
     .pipe(gulp.dest(options.static + 'css/'))
+  });
+
+  // copy images in correct folder
+  gulp.task('copyImages', ['wait'], function(){
+    return gulp.src([`${options.icon}/ceilometerDashboard-icon.png`,`${options.icon}/ceilometerDashboard-icon-active.png`])
+    .pipe(gulp.dest(options.static + 'images/'))
   });
 
   // compile and minify scripts
@@ -104,7 +112,7 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosCeilometerDashboardVendor.js',
+            options.static + 'vendor/xosCeilometerDashboardVendor.js',
             options.static + 'js/xosCeilometerDashboard.js',
             options.static + 'css/xosCeilometerDashboard.css'
           ]),
@@ -129,8 +137,8 @@ module.exports = function(options){
 
     return gulp.src(bowerDeps)
       .pipe(concat('xosCeilometerDashboardVendor.js'))
-      //.pipe(uglify())
-      .pipe(gulp.dest(options.static + 'js/vendor/'));
+      .pipe(uglify())
+      .pipe(gulp.dest(options.static + 'vendor/'));
   });
 
   gulp.task('lint', function () {
@@ -157,6 +165,7 @@ module.exports = function(options){
       'wiredep',
       'css',
       'copyCss',
+      'copyImages',
       'copyHtml',
       'cleanTmp'
     );

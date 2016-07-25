@@ -26,8 +26,8 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: bowerComponents.concat([
-      '../../../xos/core/xoslib/static/js/vendor/ngXosVendor.js',
-      '../../../xos/core/xoslib/static/js/vendor/ngXosHelpers.js',
+      './src/vendor/ng-xos-lib/dist/ngXosVendor.min.js',
+      './src/vendor/ng-xos-lib/dist/ngXosHelpers.min.js',
       'src/js/main.js',
       'src/js/**/*.js',
       'spec/**/*.mock.js',
@@ -46,6 +46,7 @@ module.exports = function(config) {
     preprocessors: {
       'src/js/**/*.js': ['babel'],
       'spec/**/*.test.js': ['babel'],
+      'spec/**/*.mock.js': ['babel'],
       'src/**/*.html': ['ng-html2js']
     },
 

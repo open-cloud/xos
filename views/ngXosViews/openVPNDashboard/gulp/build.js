@@ -41,7 +41,9 @@ module.exports = function(options){
     return del(
       [
         options.dashboards + 'xosOpenVPNDashboard.html',
-        options.static + 'css/xosOpenVPNDashboard.css'
+        options.static + 'css/xosOpenVPNDashboard.css',
+        options.static + 'images/openVPNDashboard-icon.png',
+        options.static + 'images/openVPNDashboard-icon-active.png'
       ],
       {force: true}
     );
@@ -68,6 +70,12 @@ module.exports = function(options){
     return gulp.src([`${options.tmp}/css/*.css`])
     .pipe(concat('xosOpenVPNDashboard.css'))
     .pipe(gulp.dest(options.static + 'css/'))
+  });
+
+  // copy images in correct folder
+  gulp.task('copyImages', ['wait'], function(){
+    return gulp.src([`${options.icon}/openVPNDashboard-icon.png`,`${options.icon}/openVPNDashboard-icon-active.png`])
+    .pipe(gulp.dest(options.static + 'images/'))
   });
 
   // compile and minify scripts
@@ -104,7 +112,7 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosOpenVPNDashboardVendor.js',
+            options.static + 'vendor/xosOpenVPNDashboardVendor.js',
             options.static + 'js/xosOpenVPNDashboard.js',
             options.static + 'css/xosOpenVPNDashboard.css'
           ]),
@@ -130,7 +138,7 @@ module.exports = function(options){
     return gulp.src(bowerDeps)
       .pipe(concat('xosOpenVPNDashboardVendor.js'))
       .pipe(uglify())
-      .pipe(gulp.dest(options.static + 'js/vendor/'));
+      .pipe(gulp.dest(options.static + 'vendor/'));
   });
 
   gulp.task('lint', function () {
@@ -157,6 +165,7 @@ module.exports = function(options){
       'wiredep',
       'css',
       'copyCss',
+      'copyImages',
       'copyHtml',
       'cleanTmp'
     );
