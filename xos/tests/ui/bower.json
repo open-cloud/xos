@@ -1,0 +1,28 @@
+{
+  "name": "ui",
+  "description": "Test configuration for Custom Views",
+  "main": "index.js",
+  "authors": [
+    "Open Networking Lab"
+  ],
+  "license": "Apache-2.0",
+  "moduleType": [],
+  "homepage": "ngxoslib.wiki.opencord.org",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "jquery": "~3.1.0",
+    "jasmine-jquery": "~2.1.1",
+    "ng-xos-lib": "opencord/ng-xos-lib",
+    "angular-mocks": "~1.5.8"
+  },
+  "resolutions": {
+    "angular": "1.4.7"
+  }
+}
