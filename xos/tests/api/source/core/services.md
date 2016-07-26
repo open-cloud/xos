@@ -1,7 +1,3 @@
-# Group Services
-
-List of the XOS Services
-
 ## Services [/api/core/services/{id}/]
 
 ### List all Services [GET]

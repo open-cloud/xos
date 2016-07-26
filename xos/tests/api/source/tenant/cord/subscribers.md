@@ -1,8 +1,6 @@
-# Group Subscribers
+## Subscribers [/api/tenant/cord/subscriber/{subscriber_id}/]
 
 Resource related to the CORD Subscribers.
-
-## Subscribers [/api/tenant/cord/subscriber/{subscriber_id}/]
 
 ### List All Subscribers [GET]
 

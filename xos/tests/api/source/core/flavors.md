@@ -1,8 +1,6 @@
-# Group Flavors
+## Flavors [/api/core/flavors/{id}/]
 
 List of the XOS flavors
-
-## Flavors [/api/core/flavors/{id}/]
 
 ### List all flavors [GET]
 

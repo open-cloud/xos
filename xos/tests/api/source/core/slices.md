@@ -1,8 +1,6 @@
-# Group Slices
+## Slices [/api/core/slices/{id}/]
 
 List of the XOS slices
-
-## Slices [/api/core/slices/{id}/]
 
 ### List all slices [GET]
 

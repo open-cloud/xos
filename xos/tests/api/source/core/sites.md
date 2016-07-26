@@ -1,7 +1,3 @@
-# Group Sites
-
-List of the XOS sites
-
 ## Sites [/api/core/sites/{id}/]
 
 ### List all sites [GET]

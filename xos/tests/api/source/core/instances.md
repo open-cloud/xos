@@ -1,7 +1,3 @@
-# Group Instances
-
-List of the XOS instances
-
 ## Instances Collection [/api/core/instances/{?no_hyperlinks}]
 
     + no_hyperlinks (number, optional) - Wheter to return relation with links or ids

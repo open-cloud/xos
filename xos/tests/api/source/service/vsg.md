@@ -1,5 +1,3 @@
-# Group vSG
-
 ## vSG Collection [/api/service/vsg/]
 
 ### List all vSGs [GET]

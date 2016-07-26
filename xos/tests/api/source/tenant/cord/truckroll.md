@@ -1,8 +1,6 @@
-# Group Truckroll
+## Truckroll Collection [/api/tenant/truckroll/{truckroll_id}/]
 
 Virtual Truckroll, enable to perform basic test on user connectivity such as ping, traceroute and tcpdump.
-
-## Truckroll Collection [/api/tenant/truckroll/{truckroll_id}/]
 
 ### List all Truckroll [GET]
 
