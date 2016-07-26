@@ -1,8 +1,6 @@
-# Group Deployments
+## Deployments [/api/core/deployments/{id}/]
 
 List of the XOS deployments
-
-## Deployments [/api/core/deployments/{id}/]
 
 ### List all deployments [GET]
 

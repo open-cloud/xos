@@ -1,7 +1,3 @@
-# Group Utility
-
-List of the XOS Utility API
-
 ## Login [/api/utility/login/]
 
 ### Log a user in the system [POST]

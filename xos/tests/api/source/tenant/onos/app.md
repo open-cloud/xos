@@ -1,5 +1,3 @@
-# Group ONOS Apps
-
 ## ONOS App Collection [/api/tenant/onos/app/]
 
 ### List all apps [GET]

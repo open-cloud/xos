@@ -1,8 +1,6 @@
-# Group ONOS Services
+## ONOS Services Collection [/api/service/onos/]
 
 List of the active onos services
-
-## ONOS Services Collection [/api/service/onos/]
 
 ### List all ONOS Services [GET]
 

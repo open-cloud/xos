@@ -1,8 +1,6 @@
-# Group vOLT
+## vOLT Collection [/api/tenant/cord/volt/{volt_id}/]
 
 OLT devices aggregate a set of subscriber connections
-
-## vOLT Collection [/api/tenant/cord/volt/{volt_id}/]
 
 ### List all vOLT [GET]
 

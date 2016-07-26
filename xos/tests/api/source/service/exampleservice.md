@@ -1,5 +1,3 @@
-# Group Example
-
 ## Example Services Collection [/api/service/exampleservice/]
 
 ### List all Example Services [GET]

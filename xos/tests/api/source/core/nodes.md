@@ -1,7 +1,3 @@
-# Group Nodes
-
-List of the XOS nodes
-
 ## Nodes [/api/core/nodes/{id}/]
 
 ### List all nodes [GET]
