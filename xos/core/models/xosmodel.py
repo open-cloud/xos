@@ -29,9 +29,13 @@ class XOS(PlCoreBase):
 #    def can_update(self, user):
 #        return user.can_update_site(self.site, allow=['tech'])
 
-    def rebuild(self):
+    def rebuild(self, services=[]):
+        # If `services` is empty, then only rebuild the UI
+        # Otherwise, only rebuild the services listed in `services`
         with transaction.atomic():
             for service_controller in self.service_controllers.all():
+                if (services) and (service_controller.name not in services):
+                    continue
                 for scr in service_controller.service_controller_resources.all():
                    scr.save()
                 service_controller.save()

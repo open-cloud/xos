@@ -50,7 +50,11 @@ class OnboardingViewSet(XOSViewSet):
 
         xos=xos[0]
 
-        xos.rebuild()
+        service = request.data.get("service", None)
+        if service:
+           xos.rebuild([service])
+        else:
+           xos.rebuild()
 
         return Response(True)
 
