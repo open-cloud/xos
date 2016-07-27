@@ -20,6 +20,9 @@ IMAGE_NAME         ?= xosproject/xos
 XOS_GIT_REPO       ?= git://github.com/open-cloud/xos.git
 XOS_GIT_BRANCH     ?= master
 
+XOS_GIT_COMMIT_HASH     ?= $(shell git log --pretty=format:'%H' -n 1 || echo -n "unknown" )
+XOS_GIT_COMMIT_DATE     ?= $(shell git log --pretty=format:'%ad' -n 1 || echo -n "unknown" )
+
 TOSCA_CONFIG_PATH  ?= /opt/xos/configurations/opencloud/opencloud.yaml
 
 base:
@@ -38,6 +41,8 @@ custom:
 
 devel:
 	sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm \
+	--build-arg XOS_GIT_COMMIT_HASH="${XOS_GIT_COMMIT_HASH}" \
+	--build-arg XOS_GIT_COMMIT_DATE="${XOS_GIT_COMMIT_DATE}" \
 	-f Dockerfile.devel -t ${IMAGE_NAME} ../..
 
 test:
