@@ -38,6 +38,18 @@ class SyncXOS(SyncStep, XOSBuilder):
         if (not xos.enable_build):
             raise DeferredException("XOS build is currently disabled")
 
+        # We've seen the XOS object get synced before the ServiceController object
+        # is synced. This results in the XOS UI container getting built with files
+        # from that controller missing. So let's try to defer.
+        #
+        # It could be argued that we should continue to defer if the ServiceController
+        # is in error state, but it is important that a single broken service does
+        # not takedown the entirety of XOS.
+
+        for scr in xos.service_controllers.all():
+            if (scr.backend_status is not None) and (scr.backend_status.startswith("0")):
+                raise DeferredException("Detected unsynced service controller. Deferring.")
+
         self.create_docker_compose()
 
         dockerfiles = [self.create_ui_dockerfile()]
