@@ -141,12 +141,14 @@ class XOSTosca(object):
             obj.save()
 
     def execute_nodetemplate(self, user, nodetemplate):
-        if nodetemplate.type in resources.resources:
-            cls = resources.resources[nodetemplate.type]
-            #print "work on", cls.__name__, nodetemplate.name
-            obj = cls(user, nodetemplate, self)
-            obj.create_or_update()
-            self.deferred_sync = self.deferred_sync + obj.deferred_sync
+        if nodetemplate.type not in resources.resources:
+            raise Exception("Nodetemplate %s's type %s is not a known resource" % (nodetemplate.name, nodetemplate.type))
+
+        cls = resources.resources[nodetemplate.type]
+        #print "work on", cls.__name__, nodetemplate.name
+        obj = cls(user, nodetemplate, self)
+        obj.create_or_update()
+        self.deferred_sync = self.deferred_sync + obj.deferred_sync
 
     def destroy(self, user):
         nodetemplates = self.ordered_nodetemplates
