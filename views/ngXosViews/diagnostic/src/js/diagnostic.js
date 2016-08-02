@@ -6,7 +6,7 @@
       restrict: 'E',
       templateUrl: 'templates/diagnostic.tpl.html',
       controllerAs: 'vm',
-      controller: function(ChartData, Subscribers, ServiceRelation, $rootScope, $log){
+      controller: function(ChartData, Subscribers, SubscribersWithDevice, ServiceRelation, $rootScope){
 
         this.loader = true;
         this.error = false;
@@ -43,7 +43,7 @@
           .then((serviceChain) => {
             this.serviceChain = serviceChain;
             ChartData.currentServiceChain = serviceChain;
-            return Subscribers.getWithDevices({id: subscriber.id}).$promise;
+            return SubscribersWithDevice.get({id: subscriber.id}).$promise;
           })
           .then((subscriber) => {
             this.selectedSubscriber = subscriber;

@@ -91,9 +91,10 @@
 
     this.getSubscriberTag = (subscriber) => {
       const tags = {
-        cTag: subscriber.c_tag,
-        sTag: subscriber.s_tag
+        cTag: subscriber.related.c_tag,
+        sTag: subscriber.related.s_tag
       };
+      console.log(subscriber);
       
       this.addSubscriberTag(tags);
       // add tags info to current subscriber
@@ -102,9 +103,7 @@
     };
 
     this.getSubscriberIP = (subscriber) => {
-      // const ip = JSON.parse(this.currentServiceChain.children[0].children[0].tenant.service_specific_attribute).wan_container_ip;
-      // const ip = this.currentServiceChain.children[0].children[0].tenant.wan_container_ip;
-      this.logicTopologyData.children[0].subscriberIP = subscriber.wan_container_ip;
+      this.logicTopologyData.children[0].subscriberIP = subscriber.related.wan_container_ip;
     };
 
     this.selectSubscriber = (subscriber) => {

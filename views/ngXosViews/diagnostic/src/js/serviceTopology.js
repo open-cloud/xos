@@ -11,7 +11,7 @@
       bindToController: true,
       controllerAs: 'vm',
       template: '',
-      controller: function($element, $window, $scope, d3, serviceTopologyConfig, ServiceRelation, Slice, Instances, Subscribers, ServiceTopologyHelper){
+      controller: function($element, $window, $scope, d3, serviceTopologyConfig, ServiceRelation, Instances, Subscribers, ServiceTopologyHelper){
 
         const el = $element[0];
 
