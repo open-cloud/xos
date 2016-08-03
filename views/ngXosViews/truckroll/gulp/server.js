@@ -55,6 +55,7 @@ module.exports = function(options){
           '/xos/core/static': options.static + '../../static/'
         },
         middleware: function(req, res, next){
+
           if(
             req.url.indexOf('/api/') !== -1
           ){
