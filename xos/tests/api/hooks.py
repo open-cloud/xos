@@ -165,7 +165,7 @@ def createTestSubscriber():
 
 
 def deleteTruckrolls():
-    for s in VTRTenant.objects.all():
+    for s in VTRTenant.get_tenant_objects().all():
         s.delete(purge=True)
 
 
