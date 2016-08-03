@@ -34,6 +34,7 @@ angular.module('xos.truckroll', [
       this.runTest = () => {
 
         // clean previous tests
+        delete this.truckroll.id;
         delete this.truckroll.result;
         delete this.truckroll.is_synced;
         delete this.truckroll.result_code;
@@ -48,6 +49,7 @@ angular.module('xos.truckroll', [
       };
 
       this.waitForTest = (id) => {
+
         Truckroll.get({id: id}).$promise
         .then((testResult) => {
           // if error
