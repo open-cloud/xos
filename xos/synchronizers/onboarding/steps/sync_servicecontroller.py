@@ -36,7 +36,12 @@ class SyncServiceController(SyncStep, XOSBuilder):
         if unready:
             raise Exception("Controller %s has unready resources: %s" % (str(sc), ",".join([str(x) for x in unready])))
 
-        dockerfiles = [self.create_synchronizer_dockerfile(sc)]
+        dockerfile = self.create_synchronizer_dockerfile(sc)
+        if dockerfile:
+            dockerfiles=[dockerfile]
+        else:
+            dockerfiles=[]
+
         tenant_fields = {"dockerfiles": dockerfiles,
                          "build_dir": self.build_dir,
                          "ansible_tag": sc.__class__.__name__ + "_" + str(sc.id)}

@@ -11,6 +11,8 @@ from xos.config import Config
 from core.models import Service, ServiceController, ServiceControllerResource, XOS
 from xos.logger import Logger, logging
 
+from django.utils import timezone
+
 logger = Logger(level=logging.INFO)
 
 class XOSBuilder(object):
@@ -21,6 +23,7 @@ class XOSBuilder(object):
     def __init__(self):
         self.source_sync_image = "xosproject/xos-synchronizer-openstack"
         self.build_dir = "/opt/xos/BUILD/"
+        self.build_tainted = False
 
     # stuff that has to do with downloading
 
@@ -143,10 +146,29 @@ class XOSBuilder(object):
     def get_controller_script_lines(self, controller, kinds):
         need_service_init_py = False
         script=[]
-        for scr in controller.service_controller_resources.all():
-            if scr.kind in kinds:
-                lines = self.get_script_lines(scr)
-                script = script + lines
+        for scr in list(controller.service_controller_resources.all()):
+            if not (scr.kind in kinds):
+                continue
+
+            # Check and see if the resource we're trying to install has
+            # disappeared. This may happen if the onboarding synchronizer
+            # container has been destroyed and restarted. In this case, flag
+            # the resource for re-download, and set the build_tainted bit
+            # so we can throw an exception after we've evaluated all
+            # resources.
+
+            download_fn = self.get_download_fn(scr)
+            if not os.path.exists(download_fn):
+                logger.info("File %s is missing; dirtying the resource" % download_fn)
+                scr.backend_status = "2 - download_fn is missing"
+                scr.updated = timezone.now()
+                scr.save(update_fields=['backend_status', 'updated'])
+                self.build_tainted = True
+                continue
+
+            lines = self.get_script_lines(scr)
+            script = script + lines
+
             if scr.kind in ["admin", "models"]:
                 need_service_init_py = True
 
@@ -182,6 +204,7 @@ class XOSBuilder(object):
             file(os.path.join(self.build_dir, "opt/xos/xos/%s_xosbuilder_migration_list") % name, "w").write("\n".join(migration_list)+"\n")
 
     def create_ui_dockerfile(self):
+        self.build_tainted = False
         xos = XOS.objects.all()[0]
         dockerfile_fn = "Dockerfile.UI"
 
@@ -209,14 +232,25 @@ class XOSBuilder(object):
 
         file(os.path.join(self.build_dir, dockerfile_fn), "w").write("\n".join(dockerfile)+"\n")
 
+        if self.build_tainted:
+            raise Exception("Build was tainted due to errors")
+
         return {"dockerfile_fn": dockerfile_fn,
                 "docker_image_name": "xosproject/xos-ui"}
 
     def create_synchronizer_dockerfile(self, controller):
+        self.build_tainted = False
+
         # bake in the synchronizer from this controller
         sync_lines = self.get_controller_script_lines(controller, self.SYNC_CONTROLLER_KINDS)
+
+        if self.build_tainted:
+            raise Exception("Build was tainted due to errors")
+
+        # If there's no sync_lines for this ServiceController, then it must not
+        # have a synchronizer.
         if not sync_lines:
-            return []
+            return None
 
         dockerfile_fn = "Dockerfile.%s" % controller.name
         dockerfile = ["FROM %s" % self.source_sync_image]
@@ -241,6 +275,9 @@ class XOSBuilder(object):
         dockerfile.append("RUN bash /build/install-%s.sh" % controller.name)
 
         file(os.path.join(self.build_dir, dockerfile_fn), "w").write("\n".join(dockerfile)+"\n")
+
+        if self.build_tainted:
+            raise Exception("Build was tainted due to errors")
 
         return {"dockerfile_fn": dockerfile_fn,
                 "docker_image_name": "xosproject/xos-synchronizer-%s" % controller.name}
