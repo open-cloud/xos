@@ -6,7 +6,6 @@ from pprint import pprint
 import json
 from services.syndicate_storage.models import *
 from core.models import *
-from services.hpc.models import ContentProvider
 from operator import attrgetter
 from django import template
 from django.views.decorators.csrf import csrf_exempt
@@ -28,8 +27,6 @@ def getDashboardContext(user, context={}, tableFormat = False):
             context['userSliceInfo'] = userSliceTableFormatter(userSliceData)
         else:
             context['userSliceInfo'] = userSliceData
-#        context['cdnData'] = getCDNOperatorData(wait=False)
-#        context['cdnContentProviders'] = getCDNContentProviderData()
 
         (dashboards, unusedDashboards)= getDashboards(user)
         unusedDashboards=[x for x in unusedDashboards if x!="Customize"]
