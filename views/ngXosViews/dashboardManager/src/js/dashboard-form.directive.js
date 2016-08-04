@@ -36,7 +36,9 @@
             'no_policy',
             'no_sync',
             'policed',
-            'write_protect'
+            'write_protect',
+            'icon',
+            'icon_active'
           ],
           actions: [
             {

@@ -1006,6 +1006,10 @@ node_types:
                 type: string
                 required: false
                 description: URL to the dashboard
+            custom_icon:
+                type: boolean
+                default: false
+                description: Whether the dashboard has custom icons
 
     tosca.nodes.Tag:
         derived_from: tosca.nodes.Root

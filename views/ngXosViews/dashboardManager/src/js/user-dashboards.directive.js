@@ -32,6 +32,7 @@
 
         this.addToList = (listName, item) => {
           this.list[listName].push(item)
+          location.reload();
         };
 
         this.isInList = (listName, item) => {

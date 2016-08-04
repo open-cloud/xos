@@ -4,18 +4,24 @@ import sys
 import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
-
 from core.models import DashboardView, Site, Deployment, SiteDeployment
-
 from xosresource import XOSResource
+
 
 class XOSDashboardView(XOSResource):
     provides = "tosca.nodes.DashboardView"
     xos_model = DashboardView
-    copyin_props = ["url","enabled"]
+    copyin_props = ["url", "enabled"]
 
     def get_xos_args(self):
-        return super(XOSDashboardView, self).get_xos_args()
+        args = super(XOSDashboardView, self).get_xos_args()
+        if (self.get_property("custom_icon")):
+            prefix, name = self.get_property("url").split(':')
+            name = name[3:]
+            name = name[:1].lower() + name[1:]
+            args["icon"] = "%s-icon.png" % name
+            args["icon_active"] = "%s-icon-active.png" % name
+        return args
 
     def postprocess(self, obj):
         for deployment_name in self.get_requirements("tosca.relationships.SupportsDeployment"):
@@ -28,4 +34,12 @@ class XOSDashboardView(XOSResource):
     def can_delete(self, obj):
         return super(XOSDashboardView, self).can_delete(obj)
 
+    def create(self):
+        xos_args = self.get_xos_args()
 
+        dashboard = DashboardView(**xos_args)
+        dashboard.save()
+
+        self.postprocess(dashboard)
+
+        self.info("Created DashboardView '%s'" % (str(dashboard), ))
