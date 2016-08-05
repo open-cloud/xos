@@ -70,9 +70,11 @@ Once your view is done, from your view root folder, run: `npm run build`.
 
 This will build your application and copy files in the appropriate locations to be used by django.
 
-At this point you can enter: `http://localhost:9999/admin/core/dashboardview/add/` and add your custom view.
+At this point you can enter a running XOS instance, and trough the `customize` page is possible to add your custom view.
 
 >_NOTE url field should be `template:xosSampleView`_
+
+A view can also be loaded via `TOSCA` and the related recipe is automatically printed at the end of the `npm run build` command or can be printed with `npm run tosca`.
 
 #### Install dependencies in your app
 
