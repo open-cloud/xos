@@ -1,14 +1,8 @@
 # Dockerfile.base
 # This image isn't used, but installs the prereqs for the other XOS images
 
-FROM       ubuntu:14.04.4
-
-# XXX Workaround for docker bug:
-# https://github.com/docker/docker/issues/6345
-# Kernel 3.15 breaks docker, uss the line below as a workaround
-# until there is a fix
-RUN ln -s -f /bin/true /usr/bin/chfn
-# XXX End workaround
+FROM ubuntu:14.04.4
+MAINTAINER Zack Williams <zdw@cs.arizona.edu>
 
 # Install apt packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
@@ -19,39 +13,28 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     git \
     graphviz \
     graphviz-dev \
+    libcurl4-gnutls-dev \
+    libffi-dev \
     libgeoip1 \
+    libpq-dev \
     libxslt1-dev \
     libxslt1.1 \
     libyaml-dev \
     m4 \
     openssh-client \
     pkg-config \
-    python-ceilometerclient \
-    python-crypto \
     python-dev \
-    python-glanceclient \
-    python-httplib2 \
-    python-jinja2 \
-    python-keystoneclient \
-    python-netaddr \
-    python-neutronclient \
-    python-novaclient \
-    python-paramiko \
     python-pip \
-    python-psycopg2 \
-    python-pycurl \
-    python-setuptools \
-    python-yaml \
     rsync \
     software-properties-common \
     supervisor \
-    tar \
     unzip \
     wget \
  && rm -rf /var/lib/apt/lists/*
 
-# Install python pacakges with pip
+# Install python packages with pip
 RUN pip install \
+    ansible \
     ca-certs-locater \
     "django>=1.8,<1.8.99" \
     django-bitfield \
@@ -71,33 +54,32 @@ RUN pip install \
     jinja2 \
     lxml \
     markdown \
+    ndg-httpsclient \
     netaddr \
     psycopg2 \
     pyOpenSSL \
+    pyasn1 \
+    pycrypto \
+    pycurl \
     pygraphviz \
-    python-ceilometerclient \
     python-dateutil \
     python-gflags \
     python-keyczar \
     python-logstash \
     pytz \
     pyyaml \
-    requests
+    requests \
+    urllib3
 
-# Required for ansible 2.x OpenStack os_* modules
+# Required for Ansible 2.x OpenStack os_* modules
 RUN pip install --upgrade pbr && \
     pip install --upgrade six && \
     pip install shade
 
-# Install ansible 2.x (has to be done after installing `software-properties-common`)
-RUN add-apt-repository ppa:ansible/ansible
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
-    ansible \
- && rm -rf /var/lib/apt/lists/*
-
+# Copy over ansible hosts
 COPY ansible-hosts /etc/ansible/hosts
 
-# jQuery
+# Install jQuery
 ENV JQUERY_DL_URL http://code.jquery.com/jquery-1.12.4.min.js
 ENV JQUERY_SHA256 668b046d12db350ccba6728890476b3efee53b2f42dbb84743e5e9f1ae0cc404
 
@@ -105,7 +87,7 @@ RUN curl -fLsS $JQUERY_DL_URL -o jquery.min.js && \
     echo "$JQUERY_SHA256  jquery.min.js" | sha256sum -c - && \
     mv jquery.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
 
-# jQueryUI
+# Install jQueryUI
 ENV JQUERYUI_DL_URL https://jqueryui.com/resources/download/jquery-ui-1.11.4.zip
 ENV JQUERYUI_SHA256 503e4c0f109bf627aff87a424edc760608ec15e4a6e37f217a083ca682543e32
 
