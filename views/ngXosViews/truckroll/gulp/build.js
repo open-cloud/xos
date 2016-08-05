@@ -26,6 +26,8 @@ var postcss = require('gulp-postcss');
 var autoprefixer = require('autoprefixer');
 var mqpacker = require('css-mqpacker');
 var csswring = require('csswring');
+var yaml = require('js-yaml');
+var colors = require('colors/safe');
 
 const TEMPLATE_FOOTER = `
 angular.module('xos.truckroll')
@@ -155,6 +157,47 @@ module.exports = function(options){
     }, 1000);
   });
 
+  gulp.task('tosca', function (cb) {
+
+    // TOSCA to register the dashboard in the system
+    const dashboardJson = {};
+    dashboardJson['Truckroll'] = {
+      type: 'tosca.nodes.DashboardView',
+      properties: {
+        url: 'template:xosTruckroll'
+      }
+    };
+    const dashboardTosca = yaml.dump(dashboardJson).replace(/'/gmi, '');
+
+    // TOSCA to add the dashboard to the user
+    const userDashboardJson = {};
+    userDashboardJson['truckroll_dashboard'] = {
+      node: 'Truckroll',
+      relationship: 'tosca.relationships.UsesDashboard'
+    };
+    const userJson = {
+      'padmin@vicci.org': {
+        type: 'tosca.nodes.User',
+        properties: {
+          'no-create': true,
+          'no-delete': true
+        },
+        requirements: [userDashboardJson]
+      }
+    };
+    const userTosca = yaml.dump(userJson).replace(/'/gmi, '');
+
+
+    // the output is in a timeout so that it get printed after the gulp logs
+    setTimeout(function () {
+      console.log(colors.cyan('\n\n# You can use this recipe to load the dashboard in the system:'));
+      console.log(colors.yellow(dashboardTosca));
+      console.log(colors.cyan('# And this recipe to activate the dashboard for a user:'));
+      console.log(colors.yellow(userTosca));
+    }, 1000);
+    cb();
+  });
+
   gulp.task('build', function() {
     runSequence(
       'clean',
@@ -167,7 +210,8 @@ module.exports = function(options){
       'copyCss',
       'copyImages',
       'copyHtml',
-      'cleanTmp'
+      'cleanTmp',
+      'tosca'
     );
   });
 };
