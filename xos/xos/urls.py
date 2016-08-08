@@ -6,9 +6,7 @@ from django.contrib import admin
 
 # This is the generated API
 from xosapi import *
-from hpcapi import *
 
-from core.views.legacyapi import LegacyXMLRPC
 from core.views.serviceGraph import ServiceGridView, ServiceGraphView
 from services.mcord.view import *
 # from core.views.analytics import AnalyticsAjaxView
@@ -67,7 +65,6 @@ urlpatterns = patterns(
     url(r'^serviceGrid', ServiceGridView.as_view(), name='serviceGrid'),
 
     url(r'^serviceGraph.png', ServiceGraphView.as_view(), name='serviceGraph'),
-    url(r'^hpcConfig', 'core.views.hpc_config.HpcConfig', name='hpcConfig'),
 
     # url(r'^docs/', include('rest_framework_swagger.urls')),
 
@@ -81,8 +78,6 @@ urlpatterns = patterns(
 
     # url(r'^admin/xoslib/(?P<name>\w+)/$', XOSLibDataView.as_view(), name="xoslib"),
 
-    url(r'^xmlrpc/legacyapi/$', 'core.views.legacyapi.LegacyXMLRPC', name='xmlrpc'),
-
     # url(r'^analytics/(?P<name>\w+)/$', AnalyticsAjaxView.as_view(), name="analytics"),
 
     url(r'^files/', redirect_to_apache),
@@ -95,4 +90,4 @@ urlpatterns = patterns(
 
     url(r'^', include('api.import_methods', namespace='api')),
 
-  ) + get_REST_patterns() + get_hpc_REST_patterns()
+  ) + get_REST_patterns()

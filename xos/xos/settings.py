@@ -181,7 +181,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'django_extensions',
     'core',
-    'services.hpc',
     'services.mcord',
     'services.requestrouter',
     'services.syndicate_storage',
