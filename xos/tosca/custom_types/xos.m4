@@ -84,6 +84,10 @@ node_types:
                 type: string
                 required: false
                 description: url of admin.py
+            django_library:
+                type: string
+                required: false
+                description: libraries used by admin or models
             admin_template:
                 type: string
                 required: false
