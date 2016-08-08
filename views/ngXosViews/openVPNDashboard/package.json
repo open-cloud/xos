@@ -5,6 +5,7 @@
   "scripts": {
     "prestart": "npm install && bower install",
     "start": "gulp serve",
+    "tosca": "gulp tosca",
     "prebuild": "npm install && bower install",
     "build": "gulp",
     "test": "karma start",
@@ -16,12 +17,13 @@
     "Angular",
     "XOSlib"
   ],
-  "author": "Jeremy Mowery",
+  "author": "Matteo Scandolo",
   "license": "Apache-2.0",
   "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^6.3.3",
     "browser-sync": "^2.9.11",
+    "colors": "^1.1.2",
     "css-mqpacker": "^4.0.0",
     "csswring": "^4.2.1",
     "del": "^2.0.2",
@@ -46,6 +48,7 @@
     "http-proxy": "^1.12.0",
     "ink-docstrap": "^0.5.2",
     "jasmine-core": "~2.3.4",
+    "js-yaml": "^3.6.1",
     "karma": "^0.13.14",
     "karma-babel-preprocessor": "~5.2.2",
     "karma-coverage": "^0.5.3",

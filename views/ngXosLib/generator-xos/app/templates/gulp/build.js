@@ -28,6 +28,7 @@ var mqpacker = require('css-mqpacker');
 var csswring = require('csswring');
 var yaml = require('js-yaml');
 var colors = require('colors/safe');
+var fs =  require('fs');
 
 const TEMPLATE_FOOTER = `
 angular.module('xos.<%= name %>')
@@ -76,7 +77,7 @@ module.exports = function(options){
 
   // copy images in correct folder
   gulp.task('copyImages', ['wait'], function(){
-    return gulp.src([`${options.icon}/<%= name %>-icon.png`,`${options.icon}/<%= name %>-icon-active.png`])
+    return gulp.src([`${options.icon}/<%= name %>-icon.png`, `${options.icon}/<%= name %>-icon-active.png`])
     .pipe(gulp.dest(options.static + 'images/'))
   });
 
@@ -167,6 +168,15 @@ module.exports = function(options){
         url: 'template:xos<%= fileName %>'
       }
     };
+
+    // check for custom icons
+    if(
+      fs.existsSync(`${options.icon}/<%= name %>-icon.png`) &&
+      fs.existsSync(`${options.icon}/<%= name %>-icon-active.png`)
+    ){
+      dashboardJson['<%= fileName %>'].properties.custom_icon = true;
+    }
+
     const dashboardTosca = yaml.dump(dashboardJson).replace(/'/gmi, '');
 
     // TOSCA to add the dashboard to the user
