@@ -3,7 +3,7 @@
 @import "lib/header";
 @import "lib/nav";
 @import "lib/footer";
-@import "lib/data_table";
+@import "lib/table";
 @import "lib/tabs";
 @import "lib/login";
 @import 'lib/breadcrumb';
@@ -91,6 +91,7 @@ body{
   }
 
   #content-main {
+    /*padding: ($grid-gutter-width / 2);*/
     padding-bottom: 60px;
   }
 }
@@ -226,7 +227,7 @@ background-color: #ffffff;
 /** Setting overflow and 1kpx to deal with inlines/forms overlapping on 
     browser resizes **/
 #content-main {
-    overflow-x:auto;
+    /*overflow-x:auto;*/
     /*min-width: 1000px;*/
 }
 
