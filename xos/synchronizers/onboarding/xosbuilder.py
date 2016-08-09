@@ -15,6 +15,10 @@ from django.utils import timezone
 
 logger = Logger(level=logging.INFO)
 
+def add_unique(list, item):
+   if not item in list:
+       list.append(item)
+
 class XOSBuilder(object):
     UI_KINDS=["models", "admin", "admin_template", "django_library", "rest_service", "rest_tenant", "tosca_custom_types", "tosca_resource","public_key"]
     SYNC_CONTROLLER_KINDS=["synchronizer", "private_key", "public_key"]
@@ -27,7 +31,7 @@ class XOSBuilder(object):
 
     # stuff that has to do with downloading
 
-    def get_dest_dir(self, scr):
+    def get_base_dest_dir(self, scr):
         xos_base = "opt/xos"
         service_name = scr.service_controller.name
         base_dirs = {"models": "%s/services/%s/" % (xos_base, service_name),
@@ -42,6 +46,11 @@ class XOSBuilder(object):
                      "private_key": "%s/services/%s/keys/" % (xos_base, service_name),
                      "public_key": "%s/services/%s/keys/" % (xos_base, service_name)}
         dest_dir = base_dirs[scr.kind]
+
+        return dest_dir
+
+    def get_dest_dir(self, scr):
+        dest_dir = self.get_base_dest_dir(scr)
 
         if scr.subdirectory:
             dest_dir = os.path.join(dest_dir, scr.subdirectory)
@@ -146,6 +155,7 @@ class XOSBuilder(object):
     def get_controller_script_lines(self, controller, kinds):
         need_service_init_py = False
         script=[]
+        inits=[]
         for scr in list(controller.service_controller_resources.all()):
             if not (scr.kind in kinds):
                 continue
@@ -169,11 +179,18 @@ class XOSBuilder(object):
             lines = self.get_script_lines(scr)
             script = script + lines
 
-            if scr.kind in ["admin", "models"]:
-                need_service_init_py = True
+            # compute the set of __init__.py files that we will need
+            if scr.kind in ["admin", "models", "rest_service", "rest_tenant"]:
+                dir = self.get_base_dest_dir(scr)
+                add_unique(inits, dir)
 
-        if need_service_init_py:
-            script.append("echo > /opt/xos/services/%s/__init__.py" % controller.name)
+                if scr.subdirectory:
+                    for part in scr.subdirectory.split("/"):
+                        dir = os.path.join(dir, part)
+                        add_unique(inits, dir)
+
+        for init in inits:
+            script.append("echo > %s" % os.path.join("/",init,"__init__.py"))
 
         return script
 
