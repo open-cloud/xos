@@ -20,4 +20,8 @@
     border: 1px solid #337ab7;
     padding: 20px; }
     #xosDashboardManager ul[dnd-list] > li a, #xosDashboardManager .dashboard-container a {
+      text-decoration: none !important; }
+      #xosDashboardManager ul[dnd-list] > li a img, #xosDashboardManager .dashboard-container a img {
+        width: 20px; }
+    #xosDashboardManager ul[dnd-list] > li i, #xosDashboardManager .dashboard-container i {
       float: right; }

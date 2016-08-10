@@ -36,6 +36,12 @@
     border: 1px solid $brand-primary;
     padding: $line-height-computed;
     a {
+      text-decoration: none !important;
+      img {
+        width: 20px;
+      }
+    }
+    i {
       float: right;
     }
   }

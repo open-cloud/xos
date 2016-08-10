@@ -15,10 +15,11 @@ class DashboardsSerializer(PlusModelSerializer):
     name = serializers.CharField(read_only=True)
     url = serializers.CharField(read_only=True)
     shown = serializers.CharField(read_only=True)
+    icon = serializers.CharField(read_only=True)
 
     class Meta:
         model = DashboardView
-        fields = ('id', 'name', 'url', 'shown')
+        fields = ('id', 'name', 'url', 'shown', 'icon')
 
 
 class DashboardsList(XOSViewSet):
@@ -64,6 +65,7 @@ class DashboardsList(XOSViewSet):
                 dash['name'] = d.name
                 dash['url'] = d.url
                 dash['id'] = d.id
+                dash['icon'] = d.icon
                 list.append(dash)
 
             return Response(list)

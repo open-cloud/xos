@@ -21,8 +21,11 @@
           <li ng-repeat="item in vm.list.disabled"
             dnd-moved="vm.removeFromList('disabled', item.id)"
             dnd-draggable="item">
-            {{item.name}}
-            <a ui-sref="edit-dashboards({id: item.id,})"><i class="glyphicon glyphicon-pencil"></i></a>
+            <a ui-sref="edit-dashboards({id: item.id,})">
+              <img src="/static/images/{{item.icon}}"></img>
+              {{item.name}}
+              <i class="glyphicon glyphicon-pencil"></i>
+            </a>
           </li>
         </ul>
       </div>
@@ -41,8 +44,11 @@
           <li ng-repeat="item in vm.list.enabled | orderBy : 'order'"
             dnd-moved="vm.removeFromList('enabled', item.id)"
             dnd-draggable="item">
-            {{item.name}}
-            <a ui-sref="edit-dashboards({id: item.id,})"><i class="glyphicon glyphicon-pencil"></i></a>
+            <a ui-sref="edit-dashboards({id: item.id,})">
+              <img src="/static/images/{{item.icon}}"></img>
+              {{item.name}}
+              <i class="glyphicon glyphicon-pencil"></i>
+            </a>
           </li>
         </ul>
       </div>
@@ -57,8 +63,11 @@
     <div class="row">
       <div class="col-sm-2" ng-repeat="item in vm.disabled | orderBy : 'id'">
         <span class="dashboard-container">
-          {{item.name}}
-          <a ui-sref="edit-dashboards({id: item.id,})"><i class="glyphicon glyphicon-pencil"></i></a>
+          <a ui-sref="edit-dashboards({id: item.id,})">
+            <img src="/static/images/{{item.icon}}"></img>
+            {{item.name}}
+            <i class="glyphicon glyphicon-pencil"></i>
+          </a>
         </span>
       </div>
     </div>
