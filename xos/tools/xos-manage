@@ -108,7 +108,7 @@ function dumpdata {
     mkdir -p $BACKUP_DIR
     FN="$BACKUP_DIR/dumpdata-`date +%Y-%m-%d_%H:%M:%S`.json"
     echo "Saving data to $FN"
-    python manage.py dumpdata core hpc syndicate_storage requestrouter -a --indent 4 > $FN
+    python manage.py dumpdata core syndicate_storage -a --indent 4 > $FN
     if [[ ! -f $FN ]]; then
         echo "FAILED to create $FN"
         exit
@@ -139,8 +139,6 @@ function genkeys {
 function makemigrations {
     rm -rf /opt/xos/*/migrations /opt/xos/services/*/migrations
     python ./manage.py makemigrations core
-    python ./manage.py makemigrations hpc
-    python ./manage.py makemigrations requestrouter
     python ./manage.py makemigrations syndicate_storage
     python ./manage.py makemigrations mcord
 

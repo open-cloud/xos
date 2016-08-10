@@ -1,3 +1,0 @@
----
-- name: restart dnsredir
-  service: name=dnsredir state=restarted
