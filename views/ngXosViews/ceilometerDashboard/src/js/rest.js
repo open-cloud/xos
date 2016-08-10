@@ -15,7 +15,7 @@
       this.getMappings = () => {
         let deferred = $q.defer();
 
-        $http.get('/xoslib/xos-slice-service-mapping/')
+        $http.get('/api/tenant/monitoring/dashboard/xos-slice-service-mapping/')
           .then((res) => {
             deferred.resolve(res.data)
           })
@@ -29,7 +29,7 @@
       this.getMeters = (params) => {
         let deferred = $q.defer();
 
-        $http.get('/xoslib/meters/', {cache: true, params: params})
+        $http.get('/api/tenant/monitoring/dashboard/meters/', {cache: true, params: params})
           // $http.get('../meters_mock.json', {cache: true})
           .then((res) => {
             deferred.resolve(res.data)
@@ -44,7 +44,7 @@
       this.getSamples = (name, tenant) => {
         let deferred = $q.defer();
 
-        $http.get(`/xoslib/metersamples/`, {params: {meter: name, tenant: tenant}})
+        $http.get(`/api/tenant/monitoring/dashboard/metersamples/`, {params: {meter: name, tenant: tenant}})
           .then((res) => {
             deferred.resolve(res.data)
           })
@@ -58,7 +58,7 @@
       this.getStats = (options) => {
         let deferred = $q.defer();
 
-        $http.get('/xoslib/meterstatistics/', {cache: true, params: options})
+        $http.get('/api/tenant/monitoring/dashboard/meterstatistics/', {cache: true, params: options})
           // $http.get('../stats_mock.son', {cache: true})
           .then((res) => {
             deferred.resolve(res.data);
