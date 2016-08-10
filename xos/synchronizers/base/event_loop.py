@@ -18,7 +18,6 @@ from core.models import *
 from django.db.models import F, Q
 from django.db import connection
 from django.db import reset_queries
-#from openstack_xos.manager import OpenStackManager
 from openstack_xos.driver import OpenStackDriver
 from xos.logger import Logger, logging, logger
 #from timeout import timeout

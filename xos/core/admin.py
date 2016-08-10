@@ -21,7 +21,6 @@ from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.html import conditional_escape, format_html
 from django.utils.safestring import mark_safe
 from django.utils.text import capfirst
-from openstack_xos.manager import OpenStackManager
 from suit.widgets import LinkedSelect
 
 # thread locals necessary to work around a django-suit issue
@@ -1399,14 +1398,12 @@ class SlicePrivilegeAdmin(XOSBaseAdmin):
         # update openstack connection to use this site/tenant
         auth = request.session.get('auth', {})
         auth['tenant'] = obj.slice.slicename
-        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.save()
 
     def delete_model(self, request, obj):
         # update openstack connection to use this site/tenant
         auth = request.session.get('auth', {})
         auth['tenant'] = obj.slice.slicename
-        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete()
 
 
@@ -1634,21 +1631,6 @@ class InstanceAdmin(XOSBaseAdmin):
             db_field, request, **kwargs)
 
         return field
-
-    # def save_model(self, request, obj, form, change):
-    #    # update openstack connection to use this site/tenant
-    #    auth = request.session.get('auth', {})
-    #    auth['tenant'] = obj.slice.name
-    #    obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
-    #    obj.creator = request.user
-    #    obj.save()
-
-    # def delete_model(self, request, obj):
-    #    # update openstack connection to use this site/tenant
-    #    auth = request.session.get('auth', {})
-    #    auth['tenant'] = obj.slice.name
-    #    obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
-    #    obj.delete()
 
 # class ContainerPortInline(XOSTabularInline):
 #    fields = ['backend_status_icon', 'network', 'container', 'ip', 'mac', 'segmentation_id']
