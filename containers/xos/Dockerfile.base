@@ -36,6 +36,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
 RUN pip install \
     ansible \
     ca-certs-locater \
+    cryptography \
     "django>=1.8,<1.8.99" \
     django-bitfield \
     django-crispy-forms \
