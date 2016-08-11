@@ -18,7 +18,6 @@ from core.models import *
 from django.db.models import F, Q
 from django.db import connection
 from django.db import reset_queries
-from openstack_xos.driver import OpenStackDriver
 from xos.logger import Logger, logging, logger
 #from timeout import timeout
 from xos.config import Config, XOS_DIR
@@ -26,7 +25,6 @@ from synchronizers.base.steps import *
 from syncstep import SyncStep
 from toposort import toposort
 from synchronizers.base.error_mapper import *
-from synchronizers.openstack.openstacksyncstep import OpenStackSyncStep
 from synchronizers.base.steps.sync_object import SyncObject
 from django.utils import timezone
 from diag import update_diag
@@ -71,6 +69,15 @@ class NoOpDriver:
 		 self.enabled = True
 		 self.dependency_graph = None
 
+# Everyone gets NoOpDriver by default. To use a different driver, call
+# set_driver() below.
+
+DRIVER = NoOpDriver()
+
+def set_driver(x):
+    global DRIVER
+    DRIVER = x
+
 STEP_STATUS_WORKING=1
 STEP_STATUS_OK=2
 STEP_STATUS_KO=3
@@ -96,12 +103,8 @@ class XOSObserver:
 		self.load_sync_steps()
 		self.event_cond = threading.Condition()
 
-		self.driver_kind = getattr(Config(), "observer_driver", "openstack")
-		self.observer_name = getattr(Config(), "observer_name", "")
-		if self.driver_kind=="openstack":
-			self.driver = OpenStackDriver()
-		else:
-			self.driver = NoOpDriver()
+                self.driver = DRIVER
+                self.observer_name = getattr(Config(), "observer_name", "")
 
         def consolePrint(self, what):
             if getattr(Config(), "observer_console_print", True):
@@ -136,7 +139,7 @@ class XOSObserver:
 					# provides field (this eliminates the abstract base classes
 					# since they don't have a provides)
 
-					if inspect.isclass(c) and (issubclass(c, SyncStep) or issubclass(c,OpenStackSyncStep)) and hasattr(c,"provides") and (c not in self.sync_steps):
+					if inspect.isclass(c) and issubclass(c, SyncStep) and hasattr(c,"provides") and (c not in self.sync_steps):
 						self.sync_steps.append(c)
 		logger.info('loaded sync steps: %s' % ",".join([x.__name__ for x in self.sync_steps]))
 
@@ -453,9 +456,6 @@ class XOSObserver:
 
 	def run(self):
 		if not self.driver.enabled:
-			return
-
-		if (self.driver_kind=="openstack") and (not self.driver.has_openstack):
 			return
 
 		while True:

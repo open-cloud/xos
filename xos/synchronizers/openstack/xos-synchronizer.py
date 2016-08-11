@@ -7,6 +7,7 @@ sys.path.append('/opt/xos')
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from synchronizers.base.backend import Backend
+from synchronizers.base.event_loop import set_driver
 from xos.config import Config, DEFAULT_CONFIG_FN
 from core.models import Instance,NetworkTemplate
 from xos.logger import Logger, logging, logger
@@ -19,6 +20,10 @@ except:
     django_setup = False
 
 config = Config()
+
+# set the driver.
+from openstack_xos.driver import OpenStackDriver
+set_driver(OpenStackDriver())
 
 # after http://www.erlenstar.demon.co.uk/unix/faq_2.html
 def daemon():
