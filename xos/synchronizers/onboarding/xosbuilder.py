@@ -280,7 +280,7 @@ class XOSBuilder(object):
         for c in ServiceController.objects.all():
             #dockerfile = dockerfile + self.get_controller_docker_lines(c, self.SYNC_ALLCONTROLLER_KINDS)
             script = script + self.get_controller_script_lines(c, self.SYNC_ALLCONTROLLER_KINDS)
-            if controller.service_controller_resources.filter(kind="models").exists():
+            if c.service_controller_resources.filter(kind="models").exists():
                 app_list.append("services." + c.name)
 
         self.create_xos_app_data(controller.name, script, app_list, None)

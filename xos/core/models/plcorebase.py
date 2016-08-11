@@ -10,7 +10,6 @@ from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from django.utils import timezone
 from django.core.exceptions import PermissionDenied
-import synchronizers.model_policy
 from model_autodeletion import ephemeral_models
 from cgi import escape as html_escape
 

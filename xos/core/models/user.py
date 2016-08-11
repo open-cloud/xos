@@ -5,7 +5,6 @@ import sys
 from collections import defaultdict
 from operator import attrgetter, itemgetter
 
-import synchronizers.model_policy
 from core.middleware import get_request
 from core.models import DashboardView, PlCoreBase, PlModelMixIn, Site
 from core.models.plcorebase import StrippedCharField

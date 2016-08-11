@@ -82,7 +82,7 @@ function syncdb {
     python $XOS_DIR/manage.py syncdb --noinput
     if [[ $DJANGO_17 ]]; then
         echo "Loading initial data from fixture..."
-        python $XOS_DIR/manage.py --noobserver --nomodelpolicy loaddata $XOS_DIR/core/fixtures/core_initial_data.json
+        python $XOS_DIR/manage.py --noobserver loaddata $XOS_DIR/core/fixtures/core_initial_data.json
     fi
 }
 function evolvedb {

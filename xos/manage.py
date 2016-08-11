@@ -12,10 +12,10 @@ if __name__ == "__main__":
         os.system("/opt/xos/tools/xos-manage makemigrations")
         sys.argv.remove("--makemigrations")
 
-    if "--nomodelpolicy" in sys.argv:
-        import synchronizers.model_policy as model_policy
-        model_policy.EnableModelPolicy(False)
-        sys.argv.remove("--nomodelpolicy")
+#    if "--nomodelpolicy" in sys.argv:
+#        import synchronizers.model_policy as model_policy
+#        model_policy.EnableModelPolicy(False)
+#        sys.argv.remove("--nomodelpolicy")
 
     if "--noobserver" in sys.argv:
         import synchronizers.base as observer
