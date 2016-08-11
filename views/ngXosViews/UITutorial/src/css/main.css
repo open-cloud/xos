@@ -1,0 +1,20 @@
+#xosUITutorial {
+  width: 100%; }
+  #xosUITutorial js-shell {
+    display: block; }
+    #xosUITutorial js-shell #shell-panel {
+      width: 100%;
+      height: 400px;
+      background: #002b36;
+      padding: 10px;
+      overflow: scroll; }
+      #xosUITutorial js-shell #shell-panel .prompt {
+        color: #d33682; }
+      #xosUITutorial js-shell #shell-panel .cursor {
+        color: #2aa198; }
+      #xosUITutorial js-shell #shell-panel .error {
+        color: #dc322f; }
+      #xosUITutorial js-shell #shell-panel #shell-view {
+        color: #93a1a1; }
+        #xosUITutorial js-shell #shell-panel #shell-view > div > div {
+          color: #268bd2; }

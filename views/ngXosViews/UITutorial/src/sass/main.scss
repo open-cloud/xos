@@ -1,0 +1,53 @@
+@import '../../../../style/sass/lib/_variables.scss';
+
+// The solarized palette
+
+$background:  #002b36;
+$hl:          #073642;
+$comment:     #586e75;
+$foreground:  #839496;
+$emph:        #93a1a1;
+
+$yellow:  #b58900;
+$orange:  #cb4b16;
+$red:     #dc322f;
+$magenta: #d33682;
+$violet:  #6c71c4;
+$blue:    #268bd2;
+$cyan:    #2aa198;
+$green:   #859900;
+
+#xosUITutorial {
+  width: 100%;
+  js-shell {
+    display: block;
+
+    #shell-panel {
+      width: 100%;
+      height: 400px;
+      background: $background;
+      padding: 10px;
+      overflow: scroll;
+
+      .prompt {
+        color: $magenta;
+      }
+
+      .cursor {
+        color: $cyan;
+      }
+
+      .error {
+        color: $red;
+      }
+
+      #shell-view {
+        color: $emph;
+
+        >div>div{
+          color: $blue;
+        }
+      }
+    }
+  }
+}
