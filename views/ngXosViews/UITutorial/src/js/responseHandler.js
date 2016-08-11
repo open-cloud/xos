@@ -3,19 +3,25 @@
   angular.module('xos.UITutorial')
   .service('ResponseHandler', function(){
     this.parse = (res, done) => {
-      // TODO @Arpit format res (it can be an array or an object),
-      // it is better if the output is a valid JSON (that we can copy and paste)
-      // TODO handle 204/No-Content response
-      if(angular.isArray(res)){
-        res = res.map(i => {
-          return JSON.stringify(i, ['id', 'name', 'max_instances'], 2) + '<br/>';
-        });
+      var compiled = _.template('<div><pre><%- JSON.stringify(val,null,1) %></div></pre>');
+      var compiledArray = _.template('<% _.forEach(valueArr, function(item) { %><div><pre><%- JSON.stringify(item) %></pre></div><%}); %>');
+      var resFunc = function (res) {
+        let retVar;
+        let exclude = ['deleted','enabled','enacted','exposed_ports','lazy_blocked','created','validators','controllers','backend_status','backend_register','policed','no_policy','write_protect','no_sync','updated'];
+        if(_.isArray(res)) {
+          retVar = [];
+          retVar = _.map(res, (o)=> {
+            return _.omit(o, exclude);
+          });
+          retVar = compiledArray({'valueArr':retVar});
+        }
+        else{
+          retVar = _.omit(res,exclude);
+          retVar = compiled({'val':retVar} );
+        }
+        return retVar;
       }
-      else {
-        res = JSON.stringify(res, ['id', 'name', 'max_instances'], 2);
-      }
-
-      done(res);
+      done( resFunc(res));
     };
   });
 })();
