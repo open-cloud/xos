@@ -7,14 +7,19 @@
       height: 400px;
       background: #002b36;
       padding: 10px;
-      overflow: scroll; }
+      overflow: scroll;
+      color: #93a1a1; }
       #xosUITutorial js-shell #shell-panel .prompt {
         color: #d33682; }
+      #xosUITutorial js-shell #shell-panel .input {
+        color: #268bd2; }
       #xosUITutorial js-shell #shell-panel .cursor {
         color: #2aa198; }
       #xosUITutorial js-shell #shell-panel .error {
         color: #dc322f; }
-      #xosUITutorial js-shell #shell-panel #shell-view {
-        color: #93a1a1; }
-        #xosUITutorial js-shell #shell-panel #shell-view > div > div {
-          color: #268bd2; }
+      #xosUITutorial js-shell #shell-panel #shell-view > div > div {
+        color: #268bd2; }
+      #xosUITutorial js-shell #shell-panel #shell-view .jsonObject {
+        white-space: nowrap; }
+      #xosUITutorial js-shell #shell-panel #shell-view .jsonCollection > .jsonObject {
+        margin-left: 10px; }

@@ -15,9 +15,8 @@ const vendorDir = '../../core/xoslib/static/vendor/';
 let viewFiles = fs.readdirSync(viewDir);
 let vendorFiles = fs.readdirSync(vendorDir);
 
-viewFiles = viewFiles.filter(f => f.indexOf('js') >= 0).filter(f => f.match(/^xos[A-Z][a-z]+/)).map(f => `${viewDir}${f}`);
-
-vendorFiles = vendorFiles.filter(f => f.indexOf('js') >= 0).filter(f => f.match(/^xos[A-Z][a-z]+/)).map(f => `${vendorDir}${f}`);
+viewFiles = viewFiles.filter(f => f.indexOf('js') >= 0).filter(f => f.match(/^xos[A-Z]+[a-z]+/)).map(f => `${viewDir}${f}`);
+vendorFiles = vendorFiles.filter(f => f.indexOf('js') >= 0).filter(f => f.match(/^xos[A-Z]+[a-z]+/)).map(f => `${vendorDir}${f}`);
 
 /*eslint-disable*/
 
@@ -125,7 +124,7 @@ module.exports = function(config) {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: [
       'PhantomJS',
-      //'Chrome'
+      // 'Chrome'
     ],
 
 
