@@ -75,7 +75,7 @@ RUN pip install \
 # Required for Ansible 2.x OpenStack os_* modules
 RUN pip install --upgrade pbr && \
     pip install --upgrade six && \
-    pip install shade
+    pip install shade==1.9.0
 
 # Copy over ansible hosts
 COPY ansible-hosts /etc/ansible/hosts
