@@ -23,7 +23,7 @@ angular.module('xos.UITutorial', [
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/js-shell.tpl.html',
-    controller: function(ExploreCmd){
+    controller: function(ExploreCmd,LearnCmd){
       var history = new Josh.History({ key: 'jsshell.history'});
       this.shell = Josh.Shell({history: history});
 
@@ -40,6 +40,20 @@ angular.module('xos.UITutorial', [
               `Use <code>resource list</code> to list all the available resources and <code>resource {resoureName} {method} {?paramters}</code> to call the API.`,
               `An example command is <code>resource Slices query</code>`,
               `You can also provide paramters with <code>resource Slices query {max_instances: 10}</code>`
+            ]
+          }));
+        }
+      });
+
+      this.shell.setCommandHandler('learn', {
+        exec: (cmd, args, done) => {
+          LearnCmd.setup(this.shell);
+          done(TemplateHandler.instructions({
+            title: `You can now learn the API`,
+            messages: [
+              `Use <code>next</code> to move to the next lesson <code>resource {resoureName} {method} {?paramters}</code> to call the API.`,
+              `An example command is <code>resource Slices query</code>`,
+              `You can also provide paramters with <code>next</code>`
             ]
           }));
         }
