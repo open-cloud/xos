@@ -19,7 +19,7 @@ def dashboard_list(context):
 
     active = None
     for d in dashboards_list:
-        if str(d.id) in request.path:
+        if str(d.id) in request.path and "admin/dashboard" in request.path:
             active = d.id
 
     if active is None and ("/admin/" == request.path or "/" == request.path):
