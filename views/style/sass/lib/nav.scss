@@ -1,6 +1,7 @@
 /************************* NAV *************************/
 
 @import "../bootstrap/bootstrap/_variables.scss";
+@import "./_variables.scss";
 
 #sidebar-wrapper {
   -webkit-box-shadow: 3px 0px 5px 0px rgba(50, 50, 50, 0.75);
@@ -129,6 +130,33 @@
     top: 5px;
   }
 
+  .glyphicon-arrow-right{
+    display: none;
+  }
+}
+
+#wrapper.collapsed {
+
+  padding-left: 60px;
+
+  #sidebar-wrapper {
+    width: 60px;
+
+    a>span, .logo, .dashboard-list{
+      display: none;
+    }
+
+    a{
+      padding: 10px;
+    }
+
+    .glyphicon-arrow-left{
+      display: none;
+    }
+    .glyphicon-arrow-right{
+      display: block;
+    }
+  }    
 }
 
 /************************* END NAV *************************/

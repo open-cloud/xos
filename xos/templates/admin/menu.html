@@ -13,7 +13,10 @@
     {% block menu_home %}
     {% url 'admin:index' as index_url %}
     <li{% if index_url == request.path or request.path == "/" or "admin/dashboard" in request.path %} class="active"{% endif %}>
-        <a href="{{ index_url }}"><i class="icon-home"></i>{% trans 'Home' %}</a>
+        <a href="{{ index_url }}">
+            <i class="icon-home"></i>
+            <span>{% trans 'Home' %}</span>
+        </a>
         {% dashboard_list %}
     </li>
     {% endblock %}
@@ -32,7 +35,7 @@
                         >
                     <a href="{{ app.url }}"{{ app.blank|yesno:' target=_blank,' }}>
                         <i class="{% firstof app.icon 'icon-chevron-right' %}"></i>
-                        {% trans app.label|capfirst %}
+                        <span>{% trans app.label|capfirst %}</span>
                     </a>
                     {% if app.models and not app.is_active %}
                     <ul class="nav nav-pills nav-stacked">

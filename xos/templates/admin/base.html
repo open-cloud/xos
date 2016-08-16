@@ -70,6 +70,10 @@
       <!-- Sidebar -->
       {% if not is_popup %}
       <div id="sidebar-wrapper">
+        <div id="navbar-collapse" class="pull-right hidden-xs">
+          <a href="" class="glyphicon glyphicon-arrow-left"></a>
+          <a href="" class="glyphicon glyphicon-arrow-right"></a>
+        </div>
         <a href="{% url 'admin:index' %}" class="hidden-xs">
           <img class="logo" src="{% static XOS_BRANDING_ICON %}"/>
         </a>
@@ -335,6 +339,11 @@
     $(".navbar-toggle").click(function(e) {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
+    });
+
+    $('#navbar-collapse').click(function(e){
+      e.preventDefault();
+      $("#wrapper").toggleClass("collapsed");
     });
   </script>
 </body>
