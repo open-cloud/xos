@@ -3,15 +3,13 @@ import base64
 from collections import defaultdict
 from django.db.models import F, Q
 from xos.config import Config
-from synchronizers.base.openstacksyncstep import OpenStackSyncStep
 from synchronizers.base.syncstep import *
 from core.models import *
 from synchronizers.base.ansible import *
-from openstack_xos.driver import OpenStackDriver
 from xos.logger import observer_logger as logger
 import json
 
-class SyncObject(OpenStackSyncStep):
+class SyncObject(SyncStep):
     provides=[] # Caller fills this in
     requested_interval=0
     observes=[] # Caller fills this in
