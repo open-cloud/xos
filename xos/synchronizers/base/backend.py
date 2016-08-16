@@ -15,14 +15,14 @@ class Backend:
     def run(self):
         update_diag(sync_start=time.time(), backend_status="0 - Synchronizer Start")
 
-        # start the openstack observer
+        # start the observer
         observer = XOSObserver()
         observer_thread = threading.Thread(target=observer.run,name='synchronizer')
         observer_thread.start()
 
         # start model policies thread
         observer_name = getattr(Config(), "observer_name", "")
-        if (not observer_name):
+        if (not observer_name) or (observer_name=="openstack"):
             from synchronizers.model_policy import run_policy
             model_policy_thread = threading.Thread(target=run_policy)
             model_policy_thread.start()

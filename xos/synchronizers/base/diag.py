@@ -11,10 +11,7 @@ from xos.logger import Logger, logging, logger
 logger = Logger(level=logging.INFO)
 
 def update_diag(loop_end=None, loop_start=None, syncrecord_start=None, sync_start=None, backend_status=None):
-    try:
-        observer_name = Config().observer_name
-    except:
-        observer_name = 'openstack'
+    observer_name = Config().observer_name
 
     try:
         diag = Diag.objects.filter(name=observer_name).first()

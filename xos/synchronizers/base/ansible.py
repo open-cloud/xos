@@ -12,12 +12,8 @@ import subprocess
 from xos.config import Config, XOS_DIR
 from xos.logger import observer_logger
 
-try:
-    step_dir = Config().observer_steps_dir
-    sys_dir = Config().observer_sys_dir
-except:
-    step_dir = XOS_DIR + '/synchronizers/openstack/steps'
-    sys_dir = '/opt/opencloud'
+step_dir = Config().observer_steps_dir
+sys_dir = Config().observer_sys_dir
 
 os_template_loader = jinja2.FileSystemLoader( searchpath=step_dir)
 os_template_env = jinja2.Environment(loader=os_template_loader)

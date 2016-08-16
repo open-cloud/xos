@@ -123,10 +123,7 @@ class XOSObserver:
 
 	def load_sync_step_modules(self, step_dir=None):
 		if step_dir is None:
-			if hasattr(Config(), "observer_steps_dir"):
-				step_dir = Config().observer_steps_dir
-			else:
-				step_dir = XOS_DIR + "/synchronizers/openstack/steps"
+			step_dir = Config().observer_steps_dir
 
 		for fn in os.listdir(step_dir):
 			pathname = os.path.join(step_dir,fn)
