@@ -7,7 +7,6 @@ from django.db.transaction import atomic
 from django.dispatch import receiver
 from django.utils import timezone
 from generate.dependency_walker import *
-from synchronizers.openstack import model_policies
 from xos.logger import Logger, logging
 
 import pdb
@@ -16,6 +15,8 @@ import traceback
 
 modelPolicyEnabled = True
 bad_instances=[]
+
+model_policies = {}
 
 logger = Logger(level=logging.INFO)
 
@@ -57,6 +58,18 @@ def delete_if_inactive(d, o):
         pass
     return
 
+def load_model_policies(policies_dir=None):
+    global model_policies
+
+    if policies_dir is None:
+            policies_dir = Config().observer_model_policies_dir
+
+    for fn in os.listdir(policies_dir):
+            pathname = os.path.join(policies_dir,fn)
+            if os.path.isfile(pathname) and fn.startswith("model_policy_") and fn.endswith(".py") and (fn!="__init__.py"):
+                model_policies[fn[:-3]] = imp.load_source(fn[:-3],pathname)
+
+    logger.info("Loaded model polices %s from %s" % (",".join(model_policies.keys()), policies_dir))
 
 #@atomic
 def execute_model_policy(instance, deleted):
@@ -120,6 +133,8 @@ def check_db_connection_okay():
            logger.log_exc("XXX some other error")
 
 def run_policy():
+    load_model_policies()
+
     while (True):
         start = time.time()
         try:

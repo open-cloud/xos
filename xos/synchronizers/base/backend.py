@@ -21,14 +21,14 @@ class Backend:
         observer_thread.start()
 
         # start model policies thread
-        observer_name = getattr(Config(), "observer_name", "")
-        if (not observer_name) or (observer_name=="openstack"):
+        policies_dir = getattr(Config(), "observer_model_policies_dir", None)
+        if policies_dir:
             from synchronizers.model_policy import run_policy
             model_policy_thread = threading.Thread(target=run_policy)
             model_policy_thread.start()
         else:
             model_policy_thread = None
-            print "Skipping model policies thread for service observer."
+            logger.info("Skipping model policies thread due to no model_policies dir.")
 
         while True:
             try:
