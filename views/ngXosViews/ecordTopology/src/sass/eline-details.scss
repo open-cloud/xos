@@ -1,0 +1,15 @@
+@import '../../../../style/sass/lib/_variables.scss';
+@import '../../../../style/sass/bootstrap/bootstrap/_variables.scss';
+
+.service-container{
+  .btn {
+    font-size: $font-size-small;
+  }
+}
+
+.sla {
+  input.input-sm {
+    max-width: 60px;
+    text-align: right;
+  }
+}

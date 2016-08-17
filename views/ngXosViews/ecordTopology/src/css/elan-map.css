@@ -1,0 +1,42 @@
+/*$brand-primary: $cord-red;*/
+elan-map {
+  display: block;
+  width: 100%;
+  height: 380px;
+  position: relative; }
+  elan-map svg {
+    position: absolute;
+    top: 0;
+    left: 0; }
+  elan-map circle.elan,
+  elan-map rect.elan {
+    stroke: #5bc0de;
+    stroke-width: 2;
+    fill: #fff; }
+  elan-map circle.elan,
+  elan-map circle.uni {
+    cursor: pointer; }
+  elan-map .node.uni circle.uni,
+  elan-map .node.uni rect.uni {
+    stroke: #CE5650;
+    stroke-width: 2;
+    fill: #fff; }
+  elan-map .node.uni path {
+    fill: #902d28; }
+  elan-map line {
+    stroke: #CE5650;
+    stroke-width: 1; }
+  elan-map #map {
+    background: #EFEBE2; }
+  elan-map .subunit {
+    fill: #B7DAFF;
+    stroke: white;
+    stroke-width: 1px; }
+  elan-map .subunit._10 {
+    fill: transparent;
+    stroke: transparent; }
+  elan-map .exterior-boundary {
+    fill: none;
+    stroke: black;
+    stroke-linejoin: round;
+    stroke-width: 1px; }

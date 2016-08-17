@@ -1,0 +1,22 @@
+/*$brand-primary: $cord-red;*/
+service-map {
+  width: 100%;
+  height: 100px;
+  display: block; }
+  service-map .node rect {
+    fill: #fff;
+    stroke-width: 2px; }
+  service-map .node.uni rect {
+    stroke: #CE5650; }
+  service-map .node.uni path {
+    fill: #902d28; }
+  service-map .node.service rect {
+    stroke: #337ab7; }
+  service-map .node.service path {
+    fill: #1d4568; }
+  service-map .node text {
+    font: 12px sans-serif; }
+  service-map .link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1; }

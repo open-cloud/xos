@@ -1,0 +1,67 @@
+@import '../../../../style/sass/lib/_variables.scss';
+@import './vars.scss';
+
+elan-map {
+  display: block;
+  width: 100%;
+  height: 380px;
+  position: relative;
+
+  svg{
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  circle.elan,
+  rect.elan {
+    stroke: $brand-info;
+    stroke-width: 2;
+    fill: #fff;
+  }
+
+  circle.elan,
+  circle.uni {
+    cursor: pointer;
+  }
+
+  .node.uni {
+
+    circle.uni,
+    rect.uni {
+      stroke: $cord-red;
+      stroke-width: 2;
+      fill: #fff;
+    }
+    path {
+      fill: darken($cord-red, 20%);
+    }
+  }
+
+  line {
+    stroke: $cord-red;
+    stroke-width: 1;
+  }
+
+  #map {
+    background: #EFEBE2;
+  }
+
+  .subunit {
+    fill: #B7DAFF;
+    stroke: white;
+    stroke-width: 1px;
+  }
+
+  .subunit._10{
+    fill: transparent;
+    stroke: transparent;
+  }
+
+  .exterior-boundary {
+    fill: none;
+    stroke: black;
+    stroke-linejoin: round;
+    stroke-width: 1px;
+  }
+}

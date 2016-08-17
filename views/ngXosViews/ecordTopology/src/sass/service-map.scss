@@ -1,0 +1,41 @@
+@import '../../../../style/sass/lib/_variables.scss';
+@import './vars.scss';
+
+service-map {
+  width: 100%;
+  height: 100px;
+  display: block;
+
+  .node rect {
+    fill: #fff;
+    stroke-width: 2px;
+  }
+
+  .node.uni {
+    rect {
+      stroke: $cord-red;
+    }
+    path {
+      fill: darken($cord-red, 20%);
+    }
+  }
+
+  .node.service{
+    rect {
+      stroke: $brand-primary;
+    }
+    path {
+      fill: darken($brand-primary, 20%);
+    }
+  }
+
+  .node text {
+    font: 12px sans-serif;
+  }
+
+  .link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1;
+  }
+}

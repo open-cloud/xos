@@ -1,0 +1,13 @@
+@import '../../../../style/sass/lib/_variables.scss';
+@import '../../../../style/sass/bootstrap/_bootstrap.scss';
+
+@import "./elan-map.scss";
+@import "./eline-details.scss";
+@import "./service-map.scss";
+
+
+#xosEcordTopology {
+  .btn-primary-border {
+    @include button-variant($btn-primary-bg, $btn-primary-color, $btn-primary-border);
+  }
+}

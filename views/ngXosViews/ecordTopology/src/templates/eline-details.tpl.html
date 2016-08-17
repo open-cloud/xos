@@ -1,0 +1,122 @@
+<div id="home" class="container-fluid">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">E-LINE MAP</h3>
+                </div>
+                <div class="panel-body">
+                    <elan-map ng-hide="!vm.eline" elan="[vm.eline]"></elan-map>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">E-LINE SERVICES</h3>
+                </div>
+                <div class="panel-body">
+                    <service-map ng-if="vm.eline" unis="vm.eline.SCA_ETH_Flow_Points" services="vm.activeServices"></service-map>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="panel panel-primary service-container">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Add a service:</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row" ng-repeat="(k,v) in vm.availableServices">
+                        <div class="col-xs-12">
+                            <label>{{k | uppercase}}</label>
+                        </div>
+                        <div class="col-xs-{{12/v.length}}" ng-repeat="service in v">
+                            <a ng-click="vm.toggleService(service)" class="btn btn-block"
+                               ng-class="{'btn-primary-border': !vm.isServiceActive(service), 'btn-primary': vm.isServiceActive(service)}">{{service.label}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="panel panel-primary animate-vertical" ng-hide="!vm.eline.SCA_ETH_Flow_Points[0]">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">{{vm.eline.SCA_ETH_Flow_Points[0].scaEthFppUniN.name}}</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">CIR</span>
+                                        <input b-to-mb ng-model="vm.eline.SCA_ETH_Flow_Points[0].scaEthFppUniN.interfaceCfgIngressBwp.bwpCfgCir" ng-value="'10'" class="form-control" type="number" required>
+                                        <span class="input-group-addon">Gb</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">EIR</span>
+                                        <input b-to-mb ng-model="vm.eline.SCA_ETH_Flow_Points[0].scaEthFppUniN.interfaceCfgIngressBwp.bwpCfgEir" ng-value="'30'" class="form-control" type="number" required>
+                                        <span class="input-group-addon">Gb</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="panel panel-primary animate-vertical" ng-hide="!vm.eline.SCA_ETH_Flow_Points[1]">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">{{vm.eline.SCA_ETH_Flow_Points[1].scaEthFppUniN.name}}</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">CIR</span>
+                                        <input b-to-mb ng-model="vm.eline.SCA_ETH_Flow_Points[1].scaEthFppUniN.interfaceCfgIngressBwp.bwpCfgCir" ng-value="'10'" class="form-control" type="number" required>
+                                        <span class="input-group-addon">Gb</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">EIR</span>
+                                        <input b-to-mb ng-model="vm.eline.SCA_ETH_Flow_Points[1].scaEthFppUniN.interfaceCfgIngressBwp.bwpCfgEir" ng-value="'30'" class="form-control" type="number" required>
+                                        <span class="input-group-addon">Gb</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-primary table-container sla">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>SLA</th>
+                        <th>Value</th>
+                        <th>Unit</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="sla in  vm.slas">
+                        <td>{{sla.name}}</td>
+                        <td class="text-right">
+                            <input class="form-control input-sm" type="text" ng-model="sla.default"></input>
+                        </td>
+                        <td>{{sla.unit}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div ng-show="!saved"ng-click="vm.saveEline()" class="btn btn-success btn-block btn-lg">Save</div>
+                    <div ng-show="saved"class="form-success btn-blockanimate-fade">Done</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

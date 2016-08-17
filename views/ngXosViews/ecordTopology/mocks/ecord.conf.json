@@ -1,0 +1,16 @@
+{
+  "endpoints": [
+    {
+      "url": "SCA_ETH_FPP_UNI_N",
+      "base": "onos/mef-sca-api/",
+      "methods": ["GET", "POST"],
+      "param": "interfaceCfgIdentifier"
+    },
+    {
+      "url": "SCA_ETH_FDFr_EC",
+      "base": "onos/mef-sca-api/",
+      "methods": ["GET", "POST"],
+      "param": "id"
+    }
+  ]
+}
