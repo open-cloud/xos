@@ -1,5 +1,7 @@
 #xosUITutorial {
   width: 100%; }
+  #xosUITutorial .ace_editor {
+    height: 200px; }
   #xosUITutorial js-shell {
     display: block; }
     #xosUITutorial js-shell #shell-panel {

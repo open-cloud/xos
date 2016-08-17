@@ -15,7 +15,8 @@
     "tests"
   ],
   "dependencies": {
-    "josh.js": "teone/josh.js#~0.2.10"
+    "josh.js": "teone/josh.js#~0.2.10",
+    "angular-ui-ace": "bower"
   },
   "devDependencies": {
     "jquery": "2.1.4",

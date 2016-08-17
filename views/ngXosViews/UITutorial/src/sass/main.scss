@@ -19,6 +19,9 @@ $green:   #859900;
 
 #xosUITutorial {
   width: 100%;
+
+  .ace_editor { height: 200px; }
+
   js-shell {
     display: block;
 

@@ -4,3 +4,28 @@
   </div>
   <div id="shell-view"></div>
 </div>
+
+<section class="component-container" ng-show="vm.componentScope">
+  <div class="row">
+    <div class="col-xs-6">
+      <label>Config:</label>
+    </div>
+    <div class="col-xs-6">
+      <label>data:</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6">
+      <div ng-model="vm.componentScope.config" ui-ace></div>
+    </div>
+    <div class="col-xs-6">
+      <div ng-model="vm.componentScope.data" ui-ace></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 text-right">
+      <a href="" ng-click="vm.applyScope(vm.componentScope)" class="btn btn-success">Apply Changes</a>
+    </div>
+  </div>
+  <div id="directive-container"></div>
+</section>
