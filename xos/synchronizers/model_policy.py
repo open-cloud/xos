@@ -90,7 +90,7 @@ def execute_model_policy(instance, deleted):
         walk_inv_deps(delete_if_inactive, instance)
 
     try:
-        policy_handler = getattr(model_policies, policy_name, None)
+        policy_handler = model_policies.get(policy_name, None) # getattr(model_policies, policy_name, None)
         logger.info("MODEL POLICY: handler %s %s" % (policy_name, policy_handler))
         if policy_handler is not None:
             if (deleted):
