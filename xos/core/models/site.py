@@ -101,7 +101,7 @@ class Site(PlCoreBase):
     enabled = models.BooleanField(default=True, help_text="Status for this Site")
     hosts_nodes = models.BooleanField(default=True, help_text="Indicates whether or not the site host nodes")
     hosts_users = models.BooleanField(default=True, help_text="Indicates whether or not the site manages user accounts")
-    location = GeopositionField()
+    # location = GeopositionField()
     longitude = models.FloatField(null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
     login_base = StrippedCharField(max_length=50, unique=True, help_text="Prefix for Slices associated with this Site")

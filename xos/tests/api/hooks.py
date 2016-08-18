@@ -62,6 +62,9 @@ def cleanDB():
     for s in Image.objects.all():
         s.delete(purge=True)
 
+    # for s in Site.objects.all():
+    #     s.delete(purge=True)
+
     # print 'DB Cleaned'
 
 
@@ -277,6 +280,14 @@ def createService():
     service.name = 'test-service'
     service.save()
 
+
+def createSite():
+    site = Site(id=1)
+    site.name = 'mysite'
+    site.created = timezone.now()
+    site.save()
+
+
 @hooks.before_all
 def my_before_all_hook(transactions):
     # print "-------------------------------- Before All Hook --------------------------------"
@@ -308,6 +319,11 @@ def get_service(transaction):
 @hooks.before("Core > Services > Delete a Service")
 def delete_service(transaction):
     createService()
+
+
+@hooks.before("Core > Sites > View a Site Detail")
+def get_site(transaction):
+    createSite()
 
 
 @hooks.before("Tenant > Truckroll Collection > Create a Truckroll")

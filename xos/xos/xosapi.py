@@ -942,7 +942,7 @@ class SiteSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Site
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','site_url','enabled','hosts_nodes','hosts_users','location','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','site_url','enabled','hosts_nodes','hosts_users','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
 
 class SiteIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -962,7 +962,7 @@ class SiteIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Site
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','site_url','enabled','hosts_nodes','hosts_users','location','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','site_url','enabled','hosts_nodes','hosts_users','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
 
 
 
@@ -3915,7 +3915,7 @@ class SiteList(XOSListCreateAPIView):
     serializer_class = SiteSerializer
     id_serializer_class = SiteIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','site_url','enabled','hosts_nodes','hosts_users','location','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','site_url','enabled','hosts_nodes','hosts_users','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
 
     def get_serializer_class(self):
         no_hyperlinks=False

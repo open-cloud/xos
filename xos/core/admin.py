@@ -1092,7 +1092,7 @@ class SiteNodeInline(XOSTabularInline):
 class SiteAdmin(XOSBaseAdmin):
     #fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
     fieldList = ['backend_status_text', 'name', 'site_url', 'enabled',
-                 'login_base', 'location', 'is_public', 'hosts_nodes', 'hosts_users']
+                 'login_base', 'latitude', 'longitude', 'is_public', 'hosts_nodes', 'hosts_users']
     fieldsets = [
         (None, {'fields': fieldList, 'classes': [
          'suit-tab suit-tab-general']}),
