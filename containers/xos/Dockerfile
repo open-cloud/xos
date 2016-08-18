@@ -5,7 +5,7 @@ ADD local_certs.crt /usr/local/share/ca-certificates/local_certs.crt
 RUN update-ca-certificates
 
 # Install and boostrap XOS and Tosca
-ENV XOS_GIT_REPO git://github.com/open-cloud/xos.git
+ENV XOS_GIT_REPO https://github.com/opencord/xos.git
 ENV XOS_GIT_BRANCH master
 
 RUN git clone $XOS_GIT_REPO -b $XOS_GIT_BRANCH /tmp/xos && \
