@@ -1,0 +1,63 @@
+<div class="panel fieldset-body">
+  <div class="form-group field-longitude ">
+    <label class="control-label col-xs-12 col-sm-2">
+      <label for="id_location">Location:</label>
+    </label>
+    <div class="form-column widget-NumberInput col-xs-12 col-sm-8 col-md-6 col-lg-4">
+      <div id="map" style="height: 300px"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initMap(){
+    
+    // registering inputs
+    var latField = $('input#id_latitude');
+    var lngField = $('input#id_longitude');
+
+    // reading coordinates
+    var latitude = latField.val();
+    var longitude = lngField.val();
+    var siteName = $('input#id_name').val();
+
+    console.log(latitude, longitude);
+    if(latitude === '' || longitude === ''){
+      // NOTE this feature is available only over HTTPS
+      // navigator.geolocation.getCurrentPosition(function(position) {
+      //   var myLatLng = {lat: parseFloat(position.coords.latitude), lng: parseFloat(position.coords.longitude)};
+      //   createMap(myLatLng, siteName);
+      // });
+      createMap({lat: 0, lng: 0}, siteName);
+    }
+    else{
+      var myLatLng = {lat: parseFloat(latitude), lng: parseFloat(longitude)};
+      createMap(myLatLng);
+    }
+
+    function createMap(myLatLng){
+      // set the map
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: myLatLng,
+        zoom: 8
+      });
+
+      // set the marker
+      var marker = new google.maps.Marker({
+        position: myLatLng,
+        map: map,
+        title: siteName,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+      });
+
+      // listen for dragend events and update the form
+      google.maps.event.addListener(marker, 'dragend', function() {
+        latField.val(marker.getPosition().lat());
+        lngField.val(marker.getPosition().lng());
+      });
+    }
+  }
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?callback=initMap" defer></script>

@@ -43,7 +43,6 @@ RUN pip install \
     django-encrypted-fields \
     django-extensions \
     django-filter \
-    django-geoposition \
     django-ipware \
     django-suit==0.3a3 \
     django-timezones \

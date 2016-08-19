@@ -183,7 +183,7 @@ INSTALLED_APPS = (
     'core',
     'services.mcord',
     'services.syndicate_storage',
-    'geoposition',
+    # 'geoposition',
     # 'rest_framework_swagger',
 )
 

@@ -1092,7 +1092,7 @@ class SiteNodeInline(XOSTabularInline):
 class SiteAdmin(XOSBaseAdmin):
     #fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
     fieldList = ['backend_status_text', 'name', 'site_url', 'enabled',
-                 'login_base', 'latitude', 'longitude', 'is_public', 'hosts_nodes', 'hosts_users']
+                 'login_base', 'is_public', 'hosts_nodes', 'hosts_users', 'latitude', 'longitude']
     fieldsets = [
         (None, {'fields': fieldList, 'classes': [
          'suit-tab suit-tab-general']}),
@@ -1113,6 +1113,10 @@ class SiteAdmin(XOSBaseAdmin):
                SitePrivilegeInline, SiteNodeInline]
     admin_inlines = [ControllerSiteInline]
     search_fields = ['name']
+
+    suit_form_includes = (
+        ('../templates/admin/core/site/location_map.html', 'middle'),
+    )
 
     @property
     def suit_form_tabs(self):

@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import PermissionDenied
-from geoposition.fields import GeopositionField
+# from geoposition.fields import GeopositionField
 from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
 from core.models import Tag
 from core.models.plcorebase import StrippedCharField
