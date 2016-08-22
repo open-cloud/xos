@@ -39,6 +39,10 @@ node_types:
                 type: boolean
                 required: false
                 description: True if XOS should not start synchronizer containers
+            extra_hosts:
+                type: string
+                required: false
+                description: List of extra_hosts to pass to docker compose
 
 
     tosca.nodes.XOSVolume:

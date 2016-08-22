@@ -308,6 +308,11 @@ class XOSBuilder(object):
                                  "container_path": volume.container_path,
                                  "read_only": volume.read_only})
 
+         if xos.extra_hosts:
+             extra_hosts = [x.strip() for x in xos.extra_hosts.split(",")]
+         else:
+             extra_hosts = []
+
          containers = {}
 
 #         containers["xos_db"] = \
@@ -320,6 +325,7 @@ class XOSBuilder(object):
                              "ports": {"%d"%xos.ui_port : "%d"%xos.ui_port},
                              #"links": ["xos_db"],
                              "external_links": ["%s:%s" % (xos.db_container_name, "xos_db")],
+                             "extra_hosts": extra_hosts,
                              "volumes": volume_list}
 
 #         containers["xos_bootstrap_ui"] = {"image": "xosproject/xos",
@@ -345,7 +351,7 @@ class XOSBuilder(object):
                                     {"image": "xosproject/xos-synchronizer-%s" % c.name,
                                      "command": command,
                                      "external_links": ["%s:%s" % (xos.db_container_name, "xos_db")],
-                                     #"links": ["xos_db"],
+                                     "extra_hosts": extra_hosts,
                                      "volumes": volume_list}
 
          vars = { "containers": containers }

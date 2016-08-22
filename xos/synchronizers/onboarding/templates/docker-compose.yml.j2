@@ -40,6 +40,12 @@
     - "{{ expose }}"
 {%- endfor %}
 {%- endif %}
+{%- if container.extra_hosts %}
+  extra_hosts:
+{%- for host in container.extra_hosts %}
+    - "{{ host }}"
+{%- endfor %}
+{%- endif %}
   log_driver: "json-file"
   log_opt:
     max-size: "100k"

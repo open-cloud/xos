@@ -17,6 +17,7 @@ class XOS(PlCoreBase):
     enable_build = models.BooleanField(help_text="True if Onboarding Synchronizer should build XOS as necessary", default=True)
     frontend_only = models.BooleanField(help_text="If True, XOS will not start synchronizer containers", default=False)
     source_ui_image = StrippedCharField(max_length=200, default="xosproject/xos")
+    extra_hosts = StrippedCharField(max_length=1024, help_text="list of hostname mappings that will be passed to docker-compose", null=True, blank=True)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
