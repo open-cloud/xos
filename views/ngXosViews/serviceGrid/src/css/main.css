@@ -32,18 +32,20 @@ xos-side-panel .xos-side-panel-content {
     visibility: hidden;
     transform: translate3d(100%, 0, 0); } }
 
-#xosServiceGrid service-graph {
-  display: block;
-  width: 100%;
-  height: 600px; }
-
-#xosServiceGrid .node {
-  stroke: #337ab7;
-  fill: white; }
-
-#xosServiceGrid .node.xos {
-  fill: #d9534f; }
-
-#xosServiceGrid .link {
-  stroke: black;
-  stroke-width: 2px; }
+#xosServiceGrid {
+  width: 100%; }
+  #xosServiceGrid service-graph {
+    display: block;
+    width: 100%;
+    height: 600px; }
+  #xosServiceGrid .node {
+    stroke: #337ab7;
+    fill: white; }
+  #xosServiceGrid .node.xos {
+    fill: #d9534f; }
+  #xosServiceGrid .link {
+    stroke: #286090;
+    stroke-width: 2px; }
+  #xosServiceGrid .link-arrow {
+    stroke: #286090;
+    fill: #286090; }

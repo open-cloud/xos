@@ -71,50 +71,100 @@
 
         let svg;
         let el = $element[0];
-        let node;
-        let link;
+        let node, nodes;
+        let link, links;
         const _this = this;
 
         this.panelConfig = {
           position: 'right'
         };
 
+        // find position for link labels
+        const xpos = (source, target) => {
+          if (target.x > source.x) {
+            return (source.x + (target.x - source.x)/2); }
+          else {
+            return (target.x + (source.x - target.x)/2); }
+        }
+
+        const ypos = (source, target) => {
+          if (target.y > source.y) {
+            return Math.round(source.y + (target.y - source.y)/2);
+          }
+          else {
+            return Math.round(target.y + (source.y - target.y)/2); }
+        }
+
         // animate node and links in the correct place
-        const tick = (e) => {
+        const tick = () => {
           node
-          .attr('cx', d => d.x)
-          .attr('cy', d => d.y)
-          .attr({
-            transform: d => `translate(${d.x}, ${d.y})`
-          });
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+            .attr({
+              transform: d => `translate(${d.x}, ${d.y})`
+            });
           
-          link
-          .attr('x1', d => d.source.x)
-          .attr('y1', d => d.source.y)
-          .attr('x2', d => getTargetNodeCircumferencePoint(d)[0])
-          .attr('y2', d => getTargetNodeCircumferencePoint(d)[1]);
+          svg.selectAll('.link')
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => getTargetNodeCircumferencePoint(d)[0])
+            .attr('y2', d => getTargetNodeCircumferencePoint(d)[1]);
+
+          svg.selectAll('.link-text')
+            .attr('x', d => xpos(d.source, {x: getTargetNodeCircumferencePoint(d)[0], y: getTargetNodeCircumferencePoint(d)[1]}))
+            .attr('y', d => ypos(d.source, {x: getTargetNodeCircumferencePoint(d)[0], y: getTargetNodeCircumferencePoint(d)[1]}))
+            .attr('transform', d => {
+              let x = xpos(d.source, {x: getTargetNodeCircumferencePoint(d)[0], y: getTargetNodeCircumferencePoint(d)[1]});
+              let y = ypos(d.source, {x: getTargetNodeCircumferencePoint(d)[0], y: getTargetNodeCircumferencePoint(d)[1]});
+              return `rotate(-30, ${x}, ${y})`;
+            });
+        };
+
+        var chainCount = 1;
+        var spareCount = 1;
+
+        const getNodePosition = (n, graph, chainElements) => {
+          let node =  graph.node(n);
+          const step = el.clientWidth / (chainElements + 1);
+
+          if(graph.nodeEdges(n).length > 0){
+            let pos = {
+              y: el.clientHeight / 4,
+              x: step * chainCount,
+              fixed: true
+            };
+            angular.extend(node, pos);
+            chainCount = chainCount + 1;
+          }
+          else {
+            let pos = {
+              y: (el.clientHeight / 2) + (el.clientHeight / 4),
+              x: (step + step / 2) * spareCount,
+              fixed: true
+            };
+            angular.extend(node, pos);
+            spareCount = spareCount + 1;
+          }
+          return node;
         };
 
         Graph.getGraph().$promise
         .then((graph) => {
 
           // build links
-          let links = graph.edges().map(e => {
+          links = graph.edges().map(e => {
             return {
               source: graph.node(e.v),
-              target: graph.node(e.w)
+              target: graph.node(e.w),
+              tenant: graph.edge(e)
             }
           });
-          let nodes = graph.nodes().map(n => graph.node(n));
+          
+          // check how many nodes are connected
+          // let longerGraph = graphlib.alg.components(graph).filter(g => g.length > 1);
+          const longerGraph = graphlib.alg.components(graph).reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
 
-           //add xos as a node
-          nodes.push({
-             name: 'XOS',
-             type: 'xos',
-             x: el.clientWidth / 2,
-             y: el.clientHeight / 2,
-             fixed: true
-           });
+          nodes = graph.nodes().reverse().map(n => getNodePosition(n, graph, longerGraph));
 
           handleSvg(el);
           defineArrows();
@@ -129,10 +179,22 @@
             .on('tick', tick)
             .start();
 
-          link = svg.selectAll('.link')
-            .data(links).enter().insert('line')
+          link = svg.selectAll('.link-container')
+            .data(links).enter().insert('g')
+            .attr('class', 'link-container');
+
+          link.insert('line')
             .attr('class', 'link')
             .attr('marker-end', 'url(#arrow)');
+
+          var linkText = svg.selectAll('.link-container')
+            .data(force.links())
+            .insert('text')
+            .attr({
+              class: 'link-text',
+              'text-anchor': 'start'
+            })
+            .text(d => `${d.tenant.humanReadableName}`)
 
           node = svg.selectAll('.node')
             .data(nodes)
@@ -211,6 +273,7 @@
           .attr('markerWidth', 6)
           .attr('markerHeight', 6)
           .attr('orient', 'auto')
+          .attr('class', 'link-arrow')
           .append('svg:path')
           .attr('d', 'M0,-5L10,0L0,5');
         };

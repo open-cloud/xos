@@ -2,6 +2,7 @@
 @import './side-panel.scss';
 
 #xosServiceGrid {
+  width: 100%;
   service-graph {
     display: block;
     width: 100%;
@@ -18,7 +19,12 @@
   }
 
   .link {
-    stroke: black;
+    stroke: darken($brand-primary, 10);
     stroke-width: 2px;
+  }
+
+  .link-arrow {
+    stroke: darken($brand-primary, 10);
+    fill: darken($brand-primary, 10);
   }
 }
