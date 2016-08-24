@@ -3,7 +3,9 @@ import datetime
 from collections import defaultdict
 from django.db import models
 from django.db.models import F, Q
-from core.models import PlCoreBase,User,Controller
+from core.models import PlCoreBase,User,Controller,ModelLink
+from core.models.site import SitePrivilege
+from core.models.slice import SlicePrivilege
 from core.models.plcorebase import StrippedCharField
 from core.models import Controller,ControllerLinkManager,ControllerLinkDeletionManager
 
@@ -14,6 +16,8 @@ class ControllerUser(PlCoreBase):
     user = models.ForeignKey(User,related_name='controllerusers')
     controller = models.ForeignKey(Controller,related_name='controllersusers')
     kuser_id = StrippedCharField(null=True, blank=True, max_length=200, help_text="Keystone user id")
+
+    xos_links = [ModelLink(Controller,via='controller'), ModelLink(User,via='user')]
 
 
     class Meta:
@@ -41,6 +45,7 @@ class ControllerSitePrivilege(PlCoreBase):
     controller = models.ForeignKey('Controller', related_name='controllersiteprivileges')
     site_privilege = models.ForeignKey('SitePrivilege', related_name='controllersiteprivileges')
     role_id = StrippedCharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone id")
+    xos_links = [ModelLink(Controller,via='controller'), ModelLink(SitePrivilege,via='site_privilege')]
 
     class Meta:
         unique_together = ('controller', 'site_privilege', 'role_id')
@@ -75,6 +80,7 @@ class ControllerSlicePrivilege(PlCoreBase):
     controller = models.ForeignKey('Controller', related_name='controllersliceprivileges')
     slice_privilege = models.ForeignKey('SlicePrivilege', related_name='controllersliceprivileges')
     role_id = StrippedCharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone id")
+    xos_links = [ModelLink(Controller,via='controller'), ModelLink(SlicePrivilege,via='slice_privilege')]
 
 
     class Meta:

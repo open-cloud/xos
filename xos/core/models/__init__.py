@@ -1,4 +1,4 @@
-from .plcorebase import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager,PlModelMixIn
+from .plcorebase import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager,PlModelMixIn,ModelLink
 from .project import Project
 from .singletonmodel import SingletonModel
 from .xosmodel import XOS, XOSVolume

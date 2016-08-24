@@ -1,6 +1,6 @@
 import os
 from django.db import models
-from core.models import PlCoreBase
+from core.models import PlCoreBase,ModelLink
 from core.models.plcorebase import StrippedCharField
 from core.models.site import Site, SiteDeployment, SitePrivilege
 from core.models import Tag
@@ -13,6 +13,8 @@ class Node(PlCoreBase):
     site_deployment = models.ForeignKey(SiteDeployment, related_name='nodes')
     site = models.ForeignKey(Site, null=True, blank=True, related_name='nodes')
     tags = GenericRelation(Tag)
+    xos_links = [ModelLink(Site,'site')]
+
 
     def __unicode__(self):  return u'%s' % (self.name)
 

@@ -1,6 +1,6 @@
 import os
 from django.db import models
-from core.models import PlCoreBase
+from core.models import PlCoreBase,ModelLink
 from core.models import Site
 from core.models.site import SitePrivilege
 from core.models import User
@@ -45,6 +45,7 @@ class Slice(PlCoreBase):
     mount_data_sets = StrippedCharField(default="GenBank",null=True, blank=True, max_length=256)
 
     default_isolation = models.CharField(null=False, blank=False, max_length=30, choices=ISOLATION_CHOICES, default="vm")
+    xos_links = [ModelLink(Site,'site'),ModelLink(User,'user')]
 
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -136,6 +137,8 @@ class SlicePrivilege(PlCoreBase):
     slice = models.ForeignKey('Slice', related_name='sliceprivileges')
     role = models.ForeignKey('SliceRole',related_name='sliceprivileges')
 
+    xos_links=[ModelLink(User,via='user'),ModelLink(Slice,via='slice'),ModelLink(Role,via='role')]
+
     class Meta:
         unique_together = ('user', 'slice', 'role')
 
@@ -176,6 +179,8 @@ class ControllerSlice(PlCoreBase):
     controller = models.ForeignKey(Controller, related_name='controllerslices')
     slice = models.ForeignKey(Slice, related_name='controllerslices')
     tenant_id = StrippedCharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
+    
+    xos_links = [ModelLink(Controller,via='controller'),ModelLink(Slice,via='slice')]
 
     class Meta:
         unique_together = ('controller', 'slice')

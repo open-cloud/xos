@@ -6,7 +6,7 @@ from collections import defaultdict
 from operator import attrgetter, itemgetter
 
 from core.middleware import get_request
-from core.models import DashboardView, PlCoreBase, PlModelMixIn, Site
+from core.models import DashboardView, PlCoreBase, PlModelMixIn, Site, ModelLink
 from core.models.plcorebase import StrippedCharField
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.exceptions import PermissionDenied
@@ -146,6 +146,8 @@ class User(AbstractBaseUser, PlModelMixIn):
     lazy_blocked = models.BooleanField(default=False)
     no_sync = models.BooleanField(default=False)     # prevent object sync
     no_policy = models.BooleanField(default=False)   # prevent model_policy run
+
+    #xos_links = [ModelLink(Site,via='site')]
 
     timezone = TimeZoneField()
 
@@ -537,3 +539,5 @@ class UserDashboardView(PlCoreBase):
     dashboardView = models.ForeignKey(
         DashboardView, related_name='userdashboardviews')
     order = models.IntegerField(default=0)
+
+    xos_links = [ModelLink(User, via='user'), ModelLink(DashboardView,via='userdashboardviews')]

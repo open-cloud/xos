@@ -2,7 +2,7 @@ import os
 from django.db import models
 from django.db.models import Q
 from django.core import exceptions
-from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
+from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager,ModelLink
 from core.models.plcorebase import StrippedCharField
 from core.models import Image
 from core.models import Slice, SlicePrivilege
@@ -100,6 +100,8 @@ class Instance(PlCoreBase):
     isolation = models.CharField(null=False, blank=False, max_length=30, choices=ISOLATION_CHOICES, default="vm")
     volumes = models.TextField(null=True, blank=True, help_text="Comma-separated list of directories to expose to parent context")
     parent = models.ForeignKey("Instance", null=True, blank=True, help_text="Parent Instance for containers nested inside of VMs")
+
+    xos_links = [ModelLink(dest=Slice,via='slice'),ModelLink(dest=Image,via='image')]
 
     def get_controller (self):
         return self.node.site_deployment.controller

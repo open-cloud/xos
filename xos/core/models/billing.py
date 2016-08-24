@@ -2,7 +2,7 @@ import datetime
 import os
 import socket
 from django.db import models
-from core.models import PlCoreBase, Site, Slice, Instance, Deployment
+from core.models import PlCoreBase, Site, Slice, Instance, Deployment, ModelLink
 from core.models.plcorebase import StrippedCharField
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Sum
@@ -10,6 +10,8 @@ from django.utils import timezone
 
 class Account(PlCoreBase):
     site = models.ForeignKey(Site, related_name="accounts", help_text="Site for this account")
+
+    xos_links = [ModelLink(Site,via='site')]
 
     @property
     def total_invoices(self):
@@ -38,6 +40,8 @@ class Invoice(PlCoreBase):
     date = models.DateTimeField()
     account = models.ForeignKey(Account, related_name="invoices")
 
+    xos_links = [ModelLink(Account,via='account')]
+
     @property
     def amount(self):
         return str(self.charges.all().aggregate(Sum('amount'))["amount__sum"])
@@ -54,6 +58,8 @@ class Payment(PlCoreBase):
     amount = models.FloatField(default=0.0)
     date = models.DateTimeField(default=timezone.now)
 
+    xos_links = [ModelLink(Account, via='account')] 
+
     def __unicode__(self): return u'%s-%0.2f-%s' % (self.account.site.name, self.amount, str(self.date))
 
 class Charge(PlCoreBase):
@@ -69,6 +75,7 @@ class Charge(PlCoreBase):
     amount = models.FloatField(default=0.0)
     coreHours = models.FloatField(default=0.0)
     invoice = models.ForeignKey(Invoice, blank=True, null=True, related_name="charges")
+    xos_links = [ModelLink(Account,via='account'),ModelLink(Slice,via='slice'),ModelLink(Invoice,via='invoice')]
 
     def __unicode__(self):  return u'%s-%0.2f-%s' % (self.account.site.name, self.amount, str(self.date))
 

@@ -312,3 +312,10 @@ class PlCoreBase(models.Model, PlModelMixIn):
             d = {}
 
         return d
+
+class ModelLink:
+    def __init__(self,dest,via,into=None):
+        self.dest=dest
+        self.via=via
+        self.into=into
+

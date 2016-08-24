@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import PermissionDenied
 # from geoposition.fields import GeopositionField
-from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
+from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager,ModelLink
 from core.models import Tag
 from core.models.plcorebase import StrippedCharField
 from core.acl import AccessControlList
@@ -112,6 +112,7 @@ class Site(PlCoreBase):
     deployments = models.ManyToManyField('Deployment', through='SiteDeployment', blank=True, help_text="Select which sites are allowed to host nodes in this deployment", related_name='sites')
     tags = GenericRelation(Tag)
 
+
     def __unicode__(self):  return u'%s' % (self.name)
 
     def can_update(self, user):
@@ -129,6 +130,8 @@ class SitePrivilege(PlCoreBase):
     user = models.ForeignKey('User', related_name='siteprivileges')
     site = models.ForeignKey('Site', related_name='siteprivileges')
     role = models.ForeignKey('SiteRole',related_name='siteprivileges')
+
+    xos_links = [ModelLink(Site,'site'),ModelLink('User','user'),ModelLink('Role','role')]
 
     def __unicode__(self):  return u'%s %s %s' % (self.site, self.user, self.role)
 
@@ -224,6 +227,9 @@ class DeploymentPrivilege(PlCoreBase):
     user = models.ForeignKey('User', related_name='deploymentprivileges')
     deployment = models.ForeignKey('Deployment', related_name='deploymentprivileges')
     role = models.ForeignKey('DeploymentRole',related_name='deploymentprivileges')
+
+    xos_links = [ModelLink(Deployment,'deployment'),ModelLink('User','user'),ModelLink('Role','role')]
+
     class Meta:
         unique_together = ('user', 'deployment', 'role')
 
@@ -268,6 +274,8 @@ class Controller(PlCoreBase):
     rabbit_password = StrippedCharField(max_length=200, null=True, blank=True, help_text="Password of rabbitmq server at this controller")
     deployment = models.ForeignKey(Deployment,related_name='controllerdeployments')
 
+    xos_links = [ModelLink(Deployment, via='deployment')]
+
     def __init__(self, *args, **kwargs):
         super(Controller, self).__init__(*args, **kwargs)
         self.no_sync=True
@@ -300,6 +308,8 @@ class SiteDeployment(PlCoreBase):
     controller = models.ForeignKey(Controller, null=True, blank=True, related_name='sitedeployments')
     availability_zone = StrippedCharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
 
+    xos_links = [ModelLink(Site,'site'),ModelLink(Deployment,'deployment'),ModelLink(Controller,'controller')]
+
     class Meta:
         unique_together = ('site', 'deployment', 'controller')
 
@@ -310,6 +320,8 @@ class ControllerSite(PlCoreBase):
     site = models.ForeignKey(Site,related_name='controllersite')
     controller = models.ForeignKey(Controller, null=True, blank=True, related_name='controllersite')
     tenant_id = StrippedCharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone tenant id")
+
+    xos_links = [ModelLink(Controller,via='controller'),ModelLink(Site,via='site')]
 
     def delete(self, *args, **kwds):
         super(ControllerSite, self).delete(*args, **kwds)

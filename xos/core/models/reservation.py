@@ -1,7 +1,7 @@
 import os
 import datetime
 from django.db import models
-from core.models import PlCoreBase
+from core.models import PlCoreBase, ModelLink
 from core.models import Instance
 from core.models import Slice
 from core.models import ServiceResource
@@ -12,6 +12,8 @@ class Reservation(PlCoreBase):
     startTime = models.DateTimeField()
     slice = models.ForeignKey(Slice, related_name="reservations")
     duration = models.IntegerField(default=1)
+
+    xos_links = [ModelLink(Slice,via='slice')]
 
     def __unicode__(self):  return u'%s to %s' % (self.startTime, self.endTime)
 
@@ -36,6 +38,8 @@ class ReservedResource(PlCoreBase):
     resource = models.ForeignKey(ServiceResource, related_name="reservedresources")
     quantity = models.IntegerField(default=1)
     reservationSet = models.ForeignKey(Reservation, related_name="reservedresources")
+    
+    xos_links = [ModelLink(Instance,'instance'),ModelLink(ServiceResource,'resource')]
 
     class Meta(PlCoreBase.Meta):
        verbose_name_plural = "Reserved Resources"

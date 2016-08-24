@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from core.models import PlCoreBase, Controller, Deployment
-from core.models.plcorebase import StrippedCharField
+from core.models.plcorebase import StrippedCharField, ModelLink
 from core.models.site import ControllerLinkManager, ControllerLinkDeletionManager
 
 class DashboardView(PlCoreBase):
@@ -13,6 +13,7 @@ class DashboardView(PlCoreBase):
     icon_active = models.CharField(max_length=200, default="default-icon-active.png", help_text="Icon for active Dashboard")
     deployments = models.ManyToManyField(Deployment, blank=True, null=True, related_name="dashboardviews", help_text="Deployments that should be included in this view")
 
+
     def __unicode__(self):  return u'%s' % (self.name)
 
 class ControllerDashboardView(PlCoreBase):
@@ -22,6 +23,7 @@ class ControllerDashboardView(PlCoreBase):
     dashboardView = models.ForeignKey(DashboardView, related_name='controllerdashboardviews')
     enabled = models.BooleanField(default=True)
     url = StrippedCharField(max_length=1024, help_text="URL of Dashboard")
+    xos_links=[ModelLink(Controller,via='controller'),ModelLink(DashboardView,via='dashboardview')]
 
 
 

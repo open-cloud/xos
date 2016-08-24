@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from core.models import PlCoreBase
-from core.models.plcorebase import StrippedCharField
+from core.models.plcorebase import StrippedCharField,ModelLink
 from core.models import Deployment, DeploymentPrivilege, Controller,ControllerLinkManager,ControllerLinkDeletionManager
 
 # Create your models here.
@@ -23,6 +23,7 @@ class Image(PlCoreBase):
 class ImageDeployments(PlCoreBase):
     image = models.ForeignKey(Image,related_name='imagedeployments')
     deployment = models.ForeignKey(Deployment,related_name='imagedeployments')
+    xos_links = [ModelLink(Image,'image'),ModelLink(Deployment,'deployment')]
 
     class Meta:
         unique_together = ('image', 'deployment')
@@ -38,6 +39,7 @@ class ControllerImages(PlCoreBase):
     image = models.ForeignKey(Image,related_name='controllerimages')
     controller = models.ForeignKey(Controller,related_name='controllerimages')
     glance_image_id = StrippedCharField(null=True, blank=True, max_length=200, help_text="Glance image id") 
+    xos_links = [ModelLink(Image,'image'),ModelLink(Controller,'controller')] 
    
     class Meta:
         unique_together = ('image', 'controller')
