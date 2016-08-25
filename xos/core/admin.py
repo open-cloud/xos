@@ -1073,6 +1073,21 @@ class ServiceControllerAdmin(XOSBaseAdmin):
                       ('resources', 'Resources'),
                       )
 
+class XosModelAdmin(XOSBaseAdmin):
+    list_display = ("backend_status_icon", "name",)
+    list_display_links = ('backend_status_icon', 'name',)
+    fieldList = ["name", "ui_port", "bootstrap_ui_port", "docker_project_name", "db_container_name", "enable_build", "frontend_only",
+                 "source_ui_image", "extra_hosts", "no_start"]
+    fieldsets = [
+        (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
+    inlines = []
+    readonly_fields = ('backend_status_text', )
+
+    user_readonly_fields = fieldList
+
+    suit_form_tabs = (('general', 'XOS Details'),
+                      )
+
 
 class SiteNodeInline(XOSTabularInline):
     model = Node
@@ -2436,7 +2451,7 @@ admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(ServiceController, ServiceControllerAdmin)
-#admin.site.register(Reservation, ReservationAdmin)
+admin.site.register(XOS, XosModelAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Port, PortAdmin)
 admin.site.register(Router, RouterAdmin)

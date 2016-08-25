@@ -18,6 +18,7 @@ class XOS(PlCoreBase):
     frontend_only = models.BooleanField(help_text="If True, XOS will not start synchronizer containers", default=False)
     source_ui_image = StrippedCharField(max_length=200, default="xosproject/xos")
     extra_hosts = StrippedCharField(max_length=1024, help_text="list of hostname mappings that will be passed to docker-compose", null=True, blank=True)
+    no_start = models.BooleanField(help_text="Do not start the XOS UI inside of the UI docker container", default=False)
 
     def __unicode__(self):  return u'%s' % (self.name)
 

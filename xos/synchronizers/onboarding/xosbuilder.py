@@ -328,6 +328,9 @@ class XOSBuilder(object):
                              "extra_hosts": extra_hosts,
                              "volumes": volume_list}
 
+         if xos.no_start:
+             containers["xos_ui"]["command"] = "sleep 864000"
+
 #         containers["xos_bootstrap_ui"] = {"image": "xosproject/xos",
 #                             "command": "python /opt/xos/manage.py runserver 0.0.0.0:%d --insecure --makemigrations" % xos.bootstrap_ui_port,
 #                             "ports": {"%d"%xos.bootstrap_ui_port : "%d"%xos.bootstrap_ui_port},
