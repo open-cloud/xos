@@ -202,12 +202,14 @@ class ControllerNetwork(PlCoreBase):
     # Stores the openstack ids at various controllers
     network = models.ForeignKey(Network, related_name='controllernetworks')
     controller = models.ForeignKey(Controller, related_name='controllernetworks')
-    net_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
-    router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
-    subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
     subnet = models.CharField(max_length=32, blank=True)
     start_ip = models.CharField(max_length=32, blank=True)
     stop_ip = models.CharField(max_length=32, blank=True)
+    net_id = models.CharField(null=True, blank=True, max_length=256, help_text="Neutron network") # feedback state
+    router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Neutron router id") # feedback state
+    subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Neutron subnet id") # feedback state
+    gateway = models.CharField(max_length=32, blank=True, null=True) # feedback state
+    segmentation_id = models.CharField(max_length=32, blank=True, null=True) # feedback state
 
     class Meta:
         unique_together = ('network', 'controller')

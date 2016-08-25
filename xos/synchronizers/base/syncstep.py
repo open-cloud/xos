@@ -162,11 +162,9 @@ class SyncStep(object):
         path = ''.join(main_objs.__name__).lower()
         res = run_template(self.playbook,tenant_fields,path=path)
 
-        try:
+        if hasattr(self, "map_sync_outputs"):
             self.map_sync_outputs(o,res)
-        except AttributeError:
-            pass
-         
+
     def delete_record(self, o):
         try:
             controller = o.get_controller()
