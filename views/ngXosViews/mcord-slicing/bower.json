@@ -1,0 +1,41 @@
+{
+  "name": "xos-mcord-slicing",
+  "version": "0.0.0",
+  "authors": [
+    "Matteo Scandolo <matteo.scandolo@gmail.com>"
+  ],
+  "description": "The mcord-slicing view",
+  "license": "Apache-2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/js/vendor/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "graphlib": "~2.1.1"
+  },
+  "devDependencies": {
+    "jquery": "2.1.4",
+    "angular-mocks": "1.5.8",
+    "angular": "1.5.8",
+    "angular-ui-router": "0.2.15",
+    "angular-cookies": "1.5.8",
+    "angular-animate": "1.5.8",
+    "angular-resource": "1.5.8",
+    "lodash": "~4.11.1",
+    "bootstrap-css": "3.3.6",
+    "angular-chart.js": "~0.10.2",
+    "d3": "~3.5.17",
+    "angular-recursion": "~1.0.5",
+    "ng-xos-lib": "opencord/ng-xos-lib#9422c38b214229fa6afdf0eea7862ccb6ff53dd7"
+  },
+  "resolutions": {
+    "angular": "1.5.8",
+    "angular-cookies": "~1.5.8",
+    "angular-animate": "~1.5.8",
+    "angular-resource": "~1.5.8"
+  }
+}
