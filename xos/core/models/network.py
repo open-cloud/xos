@@ -102,6 +102,9 @@ class NetworkTemplate(PlCoreBase, ParameterMixin):
     CONTROLLER_CHOICES = ((None, 'None'), ('onos', 'ONOS'), ('custom', 'Custom'))
     ACCESS_CHOICES = ((None, 'None'), ('indirect', 'Indirect'), ('direct', 'Direct'))
 
+    VTN_KIND_CHOICES = (("PRIVATE", "Private"), ("PUBLIC", "Public"), ("MANAGEMENT_LOCAL", "Management Local"),
+                        ("MANAGEMENT_HOST", "Management Host"), ("VSG", "VSG"), ("ACCESS_AGENT", "Access Agent"))
+
     name = models.CharField(max_length=32)
     description = models.CharField(max_length=1024, blank=True, null=True)
     guaranteed_bandwidth = models.IntegerField(default=0)
@@ -112,6 +115,7 @@ class NetworkTemplate(PlCoreBase, ParameterMixin):
     shared_network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     topology_kind = models.CharField(null=False, blank=False, max_length=30, choices=TOPOLOGY_CHOICES, default="bigswitch")
     controller_kind = models.CharField(null=True, blank=True, max_length=30, choices=CONTROLLER_CHOICES, default=None)
+    vtn_kind = models.CharField(null=True, blank=True, max_length=30, choices=VTN_KIND_CHOICES, default="PRIVATE")
 
     def __init__(self, *args, **kwargs):
         super(NetworkTemplate, self).__init__(*args, **kwargs)

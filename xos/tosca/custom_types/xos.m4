@@ -633,6 +633,10 @@ node_types:
                 type: string
                 required: false
                 description: The type of access semantics for this network
+            vtn_kind:
+                type: string
+                required: false
+                description: Network kind to pass to VTN
 
     tosca.nodes.network.Network.XOS:
           # Due to bug? in implementation, we have to copy everything from
