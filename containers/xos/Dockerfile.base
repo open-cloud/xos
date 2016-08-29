@@ -71,6 +71,9 @@ RUN pip install \
     requests \
     urllib3
 
+# uninstall cryptography
+RUN /usr/bin/yes | pip uninstall cryptography
+
 # Required for Ansible 2.x OpenStack os_* modules
 RUN pip install --upgrade pbr && \
     pip install --upgrade six && \
