@@ -1,7 +1,7 @@
 # Dockerfile.base
 # This image isn't used, but installs the prereqs for the other XOS images
 
-FROM ubuntu:14.04.4
+FROM ubuntu:14.04.5
 MAINTAINER Zack Williams <zdw@cs.arizona.edu>
 
 # Install apt packages
@@ -30,54 +30,15 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     supervisor \
     unzip \
     wget \
- && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/* \
+ && mkdir /var/xos \
+ && pip freeze > /var/xos/pip_freeze_apt_`date -u +%Y%m%dT%H%M%S`
 
 # Install python packages with pip
-RUN pip install \
-    ansible \
-    ca-certs-locater \
-    cryptography \
-    "django>=1.8,<1.8.99" \
-    django-bitfield \
-    django-crispy-forms \
-    django-encrypted-fields \
-    django-extensions \
-    django-filter \
-    django-ipware \
-    django-suit==0.3a3 \
-    django-timezones \
-    django_rest_swagger \
-    djangorestframework==3.3.3 \
-    dnslib \
-    google-api-python-client \
-    httplib2 \
-    jinja2 \
-    lxml \
-    markdown \
-    ndg-httpsclient \
-    netaddr \
-    psycopg2 \
-    pyOpenSSL \
-    pyasn1 \
-    pycrypto \
-    pycurl \
-    pygraphviz \
-    python-dateutil \
-    python-gflags \
-    python-keyczar \
-    python-logstash \
-    pytz \
-    pyyaml \
-    requests \
-    urllib3
+COPY pip_requirements.txt /tmp/pip_requirements.txt
 
-# uninstall cryptography
-RUN /usr/bin/yes | pip uninstall cryptography
-
-# Required for Ansible 2.x OpenStack os_* modules
-RUN pip install --upgrade pbr && \
-    pip install --upgrade six && \
-    pip install shade==1.9.0
+RUN pip install --no-deps -r /tmp/pip_requirements.txt \
+ && pip freeze > /var/xos/pip_freeze_pip_up_`date -u +%Y%m%dT%H%M%S`
 
 # Copy over ansible hosts
 COPY ansible-hosts /etc/ansible/hosts
