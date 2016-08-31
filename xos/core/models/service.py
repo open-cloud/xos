@@ -73,6 +73,8 @@ class ServiceController(PlCoreBase):
     synchronizer_run = StrippedCharField(max_length=1024, help_text="synchronizer run command", null=True, blank=True)
     synchronizer_config = StrippedCharField(max_length=1024, help_text="synchronizer config file", null=True, blank=True)
 
+    no_start = models.BooleanField(help_text="Do not start the XOS UI inside of the UI docker container", default=False)
+
     def __unicode__(self): return u'%s' % (self.name)
 
     def save(self, *args, **kwargs):
@@ -309,6 +311,7 @@ class Service(PlCoreBase, AttributeMixin):
             if tenant.provider_service:
                 for net in tenant.provider_service.get_vtn_nets():
                     if not net in provider_nets:
+                        net["bidirectional"] = tenant.connect_method!="private-unidirectional"
                         provider_nets.append(net)
         return provider_nets
 
@@ -458,7 +461,9 @@ class Tenant(PlCoreBase, AttributeMixin):
     """
 
     CONNECTIVITY_CHOICES = (('public', 'Public'),
-                            ('private', 'Private'), ('na', 'Not Applicable'))
+                            ('private', 'Private'),
+                            ('private-unidirectional', 'Private Unidirectional'),
+                            ('na', 'Not Applicable'))
 
     # when subclassing a service, redefine KIND to describe the new service
     KIND = "generic"

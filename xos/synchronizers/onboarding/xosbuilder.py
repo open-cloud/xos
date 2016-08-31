@@ -357,6 +357,9 @@ class XOSBuilder(object):
                                      "extra_hosts": extra_hosts,
                                      "volumes": volume_list}
 
+                     if c.no_start:
+                         containers["xos_synchronizer_%s" % c.name]["command"] = "sleep 864000"
+
          vars = { "containers": containers }
 
          template_loader = jinja2.FileSystemLoader( "/opt/xos/synchronizers/onboarding/templates/" )
