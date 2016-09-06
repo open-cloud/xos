@@ -181,7 +181,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'django_extensions',
     'core',
-    'services.mcord',
     'services.syndicate_storage',
     # 'geoposition',
     # 'rest_framework_swagger',

@@ -8,7 +8,8 @@ from django.contrib import admin
 from xosapi import *
 
 from core.views.serviceGraph import ServiceGridView, ServiceGraphView
-from services.mcord.view import *
+# from services.vbbu.view import *
+from core.views.mcordview import *
 # from core.views.analytics import AnalyticsAjaxView
 
 from core.models import *
