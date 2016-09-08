@@ -384,6 +384,9 @@ node_types:
             xosPassword:
                 type: string
                 required: false
+            vtnAPIVersion:
+                type: string
+                required: false
 
 
     tosca.nodes.CDNService:
