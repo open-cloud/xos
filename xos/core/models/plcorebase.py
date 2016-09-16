@@ -13,6 +13,9 @@ from django.core.exceptions import PermissionDenied
 from model_autodeletion import ephemeral_models
 from cgi import escape as html_escape
 
+import redis
+from redis import ConnectionError
+
 try:
     # This is a no-op if observer_disabled is set to 1 in the config file
     from synchronizers.base import *
@@ -272,6 +275,30 @@ class PlCoreBase(models.Model, PlModelMixIn):
 
         if 'synchronizer' not in threading.current_thread().name:
             self.updated = timezone.now()
+
+        # Transmit update via Redis
+        changed_fields = []
+
+        if self.pk is not None:
+            my_model = type(self)
+            try:
+                orig = my_model.objects.get(pk=self.pk)
+
+                for f in my_model._meta.fields:
+                    oval = getattr(orig, f.name)
+                    nval = getattr(self, f.name)
+                    if oval != nval:
+                        changed_fields.append(f.name)
+            except:
+                changed_fields.append('__lookup_error')
+
+        try:
+            r = redis.Redis("redis")
+            payload = json.dumps({'pk':self.pk,'changed_fields':changed_fields})
+            r.publish(self.__class__.__name__, payload)
+        except ConnectionError:
+            # Redis not running.
+            pass
 
         super(PlCoreBase, self).save(*args, **kwargs)
 

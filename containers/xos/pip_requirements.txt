@@ -132,3 +132,4 @@ warlock==1.2.0
 wheel==0.24.0
 wrapt==1.10.8
 wsgiref==0.1.2
+redis==2.10.5
