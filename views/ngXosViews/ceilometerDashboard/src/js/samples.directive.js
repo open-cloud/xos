@@ -10,7 +10,7 @@
   'use strict';
 
   angular.module('xos.ceilometerDashboard')
-  .directive('ceilometerSamples', function(_, $stateParams){
+  .directive('ceilometerSamples', function(_, $stateParams, $interval){
     return {
       restrict: 'E',
       scope: {},
@@ -39,10 +39,30 @@
 
         this.chartType = 'line';
 
+        // TODO
+        // check for name, if
+        // - broadview.pt.packet-trace-lag-resolution
+        // - broadview.pt.packet-trace-ecmp-resolution
+        // draw a pie
+        
+        const pieStats = [
+          'broadview.pt.packet-trace-lag-resolution',
+          'broadview.pt.packet-trace-ecmp-resolution'
+        ];
+        let isApie = false;
+
+        let refreshInterval = 60 * 1000;
+
         if($stateParams.name && $stateParams.tenant){
           this.name = $stateParams.name;
-          this.tenant = $stateParams.tenant;
           // TODO rename tenant in resource_id
+          this.tenant = $stateParams.tenant;
+
+          if(pieStats.indexOf(this.name) > -1){
+            isApie = true;
+            this.chartType = 'pie';
+            refreshInterval = 10 * 1000;
+          }
         }
         else{
           throw new Error('Missing Name and Tenant Params!');
@@ -118,42 +138,92 @@
             }, []);
         }
 
+        /**
+        * Format data series in pie chart val
+        */
+       
+        this.formatPieChartData = (samples) => {
+
+          this.chart['labels'] = samples[0].metadata['lag-members'].replace(/\[|\]|'| /g, '').split(',');
+          this.chart.options = {
+            legend: {
+              display: true
+            }
+          };
+          samples = _.groupBy(samples, i => i.metadata['dst-lag-member']);
+          
+          // TODO show percentage in pie
+          Chart.defaults.global.tooltipTemplate = '<%if (label){%><%=label%>: <%}%><%= value %>%';
+
+          let data = _.reduce(this.chart.labels, (data, item) => {
+            let length = samples[item] ? samples[item].length : 0;
+            data.push(length);
+            return data;
+          }, []);
+
+          let total = _.reduce(data, (d, t) => d + t);
+
+          let percent = _.map(data, d => Math.round((d / total) * 100));
+
+          console.log(total);
+
+          this.chart['data'] = percent;
+        };
+
 
         /**
          * Load the samples and format data
          */
 
+        this.loader = true;
         this.showSamples = () => {
-          this.loader = true;
           // Ceilometer.getSamples(this.name, this.tenant) //fetch one
-          Ceilometer.getSamples(this.name) //fetch all
-            .then(res => {
+          let p;
+          if (isApie){
+            p = Ceilometer.getSamples(this.name, 30) //fetch all
+          }
+          else{
+            p = Ceilometer.getSamples(this.name) //fetch all
+          }
 
-              // rename things in UI
-              res.map(m => {
-                m.resource_name = m.resource_name.replace('mysite_onos_vbng', 'ONOS_FABRIC');
-                m.resource_name = m.resource_name.replace('mysite_onos_volt', 'ONOS_CORD');
-                m.resource_name = m.resource_name.replace('mysite_vbng', 'mysite_vRouter');
-                return m;
-              });
-              // end rename things in UI
+          p.then(res => {
 
-              // setup data for visualization
-              this.samplesList = _.groupBy(res, 'resource_id');
-              this.sampleLabels = this.formatSamplesLabels(res);
-
-              // add current meter to chart
-              this.addMeterToChart(this.tenant);
-
-            })
-            .catch(err => {
-              this.error = err.data.detail;
-            })
-            .finally(() => {
-              this.loader = false;
+            // rename things in UI
+            res.map(m => {
+              m.resource_name = m.resource_name.replace('mysite_onos_vbng', 'ONOS_FABRIC');
+              m.resource_name = m.resource_name.replace('mysite_onos_volt', 'ONOS_CORD');
+              m.resource_name = m.resource_name.replace('mysite_vbng', 'mysite_vRouter');
+              return m;
             });
+            // end rename things in UI
+
+            // if I have to draw a pie skip the rest
+            if(isApie){
+
+              // TODO format data as pie
+              this.formatPieChartData(res);
+              return;
+            }
+
+            // setup data for visualization
+            this.samplesList = _.groupBy(res, 'resource_id');
+            this.sampleLabels = this.formatSamplesLabels(res);
+
+            // add current meter to chart
+            this.addMeterToChart(this.tenant);
+
+          })
+          .catch(err => {
+            this.error = err.data.detail;
+          })
+          .finally(() => {
+            this.loader = false;
+          });
         };
 
+        $interval(() => {
+          this.showSamples();
+        }, refreshInterval)
         this.showSamples();
       }
     }

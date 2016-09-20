@@ -1,0 +1,19 @@
+{
+  "endpoints": [
+    {
+      "url": "xos-slice-service-mapping",
+      "base": "api/tenant/monitoring/dashboard/",
+      "methods": ["GET"]
+    },
+    {
+      "url": "meters",
+      "base": "api/tenant/monitoring/dashboard/",
+      "methods": ["GET"]
+    },
+    {
+      "url": "metersamples",
+      "base": "api/tenant/monitoring/dashboard/",
+      "methods": ["GET"]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+[
+   {
+      "service":"service-a",
+      "slices":[
+         {
+            "project_id":"id-a-1",
+            "slice":"slice-a-1"
+         }
+      ]
+   }
+]

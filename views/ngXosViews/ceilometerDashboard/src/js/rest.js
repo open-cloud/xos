@@ -41,10 +41,10 @@
         return deferred.promise;
       };
 
-      this.getSamples = (name, tenant) => {
+      this.getSamples = (name, limit = 10) => {
         let deferred = $q.defer();
 
-        $http.get(`/api/tenant/monitoring/dashboard/metersamples/`, {params: {meter: name, tenant: tenant}})
+        $http.get(`/api/tenant/monitoring/dashboard/metersamples/`, {params: {meter: name, limit: limit}})
           .then((res) => {
             deferred.resolve(res.data)
           })

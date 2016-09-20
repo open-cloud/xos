@@ -16,7 +16,7 @@
   </div>
 </div>
 <section ng-if="!vm.loader && !vm.error">
-  <div class="row">
+  <div class="row" ng-if="vm.chartType !== 'pie'">
     <form class="form-inline col-xs-8" ng-submit="vm.addMeterToChart(vm.addMeterValue)">
       <select ng-model="vm.addMeterValue" class="form-control" ng-options="resource.id as resource.name for resource in vm.sampleLabels"></select>
       <button class="btn btn-success"> 
@@ -36,8 +36,25 @@
       <canvas ng-if="vm.chartType === 'bar'" id="bar" class="chart chart-bar" chart-data="vm.chart.data"
         chart-labels="vm.chart.labels" chart-legend="false" chart-series="vm.chart.series">
       </canvas>
-      <!-- <pre>{{vm.chartMeters | json}}</pre> -->
     </div>
+    <!-- PIE CHART -->
+    <div class="col-xs-8" ng-if="vm.chartType === 'pie'">
+      <canvas id="pie" class="chart chart-pie"
+        chart-data="vm.chart.data" chart-labels="vm.chart.labels" chart-options="vm.chart.options">
+      </canvas> 
+    </div>
+    <div class="col-xs-4" ng-if="vm.chartType === 'pie'">
+      <div class="row" ng-repeat="item in vm.chart.labels">
+        <div class="col-xs-12">
+          <span 
+            class="btn btn-chart"
+            ng-style="{'background-color': vm.chartColors[$index]}">
+            {{item}}: {{vm.chart.data[$index]}}%
+          </span>
+        </div>
+      </div>
+    </div>
+    <!-- END PIE CHART -->
   </div>
   <div class="row" ng-if="!vm.loader">
     <div class="col-xs-12">

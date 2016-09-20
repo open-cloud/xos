@@ -1,0 +1,26 @@
+[
+  {
+    "service":"service-a",
+    "slice":"slice-a-1",
+    "name":"broadview.bst.egress-uc-queue",
+    "resource_name":"resource-1",
+    "resource_id":"resource-1",
+    "tenant": "id-a-1"
+  },
+  {
+    "service":"service-a",
+    "slice":"slice-a-1",
+    "name":"broadview.pt.packet-trace-lag-resolution",
+    "resource_name":"resource-1",
+    "resource_id":"resource-1",
+    "tenant": "id-a-1"
+  },
+  {
+    "service":"service-a",
+    "slice":"slice-a-1",
+    "name":"broadview.pt.packet-trace-ecmp-resolution",
+    "resource_name":"resource-1",
+    "resource_id":"resource-1",
+    "tenant": "id-a-1"
+  }
+]

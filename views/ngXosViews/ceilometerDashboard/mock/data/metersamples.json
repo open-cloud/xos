@@ -1,0 +1,120 @@
+[
+   {
+       "slice": "slice-a-1",
+       "user_id": null,
+       "resource_id": "resource-1",
+       "timestamp": "2016-09-19T14:53:55",
+       "meter": "broadview.bst.egress-uc-queue",
+       "volume": 1111.0,
+       "source": "openstack",
+       "resource_name": "resource-1",
+       "recorded_at": "2016-09-19T21:53:56.879000",
+       "project_id": "default_admin_tenant",
+       "type": "gauge",
+       "id": "8fe9a026-7eb3-11e6-9a9b-3417ebe580ce",
+       "unit": "bv-agent",
+       "limit": 10
+   },
+   {
+       "slice": "slice-a-1",
+       "user_id": null,
+       "resource_id": "resource-1",
+       "timestamp": "2016-09-19T14:54:55",
+       "meter": "broadview.bst.egress-uc-queue",
+       "volume": 1345.0,
+       "source": "openstack",
+       "resource_name": "resource-1",
+       "recorded_at": "2016-09-19T21:53:56.879000",
+       "project_id": "default_admin_tenant",
+       "type": "gauge",
+       "id": "8fe9a026-7eb3-11e6-9a9b-3417ebe580ce",
+       "unit": "bv-agent",
+       "limit": 10
+   },
+   {
+       "slice": "slice-a-1",
+       "user_id": null,
+       "resource_id": "resource-1",
+       "timestamp": "2016-09-19T14:55:55",
+       "meter": "broadview.bst.egress-uc-queue",
+       "volume": 945.0,
+       "source": "openstack",
+       "resource_name": "resource-1",
+       "recorded_at": "2016-09-19T21:53:56.879000",
+       "project_id": "default_admin_tenant",
+       "type": "gauge",
+       "id": "8fe9a026-7eb3-11e6-9a9b-3417ebe580ce",
+       "unit": "bv-agent",
+       "limit": 10
+    },
+
+
+
+
+
+    {
+      "slice": "slice-a-1",
+      "resource_id": "resource-1",
+      "resource_name": "resource-1",
+      "timestamp": "2016-09-19T14:54:05",
+      "meter": "broadview.pt.packet-trace-lag-resolution",
+      "limit": 30,
+      "metadata": {
+          "event_type": "broadview.pt.packet-trace-lag-resolution",
+          "lag-members": "['0/1', '0/2', '0/3', '0/4']",
+          "dst-lag-member": "0/1"
+      }
+    },
+    {
+      "slice": "slice-a-1",
+      "resource_id": "resource-1",
+      "resource_name": "resource-1",
+      "timestamp": "2016-09-19T14:54:05",
+      "meter": "broadview.pt.packet-trace-lag-resolution",
+      "limit": 30,
+      "metadata": {
+          "event_type": "broadview.pt.packet-trace-lag-resolution",
+          "lag-members": "['0/1', '0/2', '0/3', '0/4']",
+          "dst-lag-member": "0/1"
+      }
+    },
+    {
+      "slice": "slice-a-1",
+      "resource_id": "resource-1",
+      "resource_name": "resource-1",
+      "timestamp": "2016-09-19T14:54:05",
+      "meter": "broadview.pt.packet-trace-lag-resolution",
+      "limit": 30,
+      "metadata": {
+          "event_type": "broadview.pt.packet-trace-lag-resolution",
+          "lag-members": "['0/1', '0/2', '0/3', '0/4']",
+          "dst-lag-member": "0/2"
+      }
+    },
+    {
+      "slice": "slice-a-1",
+      "resource_id": "resource-1",
+      "resource_name": "resource-1",
+      "timestamp": "2016-09-19T14:54:05",
+      "meter": "broadview.pt.packet-trace-lag-resolution",
+      "limit": 30,
+      "metadata": {
+          "event_type": "broadview.pt.packet-trace-lag-resolution",
+          "lag-members": "['0/1', '0/2', '0/3', '0/4']",
+          "dst-lag-member": "0/3"
+      }
+    },
+    {
+      "slice": "slice-a-1",
+      "resource_id": "resource-1",
+      "resource_name": "resource-1",
+      "timestamp": "2016-09-19T14:54:05",
+      "meter": "broadview.pt.packet-trace-lag-resolution",
+      "limit": 30,
+      "metadata": {
+          "event_type": "broadview.pt.packet-trace-lag-resolution",
+          "lag-members": "['0/1', '0/2', '0/3', '0/4']",
+          "dst-lag-member": "0/4"
+      }
+    }
+]
