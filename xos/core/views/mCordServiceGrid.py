@@ -24,6 +24,28 @@ class ServiceGridView(TemplateView):
             });
         })
     </script>
+    <style>
+        .kind-container.row {
+            height: 60px;
+            overflow-y: hidden;
+            transition: all .5s ease-in-out;
+        }
+
+        .kind-container.row > .col-xs-12 {
+            margin-bottom:10px;
+            background: darkred;
+            color: #fff;
+            border-radius: 10px;
+        }
+
+        .kind-container.row.active {
+            height: 230px;
+        }
+
+        .kind-container img {
+            margin: 0 auto;
+        }
+    </style>
     """
 
     tail_template = r"{% endblock %}"
