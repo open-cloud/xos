@@ -160,6 +160,11 @@ class XOSIndexViewSet(viewsets.ViewSet):
 
     def list(self, request):
         endpoints = {}
+
+        # If it is the root, add core
+        if(self.api_path == "api"):
+            endpoints['core'] = "http://" + request.get_host() + get_script_prefix() + self.api_path + "/core"
+
         for view_url in self.view_urls:
             method_name = view_url[1].split("/")[-1]
             method_url = "http://" + request.get_host() + get_script_prefix() + self.api_path + "/" + method_name
