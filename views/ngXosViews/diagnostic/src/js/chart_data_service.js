@@ -94,7 +94,6 @@
         cTag: subscriber.related.c_tag,
         sTag: subscriber.related.s_tag
       };
-      console.log(subscriber);
       
       this.addSubscriberTag(tags);
       // add tags info to current subscriber
@@ -107,6 +106,7 @@
     };
 
     this.selectSubscriber = (subscriber) => {
+
       // append the device with to config settings
       serviceTopologyConfig.elWidths.push(160);
 

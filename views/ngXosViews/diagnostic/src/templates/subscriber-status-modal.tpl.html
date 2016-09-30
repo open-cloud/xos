@@ -12,29 +12,29 @@
               <label>Status</label>
             </div>
             <div class="col-xs-6">
-              <a ng-click="vm.subscriber.status = 'enabled'"
+              <a ng-click="vm.subscriber.features.status = 'enabled'"
                 class="btn btn-block"
-                ng-class="{'btn-primary': vm.subscriber.status === 'enabled' ,'btn-default': vm.subscriber.status !== 'enabled'}"
+                ng-class="{'btn-primary': vm.subscriber.features.status === 'enabled' ,'btn-default': vm.subscriber.features.status !== 'enabled'}"
                 >Enabled</a>
             </div>
             <div class="col-xs-6">
-              <a ng-click="vm.subscriber.status = 'suspended'"
+              <a ng-click="vm.subscriber.features.status = 'suspended'"
                 class="btn btn-block"
-                ng-class="{'btn-primary': vm.subscriber.status === 'suspended' ,'btn-default': vm.subscriber.status !== 'suspended'}"
+                ng-class="{'btn-primary': vm.subscriber.features.status === 'suspended' ,'btn-default': vm.subscriber.features.status !== 'suspended'}"
                 >Suspended</a>
             </div>
           </div>
           <div class="row">
             <div class="col-xs-6">
-              <a ng-click="vm.subscriber.status = 'delinquent'"
+              <a ng-click="vm.subscriber.features.status = 'delinquent'"
                 class="btn btn-block"
-                ng-class="{'btn-primary': vm.subscriber.status === 'delinquent' ,'btn-default': vm.subscriber.status !== 'delinquent'}"
+                ng-class="{'btn-primary': vm.subscriber.features.status === 'delinquent' ,'btn-default': vm.subscriber.features.status !== 'delinquent'}"
                 >Delinquent <br> payment</a>
             </div>
             <div class="col-xs-6">
-              <a ng-click="vm.subscriber.status = 'copyrightviolation'"
+              <a ng-click="vm.subscriber.features.status = 'copyrightviolation'"
                 class="btn btn-block"
-                ng-class="{'btn-primary': vm.subscriber.status === 'copyrightviolation' ,'btn-default': vm.subscriber.status !== 'copyrightviolation'}"
+                ng-class="{'btn-primary': vm.subscriber.features.status === 'copyrightviolation' ,'btn-default': vm.subscriber.features.status !== 'copyrightviolation'}"
                 >Copyright <br> violation</a>
             </div>
           </div>
@@ -42,14 +42,14 @@
             <div class="col-xs-6">
               <label>Uplink Speed</label>
               <div class="input-group">
-                <input type="number" class="form-control small-padding" ng-model="vm.subscriber.uplink_speed"/>
+                <input type="number" class="form-control small-padding" ng-model="vm.subscriber.features.uplink_speed"/>
                 <span class="input-group-addon">Mbps</span>
               </div>
             </div>
             <div class="col-xs-6">
               <label>Downlink Speed</label>
               <div class="input-group">
-                <input type="number" class="form-control small-padding" ng-model="vm.subscriber.downlink_speed"/>
+                <input type="number" class="form-control small-padding" ng-model="vm.subscriber.features.downlink_speed"/>
                 <span class="input-group-addon">Mbps</span>
               </div>
             </div>
@@ -60,11 +60,11 @@
             </div>
             <div class="col-xs-6">
               <a 
-                ng-click="vm.subscriber.enable_uverse = !vm.subscriber.enable_uverse" 
-                ng-class="{'btn-success': vm.subscriber.enable_uverse, 'btn-danger': !vm.subscriber.enable_uverse}"
+                ng-click="vm.subscriber.features.enable_uverse = !vm.subscriber.features.enable_uverse"
+                ng-class="{'btn-success': vm.subscriber.features.enable_uverse, 'btn-danger': !vm.subscriber.features.enable_uverse}"
                 class="btn btn-block">
-                <span ng-show="vm.subscriber.enable_uverse === true">Enabled</span>
-                <span ng-show="vm.subscriber.enable_uverse !== true">Disabled</span>
+                <span ng-show="vm.subscriber.features.enable_uverse === true">Enabled</span>
+                <span ng-show="vm.subscriber.features.enable_uverse !== true">Disabled</span>
               </a>
             </div>
           </div>

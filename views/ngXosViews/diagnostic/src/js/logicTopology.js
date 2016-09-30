@@ -91,19 +91,18 @@
         };
 
         // listen for subscriber modal event
-        $rootScope.$on('subscriber.modal.open', () => {
-
-          if(ChartData.currentSubscriber){
-            this.subscriberStatusModal();
-          }
-          else{
-            this.selectSubscriberModal();
-          }
-        });
+        // $rootScope.$on('subscriber.modal.open', () => {
+        //
+        //   if(ChartData.currentSubscriber){
+        //     this.subscriberStatusModal();
+        //   }
+        //   else{
+        //     this.selectSubscriberModal();
+        //   }
+        // });
 
         // listen for subscriber modal event
         $rootScope.$on('subscriber.modal.open', () => {
-
           if(ChartData.currentSubscriber){
             this.currentSubscriber = ChartData.currentSubscriber;
             this.subscriberStatusModal();

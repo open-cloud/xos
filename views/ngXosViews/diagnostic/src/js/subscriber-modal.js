@@ -47,10 +47,8 @@
           if(!this.subscriber){
             return;
           }
-          console.log(newVal, oldVal);
-          console.log('subscriber change', newVal === oldVal);
-          this.subscriber.uplink_speed = parseInt(this.subscriber.uplink_speed, 10) / mb;
-          this.subscriber.downlink_speed = parseInt(this.subscriber.downlink_speed, 10) / mb;
+          this.subscriber.features.uplink_speed = parseInt(this.subscriber.features.uplink_speed, 10) / mb;
+          this.subscriber.features.downlink_speed = parseInt(this.subscriber.features.downlink_speed, 10) / mb;
         });
 
         this.close = () => {
@@ -64,8 +62,11 @@
 
           let body = angular.copy(subscriber, body);
 
-          body.uplink_speed = body.uplink_speed * mb;
-          body.downlink_speed = body.downlink_speed * mb;
+          body.features.uplink_speed = body.features.uplink_speed * mb;
+          body.features.downlink_speed = body.features.downlink_speed * mb;
+
+          // remove read only attributes
+          delete body.related;
 
           Subscribers.update(body).$promise
           .then((res) => {
