@@ -19,7 +19,7 @@ ENV NG_XOS_LIB_VERSION 1.0.0
 
 RUN git clone $NG_XOS_LIB_URL /tmp/ng-xos-lib \
  && cd /tmp/ng-xos-lib  \
- && git checkout tags/$NG_XOS_LIB_VERSION \
+# && git checkout tags/$NG_XOS_LIB_VERSION \
  && cp /tmp/ng-xos-lib/dist/ngXosHelpers.min.js /opt/xos/core/xoslib/static/vendor/ \
  && cp /tmp/ng-xos-lib/dist/ngXosVendor.min.js /opt/xos/core/xoslib/static/vendor/
 
