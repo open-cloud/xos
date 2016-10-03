@@ -8,7 +8,7 @@ import urlparse
 import xmlrpclib
 
 from xos.config import Config
-from core.models import Service, ServiceController, ServiceControllerResource, XOS
+from core.models import Service, ServiceController, ServiceControllerResource, LoadableModule, LoadableModuleResource, XOS
 from xos.logger import Logger, logging
 
 from django.utils import timezone
@@ -33,7 +33,7 @@ class XOSBuilder(object):
 
     def get_base_dest_dir(self, scr):
         xos_base = "opt/xos"
-        service_name = scr.service_controller.name
+        service_name = scr.loadable_module.name
         base_dirs = {"models": "%s/services/%s/" % (xos_base, service_name),
                      "admin": "%s/services/%s/" % (xos_base, service_name),
                      "admin_template": "%s/services/%s/templates/" % (xos_base, service_name),
@@ -125,7 +125,7 @@ class XOSBuilder(object):
 #    def get_controller_docker_lines(self, controller, kinds):
 #        need_service_init_py = False
 #        dockerfile=[]
-#        for scr in controller.service_controller_resources.all():
+#        for scr in controller.loadable_module_resources.all():
 #            if scr.kind in kinds:
 #                lines = self.get_docker_lines(scr)
 #                dockerfile = dockerfile + lines
@@ -156,7 +156,7 @@ class XOSBuilder(object):
         need_service_init_py = False
         script=[]
         inits=[]
-        for scr in list(controller.service_controller_resources.all()):
+        for scr in list(controller.loadable_module_resources.all()):
             if not (scr.kind in kinds):
                 continue
 
@@ -196,7 +196,7 @@ class XOSBuilder(object):
 
     def check_controller_unready(self, controller):
         unready_resources=[]
-        for scr in controller.service_controller_resources.all():
+        for scr in controller.loadable_module_resources.all():
             if (not scr.backend_status) or (not scr.backend_status.startswith("1")):
                 unready_resources.append(scr)
 
@@ -230,14 +230,14 @@ class XOSBuilder(object):
 
         dockerfile = ["FROM %s" % xos.source_ui_image]
         script = []
-        for controller in ServiceController.objects.all():
+        for controller in LoadableModule.objects.all():
             if self.check_controller_unready(controller):
-                 logger.warning("Controller %s has unready resources" % str(controller))
+                 logger.warning("Loadable Module %s has unready resources" % str(controller))
                  continue
 
             #dockerfile = dockerfile + self.get_controller_docker_lines(controller, self.UI_KINDS)
             script = script + self.get_controller_script_lines(controller, self.UI_KINDS)
-            if controller.service_controller_resources.filter(kind="models").exists():
+            if controller.loadable_module_resources.filter(kind="models").exists():
                 app_list.append("services." + controller.name)
                 migration_list.append(controller.name)
 
@@ -258,6 +258,10 @@ class XOSBuilder(object):
     def create_synchronizer_dockerfile(self, controller):
         self.build_tainted = False
 
+        if not controller.loadable_module_resources.filter(kind="synchronizer").exists():
+            # it doesn't have a synchronizer, therefore it doesn't need a dockerfile
+            return None
+
         # bake in the synchronizer from this controller
         sync_lines = self.get_controller_script_lines(controller, self.SYNC_CONTROLLER_KINDS)
 
@@ -277,10 +281,9 @@ class XOSBuilder(object):
         # It's important to bake all services in, because some services'
         # synchronizers may depend on models from another service.
         app_list = []
-        for c in ServiceController.objects.all():
-            #dockerfile = dockerfile + self.get_controller_docker_lines(c, self.SYNC_ALLCONTROLLER_KINDS)
+        for c in LoadableModule.objects.all():
             script = script + self.get_controller_script_lines(c, self.SYNC_ALLCONTROLLER_KINDS)
-            if c.service_controller_resources.filter(kind="models").exists():
+            if c.loadable_module_resources.filter(kind="models").exists():
                 app_list.append("services." + c.name)
 
         self.create_xos_app_data(controller.name, script, app_list, None)
@@ -344,7 +347,7 @@ class XOSBuilder(object):
                      logger.warning("Controller %s has unready resources" % str(c))
                      continue
 
-                 if c.service_controller_resources.filter(kind="synchronizer").exists():
+                 if c.loadable_module_resources.filter(kind="synchronizer").exists():
                      if c.synchronizer_run and c.synchronizer_config:
                          command = 'bash -c "sleep 120; cd /opt/xos/synchronizers/%s; python ./%s -C %s"' % (c.name, c.synchronizer_run, c.synchronizer_config)
                      else:

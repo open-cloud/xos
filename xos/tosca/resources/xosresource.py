@@ -238,12 +238,16 @@ class XOSResource(object):
 
         return args
 
+    def save_created_obj(self, xos_obj):
+        xos_obj.save()
+
     def create(self):
         xos_args = self.get_xos_args()
         xos_obj = self.xos_model(**xos_args)
         if self.user:
             xos_obj.caller = self.user
-        xos_obj.save()
+
+        self.save_created_obj(xos_obj)
 
         self.info("Created %s '%s'" % (self.xos_model.__name__,str(xos_obj)))
 

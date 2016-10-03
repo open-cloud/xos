@@ -35,12 +35,12 @@ class XOS(PlCoreBase):
         # If `services` is empty, then only rebuild the UI
         # Otherwise, only rebuild the services listed in `services`
         with transaction.atomic():
-            for service_controller in self.service_controllers.all():
-                if (services) and (service_controller.name not in services):
+            for loadable_module in self.loadable_modules.all():
+                if (services) and (loadable_module.name not in services):
                     continue
-                for scr in service_controller.service_controller_resources.all():
-                   scr.save()
-                service_controller.save()
+                for lmr in loadable_module.loadable_module_resources.all():
+                   lmr.save()
+                loadable_module.save()
             self.save()
 
 class XOSVolume(PlCoreBase):

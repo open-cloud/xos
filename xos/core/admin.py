@@ -1032,10 +1032,9 @@ class ServiceAttrAsTabInline(XOSTabularInline):
 
 
 class ServiceAdmin(XOSBaseAdmin):
-    list_display = ("backend_status_icon", "name", "kind",
-                    "versionNumber", "enabled", "published")
+    list_display = ("backend_status_icon", "name", "kind", "enabled", "published")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldList = ["backend_status_text", "name", "kind", "description", "controller", "versionNumber", "enabled", "published",
+    fieldList = ["backend_status_text", "name", "kind", "description", "controller", "enabled", "published",
                  "view_url", "icon_url", "public_key", "private_key_fn", "service_specific_attribute", "service_specific_id"]
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
@@ -1061,7 +1060,7 @@ class ServiceControllerResourceInline(XOSTabularInline):
 class ServiceControllerAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name",)
     list_display_links = ('backend_status_icon', 'name',)
-    fieldList = ["backend_status_text", "name", "xos", "base_url", "synchronizer_run", "synchronizer_config", "no_start"]
+    fieldList = ["backend_status_text", "name", "xos", "version", "provides", "requires", "base_url", "synchronizer_run", "synchronizer_config", "no_start"]
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
     inlines = [ServiceControllerResourceInline]

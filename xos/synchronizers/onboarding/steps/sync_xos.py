@@ -46,9 +46,9 @@ class SyncXOS(SyncStep, XOSBuilder):
         # is in error state, but it is important that a single broken service does
         # not takedown the entirety of XOS.
 
-        for scr in xos.service_controllers.all():
+        for scr in xos.loadable_modules.all():
             if (scr.backend_status is not None) and (scr.backend_status.startswith("0")):
-                raise DeferredException("Detected unsynced service controller. Deferring.")
+                raise DeferredException("Detected unsynced loadable module. Deferring.")
 
         self.create_docker_compose()
 

@@ -5,7 +5,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import ServiceControllerResource, ServiceController
+from core.models import ServiceControllerResource, ServiceController, LoadableModuleResource, LoadableModule
 
 from xosresource import XOSResource
 
@@ -19,7 +19,7 @@ class XOSServiceControllerResource(XOSResource):
 
         controller_name = self.get_requirement("tosca.relationships.UsedByController", throw_exception=throw_exception)
         if controller_name:
-            args["service_controller"] = self.get_xos_object(ServiceController, throw_exception=throw_exception, name=controller_name)
+            args["loadable_module"] = self.get_xos_object(ServiceController, throw_exception=throw_exception, name=controller_name)
 
         return args
 

@@ -80,6 +80,18 @@ node_types:
                 type: string
                 required: false
                 description: Base url, to allow resources to use relative URLs
+            version:
+                type: string
+                required: false
+                description: Version number of this Service Controller
+            provides:
+                type: string
+                required: false
+                description: Comma-separated list of things provided
+            requires:
+                type: string
+                required: false
+                description: Comma-separated list of requirements
             models:
                 type: string
                 required: false

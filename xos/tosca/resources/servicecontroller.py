@@ -5,14 +5,14 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import ServiceController, ServiceControllerResource
+from core.models import ServiceController, ServiceControllerResource, LoadableModule, LoadableModuleResource
 
 from xosresource import XOSResource
 
 class XOSServiceController(XOSResource):
     provides = "tosca.nodes.ServiceController"
     xos_model = ServiceController
-    copyin_props = ["base_url", "synchronizer_run", "synchronizer_config"]
+    copyin_props = ["version", "provides", "requires", "base_url", "synchronizer_run", "synchronizer_config"]
 
     def postprocess_resource_prop(self, obj, kind, format):
         values = self.get_property(kind)
@@ -39,7 +39,7 @@ class XOSServiceController(XOSResource):
                     value = parts[-1]
 
 
-                scr = ServiceControllerResource.objects.filter(service_controller=obj, name=name, kind=kind, format=format)
+                scr = LoadableModuleResource.objects.filter(loadable_module=obj, name=name, kind=kind, format=format)
                 if scr:
                     scr=scr[0]
                     if (scr.url != value) or (scr.subdirectory!=subdirectory):
@@ -49,7 +49,7 @@ class XOSServiceController(XOSResource):
                         scr.save()
                 else:
                     self.info("adding resource %s" % kind)
-                    scr = ServiceControllerResource(service_controller=obj, name=name, kind=kind, format=format, url=value, subdirectory=subdirectory)
+                    scr = LoadableModuleResource(loadable_module=obj, name=name, kind=kind, format=format, url=value, subdirectory=subdirectory)
                     scr.save()
 
     def postprocess(self, obj):
@@ -65,4 +65,13 @@ class XOSServiceController(XOSResource):
         self.postprocess_resource_prop(obj, "public_key", "raw")
         self.postprocess_resource_prop(obj, "rest_service", "python")
         self.postprocess_resource_prop(obj, "rest_tenant", "python")
+
+    def save_created_obj(self, xos_obj):
+        if xos_obj.requires and xos_obj.requires.strip():
+            (satisfied, missing) = ServiceController.dependency_check([x.strip() for x in xos_obj.requires.split(",")])
+            if missing:
+                raise Exception("missing dependencies for ServiceController %s: %s" % (xos_obj.name, ", ".join(missing)))
+
+        super(XOSServiceController, self).save_created_obj(xos_obj)
+
 

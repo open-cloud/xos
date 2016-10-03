@@ -1,5 +1,8 @@
 import json
+import operator
+
 from operator import attrgetter
+from distutils.version import LooseVersion
 
 from core.models import PlCoreBase, PlCoreBaseManager, SingletonModel, XOS
 from core.models.plcorebase import StrippedCharField
@@ -16,7 +19,6 @@ def get_xos():
        return xos[0]
     else:
        return None
-
 
 class AttributeMixin(object):
     # helper for extracting things from a json-encoded
@@ -65,27 +67,90 @@ class AttributeMixin(object):
                                             None,
                                             attrname))
 
-class ServiceController(PlCoreBase):
-    xos = models.ForeignKey(XOS, related_name='service_controllers', help_text="Pointer to XOS", default=get_xos)
+class LoadableModule(PlCoreBase):
+    xos = models.ForeignKey(XOS, related_name='loadable_modules', help_text="Pointer to XOS", default=get_xos)
     name = StrippedCharField(max_length=30, help_text="Service Name")
     base_url = StrippedCharField(max_length=1024, help_text="Base URL, allows use of relative URLs for resources", null=True, blank=True)
 
-    synchronizer_run = StrippedCharField(max_length=1024, help_text="synchronizer run command", null=True, blank=True)
-    synchronizer_config = StrippedCharField(max_length=1024, help_text="synchronizer config file", null=True, blank=True)
-
-    no_start = models.BooleanField(help_text="Do not start the XOS UI inside of the UI docker container", default=False)
+    version = StrippedCharField(blank=True, null=True,
+        max_length=30, help_text="Version of Service Controller", default = "1.0.0")
+    provides = StrippedCharField(blank=True, null=True,
+        max_length=254, help_text="Comma-separated list of things provided")
+    requires = StrippedCharField(blank=True, null=True,
+        max_length=254, help_text="Comma-separated list of required Service Controllers")
 
     def __unicode__(self): return u'%s' % (self.name)
 
     def save(self, *args, **kwargs):
-       super(ServiceController, self).save(*args, **kwargs)
+       super(LoadableModule, self).save(*args, **kwargs)
 
        if self.xos:
            # force XOS to rebuild
            # XXX somewhat hackish XXX
            self.xos.save(update_fields=["updated"])
 
-class ServiceControllerResource(PlCoreBase):
+    def get_provides_list(self):
+        prov_list = []
+        if self.provides and self.provides.strip():
+            for prov in self.provides.split(","):
+                prov=prov.strip()
+                if "=" in prov:
+                    (name, version) = prov.split("=",1)
+                    name = name.strip()
+                    version = version.strip()
+                else:
+                    name = prov
+                    version = "1.0.0"
+                prov_list.append( {"name": name, "version": version} )
+
+        # every controller provides itself
+        prov_list.append( {"name": self.name, "version": self.version} )
+
+        return prov_list
+
+
+    @classmethod
+    def dependency_check(cls, dep_list):
+        missing = []
+        satisfied = []
+        operators = {">=": operator.ge,
+                     "<=": operator.le,
+                     ">": operator.gt,
+                     "<": operator.lt,
+                     "!=": operator.ne,
+                     "=": operator.eq}
+        for dep in dep_list:
+            dep = dep.strip()
+            name = dep
+            version = None
+            this_op = None
+            for op in operators.keys():
+                if op in dep:
+                    (name, version) = dep.split(op,1)
+                    name = name.strip()
+                    version = version.strip()
+                    this_op = operators[op]
+                    break
+            found=False
+            scs = ServiceController.objects.all()
+            for sc in scs:
+                for provide in sc.get_provides_list():
+                    if (provide["name"] != name):
+                        continue
+                    if not this_op:
+                        satisfied.append(sc)
+                        found=True
+                        break
+                    elif this_op(LooseVersion(provide["version"]), LooseVersion(version)):
+                        satisfied.append(sc)
+                        found=True
+                        break
+            if not found:
+                missing.append(dep)
+
+        return (satisfied, missing)
+
+class LoadableModuleResource(PlCoreBase):
     KIND_CHOICES = (('models', 'Models'),
                     ('admin', 'Admin'),
                     ('admin_template', 'Admin Template'),
@@ -104,8 +169,8 @@ class ServiceControllerResource(PlCoreBase):
                       ('yaml', 'YAML'),
                       ('raw', 'raw'))
 
-    service_controller = models.ForeignKey(ServiceController, related_name='service_controller_resources',
-                                help_text="The Service Controller this resource is associated with")
+    loadable_module = models.ForeignKey(LoadableModule, related_name='loadable_module_resources',
+                                help_text="The Loadable Module this resource is associated with")
 
     name = StrippedCharField(max_length=30, help_text="Object Name")
     subdirectory = StrippedCharField(max_length=1024, help_text="optional subdirectory", null=True, blank=True)
@@ -117,10 +182,20 @@ class ServiceControllerResource(PlCoreBase):
 
     @property
     def full_url(self):
-        if self.service_controller and self.service_controller.base_url:
-            return urlparse.urljoin(self.service_controller.base_url, self.url)
+        if self.loadable_module and self.loadable_module.base_url:
+            return urlparse.urljoin(self.loadable_module.base_url, self.url)
         else:
             return self.url
+
+class ServiceController(LoadableModule):
+    synchronizer_run = StrippedCharField(max_length=1024, help_text="synchronizer run command", null=True, blank=True)
+    synchronizer_config = StrippedCharField(max_length=1024, help_text="synchronizer config file", null=True, blank=True)
+
+    no_start = models.BooleanField(help_text="Do not start the XOS UI inside of the UI docker container", default=False)
+
+class ServiceControllerResource(LoadableModuleResource):
+    class Meta:
+        proxy = True
 
 class Service(PlCoreBase, AttributeMixin):
     # when subclassing a service, redefine KIND to describe the new service
@@ -133,7 +208,7 @@ class Service(PlCoreBase, AttributeMixin):
         max_length=30, help_text="Kind of service", default=KIND)
     name = StrippedCharField(max_length=30, help_text="Service Name")
     versionNumber = StrippedCharField(blank=True, null=True,
-        max_length=30, help_text="Version of Service Definition")
+        max_length=30, help_text="Version of Service Definition")   # deprecated
     published = models.BooleanField(default=True)
     view_url = StrippedCharField(blank=True, null=True, max_length=1024)
     icon_url = StrippedCharField(blank=True, null=True, max_length=1024)
