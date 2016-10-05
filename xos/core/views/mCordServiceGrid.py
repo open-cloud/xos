@@ -74,7 +74,7 @@ class ServiceGridView(TemplateView):
                 target = ''
 
                 html = html + '<div class="col-xs-4 text-center service-container">'
-                html = html + '<a href="%s" %s>' % (service.view_url, target)
+                html = html + '<a href="%s" %s>' % (service.view_url.replace("$id$", str(service.id)), target)
                 html = html + '<img class="img-responsive" src="%s">' % (image_url)
                 html = html + "<h4>" + service.name + "</h4>"
                 html = html + '</a>'
