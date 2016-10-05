@@ -1,5 +1,4 @@
 import os
-import pdb
 import json
 import subprocess
 import sys
@@ -62,12 +61,18 @@ class XOSResource(object):
 
     def get_scalable(self):
         scalable = self.nodetemplate.get_capabilities().get("scalable", None)
-        if scalable:
-            return {"min_instances": scalable.get_property_value("min_instances"),
-                    "max_instances": scalable.get_property_value("max_instances"),
-                    "default_instances": scalable.get_property_value("default_instances")}
-        else:
-            return {}
+
+        min_instances = scalable.get_property_value("min_instances")
+        max_instances = scalable.get_property_value("max_instances")
+
+        # default_instances may be None, set to min_instances if not set
+        default_instances = scalable.get_property_value("default_instances")
+        if not default_instances:
+            default_instances = min_instances
+
+        return {"min_instances": min_instances,
+                "max_instances": max_instances,
+                "default_instances": default_instances}
 
     def get_property(self, name):
         return self.nodetemplate.get_property_value(name)

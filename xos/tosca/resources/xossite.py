@@ -1,16 +1,5 @@
-# note: this module named xossite.py instead of site.py due to conflict with
-#    /usr/lib/python2.7/site.py
-
-import os
-import pdb
-import sys
-import tempfile
-sys.path.append("/opt/tosca")
-from translator.toscalib.tosca_template import ToscaTemplate
-
-from core.models import User,Site,Deployment,Controller,SiteDeployment
-
 from xosresource import XOSResource
+from core.models import User,Site,Deployment,Controller,SiteDeployment
 
 class XOSSite(XOSResource):
     provides = "tosca.nodes.Site"
@@ -110,6 +99,4 @@ class XOSSite(XOSResource):
             self.info("Site %s has active nodes; skipping delete" % obj.name)
             return
         super(XOSSite, self).delete(obj)
-
-
 

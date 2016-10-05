@@ -43,10 +43,9 @@ class ObserverUserTest(BaseObserverToscaTest):
           - deployment:
                node: %s
                relationship: tosca.relationships.SiteDeployment
-               requirements:
-                   - controller:
-                       node: %s
-                       relationship: tosca.relationships.UsesController
+          - controller:
+               node: %s
+               relationship: tosca.relationships.UsesController
     johndoe@foo.bar:
       type: tosca.nodes.User
       properties:

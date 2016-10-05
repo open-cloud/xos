@@ -2,6 +2,7 @@ import os
 import random
 import string
 import sys
+import tempfile
 
 # add the parent parent directory to sys.path
 # XXX this is very hackish :(
@@ -21,6 +22,7 @@ from core.models import User
 
 class BaseToscaTest(object):
     username = "padmin@vicci.org"
+    current_test = ""
     base_yaml = \
 """tosca_definitions_version: tosca_simple_yaml_1_0
 
@@ -120,7 +122,11 @@ topology_template:
     def execute(self, yml):
         u = User.objects.get(email=self.username)
 
-        #print self.base_yaml+yml
+        # save test tosca to a temporary file
+        (tf_h, tf_p) = tempfile.mkstemp(dir="/tmp/", prefix=("tosca_test_%s_" % self.current_test))
+        # print "Saving TOSCA to file: '%s'" % tf_p
+        os.write(tf_h, self.base_yaml+yml)
+        os.close(tf_h)
 
         xt = XOSTosca(self.base_yaml+yml, parent_dir=parentdir, log_to_console=False)
         xt.execute(u)
@@ -135,12 +141,12 @@ topology_template:
 
     def runtest(self):
         for test in self.tests:
+            self.current_test = test.replace(' ','_')
             print "running", test
             self.cleanup()
-            try:
-                getattr(self,test)()
-            finally:
-                self.cleanup()
+            getattr(self,test)()
+
+        self.cleanup()
 
     def cleanup(self):
         pass

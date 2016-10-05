@@ -1,13 +1,5 @@
-import os
-import pdb
-import sys
-import tempfile
-sys.path.append("/opt/tosca")
-from translator.toscalib.tosca_template import ToscaTemplate
-
-from core.models import Slice,User,Network,NetworkParameterType
-
 from xosresource import XOSResource
+from core.models import Slice,User,Network,NetworkParameterType
 
 class XOSNetworkParameterType(XOSResource):
     provides = "tosca.nodes.NetworkParameterType"

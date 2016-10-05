@@ -32,11 +32,10 @@ class NodeTest(BaseToscaTest):
       requirements:
         - deployment:
              node: testdep
-             relationship: tosca.relationships.SiteDeployment
-             requirements:
-                 - controller:
-                     node: testcon
-                     relationship: tosca.relationships.UsesController
+             relationship: tosca.relationships.MemberOfDeployment
+        - controller:
+             node: testcon
+             relationship: tosca.relationships.UsesController
 """
 
     def create_node_minimal(self):

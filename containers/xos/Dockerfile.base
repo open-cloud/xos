@@ -70,15 +70,3 @@ RUN curl -fLsS $JQUERYUI_THEMES_DL_URL -o jquery-ui-themes.zip && \
     mv jquery-ui-themes-*/themes/smoothness/jquery-ui.min.css /usr/local/lib/python2.7/dist-packages/suit/static/suit/css/ && \
     rm -rf jquery-ui-themes.zip jquery-ui-themes-*
 
-# Install heat-translator for TOSCA support
-ENV HT_REPO_URL https://github.com/openstack/heat-translator.git
-ENV HT_REF a951b93c16e54046ed2d233d814860181c772e30
-
-RUN git clone $HT_REPO_URL /tmp/heat-translator && \
-    cd /tmp/heat-translator && \
-    git checkout $HT_REF && \
-    mkdir -p /opt/tosca && \
-    mv /tmp/heat-translator/translator /opt/tosca/translator && \
-    echo > /opt/tosca/translator/__init__.py && \
-    rm -rf /tmp/heat-translator
-

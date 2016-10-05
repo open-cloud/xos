@@ -125,6 +125,7 @@ simplejson==3.8.2
 six==1.10.0
 stevedore==1.17.1
 supervisor==3.0b2
+tosca-parser==0.6.0
 unicodecsv==0.14.1
 uritemplate==0.6
 urllib3==1.7.1

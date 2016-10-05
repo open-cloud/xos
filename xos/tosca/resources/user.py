@@ -1,13 +1,5 @@
-import os
-import pdb
-import sys
-import tempfile
-sys.path.append("/opt/tosca")
-from translator.toscalib.tosca_template import ToscaTemplate
-
-from core.models import User, Site, SiteRole, SliceRole, SlicePrivilege, SitePrivilege, DashboardView, UserDashboardView
-
 from xosresource import XOSResource
+from core.models import User, Site, SiteRole, SliceRole, SlicePrivilege, SitePrivilege, DashboardView, UserDashboardView
 
 class XOSUser(XOSResource):
     provides = "tosca.nodes.User"

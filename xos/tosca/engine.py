@@ -1,17 +1,15 @@
 import os
 import pdb
+import resources
 import sys
 import tempfile
 import traceback
 
-sys.path.append("/opt/tosca")
-from translator.toscalib.tosca_template import ToscaTemplate
-
+from toscaparser.tosca_template import ToscaTemplate
 from core.models import Slice,Instance,User,Flavor,Node,Image
 from nodeselect import XOSNodeSelector
 from imageselect import XOSImageSelector
 
-import resources
 
 class XOSTosca(object):
     def __init__(self, tosca_yaml, parent_dir=None, log_to_console = False):
@@ -23,7 +21,7 @@ class XOSTosca(object):
 
         tmp_pathname = None
         try:
-            (tmp_handle, tmp_pathname) = tempfile.mkstemp(dir=parent_dir)
+            (tmp_handle, tmp_pathname) = tempfile.mkstemp(dir=parent_dir, suffix=".yaml")
             os.write(tmp_handle, tosca_yaml)
             os.close(tmp_handle)
 

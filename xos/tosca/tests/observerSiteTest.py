@@ -28,10 +28,9 @@ class ObserverSiteTest(BaseObserverToscaTest):
           - deployment:
                node: %s
                relationship: tosca.relationships.SiteDeployment
-               requirements:
-                   - controller:
-                       node: %s
-                       relationship: tosca.relationships.UsesController
+          - controller:
+               node: %s
+               relationship: tosca.relationships.UsesController
 """ % (self.get_usable_deployment(), self.get_usable_controller()))
 
         testsite = self.assert_obj(Site, "testsite")

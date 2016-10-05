@@ -1,16 +1,8 @@
-import os
-import pdb
-import sys
-import tempfile
-sys.path.append("/opt/tosca")
-from translator.toscalib.tosca_template import ToscaTemplate
-
+from xosresource import XOSResource
 from core.models import Slice,Instance,User,Flavor,Node,Image
 from nodeselect import XOSNodeSelector
 from imageselect import XOSImageSelector
 from flavorselect import XOSFlavorSelector
-
-from xosresource import XOSResource
 
 class XOSCompute(XOSResource):
     provides = ["tosca.nodes.Compute", "tosca.nodes.Compute.Container"]
@@ -102,9 +94,9 @@ class XOSCompute(XOSResource):
 
     def create_or_update(self):
         scalable = self.get_scalable()
-        if scalable:
-            default_instances = scalable.get("default_instances",1)
-            for i in range(0, default_instances):
+
+        if scalable.get("max_instances",1) > 1:
+            for i in range(0, scalable.get("default_instances",1)):
                 name = "%s-%d" % (self.obj_name, i)
                 existing_instances = Instance.objects.filter(name=name)
                 if existing_instances:
@@ -117,14 +109,13 @@ class XOSCompute(XOSResource):
 
     def get_existing_objs(self):
         scalable = self.get_scalable()
-        if scalable:
+
+        if scalable.get("max_instances",1) > 1:
             existing_instances = []
-            max_instances = scalable.get("max_instances",1)
-            for i in range(0, max_instances):
+            for i in range(0, scalable.get("default_instances",1)):
                 name = "%s-%d" % (self.obj_name, i)
                 existing_instances = existing_instances + list(Instance.objects.filter(name=name))
             return existing_instances
         else:
             return super(XOSCompute,self).get_existing_objs()
-
 

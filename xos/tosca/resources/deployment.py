@@ -1,16 +1,5 @@
-# note: this module named xossite.py instead of site.py due to conflict with
-#    /usr/lib/python2.7/site.py
-
-import os
-import pdb
-import sys
-import tempfile
-sys.path.append("/opt/tosca")
-from translator.toscalib.tosca_template import ToscaTemplate
-
-from core.models import User,Deployment,DeploymentRole,DeploymentPrivilege,Image,ImageDeployments,Flavor
-
 from xosresource import XOSResource
+from core.models import User,Deployment,DeploymentRole,DeploymentPrivilege,Image,ImageDeployments,Flavor
 
 class XOSDeployment(XOSResource):
     provides = "tosca.nodes.Deployment"

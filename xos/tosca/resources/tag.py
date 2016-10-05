@@ -1,14 +1,6 @@
-import importlib
-import os
-import sys
-import tempfile
-sys.path.append("/opt/tosca")
-from translator.toscalib.tosca_template import ToscaTemplate
-from django.contrib.contenttypes.models import ContentType
-
-from core.models import Tag, Service
-
 from xosresource import XOSResource
+from core.models import Tag, Service
+from django.contrib.contenttypes.models import ContentType
 
 class XOSTag(XOSResource):
     provides = "tosca.nodes.Tag"
