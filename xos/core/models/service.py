@@ -187,6 +187,10 @@ class LoadableModuleResource(PlCoreBase):
         else:
             return self.url
 
+class Library(LoadableModule):
+    # for now, it's exactly like a LoadableModule
+    pass
+
 class ServiceController(LoadableModule):
     synchronizer_run = StrippedCharField(max_length=1024, help_text="synchronizer run command", null=True, blank=True)
     synchronizer_config = StrippedCharField(max_length=1024, help_text="synchronizer config file", null=True, blank=True)

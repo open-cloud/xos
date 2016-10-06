@@ -164,6 +164,69 @@ node_types:
                 required: false
                 description: url of resource, may be relative to base_url or absolute
 
+    tosca.nodes.Library:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Library.
+        properties:
+            xos_base_props
+            base_url:
+                type: string
+                required: false
+                description: Base url, to allow resources to use relative URLs
+            version:
+                type: string
+                required: false
+                description: Version number of this Service Controller
+            provides:
+                type: string
+                required: false
+                description: Comma-separated list of things provided
+            requires:
+                type: string
+                required: false
+                description: Comma-separated list of requirements
+            models:
+                type: string
+                required: false
+                description: url of models.py
+            admin:
+                type: string
+                required: false
+                description: url of admin.py
+            django_library:
+                type: string
+                required: false
+                description: libraries used by admin or models
+            admin_template:
+                type: string
+                required: false
+                description: url of admin html template
+            tosca_custom_types:
+                type: string
+                required: false
+                description: url of tosca custom_types
+            tosca_resource:
+                type: string
+                required: false
+                description: url of tosca resource
+            rest_service:
+                type: string
+                required: false
+                description: url of REST API service file
+            rest_tenant:
+                type: string
+                required: false
+                description: url of REST API tenant file
+            private_key:
+                type: string
+                required: false
+                description: private key
+            public_key:
+                type: string
+                required: false
+                description: public key
+
     tosca.nodes.Tenant:
         derived_from: tosca.nodes.Root
         description: >

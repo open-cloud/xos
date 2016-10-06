@@ -1,8 +1,12 @@
 {
     "XOS": [
-        "ServiceController"
+        "ServiceController",
+        "Library"
     ], 
     "ServiceController": [
+        "ServiceControllerResource"
+    ],
+    "Library": [
         "ServiceControllerResource"
     ]
 }

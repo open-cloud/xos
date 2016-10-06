@@ -1051,8 +1051,8 @@ class ServiceAdmin(XOSBaseAdmin):
                       ('serviceprivileges', 'Privileges')
                       )
 
-class ServiceControllerResourceInline(XOSTabularInline):
-    model = ServiceControllerResource
+class LoadableModuleResourceInline(XOSTabularInline):
+    model = LoadableModuleResource
     fields = ['name', 'kind', 'format', 'url']
     extra = 0
     suit_classes = 'suit-tab suit-tab-resources'
@@ -1063,12 +1063,27 @@ class ServiceControllerAdmin(XOSBaseAdmin):
     fieldList = ["backend_status_text", "name", "xos", "version", "provides", "requires", "base_url", "synchronizer_run", "synchronizer_config", "no_start"]
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
-    inlines = [ServiceControllerResourceInline]
+    inlines = [LoadableModuleResourceInline]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = fieldList
 
-    suit_form_tabs = (('general', 'Service Details'),
+    suit_form_tabs = (('general', 'Service Controller Details'),
+                      ('resources', 'Resources'),
+                      )
+
+class LibraryAdmin(XOSBaseAdmin):
+    list_display = ("backend_status_icon", "name",)
+    list_display_links = ('backend_status_icon', 'name',)
+    fieldList = ["backend_status_text", "name", "xos", "version", "provides", "requires", "base_url"]
+    fieldsets = [
+        (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
+    inlines = [LoadableModuleResourceInline]
+    readonly_fields = ('backend_status_text', )
+
+    user_readonly_fields = fieldList
+
+    suit_form_tabs = (('general', 'Library Details'),
                       ('resources', 'Resources'),
                       )
 
@@ -2451,6 +2466,7 @@ admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(ServiceController, ServiceControllerAdmin)
+admin.site.register(Library, LibraryAdmin)
 admin.site.register(XOS, XosModelAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Port, PortAdmin)
