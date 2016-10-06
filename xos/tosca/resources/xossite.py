@@ -36,7 +36,7 @@ class XOSSite(XOSResource):
         return self.xos_model.objects.filter(login_base = self.obj_name)
 
     def postprocess(self, obj):
-        results = []
+        # The old way - DEPRECATED
         for reqs in self.nodetemplate.requirements:
             for (k,v) in reqs.items():
                 if (v["relationship"] == "tosca.relationships.SiteDeployment"):
@@ -67,6 +67,37 @@ class XOSSite(XOSResource):
                         sitedep = SiteDeployment(deployment=deployment, site=obj, controller=controller)
                         sitedep.save()
                         self.info("Created SiteDeployment from %s to %s" % (str(obj), str(deployment)))
+
+        # The new way
+        deployments = self.get_requirements("tosca.relationships.MemberOfDeployment")
+        if deployments and len(deployments)>1:
+            raise Exception("At most one deployment per site (%s)" % str(deployments))
+
+        controllers = self.get_requirements("tosca.relationships.UsesController")
+        if controllers and len(controllers)>1:
+            raise Exception("At most one controller per site (%s)" % str(controllers))
+
+        if controllers or deployments:
+            if (not deployments):
+                raise Exception("If you specify a controller, then you must specify a deployment")
+
+            deployment = self.get_xos_object(Deployment, name = deployments[0], throw_exception = True)
+            if controllers:
+                controller = self.get_xos_object(Controller, name = controllers[0], throw_exception = True)
+            else:
+                controller = None
+            existing_sitedeps = SiteDeployment.objects.filter(site=obj)
+            if (existing_sitedeps):
+                sd = existing_sitedeps[0]
+                if (sd.controller != controller) or (sd.deployment != deployment):
+                    sd.controller = controller
+                    sd.deployment = deployment
+                    sd.save()
+                    self.info("SiteDeployment from %s to %s updated" % (str(obj), str(deployment)))
+            else:
+                sd = SiteDeployment(deployment=deployment, site=obj, controller=controller)
+                sd.save()
+                self.info("Created SiteDeployment from %s to %s" % (str(obj), str(deployment)))
 
     def delete(self, obj):
         if obj.slices.exists():
