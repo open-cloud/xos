@@ -197,9 +197,17 @@ class Instance(PlCoreBase):
 
     # return an address that the synchronizer can use to SSH to the instance
     def get_ssh_ip(self):
+        # first look specifically for a management_local network
+        for ns in self.ports.all():
+            if ns.network.template and ns.network.template.vtn_kind=="MANAGEMENT_LOCAL":
+                return ns.ip
+
+        # for compatibility, now look for any management network
         management=self.get_network_ip("management")
         if management:
             return management
+
+        # if all else fails, look for nat-net (for OpenCloud?)
         return self.get_network_ip("nat")
 
     @staticmethod
