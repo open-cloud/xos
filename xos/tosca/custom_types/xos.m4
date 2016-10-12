@@ -651,6 +651,16 @@ node_types:
                 required: false
                 #default: false
                 description: If True, the user has root admin privileges.
+            is_readonly:
+                type: boolean
+                required: false
+                #default: false
+                description: If True, the user has read-only privileges in the UI.
+            is_appuser:
+                type: boolean
+                required: false
+                #default: false
+                description: If True, the user may only login to XOS to use apps.
             login_page:
                 type: string
                 required: false

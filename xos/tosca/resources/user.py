@@ -13,7 +13,7 @@ class XOSUser(XOSResource):
     provides = "tosca.nodes.User"
     xos_model = User
     name_field = "email"
-    copyin_props = ["password", "firstname", "lastname", "phone", "user_url", "public_key", "is_active", "is_admin", "login_page"]
+    copyin_props = ["password", "firstname", "lastname", "phone", "user_url", "public_key", "is_active", "is_admin", "is_readonly", "is_appuser", "login_page"]
 
     def get_xos_args(self):
         args = super(XOSUser, self).get_xos_args()
