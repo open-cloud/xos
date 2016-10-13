@@ -385,6 +385,9 @@ node_types:
             node_label:
                 type: string
                 required: false
+            docker_image_name:
+                type: string
+                required: false
 
     tosca.nodes.VBNGService:
         derived_from: tosca.nodes.Root
