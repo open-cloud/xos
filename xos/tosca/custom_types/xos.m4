@@ -388,6 +388,11 @@ node_types:
             docker_image_name:
                 type: string
                 required: false
+                description: Name of docker image to pull for vSG
+            docker_insecure_registry:
+                type: boolean
+                required: false
+                description: If true, then the hostname:port specified in docker_image_name will be treated as an insecure registry
 
     tosca.nodes.VBNGService:
         derived_from: tosca.nodes.Root
