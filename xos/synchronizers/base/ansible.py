@@ -147,8 +147,10 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
     except ValueError,e:
         all_fatal = [e.message] + re.findall(r'^msg: (.*)',msg,re.MULTILINE)
         all_fatal2 = re.findall(r'^ERROR: (.*)',msg,re.MULTILINE)
+        all_fatal3 = re.findall(r'^failed:.*"msg": "(.*)"',msg,re.MULTILINE)
 
         all_fatal.extend(all_fatal2)
+        all_fatal.extend(all_fatal3)
         try:
             error = ' // '.join(all_fatal)
         except:
