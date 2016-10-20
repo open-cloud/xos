@@ -25,7 +25,7 @@ class XOSBuilder(object):
     SYNC_ALLCONTROLLER_KINDS=["models", "django_library"]
 
     def __init__(self):
-        self.source_sync_image = "xosproject/xos-synchronizer-openstack"
+        self.source_sync_image = "xosproject/xos" # "xosproject/xos-synchronizer-openstack"
         self.build_dir = "/opt/xos/BUILD/"
         self.build_tainted = False
 
