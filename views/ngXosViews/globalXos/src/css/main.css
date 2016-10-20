@@ -1,0 +1,7 @@
+#xosGlobalXos ui-view,
+#xosGlobalXos xos-list {
+  display: block; }
+
+#xosGlobalXos .well.active {
+  background: #337ab7;
+  color: #fff; }

@@ -1,0 +1,14 @@
+{
+  "endpoints": [
+    {
+      "url": "controllers",
+      "base": "api/core/",
+      "methods": ["GET"]
+    },
+    {
+      "url": "slices",
+      "base": "api/core/",
+      "methods": ["GET"]
+    }
+  ]
+}

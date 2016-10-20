@@ -1,0 +1,13 @@
+@import '../../../../style/sass/lib/_variables.scss';
+
+#xosGlobalXos {
+  ui-view,
+  xos-list{
+    display: block;
+  }
+
+  .well.active{
+    background: $brand-primary;
+    color: #fff;
+  }
+}

@@ -26,6 +26,7 @@ coreapi==1.32.3
 debtcollector==1.8.0
 decorator==4.0.10
 django-bitfield==1.8.0
+django-cors-headers==1.2.0
 django-crispy-forms==1.6.0
 django-encrypted-fields==1.1.2
 django-extensions==1.7.3

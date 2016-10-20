@@ -35,6 +35,9 @@ XOS_DIR = "/opt/xos"
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+# Enable CORS requests, needed to enable layered XOS
+CORS_ORIGIN_ALLOW_ALL = True
+
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
@@ -135,6 +138,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -184,6 +188,7 @@ INSTALLED_APPS = (
     'services.syndicate_storage',
     # 'geoposition',
     # 'rest_framework_swagger',
+    'corsheaders'
 )
 
 # add services that were configured by xosbuilder to INSTALLED_APPS
