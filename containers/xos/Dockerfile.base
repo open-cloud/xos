@@ -70,3 +70,25 @@ RUN curl -fLsS $JQUERYUI_THEMES_DL_URL -o jquery-ui-themes.zip && \
     mv jquery-ui-themes-*/themes/smoothness/jquery-ui.min.css /usr/local/lib/python2.7/dist-packages/suit/static/suit/css/ && \
     rm -rf jquery-ui-themes.zip jquery-ui-themes-*
 
+# -----------------------------------------------------------------------------
+# actions formerly in onboarding synchronizer
+
+ENV DOCKER_URL https://get.docker.com/builds/Linux/x86_64/docker-1.10.3
+ENV DOCKER_SHA256 d0df512afa109006a450f41873634951e19ddabf8c7bd419caeb5a526032d86d
+
+RUN curl -fLsS $DOCKER_URL -o docker && \
+    echo "${DOCKER_SHA256}  docker" | sha256sum -c - && \
+    mv docker /usr/local/bin/docker && \
+    chmod +x /usr/local/bin/docker
+
+# Install docker-compose
+ENV DOCKER_COMPOSE_URL https://github.com/docker/compose/releases/download/1.5.2/docker-compose-Linux-x86_64
+ENV DOCKER_COMPOSE_SHA256 b6b975badc5389647ef1c16fe8a33bdc5935c61f6afd5a15a28ff765427d01e3
+
+RUN curl -fLsS $DOCKER_COMPOSE_URL -o docker-compose && \
+    echo "${DOCKER_COMPOSE_SHA256}  docker-compose" | sha256sum -c - && \
+    mv docker-compose /usr/local/bin/docker-compose && \
+    chmod +x /usr/local/bin/docker-compose
+
+# end actions formerly in onboarding synchronizer
+# ----------------------------------------------------------------------------
