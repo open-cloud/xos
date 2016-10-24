@@ -20,7 +20,7 @@ def add_unique(list, item):
        list.append(item)
 
 class XOSBuilder(object):
-    UI_KINDS=["models", "admin", "admin_template", "django_library", "rest_service", "rest_tenant", "tosca_custom_types", "tosca_resource","public_key"]
+    UI_KINDS=["models", "admin", "admin_template", "django_library", "rest_service", "rest_tenant", "tosca_custom_types", "tosca_resource","public_key","vendor_js"]
     SYNC_CONTROLLER_KINDS=["synchronizer", "private_key", "public_key"]
     SYNC_ALLCONTROLLER_KINDS=["models", "django_library"]
 
@@ -44,7 +44,8 @@ class XOSBuilder(object):
                      "rest_service": "%s/api/service/" % (xos_base),
                      "rest_tenant": "%s/api/tenant/" % (xos_base),
                      "private_key": "%s/services/%s/keys/" % (xos_base, service_name),
-                     "public_key": "%s/services/%s/keys/" % (xos_base, service_name)}
+                     "public_key": "%s/services/%s/keys/" % (xos_base, service_name),
+                     "vendor_js": "%s/core/xoslib/static/vendor/" % (xos_base)}
         dest_dir = base_dirs[scr.kind]
 
         return dest_dir

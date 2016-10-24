@@ -56,6 +56,7 @@ class XOSLoadableModule(XOSResource):
         self.postprocess_resource_prop(obj, "public_key", "raw")
         self.postprocess_resource_prop(obj, "rest_service", "python")
         self.postprocess_resource_prop(obj, "rest_tenant", "python")
+        self.postprocess_resource_prop(obj, "vendor_js", "javascript")
 
     def save_created_obj(self, xos_obj):
         if xos_obj.requires and xos_obj.requires.strip():

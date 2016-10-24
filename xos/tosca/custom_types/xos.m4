@@ -144,6 +144,10 @@ node_types:
                 type: string
                 required: false
                 description: public key
+            vendor_js:
+                type: string
+                required: false
+                description: third-party javascript files
 
     tosca.nodes.ServiceControllerResource:
         derived_from: tosca.nodes.Root
@@ -226,6 +230,10 @@ node_types:
                 type: string
                 required: false
                 description: public key
+            vendor_js:
+                type: string
+                required: false
+                description: third-party javascript files
 
     tosca.nodes.Tenant:
         derived_from: tosca.nodes.Root

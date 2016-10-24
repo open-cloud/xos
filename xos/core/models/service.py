@@ -161,13 +161,15 @@ class LoadableModuleResource(PlCoreBase):
                     ('tosca_custom_types', 'Tosca Custom Types'),
                     ('tosca_resource', 'Tosca Resource'),
                     ('private_key', 'Private Key'),
-                    ('public_key', 'Public Key'))
+                    ('public_key', 'Public Key'),
+                    ('vendor_js', 'Vendor Javascript'))
 
     FORMAT_CHOICES = (('python', 'Python'),
                       ('manifest', 'Manifest'),
                       ('docker', 'Docker Container'),
                       ('yaml', 'YAML'),
-                      ('raw', 'raw'))
+                      ('raw', 'raw'),
+                      ('javascript', 'Javascript'))
 
     loadable_module = models.ForeignKey(LoadableModule, related_name='loadable_module_resources',
                                 help_text="The Loadable Module this resource is associated with")
