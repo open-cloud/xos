@@ -5,21 +5,23 @@ const helpers = require('yeoman-test');
 const assert = require('yeoman-assert');
 const rimraf = require('rimraf');
 const mockery = require('mockery');
-const wiredep = require('wiredep');
 
 const firstCharTouppercase = string => string.replace(/^./, string[0].toUpperCase())
 
+const ngVersion = '1.5.8';
+const ngXosLibVersion = `1.1.0`;
+
 const bowerDeps = [
-  'angular',
+  `"angular": "${ngVersion}"`,
   'angular-ui-router',
-  'angular-resource',
-  'angular-cookies',
-  'angular-animate',
+  `"angular-resource": "${ngVersion}"`,
+  `"angular-cookies": "${ngVersion}"`,
+  `"angular-animate": "${ngVersion}"`,
   'lodash',
   'angular-chart.js',
   'd3',
-  'angular-recursion',
-  'ng-xos-lib'
+  'angular-recursion', // NOTE check if it is still needed
+  `"ng-xos-lib": "opencord/ng-xos-lib#${ngXosLibVersion}"`
 ];
 
 // test values
