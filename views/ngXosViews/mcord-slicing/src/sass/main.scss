@@ -36,7 +36,7 @@ slicing-topo {
   }
 
   .node.button {
-    //stroke-dasharray: 5;
+    stroke-dasharray: 5;
     stroke: $brand-info;
     fill: lighten($brand-info, 30)
   }
@@ -44,6 +44,17 @@ slicing-topo {
   .node.selected{
     stroke-width: 5px;
     stroke-dasharray: 5;
+  }
+
+  /* Icons */
+  .node ~ .icon {
+    stroke: $brand-primary;
+    fill: $brand-primary;
+  }
+
+  .node.control ~ .icon {
+    stroke: $brand-danger;
+    fill: $brand-danger;
   }
 
   .link {
@@ -62,7 +73,7 @@ slicing-topo {
     stroke-dasharray: 5;
   }
 
-  // drag line
+  /*drag line*/
   .dragline {
     stroke-dasharray: 5;
     stroke: darken($brand-primary, 10);
@@ -73,7 +84,7 @@ slicing-topo {
     stroke-width: 0;
   }
 
-  // form styling
+  /*form styling*/
   div.element-form {
     position: absolute;
     border: 1px solid $brand-info;

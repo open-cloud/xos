@@ -7,63 +7,62 @@ slicing-topo {
 slicing-topo {
   display: block; }
 
-#xosMcord-slicing .node {
-  stroke: #337ab7;
-  fill: white; }
-
-#xosMcord-slicing .node,
-#xosMcord-slicing .node + text {
-  cursor: pointer; }
-
-#xosMcord-slicing text {
-  pointer-events: none;
-  -webkit-user-select: none;
-  /* Chrome all / Safari all */
-  -moz-user-select: none;
-  /* Firefox all */
-  -ms-user-select: none;
-  /* IE 10+ */
-  user-select: none; }
-
-#xosMcord-slicing .node.control {
-  stroke-dasharray: 5;
-  stroke: #d9534f; }
-
-#xosMcord-slicing .node.button {
-  stroke: #5bc0de;
-  fill: #daf1f8; }
-
-#xosMcord-slicing .node.selected {
-  stroke-width: 5px;
-  stroke-dasharray: 5; }
-
-#xosMcord-slicing .link {
-  stroke: #286090;
-  stroke-width: 2px;
-  cursor: pointer; }
-
-#xosMcord-slicing .link.control {
-  stroke-dasharray: 5;
-  stroke: #d9534f; }
-
-#xosMcord-slicing .link.selected {
-  stroke-width: 5px;
-  stroke-dasharray: 5; }
-
-#xosMcord-slicing .dragline {
-  stroke-dasharray: 5;
-  stroke: #286090;
-  stroke-width: 2px; }
-
-#xosMcord-slicing .dragline.hidden {
-  stroke-width: 0; }
-
-#xosMcord-slicing div.element-form {
-  position: absolute;
-  border: 1px solid #5bc0de;
-  padding: 10px;
-  background: #fff; }
-
-#xosMcord-slicing .form-line {
-  stroke: #31b0d5;
-  stroke-width: 1px; }
+#xosMcord-slicing {
+  /* Icons */
+  /*drag line*/
+  /*form styling*/ }
+  #xosMcord-slicing .node {
+    stroke: #337ab7;
+    fill: white; }
+  #xosMcord-slicing .node,
+  #xosMcord-slicing .node + text {
+    cursor: pointer; }
+  #xosMcord-slicing text {
+    pointer-events: none;
+    -webkit-user-select: none;
+    /* Chrome all / Safari all */
+    -moz-user-select: none;
+    /* Firefox all */
+    -ms-user-select: none;
+    /* IE 10+ */
+    user-select: none; }
+  #xosMcord-slicing .node.control {
+    stroke-dasharray: 5;
+    stroke: #d9534f; }
+  #xosMcord-slicing .node.button {
+    stroke-dasharray: 5;
+    stroke: #5bc0de;
+    fill: #daf1f8; }
+  #xosMcord-slicing .node.selected {
+    stroke-width: 5px;
+    stroke-dasharray: 5; }
+  #xosMcord-slicing .node ~ .icon {
+    stroke: #337ab7;
+    fill: #337ab7; }
+  #xosMcord-slicing .node.control ~ .icon {
+    stroke: #d9534f;
+    fill: #d9534f; }
+  #xosMcord-slicing .link {
+    stroke: #286090;
+    stroke-width: 2px;
+    cursor: pointer; }
+  #xosMcord-slicing .link.control {
+    stroke-dasharray: 5;
+    stroke: #d9534f; }
+  #xosMcord-slicing .link.selected {
+    stroke-width: 5px;
+    stroke-dasharray: 5; }
+  #xosMcord-slicing .dragline {
+    stroke-dasharray: 5;
+    stroke: #286090;
+    stroke-width: 2px; }
+  #xosMcord-slicing .dragline.hidden {
+    stroke-width: 0; }
+  #xosMcord-slicing div.element-form {
+    position: absolute;
+    border: 1px solid #5bc0de;
+    padding: 10px;
+    background: #fff; }
+  #xosMcord-slicing .form-line {
+    stroke: #31b0d5;
+    stroke-width: 1px; }

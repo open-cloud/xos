@@ -9,7 +9,7 @@
       bindToController: true,
       controllerAs: 'vm',
       templateUrl: 'templates/slicing-topo.tpl.html',
-      controller: function($element, SliceGraph, McordSlicingTopo, _, NodePositioner, FormHandler){
+      controller: function($element, SliceGraph, McordSlicingTopo, _, NodePositioner, FormHandler, mCordSlicingIcons){
 
         let svg;
         let nodes, links;
@@ -77,6 +77,15 @@
         };
 
         const tick = () => {
+
+          // svg.selectAll('.node')
+          // .attr({
+          //   y: (n) => {
+          //     console.log(n.y);
+          //     return n.y;
+          //   }
+          // });
+
           svg.selectAll('.link')
             .attr('x1', d => d.source.x)
             .attr('y1', d => d.source.y)
@@ -372,14 +381,71 @@
 
           nodes.append('text')
             .attr({
-              'text-anchor': 'middle',
-              'alignment-baseline': 'middle'
+              'text-anchor': 'left',
+              'alignment-baseline': 'middle',
+              x: -20
             })
-            // .text(d => `${d.id} ${d.name}`);
             .text(d => `${d.name}`);
 
           nodes.on('click', (n) => {
             expandNode(n);
+          });
+
+          // draw icons
+          const ues = nodes.filter(n => n.type === 'ue');
+          ues.append('path')
+          .attr({
+            d: mCordSlicingIcons.mobile,
+            class: 'icon',
+            transform: `translate(-40, -12.5), scale(0.5)`
+          });
+
+          const profiles = nodes.filter(n => n.type === 'profile');
+          profiles.append('path')
+          .attr({
+            d: mCordSlicingIcons.profile,
+            class: 'icon',
+            transform: `translate(-40, -12.5), scale(0.5)`
+          });
+
+          const rru = nodes.filter(n => n.type === 'ran-ru');
+          rru.append('path')
+          .attr({
+            d: mCordSlicingIcons.rru,
+            class: 'icon',
+            transform: `translate(-40, -12.5), scale(0.5)`
+          });
+
+          const rcu = nodes.filter(n => n.type === 'ran-cu');
+          rcu.append('path')
+          .attr({
+            d: mCordSlicingIcons.rcu,
+            class: 'icon',
+            transform: `translate(-40, -12.5), scale(0.5)`
+          });
+
+          const sgw = nodes.filter(n => n.type === 'sgw');
+          sgw.append('path')
+          .attr({
+            d: mCordSlicingIcons.sgw,
+            class: 'icon',
+            transform: `translate(-40, -12.5), scale(0.5)`
+          });
+
+          const pgw = nodes.filter(n => n.type === 'pgw');
+          pgw.append('path')
+          .attr({
+            d: mCordSlicingIcons.pgw,
+            class: 'icon',
+            transform: `translate(-40, -12.5), scale(0.5)`
+          });
+
+          const mme = nodes.filter(n => n.type === 'mme');
+          mme.append('path')
+          .attr({
+            d: mCordSlicingIcons.mme,
+            class: 'icon',
+            transform: `translate(-40, -12.5), scale(0.5)`
           });
 
           nodes

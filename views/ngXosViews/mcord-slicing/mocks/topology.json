@@ -20,7 +20,7 @@
         {"id": 210, "name": "profile-1", "type": "profile", "model_id": 1, "plane": "data", "model": {"start": "2016-01-01T08:00:00.000Z", "end": "2016-12-01T08:00:00.000Z"}},
         {"id": 220, "name": "profile-2", "type": "profile", "model_id": 1, "plane": "data", "model": {"start": "2016-01-01T08:00:00.000Z", "end": "2016-12-01T08:00:00.000Z"}},
 
-        {"id": 211, "name": "ue-1", "type": "ue", "model_id": 1, "plane": "data", "model": {"id": 123}},
+        {"id": 211, "name": "Michelle", "type": "ue", "model_id": 1, "plane": "data", "model": {"id": 123}},
         {"id": 212, "name": "ue-2", "type": "ue", "model_id": 1, "plane": "data", "model": {"id": 456}},
         {"id": 221, "name": "ue-3", "type": "ue", "model_id": 1, "plane": "data", "model": {"id": 789}},
 
