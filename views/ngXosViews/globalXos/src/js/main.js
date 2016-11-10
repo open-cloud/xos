@@ -29,7 +29,7 @@ angular.module('xos.globalXos', [
     controller: function($window, $q, _, Controllers, LXOS, LocalAuth, LocalSlices, LocalUsers, $uibModal, Slices){
       const self = this;
       $q.all([
-        Controllers.query({backend_type: 'XOS'}).$promise,
+        Controllers.query({backend_type: 'CORD'}).$promise,
         Slices.query().$promise // NOTE why this is queryFromAll??
       ])
       .then(res => {
