@@ -94,14 +94,57 @@
       });
 
       return d.promise;
+    };
+
+    this.getUserByName = (xos, username) => {
+      const d = $q.defer();
+      console.log(username);
+      $http.get(`${xos.auth_url}api/core/users/`, {
+        params: {
+          username: username
+        },
+        headers: {
+          Authorization: `Basic ${btoa(xos.admin_user + ':' + xos.admin_password)}`
+        }
+      })
+      .then((res) => {
+        d.resolve(res.data[0]);
+      })
+      .catch(e => {
+        d.reject(e);
+      });
+
+      return d.promise;
     }
   })
-  .service('LocalSlices', function(GXOS){
+  .service('LocalSlices', function($q, $http, GXOS){
     const baseUrl = `api/utility/slicesplus/`;
 
     // TODO build a global resource
     this.queryFromAll = (targets) => {
       return GXOS.buildQueryEndpoint(baseUrl, targets)();
+    };
+
+    this.getLocalByName = (xos, sliceName) => {
+      const d = $q.defer();
+
+      $http.get(`${xos.auth_url}${baseUrl}`, {
+        // params: params,
+        headers: {
+          Authorization: `Basic ${btoa(xos.admin_user + ':' + xos.admin_password)}`
+        }
+      })
+      .then((res) => {
+        const slice = _.filter(res.data, (s) => {
+          return s.name.indexOf(sliceName) > -1;
+        });
+        d.resolve(slice[0]);
+      })
+      .catch(e => {
+        d.reject(e);
+      });
+
+      return d.promise;
     };
   })
   .service('LocalUsers', function(GXOS){
@@ -143,6 +186,24 @@
         params: params,
         headers: {
           Authorization: `Basic ${btoa(xos.admin_user + ':' + xos.admin_password)}`
+        }
+      })
+        .then((inst) => {
+          d.resolve(inst.data);
+        })
+        .catch(e => {
+          d.reject(e);
+        });
+
+      return d.promise;
+    };
+
+    this.deleteFromLocal = (instance) => {
+      console.log('deleteFromLocal');
+      const d = $q.defer();
+      $http.delete(`${instance.xos.auth_url}${baseUrl}${instance.id}/`, {
+        headers: {
+          Authorization: `Basic ${btoa(instance.xos.admin_user + ':' + instance.xos.admin_password)}`
         }
       })
         .then((inst) => {
