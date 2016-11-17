@@ -57,6 +57,10 @@ node_types:
                 type: string
                 required: false
                 description: Database container name
+            redis_container_name:
+                type: string
+                required: false
+                description: redis container name
             source_ui_image:
                 type: string
                 required: false

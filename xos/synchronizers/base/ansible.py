@@ -15,7 +15,7 @@ from xos.logger import observer_logger
 step_dir = Config().observer_steps_dir
 sys_dir = Config().observer_sys_dir
 
-os_template_loader = jinja2.FileSystemLoader( searchpath=step_dir)
+os_template_loader = jinja2.FileSystemLoader( searchpath=[step_dir, "/opt/xos/synchronizers/shared_templates"])
 os_template_env = jinja2.Environment(loader=os_template_loader)
 
 def parse_output(msg):

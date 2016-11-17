@@ -1,0 +1,24 @@
+---
+- hosts: {{ instance_name }}
+  #gather_facts: False
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+  vars:
+      target_subnet : {{ target_subnet }}
+      src_intf_ip : {{ src_intf_ip }}
+
+
+  tasks:
+  - name: Find the interface that has specified src ip
+    shell: ifconfig | grep -B1 {{ src_intf_ip }} | head -n1 | awk '{print $1}'
+    register: src_intf
+
+  - name: debug
+    debug: var=src_intf.stdout
+
+  - name: set up the network
+    shell: "{{ '{{' }} item {{ '}}' }}"
+    with_items:
+       - sudo ip route add {{ target_subnet }} dev {{ '{{' }} src_intf.stdout {{ '}}' }}
+

@@ -1090,7 +1090,7 @@ class LibraryAdmin(XOSBaseAdmin):
 class XosModelAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name",)
     list_display_links = ('backend_status_icon', 'name',)
-    fieldList = ["name", "ui_port", "bootstrap_ui_port", "docker_project_name", "db_container_name", "enable_build", "frontend_only",
+    fieldList = ["name", "ui_port", "bootstrap_ui_port", "docker_project_name", "db_container_name", "redis_container_name", "enable_build", "frontend_only",
                  "source_ui_image", "extra_hosts", "no_start"]
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]

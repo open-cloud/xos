@@ -408,6 +408,20 @@ class Service(PlCoreBase, AttributeMixin):
     def get_vtn_src_names(self):
         return [x["name"] + "_" + x["net_id"] for x in self.get_vtn_src_nets()]
 
+    def get_composable_networks(self):
+	SUPPORTED_VTN_SERVCOMP_KINDS = ['VSG','PRIVATE']
+
+        nets = []
+        for slice in self.slices.all():
+            for net in slice.networks.all():
+                if (net.template.vtn_kind not in SUPPORTED_VTN_SERVCOMP_KINDS) or (net.owner != slice):
+                    continue
+
+                if not net.controllernetworks.exists():
+                    continue
+                nets.append(net)
+        return nets
+
 
 class ServiceAttribute(PlCoreBase):
     name = models.CharField(help_text="Attribute Name", max_length=128)

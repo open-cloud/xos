@@ -96,10 +96,11 @@ class XOSObserver:
 	sync_steps = []
 
 
-	def __init__(self):
+	def __init__(self,sync_steps):
 		# The Condition object that gets signalled by Feefie events
 		self.step_lookup = {}
-		self.load_sync_step_modules()
+		#self.load_sync_step_modules()
+                self.sync_steps = sync_steps
 		self.load_sync_steps()
 		self.event_cond = threading.Condition()
 

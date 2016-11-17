@@ -8,7 +8,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
-from core.models import Service, Slice, ControllerSlice, ControllerUser
+from core.models import Service, Slice, ControllerSlice, ControllerUser, ModelLink, CoarseTenant, Tenant
 from xos.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
@@ -261,3 +261,84 @@ class SyncInstanceUsingAnsible(SyncStep):
                 self.map_delete_outputs(o,res)
         except AttributeError:
                 pass
+
+    #In order to enable the XOS watcher functionality for a synchronizer, define the 'watches' attribute 
+    #in the derived class: eg. watches = [ModelLink(CoarseTenant,via='coarsetenant')]
+    #This base class implements the notification handler for handling CoarseTenant model notifications
+    #If a synchronizer need to watch on multiple objects, the additional handlers need to be implemented
+    #in the derived class and override the below handle_watched_object() method to route the notifications
+    #accordingly
+    def handle_watched_object(self, o):
+        logger.info("handle_watched_object is invoked for object %s" % (str(o)),extra=o.tologdict())
+        if (type(o) is CoarseTenant):
+           self.handle_service_composition_watch_notification(o)
+        pass
+
+    def handle_service_composition_watch_notification(self, coarse_tenant):
+        cls_obj = self.observes
+        if (type(cls_obj) is list):
+            cls_obj = cls_obj[0]
+        logger.info("handle_watched_object observed model %s" % (cls_obj))
+
+        objs = cls_obj.objects.filter(kind=cls_obj.KIND).all()
+
+        for obj in objs:
+            self.handle_service_composition_for_object(obj, coarse_tenant)
+        pass
+
+    def handle_service_composition_for_object(self, obj, coarse_tenant):
+        try:
+           instance = self.get_instance(obj)
+           valid_instance = True
+        except:
+           valid_instance = False
+
+        if not valid_instance:
+           logger.warn("handle_watched_object: No valid instance found for object %s" % (str(obj)))
+           return
+
+        provider_service = coarse_tenant.provider_service
+        subscriber_service = coarse_tenant.subscriber_service
+
+        if isinstance(obj,Service):
+            if obj.id == provider_service.id:
+                matched_service = provider_service
+                other_service = subscriber_service
+            elif obj.id == subscriber_service.id:
+                matched_service = subscriber_service
+                other_service = provider_service
+            else:
+                logger.info("handle_watched_object: Service object %s does not match with any of composed services" % (str(obj)))
+                return
+        elif isinstance(obj,Tenant):
+            if obj.provider_service.id == provider_service.id:
+                matched_service = provider_service
+                other_service = subscriber_service
+            elif obj.provider_service.id == subscriber_service.id:
+                matched_service = subscriber_service
+                other_service = provider_service
+            else:
+                logger.info("handle_watched_object: Tenant object %s does not match with any of composed services" % (str(obj)))
+                return
+        else:
+           logger.warn("handle_watched_object: Model object %s is of neither Service nor Tenant type" % (str(obj)))
+
+        src_networks = matched_service.get_composable_networks()
+        target_networks = other_service.get_composable_networks()
+        if src_networks and target_networks:
+            src_network = src_networks[0] #Only one composable network should present per service
+            target_network = target_networks[0]
+            src_ip = instance.get_network_ip(src_network.name)
+            target_subnet = target_network.controllernetworks.all()[0].subnet
+  
+            #TODO: Run ansible playbook to update the routing table entries in the instance
+            fields = self.get_ansible_fields(instance)
+            fields["ansible_tag"] =  obj.__class__.__name__ + "_" + str(obj.id) + "_service_composition"
+            fields["src_intf_ip"] = src_ip
+            fields["target_subnet"] = target_subnet
+            #Template file is available under .../synchronizers/shared_templates
+            service_composition_template_name = "sync_service_composition.yaml"
+            logger.info("handle_watched_object: Updating routing tables in the instance associated with object %s: target_subnet:%s src_ip:%s" % (str(obj), target_subnet, src_ip))
+            SyncInstanceUsingAnsible.run_playbook(self, obj, fields, service_composition_template_name)
+        else:
+           logger.info("handle_watched_object: No intersection of composable networks between composed services %s" % (str(coarse_tenant)))

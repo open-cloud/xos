@@ -323,12 +323,18 @@ class XOSBuilder(object):
 #                            {"image": "xosproject/xos-postgres",
 #                             "expose": [5432]}
 
+         external_links=[]
+         if xos.db_container_name:
+             external_links.append("%s:%s" % (xos.db_container_name, "xos_db"))
+         if xos.redis_container_name:
+             external_links.append("%s:%s" % (xos.redis_container_name, "redis"))
+
          containers["xos_ui"] = \
                             {"image": "xosproject/xos-ui",
                              "command": "python /opt/xos/manage.py runserver 0.0.0.0:%d --insecure --makemigrations" % xos.ui_port,
                              "ports": {"%d"%xos.ui_port : "%d"%xos.ui_port},
                              #"links": ["xos_db"],
-                             "external_links": ["%s:%s" % (xos.db_container_name, "xos_db")],
+                             "external_links": external_links,
                              "extra_hosts": extra_hosts,
                              "volumes": volume_list}
 
@@ -357,7 +363,7 @@ class XOSBuilder(object):
                      containers["xos_synchronizer_%s" % c.name] = \
                                     {"image": "xosproject/xos-synchronizer-%s" % c.name,
                                      "command": command,
-                                     "external_links": ["%s:%s" % (xos.db_container_name, "xos_db")],
+                                     "external_links": external_links,
                                      "extra_hosts": extra_hosts,
                                      "volumes": volume_list}
 
