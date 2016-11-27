@@ -144,6 +144,10 @@ body{
 }
 /* ************************* END SIDENAV TOGGLE ************************* */
 
+[ui-view] {
+    margin-bottom: 100px;
+}
+
 /************************* FORM TWEAKS *************************/
 @media (min-width: $screen-md){
     .form-column.col-lg-4 {
