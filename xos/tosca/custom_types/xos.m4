@@ -478,6 +478,9 @@ node_types:
             vtnAPIVersion:
                 type: string
                 required: false
+            controllerPort:
+                type: string
+                required: false
 
 
     tosca.nodes.CDNService:
