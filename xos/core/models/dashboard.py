@@ -11,7 +11,7 @@ class DashboardView(PlCoreBase):
     enabled = models.BooleanField(default=True)
     icon = models.CharField(max_length=200, default="default-icon.png", help_text="Icon for Dashboard")
     icon_active = models.CharField(max_length=200, default="default-icon-active.png", help_text="Icon for active Dashboard")
-    deployments = models.ManyToManyField(Deployment, blank=True, null=True, related_name="dashboardviews", help_text="Deployments that should be included in this view")
+    deployments = models.ManyToManyField(Deployment, blank=True, related_name="dashboardviews", help_text="Deployments that should be included in this view")
 
 
     def __unicode__(self):  return u'%s' % (self.name)
