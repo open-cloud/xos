@@ -292,6 +292,10 @@ class PlCoreBase(models.Model, PlModelMixIn):
             except:
                 changed_fields.append('__lookup_error')
 
+        
+
+        super(PlCoreBase, self).save(*args, **kwargs)
+
         try:
             r = redis.Redis("redis")
             payload = json.dumps({'pk':self.pk,'changed_fields':changed_fields})
@@ -299,8 +303,6 @@ class PlCoreBase(models.Model, PlModelMixIn):
         except ConnectionError:
             # Redis not running.
             pass
-
-        super(PlCoreBase, self).save(*args, **kwargs)
 
         # This is a no-op if observer_disabled is set
         # if not silent:
