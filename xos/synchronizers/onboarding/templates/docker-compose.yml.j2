@@ -1,54 +1,72 @@
-{% for container_name, container in containers.iteritems() %}
+version: '2'
 
-{{ container_name}}:
+{% if networks %}
+networks:
+{% for network in networks %}
+  {{ network }}:
+    external: true
+{% endfor %}
+{% endif %}
+
+services:
+{% for container_name, container in containers.iteritems() %}
+  {{ container_name }}:
 #  container_name: {{ container.container_base_name }}_{{ container_name }}_1
-  image: {{ container.image }}
+    image: {{ container.image }}
+{%- if container.networks %}
+    networks:
+{%- for network in container.networks %}
+      - {{ network }}
+{%- endfor %}
+{%- endif %}
 {%- if container.command %}
-  command: {{ container.command }}
+    command: {{ container.command }}
 {%- endif %}
 {%- if container.ports %}
-  ports:
+    ports:
 {%- for src,dest in container.ports.iteritems() %}
-    - "{{ src }}:{{ dest }}"
+      - "{{ src }}:{{ dest }}"
 {%- endfor %}
 {%- endif %}
 {%- if container.links %}
-  links:
+    links:
 {%- for link in container.links %}
-    - {{ link }}
+      - {{ link }}
 {%- endfor %}
 {%- endif %}
 {%- if container.external_links %}
-  external_links:
+    external_links:
 {%- for link in container.external_links %}
-    - {{ link }}
+      - {{ link }}
 {%- endfor %}
 {%- endif %}
 {%- if container.volumes %}
-  volumes:
+    volumes:
 {%- for volume in container.volumes %}
 {%- if volume.read_only %}
-    - {{ volume.host_path }}:{{ volume.container_path }}:ro
+      - {{ volume.host_path }}:{{ volume.container_path }}:ro
 {%- else %}
-    - {{ volume.host_path }}:{{ volume.container_path }}
+      - {{ volume.host_path }}:{{ volume.container_path }}
 {%- endif %}
 {%- endfor %}
 {%- endif %}
 {%- if container.expose %}
-  expose:
+    expose:
 {%- for expose in container.expose %}
-    - "{{ expose }}"
+      - "{{ expose }}"
 {%- endfor %}
 {%- endif %}
 {%- if container.extra_hosts %}
-  extra_hosts:
+    extra_hosts:
 {%- for host in container.extra_hosts %}
-    - "{{ host }}"
+      - "{{ host }}"
 {%- endfor %}
 {%- endif %}
-  log_driver: "json-file"
-  log_opt:
-    max-size: "100k"
-    max-file: "5"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1000k"
+        max-file: "5"
 
 {%- endfor %}
+

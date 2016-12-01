@@ -1,15 +1,14 @@
 ---
-- hosts: 127.0.0.1
-  connection: local
+- hosts: localhost
 
   vars:
     dockerfiles:
     {% for dockerfile in dockerfiles %}
       - docker_image_name: {{ dockerfile.docker_image_name }}
         dockerfile_fn: {{ dockerfile.dockerfile_fn }}
-    {% endfor %}  
+    {% endfor %}
 
-  tasks: 
+  tasks:
     {% for dockerfile in dockerfiles %}
     - name: build_docker_{{ dockerfile.docker_image_name }}
       shell: chdir={{ build_dir }} docker build -f {{ dockerfile.dockerfile_fn }} --rm -t {{ dockerfile.docker_image_name }} .

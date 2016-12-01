@@ -14,17 +14,13 @@ RUN update-ca-certificates
 ADD xos /opt/xos
 
 RUN chmod +x /opt/xos/tools/xos-manage \
+ && mkdir -p /opt/cord_profile /opt/xos_services /opt/xos_libraries \
  && sync \
  && /opt/xos/tools/xos-manage genkeys
-
-EXPOSE 8000
 
 # Set environment variables
 ENV HOME /root
 
 # Define working directory
 WORKDIR /opt/xos
-
-# Define default command
-CMD python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
 

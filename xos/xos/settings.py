@@ -7,27 +7,7 @@ from urlparse import urlparse
 
 # Django settings for XOS.
 from config import Config
-from config import set_override
 config = Config()
-
-
-# Override the config from the environment. This is used leverage the LINK
-# capability of docker. It would be far better to use DNS and that can be
-# done in environments like kubernetes. Look for environment variables that
-# match the link pattern and set the appropriate overeides. It is expected
-# that the set of overrides will be expanded with need
-def overrideDbSettings(v):
-    parsed = urlparse(v)
-    config.db_host = parsed.hostname
-    config.db_port = parsed.port
-
-env_to_config_dict = {
-    "XOS_DB_PORT": overrideDbSettings
-}
-
-for key, ofunc in env_to_config_dict.items():
-    if key in os.environ:
-        ofunc(os.environ[key])
 
 GEOIP_PATH = "/usr/share/GeoIP"
 XOS_DIR = "/opt/xos"
@@ -60,7 +40,6 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = 'core.User'
-
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts

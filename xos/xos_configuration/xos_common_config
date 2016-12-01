@@ -6,7 +6,7 @@ deployment=plc
 name=xos
 user=postgres
 password=password
-host=localhost
+host=xos_db
 port=5432
 
 [api]
@@ -43,3 +43,4 @@ disable_minidashboard=True
 branding_name=Open Cloud
 branding_icon=/static/logo.png
 branding_favicon=/static/favicon.png
+

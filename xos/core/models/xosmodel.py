@@ -10,12 +10,10 @@ from core.models.plcorebase import StrippedCharField
 class XOS(PlCoreBase):
     name = StrippedCharField(max_length=200, unique=True, help_text="Name of XOS", default="XOS")
     ui_port = models.IntegerField(help_text="Port for XOS UI", default=80)
-    bootstrap_ui_port = models.IntegerField(help_text="Port for XOS UI", default=81)
+    bootstrap_ui_port = models.IntegerField(help_text="Port for XOS Bootstrap UI", default=81)
     db_container_name = StrippedCharField(max_length=200, help_text="name of XOS db container", default="xos_db")
-    redis_container_name = StrippedCharField(max_length=200, help_text="name of XOS redis container", default="xos_redis")
+    redis_container_name = StrippedCharField(max_length=200, help_text="name of XOS redis container", blank=True, default="")
     docker_project_name = StrippedCharField(max_length=200, help_text="docker project name")
-    #FIXME: duplicate, delete?
-    db_container_name = StrippedCharField(max_length=200, help_text="database container name")
     enable_build = models.BooleanField(help_text="True if Onboarding Synchronizer should build XOS as necessary", default=True)
     frontend_only = models.BooleanField(help_text="If True, XOS will not start synchronizer containers", default=False)
     source_ui_image = StrippedCharField(max_length=200, default="xosproject/xos")

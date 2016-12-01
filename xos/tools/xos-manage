@@ -80,6 +80,7 @@ function dropdb {
 function syncdb {
     echo "Syncing XOS services..."
     python $XOS_DIR/manage.py syncdb --noinput
+    python $XOS_DIR/manage.py migrate
     if [[ $DJANGO_17 ]]; then
         echo "Loading initial data from fixture..."
         python $XOS_DIR/manage.py --noobserver loaddata $XOS_DIR/core/fixtures/core_initial_data.json
@@ -140,7 +141,6 @@ function makemigrations {
     rm -rf /opt/xos/*/migrations /opt/xos/services/*/migrations
     python ./manage.py makemigrations core
     python ./manage.py makemigrations syndicate_storage
-    python ./manage.py makemigrations mcord
 
     if [[ -e /opt/xos/xos/xosbuilder_migration_list ]]; then
         cat /opt/xos/xos/xosbuilder_migration_list | while read line; do
