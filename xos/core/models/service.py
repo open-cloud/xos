@@ -193,6 +193,36 @@ class Library(LoadableModule):
     # for now, it's exactly like a LoadableModule
     pass
 
+
+class XOSComponent(LoadableModule):
+    # this will define loadable XOS component in the form of containers
+    image = StrippedCharField(max_length=200, help_text="docker image name")
+    command = StrippedCharField(max_length=1024, help_text="docker run command", null=True, blank=True)
+    ports = StrippedCharField(max_length=200, help_text="port binding", null=True, blank=True)
+
+
+class XOSComponentLink(PlCoreBase):
+
+    LINK_KIND = (
+        ('internal', 'Internal'),
+        ('external', 'External')
+    )
+
+    component = models.ForeignKey(XOSComponent, related_name='links', help_text="The Component object for this Link")
+    container = StrippedCharField(max_length=200, help_text="container to link")
+    alias = StrippedCharField(max_length=200, help_text="alias for the link")
+    kind = models.CharField(max_length=20, choices=LINK_KIND, default='internal')
+
+
+# NOTE can this be the same of XOSVolume??
+class XOSComponentVolume(PlCoreBase):
+    component = models.ForeignKey(XOSComponent, related_name='volumes', help_text="The Component object for this Volume")
+    name = StrippedCharField(max_length=30, help_text="Volume Name")
+    container_path = StrippedCharField(max_length=1024, unique=True, help_text="Path of Volume in Container")
+    host_path = StrippedCharField(max_length=1024, help_text="Path of Volume in Host")
+    read_only = models.BooleanField(default=False, help_text="True if mount read-only")
+
+
 class ServiceController(LoadableModule):
     synchronizer_run = StrippedCharField(max_length=1024, help_text="synchronizer run command", null=True, blank=True)
     synchronizer_config = StrippedCharField(max_length=1024, help_text="synchronizer config file", null=True, blank=True)

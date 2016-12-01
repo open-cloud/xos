@@ -48,7 +48,6 @@ node_types:
                 required: false
                 description: List of extra_hosts to pass to docker compose
 
-
     tosca.nodes.XOSVolume:
         derived_from: tosca.nodes.Root
         description: A volume that should be attached to the XOS docker container
@@ -238,6 +237,73 @@ node_types:
                 type: string
                 required: false
                 description: third-party javascript files
+
+    tosca.nodes.Component:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Component in the form of a docker container.
+        properties:
+            xos_base_props
+            name:
+                type: string
+                required: true
+                description: the container name
+            image:
+                type: string
+                required: true
+                description: the base image for the container
+            command:
+                type: string
+                required: false
+                description: the command to execute in the container
+            ports:
+                type: string
+                required: false
+                description: ports that need to be exposed
+
+    tosca.nodes.ComponentLink:
+        derived_from: tosca.nodes.Root
+        description: >
+            Links between XOS components.
+        properties:
+            xos_base_props
+            container:
+                type: string
+                required: true
+                description: the container that needs to be linked
+            alias:
+                type: string
+                required: true
+                description: alias for the link
+            kind:
+                type: string
+                required: true
+                description: internal or external link
+                constraints:
+                    - valid_values: [ 'internal', 'external' ]
+
+    tosca.nodes.ComponentVolume:
+        derived_from: tosca.nodes.Root
+        description: >
+            Volumes of the XOS components.
+        properties:
+            xos_base_props
+            host_path:
+                type: string
+                required: false
+                description: path of resource on host
+            read_only:
+                type: boolean
+                required: false
+                description: True if mount read only
+
+    tosca.relationships.LinkOfComponent:
+            derived_from: tosca.relationships.Root
+            valid_target_types: [ tosca.capabilities.xos.ComponentLink ]
+
+    tosca.relationships.VolumeOfComponent:
+            derived_from: tosca.relationships.Root
+            valid_target_types: [ tosca.capabilities.xos.ComponentVolume ]
 
     tosca.nodes.Tenant:
         derived_from: tosca.nodes.Root
