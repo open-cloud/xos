@@ -1030,6 +1030,14 @@ class ServiceAttrAsTabInline(XOSTabularInline):
     extra = 0
     suit_classes = 'suit-tab suit-tab-serviceattrs'
 
+class ServiceMonitoringAgentInfoInline(XOSTabularInline):
+    model = ServiceMonitoringAgentInfo
+    fields = ['id', 'name', 'target_uri']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-servicemonitoringagents'
+    verbose_name = 'Monitoring agent info for this service'
+    verbose_name_plural = 'Monitoring agent info for this service'
+
 
 class ServiceAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", "kind", "enabled", "published")
@@ -1039,7 +1047,7 @@ class ServiceAdmin(XOSBaseAdmin):
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
     inlines = [ServiceAttrAsTabInline, SliceInline, ProviderTenantInline,
-               SubscriberTenantInline, ServicePrivilegeInline]
+               SubscriberTenantInline, ServicePrivilegeInline, ServiceMonitoringAgentInfoInline]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = fieldList
@@ -1048,7 +1056,8 @@ class ServiceAdmin(XOSBaseAdmin):
                       ('slices', 'Slices'),
                       ('serviceattrs', 'Additional Attributes'),
                       ('servicetenants', 'Tenancy'),
-                      ('serviceprivileges', 'Privileges')
+                      ('serviceprivileges', 'Privileges'),
+                      ('servicemonitoringagents', 'Monitoring Agents')
                       )
 
 class LoadableModuleResourceInline(XOSTabularInline):

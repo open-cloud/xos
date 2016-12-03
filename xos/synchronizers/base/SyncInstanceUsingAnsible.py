@@ -8,7 +8,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
-from core.models import Service, Slice, ControllerSlice, ControllerUser, ModelLink, CoarseTenant, Tenant
+from core.models import Service, Slice, ControllerSlice, ControllerUser, ModelLink, CoarseTenant, Tenant, ServiceMonitoringAgentInfo
 from xos.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
@@ -272,6 +272,8 @@ class SyncInstanceUsingAnsible(SyncStep):
         logger.info("handle_watched_object is invoked for object %s" % (str(o)),extra=o.tologdict())
         if (type(o) is CoarseTenant):
            self.handle_service_composition_watch_notification(o)
+        elif (type(o) is ServiceMonitoringAgentInfo):
+           self.handle_service_monitoringagentinfo_watch_notification(o)
         pass
 
     def handle_service_composition_watch_notification(self, coarse_tenant):
@@ -284,6 +286,9 @@ class SyncInstanceUsingAnsible(SyncStep):
 
         for obj in objs:
             self.handle_service_composition_for_object(obj, coarse_tenant)
+        pass
+
+    def handle_service_monitoringagentinfo_watch_notification(self, monitoring_agent_info):
         pass
 
     def handle_service_composition_for_object(self, obj, coarse_tenant):
@@ -331,7 +336,7 @@ class SyncInstanceUsingAnsible(SyncStep):
             src_ip = instance.get_network_ip(src_network.name)
             target_subnet = target_network.controllernetworks.all()[0].subnet
   
-            #TODO: Run ansible playbook to update the routing table entries in the instance
+            #Run ansible playbook to update the routing table entries in the instance
             fields = self.get_ansible_fields(instance)
             fields["ansible_tag"] =  obj.__class__.__name__ + "_" + str(obj.id) + "_service_composition"
             fields["src_intf_ip"] = src_ip

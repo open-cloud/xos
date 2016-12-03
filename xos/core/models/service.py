@@ -7,6 +7,7 @@ from distutils.version import LooseVersion
 from core.models import PlCoreBase, PlCoreBaseManager, SingletonModel, XOS
 from core.models.plcorebase import StrippedCharField
 from django.db import models
+from django.core.validators import URLValidator
 from xos.exceptions import *
 import urlparse
 
@@ -500,6 +501,13 @@ class ServicePrivilege(PlCoreBase):
         else:
             qs = cls.objects.filter(user=user)
         return qs
+
+#Model that defines the information needed to enable monitoring agents of a service
+class ServiceMonitoringAgentInfo(PlCoreBase):
+    name = models.CharField(help_text="Monitoring Agent Name", max_length=128)
+    service = models.ForeignKey(Service, related_name='servicemonitoringagents', blank=True, null=True,
+                                help_text="The Service this attribute is associated with")
+    target_uri = models.TextField(validators=[URLValidator()], help_text="Monitoring collector URI to be used by agents to publish the data")
 
 
 class TenantRoot(PlCoreBase, AttributeMixin):

@@ -397,7 +397,7 @@ class XOSBuilder(object):
                     containers["xos_synchronizer_%s" % c.name] = {
                         "image": "xosproject/xos-synchronizer-%s" % c.name,
                         "command": command,
-                        "external_links": ["%s:%s" % (xos.db_container_name, "xos_db")],
+                        "external_links": external_links,
                         "extra_hosts": extra_hosts,
                         "volumes": volume_list
                     }
