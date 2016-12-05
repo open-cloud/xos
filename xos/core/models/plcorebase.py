@@ -263,6 +263,10 @@ class PlCoreBase(models.Model, PlModelMixIn):
         if "silent" in kwargs:
             silent=silent or kwargs.pop("silent")
 
+        always_update_timestamp = False
+        if "always_update_timestamp" in kwargs:
+            always_update_timestamp = always_update_timestamp or kwargs.pop("always_update_timestamp")
+
         # SMBAKER: if an object is trying to delete itself, or if the observer
         # is updating an object's backend_* fields, then let it slip past the
         # composite key check.
@@ -273,7 +277,7 @@ class PlCoreBase(models.Model, PlModelMixIn):
                 if not (field in ["backend_register", "backend_status", "deleted", "enacted", "updated"]):
                     ignore_composite_key_check=False
 
-        if 'synchronizer' not in threading.current_thread().name:
+        if ('synchronizer' not in threading.current_thread().name) or always_update_timestamp:
             self.updated = timezone.now()
 
         # Transmit update via Redis

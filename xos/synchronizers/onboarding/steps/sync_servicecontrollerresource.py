@@ -28,6 +28,11 @@ class SyncServiceControllerResource(SyncStep, XOSBuilder):
         logger.info("Sync'ing ServiceControllerResource %s" % scr)
         self.download_resource(scr)
 
+        if scr.loadable_module and scr.loadable_module.xos:
+            # Make sure the xos UI is resynced
+            xos = scr.loadable_module.xos
+            xos.save(update_fields=["updated"], always_update_timestamp=True)
+
     def delete_record(self, m):
         pass
 

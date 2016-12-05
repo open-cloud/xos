@@ -85,10 +85,11 @@ class LoadableModule(PlCoreBase):
     def save(self, *args, **kwargs):
        super(LoadableModule, self).save(*args, **kwargs)
 
-       if self.xos:
-           # force XOS to rebuild
-           # XXX somewhat hackish XXX
-           self.xos.save(update_fields=["updated"])
+#   XXX handling this in the LoadableModuleResource syncstep instead
+#       if self.xos:
+#           # force XOS to rebuild
+#           # XXX somewhat hackish XXX
+#           self.xos.save(update_fields=["updated"])
 
     def get_provides_list(self):
         prov_list = []
