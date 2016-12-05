@@ -355,13 +355,13 @@ class XOSBuilder(object):
         for c in XOSComponent.objects.all():
 
             # create internal and external links list
-            links = []
-            external_links = []
+            component_links = []
+            component_external_links = []
             for l in c.links.all():
                 if l.kind == 'internal':
-                    links.append("%s:%s" % (l.container, l.alias))
+                    component_links.append("%s:%s" % (l.container, l.alias))
                 elif l.kind == 'external':
-                    external_links.append("%s:%s" % (l.container, l.alias))
+                    component_external_links.append("%s:%s" % (l.container, l.alias))
 
             # creating volumes list
             volume_list = []
@@ -377,8 +377,8 @@ class XOSBuilder(object):
                 "ports": {
                     port[0]: port[1]
                 },
-                "links": links,
-                "external_links": external_links,
+                "links": component_links,
+                "external_links": component_external_links,
                 "volumes": volume_list
             }
 
