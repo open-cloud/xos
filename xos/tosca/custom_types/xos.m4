@@ -47,6 +47,10 @@ node_types:
                 type: string
                 required: false
                 description: List of extra_hosts to pass to docker compose
+            no_start:
+                type: boolean
+                required: false
+                description: Wheter to start the Django server or not
 
     tosca.nodes.XOSVolume:
         derived_from: tosca.nodes.Root
