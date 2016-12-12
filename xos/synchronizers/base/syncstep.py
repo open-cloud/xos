@@ -225,7 +225,9 @@ class SyncStep(object):
                     for f in failed:
                         self.check_dependencies(o,f) # Raises exception if failed
                     if (deletion):
+                        journal_object(o,"syncstep.call.delete_record")
                         self.delete_record(o)
+                        journal_object(o,"syncstep.call.delete_purge")
                         o.delete(purge=True)
                     else:
                         new_enacted = timezone.now()
@@ -234,6 +236,13 @@ class SyncStep(object):
                         except AttributeError:
                             run_always = False
 
+                        # Mark this as an object that will require delete. Do
+                        # this now rather than after the syncstep,
+                        if not (o.backend_need_delete):
+                            o.backend_need_delete = True
+                            o.save(update_fields=['backend_need_delete'])
+
+                        journal_object(o,"syncstep.call.sync_record")
                         self.sync_record(o)
 
 #                         if (not run_always):
@@ -244,6 +253,7 @@ class SyncStep(object):
                         scratchpad = {'next_run':0, 'exponent':0, 'last_success':time.time()}
                         o.backend_register = json.dumps(scratchpad)
                         o.backend_status = "1 - OK"
+                        journal_object(o,"syncstep.call.save_update")
                         o.save(update_fields=['enacted','backend_status','backend_register'])
                 except (InnocuousException,Exception,DeferredException) as e:
                     logger.log_exc("sync step failed!",extra=o.tologdict())

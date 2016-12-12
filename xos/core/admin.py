@@ -21,6 +21,8 @@ from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.html import conditional_escape, format_html
 from django.utils.safestring import mark_safe
 from django.utils.text import capfirst
+from django.utils.translation import ugettext, ugettext_lazy
+from django.contrib.admin.actions import delete_selected
 from suit.widgets import LinkedSelect
 
 # thread locals necessary to work around a django-suit issue
@@ -294,6 +296,40 @@ class XOSAdminMixin(object):
                 inlines.append(inline_class(self.model, self.admin_site))
 
         return inlines
+
+    # see http://stackoverflow.com/questions/1471909/django-model-delete-not-triggered
+    class SafeDeleteQuerysetWrapper(object):
+        def __init__(self, wrapped_queryset):
+            self.wrapped_queryset = wrapped_queryset
+
+        def _safe_delete(self):
+            for obj in list(self.wrapped_queryset):
+                obj.delete()
+
+        def __getattr__(self, attr):
+            if attr == 'delete':
+                return self._safe_delete
+            else:
+                return getattr(self.wrapped_queryset, attr)
+
+        def __iter__(self):
+            for obj in list(self.wrapped_queryset):
+                yield obj
+
+        def __getitem__(self, index):
+            return self.wrapped_queryset[index]
+
+        def __len__(self):
+            return len(self.wrapped_queryset)
+
+    def get_actions(self, request):
+        actions = super(XOSAdminMixin, self).get_actions(request)
+        actions['delete_selected'] = (XOSAdminMixin.action_safe_bulk_delete, 'delete_selected', ugettext_lazy("Delete selected %(verbose_name_plural)s"))
+        return actions
+
+    def action_safe_bulk_delete(self, request, queryset):
+        wrapped_queryset = XOSAdminMixin.SafeDeleteQuerysetWrapper(queryset)
+        return delete_selected(self, request, wrapped_queryset)
 
 
 class ReadOnlyAwareAdmin(XOSAdminMixin, admin.ModelAdmin):

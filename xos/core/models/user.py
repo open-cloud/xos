@@ -141,6 +141,7 @@ class User(AbstractBaseUser, PlModelMixIn):
     policed = models.DateTimeField(null=True, default=None)
     backend_status = StrippedCharField(max_length=1024,
                                        default="Provisioning in progress")
+    backend_need_delete = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
     write_protect = models.BooleanField(default=False)
     lazy_blocked = models.BooleanField(default=False)
