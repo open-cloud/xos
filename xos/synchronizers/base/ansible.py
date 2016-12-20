@@ -27,6 +27,8 @@ def parse_output(msg):
     for l in lines:
         magic_str = 'ok: [127.0.0.1] => '
         magic_str2 = 'changed: [127.0.0.1] => '
+        magic_str3 = 'ok: [localhost] => '
+        magic_str4 = 'changed: [localhost] => '
         if (l.startswith(magic_str)):
             w = len(magic_str)
             str = l[w:]
@@ -39,6 +41,25 @@ def parse_output(msg):
             results.append(d)
         elif (l.startswith(magic_str2)):
             w = len(magic_str2)
+            str = l[w:]
+
+            if str.startswith("(") and (" => {" in str):
+                str = str.split("=> ",1)[1]
+
+            d = json.loads(str)
+            results.append(d)
+        elif (l.startswith(magic_str3)):
+            w = len(magic_str3)
+            str = l[w:]
+
+            # handle ok: [127.0.0.1] => (item=org.onosproject.driver) => {...
+            if str.startswith("(") and (" => {" in str):
+                str = str.split("=> ",1)[1]
+
+            d = json.loads(str)
+            results.append(d)
+        elif (l.startswith(magic_str4)):
+            w = len(magic_str4)
             str = l[w:]
 
             if str.startswith("(") and (" => {" in str):
