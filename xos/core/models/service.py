@@ -85,11 +85,12 @@ class LoadableModule(PlCoreBase):
     def save(self, *args, **kwargs):
        super(LoadableModule, self).save(*args, **kwargs)
 
-#   XXX handling this in the LoadableModuleResource syncstep instead
-#       if self.xos:
-#           # force XOS to rebuild
-#           # XXX somewhat hackish XXX
-#           self.xos.save(update_fields=["updated"])
+       # This is necessary, as the XOS syncstep handles rerunning the docker-
+       # compose.
+       if self.xos:
+           # force XOS to rebuild
+           # XXX somewhat hackish XXX
+           self.xos.save(update_fields=["updated"])
 
     def get_provides_list(self):
         prov_list = []
