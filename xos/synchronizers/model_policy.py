@@ -195,7 +195,7 @@ def run_policy_once():
                 if hasattr(d,"_meta") and hasattr(d._meta,"proxy") and d._meta.proxy:
                     # skip proxy objects; we'll get the base instead
                     continue
-                if getattr(d, "backend_need_delete", False):
+                if (not getattr(d, "backend_need_reap", False)) and getattr(d, "backend_need_delete", False):
                     journal_object(d, "reaper.need_delete")
                     print "Reaper: skipping %r because it has need_delete set" % d
                     continue

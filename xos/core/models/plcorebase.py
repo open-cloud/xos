@@ -219,8 +219,21 @@ class PlCoreBase(models.Model, PlModelMixIn):
     backend_register = models.CharField(max_length=1024,
                                       default="{}", null=True)
 
-    # If True, then the backend wants to delete this object
+    # backend_need_delete and backend_need_reap are used by the synchronizer to
+    # handle deleting and reaping objects.
+    #
+    # backend_need_delete is set by a syncstep when it starts to work on an
+    # object. It indicates that the syncstep will, in the future, want an
+    # opportunity to delete the object. This bit prevents the reaper from
+    # auto-deleting the object.
+    #
+    # backend_need_reap is set when a syncstep has successfully enacted a delete
+    # and is ready for it to be permanently deleted. The reaper will, assuming
+    # the object has no cascades to other objects that need deleting, permanently
+    # delete the object.
+
     backend_need_delete = models.BooleanField(default=False)
+    backend_need_reap = models.BooleanField(default=False)
 
     backend_status = models.CharField(max_length=1024,
                                       default="0 - Provisioning in progress")

@@ -225,10 +225,16 @@ class SyncStep(object):
                     for f in failed:
                         self.check_dependencies(o,f) # Raises exception if failed
                     if (deletion):
-                        journal_object(o,"syncstep.call.delete_record")
-                        self.delete_record(o)
-                        journal_object(o,"syncstep.call.delete_purge")
-                        o.delete(purge=True)
+                        if getattr(o, "backend_need_reap", False):
+                            # the object has already been deleted and marked for reaping
+                            journal_object(o,"syncstep.call.already_marked_reap")
+                        else:
+                            journal_object(o,"syncstep.call.delete_record")
+                            self.delete_record(o)
+                            journal_object(o,"syncstep.call.delete_set_reap")
+                            o.backend_need_reap = True
+                            o.save(update_fields=['backend_need_reap'])
+                            #o.delete(purge=True)
                     else:
                         new_enacted = timezone.now()
                         try:

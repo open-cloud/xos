@@ -232,6 +232,11 @@ class SyncInstanceUsingAnsible(SyncStep):
             pass
 
         instance = self.get_instance(o)
+
+        if not instance:
+            # the instance is gone. There's nothing left for us to do.
+            return
+
         if isinstance(instance, basestring):
             # sync to some external host
 
