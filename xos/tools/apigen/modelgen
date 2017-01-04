@@ -6,7 +6,7 @@ import copy
 import sys
 import json
 import re
-from django.template import Context, Template
+import jinja2
 from optparse import OptionParser
 
 # Django set up
@@ -260,10 +260,13 @@ def main():
 		generator.add_object(m)
 
 	generator.compute_links()
-	template_contents = open(template_name).read()
-	template = Template(template_contents)
-	context = Context({'generator':generator})
-	rendered = template.render(context)
+
+        os_template_loader = jinja2.FileSystemLoader( searchpath=[os.path.split(template_name)[0]])
+        os_template_env = jinja2.Environment(loader=os_template_loader)
+
+        template = os_template_env.get_template(os.path.split(template_name)[1])
+        rendered = template.render({"generator": generator})
+
         lines = rendered.splitlines()
         current_buffer = []
         for l in lines:

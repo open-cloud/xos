@@ -1,5 +1,5 @@
-{% for object in generator.all %}
-{{ object.camel }}:
+{% for object in generator.all() %}
+{{ object.camel() }}:
 fields:
   {% for f in object.fields %}
   - name: {{ f.name }}

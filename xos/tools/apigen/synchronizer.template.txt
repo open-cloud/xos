@@ -1,5 +1,5 @@
-{% for app,files in generator.apps.items %}
-{% for file,models in files.items %}
+{% for app,files in generator.apps.items() %}
+{% for file,models in files.items() %}
 {% for m in models %}
 # This file implements the synchronization of the {{ m.class_name }} model
 # TODO (see below):
@@ -17,7 +17,7 @@ from xos.logger import observer_logger as logger
 
 class Sync{{m.camel.title}}(SyncStep):
     # The model synchronized
-    provides=[{{m.class_name.title}}]
+    provides=[{{m.class_name.title()}}]
     # How often do you want this to run. 0 means immediately following changes to the model
     requested_interval=0
     # The model in which changes trigger this module
@@ -55,16 +55,14 @@ class Sync{{m.camel.title}}(SyncStep):
   tasks:
   - task_1:
       {% for f in m.fields %}
-      {{f.name}}: {% templatetag openbrace %}{% templatetag openbrace %}{{f.name}}{% templatetag closebrace %}{% templatetag closebrace %}
+      {{f.name}}: {{ '{{' }}{{f.name}}{{ '}}' }}
       {% endfor %}
-      {% verbatim %}
-      {% if delete %}
+      {{ '{%' }} if delete {{ '%}' }}
       state: absent
-      {% else %}
+      {{ '{%' }} else {{ '%}' }}
       state: present
-      {% endif %}
-      {% endif %}
-      {% endverbatim %}
+      {{ '{%' }} endif {{ '%}' }}
+      {{ '{%' }} endif {{ '%}' }}
 +++ Sync{{ m.class_name }}.yaml
 {% endfor %}
 {% endfor %}

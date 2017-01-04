@@ -1,7 +1,7 @@
 {
-{% for o in generator.all %}
-    "{{ o.camel }}": [
-	{% for f in o.refs %}"{{ f.camel }}",
+{% for o in generator.all() %}
+    "{{ o.camel() }}": [
+	{% for f in o.refs %}"{{ f.camel() }}",
 	{% endfor %}]
 {% endfor %}
 }

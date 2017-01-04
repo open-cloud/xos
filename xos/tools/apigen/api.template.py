@@ -38,30 +38,30 @@ def get_REST_patterns():
     return patterns('',
     # legacy - deprecated
         url(r'^xos/$', api_root),
-    {% for object in generator.all %}
-        url(r'xos/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list-legacy'),
-        url(r'xos/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail-legacy'),
+    {% for object in generator.all() %}
+        url(r'xos/{{ object.rest_name() }}/$', {{ object.camel() }}List.as_view(), name='{{ object.singular() }}-list-legacy'),
+        url(r'xos/{{ object.rest_name() }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel() }}Detail.as_view(), name ='{{ object.singular() }}-detail-legacy'),
     {% endfor %}
     ) + patterns('',
     # new - use these instead of the above
         url(r'^api/core/$', api_root),
-    {% for object in generator.all %}
-        url(r'api/core/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list'),
-        url(r'api/core/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail'),
+    {% for object in generator.all() %}
+        url(r'api/core/{{ object.rest_name() }}/$', {{ object.camel() }}List.as_view(), name='{{ object.singular() }}-list'),
+        url(r'api/core/{{ object.rest_name() }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel() }}Detail.as_view(), name ='{{ object.singular() }}-detail'),
     {% endfor %}
     )
 
 @api_view(['GET'])
 def api_root_legacy(request, format=None):
     return Response({
-        {% for object in generator.all %}'{{ object.plural }}': reverse('{{ object }}-list-legacy', request=request, format=format),
+        {% for object in generator.all() %}'{{ object.plural() }}': reverse('{{ object }}-list-legacy', request=request, format=format),
         {% endfor %}
     })
 
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
-        {% for object in generator.all %}'{{ object.plural }}': reverse('{{ object }}-list', request=request, format=format),
+        {% for object in generator.all() %}'{{ object.plural() }}': reverse('{{ object }}-list', request=request, format=format),
         {% endfor %}
     })
 
@@ -120,13 +120,13 @@ class XOSModelSerializer(serializers.ModelSerializer):
                    newModel = through(**{local_fieldName: obj, remote_fieldName: item})
                    newModel.save()
 
-{% for object in generator.all %}
+{% for object in generator.all() %}
 
-class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
+class {{ object.camel() }}Serializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     {% for ref in object.refs %}
     {% if ref.multi %}
-    {{ ref.plural }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
+    {{ ref.plural() }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
     {% else %}
     {{ ref }} = serializers.HyperlinkedRelatedField(read_only=True, view_name='{{ ref }}-detail')
     {% endif %}
@@ -141,16 +141,16 @@ class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
         except:
             return None
     class Meta:
-        model = {{ object.camel }}
-        fields = ('humanReadableName', 'validators', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
+        model = {{ object.camel() }}
+        fields = ('humanReadableName', 'validators', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural() }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
-class {{ object.camel }}IdSerializer(XOSModelSerializer):
+class {{ object.camel() }}IdSerializer(XOSModelSerializer):
     id = IdField()
     {% for ref in object.refs %}
     {% if ref.multi %}
-    {{ ref.plural }} = serializers.PrimaryKeyRelatedField(many=True,  required=False, queryset = {{ ref.camel }}.objects.all())
+    {{ ref.plural() }} = serializers.PrimaryKeyRelatedField(many=True,  required=False, queryset = {{ ref.camel() }}.objects.all())
     {% else %}
-    {{ ref }} = serializers.PrimaryKeyRelatedField( queryset = {{ ref.camel }}.objects.all())
+    {{ ref }} = serializers.PrimaryKeyRelatedField( queryset = {{ ref.camel() }}.objects.all())
     {% endif %}
     {% endfor %}
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -163,28 +163,28 @@ class {{ object.camel }}IdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
-        model = {{ object.camel }}
-        fields = ('humanReadableName', 'validators', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
+        model = {{ object.camel() }}
+        fields = ('humanReadableName', 'validators', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural() }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
 
 {% endfor %}
 
 serializerLookUp = {
-{% for object in generator.all %}
-                 {{ object.camel }}: {{ object.camel }}Serializer,
+{% for object in generator.all() %}
+                 {{ object.camel() }}: {{ object.camel() }}Serializer,
 {% endfor %}
                  None: None,
                 }
 
 # Based on core/views/*.py
-{% for object in generator.all %}
+{% for object in generator.all() %}
 
-class {{ object.camel }}List(XOSListCreateAPIView):
-    queryset = {{ object.camel }}.objects.select_related().all()
-    serializer_class = {{ object.camel }}Serializer
-    id_serializer_class = {{ object.camel }}IdSerializer
+class {{ object.camel() }}List(XOSListCreateAPIView):
+    queryset = {{ object.camel() }}.objects.select_related().all()
+    serializer_class = {{ object.camel() }}Serializer
+    id_serializer_class = {{ object.camel() }}IdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
+    filter_fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural() }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -198,13 +198,13 @@ class {{ object.camel }}List(XOSListCreateAPIView):
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
-        return {{ object.camel }}.select_by_user(self.request.user)
+        return {{ object.camel() }}.select_by_user(self.request.user)
 
 
-class {{ object.camel }}Detail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = {{ object.camel }}.objects.select_related().all()
-    serializer_class = {{ object.camel }}Serializer
-    id_serializer_class = {{ object.camel }}IdSerializer
+class {{ object.camel() }}Detail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = {{ object.camel() }}.objects.select_related().all()
+    serializer_class = {{ object.camel() }}Serializer
+    id_serializer_class = {{ object.camel() }}IdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -218,7 +218,7 @@ class {{ object.camel }}Detail(XOSRetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
-        return {{ object.camel }}.select_by_user(self.request.user)
+        return {{ object.camel() }}.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 

@@ -1,4 +1,4 @@
-{% for object in generator.all %}
+{% for object in generator.all() %}
 Object {{ object }}:
 Refs:
 {% for ref in object.refs %}

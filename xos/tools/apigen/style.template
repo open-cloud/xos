@@ -9,7 +9,7 @@ def is_missing_underscore(fieldName):
        # this one is okay
        return False
 
-   {% for model in generator.all %}
+   {% for model in generator.all() %}
        pos = fieldName.find("{{ model }}")
        if (pos > 0) and (fieldName[pos-1] != "_"):
            return True
@@ -34,13 +34,13 @@ def stylecheck_field_plural(modelName, fieldName):
        print "m2m field '%s.%s' is missing underscore" % (modelName, fieldName)
 
 def main():
-{% for obj in generator.all %}
-   stylecheck_model_name("{{ obj.camel }}");
+{% for obj in generator.all() %}
+   stylecheck_model_name("{{ obj.camel() }}");
 {% for ref in obj.refs %}
-   stylecheck_field_plural("{{ obj.camel }}", "{{ ref.plural }}");
+   stylecheck_field_plural("{{ obj.camel() }}", "{{ ref.plural }}");
 {% endfor %}
 {% for prop in obj.props %}
-   stylecheck_field_name("{{ obj.camel }}", "{{ prop }}");
+   stylecheck_field_name("{{ obj.camel() }}", "{{ prop }}");
 {% endfor %}
 {% endfor %}
 
