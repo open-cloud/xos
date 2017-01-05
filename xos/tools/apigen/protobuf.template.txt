@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package xos;
+
+{% for object in generator.all() %}
+
+message {{ object.camel() }} {
+  {%- for field in object.all_fields -%}
+    {%- if (field.get_internal_type() == "CharField") or (field.get_internal_type() == "TextField") or (field.get_internal_type() == "SlugField") %}
+      string {{ field.name }} = {{ loop.index }};
+    {%- elif field.get_internal_type() == "BooleanField" %}
+      bool {{ field.name }} = {{ loop.index }};
+    {%- elif field.get_internal_type() == "ForeignKey" %}
+      int32 {{ field.name }}_id = {{ loop.index }};
+    {%- elif field.get_internal_type() == "DateTimeField" %}
+      int32 {{ field.name }} = {{ loop.index }};
+    {%- elif field.get_internal_type() == "AutoField" %}
+      int32 {{ field.name }} = {{ loop.index }};
+    {%- elif field.get_internal_type() == "IntegerField" %}
+      int32 {{ field.name }} = {{ loop.index }};
+    {%- elif field.get_internal_type() == "PositiveIntegerField" %}
+      uint32 {{ field.name }} = {{ loop.index }};
+    {%- elif field.get_internal_type() == "FloatField" %}
+      float {{ field.name }} = {{ loop.index }};
+    {%- elif field.get_internal_type() == "GenericIPAddressField" %}
+      string {{ field.name }} = {{ loop.index }};
+    {%- else %}
+      UNKNOWN {{ field.get_internal_type() }} {{ field.name }} = {{ loop.index }};
+    {%- endif %}
+  {%- endfor %}
+}
+
+{% endfor %}
+
