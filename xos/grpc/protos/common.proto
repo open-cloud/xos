@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package xos;
+
+message ID {
+    int32 id = 1;
+}

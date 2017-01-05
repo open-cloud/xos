@@ -1,0 +1,2551 @@
+syntax = "proto3";
+
+package xos;
+
+import "google/protobuf/empty.proto";
+import "common.proto";
+
+
+
+message ServiceControllerResource {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 loadable_module_id = 15;
+      string name = 16;
+      string subdirectory = 17;
+      string kind = 18;
+      string format = 19;
+      string url = 20;
+}
+
+message ServiceControllerResources {
+    repeated ServiceControllerResource items = 1;
+}
+
+
+
+message XOSVolume {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 xos_id = 15;
+      string container_path = 16;
+      string host_path = 17;
+      bool read_only = 18;
+}
+
+message XOSVolumes {
+    repeated XOSVolume items = 1;
+}
+
+
+
+message ServiceAttribute {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string value = 16;
+      int32 service_id = 17;
+}
+
+message ServiceAttributes {
+    repeated ServiceAttribute items = 1;
+}
+
+
+
+message ControllerImages {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 image_id = 15;
+      int32 controller_id = 16;
+      string glance_image_id = 17;
+}
+
+message ControllerImagess {
+    repeated ControllerImages items = 1;
+}
+
+
+
+message ControllerSitePrivilege {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 controller_id = 15;
+      int32 site_privilege_id = 16;
+      string role_id = 17;
+}
+
+message ControllerSitePrivileges {
+    repeated ControllerSitePrivilege items = 1;
+}
+
+
+
+message Image {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string kind = 16;
+      string disk_format = 17;
+      string container_format = 18;
+      string path = 19;
+      string tag = 20;
+}
+
+message Images {
+    repeated Image items = 1;
+}
+
+
+
+message ControllerNetwork {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 network_id = 15;
+      int32 controller_id = 16;
+      string subnet = 17;
+      string start_ip = 18;
+      string stop_ip = 19;
+      string net_id = 20;
+      string router_id = 21;
+      string subnet_id = 22;
+      string gateway = 23;
+      string segmentation_id = 24;
+}
+
+message ControllerNetworks {
+    repeated ControllerNetwork items = 1;
+}
+
+
+
+message Site {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string site_url = 16;
+      bool enabled = 17;
+      bool hosts_nodes = 18;
+      bool hosts_users = 19;
+      float longitude = 20;
+      float latitude = 21;
+      string login_base = 22;
+      bool is_public = 23;
+      string abbreviated_name = 24;
+}
+
+message Sites {
+    repeated Site items = 1;
+}
+
+
+
+message Library {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 xos_id = 15;
+      string name = 16;
+      string base_url = 17;
+      string version = 18;
+      string provides = 19;
+      string requires = 20;
+}
+
+message Librarys {
+    repeated Library items = 1;
+}
+
+
+
+message SliceRole {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string role = 15;
+}
+
+message SliceRoles {
+    repeated SliceRole items = 1;
+}
+
+
+
+message SiteDeployment {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 site_id = 15;
+      int32 deployment_id = 16;
+      int32 controller_id = 17;
+      string availability_zone = 18;
+}
+
+message SiteDeployments {
+    repeated SiteDeployment items = 1;
+}
+
+
+
+message XOSComponentLink {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 component_id = 15;
+      string container = 16;
+      string alias = 17;
+      string kind = 18;
+}
+
+message XOSComponentLinks {
+    repeated XOSComponentLink items = 1;
+}
+
+
+
+message TenantPrivilege {
+      float created = 1;
+      float updated = 2;
+      float enacted = 3;
+      float policed = 4;
+      string backend_register = 5;
+      bool backend_need_delete = 6;
+      bool backend_need_reap = 7;
+      string backend_status = 8;
+      bool deleted = 9;
+      bool write_protect = 10;
+      bool lazy_blocked = 11;
+      bool no_sync = 12;
+      bool no_policy = 13;
+      int32 id = 14;
+      int32 user_id = 15;
+      int32 tenant_id = 16;
+      int32 role_id = 17;
+}
+
+message TenantPrivileges {
+    repeated TenantPrivilege items = 1;
+}
+
+
+
+message Tag {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 service_id = 15;
+      string name = 16;
+      string value = 17;
+      int32 content_type_id = 18;
+      uint32 object_id = 19;
+}
+
+message Tags {
+    repeated Tag items = 1;
+}
+
+
+
+message ServiceMonitoringAgentInfo {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      int32 service_id = 16;
+      string target_uri = 17;
+}
+
+message ServiceMonitoringAgentInfos {
+    repeated ServiceMonitoringAgentInfo items = 1;
+}
+
+
+
+message XOSComponent {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 xos_id = 15;
+      string name = 16;
+      string base_url = 17;
+      string version = 18;
+      string provides = 19;
+      string requires = 20;
+      string image = 21;
+      string command = 22;
+      string ports = 23;
+}
+
+message XOSComponents {
+    repeated XOSComponent items = 1;
+}
+
+
+
+message Invoice {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      float date = 15;
+      int32 account_id = 16;
+}
+
+message Invoices {
+    repeated Invoice items = 1;
+}
+
+
+
+message SlicePrivilege {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 user_id = 15;
+      int32 slice_id = 16;
+      int32 role_id = 17;
+}
+
+message SlicePrivileges {
+    repeated SlicePrivilege items = 1;
+}
+
+
+
+message Flavor {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string description = 16;
+      string flavor = 17;
+      int32 order = 18;
+      bool default = 19;
+}
+
+message Flavors {
+    repeated Flavor items = 1;
+}
+
+
+
+message Port {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 network_id = 15;
+      int32 instance_id = 16;
+      string ip = 17;
+      string port_id = 18;
+      string mac = 19;
+      bool xos_created = 20;
+}
+
+message Ports {
+    repeated Port items = 1;
+}
+
+
+
+message ServiceRole {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string role = 15;
+}
+
+message ServiceRoles {
+    repeated ServiceRole items = 1;
+}
+
+
+
+message ControllerSite {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 site_id = 15;
+      int32 controller_id = 16;
+      string tenant_id = 17;
+}
+
+message ControllerSites {
+    repeated ControllerSite items = 1;
+}
+
+
+
+message ControllerSlice {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 controller_id = 15;
+      int32 slice_id = 16;
+      string tenant_id = 17;
+}
+
+message ControllerSlices {
+    repeated ControllerSlice items = 1;
+}
+
+
+
+message TenantRole {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string role = 15;
+}
+
+message TenantRoles {
+    repeated TenantRole items = 1;
+}
+
+
+
+message Slice {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      bool enabled = 16;
+      bool omf_friendly = 17;
+      string description = 18;
+      string slice_url = 19;
+      int32 site_id = 20;
+      int32 max_instances = 21;
+      int32 service_id = 22;
+      string network = 23;
+      string exposed_ports = 24;
+      int32 serviceClass_id = 25;
+      int32 creator_id = 26;
+      int32 default_flavor_id = 27;
+      int32 default_image_id = 28;
+      int32 default_node_id = 29;
+      string mount_data_sets = 30;
+      string default_isolation = 31;
+}
+
+message Slices {
+    repeated Slice items = 1;
+}
+
+
+
+message LoadableModuleResource {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 loadable_module_id = 15;
+      string name = 16;
+      string subdirectory = 17;
+      string kind = 18;
+      string format = 19;
+      string url = 20;
+}
+
+message LoadableModuleResources {
+    repeated LoadableModuleResource items = 1;
+}
+
+
+
+message ControllerRole {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string role = 15;
+}
+
+message ControllerRoles {
+    repeated ControllerRole items = 1;
+}
+
+
+
+message Diag {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+}
+
+message Diags {
+    repeated Diag items = 1;
+}
+
+
+
+message XOS {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      int32 ui_port = 16;
+      int32 bootstrap_ui_port = 17;
+      string db_container_name = 18;
+      string redis_container_name = 19;
+      string docker_project_name = 20;
+      bool enable_build = 21;
+      bool frontend_only = 22;
+      string source_ui_image = 23;
+      string extra_hosts = 24;
+      bool no_start = 25;
+}
+
+message XOSs {
+    repeated XOS items = 1;
+}
+
+
+
+message ServiceClass {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string description = 16;
+      int32 commitment = 17;
+      int32 membershipFee = 18;
+      int32 membershipFeeMonths = 19;
+      bool upgradeRequiresApproval = 20;
+}
+
+message ServiceClasss {
+    repeated ServiceClass items = 1;
+}
+
+
+
+message TenantAttribute {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string value = 16;
+      int32 tenant_id = 17;
+}
+
+message TenantAttributes {
+    repeated TenantAttribute items = 1;
+}
+
+
+
+message SiteRole {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string role = 15;
+}
+
+message SiteRoles {
+    repeated SiteRole items = 1;
+}
+
+
+
+message Subscriber {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string kind = 15;
+      string name = 16;
+      string service_specific_attribute = 17;
+      string service_specific_id = 18;
+}
+
+message Subscribers {
+    repeated Subscriber items = 1;
+}
+
+
+
+message Instance {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string instance_id = 15;
+      string instance_uuid = 16;
+      string name = 17;
+      string instance_name = 18;
+      string ip = 19;
+      int32 image_id = 20;
+      int32 creator_id = 21;
+      int32 slice_id = 22;
+      int32 deployment_id = 23;
+      int32 node_id = 24;
+      int32 numberCores = 25;
+      int32 flavor_id = 26;
+      string userData = 27;
+      string isolation = 28;
+      string volumes = 29;
+      int32 parent_id = 30;
+}
+
+message Instances {
+    repeated Instance items = 1;
+}
+
+
+
+message Charge {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 account_id = 15;
+      int32 slice_id = 16;
+      string kind = 17;
+      string state = 18;
+      float date = 19;
+      int32 object_id = 20;
+      float amount = 21;
+      float coreHours = 22;
+      int32 invoice_id = 23;
+}
+
+message Charges {
+    repeated Charge items = 1;
+}
+
+
+
+message Program {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string description = 16;
+      string kind = 17;
+      string command = 18;
+      int32 owner_id = 19;
+      string contents = 20;
+      string output = 21;
+      string messages = 22;
+      string status = 23;
+}
+
+message Programs {
+    repeated Program items = 1;
+}
+
+
+
+message Role {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string role_type = 15;
+      string role = 16;
+      string description = 17;
+      int32 content_type_id = 18;
+}
+
+message Roles {
+    repeated Role items = 1;
+}
+
+
+
+message NodeLabel {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+}
+
+message NodeLabels {
+    repeated NodeLabel items = 1;
+}
+
+
+
+message NetworkTemplate {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string description = 16;
+      int32 guaranteed_bandwidth = 17;
+      string visibility = 18;
+      string translation = 19;
+      string access = 20;
+      string shared_network_name = 21;
+      string shared_network_id = 22;
+      string topology_kind = 23;
+      string controller_kind = 24;
+      string vtn_kind = 25;
+}
+
+message NetworkTemplates {
+    repeated NetworkTemplate items = 1;
+}
+
+
+
+message ServiceController {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 xos_id = 15;
+      string name = 16;
+      string base_url = 17;
+      string version = 18;
+      string provides = 19;
+      string requires = 20;
+      string synchronizer_run = 21;
+      string synchronizer_config = 22;
+      bool no_start = 23;
+}
+
+message ServiceControllers {
+    repeated ServiceController items = 1;
+}
+
+
+
+message LoadableModule {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 xos_id = 15;
+      string name = 16;
+      string base_url = 17;
+      string version = 18;
+      string provides = 19;
+      string requires = 20;
+}
+
+message LoadableModules {
+    repeated LoadableModule items = 1;
+}
+
+
+
+message UsableObject {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+}
+
+message UsableObjects {
+    repeated UsableObject items = 1;
+}
+
+
+
+message Node {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      int32 site_deployment_id = 16;
+      int32 site_id = 17;
+}
+
+message Nodes {
+    repeated Node items = 1;
+}
+
+
+
+message AddressPool {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string addresses = 16;
+      string gateway_ip = 17;
+      string gateway_mac = 18;
+      string cidr = 19;
+      string inuse = 20;
+      int32 service_id = 21;
+}
+
+message AddressPools {
+    repeated AddressPool items = 1;
+}
+
+
+
+message DashboardView {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string url = 16;
+      bool enabled = 17;
+      string icon = 18;
+      string icon_active = 19;
+}
+
+message DashboardViews {
+    repeated DashboardView items = 1;
+}
+
+
+
+message NetworkParameter {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 parameter_id = 15;
+      string value = 16;
+      int32 content_type_id = 17;
+      uint32 object_id = 18;
+}
+
+message NetworkParameters {
+    repeated NetworkParameter items = 1;
+}
+
+
+
+message ImageDeployments {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 image_id = 15;
+      int32 deployment_id = 16;
+}
+
+message ImageDeploymentss {
+    repeated ImageDeployments items = 1;
+}
+
+
+
+message ControllerUser {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 user_id = 15;
+      int32 controller_id = 16;
+      string kuser_id = 17;
+}
+
+message ControllerUsers {
+    repeated ControllerUser items = 1;
+}
+
+
+
+message ReservedResource {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 instance_id = 15;
+      int32 resource_id = 16;
+      int32 quantity = 17;
+      int32 reservationSet_id = 18;
+}
+
+message ReservedResources {
+    repeated ReservedResource items = 1;
+}
+
+
+
+message JournalEntry {
+      int32 id = 1;
+      string objClassName = 2;
+      string objId = 3;
+      string objUnicode = 4;
+      string operation = 5;
+      string msg = 6;
+      float timestamp = 7;
+}
+
+message JournalEntrys {
+    repeated JournalEntry items = 1;
+}
+
+
+
+message UserCredential {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 user_id = 15;
+      string name = 16;
+      string key_id = 17;
+      string enc_value = 18;
+}
+
+message UserCredentials {
+    repeated UserCredential items = 1;
+}
+
+
+
+message ControllerDashboardView {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 controller_id = 15;
+      int32 dashboardView_id = 16;
+      bool enabled = 17;
+      string url = 18;
+}
+
+message ControllerDashboardViews {
+    repeated ControllerDashboardView items = 1;
+}
+
+
+
+message UserDashboardView {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 user_id = 15;
+      int32 dashboardView_id = 16;
+      int32 order = 17;
+}
+
+message UserDashboardViews {
+    repeated UserDashboardView items = 1;
+}
+
+
+
+message Controller {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string backend_type = 16;
+      string version = 17;
+      string auth_url = 18;
+      string admin_user = 19;
+      string admin_password = 20;
+      string admin_tenant = 21;
+      string domain = 22;
+      string rabbit_host = 23;
+      string rabbit_user = 24;
+      string rabbit_password = 25;
+      int32 deployment_id = 26;
+}
+
+message Controllers {
+    repeated Controller items = 1;
+}
+
+
+
+message TenantRootRole {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string role = 15;
+}
+
+message TenantRootRoles {
+    repeated TenantRootRole items = 1;
+}
+
+
+
+message Deployment {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string accessControl = 16;
+}
+
+message Deployments {
+    repeated Deployment items = 1;
+}
+
+
+
+message Reservation {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      float startTime = 15;
+      int32 slice_id = 16;
+      int32 duration = 17;
+}
+
+message Reservations {
+    repeated Reservation items = 1;
+}
+
+
+
+message SitePrivilege {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 user_id = 15;
+      int32 site_id = 16;
+      int32 role_id = 17;
+}
+
+message SitePrivileges {
+    repeated SitePrivilege items = 1;
+}
+
+
+
+message Payment {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 account_id = 15;
+      float amount = 16;
+      float date = 17;
+}
+
+message Payments {
+    repeated Payment items = 1;
+}
+
+
+
+message Tenant {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string kind = 15;
+      int32 provider_service_id = 16;
+      int32 subscriber_service_id = 17;
+      int32 subscriber_tenant_id = 18;
+      int32 subscriber_user_id = 19;
+      int32 subscriber_root_id = 20;
+      int32 subscriber_network_id = 21;
+      string service_specific_id = 22;
+      string service_specific_attribute = 23;
+      string connect_method = 24;
+}
+
+message Tenants {
+    repeated Tenant items = 1;
+}
+
+
+
+message Network {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      int32 template_id = 16;
+      string subnet = 17;
+      string start_ip = 18;
+      string end_ip = 19;
+      string ports = 20;
+      string labels = 21;
+      int32 owner_id = 22;
+      int32 guaranteed_bandwidth = 23;
+      bool permit_all_slices = 24;
+      string topology_parameters = 25;
+      string controller_url = 26;
+      string controller_parameters = 27;
+      string network_id = 28;
+      string router_id = 29;
+      string subnet_id = 30;
+      bool autoconnect = 31;
+}
+
+message Networks {
+    repeated Network items = 1;
+}
+
+
+
+message NetworkSlice {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 network_id = 15;
+      int32 slice_id = 16;
+}
+
+message NetworkSlices {
+    repeated NetworkSlice items = 1;
+}
+
+
+
+message Account {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 site_id = 15;
+}
+
+message Accounts {
+    repeated Account items = 1;
+}
+
+
+
+message TenantRoot {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string kind = 15;
+      string name = 16;
+      string service_specific_attribute = 17;
+      string service_specific_id = 18;
+}
+
+message TenantRoots {
+    repeated TenantRoot items = 1;
+}
+
+
+
+message Service {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string description = 15;
+      bool enabled = 16;
+      string kind = 17;
+      string name = 18;
+      string versionNumber = 19;
+      bool published = 20;
+      string view_url = 21;
+      string icon_url = 22;
+      string public_key = 23;
+      string private_key_fn = 24;
+      string service_specific_id = 25;
+      string service_specific_attribute = 26;
+      int32 controller_id = 27;
+}
+
+message Services {
+    repeated Service items = 1;
+}
+
+
+
+message ControllerSlicePrivilege {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 controller_id = 15;
+      int32 slice_privilege_id = 16;
+      string role_id = 17;
+}
+
+message ControllerSlicePrivileges {
+    repeated ControllerSlicePrivilege items = 1;
+}
+
+
+
+message SiteCredential {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 site_id = 15;
+      string name = 16;
+      string key_id = 17;
+      string enc_value = 18;
+}
+
+message SiteCredentials {
+    repeated SiteCredential items = 1;
+}
+
+
+
+message DeploymentPrivilege {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 user_id = 15;
+      int32 deployment_id = 16;
+      int32 role_id = 17;
+}
+
+message DeploymentPrivileges {
+    repeated DeploymentPrivilege items = 1;
+}
+
+
+
+message NetworkParameterType {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      string description = 16;
+}
+
+message NetworkParameterTypes {
+    repeated NetworkParameterType items = 1;
+}
+
+
+
+message Provider {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string kind = 15;
+      string name = 16;
+      string service_specific_attribute = 17;
+      string service_specific_id = 18;
+}
+
+message Providers {
+    repeated Provider items = 1;
+}
+
+
+
+message TenantWithContainer {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string kind = 15;
+      int32 provider_service_id = 16;
+      int32 subscriber_service_id = 17;
+      int32 subscriber_tenant_id = 18;
+      int32 subscriber_user_id = 19;
+      int32 subscriber_root_id = 20;
+      int32 subscriber_network_id = 21;
+      string service_specific_id = 22;
+      string service_specific_attribute = 23;
+      string connect_method = 24;
+}
+
+message TenantWithContainers {
+    repeated TenantWithContainer items = 1;
+}
+
+
+
+message DeploymentRole {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string role = 15;
+}
+
+message DeploymentRoles {
+    repeated DeploymentRole items = 1;
+}
+
+
+
+message Project {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+}
+
+message Projects {
+    repeated Project items = 1;
+}
+
+
+
+message TenantRootPrivilege {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 user_id = 15;
+      int32 tenant_root_id = 16;
+      int32 role_id = 17;
+}
+
+message TenantRootPrivileges {
+    repeated TenantRootPrivilege items = 1;
+}
+
+
+
+message XOSComponentVolume {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 component_id = 15;
+      string name = 16;
+      string container_path = 17;
+      string host_path = 18;
+      bool read_only = 19;
+}
+
+message XOSComponentVolumes {
+    repeated XOSComponentVolume items = 1;
+}
+
+
+
+message SliceCredential {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 slice_id = 15;
+      string name = 16;
+      string key_id = 17;
+      string enc_value = 18;
+}
+
+message SliceCredentials {
+    repeated SliceCredential items = 1;
+}
+
+
+
+message SliceTag {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 slice_id = 15;
+      string name = 16;
+      string value = 17;
+}
+
+message SliceTags {
+    repeated SliceTag items = 1;
+}
+
+
+
+message CoarseTenant {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string kind = 15;
+      int32 provider_service_id = 16;
+      int32 subscriber_service_id = 17;
+      int32 subscriber_tenant_id = 18;
+      int32 subscriber_user_id = 19;
+      int32 subscriber_root_id = 20;
+      int32 subscriber_network_id = 21;
+      string service_specific_id = 22;
+      string service_specific_attribute = 23;
+      string connect_method = 24;
+}
+
+message CoarseTenants {
+    repeated CoarseTenant items = 1;
+}
+
+
+
+message Router {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      string name = 15;
+      int32 owner_id = 16;
+}
+
+message Routers {
+    repeated Router items = 1;
+}
+
+
+
+message ServiceResource {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 serviceClass_id = 15;
+      string name = 16;
+      int32 maxUnitsDeployment = 17;
+      int32 maxUnitsNode = 18;
+      int32 maxDuration = 19;
+      int32 bucketInRate = 20;
+      int32 bucketMaxSize = 21;
+      int32 cost = 22;
+      bool calendarReservable = 23;
+}
+
+message ServiceResources {
+    repeated ServiceResource items = 1;
+}
+
+
+
+message ServicePrivilege {
+      int32 id = 1;
+      float created = 2;
+      float updated = 3;
+      float enacted = 4;
+      float policed = 5;
+      string backend_register = 6;
+      bool backend_need_delete = 7;
+      bool backend_need_reap = 8;
+      string backend_status = 9;
+      bool deleted = 10;
+      bool write_protect = 11;
+      bool lazy_blocked = 12;
+      bool no_sync = 13;
+      bool no_policy = 14;
+      int32 user_id = 15;
+      int32 service_id = 16;
+      int32 role_id = 17;
+}
+
+message ServicePrivileges {
+    repeated ServicePrivilege items = 1;
+}
+
+
+
+message User {
+      int32 id = 1;
+      string password = 2;
+      float last_login = 3;
+      string email = 4;
+      string username = 5;
+      string firstname = 6;
+      string lastname = 7;
+      string phone = 8;
+      string user_url = 9;
+      int32 site_id = 10;
+      string public_key = 11;
+      bool is_active = 12;
+      bool is_admin = 13;
+      bool is_staff = 14;
+      bool is_readonly = 15;
+      bool is_registering = 16;
+      bool is_appuser = 17;
+      string login_page = 18;
+      float created = 19;
+      float updated = 20;
+      float enacted = 21;
+      float policed = 22;
+      string backend_status = 23;
+      bool backend_need_delete = 24;
+      bool backend_need_reap = 25;
+      bool deleted = 26;
+      bool write_protect = 27;
+      bool lazy_blocked = 28;
+      bool no_sync = 29;
+      bool no_policy = 30;
+      string timezone = 31;
+}
+
+message Users {
+    repeated User items = 1;
+}
+
+
+
+service xos {
+
+  rpc ListServiceControllerResource(google.protobuf.Empty) returns (ServiceControllerResources) {}
+  rpc GetServiceControllerResource(ID) returns (ServiceControllerResource) {}
+
+  rpc ListXOSVolume(google.protobuf.Empty) returns (XOSVolumes) {}
+  rpc GetXOSVolume(ID) returns (XOSVolume) {}
+
+  rpc ListServiceAttribute(google.protobuf.Empty) returns (ServiceAttributes) {}
+  rpc GetServiceAttribute(ID) returns (ServiceAttribute) {}
+
+  rpc ListControllerImages(google.protobuf.Empty) returns (ControllerImagess) {}
+  rpc GetControllerImages(ID) returns (ControllerImages) {}
+
+  rpc ListControllerSitePrivilege(google.protobuf.Empty) returns (ControllerSitePrivileges) {}
+  rpc GetControllerSitePrivilege(ID) returns (ControllerSitePrivilege) {}
+
+  rpc ListImage(google.protobuf.Empty) returns (Images) {}
+  rpc GetImage(ID) returns (Image) {}
+
+  rpc ListControllerNetwork(google.protobuf.Empty) returns (ControllerNetworks) {}
+  rpc GetControllerNetwork(ID) returns (ControllerNetwork) {}
+
+  rpc ListSite(google.protobuf.Empty) returns (Sites) {}
+  rpc GetSite(ID) returns (Site) {}
+
+  rpc ListLibrary(google.protobuf.Empty) returns (Librarys) {}
+  rpc GetLibrary(ID) returns (Library) {}
+
+  rpc ListSliceRole(google.protobuf.Empty) returns (SliceRoles) {}
+  rpc GetSliceRole(ID) returns (SliceRole) {}
+
+  rpc ListSiteDeployment(google.protobuf.Empty) returns (SiteDeployments) {}
+  rpc GetSiteDeployment(ID) returns (SiteDeployment) {}
+
+  rpc ListXOSComponentLink(google.protobuf.Empty) returns (XOSComponentLinks) {}
+  rpc GetXOSComponentLink(ID) returns (XOSComponentLink) {}
+
+  rpc ListTenantPrivilege(google.protobuf.Empty) returns (TenantPrivileges) {}
+  rpc GetTenantPrivilege(ID) returns (TenantPrivilege) {}
+
+  rpc ListTag(google.protobuf.Empty) returns (Tags) {}
+  rpc GetTag(ID) returns (Tag) {}
+
+  rpc ListServiceMonitoringAgentInfo(google.protobuf.Empty) returns (ServiceMonitoringAgentInfos) {}
+  rpc GetServiceMonitoringAgentInfo(ID) returns (ServiceMonitoringAgentInfo) {}
+
+  rpc ListXOSComponent(google.protobuf.Empty) returns (XOSComponents) {}
+  rpc GetXOSComponent(ID) returns (XOSComponent) {}
+
+  rpc ListInvoice(google.protobuf.Empty) returns (Invoices) {}
+  rpc GetInvoice(ID) returns (Invoice) {}
+
+  rpc ListSlicePrivilege(google.protobuf.Empty) returns (SlicePrivileges) {}
+  rpc GetSlicePrivilege(ID) returns (SlicePrivilege) {}
+
+  rpc ListFlavor(google.protobuf.Empty) returns (Flavors) {}
+  rpc GetFlavor(ID) returns (Flavor) {}
+
+  rpc ListPort(google.protobuf.Empty) returns (Ports) {}
+  rpc GetPort(ID) returns (Port) {}
+
+  rpc ListServiceRole(google.protobuf.Empty) returns (ServiceRoles) {}
+  rpc GetServiceRole(ID) returns (ServiceRole) {}
+
+  rpc ListControllerSite(google.protobuf.Empty) returns (ControllerSites) {}
+  rpc GetControllerSite(ID) returns (ControllerSite) {}
+
+  rpc ListControllerSlice(google.protobuf.Empty) returns (ControllerSlices) {}
+  rpc GetControllerSlice(ID) returns (ControllerSlice) {}
+
+  rpc ListTenantRole(google.protobuf.Empty) returns (TenantRoles) {}
+  rpc GetTenantRole(ID) returns (TenantRole) {}
+
+  rpc ListSlice(google.protobuf.Empty) returns (Slices) {}
+  rpc GetSlice(ID) returns (Slice) {}
+
+  rpc ListLoadableModuleResource(google.protobuf.Empty) returns (LoadableModuleResources) {}
+  rpc GetLoadableModuleResource(ID) returns (LoadableModuleResource) {}
+
+  rpc ListControllerRole(google.protobuf.Empty) returns (ControllerRoles) {}
+  rpc GetControllerRole(ID) returns (ControllerRole) {}
+
+  rpc ListDiag(google.protobuf.Empty) returns (Diags) {}
+  rpc GetDiag(ID) returns (Diag) {}
+
+  rpc ListXOS(google.protobuf.Empty) returns (XOSs) {}
+  rpc GetXOS(ID) returns (XOS) {}
+
+  rpc ListServiceClass(google.protobuf.Empty) returns (ServiceClasss) {}
+  rpc GetServiceClass(ID) returns (ServiceClass) {}
+
+  rpc ListTenantAttribute(google.protobuf.Empty) returns (TenantAttributes) {}
+  rpc GetTenantAttribute(ID) returns (TenantAttribute) {}
+
+  rpc ListSiteRole(google.protobuf.Empty) returns (SiteRoles) {}
+  rpc GetSiteRole(ID) returns (SiteRole) {}
+
+  rpc ListSubscriber(google.protobuf.Empty) returns (Subscribers) {}
+  rpc GetSubscriber(ID) returns (Subscriber) {}
+
+  rpc ListInstance(google.protobuf.Empty) returns (Instances) {}
+  rpc GetInstance(ID) returns (Instance) {}
+
+  rpc ListCharge(google.protobuf.Empty) returns (Charges) {}
+  rpc GetCharge(ID) returns (Charge) {}
+
+  rpc ListProgram(google.protobuf.Empty) returns (Programs) {}
+  rpc GetProgram(ID) returns (Program) {}
+
+  rpc ListRole(google.protobuf.Empty) returns (Roles) {}
+  rpc GetRole(ID) returns (Role) {}
+
+  rpc ListNodeLabel(google.protobuf.Empty) returns (NodeLabels) {}
+  rpc GetNodeLabel(ID) returns (NodeLabel) {}
+
+  rpc ListNetworkTemplate(google.protobuf.Empty) returns (NetworkTemplates) {}
+  rpc GetNetworkTemplate(ID) returns (NetworkTemplate) {}
+
+  rpc ListServiceController(google.protobuf.Empty) returns (ServiceControllers) {}
+  rpc GetServiceController(ID) returns (ServiceController) {}
+
+  rpc ListLoadableModule(google.protobuf.Empty) returns (LoadableModules) {}
+  rpc GetLoadableModule(ID) returns (LoadableModule) {}
+
+  rpc ListUsableObject(google.protobuf.Empty) returns (UsableObjects) {}
+  rpc GetUsableObject(ID) returns (UsableObject) {}
+
+  rpc ListNode(google.protobuf.Empty) returns (Nodes) {}
+  rpc GetNode(ID) returns (Node) {}
+
+  rpc ListAddressPool(google.protobuf.Empty) returns (AddressPools) {}
+  rpc GetAddressPool(ID) returns (AddressPool) {}
+
+  rpc ListDashboardView(google.protobuf.Empty) returns (DashboardViews) {}
+  rpc GetDashboardView(ID) returns (DashboardView) {}
+
+  rpc ListNetworkParameter(google.protobuf.Empty) returns (NetworkParameters) {}
+  rpc GetNetworkParameter(ID) returns (NetworkParameter) {}
+
+  rpc ListImageDeployments(google.protobuf.Empty) returns (ImageDeploymentss) {}
+  rpc GetImageDeployments(ID) returns (ImageDeployments) {}
+
+  rpc ListControllerUser(google.protobuf.Empty) returns (ControllerUsers) {}
+  rpc GetControllerUser(ID) returns (ControllerUser) {}
+
+  rpc ListReservedResource(google.protobuf.Empty) returns (ReservedResources) {}
+  rpc GetReservedResource(ID) returns (ReservedResource) {}
+
+  rpc ListJournalEntry(google.protobuf.Empty) returns (JournalEntrys) {}
+  rpc GetJournalEntry(ID) returns (JournalEntry) {}
+
+  rpc ListUserCredential(google.protobuf.Empty) returns (UserCredentials) {}
+  rpc GetUserCredential(ID) returns (UserCredential) {}
+
+  rpc ListControllerDashboardView(google.protobuf.Empty) returns (ControllerDashboardViews) {}
+  rpc GetControllerDashboardView(ID) returns (ControllerDashboardView) {}
+
+  rpc ListUserDashboardView(google.protobuf.Empty) returns (UserDashboardViews) {}
+  rpc GetUserDashboardView(ID) returns (UserDashboardView) {}
+
+  rpc ListController(google.protobuf.Empty) returns (Controllers) {}
+  rpc GetController(ID) returns (Controller) {}
+
+  rpc ListTenantRootRole(google.protobuf.Empty) returns (TenantRootRoles) {}
+  rpc GetTenantRootRole(ID) returns (TenantRootRole) {}
+
+  rpc ListDeployment(google.protobuf.Empty) returns (Deployments) {}
+  rpc GetDeployment(ID) returns (Deployment) {}
+
+  rpc ListReservation(google.protobuf.Empty) returns (Reservations) {}
+  rpc GetReservation(ID) returns (Reservation) {}
+
+  rpc ListSitePrivilege(google.protobuf.Empty) returns (SitePrivileges) {}
+  rpc GetSitePrivilege(ID) returns (SitePrivilege) {}
+
+  rpc ListPayment(google.protobuf.Empty) returns (Payments) {}
+  rpc GetPayment(ID) returns (Payment) {}
+
+  rpc ListTenant(google.protobuf.Empty) returns (Tenants) {}
+  rpc GetTenant(ID) returns (Tenant) {}
+
+  rpc ListNetwork(google.protobuf.Empty) returns (Networks) {}
+  rpc GetNetwork(ID) returns (Network) {}
+
+  rpc ListNetworkSlice(google.protobuf.Empty) returns (NetworkSlices) {}
+  rpc GetNetworkSlice(ID) returns (NetworkSlice) {}
+
+  rpc ListAccount(google.protobuf.Empty) returns (Accounts) {}
+  rpc GetAccount(ID) returns (Account) {}
+
+  rpc ListTenantRoot(google.protobuf.Empty) returns (TenantRoots) {}
+  rpc GetTenantRoot(ID) returns (TenantRoot) {}
+
+  rpc ListService(google.protobuf.Empty) returns (Services) {}
+  rpc GetService(ID) returns (Service) {}
+
+  rpc ListControllerSlicePrivilege(google.protobuf.Empty) returns (ControllerSlicePrivileges) {}
+  rpc GetControllerSlicePrivilege(ID) returns (ControllerSlicePrivilege) {}
+
+  rpc ListSiteCredential(google.protobuf.Empty) returns (SiteCredentials) {}
+  rpc GetSiteCredential(ID) returns (SiteCredential) {}
+
+  rpc ListDeploymentPrivilege(google.protobuf.Empty) returns (DeploymentPrivileges) {}
+  rpc GetDeploymentPrivilege(ID) returns (DeploymentPrivilege) {}
+
+  rpc ListNetworkParameterType(google.protobuf.Empty) returns (NetworkParameterTypes) {}
+  rpc GetNetworkParameterType(ID) returns (NetworkParameterType) {}
+
+  rpc ListProvider(google.protobuf.Empty) returns (Providers) {}
+  rpc GetProvider(ID) returns (Provider) {}
+
+  rpc ListTenantWithContainer(google.protobuf.Empty) returns (TenantWithContainers) {}
+  rpc GetTenantWithContainer(ID) returns (TenantWithContainer) {}
+
+  rpc ListDeploymentRole(google.protobuf.Empty) returns (DeploymentRoles) {}
+  rpc GetDeploymentRole(ID) returns (DeploymentRole) {}
+
+  rpc ListProject(google.protobuf.Empty) returns (Projects) {}
+  rpc GetProject(ID) returns (Project) {}
+
+  rpc ListTenantRootPrivilege(google.protobuf.Empty) returns (TenantRootPrivileges) {}
+  rpc GetTenantRootPrivilege(ID) returns (TenantRootPrivilege) {}
+
+  rpc ListXOSComponentVolume(google.protobuf.Empty) returns (XOSComponentVolumes) {}
+  rpc GetXOSComponentVolume(ID) returns (XOSComponentVolume) {}
+
+  rpc ListSliceCredential(google.protobuf.Empty) returns (SliceCredentials) {}
+  rpc GetSliceCredential(ID) returns (SliceCredential) {}
+
+  rpc ListSliceTag(google.protobuf.Empty) returns (SliceTags) {}
+  rpc GetSliceTag(ID) returns (SliceTag) {}
+
+  rpc ListCoarseTenant(google.protobuf.Empty) returns (CoarseTenants) {}
+  rpc GetCoarseTenant(ID) returns (CoarseTenant) {}
+
+  rpc ListRouter(google.protobuf.Empty) returns (Routers) {}
+  rpc GetRouter(ID) returns (Router) {}
+
+  rpc ListServiceResource(google.protobuf.Empty) returns (ServiceResources) {}
+  rpc GetServiceResource(ID) returns (ServiceResource) {}
+
+  rpc ListServicePrivilege(google.protobuf.Empty) returns (ServicePrivileges) {}
+  rpc GetServicePrivilege(ID) returns (ServicePrivilege) {}
+
+  rpc ListUser(google.protobuf.Empty) returns (Users) {}
+  rpc GetUser(ID) returns (User) {}
+
+}

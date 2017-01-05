@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package xos;
 
+import "google/protobuf/empty.proto";
+import "common.proto";
+
 {% for object in generator.all() %}
 
 message {{ object.camel() }} {
@@ -13,7 +16,7 @@ message {{ object.camel() }} {
     {%- elif field.get_internal_type() == "ForeignKey" %}
       int32 {{ field.name }}_id = {{ loop.index }};
     {%- elif field.get_internal_type() == "DateTimeField" %}
-      int32 {{ field.name }} = {{ loop.index }};
+      float {{ field.name }} = {{ loop.index }};
     {%- elif field.get_internal_type() == "AutoField" %}
       int32 {{ field.name }} = {{ loop.index }};
     {%- elif field.get_internal_type() == "IntegerField" %}
@@ -30,5 +33,16 @@ message {{ object.camel() }} {
   {%- endfor %}
 }
 
+message {{ object.camel() }}s {
+    repeated {{ object.camel() }} items = 1;
+}
+
 {% endfor %}
+
+service xos {
+{% for object in generator.all() %}
+  rpc List{{ object.camel() }}(google.protobuf.Empty) returns ({{ object.camel() }}s) {}
+  rpc Get{{ object.camel() }}(ID) returns ({{ object.camel() }}) {}
+{% endfor %}
+}
 
