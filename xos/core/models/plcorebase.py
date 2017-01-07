@@ -18,6 +18,10 @@ from journal import journal_object
 import redis
 from redis import ConnectionError
 
+
+def date_handler(obj):
+    return obj.isoformat() if hasattr(obj, 'isoformat') else obj
+
 try:
     # This is a no-op if observer_disabled is set to 1 in the config file
     from synchronizers.base import *
@@ -347,7 +351,9 @@ class PlCoreBase(models.Model, PlModelMixIn):
 
         try:
             r = redis.Redis("redis")
-            payload = json.dumps({'pk':self.pk,'changed_fields':changed_fields})
+            # NOTE the redis event has been extended with model properties to facilitate the support of real time notification in the UI
+            # keep this monitored for performance reasons and eventually revert it back to fetch model properties via the REST API
+            payload = json.dumps({'pk': self.pk, 'changed_fields': changed_fields, 'object': model_to_dict(self)}, default=date_handler)
             r.publish(self.__class__.__name__, payload)
         except ConnectionError:
             # Redis not running.
