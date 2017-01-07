@@ -29,12 +29,61 @@ import django
 sys.path.append('/opt/xos')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 
-from protos import xos_pb2
+from protos import xos_pb2, schema_pb2
 from xos_grpc_api import XosService
 from google.protobuf.empty_pb2 import Empty
 
 from xos.logger import Logger, logging
 logger = Logger(level=logging.INFO)
+
+class SchemaService(schema_pb2.SchemaServiceServicer):
+
+    def __init__(self, thread_pool):
+        self.thread_pool = thread_pool
+        protos = self._load_schema()
+        self.schemas = schema_pb2.Schemas(protos=protos,
+                                          swagger_from='xos.proto',
+                                          yang_from='xos.proto')
+
+    def stop(self):
+        pass
+
+    def _load_schema(self):
+        """Pre-load schema file so that we can serve it up (file sizes
+           are small enough to do so
+        """
+        proto_dir = abspath(join(dirname(__file__), './protos'))
+
+        def find_files(dir, suffix):
+            proto_files = [
+                join(dir, fname) for fname in os.listdir(dir)
+                if fname.endswith(suffix)
+            ]
+            return proto_files
+
+        proto_map = OrderedDict()  # to have deterministic data
+        for proto_file in find_files(proto_dir, '.proto'):
+            with open(proto_file, 'r') as f:
+                proto_content = f.read()
+            fname = basename(proto_file)
+            # assure no two files have the same basename
+            assert fname not in proto_map
+
+            desc_file = proto_file.replace('.proto', '.desc')
+            with open(desc_file, 'r') as f:
+                descriptor_content = zlib.compress(f.read())
+
+            proto_map[fname] = schema_pb2.ProtoFile(
+                file_name=fname,
+                proto=proto_content,
+                descriptor=descriptor_content
+            )
+
+        return proto_map.values()
+
+    def GetSchema(self, request, context):
+        """Return current schema files and descriptor"""
+        return self.schemas
 
 class XOSGrpcServer(object):
 
@@ -50,6 +99,7 @@ class XOSGrpcServer(object):
 
         # add each service unit to the server and also to the list
         for activator_func, service_class in (
+            (schema_pb2.add_SchemaServiceServicer_to_server, SchemaService),
             (xos_pb2.add_xosServicer_to_server, XosService),
         ):
             service = service_class(self.thread_pool)

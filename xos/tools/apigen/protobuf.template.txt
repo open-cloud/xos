@@ -3,6 +3,7 @@ syntax = "proto3";
 package xos;
 
 import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
 import "common.proto";
 
 {% for object in generator.all() %}
@@ -41,8 +42,16 @@ message {{ object.camel() }}s {
 
 service xos {
 {% for object in generator.all() %}
-  rpc List{{ object.camel() }}(google.protobuf.Empty) returns ({{ object.camel() }}s) {}
-  rpc Get{{ object.camel() }}(ID) returns ({{ object.camel() }}) {}
+  rpc List{{ object.camel() }}(google.protobuf.Empty) returns ({{ object.camel() }}s) {
+        option (google.api.http) = {
+            get: "/api/v1/{{ object.plural() }}"
+        };
+  }
+  rpc Get{{ object.camel() }}(ID) returns ({{ object.camel() }}) {
+        option (google.api.http) = {
+            get: "/api/v1/{{ object.plural() }}/{id}"
+        };
+  }
 {% endfor %}
 }
 
