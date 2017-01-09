@@ -15,6 +15,7 @@ class XOSPermissionDenied(RestFrameworkPermissionDenied):
                             "fields": fields})
 
 class XOSNotAuthenticated(RestFrameworkPermissionDenied):
+    status_code=401
     def __init__(self, why="you must be authenticated to use this api", fields={}):
         APIException.__init__(self, {"error": "XOSNotAuthenticated",
                             "specific_error": why,
