@@ -6,10 +6,15 @@ import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "common.proto";
 
+// Note: all fields are wrapped in a "oneof". This causes proto3 to always send
+// fields that are set by the caller, regardless if they are set to a default
+// value. XOS uses this to know when to apply a default value.
+
 {% for object in generator.all() %}
 
 message {{ object.camel() }} {
-  {%- for field in object.all_fields -%}
+  {%- for field in object.all_fields %}
+    oneof {{ field.name }}_present {
     {%- if (field.get_internal_type() == "CharField") or (field.get_internal_type() == "TextField") or (field.get_internal_type() == "SlugField") %}
       string {{ field.name }} = {{ loop.index }};
     {%- elif field.get_internal_type() == "BooleanField" %}
@@ -31,6 +36,7 @@ message {{ object.camel() }} {
     {%- else %}
       UNKNOWN {{ field.get_internal_type() }} {{ field.name }} = {{ loop.index }};
     {%- endif %}
+    }
   {%- endfor %}
 }
 
@@ -50,6 +56,23 @@ service xos {
   rpc Get{{ object.camel() }}(ID) returns ({{ object.camel() }}) {
         option (google.api.http) = {
             get: "/api/v1/{{ object.plural() }}/{id}"
+        };
+  }
+  rpc Create{{ object.camel() }}({{ object.camel() }}) returns ({{ object.camel() }}) {
+        option (google.api.http) = {
+            post: "/api/v1/{{ object.plural() }}"
+            body: "*"
+        };
+  }
+  rpc Update{{ object.camel() }}({{ object.camel() }}) returns ({{ object.camel() }}) {
+        option (google.api.http) = {
+            put: "/api/v1/{{ object.plural() }}/{id}"
+            body: "*"
+        };
+  }
+  rpc Delete{{ object.camel() }}(ID) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/api/v1/{{ object.plural() }}/{id}"
         };
   }
 {% endfor %}
