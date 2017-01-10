@@ -8,6 +8,7 @@ MAINTAINER Zack Williams <zdw@cs.arizona.edu>
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     apt-transport-https \
     curl \
+    cython \
     gcc \
     geoip-database \
     git \
