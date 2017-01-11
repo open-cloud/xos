@@ -92,6 +92,13 @@ class XOSGrpcServer(object):
         logger.info('init-grpc-server port=%d' % self.port)
         self.thread_pool = futures.ThreadPoolExecutor(max_workers=10)
         self.server = grpc.server(self.thread_pool)
+
+        server_key = open("certs/server.key","r").read()
+        server_cert = open("certs/server.crt","r").read()
+        server_ca = open("certs/ca.crt","r").read()
+
+        self.credentials = grpc.ssl_server_credentials([(server_key, server_cert)], server_ca, False)
+
         self.services = []
 
     def start(self):
@@ -107,6 +114,8 @@ class XOSGrpcServer(object):
 
         # open port
         self.server.add_insecure_port('[::]:%s' % self.port)
+
+        self.server.add_secure_port("[::]:50051", self.credentials)
 
         # strat the server
         self.server.start()

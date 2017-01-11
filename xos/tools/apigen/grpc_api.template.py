@@ -1,8 +1,11 @@
+import base64
 import time
 from protos import xos_pb2
 from google.protobuf.empty_pb2 import Empty
 
+from django.contrib.auth import authenticate as django_authenticate
 from core.models import *
+from xos.exceptions import *
 
 class XosService(xos_pb2.xosServicer):
     def __init__(self, thread_pool):
@@ -113,36 +116,69 @@ class XosService(xos_pb2.xosServicer):
         obj = djangoClass.objects.get(id=id)
         return self.objToProto(obj)
 
-    def create(self, djangoClass, request):
+    def create(self, djangoClass, user, request):
         args = self.protoToArgs(djangoClass, request)
         new_obj = djangoClass(**args)
+        new_obj.caller = user
+        if (not user) or (not new_obj.can_update(user)):
+            raise XOSPermissionDenied()
         new_obj.save()
         return self.objToProto(new_obj)
 
-    def update(self, djangoClass, id, message):
+    def update(self, djangoClass, user, id, message):
         obj = djangoClass.objects.get(id=id)
+        obj.caller = user
+        if (not user) or (not obj.can_update(user)):
+            raise XOSPermissionDenied()
         args = self.protoToArgs(djangoClass, message)
         for (k,v) in args.iteritems():
             setattr(obj, k, v)
         obj.save()
         return self.objToProto(obj)
 
+    def delete(self, djangoClass, user, id):
+      obj = djangoClass.objects.get(id=id)
+      if (not user) or (not obj.can_update(user)):
+          raise XOSPermissionDenied()
+      obj.delete()
+      return Empty()
+
+    def authenticate(self, context):
+        for (k, v) in context.invocation_metadata():
+            if (k.lower()=="authorization"):
+                (method, auth) = v.split(" ",1)
+                if (method.lower() == "basic"):
+                    auth = base64.b64decode(auth)
+                    (username, password) = auth.split(":")
+                    user = django_authenticate(username=username, password=password)
+                    if not user:
+                        raise Exception("failed to authenticate %s:%s" % (username, password))
+                    print "authenticated %s:%s as %s" % (username, password, user)
+                    return user
+
+        return None
+
+
 {% for object in generator.all() %}
     def List{{ object.camel() }}(self, request, context):
+      user=self.authenticate(context)
       return self.querysetToProto({{ object.camel() }}, {{ object.camel() }}.objects.all())
 
     def Get{{ object.camel() }}(self, request, context):
+      user=self.authenticate(context)
       return self.get({{ object.camel() }}, request.id)
 
     def Create{{ object.camel() }}(self, request, context):
-      return self.create({{ object.camel() }}, request)
+      user=self.authenticate(context)
+      return self.create({{ object.camel() }}, user, request)
 
     def Delete{{ object.camel() }}(self, request, context):
-      {{ object.camel() }}.objects.get(id=request.id).delete()
-      return Empty()
+      user=self.authenticate(context)
+      return self.delete({{ object.camel() }}, user, request.id)
 
     def Update{{ object.camel() }}(self, request, context):
-      return self.update({{ object.camel() }}, request.id, request)
+      user=self.authenticate(context)
+      return self.update({{ object.camel() }}, user, request.id, request)
 
 {% endfor %}
 

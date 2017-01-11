@@ -1,16 +1,19 @@
-import grpc
-from protos import common_pb2
-from protos import xos_pb2
-from protos import xos_pb2_grpc
-from google.protobuf.empty_pb2 import Empty
+import grpc_client
+from grpc_client import Empty
 
-channel = grpc.insecure_channel("localhost:50055")
-stub = xos_pb2_grpc.xosStub(channel)
+c=grpc_client.InsecureClient("localhost")
 
 {% for object in generator.all() %}
-print "List{{ object.camel() }}...",
-stub.List{{ object.camel() }}(Empty())
+print "testing insecure List{{ object.camel() }}...",
+c.stub.List{{ object.camel() }}(Empty())
 print "Okay"
 {%- endfor %}
 
+c=grpc_client.SecureClient("localhost", username="padmin@vicci.org", password="letmein")
+
+{% for object in generator.all() %}
+print "testing secure List{{ object.camel() }}...",
+c.stub.List{{ object.camel() }}(Empty())
+print "Okay"
+{%- endfor %}
 
