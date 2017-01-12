@@ -40,10 +40,10 @@ class SecureClient(XOSClient):
         self.stub = xos_pb2_grpc.xosStub(self.channel)
 
 def main():  # self-test
-    client = InsecureClient("localhost")
+    client = InsecureClient("xos-core.cord.lab")
     print client.stub.ListUser(Empty())
 
-    client = SecureClient("localhost", username="padmin@vicci.org", password="letmein")
+    client = SecureClient("xos-core.cord.lab", username="padmin@vicci.org", password="letmein")
     print client.stub.ListUser(Empty())
 
 if __name__=="__main__":

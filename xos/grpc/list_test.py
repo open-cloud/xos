@@ -1,7 +1,7 @@
 import grpc_client
 from grpc_client import Empty
 
-c=grpc_client.InsecureClient("localhost")
+c=grpc_client.InsecureClient("xos-core.cord.lab")
 
 
 print "testing insecure ListServiceControllerResource...",
@@ -251,7 +251,7 @@ print "testing insecure ListUser...",
 c.stub.ListUser(Empty())
 print "Okay"
 
-c=grpc_client.SecureClient("localhost", username="padmin@vicci.org", password="letmein")
+c=grpc_client.SecureClient("xos-core.cord.lab", username="padmin@vicci.org", password="letmein")
 
 
 print "testing secure ListServiceControllerResource...",

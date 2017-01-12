@@ -333,26 +333,29 @@ class XOSBuilder(object):
         if xos.redis_container_name:
             external_links.append("%s:%s" % (xos.redis_container_name, "redis"))
 
+        # eventually xos_ui will go away, and only xos_core shall remain.
+
         containers["xos_ui"] = {
             "image": "xosproject/xos-ui",
             "command": "python /opt/xos/manage.py runserver 0.0.0.0:%d --insecure --makemigrations" % xos.ui_port,
             "networks": networks,
             "ports": {"%d" % xos.ui_port: "%d" % xos.ui_port},
-            # "links": ["xos_db"],
-            # "external_links": ["%s:%s" % (xos.db_container_name, "xos_db")],
+            "external_links": external_links,
+            "extra_hosts": extra_hosts,
+            "volumes": volume_list}
+
+        containers["xos_core"] = {
+            "image": "xosproject/xos-ui",
+            "command": 'bash -c "cd grpc; bash ./start_grpc_server.sh"',
+            "networks": networks,
+            "ports": {"50055": "50055", "50051" : "50051"},
             "external_links": external_links,
             "extra_hosts": extra_hosts,
             "volumes": volume_list}
 
         if xos.no_start:
             containers["xos_ui"]["command"] = "sleep 864000"
-
-#         containers["xos_bootstrap_ui"] = {"image": "xosproject/xos",
-#                             "command": "python /opt/xos/manage.py runserver 0.0.0.0:%d --insecure --makemigrations" % xos.bootstrap_ui_port,
-#                             "ports": {"%d"%xos.bootstrap_ui_port : "%d"%xos.bootstrap_ui_port},
-#                             #"external_links": ["%s:%s" % (xos.db_container_name, "xos_db")],
-#                             "links": ["xos_db"],
-#                             "volumes": volume_list}
+            containers["xos_core"]["command"] = "sleep 864000"
 
         # creating Component containers
         for c in XOSComponent.objects.all():
