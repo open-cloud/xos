@@ -370,9 +370,9 @@ class XOSBuilder(object):
                     component_external_links.append("%s:%s" % (l.container, l.alias))
 
             # creating volumes list
-            volume_list = []
+            component_volume_list = []
             for volume in c.volumes.all():
-                volume_list.append({"host_path": volume.host_path,
+                component_volume_list.append({"host_path": volume.host_path,
                                     "container_path": volume.container_path,
                                     "read_only": volume.read_only})
 
@@ -386,7 +386,7 @@ class XOSBuilder(object):
                 },
                 "links": component_links,
                 "external_links": component_external_links,
-                "volumes": volume_list
+                "volumes": component_volume_list
             }
 
         if not xos.frontend_only:
