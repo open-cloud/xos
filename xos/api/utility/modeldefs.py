@@ -84,6 +84,8 @@ class ModelDefsList(APIView):
                     fieldtype = self.convertType(f.get_internal_type())
                     if fieldtype is not None:
                         field['type'] = fieldtype
+                    else:
+                        field['type'] = 'string'
 
                     if not f.blank and not f.null:
                         field['validators']['required'] = True
