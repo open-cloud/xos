@@ -216,6 +216,12 @@ class XOSComponentLink(PlCoreBase):
     alias = StrippedCharField(max_length=200, help_text="alias for the link")
     kind = models.CharField(max_length=20, choices=LINK_KIND, default='internal')
 
+    def save(self, *args, **kwds):
+        existing = XOSComponentLink.objects.filter(container=self.container, alias=self.alias)
+        if len(existing) > 0:
+            raise XOSValidationError('XOSComponentLink for %s:%s already defined' % (self.container, self.alias))
+        super(XOSComponentLink, self).save(*args, **kwds)
+
 
 # NOTE can this be the same of XOSVolume??
 class XOSComponentVolume(PlCoreBase):
@@ -224,6 +230,12 @@ class XOSComponentVolume(PlCoreBase):
     container_path = StrippedCharField(max_length=1024, unique=True, help_text="Path of Volume in Container")
     host_path = StrippedCharField(max_length=1024, help_text="Path of Volume in Host")
     read_only = models.BooleanField(default=False, help_text="True if mount read-only")
+
+    def save(self, *args, **kwds):
+        existing = XOSComponentVolume.objects.filter(container_path=self.container_path, host_path=self.host_path)
+        if len(existing) > 0:
+            raise XOSValidationError('XOSComponentVolume for %s:%s already defined' % (self.container_path, self.host_path))
+        super(XOSComponentVolume, self).save(*args, **kwds)
 
 
 class ServiceController(LoadableModule):
