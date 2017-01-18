@@ -104,11 +104,20 @@
          */
         this.chartMeters = [];
         this.addMeterToChart = (resource_id) => {
-          this.chart['labels'] = this.getLabels(_.sortBy(this.samplesList[resource_id], 'timestamp'));
-          this.chart['series'].push(resource_id);
-          this.chart['data'].push(this.getData(_.sortBy(this.samplesList[resource_id], 'timestamp')));
-          this.chartMeters.push(this.samplesList[resource_id][0]); //use the 0 as are all samples for the same resource and I need the name
-          _.remove(this.sampleLabels, {id: resource_id});
+          const resourcePos = _.findIndex(this.chartMeters, m => m.resource_id === resource_id);
+          // if this meter is not yet rendered
+          if (resourcePos < 0) {
+            this.chart['data'].push(this.getData(_.sortBy(this.samplesList[resource_id], 'timestamp')));
+            this.chart['labels'] = this.getLabels(_.sortBy(this.samplesList[resource_id], 'timestamp'));
+            this.chart['series'].push(resource_id);
+            this.chartMeters.push(this.samplesList[resource_id][0]); //use the 0 as are all samples for the same resource and I need the name
+            _.remove(this.sampleLabels, {id: resource_id});
+          }
+          else {
+            this.chart['data'][resourcePos] = this.getData(_.sortBy(this.samplesList[resource_id], 'timestamp'));
+            this.chart['labels'] = this.getLabels(_.sortBy(this.samplesList[resource_id], 'timestamp'));
+            this.chart['series'][resourcePos] = resource_id;
+          }
         }
 
         this.removeFromChart = (meter) => {
