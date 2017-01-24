@@ -7,7 +7,7 @@ import time
 from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
-from synchronizers.base.ansible import run_template_ssh
+from synchronizers.base.ansible_helper import run_template_ssh
 from core.models import Service, Slice, ControllerSlice, ControllerUser, ModelLink, CoarseTenant, Tenant, ServiceMonitoringAgentInfo
 from xos.logger import Logger, logging
 

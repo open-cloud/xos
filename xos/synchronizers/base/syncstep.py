@@ -8,7 +8,7 @@ from synchronizers.base.steps import *
 from django.db.models import F, Q
 from core.models import *
 from django.db import reset_queries
-from synchronizers.base.ansible import *
+from synchronizers.base.ansible_helper import *
 from generate.dependency_walker import *
 from diag import update_diag
 

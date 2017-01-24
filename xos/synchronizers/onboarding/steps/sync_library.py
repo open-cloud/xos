@@ -6,7 +6,7 @@ from xos.config import Config
 from synchronizers.base.syncstep import SyncStep, DeferredException
 from core.models import XOS, Library
 from xos.logger import Logger, logging
-from synchronizers.base.ansible import run_template
+from synchronizers.base.ansible_helper import run_template
 
 # xosbuilder will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")
