@@ -148,21 +148,22 @@ class SyncInstanceUsingAnsible(SyncStep):
 
         fields["private_key"] = key
 
-        # now the ceilometer stuff
+        # Now the ceilometer stuff
+        # Only do this if the instance is not being deleted.
+        if not instance.deleted:
+            cslice = ControllerSlice.objects.get(slice=instance.slice)
+            if not cslice:
+                raise Exception("Controller slice object for %s does not exist" % instance.slice.name)
 
-        cslice = ControllerSlice.objects.get(slice=instance.slice)
-        if not cslice:
-            raise Exception("Controller slice object for %s does not exist" % instance.slice.name)
+            cuser = ControllerUser.objects.get(user=instance.creator)
+            if not cuser:
+                raise Exception("Controller user object for %s does not exist" % instance.creator)
 
-        cuser = ControllerUser.objects.get(user=instance.creator)
-        if not cuser:
-            raise Exception("Controller user object for %s does not exist" % instance.creator)
-
-        fields.update({"keystone_tenant_id": cslice.tenant_id,
-                       "keystone_user_id": cuser.kuser_id,
-                       "rabbit_user": getattr(instance.controller,"rabbit_user", None),
-                       "rabbit_password": getattr(instance.controller, "rabbit_password", None),
-                       "rabbit_host": getattr(instance.controller, "rabbit_host", None)})
+            fields.update({"keystone_tenant_id": cslice.tenant_id,
+                           "keystone_user_id": cuser.kuser_id,
+                           "rabbit_user": getattr(instance.controller,"rabbit_user", None),
+                           "rabbit_password": getattr(instance.controller, "rabbit_password", None),
+                           "rabbit_host": getattr(instance.controller, "rabbit_host", None)})
 
         return fields
 
@@ -237,6 +238,10 @@ class SyncInstanceUsingAnsible(SyncStep):
             # the instance is gone. There's nothing left for us to do.
             return
 
+        if instance.deleted:
+            # the instance is being deleted. There's nothing left for us to do.
+            return
+
         if isinstance(instance, basestring):
             # sync to some external host
 
@@ -258,14 +263,14 @@ class SyncInstanceUsingAnsible(SyncStep):
             for attribute_name in o.sync_attributes:
                 fields[attribute_name] = getattr(o, attribute_name)
 
-        fields.update(self.map_delete_inputs(o))
+        if hasattr(self, "map_delete_inputs"):
+            fields.update(self.map_delete_inputs(o))
 
         fields['delete']=True
         res = self.run_playbook(o,fields)
-        try:
-                self.map_delete_outputs(o,res)
-        except AttributeError:
-                pass
+
+        if hasattr(self, "map_delete_outputs"):
+            self.map_delete_outputs(o,res)
 
     #In order to enable the XOS watcher functionality for a synchronizer, define the 'watches' attribute 
     #in the derived class: eg. watches = [ModelLink(CoarseTenant,via='coarsetenant')]

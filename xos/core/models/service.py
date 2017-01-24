@@ -821,78 +821,39 @@ class ContainerVmScheduler(Scheduler):
 
 
 class TenantWithContainer(Tenant):
-    """ A tenant that manages a container """
+    """ A tenant that manages an Instance
+        Note: Should probably be called TenantWithInstance instead of TenantWithContainer
+    """
 
-    class Meta:
-        proxy = True
+    instance = models.ForeignKey("Instance", related_name='+', help_text="Instance used by this Tenant", null=True, blank=True)
+    creator = models.ForeignKey("User", related_name='+', help_text="Creator of this Tenant", null=True, blank=True)
+    external_hostname = StrippedCharField(max_length=30, help_text="External host name", null=True, blank=True) # is this still used?
+    external_container = StrippedCharField(max_length=30, help_text="External host name", null=True, blank=True) # is this still used?
 
     def __init__(self, *args, **kwargs):
         super(TenantWithContainer, self).__init__(*args, **kwargs)
-        self.cached_instance = None
-        self.orig_instance_id = self.get_initial_attribute("instance_id")
 
-    @property
-    def instance(self):
-        from core.models import Instance
-        if getattr(self, "cached_instance", None):
-            return self.cached_instance
-        instance_id = self.get_attribute("instance_id")
-        if not instance_id:
-            return None
-        instances = Instance.objects.filter(id=instance_id)
-        if not instances:
-            return None
-        instance = instances[0]
-        instance.caller = self.creator
-        self.cached_instance = instance
-        return instance
+        # vSG service relies on knowing when instance id has changed
+        self.orig_instance_id = self.get_attribute("instance_id")
 
-    @instance.setter
-    def instance(self, value):
-        if value:
-            value = value.id
-        if (value != self.get_attribute("instance_id", None)):
-            self.cached_instance = None
-        self.set_attribute("instance_id", value)
+    # vSG service relies on instance_id attribute
+    def get_attribute(self, name, default=None):
+        if name=="instance_id":
+            if self.instance:
+                return self.instance.id
+            else:
+                return None
+        else:
+            return super(TenantWithContainer, self).get_attribute(name, default)
 
-    @property
-    def external_hostname(self):
-        return self.get_attribute("external_hostname", "")
-
-    @external_hostname.setter
-    def external_hostname(self, value):
-        self.set_attribute("external_hostname", value)
-
-    @property
-    def external_container(self):
-        return self.get_attribute("external_container", "")
-
-    @external_container.setter
-    def external_container(self, value):
-        self.set_attribute("external_container", value)
-
-    @property
-    def creator(self):
-        from core.models import User
-        if getattr(self, "cached_creator", None):
-            return self.cached_creator
-        creator_id = self.get_attribute("creator_id")
-        if not creator_id:
-            return None
-        users = User.objects.filter(id=creator_id)
-        if not users:
-            return None
-        user = users[0]
-        self.cached_creator = users[0]
-        return user
-
-    @creator.setter
-    def creator(self, value):
-        if value:
-            value = value.id
-        if (value != self.get_attribute("creator_id", None)):
-            self.cached_creator = None
-        self.set_attribute("creator_id", value)
+    # Services may wish to override the image() function to return different
+    # images based on criteria in the tenant object. For example,
+    #    if (self.has_feature_A):
+    #        return Instance.object.get(name="image_with_feature_a")
+    #    elif (self.has_feature_B):
+    #        return Instance.object.get(name="image_with_feature_b")
+    #    else:
+    #        return super(MyTenantClass,self).image()
 
     @property
     def image(self):

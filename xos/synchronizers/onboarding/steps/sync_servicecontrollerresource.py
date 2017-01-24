@@ -28,10 +28,21 @@ class SyncServiceControllerResource(SyncStep, XOSBuilder):
         logger.info("Sync'ing ServiceControllerResource %s" % scr)
         self.download_resource(scr)
 
+        # TODO: The following should be redone with watchers
+
         if scr.loadable_module and scr.loadable_module.xos:
             # Make sure the xos UI is resynced
             xos = scr.loadable_module.xos
             xos.save(update_fields=["updated"], always_update_timestamp=True)
+
+        if (scr.kind=="models") and scr.loadable_module and (scr.loadable_module.name != "openstack"):
+            # Make sure the openstack controller is restarted. This is necessary
+            # as the OpenStack controller is the only one that handles model
+            # policies.
+            os_scr = ServiceController.objects.filter(name="openstack")
+            if os_scr:
+                os_scr = os_scr[0]
+                os_scr.save(update_fields=["updated"], always_update_timestamp=True)
 
     def delete_record(self, m):
         pass

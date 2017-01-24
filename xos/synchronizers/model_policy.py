@@ -156,7 +156,16 @@ def has_deleted_dependencies(m):
     for (k, models) in collector.data.items():
         for model in models:
             if model==m:
+                # collector will return ourself; ignore it.
                 continue
+            if issubclass(m.__class__, model.__class__):
+                # collector will return our parent classes; ignore them.
+                continue
+# We don't actually need this check, as with multiple passes the reaper can
+# clean up a hierarchy of objects.
+#            if getattr(model, "backend_need_reap", False):
+#                # model is already marked for reaping; ignore it.
+#                continue
             deps.append(model)
     return deps
 
