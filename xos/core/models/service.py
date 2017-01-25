@@ -87,9 +87,9 @@ class LoadableModule(PlCoreBase):
 
        # This is necessary, as the XOS syncstep handles rerunning the docker-
        # compose.
+       # TODO: Update synchronizer and replace with watcher functionality
        if self.xos:
            # force XOS to rebuild
-           # XXX somewhat hackish XXX
            self.xos.save(update_fields=["updated"])
 
     def get_provides_list(self):

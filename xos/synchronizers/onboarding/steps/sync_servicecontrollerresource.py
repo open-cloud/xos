@@ -39,6 +39,9 @@ class SyncServiceControllerResource(SyncStep, XOSBuilder):
             # Make sure the openstack controller is restarted. This is necessary
             # as the OpenStack controller is the only one that handles model
             # policies.
+            #
+            # Note: Expect to resolve this dependence as part of XOS refactoring.
+            #
             os_scr = ServiceController.objects.filter(name="openstack")
             if os_scr:
                 os_scr = os_scr[0]

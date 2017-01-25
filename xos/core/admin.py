@@ -1132,6 +1132,12 @@ class LibraryAdmin(XOSBaseAdmin):
                       ('resources', 'Resources'),
                       )
 
+class XOSVolumeInline(XOSTabularInline):
+    model = XOSVolume
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-volumes'
+    fields = ['container_path', 'host_path', 'read_only']
+
 class XosModelAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name",)
     list_display_links = ('backend_status_icon', 'name',)
@@ -1139,12 +1145,13 @@ class XosModelAdmin(XOSBaseAdmin):
                  "source_ui_image", "extra_hosts", "no_start"]
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
-    inlines = []
+    inlines = [XOSVolumeInline]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = fieldList
 
     suit_form_tabs = (('general', 'XOS Details'),
+                      ('volumes', 'Volume Mounts'),
                       )
 
 
