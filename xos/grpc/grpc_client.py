@@ -6,6 +6,8 @@ from protos import xos_pb2_grpc
 from google.protobuf.empty_pb2 import Empty
 from grpc import metadata_call_credentials, ChannelCredentials, composite_channel_credentials, ssl_channel_credentials
 
+SERVER_CA="/usr/local/share/ca-certificates/local_certs.crt"
+
 class UsernamePasswordCallCredentials(grpc.AuthMetadataPlugin):
   """Metadata wrapper for raw access token credentials."""
   def __init__(self, username, password):
@@ -28,7 +30,7 @@ class InsecureClient(XOSClient):
         self.stub = xos_pb2_grpc.xosStub(self.channel)
 
 class SecureClient(XOSClient):
-    def __init__(self, hostname, port=50051, cacert="certs/ca.crt", username=None, password=None):
+    def __init__(self, hostname, port=50051, cacert=SERVER_CA, username=None, password=None):
         super(SecureClient,self).__init__(hostname, port)
 
         server_ca = open(cacert,"r").read()

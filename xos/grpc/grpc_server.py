@@ -36,6 +36,14 @@ from google.protobuf.empty_pb2 import Empty
 from xos.logger import Logger, logging
 logger = Logger(level=logging.INFO)
 
+SERVER_KEY="/root/setup/core_api_key.pem"
+SERVER_CERT="/root/setup/core_api_cert.pem"
+SERVER_CA="/usr/local/share/ca-certificates/local_certs.crt"
+
+#SERVER_KEY="certs/server.key"
+#SERVER_CERT="certs/server.crt"
+#SERVER_CA="certs/ca.crt"
+
 class SchemaService(schema_pb2.SchemaServiceServicer):
 
     def __init__(self, thread_pool):
@@ -93,9 +101,9 @@ class XOSGrpcServer(object):
         self.thread_pool = futures.ThreadPoolExecutor(max_workers=10)
         self.server = grpc.server(self.thread_pool)
 
-        server_key = open("certs/server.key","r").read()
-        server_cert = open("certs/server.crt","r").read()
-        server_ca = open("certs/ca.crt","r").read()
+        server_key = open(SERVER_KEY,"r").read()
+        server_cert = open(SERVER_CERT,"r").read()
+        server_ca = open(SERVER_CA,"r").read()
 
         self.credentials = grpc.ssl_server_credentials([(server_key, server_cert)], server_ca, False)
 
