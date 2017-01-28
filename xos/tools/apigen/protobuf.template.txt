@@ -5,6 +5,25 @@ package xos;
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "common.proto";
+import "xosoptions.proto";
+
+{%- macro fieldOpts(field) -%}
+  {%- set needComma=False -%}
+  {%- set needBrack=True -%}
+  {%- if field.max_length!=None -%}
+    {%- if needBrack -%}[{%- endif -%}{%- if needComma -%}, {%- endif -%}{%- set needComma=True -%}{%- set needBrack=False -%}
+    (val).maxLength = {{ field.max_length }}
+  {%- endif -%}
+  {%- if field.null==False -%}
+    {%- if needBrack -%}[{%- endif -%}{%- if needComma -%}, {%- endif -%}{%- set needComma=True -%}{%- set needBrack=False -%}
+    (val).nonNull= true
+  {%- endif -%}
+  {%- if field.related and field.related.model and field.related.model.__name__ -%}
+    {%- if needBrack -%}[{%- endif -%}{%- if needComma -%}, {%- endif -%}{%- set needComma=True -%}{%- set needBrack=False -%}
+    (foreignKey).modelName = "{{ field.related.model.__name__ }}"
+  {%- endif -%}
+  {%- if not needBrack -%}]{%- endif -%}
+{%- endmacro %}
 
 // Note: all fields are wrapped in a "oneof". This causes proto3 to always send
 // fields that are set by the caller, regardless if they are set to a default
@@ -16,11 +35,11 @@ message {{ object.camel() }} {
   {%- for field in object.all_fields %}
     oneof {{ field.name }}_present {
     {%- if (field.get_internal_type() == "CharField") or (field.get_internal_type() == "TextField") or (field.get_internal_type() == "SlugField") %}
-      string {{ field.name }} = {{ loop.index }};
+      string {{ field.name }} = {{ loop.index }} {{ fieldOpts(field) }};
     {%- elif field.get_internal_type() == "BooleanField" %}
       bool {{ field.name }} = {{ loop.index }};
     {%- elif field.get_internal_type() == "ForeignKey" %}
-      int32 {{ field.name }}_id = {{ loop.index }};
+      int32 {{ field.name }}_id = {{ loop.index }} {{ fieldOpts(field) }};
     {%- elif field.get_internal_type() == "DateTimeField" %}
       float {{ field.name }} = {{ loop.index }};
     {%- elif field.get_internal_type() == "AutoField" %}

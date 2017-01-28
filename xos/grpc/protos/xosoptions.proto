@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package xos;
+
+import "google/protobuf/descriptor.proto";
+
+message ValRule {
+  int32 maxLength = 1;
+  bool nonNull = 2;
+  bool unique = 3;
+}
+
+message ForeignKeyRule {
+  string modelName = 1;
+}
+
+extend google.protobuf.FieldOptions {
+  ValRule val = 1001;
+  ForeignKeyRule foreignKey = 1002;
+}
