@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package xos;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "common.proto";
+
+// This API is used by the UI to validate fields.
+
+message FieldValidator {
+    string name = 1;
+    oneof val_value {
+        bool bool_value = 2;
+        int32 int_value = 3;
+        string str_value = 4;
+    };
+};
+
+message FieldRelation {
+    string model = 1;
+    string type = 2;
+};
+
+message ModelField {
+    string name = 1;
+    string hint = 2;
+    string type = 3;
+    FieldRelation relation = 4;
+    repeated FieldValidator validators = 5;
+};
+
+message ModelDef {
+    string name = 1;
+    repeated ModelField fields = 2;
+    repeated FieldRelation relations = 3;
+};
+
+message ModelDefs {
+    repeated ModelDef items = 1;
+};
+
+service modeldefs {
+
+  rpc ListModelDefs(google.protobuf.Empty) returns (ModelDefs) {
+        option (google.api.http) = {
+            get: "/api/v1/modeldefs"
+        };
+  }
+};

@@ -2,7 +2,7 @@ import base64
 import grpc
 from protos.common_pb2 import *
 from protos.xos_pb2 import *
-from protos import xos_pb2_grpc
+from protos import xos_pb2_grpc, modeldefs_pb2_grpc
 from google.protobuf.empty_pb2 import Empty
 from grpc import metadata_call_credentials, ChannelCredentials, composite_channel_credentials, ssl_channel_credentials
 
@@ -28,6 +28,7 @@ class InsecureClient(XOSClient):
         super(InsecureClient,self).__init__(hostname, port)
         self.channel = grpc.insecure_channel("%s:%d" % (self.hostname, self.port))
         self.stub = xos_pb2_grpc.xosStub(self.channel)
+        self.modeldefs = modeldefs_pb2_grpc.modeldefsStub(self.channel)
 
 class SecureClient(XOSClient):
     def __init__(self, hostname, port=50051, cacert=SERVER_CA, username=None, password=None):
@@ -40,6 +41,7 @@ class SecureClient(XOSClient):
 
         self.channel = grpc.secure_channel("%s:%d" % (self.hostname, self.port), chan_creds)
         self.stub = xos_pb2_grpc.xosStub(self.channel)
+        self.modeldefs = modeldefs_pb2_grpc.modeldefsStub(self.channel)
 
 def main():  # self-test
     client = InsecureClient("xos-core.cord.lab")
