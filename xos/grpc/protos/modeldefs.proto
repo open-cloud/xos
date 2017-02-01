@@ -44,7 +44,7 @@ service modeldefs {
 
   rpc ListModelDefs(google.protobuf.Empty) returns (ModelDefs) {
         option (google.api.http) = {
-            get: "/api/v1/modeldefs"
+            get: "/xosapi/v1/modeldefs"
         };
   }
 };

@@ -50,29 +50,29 @@ service xos {
 {% for object in generator.all() %}
   rpc List{{ object.camel() }}(google.protobuf.Empty) returns ({{ object.camel() }}s) {
         option (google.api.http) = {
-            get: "/api/v1/{{ object.plural() }}"
+            get: "/xosapi/v1/{{ object.plural() }}"
         };
   }
   rpc Get{{ object.camel() }}(ID) returns ({{ object.camel() }}) {
         option (google.api.http) = {
-            get: "/api/v1/{{ object.plural() }}/{id}"
+            get: "/xosapi/v1/{{ object.plural() }}/{id}"
         };
   }
   rpc Create{{ object.camel() }}({{ object.camel() }}) returns ({{ object.camel() }}) {
         option (google.api.http) = {
-            post: "/api/v1/{{ object.plural() }}"
+            post: "/xosapi/v1/{{ object.plural() }}"
             body: "*"
         };
   }
   rpc Update{{ object.camel() }}({{ object.camel() }}) returns ({{ object.camel() }}) {
         option (google.api.http) = {
-            put: "/api/v1/{{ object.plural() }}/{id}"
+            put: "/xosapi/v1/{{ object.plural() }}/{id}"
             body: "*"
         };
   }
   rpc Delete{{ object.camel() }}(ID) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/api/v1/{{ object.plural() }}/{id}"
+            delete: "/xosapi/v1/{{ object.plural() }}/{id}"
         };
   }
 {% endfor %}
