@@ -103,7 +103,8 @@ class ModelDefsList(APIView):
 
                     fields.append(field)
 
-                    if f.is_relation and f.related_model:
+                    if f.is_relation and f.related_model and f.related_model.__name__ != 'ContentType':
+                        # ContentType is a Django internal model, we don't want it in the GUI
 
                         # Add the relation details to the model
                         field['relation'] = {

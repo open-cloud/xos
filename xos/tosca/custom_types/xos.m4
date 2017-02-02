@@ -248,19 +248,19 @@ node_types:
             An XOS Component in the form of a docker container.
         properties:
             xos_base_props
-            name:
-                type: string
-                required: true
-                description: the container name
             image:
                 type: string
-                required: true
+                required: false
                 description: the base image for the container
             command:
                 type: string
                 required: false
                 description: the command to execute in the container
             ports:
+                type: string
+                required: false
+                description: ports that need to be exposed
+            extra:
                 type: string
                 required: false
                 description: ports that need to be exposed

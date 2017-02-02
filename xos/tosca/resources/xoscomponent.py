@@ -5,7 +5,7 @@ from core.models import XOSComponent, XOSComponentLink, XOSComponentVolume
 class XOSXOSComponent(XOSResource):
     provides = "tosca.nodes.Component"
     xos_model = XOSComponent
-    copyin_props = ["name", "image", "command", "ports"]
+    copyin_props = ["name", "image", "command", "ports", "extra"]
 
 
 class XOSXOSComponentLink(XOSResource):

@@ -202,6 +202,7 @@ class XOSComponent(LoadableModule):
     image = StrippedCharField(max_length=200, help_text="docker image name")
     command = StrippedCharField(max_length=1024, help_text="docker run command", null=True, blank=True)
     ports = StrippedCharField(max_length=200, help_text="port binding", null=True, blank=True)
+    extra = StrippedCharField(max_length=200, help_text="extra information needed by containers", null=True, blank=True)
 
     no_start = models.BooleanField(help_text="Do not start the Component", default=False)
 
