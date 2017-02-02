@@ -1132,6 +1132,21 @@ class LibraryAdmin(XOSBaseAdmin):
                       ('resources', 'Resources'),
                       )
 
+class XOSComponentAdmin(XOSBaseAdmin):
+    list_display = ("backend_status_icon", "name",)
+    list_display_links = ('backend_status_icon', 'name',)
+    fieldList = ["backend_status_text", "name", "xos", "version", "provides", "requires", "base_url", "no_start"]
+    fieldsets = [
+        (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
+    inlines = [LoadableModuleResourceInline]
+    readonly_fields = ('backend_status_text', )
+
+    user_readonly_fields = fieldList
+
+    suit_form_tabs = (('general', 'Component Details'),
+                      ('resources', 'Resources'),
+                      )
+
 class XOSVolumeInline(XOSTabularInline):
     model = XOSVolume
     extra = 0
@@ -2519,6 +2534,7 @@ admin.site.register(Slice, SliceAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(ServiceController, ServiceControllerAdmin)
 admin.site.register(Library, LibraryAdmin)
+admin.site.register(XOSComponent, XOSComponentAdmin)
 admin.site.register(XOS, XosModelAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Port, PortAdmin)

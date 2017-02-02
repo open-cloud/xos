@@ -203,6 +203,8 @@ class XOSComponent(LoadableModule):
     command = StrippedCharField(max_length=1024, help_text="docker run command", null=True, blank=True)
     ports = StrippedCharField(max_length=200, help_text="port binding", null=True, blank=True)
 
+    no_start = models.BooleanField(help_text="Do not start the Component", default=False)
+
 
 class XOSComponentLink(PlCoreBase):
 
@@ -242,7 +244,7 @@ class ServiceController(LoadableModule):
     synchronizer_run = StrippedCharField(max_length=1024, help_text="synchronizer run command", null=True, blank=True)
     synchronizer_config = StrippedCharField(max_length=1024, help_text="synchronizer config file", null=True, blank=True)
 
-    no_start = models.BooleanField(help_text="Do not start the XOS UI inside of the UI docker container", default=False)
+    no_start = models.BooleanField(help_text="Do not start the Synchronizer", default=False)
 
 class ServiceControllerResource(LoadableModuleResource):
     class Meta:

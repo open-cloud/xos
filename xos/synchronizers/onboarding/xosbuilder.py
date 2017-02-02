@@ -389,6 +389,9 @@ class XOSBuilder(object):
                 "volumes": component_volume_list
             }
 
+            if c.no_start:
+                containers[c.name]["command"] = "sleep 864000"
+
         if not xos.frontend_only:
             for c in ServiceController.objects.all():
                 if self.check_controller_unready(c):
