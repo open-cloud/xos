@@ -59,7 +59,7 @@ class SyncXOS(SyncStep, XOSBuilder):
                          "ansible_tag": xos.__class__.__name__ + "_" + str(xos.id)}
 
         path="XOS"
-        res = run_template(self.playbook, tenant_fields, path=path)
+        res = run_template(self.playbook, tenant_fields, path=path, object=xos)
 
     def delete_record(self, m):
         pass

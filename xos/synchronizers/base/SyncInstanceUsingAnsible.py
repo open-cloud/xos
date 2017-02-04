@@ -61,7 +61,7 @@ class SyncInstanceUsingAnsible(SyncStep):
         if not template_name:
             template_name = self.template_name
         tStart = time.time()
-        run_template_ssh(template_name, fields)
+        run_template_ssh(template_name, fields, object=o)
         logger.info("playbook execution time %d" % int(time.time()-tStart),extra=o.tologdict())
 
     def pre_sync_hook(self, o, fields):

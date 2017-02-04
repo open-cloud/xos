@@ -47,7 +47,7 @@ class SyncServiceController(SyncStep, XOSBuilder):
                          "ansible_tag": sc.__class__.__name__ + "_" + str(sc.id)}
 
         path="servicecontroller"
-        res = run_template(self.playbook, tenant_fields, path=path)
+        res = run_template(self.playbook, tenant_fields, path=path, object=sc)
 
     def delete_record(self, m):
         pass

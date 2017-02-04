@@ -160,7 +160,7 @@ class SyncStep(object):
             main_objs=main_objs[0]
 
         path = ''.join(main_objs.__name__).lower()
-        res = run_template(self.playbook,tenant_fields,path=path)
+        res = run_template(self.playbook,tenant_fields,path=path, object=o)
 
         if hasattr(self, "map_sync_outputs"):
             self.map_sync_outputs(o,res)
