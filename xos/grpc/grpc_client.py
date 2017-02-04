@@ -2,7 +2,8 @@ import base64
 import grpc
 from protos.common_pb2 import *
 from protos.xos_pb2 import *
-from protos import xos_pb2_grpc, modeldefs_pb2_grpc
+from protos.utility_pb2 import *
+from protos import xos_pb2_grpc, modeldefs_pb2_grpc, utility_pb2_grpc
 from google.protobuf.empty_pb2 import Empty
 from grpc import metadata_call_credentials, ChannelCredentials, composite_channel_credentials, ssl_channel_credentials
 
@@ -18,6 +19,14 @@ class UsernamePasswordCallCredentials(grpc.AuthMetadataPlugin):
         metadata = (('Authorization', basic_auth),)
         callback(metadata, None)
 
+class SessionIdCallCredentials(grpc.AuthMetadataPlugin):
+  """Metadata wrapper for raw access token credentials."""
+  def __init__(self, sessionid):
+        self._sessionid = sessionid
+  def __call__(self, context, callback):
+        metadata = (('x-xossession', self._sessionid),)
+        callback(metadata, None)
+
 class XOSClient(object):
     def __init__(self, hostname, port):
         self.hostname = hostname
@@ -29,19 +38,24 @@ class InsecureClient(XOSClient):
         self.channel = grpc.insecure_channel("%s:%d" % (self.hostname, self.port))
         self.stub = xos_pb2_grpc.xosStub(self.channel)
         self.modeldefs = modeldefs_pb2_grpc.modeldefsStub(self.channel)
+        self.utility = utility_pb2_grpc.utilityStub(self.channel)
 
 class SecureClient(XOSClient):
-    def __init__(self, hostname, port=50051, cacert=SERVER_CA, username=None, password=None):
+    def __init__(self, hostname, port=50051, cacert=SERVER_CA, username=None, password=None, sessionid=None):
         super(SecureClient,self).__init__(hostname, port)
 
         server_ca = open(cacert,"r").read()
-        call_creds = metadata_call_credentials(UsernamePasswordCallCredentials(username, password))
+        if (sessionid):
+            call_creds = metadata_call_credentials(SessionIdCallCredentials(sessionid))
+        else:
+            call_creds = metadata_call_credentials(UsernamePasswordCallCredentials(username, password))
         chan_creds = ssl_channel_credentials(server_ca)
         chan_creds = composite_channel_credentials(chan_creds, call_creds)
 
         self.channel = grpc.secure_channel("%s:%d" % (self.hostname, self.port), chan_creds)
         self.stub = xos_pb2_grpc.xosStub(self.channel)
         self.modeldefs = modeldefs_pb2_grpc.modeldefsStub(self.channel)
+        self.utility = utility_pb2_grpc.utilityStub(self.channel)
 
 def main():  # self-test
     client = InsecureClient("xos-core.cord.lab")

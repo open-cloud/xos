@@ -29,9 +29,10 @@ import django
 sys.path.append('/opt/xos')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 
-from protos import xos_pb2, schema_pb2, modeldefs_pb2
+from protos import xos_pb2, schema_pb2, modeldefs_pb2, utility_pb2
 from xos_grpc_api import XosService
 from xos_modeldefs_api import ModelDefsService
+from xos_utility_api import UtilityService
 from google.protobuf.empty_pb2 import Empty
 
 from xos.logger import Logger, logging
@@ -118,6 +119,7 @@ class XOSGrpcServer(object):
             (schema_pb2.add_SchemaServiceServicer_to_server, SchemaService),
             (xos_pb2.add_xosServicer_to_server, XosService),
             (modeldefs_pb2.add_modeldefsServicer_to_server, ModelDefsService),
+            (utility_pb2.add_utilityServicer_to_server, UtilityService),
         ):
             service = service_class(self.thread_pool)
             self.register(activator_func, service)

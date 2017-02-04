@@ -7,6 +7,10 @@ from django.contrib.auth import authenticate as django_authenticate
 from core.models import *
 from xos.exceptions import *
 
+from importlib import import_module
+from django.conf import settings
+SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
+
 class XOSAPIHelperMixin(object):
     def getProtoClass(self, djangoClass):
         pClass = getattr(xos_pb2, djangoClass.__name__)
@@ -146,9 +150,18 @@ class XOSAPIHelperMixin(object):
                     (username, password) = auth.split(":")
                     user = django_authenticate(username=username, password=password)
                     if not user:
-                        raise Exception("failed to authenticate %s:%s" % (username, password))
+                        raise XOSPermissionDenied("failed to authenticate %s:%s" % (username, password))
                     print "authenticated %s:%s as %s" % (username, password, user)
                     return user
+            elif (k.lower()=="x-xossession"):
+                 s = SessionStore(session_key=v)
+                 id = s.get("_auth_user_id", None)
+                 if not id:
+                     raise XOSPermissionDenied("failed to authenticate token %s" % v)
+                 user = User.objects.get(id=id)
+                 print "authenticated sessionid %s as %s" % (v, user)
+                 return user
+
 
         return None
 
