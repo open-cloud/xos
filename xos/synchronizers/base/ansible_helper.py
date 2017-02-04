@@ -10,83 +10,14 @@ import re
 import traceback
 import subprocess
 from xos.config import Config, XOS_DIR
-from xos.logger import observer_logger
+from xos.logger import observer_logger as logger
+from ansible_runner import *
 
 step_dir = Config().observer_steps_dir
 sys_dir = Config().observer_sys_dir
 
 os_template_loader = jinja2.FileSystemLoader( searchpath=[step_dir, "/opt/xos/synchronizers/shared_templates"])
 os_template_env = jinja2.Environment(loader=os_template_loader)
-
-def parse_output(msg):
-    lines = msg.splitlines()
-    results = []
-
-    observer_logger.info(msg)
-
-    for l in lines:
-        magic_str = 'ok: [127.0.0.1] => '
-        magic_str2 = 'changed: [127.0.0.1] => '
-        magic_str3 = 'ok: [localhost] => '
-        magic_str4 = 'changed: [localhost] => '
-        if (l.startswith(magic_str)):
-            w = len(magic_str)
-            str = l[w:]
-
-            # handle ok: [127.0.0.1] => (item=org.onosproject.driver) => {...
-            if str.startswith("(") and (" => {" in str):
-                str = str.split("=> ",1)[1]
-
-            d = json.loads(str)
-            results.append(d)
-        elif (l.startswith(magic_str2)):
-            w = len(magic_str2)
-            str = l[w:]
-
-            if str.startswith("(") and (" => {" in str):
-                str = str.split("=> ",1)[1]
-
-            d = json.loads(str)
-            results.append(d)
-        elif (l.startswith(magic_str3)):
-            w = len(magic_str3)
-            str = l[w:]
-
-            # handle ok: [127.0.0.1] => (item=org.onosproject.driver) => {...
-            if str.startswith("(") and (" => {" in str):
-                str = str.split("=> ",1)[1]
-
-            d = json.loads(str)
-            results.append(d)
-        elif (l.startswith(magic_str4)):
-            w = len(magic_str4)
-            str = l[w:]
-
-            if str.startswith("(") and (" => {" in str):
-                str = str.split("=> ",1)[1]
-
-            d = json.loads(str)
-            results.append(d)
-
-
-    return results
-
-def parse_unreachable(msg):
-    total_unreachable=0
-    total_failed=0
-    for l in msg.splitlines():
-        x = re.findall('ok=([0-9]+).*changed=([0-9]+).*unreachable=([0-9]+).*failed=([0-9]+)', l)
-        if x:
-            (ok, changed, unreachable, failed) = x[0]
-            ok=int(ok)
-            changed=int(changed)
-            unreachable=int(unreachable)
-            failed=int(failed)
-
-            total_unreachable += unreachable
-            total_failed += failed
-    return {'unreachable':total_unreachable,'failed':total_failed}
-
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
@@ -115,7 +46,7 @@ def get_playbook_fn(opts, path):
 
     return (opts, os.path.join(pathed_sys_dir,objname))
 
-def run_template(name, opts, path='', expected_num=None, ansible_config=None, ansible_hosts=None, run_ansible_script=None):
+def run_template(name, opts, path='', expected_num=None, ansible_config=None, ansible_hosts=None, run_ansible_script=None, object=None):
     template = os_template_env.get_template(name)
     buffer = template.render(opts)
 
@@ -133,54 +64,64 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
     if ansible_hosts:
        env["ANSIBLE_HOSTS"] = ansible_hosts
 
-    if (not Config().observer_pretend):
-        if not run_ansible_script:
-            run_ansible_script = os.path.join(XOS_DIR, "synchronizers/base/run_ansible")
+    # Dropped support for observer_pretend - to be redone
+    runner = Runner(
+        playbook=fqp,
+        run_data=opts)
+        
 
-        process = subprocess.Popen("%s %s" % (run_ansible_script, shellquote(fqp)), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
-        msg = process.stdout.read()
-        err_msg = process.stderr.read()
-
-        if getattr(Config(), "observer_save_ansible_output", False):
-            try:
-                open(fqp+".out","w").write(msg)
-                open(fqp+".err","w").write(err_msg)
-            except:
-                # fail silently
-                pass
-
-    else:
-        msg = open(fqp+'.out').read()
+    stats,aresults = runner.run()
 
     try:
-        ok_results = parse_output(msg)
+        ok_results = []
+        total_unreachable = 0
+        failed = 0
+
+        error_msg = []
+        for x in aresults:
+            if not x.is_failed() and not x.is_unreachable() and not x.is_skipped():
+                ok_results.append(x)
+            elif x.is_unreachable():
+                total_unreachable+=1
+                try:
+                    error_msg.append(x._result['msg'])
+                except:
+                    pass
+            elif x.is_failed():
+                failed+=1
+                try:
+                    error_msg.append(x._result['msg'])
+                except:
+                    pass
+
+
         if (expected_num is not None) and (len(ok_results) != expected_num):
             raise ValueError('Unexpected num %s!=%d' % (str(expected_num), len(ok_results)) )
 
-        parsed = parse_unreachable(msg)
-        total_unreachable = parsed['unreachable']
-	failed = parsed['failed']
+        #total_unreachable = stats.unreachable
+
 	if (failed):
 		raise ValueError('Ansible playbook failed.')
 
-        if (total_unreachable > 0):
-            raise ValueError("Unreachable results in ansible recipe")
     except ValueError,e:
-        all_fatal = [e.message] + re.findall(r'^msg: (.*)',msg,re.MULTILINE)
-        all_fatal2 = re.findall(r'^ERROR: (.*)',msg,re.MULTILINE)
-        all_fatal3 = re.findall(r'^failed:.*"msg": "(.*)"',msg,re.MULTILINE)
-
-        all_fatal.extend(all_fatal2)
-        all_fatal.extend(all_fatal3)
         try:
-            error = ' // '.join(all_fatal)
+            error = ' // '.join(error_msg)
         except:
             pass
         raise Exception(error)
 
-    return ok_results
+    if (object):
+        oprops = object.tologdict()
+        for i in ok_results:
+            ansible = i._result
+            ansible['ansible'] = 1
+            c = dict(oprops.items() + ansible.items())
+            logger.info(i._task, extra=c)
+            
+    processed_results = map(lambda x:x._result, ok_results)
+    return processed_results[1:] # 0 is setup
 
-def run_template_ssh(name, opts, path='', expected_num=None):
+def run_template_ssh(name, opts, path='', expected_num=None, object=None):
     instance_name = opts["instance_name"]
     hostname = opts["hostname"]
     private_key = opts["private_key"]
@@ -241,7 +182,7 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     print "ANSIBLE_CONFIG=%s" % config_pathname
     print "ANSIBLE_HOSTS=%s" % hosts_pathname
 
-    return run_template(name, opts, path, ansible_config = config_pathname, ansible_hosts = hosts_pathname, run_ansible_script="/opt/xos/synchronizers/base/run_ansible_verbose")
+    return run_template(name, opts, path, ansible_config = config_pathname, ansible_hosts = hosts_pathname, run_ansible_script="/opt/xos/synchronizers/base/run_ansible_verbose", object=object)
 
 
 
