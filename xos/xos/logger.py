@@ -125,7 +125,17 @@ class Logger:
         except:
             pass
 
+        self.sanitize_extra_args(cur)
         return cur
+
+    def sanitize_extra_args(self, extra):
+        illegal_keys = logging.LogRecord(None,None,None,None,None,None,None,None).__dict__.keys()
+        for k in illegal_keys:
+            try:
+                del extra[k]
+                self.logger.warn("*** WARNING: Dropped field %s from extra args ***")
+            except KeyError:
+                pass
 
     def info(self, msg, extra={}):
         extra = self.extract_context(extra) 
