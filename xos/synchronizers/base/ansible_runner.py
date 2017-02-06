@@ -2,6 +2,7 @@
 
 import os
 import sys
+import pdb
 
 from tempfile import NamedTemporaryFile
 from ansible.inventory import Inventory
@@ -10,6 +11,7 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.executor import playbook_executor
 from ansible.utils.display import Display
 from ansible.plugins.callback import CallbackBase
+from xos.logger import observer_logger as logger
 
 
 class ResultCallback(CallbackBase):
@@ -18,6 +20,7 @@ class ResultCallback(CallbackBase):
         self.results = []
 
     def v2_runner_on_ok(self, result, **kwargs):
+        logger.info("OK: %s"%str(result._task))
         self.results.append(result)
     
     def v2_runner_on_failed(self, result, **kwargs):
@@ -85,10 +88,9 @@ class Options(object):
 
 class Runner(object):
 
-    def __init__(self, playbook, run_data, private_key_file=None, verbosity=0):
+    def __init__(self, playbook, run_data, private_key_file=None, verbosity=0, host_file=None):
 
         self.run_data = run_data
-
         self.options = Options()
         self.options.output_file = playbook + '.result'
         self.options.private_key_file = private_key_file
@@ -118,10 +120,14 @@ class Runner(object):
         
         # All the variables from all the various places
         self.variable_manager = VariableManager()
-        self.variable_manager.extra_vars = self.run_data
+        self.variable_manager.extra_vars = {} # self.run_data
 
         # Set inventory, using most of above objects
-        self.inventory = Inventory(loader=self.loader, variable_manager=self.variable_manager)
+        if (host_file):
+            self.inventory = Inventory(loader=self.loader, variable_manager=self.variable_manager, host_list = host_file)
+        else:
+            self.inventory = Inventory(loader=self.loader, variable_manager=self.variable_manager)
+
         self.variable_manager.set_inventory(self.inventory)
 
 

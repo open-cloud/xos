@@ -11,7 +11,6 @@ import traceback
 import subprocess
 from xos.config import Config, XOS_DIR
 from xos.logger import observer_logger as logger
-from ansible_runner import *
 
 step_dir = Config().observer_steps_dir
 sys_dir = Config().observer_sys_dir
@@ -56,19 +55,20 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
     f.write(buffer)
     f.flush()
 
-    # This is messy -- there's no way to specify ansible config file from
-    # the command line, but we can specify it using the environment.
-    env = os.environ.copy()
     if ansible_config:
-       env["ANSIBLE_CONFIG"] = ansible_config
+       os.environ["ANSIBLE_CONFIG"] = ansible_config
     if ansible_hosts:
-       env["ANSIBLE_HOSTS"] = ansible_hosts
+       os.environ["ANSIBLE_HOSTS"] = ansible_hosts
+
+    # This import needs to be here, otherwise ANSIBLE_CONFIG does not take effect
+    from ansible_runner import Runner
+
 
     # Dropped support for observer_pretend - to be redone
     runner = Runner(
         playbook=fqp,
-        run_data=opts)
-        
+        run_data=opts,
+        host_file=ansible_hosts)
 
     stats,aresults = runner.run()
 
