@@ -82,6 +82,7 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
             if not x.is_failed() and not x.is_unreachable() and not x.is_skipped():
                 ok_results.append(x)
             elif x.is_unreachable():
+                failed+=1
                 total_unreachable+=1
                 try:
                     error_msg.append(x._result['msg'])
