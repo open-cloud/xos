@@ -3,7 +3,7 @@
   #gather_facts: False
   connection: ssh
   user: ubuntu
-  sudo: yes
+  become: yes
   vars:
       target_subnet : {{ target_subnet }}
       src_intf_ip : {{ src_intf_ip }}
