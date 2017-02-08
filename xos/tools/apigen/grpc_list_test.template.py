@@ -31,3 +31,10 @@ c.stub.List{{ object.camel() }}(Empty())
 print "Okay"
 {%- endfor %}
 
+c=grpc_client.SecureClient("xos-core.cord.lab", sessionid=session.sessionid)
+{% for object in generator.all() %}
+print "testing session secure xos_orm.{{ object.camel() }}.objects.all() ...",
+c.xos_orm.{{ object.camel() }}.objects.all()
+print "Okay"
+{%- endfor %}
+

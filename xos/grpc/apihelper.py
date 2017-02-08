@@ -61,6 +61,19 @@ class XOSAPIHelperMixin(object):
                 setattr(p_obj, field.name, float(getattr(obj, field.name)))
             elif (ftype == "GenericIPAddressField"):
                 setattr(p_obj, field.name, str(getattr(obj, field.name)))
+
+        for field in obj._meta.related_objects:
+            related_name = field.related_name
+            if not related_name:
+                continue
+            if "+" in related_name:
+                continue
+            rel_objs = getattr(obj, related_name)
+            for rel_obj in rel_objs.all():
+                if not hasattr(p_obj,related_name+"_ids"):
+                    continue
+                x=getattr(p_obj,related_name+"_ids").append(rel_obj.id)
+
         return p_obj
 
     def protoToArgs(self, djangoClass, message):

@@ -1,5 +1,6 @@
 import base64
 import grpc
+import orm
 from protos.common_pb2 import *
 from protos.xos_pb2 import *
 from protos.utility_pb2 import *
@@ -40,6 +41,8 @@ class InsecureClient(XOSClient):
         self.modeldefs = modeldefs_pb2_grpc.modeldefsStub(self.channel)
         self.utility = utility_pb2_grpc.utilityStub(self.channel)
 
+        self.xos_orm = orm.ORMStub(self.stub, "xos")
+
 class SecureClient(XOSClient):
     def __init__(self, hostname, port=50051, cacert=SERVER_CA, username=None, password=None, sessionid=None):
         super(SecureClient,self).__init__(hostname, port)
@@ -56,6 +59,8 @@ class SecureClient(XOSClient):
         self.stub = xos_pb2_grpc.xosStub(self.channel)
         self.modeldefs = modeldefs_pb2_grpc.modeldefsStub(self.channel)
         self.utility = utility_pb2_grpc.utilityStub(self.channel)
+
+        self.xos_orm = orm.ORMStub(self.stub, "xos")
 
 def main():  # self-test
     client = InsecureClient("xos-core.cord.lab")

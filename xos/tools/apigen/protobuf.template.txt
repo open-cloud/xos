@@ -56,6 +56,9 @@ message {{ object.camel() }} {
       UNKNOWN {{ field.get_internal_type() }} {{ field.name }} = {{ loop.index }};
     {%- endif %}
     }
+  {%- endfor -%}
+  {%- for ref in object.reverse_refs %}
+    repeated int32 {{ ref.related_name }}_ids  = {{ loop.index+100 }} [(reverseForeignKey).modelName = "{{ ref.camel() }}"];
   {%- endfor %}
 }
 

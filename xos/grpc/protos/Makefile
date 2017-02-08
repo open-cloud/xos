@@ -85,4 +85,4 @@ rebuild-protos:
 	cd ../../tools/apigen && python ./modelgen -a core protobuf.template.txt > /opt/xos/grpc/protos/xos.proto  
 	cd ../../tools/apigen && python ./modelgen -a core grpc_api.template.py > /opt/xos/grpc/xos_grpc_api.py  
 	cd ../../tools/apigen && python ./modelgen -a core grpc_list_test.template.py > /opt/xos/grpc/list_test.py
-
+	cd ../../tools/apigen && python ./modelgen -a core chameleon_list_test.template.sh > /opt/xos/grpc/tests/chameleon_list_test.sh

@@ -80,6 +80,7 @@ class GenObj(object):
                 self.all_fields = []
 		self.field_dict = []
 		self.refs = []
+                self.reverse_refs = []
 		self.plural_name = None
 
 	def plural(self):
@@ -215,6 +216,20 @@ class Generator(dict):
 					cobj.multi = True
 
 					obj.refs.append(cobj)
+
+                for obj in self.values():
+                        # generate foreign key reverse references
+                        for f in obj.model._meta.related_objects:
+                            related_model = getattr(f, "related_model", None)
+                            if not f.related_name:
+                                continue
+                            if "+" in f.related_name:
+                                continue
+                            if related_model and (related_model.__name__.lower() in self.keys()):
+                                cobj = copy.deepcopy(self[related_model.__name__.lower()])
+                                cobj.related_name = f.related_name
+                                obj.reverse_refs.append(cobj)
+
 
 
 
