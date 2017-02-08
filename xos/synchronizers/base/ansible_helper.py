@@ -139,6 +139,9 @@ def run_template_ssh(name, opts, path='', expected_num=None, object=None):
         except:
             proxy_ssh = True
 
+    if (not ssh_ip):
+        raise Exception('IP of ssh proxy not available. Synchronization deferred')
+
     (opts, fqp) = get_playbook_fn(opts, path)
     private_key_pathname = fqp + ".key"
     config_pathname = fqp + ".config"
