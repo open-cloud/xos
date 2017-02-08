@@ -31,4 +31,5 @@ driver=None
 backoff_disabled=True
 pretend=False
 save_ansible_output=True
+node_key=/opt/cord_profile/node_key
 

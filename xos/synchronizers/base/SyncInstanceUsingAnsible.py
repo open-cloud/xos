@@ -80,7 +80,7 @@ class SyncInstanceUsingAnsible(SyncStep):
         return o.node
 
     def get_node_key(self, node):
-        return "/root/setup/node_key"
+        return getattr(Config(), "observer_node_key", "/opt/cord_profile/node_key")
 
     def get_key_name(self, instance):
         if instance.isolation=="vm":
