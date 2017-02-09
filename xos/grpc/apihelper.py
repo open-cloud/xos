@@ -12,6 +12,16 @@ from django.conf import settings
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
 
 class XOSAPIHelperMixin(object):
+    def __init__(self):
+        import django.apps
+
+        self.models = {}
+        for model in django.apps.apps.get_models():
+            self.models[model.__name__] = model
+
+    def get_model(self, name):
+        return self.models[name]
+
     def getProtoClass(self, djangoClass):
         pClass = getattr(xos_pb2, djangoClass.__name__)
         return pClass

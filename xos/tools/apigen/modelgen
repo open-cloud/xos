@@ -16,6 +16,7 @@ sys.path.append('.')
 sys.path.append('/opt/xos')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.db.models.fields.related import ForeignKey, ManyToManyField
+from django.conf import settings
 
 django.setup()
 
@@ -52,6 +53,13 @@ def enum_classes(apps):
 
             for classname in dir(models_module):
                     c = getattr(models_module, classname, None)
+
+                    # For services, prevent loading of core models as it causes
+                    # duplication.
+                    if hasattr(c,"_meta") and hasattr(c._meta, "app_label"):
+                        if (c._meta.app_label == "core") and (orig_app!="core"):
+                            continue
+
                     if type(c)==type(PlCoreBase) and c.__name__ not in options.blacklist:
                             model_classes.append(c)
                             app_map[c.__name__]=orig_app
@@ -135,7 +143,8 @@ class Generator(dict):
 		obj = GenObj(o)
 		fields = o._meta.fields
                 try:
-                    obj.app = app_map[o.__name__]
+                    obj.app = app_map[o.__name__] # full name
+                    obj.app_name = app_map[o.__name__].split(".")[-1]  # only the last part
                 except KeyError:
                     print "KeyError: %r"%o.__name__
                 obj.class_name = o.class_name
@@ -231,8 +240,23 @@ class Generator(dict):
                                 obj.reverse_refs.append(cobj)
 
 
+def app_has_models(app):
+    """ check whether 'app' includes XOS models """
 
+    app = app + ".models"
+    try:
+        models_module = __import__(app)
+    except ImportError:
+        return False
+    for part in app.split(".")[1:]:
+        if hasattr(models_module, "PlCoreBase"):
+            return True
+        models_module = getattr(models_module,part)
 
+    if hasattr(models_module, "PlCoreBase"):
+        return True
+
+    return False
 
 def main():
         global options
@@ -250,13 +274,6 @@ def main():
 
         (options, args) = parser.parse_args(sys.argv[1:])
 
-        if not options.apps:
-            options.apps = ["core"]
-
-        if len(args)!=1:
-            print 'Usage: modelgen [options] <template_fn>'
-            exit(1)
-
         template_name = os.path.abspath(args[0])
 
         # try to make sure we're running from the right place
@@ -268,6 +285,16 @@ def main():
             else:
                 print >> sys.stderr, "Are you sure you're running modelgen from the root of an XOS installation"
                 sys.exit(-1)
+
+        if not options.apps:
+            options.apps = ["core"]
+
+        if options.apps == ["*"]:
+            options.apps = [x for x in settings.INSTALLED_APPS if app_has_models(x)]
+
+        if len(args)!=1:
+            print 'Usage: modelgen [options] <template_fn>'
+            exit(1)
 
 	generator = Generator()
 

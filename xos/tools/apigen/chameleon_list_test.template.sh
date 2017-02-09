@@ -7,7 +7,7 @@ if [[ $? -ne 0 ]]; then
 fi
 
 {% for object in generator.all() %}
-curl -f --silent http://$HOSTNAME:8080/xosapi/v1/{{ object.camel()|lower }}s > /dev/null
+curl -f --silent http://$HOSTNAME:8080/xosapi/v1/{{ object.app_name }}/{{ object.plural() }} > /dev/null
 if [[ $? -ne 0 ]]; then
     echo fail {{ object.camel() }}
 fi
