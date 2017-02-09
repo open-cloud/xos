@@ -66,6 +66,16 @@ node_types:
                 required: false
                 description: True if mount read only
 
+    tosca.nodes.XOSGuiExtension:
+        derived_from: tosca.nodes.Root
+        description: A GUI Extension that can be loaded at runtime and need to be persisted
+        properties:
+            xos_base_props
+            files:
+                type: string
+                required: false
+                description: List of comma separated file composing the view
+
     tosca.nodes.Service:
         derived_from: tosca.nodes.Root
         description: >
@@ -301,6 +311,21 @@ node_types:
                 required: false
                 description: True if mount read only
 
+    tosca.nodes.ComponentVolumeContainer:
+        derived_from: tosca.nodes.Root
+        description: >
+            Container Volumes used by XOS components.
+        properties:
+            xos_base_props
+            name:
+                type: string
+                required: false
+                description: Identifier of the Container Volume
+            container:
+                type: string
+                required: false
+                description: Name of the Container Volume
+
     tosca.relationships.LinkOfComponent:
             derived_from: tosca.relationships.Root
             valid_target_types: [ tosca.capabilities.xos.ComponentLink ]
@@ -308,6 +333,10 @@ node_types:
     tosca.relationships.VolumeOfComponent:
             derived_from: tosca.relationships.Root
             valid_target_types: [ tosca.capabilities.xos.ComponentVolume ]
+
+    tosca.relationships.VolumeContainerOfComponent:
+            derived_from: tosca.relationships.Root
+            valid_target_types: [ tosca.capabilities.xos.ComponentVolumeContainer ]
 
     tosca.nodes.Tenant:
         derived_from: tosca.nodes.Root

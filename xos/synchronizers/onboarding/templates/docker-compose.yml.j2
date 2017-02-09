@@ -45,9 +45,17 @@ services:
 {%- for volume in container.volumes %}
 {%- if volume.read_only %}
       - {{ volume.host_path }}:{{ volume.container_path }}:ro
+{%- elif volume.host_path == "" %}
+      - {{ volume.container_path }}
 {%- else %}
       - {{ volume.host_path }}:{{ volume.container_path }}
 {%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- if container.volumes_from %}
+    volumes_from:
+{%- for volume in container.volumes_from %}
+      - {{ volume }}
 {%- endfor %}
 {%- endif %}
 {%- if container.expose %}

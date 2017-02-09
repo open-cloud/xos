@@ -1,5 +1,5 @@
 from xosresource import XOSResource
-from core.models import DashboardView, Site, Deployment, SiteDeployment
+from core.models import DashboardView, Site, Deployment, SiteDeployment, XOSGuiExtension
 
 class XOSDashboardView(XOSResource):
     provides = "tosca.nodes.DashboardView"
@@ -36,3 +36,9 @@ class XOSDashboardView(XOSResource):
         self.postprocess(dashboard)
 
         self.info("Created DashboardView '%s'" % (str(dashboard), ))
+
+
+class XOSXOSGuiExtension(XOSResource):
+    provides = "tosca.nodes.XOSGuiExtension"
+    xos_model = XOSGuiExtension
+    copyin_props = ["name", "files"]

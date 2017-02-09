@@ -4,6 +4,7 @@ from core.models import PlCoreBase, Controller, Deployment
 from core.models.plcorebase import StrippedCharField, ModelLink
 from core.models.site import ControllerLinkManager, ControllerLinkDeletionManager
 
+
 class DashboardView(PlCoreBase):
     name = StrippedCharField(max_length=200, unique=True, help_text="Name of the View")
     url = StrippedCharField(max_length=1024, help_text="URL of Dashboard")
@@ -13,8 +14,8 @@ class DashboardView(PlCoreBase):
     icon_active = models.CharField(max_length=200, default="default-icon-active.png", help_text="Icon for active Dashboard")
     deployments = models.ManyToManyField(Deployment, blank=True, related_name="dashboardviews", help_text="Deployments that should be included in this view")
 
+    def __unicode__(self): return u'%s' % (self.name)
 
-    def __unicode__(self):  return u'%s' % (self.name)
 
 class ControllerDashboardView(PlCoreBase):
     objects = ControllerLinkManager()
@@ -23,7 +24,13 @@ class ControllerDashboardView(PlCoreBase):
     dashboardView = models.ForeignKey(DashboardView, related_name='controllerdashboardviews')
     enabled = models.BooleanField(default=True)
     url = StrippedCharField(max_length=1024, help_text="URL of Dashboard")
-    xos_links=[ModelLink(Controller,via='controller'),ModelLink(DashboardView,via='dashboardview')]
+    xos_links = [ModelLink(Controller, via='controller'), ModelLink(DashboardView, via='dashboardview')]
 
 
+class XOSGuiExtension(PlCoreBase):
+    """Persist GUI Extension"""
+    class Meta:
+        app_label = "core"
 
+    name = StrippedCharField(max_length=200, unique=True, help_text="Name of the GUI Extensions")
+    files = StrippedCharField(max_length=1024, help_text="List of comma separated file composing the view")

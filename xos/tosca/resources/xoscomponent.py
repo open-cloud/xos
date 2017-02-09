@@ -1,5 +1,5 @@
 from xosresource import XOSResource
-from core.models import XOSComponent, XOSComponentLink, XOSComponentVolume
+from core.models import XOSComponent, XOSComponentLink, XOSComponentVolume, XOSComponentVolumeContainer
 
 
 class XOSXOSComponent(XOSResource):
@@ -34,6 +34,22 @@ class XOSXOSComponentVolume(XOSResource):
         args = super(XOSXOSComponentVolume, self).get_xos_args()
 
         component_name = self.get_requirement("tosca.relationships.VolumeOfComponent", throw_exception=throw_exception)
+        if component_name:
+            args["component"] = self.get_xos_object(XOSComponent, throw_exception=throw_exception, name=component_name)
+
+        return args
+
+
+class XOSXOSComponentVolumeContainer(XOSResource):
+    provides = "tosca.nodes.ComponentVolumeContainer"
+    xos_model = XOSComponentVolumeContainer
+    copyin_props = ["name", "container"]
+    name_field = "name"
+
+    def get_xos_args(self, throw_exception=True):
+        args = super(XOSXOSComponentVolumeContainer, self).get_xos_args()
+
+        component_name = self.get_requirement("tosca.relationships.VolumeContainerOfComponent", throw_exception=throw_exception)
         if component_name:
             args["component"] = self.get_xos_object(XOSComponent, throw_exception=throw_exception, name=component_name)
 

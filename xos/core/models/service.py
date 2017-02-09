@@ -229,7 +229,7 @@ class XOSComponentLink(PlCoreBase):
 # NOTE can this be the same of XOSVolume??
 class XOSComponentVolume(PlCoreBase):
     component = models.ForeignKey(XOSComponent, related_name='volumes', help_text="The Component object for this Volume")
-    name = StrippedCharField(max_length=30, help_text="Volume Name")
+    name = StrippedCharField(max_length=300, help_text="Volume Name")
     container_path = StrippedCharField(max_length=1024, unique=True, help_text="Path of Volume in Container")
     host_path = StrippedCharField(max_length=1024, help_text="Path of Volume in Host")
     read_only = models.BooleanField(default=False, help_text="True if mount read-only")
@@ -239,6 +239,18 @@ class XOSComponentVolume(PlCoreBase):
         if len(existing) > 0:
             raise XOSValidationError('XOSComponentVolume for %s:%s already defined' % (self.container_path, self.host_path))
         super(XOSComponentVolume, self).save(*args, **kwds)
+
+
+class XOSComponentVolumeContainer(PlCoreBase):
+    component = models.ForeignKey(XOSComponent, related_name='volumecontainers', help_text="The Component object for this VolumeContainer")
+    name = StrippedCharField(max_length=300, help_text="Volume Name")
+    container = StrippedCharField(max_length=300, help_text="Volume Name")
+
+    def save(self, *args, **kwds):
+        existing = XOSComponentVolumeContainer.objects.filter(name=self.name)
+        if len(existing) > 0:
+            raise XOSValidationError('XOSComponentVolumeContainer for %s:%s already defined' % (self.container_path, self.host_path))
+        super(XOSComponentVolumeContainer, self).save(*args, **kwds)
 
 
 class ServiceController(LoadableModule):

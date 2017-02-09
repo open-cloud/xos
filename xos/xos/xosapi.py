@@ -96,6 +96,9 @@ def get_REST_patterns():
         url(r'xos/flavors/$', FlavorList.as_view(), name='flavor-list-legacy'),
         url(r'xos/flavors/(?P<pk>[a-zA-Z0-9\-]+)/$', FlavorDetail.as_view(), name ='flavor-detail-legacy'),
     
+        url(r'xos/xosguiextensions/$', XOSGuiExtensionList.as_view(), name='xosguiextension-list-legacy'),
+        url(r'xos/xosguiextensions/(?P<pk>[a-zA-Z0-9\-]+)/$', XOSGuiExtensionDetail.as_view(), name ='xosguiextension-detail-legacy'),
+    
         url(r'xos/ports/$', PortList.as_view(), name='port-list-legacy'),
         url(r'xos/ports/(?P<pk>[a-zA-Z0-9\-]+)/$', PortDetail.as_view(), name ='port-detail-legacy'),
     
@@ -346,6 +349,9 @@ def get_REST_patterns():
         url(r'api/core/flavors/$', FlavorList.as_view(), name='flavor-list'),
         url(r'api/core/flavors/(?P<pk>[a-zA-Z0-9\-]+)/$', FlavorDetail.as_view(), name ='flavor-detail'),
     
+        url(r'api/core/xosguiextensions/$', XOSGuiExtensionList.as_view(), name='xosguiextension-list'),
+        url(r'api/core/xosguiextensions/(?P<pk>[a-zA-Z0-9\-]+)/$', XOSGuiExtensionDetail.as_view(), name ='xosguiextension-detail'),
+    
         url(r'api/core/ports/$', PortList.as_view(), name='port-list'),
         url(r'api/core/ports/(?P<pk>[a-zA-Z0-9\-]+)/$', PortDetail.as_view(), name ='port-detail'),
     
@@ -559,6 +565,7 @@ def api_root_legacy(request, format=None):
         'invoices': reverse('invoice-list-legacy', request=request, format=format),
         'sliceprivileges': reverse('sliceprivilege-list-legacy', request=request, format=format),
         'flavors': reverse('flavor-list-legacy', request=request, format=format),
+        'xosguiextensions': reverse('xosguiextension-list-legacy', request=request, format=format),
         'ports': reverse('port-list-legacy', request=request, format=format),
         'serviceroles': reverse('servicerole-list-legacy', request=request, format=format),
         'controllersites': reverse('controllersite-list-legacy', request=request, format=format),
@@ -647,6 +654,7 @@ def api_root(request, format=None):
         'invoices': reverse('invoice-list', request=request, format=format),
         'sliceprivileges': reverse('sliceprivilege-list', request=request, format=format),
         'flavors': reverse('flavor-list', request=request, format=format),
+        'xosguiextensions': reverse('xosguiextension-list', request=request, format=format),
         'ports': reverse('port-list', request=request, format=format),
         'serviceroles': reverse('servicerole-list', request=request, format=format),
         'controllersites': reverse('controllersite-list', request=request, format=format),
@@ -1325,7 +1333,7 @@ class XOSComponentSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = XOSComponent
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','xos','name','base_url','version','provides','requires','image','command','ports','extra',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','xos','name','base_url','version','provides','requires','image','command','ports','extra','no_start',)
 
 class XOSComponentIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1341,7 +1349,7 @@ class XOSComponentIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = XOSComponent
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','xos','name','base_url','version','provides','requires','image','command','ports','extra',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','xos','name','base_url','version','provides','requires','image','command','ports','extra','no_start',)
 
 
 
@@ -1455,6 +1463,41 @@ class FlavorIdSerializer(XOSModelSerializer):
     class Meta:
         model = Flavor
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','description','flavor','order','default','deployments',)
+
+
+
+
+class XOSGuiExtensionSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = XOSGuiExtension
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','files',)
+
+class XOSGuiExtensionIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = XOSGuiExtension
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','files',)
 
 
 
@@ -3856,6 +3899,8 @@ serializerLookUp = {
 
                  Flavor: FlavorSerializer,
 
+                 XOSGuiExtension: XOSGuiExtensionSerializer,
+
                  Port: PortSerializer,
 
                  ServiceRole: ServiceRoleSerializer,
@@ -4698,7 +4743,7 @@ class XOSComponentList(XOSListCreateAPIView):
     serializer_class = XOSComponentSerializer
     id_serializer_class = XOSComponentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','xos','name','base_url','version','provides','requires','image','command','ports','extra',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','xos','name','base_url','version','provides','requires','image','command','ports','extra','no_start',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -4874,6 +4919,53 @@ class FlavorDetail(XOSRetrieveUpdateDestroyAPIView):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
         return Flavor.select_by_user(self.request.user)
+
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
+
+
+
+class XOSGuiExtensionList(XOSListCreateAPIView):
+    queryset = XOSGuiExtension.objects.select_related().all()
+    serializer_class = XOSGuiExtensionSerializer
+    id_serializer_class = XOSGuiExtensionIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','files',)
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return XOSGuiExtension.select_by_user(self.request.user)
+
+
+class XOSGuiExtensionDetail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = XOSGuiExtension.objects.select_related().all()
+    serializer_class = XOSGuiExtensionSerializer
+    id_serializer_class = XOSGuiExtensionIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"query_params"):
+            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return XOSGuiExtension.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
