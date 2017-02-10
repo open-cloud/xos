@@ -154,12 +154,35 @@ class XOSGrpcServer(object):
         activator_func(service, self.server)
 
 
+def restart_chameleon():
+    import docker
+
+    def find_container(client, search_name):
+        for c in client.containers():
+            for c_name in c["Names"]:
+                if (search_name in c_name):
+                    return c
+        return None
+
+    client=docker.from_env()
+    chameleon_container = find_container(client, "xos_chameleon_1")
+    if chameleon_container:
+        try:
+            # the first attempt always fails with 404 error
+            # docker-py bug?
+            client.restart(chameleon_container["Names"][0])
+        except:
+            client.restart(chameleon_container["Names"][0])
+
+
 # This is to allow running the GRPC server in stand-alone mode
 
 if __name__ == '__main__':
     django.setup()
 
     server = XOSGrpcServer().start()
+
+    restart_chameleon()
 
     import time
     _ONE_DAY_IN_SECONDS = 60 * 60 * 24

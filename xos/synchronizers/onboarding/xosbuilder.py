@@ -344,6 +344,9 @@ class XOSBuilder(object):
             "extra_hosts": extra_hosts,
             "volumes": volume_list}
 
+        # The core needs access to docker so it can restart Chameleon
+        core_volume_list = volume_list + [{"host_path": "/var/run/docker.sock", "container_path": "/var/run/docker.sock", "read_only": False}]
+
         containers["xos_core"] = {
             "image": "xosproject/xos-ui",
             "command": 'bash -c "cd grpc; bash ./start_grpc_server.sh"',
@@ -351,7 +354,7 @@ class XOSBuilder(object):
             "ports": {"50055": "50055", "50051" : "50051"},
             "external_links": external_links,
             "extra_hosts": extra_hosts,
-            "volumes": volume_list}
+            "volumes": core_volume_list}
 
         if xos.no_start:
             containers["xos_ui"]["command"] = "sleep 864000"
