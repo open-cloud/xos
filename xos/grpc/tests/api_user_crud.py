@@ -2,11 +2,12 @@ import sys
 sys.path.append("..")
 
 import grpc_client
+from testconfig import *
 
 print "api_user_crud"
 
 #c=grpc_client.InsecureClient("localhost")
-c=grpc_client.SecureClient("xos-core.cord.lab", username="padmin@vicci.org", password="letmein")
+c=grpc_client.SecureClient("xos-core.cord.lab", username=USERNAME, password=PASSWORD)
 u=grpc_client.User()
 import random, string
 u.email=''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))

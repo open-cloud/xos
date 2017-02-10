@@ -2,10 +2,11 @@ import sys
 sys.path.append("..")
 
 import grpc_client
+from testconfig import *
 
 print "orm_user_crud"
 
-c=grpc_client.SecureClient("xos-core.cord.lab", username="padmin@vicci.org", password="letmein")
+c=grpc_client.SecureClient("xos-core.cord.lab", username=USERNAME, password=PASSWORD)
 
 # create a new user and save it
 u=c.xos_orm.User.objects.new()
