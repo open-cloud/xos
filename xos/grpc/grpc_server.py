@@ -38,8 +38,8 @@ from google.protobuf.empty_pb2 import Empty
 from xos.logger import Logger, logging
 logger = Logger(level=logging.INFO)
 
-SERVER_KEY="/root/setup/core_api_key.pem"
-SERVER_CERT="/root/setup/core_api_cert.pem"
+SERVER_KEY="/opt/cord_profile/core_api_key.pem"
+SERVER_CERT="/opt/cord_profile/core_api_cert.pem"
 SERVER_CA="/usr/local/share/ca-certificates/local_certs.crt"
 
 #SERVER_KEY="certs/server.key"
