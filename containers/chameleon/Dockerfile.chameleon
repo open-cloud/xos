@@ -27,7 +27,7 @@ MAINTAINER Nathan Knuth   <nathan.knuth@tibitcom.com>
 # Bundle app source
 RUN mkdir /chameleon && touch /chameleon/__init__.py
 ENV PYTHONPATH=/chameleon
-COPY . /chameleon/chameleon
+COPY tmp.chameleon /chameleon/chameleon
 
 # Build the protos
 RUN chdir chameleon/chameleon/protos && VOLTHA_BASE=anything make

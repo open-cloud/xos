@@ -32,6 +32,8 @@ BUILD_ARGS += --build-arg https_proxy=${https_proxy}
 endif
 
 chameleon:
-	sudo cp Dockerfile.chameleon /opt/cord/component/chameleon 
+	rm -rf tmp.chameleon
+	cp -R /opt/cord/component/chameleon tmp.chameleon
 	sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm \
-	-f /opt/cord/component/chameleon/Dockerfile.chameleon -t ${IMAGE_NAME} ${BUILD_ARGS} /opt/cord/component/chameleon
+	-f Dockerfile.chameleon -t ${IMAGE_NAME} ${BUILD_ARGS} .
+	rm -rf tmp.chameleon
