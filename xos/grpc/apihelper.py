@@ -164,7 +164,7 @@ class XOSAPIHelperMixin(object):
       obj.delete()
       return Empty()
 
-    def authenticate(self, context):
+    def authenticate(self, context, required=False):
         for (k, v) in context.invocation_metadata():
             if (k.lower()=="authorization"):
                 (method, auth) = v.split(" ",1)
@@ -185,6 +185,8 @@ class XOSAPIHelperMixin(object):
                  print "authenticated sessionid %s as %s" % (v, user)
                  return user
 
+        if required:
+            raise XOSPermissionDenied("This API requires authentication")
 
         return None
 

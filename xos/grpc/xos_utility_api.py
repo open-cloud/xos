@@ -1,5 +1,8 @@
 import base64
+import os
+import sys
 import time
+import traceback
 from protos import utility_pb2
 from google.protobuf.empty_pb2 import Empty
 
@@ -12,6 +15,12 @@ import django.apps
 from core.models import *
 from xos.exceptions import *
 from apihelper import XOSAPIHelperMixin
+
+# The Tosca engine expects to be run from /opt/xos/tosca/ or equivalent. It
+# needs some sys.path fixing up.
+import inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+toscadir = os.path.join(currentdir, "../tosca")
 
 class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
     def __init__(self, thread_pool):
@@ -48,4 +57,50 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
                     del s["_auth_user_id"]
                     s.save()
         return Empty()
+
+    def RunTosca(self, request, context):
+        user=self.authenticate(context, required=True)
+
+        sys_path_save = sys.path
+        try:
+            sys.path.append(toscadir)
+            from tosca.engine import XOSTosca
+            xt = XOSTosca(request.recipe, parent_dir=toscadir, log_to_console=False)
+            xt.execute(user)
+        except:
+            response = utility_pb2.ToscaResponse()
+            response.status = response.ERROR
+            response.messages = traceback.format_exc()
+            return response
+        finally:
+            sys.path = sys_path_save
+
+        response = utility_pb2.ToscaResponse()
+        response.status = response.SUCCESS
+        response.messages = "\n".join(xt.log_msgs)
+
+        return response
+
+    def DestroyTosca(self, request, context):
+        user=self.authenticate(context, required=True)
+
+        sys_path_save = sys.path
+        try:
+            sys.path.append(toscadir)
+            from tosca.engine import XOSTosca
+            xt = XOSTosca(request.recipe, parent_dir=toscadir, log_to_console=False)
+            xt.destroy(user)
+        except:
+            response = utility_pb2.ToscaResponse()
+            response.status = response.ERROR
+            response.messages = traceback.format_exc()
+            return response
+        finally:
+            sys.path = sys_path_save
+
+        response = utility_pb2.ToscaResponse()
+        response.status = response.SUCCESS
+        response.messages = "\n".join(xt.log_msgs)
+
+        return response
 

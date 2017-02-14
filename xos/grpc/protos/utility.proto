@@ -15,6 +15,19 @@ message LoginResponse {
     string sessionid = 1;
 };
 
+message ToscaRequest {
+    string recipe = 1;
+};
+
+message ToscaResponse {
+    enum ToscaStatus {
+        SUCCESS = 0;
+        ERROR = 1;
+    }
+    ToscaStatus status = 1;
+    string messages = 2;
+};
+
 service utility {
 
   rpc Login(LoginRequest) returns (LoginResponse) {
@@ -27,6 +40,20 @@ service utility {
   rpc Logout(google.protobuf.Empty) returns (google.protobuf.Empty) {
         option (google.api.http) = {
             post: "/xosapi/v1/utility/logout"
+            body: "*"
+        };
+  }
+
+  rpc RunTosca(ToscaRequest) returns (ToscaResponse) {
+        option (google.api.http) = {
+            post: "/xosapi/v1/utility/tosca"
+            body: "*"
+        };
+  }
+
+  rpc DestroyTosca(ToscaRequest) returns (ToscaResponse) {
+        option (google.api.http) = {
+            post: "/xosapi/v1/utility/destroy_tosca"
             body: "*"
         };
   }
