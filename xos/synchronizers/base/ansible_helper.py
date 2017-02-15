@@ -95,6 +95,15 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
                 except:
                     pass
 
+	    if (object):
+		oprops = object.tologdict()
+		ansible = x._result
+		oprops['ansible']=1
+		oprops['failed']=failed
+		oprops['ansible_results']=json.dumps(ansible)
+
+		logger.info(x._task, extra=oprops)
+
 
         if (expected_num is not None) and (len(ok_results) != expected_num):
             raise ValueError('Unexpected num %s!=%d' % (str(expected_num), len(ok_results)) )
@@ -111,13 +120,7 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
             pass
         raise Exception(error)
 
-    if (object):
-        oprops = object.tologdict()
-        for i in ok_results:
-            ansible = i._result
-            ansible['ansible'] = 1
-            c = dict(oprops.items() + ansible.items())
-            logger.info(i._task, extra=c)
+    
             
     processed_results = map(lambda x:x._result, ok_results)
     return processed_results[1:] # 0 is setup
