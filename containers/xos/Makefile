@@ -57,6 +57,15 @@ test:
 	sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm \
 	-f Dockerfile.test -t xosproject/xos-test ${BUILD_ARGS} ../..
 
+client:
+	rm -rf tmp.chameleon
+	cp -R /opt/cord/component/chameleon tmp.chameleon
+	sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm \
+	--build-arg XOS_GIT_COMMIT_HASH="${XOS_GIT_COMMIT_HASH}" \
+	--build-arg XOS_GIT_COMMIT_DATE="${XOS_GIT_COMMIT_DATE}" \
+	-f Dockerfile.client -t xosproject/xos-client ${BUILD_ARGS} ../..
+	rm -rf tmp.chameleon
+
 run:
 	sudo docker run -d --name ${CONTAINER_NAME} -p 80:8000 \
 	${IMAGE_NAME}

@@ -1,0 +1,92 @@
+#!/usr/bin/python
+#
+# XOSAPI interactive shell
+
+
+import functools
+import os, sys
+import atexit
+import readline
+import rlcompleter
+
+from twisted.internet import reactor
+from xosapi.xos_grpc_client import InsecureClient
+
+coreapi_endpoint = "xos-core.cord.lab:50055"
+
+def start_xossh(client):
+    global coreapi
+    coreapi = client.xos_orm
+
+    print "XOS Core server at %s" % client.endpoint
+
+    print 'Type "coreapi.listObjects()" for a list of all objects'
+
+    # Load command history
+    history_path = os.path.join(os.environ["HOME"], ".xossh_history")
+    try:
+        file(history_path, 'a').close()
+        readline.read_history_file(history_path)
+        atexit.register(readline.write_history_file, history_path)
+    except IOError:
+        pass
+
+    # Enable tab completion
+    readline.parse_and_bind("tab: complete")
+
+    prompt = "xossh "
+
+    try:
+        while True:
+            command = ""
+            while True:
+                # Get line
+                try:
+                    if command == "":
+                        sep = ">>> "
+                    else:
+                        sep = "... "
+                    line = raw_input(prompt + sep)
+                # Ctrl-C
+                except KeyboardInterrupt:
+                    command = ""
+                    print
+                    break
+
+                # Build up multi-line command
+                command += line
+
+                # Blank line or first line does not end in :
+                if line == "" or (command == line and line[-1] != ':'):
+                    break
+
+                command += os.linesep
+
+            # Blank line
+            if command == "":
+                continue
+            # Quit
+            elif command in ["q", "quit", "exit"]:
+                break
+
+            try:
+                # Do it
+                code = compile(command, "<stdin>", "single")
+                exec code
+            except Exception, err:
+                print err
+
+    except EOFError:
+        print
+        pass
+
+    reactor.stop()
+
+def main():
+    client = InsecureClient(endpoint=coreapi_endpoint)
+    client.set_reconnect_callback(functools.partial(start_xossh, client))
+    client.start()
+    reactor.run()
+
+if __name__ == "__main__":
+    main()
