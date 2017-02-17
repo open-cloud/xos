@@ -217,7 +217,13 @@ def run_policy_once():
                 if (not deps):
                     journal_object(d, "reaper.purge")
                     print 'Reaper: purging object %r'%d
-                    d.delete(purge=True)
+                    try:
+                        d.delete(purge=True)
+                    except:
+                        journal_object(d, "reaper.purge.exception")
+                        print 'Reaper: exception purging object %r'%d
+                        traceback.print_exc()
+
 
         try:
             reset_queries()
