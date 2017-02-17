@@ -157,6 +157,9 @@ def has_deleted_dependencies(m):
         for model in models:
             if model==m:
                 continue
+            if issubclass(m.__class__, model.__class__):
+                # collector will return our parent classes; ignore them.
+                continue
             deps.append(model)
     return deps
 
@@ -208,7 +211,12 @@ def run_policy_once():
                 if (not deps):
                     journal_object(d, "reaper.purge")
                     print 'Reaper: purging object %r'%d
-                    d.delete(purge=True)
+                    try:
+                        d.delete(purge=True)
+                    except:
+                        journal_object(d, "reaper.purge.exception")
+                        print 'Reaper: exception purging object %r'%d
+                        traceback.print_exc()
 
         try:
             reset_queries()
