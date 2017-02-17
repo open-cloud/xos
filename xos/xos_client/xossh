@@ -3,6 +3,7 @@
 # XOSAPI interactive shell
 
 
+import argparse
 import functools
 import os, sys
 import atexit
@@ -10,17 +11,128 @@ import readline
 import rlcompleter
 
 from twisted.internet import reactor
-from xosapi.xos_grpc_client import InsecureClient
+from xosapi.xos_grpc_client import InsecureClient, SecureClient
 
-coreapi_endpoint = "xos-core.cord.lab:50055"
+current_client = None
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+
+    defs = {"grpc_insecure_endpoint": "xos-core.cord.lab:50055",
+            "grpc_secure_endpoint": "xos-core.cord.lab:50051",
+            "consul": None}
+
+    _help = '<hostname>:<port> to consul agent (default: %s)' % defs['consul']
+    parser.add_argument(
+        '-C', '--consul', dest='consul', action='store',
+        default=defs['consul'],
+        help=_help)
+
+    _help = ('gRPC insecure end-point to connect to. It can either be a direct'
+             'definition in the form of <hostname>:<port>, or it can be an'
+             'indirect definition in the form of @<service-name> where'
+             '<service-name> is the name of the grpc service as registered'
+             'in consul (example: @voltha-grpc). (default: %s'
+             % defs['grpc_insecure_endpoint'])
+    parser.add_argument('-G', '--grpc-insecure-endpoint',
+                        dest='grpc_insecure_endpoint',
+                        action='store',
+                        default=defs["grpc_insecure_endpoint"],
+                        help=_help)
+
+    _help = ('gRPC secure end-point to connect to. It can either be a direct'
+             'definition in the form of <hostname>:<port>, or it can be an'
+             'indirect definition in the form of @<service-name> where'
+             '<service-name> is the name of the grpc service as registered'
+             'in consul (example: @voltha-grpc). (default: %s'
+             % defs["grpc_secure_endpoint"])
+    parser.add_argument('-S', '--grpc-secure-endpoint',
+                        dest='grpc_secure_endpoint',
+                        action='store',
+                        default=defs["grpc_secure_endpoint"],
+                        help=_help)
+
+    parser.add_argument('-u', '--username',
+                        dest='username',
+                        action='store',
+                        default=None,
+                        help=_help)
+
+    parser.add_argument('-p', '--password',
+                        dest='password',
+                        action='store',
+                        default=None,
+                        help=_help)
+
+    _help = 'omit startup banner log lines'
+    parser.add_argument('-n', '--no-banner',
+                        dest='no_banner',
+                        action='store_true',
+                        default=False,
+                        help=_help)
+
+    _help = "suppress debug and info logs"
+    parser.add_argument('-q', '--quiet',
+                        dest='quiet',
+                        action='count',
+                        help=_help)
+
+    _help = 'enable verbose logging'
+    parser.add_argument('-v', '--verbose',
+                        dest='verbose',
+                        action='count',
+                        help=_help)
+
+    args = parser.parse_args()
+
+    return args
+
+def login(username=None, password=None):
+    if current_client:
+        current_client.stop()
+        current_client.session_change = True
+
+    # now switch
+
+    if username:
+        client = SecureClient(endpoint=args.grpc_secure_endpoint, username=username, password=password)
+        client.set_reconnect_callback(functools.partial(start_xossh, client))
+        client.start()
+    else:
+        client = InsecureClient(endpoint=args.grpc_insecure_endpoint)
+        client.set_reconnect_callback(functools.partial(start_xossh, client))
+        client.start()
+
+def examples():
+    print 'coreapi.Slice.objects.all() # list all slices'
+    print 's = coreapi.Slice.objects.new() # create a new slice'
+    print 's.name = "mysite_foo" # set a slice name'
+    print 's.site_id = coreapi.Site.objects.all()[0].id # grab the first site'
+    print 's.save() # save the slice'
+    print
 
 def start_xossh(client):
-    global coreapi
+    global coreapi, current_client
     coreapi = client.xos_orm
+    current_client = client
 
-    print "XOS Core server at %s" % client.endpoint
+    current_client.session_change = False
 
-    print 'Type "coreapi.listObjects()" for a list of all objects'
+    if not args.no_banner:
+        print
+        print "__   __   ____     _____    _____   _    _"
+        print "\ \ / /  / __ \   / ____|  / ____| | |  | |"
+        print " \ V /  | |  | | | (___   | (___   | |__| |"
+        print "  > <   | |  | |  \___ \   \___ \  |  __  |"
+        print " / . \  | |__| |  ____) |  ____) | | |  | |"
+        print "/_/ \_\  \____/  |_____/  |_____/  |_|  |_|"
+        print
+
+        print "XOS Core server at %s" % client.endpoint
+
+        print 'Type "coreapi.listObjects()" for a list of all objects'
+        print 'Type "login("username", "password")" to switch to a secure shell'
+        print 'Type "examples()" for some examples'
 
     # Load command history
     history_path = os.path.join(os.environ["HOME"], ".xossh_history")
@@ -34,8 +146,10 @@ def start_xossh(client):
     # Enable tab completion
     readline.parse_and_bind("tab: complete")
 
-    prompt = "xossh "
+    reactor.callLater(0, functools.partial(do_xossh_prompt, client))
 
+def do_xossh_prompt(client):
+    prompt = "xossh "
     try:
         while True:
             command = ""
@@ -62,30 +176,36 @@ def start_xossh(client):
 
                 command += os.linesep
 
-            # Blank line
-            if command == "":
-                continue
             # Quit
-            elif command in ["q", "quit", "exit"]:
-                break
+            if command in ["q", "quit", "exit"]:
+                reactor.stop()
+                return
 
-            try:
-                # Do it
-                code = compile(command, "<stdin>", "single")
-                exec code
-            except Exception, err:
-                print err
+            if command == "":
+                # blank line
+                pass
+            else:
+                try:
+                    # Do it
+                    code = compile(command, "<stdin>", "single")
+                    exec code
+                except Exception, err:
+                    print err
+
+            # check to see if login() was used
+            if client.session_change:
+                return
+
+            #reactor.callLater(0, functools.partial(do_xossh_prompt, client))
 
     except EOFError:
         print
-        pass
-
-    reactor.stop()
+        reactor.stop()
 
 def main():
-    client = InsecureClient(endpoint=coreapi_endpoint)
-    client.set_reconnect_callback(functools.partial(start_xossh, client))
-    client.start()
+    global args
+    args = parse_args()
+    login(username=args.username, password=args.password)
     reactor.run()
 
 if __name__ == "__main__":
