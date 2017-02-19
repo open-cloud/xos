@@ -95,14 +95,19 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
                 except:
                     pass
 
+            # FIXME (zdw, 2017-02-19) - may not be needed with new callback logging
 	    if (object):
 		oprops = object.tologdict()
 		ansible = x._result
-		oprops['ansible']=1
-		oprops['failed']=failed
-		oprops['ansible_results']=json.dumps(ansible)
+		oprops['xos_type']='ansible'
+		oprops['ansible_result']=json.dumps(ansible)
 
-		logger.info(x._task, extra=oprops)
+                if failed == 0:
+		    oprops['ansible_status']='OK'
+                else:
+		    oprops['ansible_status']='FAILED'
+
+                # logger.info(x._task, extra=oprops)
 
 
         if (expected_num is not None) and (len(ok_results) != expected_num):

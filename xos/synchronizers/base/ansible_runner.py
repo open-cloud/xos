@@ -4,6 +4,7 @@ import os
 import sys
 import pdb
 import json
+import uuid
 
 from tempfile import NamedTemporaryFile
 from ansible.inventory import Inventory
@@ -23,12 +24,14 @@ class ResultCallback(CallbackBase):
     def __init__(self):
         super(ResultCallback, self).__init__()
         self.results = []
+        self.uuid = str(uuid.uuid1())
         self.playbook_status = 'OK'
 
     def v2_playbook_on_start(self, playbook):
         self.playbook = playbook._file_name
         log_extra = {
             'xos_type': "ansible",
+            'ansible_uuid': self.uuid,
             'ansible_type': "playbook start",
             'ansible_status': "OK",
             'ansible_playbook': self.playbook
@@ -42,6 +45,7 @@ class ResultCallback(CallbackBase):
 
         log_extra = {
             'xos_type': "ansible",
+            'ansible_uuid': self.uuid,
             'ansible_type': "playbook stats",
             'ansible_status': self.playbook_status,
             'ansible_playbook': self.playbook,
@@ -56,17 +60,20 @@ class ResultCallback(CallbackBase):
     def v2_playbook_on_play_start(self, play):
         log_extra = {
             'xos_type': "ansible",
+            'ansible_uuid': self.uuid,
             'ansible_type': "play start",
+            'ansible_status': self.playbook_status,
             'ansible_playbook': self.playbook
         }
-        logger.debug("PLAY [%s]" % play.name, extra=log_extra)
+        logger.debug("PLAY START [%s]" % play.name, extra=log_extra)
 
     def v2_runner_on_ok(self, result, **kwargs):
         log_extra = {
             'xos_type': "ansible",
+            'ansible_uuid': self.uuid,
             'ansible_type': "task",
             'ansible_status': "OK",
-            'ansible_result': self._dump_results(result._result),
+            'ansible_result': json.dumps(result._result),
             'ansible_task': result._task,
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
@@ -78,9 +85,10 @@ class ResultCallback(CallbackBase):
         self.playbook_status = "FAILED"
         log_extra = {
             'xos_type': "ansible",
+            'ansible_uuid': self.uuid,
             'ansible_type': "task",
             'ansible_status': "FAILED",
-            'ansible_result': self._dump_results(result._result),
+            'ansible_result': json.dumps(result._result),
             'ansible_task': result._task,
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
@@ -92,9 +100,10 @@ class ResultCallback(CallbackBase):
         self.playbook_status = "FAILED"
         log_extra = {
             'xos_type': "ansible",
+            'ansible_uuid': self.uuid,
             'ansible_type': "task",
             'ansible_status': "ASYNC FAILED",
-            'ansible_result': self._dump_results(result._result),
+            'ansible_result': json.dumps(result._result),
             'ansible_task': result._task,
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
@@ -104,8 +113,10 @@ class ResultCallback(CallbackBase):
     def v2_runner_on_skipped(self, result, **kwargs):
         log_extra = {
             'xos_type': "ansible",
+            'ansible_uuid': self.uuid,
             'ansible_type': "task",
             'ansible_status': "SKIPPED",
+            'ansible_result': json.dumps(result._result),
             'ansible_task': result._task,
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
@@ -116,9 +127,10 @@ class ResultCallback(CallbackBase):
     def v2_runner_on_unreachable(self, result, **kwargs):
         log_extra = {
             'xos_type': "ansible",
+            'ansible_uuid': self.uuid,
             'ansible_type': "task",
             'ansible_status': "UNREACHABLE",
-            'ansible_result': self._dump_results(result._result),
+            'ansible_result': json.dumps(result._result),
             'ansible_task': result._task,
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
@@ -129,9 +141,10 @@ class ResultCallback(CallbackBase):
     def v2_runner_retry(self, result, **kwargs):
         log_extra = {
             'xos_type': "ansible",
+            'ansible_uuid': self.uuid,
             'ansible_type': "task",
             'ansible_status': "RETRY",
-            'ansible_result': self._dump_results(result._result),
+            'ansible_result': json.dumps(result._result),
             'ansible_task': result._task,
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
@@ -142,6 +155,7 @@ class ResultCallback(CallbackBase):
     def v2_playbook_on_handler_task_start(self, task, **kwargs):
         log_extra = {
             'xos_type': "ansible",
+            'ansible_uuid': self.uuid,
             'ansible_type': "task",
             'ansible_status': "HANDLER",
             'ansible_task': task.get_name().strip(),
@@ -153,8 +167,10 @@ class ResultCallback(CallbackBase):
     def v2_playbook_on_import_for_host(self, result, imported_file):
         log_extra = {
             'xos_type': "ansible",
+            'ansible_uuid': self.uuid,
             'ansible_type': "import",
             'ansible_status': "IMPORT",
+            'ansible_result': json.dumps(result._result),
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
         }
@@ -164,8 +180,10 @@ class ResultCallback(CallbackBase):
     def v2_playbook_on_not_import_for_host(self, result, missing_file):
         log_extra = {
             'xos_type': "ansible",
+            'ansible_uuid': self.uuid,
             'ansible_type': "import",
             'ansible_status': "MISSING IMPORT",
+            'ansible_result': json.dumps(result._result),
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
         }

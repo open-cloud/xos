@@ -19,7 +19,7 @@ bad_instances=[]
 
 model_policies = {}
 
-logger = Logger(level=logging.INFO)
+logger = Logger(level=logging.DEBUG)
 
 def EnableModelPolicy(x):
     global modelPolicyEnabled
@@ -70,7 +70,7 @@ def load_model_policies(policies_dir=None):
             if os.path.isfile(pathname) and fn.startswith("model_policy_") and fn.endswith(".py") and (fn!="__init__.py"):
                 model_policies[fn[:-3]] = imp.load_source(fn[:-3],pathname)
 
-    logger.info("Loaded model polices %s from %s" % (",".join(model_policies.keys()), policies_dir))
+    logger.debug("Loaded model polices %s from %s" % (",".join(model_policies.keys()), policies_dir))
 
 #@atomic
 def execute_model_policy(instance, deleted):
@@ -92,7 +92,7 @@ def execute_model_policy(instance, deleted):
 
     try:
         policy_handler = model_policies.get(policy_name, None) # getattr(model_policies, policy_name, None)
-        logger.info("MODEL POLICY: handler %s %s" % (policy_name, policy_handler))
+        logger.debug("MODEL POLICY: handler %s %s" % (policy_name, policy_handler))
         if policy_handler is not None:
             if (deleted):
                 try:
@@ -101,7 +101,7 @@ def execute_model_policy(instance, deleted):
                     pass
             else:
                 policy_handler.handle(instance)
-        logger.info("MODEL POLICY: completed handler %s %s" % (policy_name, policy_handler))
+        logger.debug("MODEL POLICY: completed handler %s %s" % (policy_name, policy_handler))
     except:
         logger.log_exc("MODEL POLICY: Exception when running handler")
 
@@ -175,7 +175,7 @@ def run_policy_once():
         objects = []
         deleted_objects = []
 
-        logger.info("MODEL POLICY: run_policy_once()")
+        logger.debug("MODEL POLICY: run_policy_once()")
 
         check_db_connection_okay()
 
@@ -225,4 +225,4 @@ def run_policy_once():
             # this shouldn't happen, but in case it does, catch it...
             logger.log_exc("MODEL POLICY: exception in reset_queries")
 
-        logger.info("MODEL POLICY: finished run_policy_once()")
+        logger.debug("MODEL POLICY: finished run_policy_once()")

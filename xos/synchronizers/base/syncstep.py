@@ -16,7 +16,7 @@ import json
 import time
 import pdb
 
-logger = Logger(level=logging.INFO)
+logger = Logger(level=logging.DEBUG)
 
 def f7(seq):
     seen = set()
@@ -141,7 +141,7 @@ class SyncStep(object):
 
 
     def sync_record(self, o):
-        logger.info("Sync_record called for %s %s" % (o.__class__.__name__, str(o)))
+        logger.debug("Sync_record called for %s %s" % (o.__class__.__name__, str(o)))
 
         try:
             controller = o.get_controller()

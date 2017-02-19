@@ -32,6 +32,8 @@ class SyncInstanceUsingAnsible(SyncStep):
         return False
 
     def defer_sync(self, o, reason):
+        # zdw, 2017-02-18 - is raising the exception here necessary? - seems like
+        # it's just logging the same thing twice
         logger.info("defer object %s due to %s" % (str(o), reason),extra=o.tologdict())
         raise Exception("defer object %s due to %s" % (str(o), reason))
 
@@ -272,7 +274,7 @@ class SyncInstanceUsingAnsible(SyncStep):
         if hasattr(self, "map_delete_outputs"):
             self.map_delete_outputs(o,res)
 
-    #In order to enable the XOS watcher functionality for a synchronizer, define the 'watches' attribute 
+    #In order to enable the XOS watcher functionality for a synchronizer, define the 'watches' attribute
     #in the derived class: eg. watches = [ModelLink(CoarseTenant,via='coarsetenant')]
     #This base class implements the notification handler for handling CoarseTenant model notifications
     #If a synchronizer need to watch on multiple objects, the additional handlers need to be implemented
@@ -345,7 +347,7 @@ class SyncInstanceUsingAnsible(SyncStep):
             target_network = target_networks[0]
             src_ip = instance.get_network_ip(src_network.name)
             target_subnet = target_network.controllernetworks.all()[0].subnet
-  
+
             #Run ansible playbook to update the routing table entries in the instance
             fields = self.get_ansible_fields(instance)
             fields["ansible_tag"] =  obj.__class__.__name__ + "_" + str(obj.id) + "_service_composition"
