@@ -1,8 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import os
 import sys
 import pdb
+import json
 
 from tempfile import NamedTemporaryFile
 from ansible.inventory import Inventory
@@ -13,22 +14,162 @@ from ansible.utils.display import Display
 from ansible.plugins.callback import CallbackBase
 from xos.logger import observer_logger as logger
 
-
 class ResultCallback(CallbackBase):
+
+    CALLBACK_VERSION = 2.0
+    CALLBACK_NAME = 'resultcallback'
+    CALLBACK_TYPE = 'programmatic'
+
     def __init__(self):
         super(ResultCallback, self).__init__()
         self.results = []
+        self.playbook_status = 'OK'
+
+    def v2_playbook_on_start(self, playbook):
+        self.playbook = playbook._file_name
+        log_extra = {
+            'xos_type': "ansible",
+            'ansible_type': "playbook start",
+            'ansible_status': "OK",
+            'ansible_playbook': self.playbook
+        }
+        logger.info("PLAYBOOK START [%s]" % self.playbook, extra=log_extra)
+
+    def v2_playbook_on_stats(self, stats):
+        host_stats = {}
+        for host in stats.processed.keys():
+            host_stats[host] = stats.summarize(host)
+
+        log_extra = {
+            'xos_type': "ansible",
+            'ansible_type': "playbook stats",
+            'ansible_status': self.playbook_status,
+            'ansible_playbook': self.playbook,
+            'ansible_result': json.dumps(host_stats)
+        }
+
+        if self.playbook_status == 'OK':
+            logger.info("PLAYBOOK END [%s]" % self.playbook, extra=log_extra)
+        else:
+            logger.error("PLAYBOOK END [%s]" % self.playbook, extra=log_extra)
+
+    def v2_playbook_on_play_start(self, play):
+        log_extra = {
+            'xos_type': "ansible",
+            'ansible_type': "play start",
+            'ansible_playbook': self.playbook
+        }
+        logger.debug("PLAY [%s]" % play.name, extra=log_extra)
 
     def v2_runner_on_ok(self, result, **kwargs):
-        logger.info("OK: %s"%str(result._task))
+        log_extra = {
+            'xos_type': "ansible",
+            'ansible_type': "task",
+            'ansible_status': "OK",
+            'ansible_result': self._dump_results(result._result),
+            'ansible_task': result._task,
+            'ansible_playbook': self.playbook,
+            'ansible_host': result._host.get_name()
+        }
+        logger.debug("OK [%s]" % str(result._task), extra=log_extra)
         self.results.append(result)
-    
+
     def v2_runner_on_failed(self, result, **kwargs):
-        host = result._host
+        self.playbook_status = "FAILED"
+        log_extra = {
+            'xos_type': "ansible",
+            'ansible_type': "task",
+            'ansible_status': "FAILED",
+            'ansible_result': self._dump_results(result._result),
+            'ansible_task': result._task,
+            'ansible_playbook': self.playbook,
+            'ansible_host': result._host.get_name()
+        }
+        logger.error("FAILED [%s]" % str(result._task), extra=log_extra)
+        self.results.append(result)
+
+    def v2_runner_on_async_failed(self, result, **kwargs):
+        self.playbook_status = "FAILED"
+        log_extra = {
+            'xos_type': "ansible",
+            'ansible_type': "task",
+            'ansible_status': "ASYNC FAILED",
+            'ansible_result': self._dump_results(result._result),
+            'ansible_task': result._task,
+            'ansible_playbook': self.playbook,
+            'ansible_host': result._host.get_name()
+        }
+        logger.error("ASYNC FAILED [%s]" % str(result._task), extra=log_extra)
+
+    def v2_runner_on_skipped(self, result, **kwargs):
+        log_extra = {
+            'xos_type': "ansible",
+            'ansible_type': "task",
+            'ansible_status': "SKIPPED",
+            'ansible_task': result._task,
+            'ansible_playbook': self.playbook,
+            'ansible_host': result._host.get_name()
+        }
+        logger.debug("SKIPPED [%s]" % str(result._task), extra=log_extra)
         self.results.append(result)
 
     def v2_runner_on_unreachable(self, result, **kwargs):
-        host = result._host
+        log_extra = {
+            'xos_type': "ansible",
+            'ansible_type': "task",
+            'ansible_status': "UNREACHABLE",
+            'ansible_result': self._dump_results(result._result),
+            'ansible_task': result._task,
+            'ansible_playbook': self.playbook,
+            'ansible_host': result._host.get_name()
+        }
+        logger.error("UNREACHABLE [%s]" % str(result._task), extra=log_extra)
+        self.results.append(result)
+
+    def v2_runner_retry(self, result, **kwargs):
+        log_extra = {
+            'xos_type': "ansible",
+            'ansible_type': "task",
+            'ansible_status': "RETRY",
+            'ansible_result': self._dump_results(result._result),
+            'ansible_task': result._task,
+            'ansible_playbook': self.playbook,
+            'ansible_host': result._host.get_name()
+        }
+        logger.warning("RETRYING [%s] - attempt %d" % (str(result._task), result._result['attempts']), extra=log_extra)
+        self.results.append(result)
+
+    def v2_playbook_on_handler_task_start(self, task, **kwargs):
+        log_extra = {
+            'xos_type': "ansible",
+            'ansible_type': "task",
+            'ansible_status': "HANDLER",
+            'ansible_task': task.get_name().strip(),
+            'ansible_playbook': self.playbook,
+            'ansible_host': result._host.get_name()
+        }
+        logger.debug("HANDLER [%s]" % task.get_name().strip(), extra=log_extra)
+
+    def v2_playbook_on_import_for_host(self, result, imported_file):
+        log_extra = {
+            'xos_type': "ansible",
+            'ansible_type': "import",
+            'ansible_status': "IMPORT",
+            'ansible_playbook': self.playbook,
+            'ansible_host': result._host.get_name()
+        }
+        logger.debug("IMPORT [%s]" % imported_file, extra=log_extra)
+        self.results.append(result)
+
+    def v2_playbook_on_not_import_for_host(self, result, missing_file):
+        log_extra = {
+            'xos_type': "ansible",
+            'ansible_type': "import",
+            'ansible_status': "MISSING IMPORT",
+            'ansible_playbook': self.playbook,
+            'ansible_host': result._host.get_name()
+        }
+        logger.debug("MISSING IMPORT [%s]" % missing_file, extra=log_extra)
         self.results.append(result)
 
 class Options(object):
@@ -90,7 +231,9 @@ class Runner(object):
 
     def __init__(self, playbook, run_data, private_key_file=None, verbosity=0, host_file=None):
 
+        self.playbook = playbook
         self.run_data = run_data
+
         self.options = Options()
         self.options.output_file = playbook + '.result'
         self.options.private_key_file = private_key_file
@@ -103,7 +246,7 @@ class Runner(object):
         # Set global verbosity
         self.display = Display()
         self.display.verbosity = self.options.verbosity
-        # Executor appears to have it's own 
+        # Executor appears to have it's own
         # verbosity object/setting as well
         playbook_executor.verbosity = self.options.verbosity
 
@@ -117,7 +260,6 @@ class Runner(object):
         except KeyError:
             pass
 
-        
         # All the variables from all the various places
         self.variable_manager = VariableManager()
         self.variable_manager.extra_vars = {} # self.run_data
@@ -130,21 +272,19 @@ class Runner(object):
 
         self.variable_manager.set_inventory(self.inventory)
 
-
         # Setup playbook executor, but don't run until run() called
         self.pbex = playbook_executor.PlaybookExecutor(
-            playbooks=[playbook], 
-            inventory=self.inventory, 
+            playbooks=[playbook],
+            inventory=self.inventory,
             variable_manager=self.variable_manager,
-            loader=self.loader, 
-            options=self.options, 
+            loader=self.loader,
+            options=self.options,
             passwords={})
 
     def run(self):
-        # Results of PlaybookExecutor
         os.environ['REQUESTS_CA_BUNDLE'] = '/usr/local/share/ca-certificates/local_certs.crt'
-	callback = ResultCallback()
-	self.pbex._tqm._stdout_callback = callback
+        callback = ResultCallback()
+        self.pbex._tqm._stdout_callback = callback
 
         self.pbex.run()
         stats = self.pbex._tqm._stats
@@ -156,7 +296,6 @@ class Runner(object):
             t = stats.summarize(h)
             if t['unreachable'] > 0 or t['failures'] > 0:
                 run_success = False
-
 
         #os.remove(self.hosts.name)
 
