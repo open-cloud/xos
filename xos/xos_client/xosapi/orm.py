@@ -33,6 +33,7 @@ class ORMWrapper(object):
         super(ORMWrapper, self).__setattr__("stub", stub)
         super(ORMWrapper, self).__setattr__("cache", {})
         super(ORMWrapper, self).__setattr__("reverse_cache", {})
+        super(ORMWrapper, self).__setattr__("poisoned", {})
         super(ORMWrapper, self).__setattr__("is_new", is_new)
         fkmap=self.gen_fkmap()
         super(ORMWrapper, self).__setattr__("_fkmap", fkmap)
@@ -82,9 +83,28 @@ class ORMWrapper(object):
 
         return self.cache[name]
 
+    def fk_set(self, name, model):
+        fk_entry = self._fkmap[name]
+        id = model.id
+        setattr(self._wrapped_class, fk_entry["src_fieldName"], id)
+
+        # XXX setting the cache here is a problematic, since the cached object's
+        # reverse foreign key pointers will not include the reference back
+        # to this object. Instead of setting the cache, let's poison the name
+        # and throw an exception if someone tries to get it.
+
+        # To work around this, explicitly call reset_cache(fieldName) and
+        # the ORM will reload the object.
+
+        self.poisoned[name] = True
+
     def __getattr__(self, name, *args, **kwargs):
         # note: getattr is only called for attributes that do not exist in
         #       self.__dict__
+
+        if name in self.poisoned.keys():
+            # see explanation in fk_set()
+            raise Exception("foreign key was poisoned")
 
         if name in self._fkmap.keys():
             return self.fk_resolve(name)
@@ -95,13 +115,28 @@ class ORMWrapper(object):
         return getattr(self._wrapped_class, name, *args, **kwargs)
 
     def __setattr__(self, name, value):
-        if name in self.__dict__:
+        if name in self._fkmap.keys():
+            self.fk_set(name, value)
+        elif name in self.__dict__:
             super(ORMWrapper,self).__setattr__(name, value)
         else:
             setattr(self._wrapped_class, name, value)
 
     def __repr__(self):
         return self._wrapped_class.__repr__()
+
+    def invalidate_cache(self, name=None):
+        if name:
+            if name in self.cache:
+                del self.cache[name]
+            if name in self.reverse_cache:
+                del self.reverse_cache[name]
+            if name in self.poisoned:
+                del self.poisoned[name]
+        else:
+            self.cache.clear()
+            self.reverse_cache.clear()
+            self.poisoned.clear()
 
     def save(self):
         if self.is_new:

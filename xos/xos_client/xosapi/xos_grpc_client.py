@@ -1,3 +1,4 @@
+import argparse
 import base64
 import functools
 import grpc
@@ -92,6 +93,116 @@ class SecureClient(XOSClient):
         super(SecureClient,self).__init__(consul_endpoint, work_dir, endpoint, self.reconnected, chan_creds)
 
         self.reconnect_callback2 = reconnect_callback
+
+# -----------------------------------------------------------------------------
+# Wrappers for easy setup for test cases, etc
+# -----------------------------------------------------------------------------
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+
+    defs = {"grpc_insecure_endpoint": "xos-core.cord.lab:50055",
+            "grpc_secure_endpoint": "xos-core.cord.lab:50051",
+            "consul": None}
+
+    _help = '<hostname>:<port> to consul agent (default: %s)' % defs['consul']
+    parser.add_argument(
+        '-C', '--consul', dest='consul', action='store',
+        default=defs['consul'],
+        help=_help)
+
+    _help = ('gRPC insecure end-point to connect to. It can either be a direct'
+             'definition in the form of <hostname>:<port>, or it can be an'
+             'indirect definition in the form of @<service-name> where'
+             '<service-name> is the name of the grpc service as registered'
+             'in consul (example: @voltha-grpc). (default: %s'
+             % defs['grpc_insecure_endpoint'])
+    parser.add_argument('-G', '--grpc-insecure-endpoint',
+                        dest='grpc_insecure_endpoint',
+                        action='store',
+                        default=defs["grpc_insecure_endpoint"],
+                        help=_help)
+
+    _help = ('gRPC secure end-point to connect to. It can either be a direct'
+             'definition in the form of <hostname>:<port>, or it can be an'
+             'indirect definition in the form of @<service-name> where'
+             '<service-name> is the name of the grpc service as registered'
+             'in consul (example: @voltha-grpc). (default: %s'
+             % defs["grpc_secure_endpoint"])
+    parser.add_argument('-S', '--grpc-secure-endpoint',
+                        dest='grpc_secure_endpoint',
+                        action='store',
+                        default=defs["grpc_secure_endpoint"],
+                        help=_help)
+
+    parser.add_argument('-u', '--username',
+                        dest='username',
+                        action='store',
+                        default=None,
+                        help=_help)
+
+    parser.add_argument('-p', '--password',
+                        dest='password',
+                        action='store',
+                        default=None,
+                        help=_help)
+
+    _help = 'omit startup banner log lines'
+    parser.add_argument('-n', '--no-banner',
+                        dest='no_banner',
+                        action='store_true',
+                        default=False,
+                        help=_help)
+
+    _help = "suppress debug and info logs"
+    parser.add_argument('-q', '--quiet',
+                        dest='quiet',
+                        action='count',
+                        help=_help)
+
+    _help = 'enable verbose logging'
+    parser.add_argument('-v', '--verbose',
+                        dest='verbose',
+                        action='count',
+                        help=_help)
+
+    args = parser.parse_args()
+
+    return args
+
+def coreclient_reconnect(client, reconnect_callback, *args, **kwargs):
+    global coreapi
+
+    coreapi = coreclient.xos_orm
+
+    if reconnect_callback:
+        reconnect_callback(*args, **kwargs)
+
+    reactor.stop()
+
+def start_api(reconnect_callback, *args, **kwargs):
+    global coreclient
+
+    if kwargs.get("username", None):
+        coreclient = SecureClient(*args, **kwargs)
+    else:
+        coreclient = InsecureClient(*args, **kwargs)
+
+    coreclient.set_reconnect_callback(functools.partial(coreclient_reconnect, coreclient, reconnect_callback))
+    coreclient.start()
+
+    reactor.run()
+
+def start_api_parseargs(reconnect_callback):
+    args = parse_args()
+
+    if args.username:
+        start_api(reconnect_callback, endpoint=args.grpc_secure_endpoint, username=args.username, password=args.password)
+    else:
+        start_api(reconnect_callback, endpoint=args.grpc_insecure_endpoint)
+
+
+
 
 # -----------------------------------------------------------------------------
 # Self test
