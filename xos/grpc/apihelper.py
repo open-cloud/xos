@@ -4,6 +4,7 @@ from protos import xos_pb2
 from google.protobuf.empty_pb2 import Empty
 
 from django.contrib.auth import authenticate as django_authenticate
+from django.db.models import F,Q
 from core.models import *
 from xos.exceptions import *
 
@@ -163,6 +164,47 @@ class XOSAPIHelperMixin(object):
           raise XOSPermissionDenied()
       obj.delete()
       return Empty()
+
+    def query_element_to_q(self, element):
+        value = element.sValue
+        if element.HasField("iValue"):
+            value = element.iValue
+        elif element.HasField("sValue"):
+            value = element.sValue
+        else:
+            raise Exception("must specify iValue or sValue")
+
+        if element.operator == element.EQUAL:
+            q = Q(**{element.name: value})
+        elif element.operator == element.LESS_THAN:
+            q = Q(**{element.name + "__lt": value})
+        elif element.operator == element.LESS_THAN_OR_EQUAL:
+            q = Q(**{element.name + "__lte": value})
+        elif element.operator == element.GREATER_THAN:
+            q = Q(**{element.name + "__gt": value})
+        elif element.operator == element.GREATER_THAN_OR_EQUAL:
+            q = Q(**{element.name + "__gte": value})
+        else:
+            raise Exception("unknown operator")
+
+        if element.invert:
+            q = ~q
+
+        return q
+
+    def filter(self, djangoClass, request):
+        query = None
+        if request.kind == request.DEFAULT:
+            for element in request.elements:
+                if query:
+                    query = query & self.query_element_to_q(element)
+                else:
+                    query = self.query_element_to_q(element)
+        elif request.kind == request.SYNCHRONIZER_DIRTY_OBJECTS:
+            query = (Q(enacted__lt=F('updated')) | Q(enacted=None)) & Q(lazy_blocked=False) &Q(no_sync=False)
+        elif request.kind == request.ALL:
+            return self.querysetToProto(djangoClass, djangoClass.objects.all())
+        return self.querysetToProto(djangoClass, djangoClass.objects.filter(query))
 
     def authenticate(self, context, required=False):
         for (k, v) in context.invocation_metadata():

@@ -21,6 +21,11 @@ class XosService(xos_pb2.xosServicer, XOSAPIHelperMixin):
       model=self.get_model("{{ object.camel() }}")
       return self.querysetToProto(model, model.objects.all())
 
+    def Filter{{ object.camel() }}(self, request, context):
+      user=self.authenticate(context)
+      model=self.get_model("{{ object.camel() }}")
+      return self.filter(model, request)
+
     def Get{{ object.camel() }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.camel() }}")

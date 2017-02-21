@@ -178,6 +178,9 @@ class ORMLocalObjectManager(object):
 class ORMObjectManager(object):
     """ Manages a remote list of objects """
 
+    # constants better agree with common.proto
+    SYNCHRONIZER_DIRTY_OBJECTS = 2;
+
     def __init__(self, stub, modelName, packageName):
         self._stub = stub
         self._modelName = modelName
@@ -194,6 +197,41 @@ class ORMObjectManager(object):
 
     def all(self):
         return self.wrap_list(self._stub.invoke("List%s" % self._modelName, Empty()))
+
+    def filter(self, **kwargs):
+        q = self._stub.make_Query()
+        q.kind = q.DEFAULT
+
+        for (name, val) in kwargs.items():
+            el = q.elements.add()
+
+            if name.endswith("__gt"):
+                name = name[:-4]
+                el.operator = el.GREATER_THAN
+            elif name.endswith("__gte"):
+                name = name[:-5]
+                el.operator = el.GREATER_THAN_OR_EQUAL
+            elif name.endswith("__lt"):
+                name = name[:-4]
+                el.operator = el.LESS_THAN
+            elif name.endswith("__lte"):
+                name = name[:-5]
+                el.operator = el.LESS_THAN_OR_EQUAL
+            else:
+                el.operator = el.EQUAL
+
+            el.name = name
+            if isinstance(val, int):
+                el.iValue = val
+            else:
+                el.sValue = val
+
+        return self.wrap_list(self._stub.invoke("Filter%s" % self._modelName, q))
+
+    def filter_special(self, kind):
+        q = self._stub.make_Query()
+        q.kind = kind
+        return self.wrap_list(self._stub.invoke("Filter%s" % self._modelName, q))
 
     def get(self, id):
         return self.wrap_single(self._stub.invoke("Get%s" % self._modelName, self._stub.make_ID(id=id)))
@@ -228,6 +266,9 @@ class ORMStub(object):
 
     def make_ID(self, id):
         return _sym_db._classes["xos.ID"](id=id)
+
+    def make_Query(self):
+        return _sym_db._classes["xos.Query"]()
 
 
 #def wrap_get(*args, **kwargs):

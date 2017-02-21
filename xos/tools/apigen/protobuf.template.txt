@@ -75,6 +75,8 @@ service xos {
             get: "/xosapi/v1/{{ object.app_name }}/{{ object.plural() }}"
         };
   }
+  rpc Filter{{ object.camel() }}(Query) returns ({{ object.camel() }}s) {
+  }
   rpc Get{{ object.camel() }}(ID) returns ({{ object.camel() }}) {
         option (google.api.http) = {
             get: "/xosapi/v1/{{ object.app_name }}/{{ object.plural() }}/{id}"

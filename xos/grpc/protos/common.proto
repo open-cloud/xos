@@ -5,3 +5,31 @@ package xos;
 message ID {
     int32 id = 1;
 }
+
+message QueryElement {
+    enum QueryOperator {
+        EQUAL = 0;
+        GREATER_THAN = 1;
+        LESS_THAN = 2;
+        GREATER_THAN_OR_EQUAL = 3;
+        LESS_THAN_OR_EQUAL = 4;
+    }
+    QueryOperator operator = 1;
+    bool invert = 2;
+    string name = 3;
+    oneof value {
+        string sValue = 4;
+        int32 iValue = 5;
+    }
+};
+
+message Query {
+    enum QueryKind {
+        DEFAULT=0;
+        ALL=1;
+        SYNCHRONIZER_DIRTY_OBJECTS = 2;
+    }
+    QueryKind kind = 1;
+    repeated QueryElement elements = 2;
+};
+
