@@ -22,4 +22,4 @@ ADD containers/xos/tmp.chameleon /tmp/xos_client/xosapi/chameleon
 # install the client library and xossh
 RUN chdir /tmp/xos_client && make
 
-CMD xossh
+ENTRYPOINT ["xossh"]
