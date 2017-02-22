@@ -1,0 +1,11 @@
+[Unit]
+Description={{ container_name }}
+After=docker.service
+
+[Service]
+ExecStart=/bin/bash -c "/usr/local/sbin/start-container-{{ container_name }}.sh ATTACH"
+ExecStop=/bin/bash -c "/usr/local/sbin/stop-container-{{ container_name }}.sh"
+SuccessExitStatus=0 137
+
+[Install]
+WantedBy=multi-user.target
