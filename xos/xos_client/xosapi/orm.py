@@ -20,7 +20,9 @@ u=c.xos_orm.User.objects.get(id=1)
 """
 
 import functools
+import grpc
 from google.protobuf.empty_pb2 import Empty
+import time
 
 from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
@@ -246,9 +248,10 @@ class ORMModelClass(object):
         self.objects = ORMObjectManager(stub, model_name, package_name)
 
 class ORMStub(object):
-    def __init__(self, stub, package_name):
+    def __init__(self, stub, package_name, invoker=None):
         self.grpc_stub = stub
         self.all_model_names = []
+        self.invoker = invoker
 
         for name in dir(stub):
            if name.startswith("Get"):
@@ -261,8 +264,28 @@ class ORMStub(object):
         return self.all_model_names
 
     def invoke(self, name, request):
-        method = getattr(self.grpc_stub, name)
-        return method(request)
+        if self.invoker:
+            # Hook in place to call Chameleon's invoke method, as soon as we
+            # have rewritten the synchronizer to use reactor.
+            return self.invoker.invoke(self.grpc_stub.__class__, name, request, metadata={}).result[0]
+        else:
+            # Our own retry mechanism. This works fine if there is a temporary
+            # failure in connectivity, but does not re-download gRPC schema.
+            while True:
+                backoff = [0.5, 1, 2, 4, 8]
+                try:
+                    method = getattr(self.grpc_stub, name)
+                    return method(request)
+                except grpc._channel._Rendezvous, e:
+                    code = e.code()
+                    if code == grpc.StatusCode.UNAVAILABLE:
+                        if not backoff:
+                            raise Exception("No more retries on %s" % name)
+                        time.sleep(backoff.pop(0))
+                    else:
+                        raise
+                except:
+                    raise
 
     def make_ID(self, id):
         return _sym_db._classes["xos.ID"](id=id)
