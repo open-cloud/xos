@@ -34,6 +34,7 @@ message ModelDef {
     string name = 1;
     repeated ModelField fields = 2;
     repeated FieldRelation relations = 3;
+    string app = 4;
 };
 
 message ModelDefs {

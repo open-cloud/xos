@@ -9,6 +9,7 @@ from core.models import *
 from xos.exceptions import *
 from apihelper import XOSAPIHelperMixin
 
+
 class ModelDefsService(modeldefs_pb2.modeldefsServicer, XOSAPIHelperMixin):
     def __init__(self, thread_pool):
         self.thread_pool = thread_pool
@@ -59,61 +60,86 @@ class ModelDefsService(modeldefs_pb2.modeldefsServicer, XOSAPIHelperMixin):
         if (field.one_to_one):
             return 'one_to_one'
 
+    def parseModuleName(self, module):
+        if 'core' in module:
+            return 'core'
+        if 'service' in module:
+            return module[:-7]
+        return module
+
     def ListModelDefs(self, request, context):
         models = django.apps.apps.get_models()
 
-        modeldefs = modeldefs_pb2.ModelDefs();
+        modeldefs = modeldefs_pb2.ModelDefs()
 
         response = []
 
         for model in models:
-            if 'core' in model.__module__:
-                modeldef = modeldefs.items.add()
+            # NOTE removing Django internal models
+            if 'django' in model.__module__:
+                continue
+            if 'cors' in model.__module__:
+                continue
+            if 'contenttypes' in model.__module__:
+                continue
+            if 'core.models.journal' in model.__module__:
+                continue
+            if 'core.models.project' in model.__module__:
+                continue
 
-                modeldef.name = model.__name__
+            modeldef = modeldefs.items.add()
 
-                for f in model._meta.fields:
-                    field = modeldef.fields.add()
+            modeldef.name = model.__name__
+            modeldef.app = self.parseModuleName(model.__module__)
 
-                    field.name = f.name
-                    field.hint = f.help_text
+            for f in model._meta.fields:
+                field = modeldef.fields.add()
 
-                    fieldtype = self.convertType(f.get_internal_type())
-                    if fieldtype is not None:
-                        field.type = fieldtype
+                field.name = f.name
+                field.hint = f.help_text
+
+                fieldtype = self.convertType(f.get_internal_type())
+                if fieldtype is not None:
+                    field.type = fieldtype
+                else:
+                    field.type = 'string'
+
+                if not f.blank and not f.null:
+                    val = field.validators.add()
+                    val.name = "required"
+                    val.bool_value = True
+
+                for v in f.validators:
+                    val = field.validators.add()
+                    validator_name = v.__class__.__name__
+                    if 'function' in validator_name:
+                        validator_name = v.__name__
+                    validator_name = self.convertValidator(validator_name)
+
+                    if not validator_name:
+                        continue
+
+                    val.name = validator_name
+                    if hasattr(v, 'limit_value'):
+                        try:
+                            val.int_value = v.limit_value
+                        except TypeError:
+                            val.str_value = str(v.limit_value)
                     else:
-                        field.type = 'string'
-
-                    if not f.blank and not f.null:
-                        val = field.validators.add()
-                        val.name = "required"
                         val.bool_value = True
 
-                    for v in f.validators:
-                        val = field.validators.add()
-                        validator_name = v.__class__.__name__
-                        if 'function' in validator_name:
-                            validator_name = v.__name__
-                        validator_name = self.convertValidator(validator_name)
+                if f.is_relation and f.related_model:
 
-                        if not validator_name:
-                            continue
+                    if 'ContentType' in f.related_model.__name__:
+                        # ContentType is a Django internal
+                        continue
 
-                        val.name = validator_name
-                        if hasattr(v, 'limit_value'):
-                            try:
-                                val.int_value = v.limit_value
-                            except TypeError:
-                                val.str_value = str(v.limit_value)
-                        else:
-                            val.bool_value = True
+                    field.name = field.name + '_id'
+                    field.relation.model = f.related_model.__name__
+                    field.relation.type = self.getRelationType(f)
 
-                    if f.is_relation and f.related_model:
-                        field.relation.model = f.related_model.__name__
-                        field.relation.type = self.getRelationType(f)
-
-                        rel = modeldef.relations.add()
-                        rel.model = f.related_model.__name__
-                        rel.type = self.getRelationType(f)
+                    rel = modeldef.relations.add()
+                    rel.model = f.related_model.__name__
+                    rel.type = self.getRelationType(f)
         return modeldefs
 
