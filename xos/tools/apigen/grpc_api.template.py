@@ -44,7 +44,7 @@ class XosService(xos_pb2.xosServicer, XOSAPIHelperMixin):
     def Update{{ object.camel() }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.camel() }}")
-      return self.update(model, user, request.id, request)
+      return self.update(model, user, request.id, request, context)
 
 {% endfor %}
 

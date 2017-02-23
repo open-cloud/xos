@@ -140,13 +140,16 @@ class ORMWrapper(object):
             self.reverse_cache.clear()
             self.poisoned.clear()
 
-    def save(self):
+    def save(self, update_fields=None):
         if self.is_new:
            new_class = self.stub.invoke("Create%s" % self._wrapped_class.__class__.__name__, self._wrapped_class)
            self._wrapped_class = new_class
            self.is_new = False
         else:
-           self.stub.invoke("Update%s" % self._wrapped_class.__class__.__name__, self._wrapped_class)
+           metadata = []
+           if update_fields:
+               metadata.append( ("update_fields", ",".join(update_fields)) )
+           self.stub.invoke("Update%s" % self._wrapped_class.__class__.__name__, self._wrapped_class, metadata=metadata)
 
     def delete(self):
         id = self.stub.make_ID(id=self._wrapped_class.id)
@@ -263,7 +266,7 @@ class ORMStub(object):
     def listObjects(self):
         return self.all_model_names
 
-    def invoke(self, name, request):
+    def invoke(self, name, request, metadata=[]):
         if self.invoker:
             # Hook in place to call Chameleon's invoke method, as soon as we
             # have rewritten the synchronizer to use reactor.
@@ -275,7 +278,7 @@ class ORMStub(object):
                 backoff = [0.5, 1, 2, 4, 8]
                 try:
                     method = getattr(self.grpc_stub, name)
-                    return method(request)
+                    return method(request, metadata=metadata)
                 except grpc._channel._Rendezvous, e:
                     code = e.code()
                     if code == grpc.StatusCode.UNAVAILABLE:
@@ -294,14 +297,4 @@ class ORMStub(object):
         return _sym_db._classes["xos.Query"]()
 
 
-#def wrap_get(*args, **kwargs):
-#    stub=kwargs.pop("stub")
-#    getmethod=kwargs.pop("getmethod")
-#    result = getmethod(*args, **kwargs)
-#    return ORMWrapper(result)
-#
-#def wrap_stub(stub):
-#    for name in dir(stub):
-#        if name.startswith("Get"):
-#            setattr(stub, name, functools.partial(wrap_get, stub=stub, getmethod=getattr(stub,name)))
 

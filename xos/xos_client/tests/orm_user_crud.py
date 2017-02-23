@@ -49,8 +49,20 @@ def test_callback():
     u3 = c.xos_orm.User.objects.get(id=orig_id)
     assert(u3.password=="foobar")
 
+    # try a partial update
+    u3.password = "should_not_change"
+    u3.firstname = "new_first_name"
+    u3.lastname = "new_last_name"
+    u3.save(update_fields = ["firstname", "lastname"])
+
+    # get and make sure the password was not updated, but first and last name were
+    u4 = c.xos_orm.User.objects.get(id=orig_id)
+    assert(u4.password=="foobar")
+    assert(u4.firstname == "new_first_name")
+    assert(u4.lastname == "new_last_name")
+
     # delete the user
-    u3.delete()
+    u4.delete()
 
     # make sure it is deleted
     u_all = c.xos_orm.User.objects.all()

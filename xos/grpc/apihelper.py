@@ -147,7 +147,7 @@ class XOSAPIHelperMixin(object):
         new_obj.save()
         return self.objToProto(new_obj)
 
-    def update(self, djangoClass, user, id, message):
+    def update(self, djangoClass, user, id, message, context):
         obj = djangoClass.objects.get(id=id)
         obj.caller = user
         if (not user) or (not obj.can_update(user)):
@@ -155,7 +155,13 @@ class XOSAPIHelperMixin(object):
         args = self.protoToArgs(djangoClass, message)
         for (k,v) in args.iteritems():
             setattr(obj, k, v)
-        obj.save()
+
+        save_kwargs={}
+        for (k, v) in context.invocation_metadata():
+            if k=="update_fields":
+                save_kwargs["update_fields"] = v.split(",")
+
+        obj.save(**save_kwargs)
         return self.objToProto(obj)
 
     def delete(self, djangoClass, user, id):
