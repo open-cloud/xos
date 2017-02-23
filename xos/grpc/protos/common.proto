@@ -28,6 +28,7 @@ message Query {
         DEFAULT=0;
         ALL=1;
         SYNCHRONIZER_DIRTY_OBJECTS = 2;
+        SYNCHRONIZER_DELETED_OBJECTS = 3;
     }
     QueryKind kind = 1;
     repeated QueryElement elements = 2;

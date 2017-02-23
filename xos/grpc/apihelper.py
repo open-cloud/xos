@@ -1,4 +1,5 @@
 import base64
+import inspect
 import time
 from protos import xos_pb2
 from google.protobuf.empty_pb2 import Empty
@@ -84,6 +85,14 @@ class XOSAPIHelperMixin(object):
                 if not hasattr(p_obj,related_name+"_ids"):
                     continue
                 x=getattr(p_obj,related_name+"_ids").append(rel_obj.id)
+
+        # Generate a list of class names for the object. This includes its
+        # ancestors. Anything that is a descendant of PlCoreBase or User
+        # counts.
+
+        bases = inspect.getmro(obj.__class__)
+        bases = [x for x in bases if issubclass(x, PlCoreBase) or issubclass(x, User)]
+        p_obj.class_names = ",".join( [x.__name__ for x in bases] )
 
         return p_obj
 
@@ -206,11 +215,16 @@ class XOSAPIHelperMixin(object):
                     query = query & self.query_element_to_q(element)
                 else:
                     query = self.query_element_to_q(element)
+            queryset = djangoClass.objects.filter(query)
         elif request.kind == request.SYNCHRONIZER_DIRTY_OBJECTS:
             query = (Q(enacted__lt=F('updated')) | Q(enacted=None)) & Q(lazy_blocked=False) &Q(no_sync=False)
+            queryset = djangoClass.objects.filter(query)
+        elif request.kind == request.SYNCHRONIZER_DELETED_OBJECTS:
+            queryset = djangoClass.deleted_objects.all()
         elif request.kind == request.ALL:
-            return self.querysetToProto(djangoClass, djangoClass.objects.all())
-        return self.querysetToProto(djangoClass, djangoClass.objects.filter(query))
+            queryset = djangoClass.objects.all()
+
+        return self.querysetToProto(djangoClass, queryset)
 
     def authenticate(self, context, required=False):
         for (k, v) in context.invocation_metadata():

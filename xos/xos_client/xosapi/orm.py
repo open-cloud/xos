@@ -104,6 +104,10 @@ class ORMWrapper(object):
         # note: getattr is only called for attributes that do not exist in
         #       self.__dict__
 
+        # pk is a synonym for id
+        if (name == "pk"):
+            name = "id"
+
         if name in self.poisoned.keys():
             # see explanation in fk_set()
             raise Exception("foreign key was poisoned")
@@ -185,6 +189,7 @@ class ORMObjectManager(object):
 
     # constants better agree with common.proto
     SYNCHRONIZER_DIRTY_OBJECTS = 2;
+    SYNCHRONIZER_DELETED_OBJECTS = 3;
 
     def __init__(self, stub, modelName, packageName):
         self._stub = stub

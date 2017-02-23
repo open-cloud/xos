@@ -60,6 +60,7 @@ message {{ object.camel() }} {
   {%- for ref in object.reverse_refs %}
     repeated int32 {{ ref.related_name }}_ids  = {{ loop.index+100 }} [(reverseForeignKey).modelName = "{{ ref.camel() }}"];
   {%- endfor %}
+  string class_names = 201;
 }
 
 message {{ object.camel() }}s {
