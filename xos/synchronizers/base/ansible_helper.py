@@ -11,6 +11,8 @@ import traceback
 import subprocess
 from xos.config import Config, XOS_DIR
 from xos.logger import observer_logger as logger
+from multiprocessing import Process, Queue
+
 
 step_dir = Config().observer_steps_dir
 sys_dir = Config().observer_sys_dir
@@ -45,6 +47,35 @@ def get_playbook_fn(opts, path):
 
     return (opts, os.path.join(pathed_sys_dir,objname))
 
+def run_playbook(ansible_hosts, ansible_config, fqp, opts, q):
+    if ansible_config:
+       os.environ["ANSIBLE_CONFIG"] = ansible_config
+    else:
+       try:
+           del os.environ["ANSIBLE_CONFIG"]
+       except KeyError:
+           pass
+
+    if ansible_hosts:
+       os.environ["ANSIBLE_HOSTS"] = ansible_hosts
+    else:
+       try:
+           del os.environ["ANSIBLE_HOSTS"]
+       except KeyError:
+           pass
+
+    import ansible_runner
+    reload(ansible_runner)
+
+    # Dropped support for observer_pretend - to be redone
+    runner = ansible_runner.Runner(
+        playbook=fqp,
+        run_data=opts,
+        host_file=ansible_hosts)
+
+    stats,aresults = runner.run()
+    q.put([stats,aresults])
+
 def run_template(name, opts, path='', expected_num=None, ansible_config=None, ansible_hosts=None, run_ansible_script=None, object=None):
     template = os_template_env.get_template(name)
     buffer = template.render(opts)
@@ -54,23 +85,12 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
     f = open(fqp,'w')
     f.write(buffer)
     f.flush()
-
-    if ansible_config:
-       os.environ["ANSIBLE_CONFIG"] = ansible_config
-    if ansible_hosts:
-       os.environ["ANSIBLE_HOSTS"] = ansible_hosts
-
-    # This import needs to be here, otherwise ANSIBLE_CONFIG does not take effect
-    from ansible_runner import Runner
-
-
-    # Dropped support for observer_pretend - to be redone
-    runner = Runner(
-        playbook=fqp,
-        run_data=opts,
-        host_file=ansible_hosts)
-
-    stats,aresults = runner.run()
+    
+    q = Queue()
+    p = Process(target=run_playbook, args=(ansible_hosts, ansible_config, fqp, opts, q,))
+    p.start()
+    stats,aresults = q.get()
+    p.join()
 
     try:
         ok_results = []
@@ -147,8 +167,8 @@ def run_template_ssh(name, opts, path='', expected_num=None, object=None):
         except:
             proxy_ssh = True
 
-    if (not ssh_ip):
-        raise Exception('IP of ssh proxy not available. Synchronization deferred')
+        if (not ssh_ip):
+            raise Exception('IP of ssh proxy not available. Synchronization deferred')
 
     (opts, fqp) = get_playbook_fn(opts, path)
     private_key_pathname = fqp + ".key"

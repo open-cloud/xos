@@ -6,6 +6,9 @@ import pdb
 import json
 import uuid
 
+from ansible import constants
+constants = reload(constants)
+
 from tempfile import NamedTemporaryFile
 from ansible.inventory import Inventory
 from ansible.vars import VariableManager
@@ -14,6 +17,7 @@ from ansible.executor import playbook_executor
 from ansible.utils.display import Display
 from ansible.plugins.callback import CallbackBase
 from xos.logger import observer_logger as logger
+
 
 class ResultCallback(CallbackBase):
 
