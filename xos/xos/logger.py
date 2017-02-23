@@ -16,7 +16,7 @@
 # THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
 # OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
 # MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
 # HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
 # OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
@@ -51,6 +51,21 @@ class Logger:
                 logfile = Config().observer_log_file
             except:
                 logfile = "/var/log/xos.log"
+
+        # allow config-file override of log level
+
+        level_str = getattr(Config(), "observer_log_level", None)
+        if level_str:
+            level_str = level_str.lower()
+
+        if level_str == "info":
+            level = logging.INFO
+        elif level_str == "debug":
+            level = logging.DEBUG
+        elif level_str == "warning":
+            level = logging.WARNING
+        elif level_str == "error":
+            level = logging.ERROR
 
         if (logfile == "console"):
             loggername = "console"
