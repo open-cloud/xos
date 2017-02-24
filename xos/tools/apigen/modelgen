@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import inspect
 import os
 import pdb
 import copy
@@ -20,7 +21,50 @@ from django.conf import settings
 
 django.setup()
 
+from core.models import PlCoreBase
+
 options = None
+
+def is_model_class(model):
+    """ Return True if 'model' is something that we're interested in """
+    if not inspect.isclass(model):
+        return False
+    if model.__name__ in ["PlModelMixIn"]:
+        return False
+    bases = inspect.getmro(model)
+    bases = [x.__name__ for x in bases]
+    if ("PlCoreBase" in bases) or ("PlModelMixIn" in bases):
+        return True
+
+    return False
+
+def module_has_models(module):
+    """ return True if 'module' contains any models we're interested in """
+    for k in dir(module):
+        v=getattr(module,k)
+        if is_model_class(v):
+            return True
+
+    return False
+
+def app_get_models_module(app):
+    """ check whether 'app' includes XOS models """
+
+    app = app + ".models"
+    try:
+        models_module = __import__(app)
+    except ImportError:
+        return False
+
+    for part in app.split(".")[1:]:
+        if module_has_models(models_module):
+            return models_module
+        models_module = getattr(models_module,part)
+
+    if module_has_models(models_module):
+        return models_module
+
+    return None
 
 
 def singular(foo, keys):
@@ -41,15 +85,7 @@ def enum_classes(apps):
     model_classes = []
     for app in apps:
             orig_app=app
-            app = app + ".models"
-            models_module = __import__(app)
-            for part in app.split(".")[1:]:
-                if hasattr(models_module, "PlCoreBase"):
-                    break
-                models_module = getattr(models_module,part)
-
-            global PlCoreBase
-            PlCoreBase = getattr(models_module,"PlCoreBase")
+            models_module = app_get_models_module(app)
 
             for classname in dir(models_module):
                     c = getattr(models_module, classname, None)
@@ -60,7 +96,7 @@ def enum_classes(apps):
                         if (c._meta.app_label == "core") and (orig_app!="core"):
                             continue
 
-                    if type(c)==type(PlCoreBase) and c.__name__ not in options.blacklist:
+                    if is_model_class(c) and c.__name__ not in options.blacklist:
                             model_classes.append(c)
                             app_map[c.__name__]=orig_app
                             c.class_name = c.__name__
@@ -239,25 +275,6 @@ class Generator(dict):
                                 cobj.related_name = f.related_name
                                 obj.reverse_refs.append(cobj)
 
-
-def app_has_models(app):
-    """ check whether 'app' includes XOS models """
-
-    app = app + ".models"
-    try:
-        models_module = __import__(app)
-    except ImportError:
-        return False
-    for part in app.split(".")[1:]:
-        if hasattr(models_module, "PlCoreBase"):
-            return True
-        models_module = getattr(models_module,part)
-
-    if hasattr(models_module, "PlCoreBase"):
-        return True
-
-    return False
-
 def main():
         global options
         parser = OptionParser(usage="modelgen [options] <template_fn>", )
@@ -290,7 +307,7 @@ def main():
             options.apps = ["core"]
 
         if options.apps == ["*"]:
-            options.apps = [x for x in settings.INSTALLED_APPS if app_has_models(x)]
+            options.apps = [x for x in settings.INSTALLED_APPS if app_get_models_module(x)]
 
         if len(args)!=1:
             print 'Usage: modelgen [options] <template_fn>'

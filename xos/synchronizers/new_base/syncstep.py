@@ -5,7 +5,7 @@ from xos.logger import Logger, logging
 from synchronizers.new_base.modelaccessor import *
 #from synchronizers.new_base.steps import *
 #from synchronizers.new_base.ansible_helper import *
-from generate.dependency_walker import *
+#from generate.dependency_walker import *
 
 import json
 import time
@@ -207,11 +207,11 @@ class SyncStep(object):
                     if (deletion):
                         if getattr(o, "backend_need_reap", False):
                             # the object has already been deleted and marked for reaping
-                            journal_object(o,"syncstep.call.already_marked_reap")
+                            model_accessor.journal_object(o,"syncstep.call.already_marked_reap")
                         else:
-                            journal_object(o,"syncstep.call.delete_record")
+                            model_accessor.journal_object(o,"syncstep.call.delete_record")
                             self.delete_record(o)
-                            journal_object(o,"syncstep.call.delete_set_reap")
+                            model_accessor.journal_object(o,"syncstep.call.delete_set_reap")
                             o.backend_need_reap = True
                             o.save(update_fields=['backend_need_reap'])
                             #o.delete(purge=True)
@@ -228,7 +228,7 @@ class SyncStep(object):
                             o.backend_need_delete = True
                             o.save(update_fields=['backend_need_delete'])
 
-                        journal_object(o,"syncstep.call.sync_record")
+                        model_accessor.journal_object(o,"syncstep.call.sync_record")
                         self.sync_record(o)
 
                         model_accessor.update_diag(syncrecord_start = time.time(), backend_status="1 - Synced Record")
@@ -236,8 +236,9 @@ class SyncStep(object):
                         scratchpad = {'next_run':0, 'exponent':0, 'last_success':time.time()}
                         o.backend_register = json.dumps(scratchpad)
                         o.backend_status = "1 - OK"
-                        journal_object(o,"syncstep.call.save_update")
+                        model_accessor.journal_object(o,"syncstep.call.save_update")
                         o.save(update_fields=['enacted','backend_status','backend_register'])
+                        logger.info("save sync object, new enacted = %s" % str(new_enacted))
                 except (InnocuousException,Exception,DeferredException) as e:
                     logger.log_exc("sync step failed!",extra=o.tologdict())
                     try:

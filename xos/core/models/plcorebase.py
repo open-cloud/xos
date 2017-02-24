@@ -310,6 +310,14 @@ class PlCoreBase(models.Model, PlModelMixIn):
         if "silent" in kwargs:
             silent=silent or kwargs.pop("silent")
 
+        caller_kind = "unknown"
+
+        if ('synchronizer' in threading.current_thread().name):
+            caller_kind = "synchronizer"
+
+        if "caller_kind" in kwargs:
+            caller_kind = kwargs.pop("caller_kind")
+
         always_update_timestamp = False
         if "always_update_timestamp" in kwargs:
             always_update_timestamp = always_update_timestamp or kwargs.pop("always_update_timestamp")
@@ -324,7 +332,7 @@ class PlCoreBase(models.Model, PlModelMixIn):
                 if not (field in ["backend_register", "backend_status", "deleted", "enacted", "updated"]):
                     ignore_composite_key_check=False
 
-        if ('synchronizer' not in threading.current_thread().name) or always_update_timestamp:
+        if (caller_kind!="synchronizer") or always_update_timestamp:
             self.updated = timezone.now()
 
         # Transmit update via Redis

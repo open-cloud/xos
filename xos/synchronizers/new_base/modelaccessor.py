@@ -8,6 +8,9 @@
     models into the calling module's scope.
 """
 
+import functools
+from xos.config import Config
+
 class ModelAccessor(object):
     def __init__(self):
         self.all_model_classes = self.get_all_model_classes()
@@ -52,7 +55,7 @@ class ModelAccessor(object):
         """ Return the current time for timestamping purposes """
         raise Exception("Not Implemented")
 
-    def update_diag(loop_end=None, loop_start=None, syncrecord_start=None, sync_start=None, backend_status=None):
+    def update_diag(self, loop_end=None, loop_start=None, syncrecord_start=None, sync_start=None, backend_status=None):
         """ Update the diagnostic object """
         pass
 
@@ -64,27 +67,62 @@ class ModelAccessor(object):
         """ returns True if obj is of model type "name" or is a descendant """
         raise Exception("Not Implemented")
 
+    def journal_object(o, operation, msg=None, timestamp=None):
+        pass
 
-# TODO: insert logic here to pick accessor based on config setting
-if True:
-   from djangoaccessor import DjangoModelAccessor
-   model_accessor = DjangoModelAccessor()
-else:
-   from apiaccessor import ApiModelAccessor
-   model_accessor = CoreApiModelAccessor()
+def import_models_to_globals():
+    # add all models to globals
+    for (k, v) in model_accessor.all_model_classes.items():
+        globals()[k] = v
 
-# add all models to globals
-for (k, v) in model_accessor.all_model_classes.items():
-    globals()[k] = v
+    # plcorebase doesn't exist from the synchronizer's perspective, so fake out
+    # ModelLink.
+    if "ModelLink" not in globals():
+        class ModelLink:
+            def __init__(self,dest,via,into=None):
+                self.dest=dest
+                self.via=via
+                self.into=into
+        globals()["ModelLink"] = ModelLink
 
-# plcorebase doesn't exist from the synchronizer's perspective, so fake out
-# ModelLink.
-if "ModelLink" not in globals():
-    class ModelLink:
-        def __init__(self,dest,via,into=None):
-            self.dest=dest
-            self.via=via
-            self.into=into
-    globals()["ModelLink"] = ModelLink
+def grpcapi_reconnect(client, reactor):
+    global model_accessor
 
+    # this will prevent updated timestamps from being automatically updated
+    client.xos_orm.caller_kind = "synchronizer"
+
+    from apiaccessor import CoreApiModelAccessor
+    model_accessor = CoreApiModelAccessor(orm = client.xos_orm)
+    import_models_to_globals()
+
+    # Synchronizer framework isn't ready to embrace reactor yet...
+    reactor.stop()
+
+def config_accessor():
+    global model_accessor
+
+    accessor_kind = getattr(Config(), "observer_accessor_kind", "django")
+
+    if (accessor_kind == "django"):
+       from djangoaccessor import DjangoModelAccessor
+       model_accessor = DjangoModelAccessor()
+       import_models_to_globals()
+    else:
+       grpcapi_endpoint = getattr(Config(), "observer_accessor_endpoint", "xos-core.cord.lab:50051")
+       grpcapi_username = getattr(Config(), "observer_accessor_username", "xosadmin@opencord.org")
+       grpcapi_password = getattr(Config(), "observer_accessor_password")
+
+       from xosapi.xos_grpc_client import SecureClient
+       from twisted.internet import reactor
+
+       grpcapi_client = SecureClient(endpoint = grpcapi_endpoint, username = grpcapi_username, password=grpcapi_password)
+       grpcapi_client.set_reconnect_callback(functools.partial(grpcapi_reconnect, grpcapi_client, reactor))
+       grpcapi_client.start()
+
+       # Start reactor. This will cause the client to connect and then execute
+       # grpcapi_callback().
+
+       reactor.run()
+
+config_accessor()
 

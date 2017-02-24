@@ -27,6 +27,8 @@ import time
 from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
+convenience_wrappers = {}
+
 class ORMWrapper(object):
     """ Wraps a protobuf object to provide ORM features """
 
@@ -68,7 +70,7 @@ class ORMWrapper(object):
 
     def fk_resolve(self, name):
         if name in self.cache:
-            return ORMWrapper(self.cache[name], self.stub)
+            return make_ORMWrapper(self.cache[name], self.stub)
 
         fk_entry = self._fkmap[name]
         id=self.stub.make_ID(id=getattr(self, fk_entry["src_fieldName"]))
@@ -76,7 +78,7 @@ class ORMWrapper(object):
 
         self.cache[name] = dest_model
 
-        return ORMWrapper(dest_model, self.stub)
+        return make_ORMWrapper(dest_model, self.stub)
 
     def reverse_fk_resolve(self, name):
         if name not in self.reverse_cache:
@@ -159,6 +161,14 @@ class ORMWrapper(object):
         id = self.stub.make_ID(id=self._wrapped_class.id)
         self.stub.invoke("Delete%s" % self._wrapped_class.__class__.__name__, id)
 
+    def tologdict(self):
+        try:
+            d = {'model_name':self.__class__.__name__, 'pk': self.pk}
+        except:
+            d = {}
+
+        return d
+
 class ORMLocalObjectManager(object):
     """ Manages a local list of objects """
 
@@ -182,7 +192,7 @@ class ORMLocalObjectManager(object):
 
     def all(self):
         models = self.resolve_queryset()
-        return [ORMWrapper(x,self._stub) for x in models]
+        return [make_ORMWrapper(x,self._stub) for x in models]
 
 class ORMObjectManager(object):
     """ Manages a remote list of objects """
@@ -197,16 +207,22 @@ class ORMObjectManager(object):
         self._packageName = packageName
 
     def wrap_single(self, obj):
-        return ORMWrapper(obj, self._stub)
+        return make_ORMWrapper(obj, self._stub)
 
     def wrap_list(self, obj):
         result=[]
         for item in obj.items:
-            result.append(ORMWrapper(item, self._stub))
+            result.append(make_ORMWrapper(item, self._stub))
         return result
 
     def all(self):
         return self.wrap_list(self._stub.invoke("List%s" % self._modelName, Empty()))
+
+    def first(self):
+        objs=self.wrap_list(self._stub.invoke("List%s" % self._modelName, Empty()))
+        if not objs:
+            return None
+        return objs[0]
 
     def filter(self, **kwargs):
         q = self._stub.make_Query()
@@ -243,23 +259,34 @@ class ORMObjectManager(object):
         q.kind = kind
         return self.wrap_list(self._stub.invoke("Filter%s" % self._modelName, q))
 
-    def get(self, id):
-        return self.wrap_single(self._stub.invoke("Get%s" % self._modelName, self._stub.make_ID(id=id)))
+    def get(self, **kwargs):
+        if kwargs.keys() == ["id"]:
+            # the fast and easy case, look it up by id
+            return self.wrap_single(self._stub.invoke("Get%s" % self._modelName, self._stub.make_ID(id=kwargs["id"])))
+        else:
+            # the slightly more difficult case, filter and return the first item
+            objs = self.filter(**kwargs)
+            return objs[0]
 
     def new(self, **kwargs):
         full_model_name = "%s.%s" % (self._packageName, self._modelName)
         cls = _sym_db._classes[full_model_name]
-        return ORMWrapper(cls(), self._stub, is_new=True)
+        return make_ORMWrapper(cls(), self._stub, is_new=True)
 
 class ORMModelClass(object):
     def __init__(self, stub, model_name, package_name):
+        self.model_name = model_name
         self.objects = ORMObjectManager(stub, model_name, package_name)
 
+    def __name__(self):
+        return self.model_name
+
 class ORMStub(object):
-    def __init__(self, stub, package_name, invoker=None):
+    def __init__(self, stub, package_name, invoker=None, caller_kind="grpcapi"):
         self.grpc_stub = stub
         self.all_model_names = []
         self.invoker = invoker
+        self.caller_kind = caller_kind
 
         for name in dir(stub):
            if name.startswith("Get"):
@@ -271,7 +298,20 @@ class ORMStub(object):
     def listObjects(self):
         return self.all_model_names
 
+    def add_default_metadata(self, metadata):
+        default_metadata = [ ("caller_kind", self.caller_kind) ]
+
+        # build up a list of metadata keys we already have
+        md_keys=[x[0] for x in metadata]
+
+        # add any defaults that we don't already have
+        for md in default_metadata:
+            if md[0] not in md_keys:
+                metadata.append( (md[0], md[1]) )
+
     def invoke(self, name, request, metadata=[]):
+        self.add_default_metadata(metadata)
+
         if self.invoker:
             # Hook in place to call Chameleon's invoke method, as soon as we
             # have rewritten the synchronizer to use reactor.
@@ -301,5 +341,18 @@ class ORMStub(object):
     def make_Query(self):
         return _sym_db._classes["xos.Query"]()
 
+def register_convenience_wrapper(class_name, wrapper):
+    global convenience_wrappers
 
+    convenience_wrappers[class_name] = wrapper
+
+def make_ORMWrapper(wrapped_class, *args, **kwargs):
+    if wrapped_class.__class__.__name__ in convenience_wrappers:
+        cls = convenience_wrappers[wrapped_class.__class__.__name__]
+    else:
+        cls = ORMWrapper
+
+    return cls(wrapped_class, *args, **kwargs)
+
+import convenience.instance
 

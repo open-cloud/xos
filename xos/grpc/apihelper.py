@@ -1,5 +1,7 @@
 import base64
+import datetime
 import inspect
+import pytz
 import time
 from protos import xos_pb2
 from google.protobuf.empty_pb2 import Empty
@@ -42,7 +44,9 @@ class XOSAPIHelperMixin(object):
         if not x:
             return 0
         else:
-            return time.mktime(x.timetuple())
+            utc=pytz.utc
+            return (x-datetime.datetime(1970,1,1,tzinfo=utc)).total_seconds()
+            #return time.mktime(x.timetuple())
 
     def convertForeignKey(self, x):
         if not x:
@@ -124,7 +128,8 @@ class XOSAPIHelperMixin(object):
                 elif (ftype == "ForeignKey"):
                     args[name] = val # field name already has "_id" at the end
                 elif (ftype == "DateTimeField"):
-                    pass # do something special here
+                    utc = pytz.utc
+                    args[name] = datetime.datetime.fromtimestamp(val,tz=utc)
                 elif (ftype == "FloatField"):
                     args[name] = val
                 elif (ftype == "GenericIPAddressField"):
@@ -169,6 +174,10 @@ class XOSAPIHelperMixin(object):
         for (k, v) in context.invocation_metadata():
             if k=="update_fields":
                 save_kwargs["update_fields"] = v.split(",")
+            elif k=="caller_kind":
+                save_kwargs["caller_kind"] = v
+            elif k=="always_update_timestamp":
+                save_kwargs["always_update_timestamp"] = True
 
         obj.save(**save_kwargs)
         return self.objToProto(obj)

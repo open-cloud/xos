@@ -66,6 +66,10 @@ client:
 	-f Dockerfile.client -t xosproject/xos-client ${BUILD_ARGS} ../..
 	rm -rf tmp.chameleon
 
+synchronizer-base: 
+	sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm \
+	-f Dockerfile.synchronizer-base -t xosproject/xos-synchronizer-base ${BUILD_ARGS} ../..
+
 run:
 	sudo docker run -d --name ${CONTAINER_NAME} -p 80:8000 \
 	${IMAGE_NAME}
