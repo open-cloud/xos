@@ -180,7 +180,10 @@ class Generator(dict):
 		fields = o._meta.fields
                 try:
                     obj.app = app_map[o.__name__] # full name
-                    obj.app_name = app_map[o.__name__].split(".")[-1]  # only the last part
+                    if hasattr(o, "_meta") and hasattr(o._meta, "app_label"):
+                        obj.app_name = o._meta.app_label
+                    else:
+                        obj.app_name = app_map[o.__name__].split(".")[-1]  # only the last part
                 except KeyError:
                     print "KeyError: %r"%o.__name__
                 obj.class_name = o.class_name
