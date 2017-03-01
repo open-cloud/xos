@@ -4,7 +4,6 @@ import django.apps
 from django.db import reset_queries
 from django.utils import timezone
 from modelaccessor import ModelAccessor
-from diag import update_diag
 from django.db import connection
 from django.db.models import F, Q
 from django import setup as django_setup # django 1.7
@@ -70,9 +69,6 @@ class DjangoModelAccessor(ModelAccessor):
 
     def now(self):
         return timezone.now()
-
-    def update_diag(self, loop_end=None, loop_start=None, syncrecord_start=None, sync_start=None, backend_status=None):
-        return update_diag(loop_end, loop_start, syncrecord_start, sync_start, backend_status)
 
     def is_type(self, obj, name):
         return type(obj) == self.get_model_class(name)

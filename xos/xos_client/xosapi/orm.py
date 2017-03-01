@@ -169,6 +169,14 @@ class ORMWrapper(object):
 
         return d
 
+class ORMQuerySet(list):
+    """ Makes lists look like django querysets """
+    def first(self):
+        if len(self)>0:
+            return self[0]
+        else:
+            return None
+
 class ORMLocalObjectManager(object):
     """ Manages a local list of objects """
 
@@ -213,7 +221,7 @@ class ORMObjectManager(object):
         result=[]
         for item in obj.items:
             result.append(make_ORMWrapper(item, self._stub))
-        return result
+        return ORMQuerySet(result)
 
     def all(self):
         return self.wrap_list(self._stub.invoke("List%s" % self._modelName, Empty()))

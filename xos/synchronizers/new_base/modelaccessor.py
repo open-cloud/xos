@@ -11,6 +11,7 @@
 import functools
 import os
 from xos.config import Config
+from diag import update_diag
 
 class ModelAccessor(object):
     def __init__(self):
@@ -23,6 +24,10 @@ class ModelAccessor(object):
     def get_model_class(self, name):
         """ Given a class name, return that model class """
         return self.all_model_classes[name]
+
+    def has_model_class(self, name):
+        """ Given a class name, return that model class """
+        return name in self.all_model_classes
 
     def fetch_pending(self, name, deletion=False):
         """ Execute the default fetch_pending query """
@@ -57,8 +62,8 @@ class ModelAccessor(object):
         raise Exception("Not Implemented")
 
     def update_diag(self, loop_end=None, loop_start=None, syncrecord_start=None, sync_start=None, backend_status=None):
-        """ Update the diagnostic object """
-        pass
+        if self.has_model_class("Diag"):
+            return update_diag(self.get_model_class("Diag"), loop_end, loop_start, syncrecord_start, sync_start, backend_status)
 
     def is_type(self, obj, name):
         """ returns True is obj is of model type "name" """
