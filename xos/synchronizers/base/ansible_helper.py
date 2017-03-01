@@ -48,32 +48,38 @@ def get_playbook_fn(opts, path):
     return (opts, os.path.join(pathed_sys_dir,objname))
 
 def run_playbook(ansible_hosts, ansible_config, fqp, opts, q):
-    if ansible_config:
-       os.environ["ANSIBLE_CONFIG"] = ansible_config
-    else:
-       try:
-           del os.environ["ANSIBLE_CONFIG"]
-       except KeyError:
-           pass
+    try:
+        if ansible_config:
+           os.environ["ANSIBLE_CONFIG"] = ansible_config
+        else:
+           try:
+               del os.environ["ANSIBLE_CONFIG"]
+           except KeyError:
+               pass
 
-    if ansible_hosts:
-       os.environ["ANSIBLE_HOSTS"] = ansible_hosts
-    else:
-       try:
-           del os.environ["ANSIBLE_HOSTS"]
-       except KeyError:
-           pass
+        if ansible_hosts:
+           os.environ["ANSIBLE_HOSTS"] = ansible_hosts
+        else:
+           try:
+               del os.environ["ANSIBLE_HOSTS"]
+           except KeyError:
+               pass
 
-    import ansible_runner
-    reload(ansible_runner)
+        import ansible_runner
+        reload(ansible_runner)
 
-    # Dropped support for observer_pretend - to be redone
-    runner = ansible_runner.Runner(
-        playbook=fqp,
-        run_data=opts,
-        host_file=ansible_hosts)
+        # Dropped support for observer_pretend - to be redone
+        runner = ansible_runner.Runner(
+            playbook=fqp,
+            run_data=opts,
+            host_file=ansible_hosts)
 
-    stats,aresults = runner.run()
+        stats,aresults = runner.run()
+    except Exception, e:
+        logger.log_exc("Exception executing playbook",extra={'exception':str(e)})
+        stats = None
+        aresults = None
+
     q.put([stats,aresults])
 
 def run_template(name, opts, path='', expected_num=None, ansible_config=None, ansible_hosts=None, run_ansible_script=None, object=None):
@@ -94,6 +100,9 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
 
     output_file = fqp + '.out'
     try:
+        if (aresults is None):
+            raise ValueError("Error executing playbook %s"%fqp)
+
         ok_results = []
         total_unreachable = 0
         failed = 0
