@@ -92,12 +92,16 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
     stats,aresults = q.get()
     p.join()
 
+    output_file = fqp + '.out'
     try:
         ok_results = []
         total_unreachable = 0
         failed = 0
 
         error_msg = []
+
+        ofile = open(output_file, 'w')
+
         for x in aresults:
             if not x.is_failed() and not x.is_unreachable() and not x.is_skipped():
                 ok_results.append(x)
@@ -116,6 +120,9 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
                     pass
 
             # FIXME (zdw, 2017-02-19) - may not be needed with new callback logging
+            
+            ofile.write('%s: %s\n'%(x._task, str(x._result)))
+
 	    if (object):
 		oprops = object.tologdict()
 		ansible = x._result
@@ -127,8 +134,10 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
                 else:
 		    oprops['ansible_status']='FAILED'
 
-                # logger.info(x._task, extra=oprops)
+                logger.info(x._task, extra=oprops)
 
+
+        ofile.close()
 
         if (expected_num is not None) and (len(ok_results) != expected_num):
             raise ValueError('Unexpected num %s!=%d' % (str(expected_num), len(ok_results)) )
