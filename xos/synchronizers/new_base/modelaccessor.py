@@ -9,6 +9,7 @@
 """
 
 import functools
+import os
 from xos.config import Config
 
 class ModelAccessor(object):
@@ -111,6 +112,13 @@ def config_accessor():
        grpcapi_endpoint = getattr(Config(), "observer_accessor_endpoint", "xos-core.cord.lab:50051")
        grpcapi_username = getattr(Config(), "observer_accessor_username", "xosadmin@opencord.org")
        grpcapi_password = getattr(Config(), "observer_accessor_password")
+
+       # if password starts with "@", then retreive the password from a file
+       if grpcapi_password.startswith("@"):
+           fn = grpcapi_password[1:]
+           if not os.path.exists(fn):
+               raise Exception("%s does not exist" % fn)
+           grpcapi_password = open(fn).readline().strip()
 
        from xosapi.xos_grpc_client import SecureClient
        from twisted.internet import reactor
