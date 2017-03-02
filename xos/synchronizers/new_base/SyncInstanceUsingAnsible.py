@@ -209,7 +209,7 @@ class SyncInstanceUsingAnsible(SyncStep):
 
                 fields = self.get_ansible_fields(instance)
 
-        fields["ansible_tag"] =  o.__class__.__name__ + "_" + str(o.id)
+        fields["ansible_tag"] = getattr(o, "ansible_tag", o.__class__.__name__ + "_" + str(o.id))
 
         # If 'o' defines a 'sync_attributes' list, then we'll copy those
         # attributes into the Ansible recipe's field list automatically.
@@ -256,7 +256,7 @@ class SyncInstanceUsingAnsible(SyncStep):
             # sync to an XOS instance
             fields = self.get_ansible_fields(instance)
 
-            fields["ansible_tag"] =  o.__class__.__name__ + "_" + str(o.id)
+            fields["ansible_tag"] = getattr(o, "ansible_tag", o.__class__.__name__ + "_" + str(o.id))
 
         # If 'o' defines a 'sync_attributes' list, then we'll copy those
         # attributes into the Ansible recipe's field list automatically.
@@ -348,7 +348,7 @@ class SyncInstanceUsingAnsible(SyncStep):
 
             #Run ansible playbook to update the routing table entries in the instance
             fields = self.get_ansible_fields(instance)
-            fields["ansible_tag"] =  obj.__class__.__name__ + "_" + str(obj.id) + "_service_composition"
+            fields["ansible_tag"] = getattr(obj, "ansible_tag", obj.__class__.__name__ + "_" + str(obj.id)) + "_service_composition"
             fields["src_intf_ip"] = src_ip
             fields["target_subnet"] = target_subnet
             #Template file is available under .../synchronizers/shared_templates

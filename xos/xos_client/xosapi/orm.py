@@ -169,6 +169,10 @@ class ORMWrapper(object):
 
         return d
 
+    @property
+    def ansible_tag(self):
+        return "%s_%s" % (self._wrapped_class.__class__.__name__, self.id)
+
 class ORMQuerySet(list):
     """ Makes lists look like django querysets """
     def first(self):
@@ -286,6 +290,7 @@ class ORMModelClass(object):
         self.model_name = model_name
         self.objects = ORMObjectManager(stub, model_name, package_name)
 
+    @property
     def __name__(self):
         return self.model_name
 
