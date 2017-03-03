@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import jinja2
 import tempfile
 import os
@@ -9,6 +10,7 @@ import random
 import re
 import traceback
 import subprocess
+import threading
 from xos.config import Config, XOS_DIR
 from xos.logger import observer_logger as logger
 from multiprocessing import Process, Queue
@@ -47,7 +49,7 @@ def get_playbook_fn(opts, path):
 
     return (opts, os.path.join(pathed_sys_dir,objname))
 
-def run_playbook(ansible_hosts, ansible_config, fqp, opts, q):
+def run_playbook(ansible_hosts, ansible_config, fqp, opts):#, q):
     try:
         if ansible_config:
            os.environ["ANSIBLE_CONFIG"] = ansible_config
@@ -80,9 +82,19 @@ def run_playbook(ansible_hosts, ansible_config, fqp, opts, q):
         stats = None
         aresults = None
 
-    q.put([stats,aresults])
+    #q.put([stats,aresults])
+    return (stats,aresults)
 
 def run_template(name, opts, path='', expected_num=None, ansible_config=None, ansible_hosts=None, run_ansible_script=None, object=None):
+    global uglylock
+    try:
+        if (uglylock):
+            pass
+    except NameError:
+        uglylock = threading.Lock()
+
+    uglylock.acquire()
+
     template = os_template_env.get_template(name)
     buffer = template.render(opts)
 
@@ -92,12 +104,17 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
     f.write(buffer)
     f.flush()
     
+    """
     q = Queue()
     p = Process(target=run_playbook, args=(ansible_hosts, ansible_config, fqp, opts, q,))
     p.start()
     stats,aresults = q.get()
     p.join()
+    """
+    stats,aresults = run_playbook(ansible_hosts,ansible_config,fqp,opts)
 
+    uglylock.release()
+    
     output_file = fqp + '.out'
     try:
         if (aresults is None):
