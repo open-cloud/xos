@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import os
 import sys
+import threading
 from collections import defaultdict
 from operator import attrgetter, itemgetter
 
@@ -247,15 +248,29 @@ class User(AbstractBaseUser, PlModelMixIn):
 #            roles[slice_membership.role.role_type].append(slice_membership.slice.name)
 #        return roles
 
-    def save(self, *args, **kwds):
+    def save(self, *args, **kwargs):
         if not self.id:
             self.set_password(self.password)
         if self.is_active and self.is_registering:
             self.send_temporary_password()
             self.is_registering = False
 
+        caller_kind = "unknown"
+
+        if ('synchronizer' in threading.current_thread().name):
+            caller_kind = "synchronizer"
+
+        if "caller_kind" in kwargs:
+            caller_kind = kwargs.pop("caller_kind")
+
+        always_update_timestamp = False
+        if "always_update_timestamp" in kwargs:
+            always_update_timestamp = always_update_timestamp or kwargs.pop("always_update_timestamp")
+
+        # TODO: plCoreBase logic for updating timestamps is missing
+
         self.username = self.email
-        super(User, self).save(*args, **kwds)
+        super(User, self).save(*args, **kwargs)
 
         self._initial = self._dict
 
