@@ -145,30 +145,6 @@ def run_policy():
         if (time.time()-start<1):
             time.sleep(1)
 
-from core.models.plcorebase import XOSCollector
-from django.db import router
-def has_deleted_dependencies(m):
-    # Check to see if 'm' would cascade to any objects that have the 'deleted'
-    # field set in them.
-    collector = XOSCollector(using=router.db_for_write(m.__class__, instance=m))
-    collector.collect([m])
-    deps=[]
-    for (k, models) in collector.data.items():
-        for model in models:
-            if model==m:
-                # collector will return ourself; ignore it.
-                continue
-            if issubclass(m.__class__, model.__class__):
-                # collector will return our parent classes; ignore them.
-                continue
-# We don't actually need this check, as with multiple passes the reaper can
-# clean up a hierarchy of objects.
-#            if getattr(model, "backend_need_reap", False):
-#                # model is already marked for reaping; ignore it.
-#                continue
-            deps.append(model)
-    return deps
-
 def run_policy_once():
         from core.models import Instance,Slice,Controller,Network,User,SlicePrivilege,Site,SitePrivilege,Image,ControllerSlice,ControllerUser,ControllerSite
         models = [Controller, Site, SitePrivilege, Image, ControllerSlice, ControllerSite, ControllerUser, User, Slice, Network, Instance, SlicePrivilege]
@@ -190,40 +166,6 @@ def run_policy_once():
 
         for o in deleted_objects:
             execute_model_policy(o, True)
-
-        # Reap non-sync'd models here
-        # models_to_reap = [Slice,Network,NetworkSlice]
-
-        models_to_reap = django_models.get_models(include_auto_created=False)
-        for m in models_to_reap:
-            if not hasattr(m, "deleted_objects"):
-                continue
-
-            dobjs = m.deleted_objects.all()
-            for d in dobjs:
-                if hasattr(d,"_meta") and hasattr(d._meta,"proxy") and d._meta.proxy:
-                    # skip proxy objects; we'll get the base instead
-                    continue
-                if (not getattr(d, "backend_need_reap", False)) and getattr(d, "backend_need_delete", False):
-                    journal_object(d, "reaper.need_delete")
-                    print "Reaper: skipping %r because it has need_delete set" % d
-                    continue
-                deleted_deps = has_deleted_dependencies(d)
-                if deleted_deps:
-                    journal_object(d, "reaper.has_deleted_dependencies", msg=",".join([str(m) for m in deleted_deps]))
-                    print 'Reaper: cannot purge object %r because it has deleted dependencies: %s' % (d, ",".join([str(m) for m in deleted_deps]))
-                    continue
-                deps = walk_inv_deps(noop, d)
-                if (not deps):
-                    journal_object(d, "reaper.purge")
-                    print 'Reaper: purging object %r'%d
-                    try:
-                        d.delete(purge=True)
-                    except:
-                        journal_object(d, "reaper.purge.exception")
-                        print 'Reaper: exception purging object %r'%d
-                        traceback.print_exc()
-
 
         try:
             reset_queries()

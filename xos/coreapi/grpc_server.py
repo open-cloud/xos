@@ -18,16 +18,16 @@
 import os
 import sys
 import uuid
-from Queue import Queue
 from collections import OrderedDict
 from os.path import abspath, basename, dirname, join, walk
 import grpc
 from concurrent import futures
 import zlib
 
-import django
-sys.path.append('/opt/xos')
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
+if __name__ == "__main__":
+    import django
+    sys.path.append('/opt/xos')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 
 from protos import xos_pb2, schema_pb2, modeldefs_pb2, utility_pb2
 from xos_grpc_api import XosService

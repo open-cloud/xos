@@ -349,7 +349,7 @@ class XOSBuilder(object):
 
         containers["xos_core"] = {
             "image": "xosproject/xos-ui",
-            "command": 'bash -c "cd grpc; bash ./start_grpc_server.sh"',
+            "command": 'bash -c "cd coreapi; bash ./start_coreapi.sh"',
             "networks": networks,
             "ports": {"50055": "50055", "50051" : "50051"},
             "external_links": external_links,

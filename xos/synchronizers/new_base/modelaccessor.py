@@ -73,7 +73,7 @@ class ModelAccessor(object):
         """ returns True if obj is of model type "name" or is a descendant """
         raise Exception("Not Implemented")
 
-    def journal_object(o, operation, msg=None, timestamp=None):
+    def journal_object(self, o, operation, msg=None, timestamp=None):
         pass
 
 def import_models_to_globals():
