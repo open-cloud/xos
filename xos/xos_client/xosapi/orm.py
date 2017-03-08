@@ -92,7 +92,7 @@ class ORMWrapper(object):
             dest_model = self.stub.invoke("Get%s" % fk_entry["modelName"], id)
 
         elif fk_kind=="generic_fk":
-            dest_model = self.stub.genericForeignKeyResolve(getattr(self, fk_entry["ct_fieldName"]), fk_id)
+            dest_model = self.stub.genericForeignKeyResolve(getattr(self, fk_entry["ct_fieldName"]), fk_id)._wrapped_class
 
         else:
             raise Exception("unknown fk_kind")
@@ -193,6 +193,10 @@ class ORMWrapper(object):
             d = {}
 
         return d
+
+    @property
+    def model_name(self):
+        return self._wrapped_class.__class__.__name__
 
     @property
     def ansible_tag(self):
@@ -419,4 +423,6 @@ def make_ORMWrapper(wrapped_class, *args, **kwargs):
     return cls(wrapped_class, *args, **kwargs)
 
 import convenience.instance
+import convenience.cordsubscriberroot
+import convenience.volttenant
 
