@@ -24,3 +24,7 @@ extend google.protobuf.FieldOptions {
   ReverseForeignKeyRule reverseForeignKey = 1003;
 }
 
+extend google.protobuf.MessageOptions {
+  int32 contentTypeId = 1001;
+}
+

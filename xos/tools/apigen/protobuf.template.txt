@@ -32,6 +32,7 @@ import "xosoptions.proto";
 {% for object in generator.all() %}
 
 message {{ object.camel() }} {
+    option (contentTypeId) = {{ object.content_type_id }};
   {%- for field in object.all_fields %}
     oneof {{ field.name }}_present {
     {%- if (field.get_internal_type() == "CharField") or (field.get_internal_type() == "TextField") or (field.get_internal_type() == "SlugField") %}
@@ -61,7 +62,6 @@ message {{ object.camel() }} {
     repeated int32 {{ ref.related_name }}_ids  = {{ loop.index+100 }} [(reverseForeignKey).modelName = "{{ ref.camel() }}"];
   {%- endfor %}
   string class_names = 201;
-  int32 self_content_type_id = 202;
 }
 
 message {{ object.camel() }}s {

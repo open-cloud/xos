@@ -47,12 +47,20 @@ class ORMWrapper(object):
     def gen_fkmap(self):
         fkmap = {}
 
+        all_field_names = self._wrapped_class.DESCRIPTOR.fields_by_name.keys()
+
         for (name, field) in self._wrapped_class.DESCRIPTOR.fields_by_name.items():
            if name.endswith("_id"):
                foreignKey = field.GetOptions().Extensions._FindExtensionByName("xos.foreignKey")
                fk = field.GetOptions().Extensions[foreignKey]
-               if fk:
-                   fkmap[name[:-3]] = {"src_fieldName": name, "modelName": fk.modelName}
+               if fk and fk.modelName:
+                   fkmap[name[:-3]] = {"src_fieldName": name, "modelName": fk.modelName, "kind": "fk"}
+               else:
+                   # If there's a corresponding _type_id field, then see if this
+                   # is a generic foreign key.
+                   type_name = name[:-3] + "_type_id"
+                   if type_name in all_field_names:
+                       fkmap[name[:-3]] = {"src_fieldName": name, "ct_fieldName": type_name, "kind": "generic_fk"}
 
         return fkmap
 
@@ -73,8 +81,21 @@ class ORMWrapper(object):
             return make_ORMWrapper(self.cache[name], self.stub)
 
         fk_entry = self._fkmap[name]
-        id=self.stub.make_ID(id=getattr(self, fk_entry["src_fieldName"]))
-        dest_model = self.stub.invoke("Get%s" % fk_entry["modelName"], id)
+        fk_kind = fk_entry["kind"]
+        fk_id = getattr(self, fk_entry["src_fieldName"])
+
+        if not fk_id:
+            return None
+
+        if fk_kind=="fk":
+            id=self.stub.make_ID(id=fk_id)
+            dest_model = self.stub.invoke("Get%s" % fk_entry["modelName"], id)
+
+        elif fk_kind=="generic_fk":
+            dest_model = self.stub.genericForeignKeyResolve(getattr(self, fk_entry["ct_fieldName"]), fk_id)
+
+        else:
+            raise Exception("unknown fk_kind")
 
         self.cache[name] = dest_model
 
@@ -89,8 +110,12 @@ class ORMWrapper(object):
 
     def fk_set(self, name, model):
         fk_entry = self._fkmap[name]
+        fk_kind = fk_entry["kind"]
         id = model.id
         setattr(self._wrapped_class, fk_entry["src_fieldName"], id)
+
+        if fk_kind=="generic_fk":
+            setattr(self._wrapped_class, fk_entry["ct_fieldName"], model.self_content_type_id)
 
         # XXX setting the cache here is a problematic, since the cached object's
         # reverse foreign key pointers will not include the reference back
@@ -172,6 +197,10 @@ class ORMWrapper(object):
     @property
     def ansible_tag(self):
         return "%s_%s" % (self._wrapped_class.__class__.__name__, self.id)
+
+    @property
+    def self_content_type_id(self):
+        return getattr(self.stub, self._wrapped_class.__class__.__name__).content_type_id
 
 class ORMQuerySet(list):
     """ Makes lists look like django querysets """
@@ -281,23 +310,30 @@ class ORMObjectManager(object):
             return objs[0]
 
     def new(self, **kwargs):
-        full_model_name = "%s.%s" % (self._packageName, self._modelName)
-        cls = _sym_db._classes[full_model_name]
+        cls = self._stub.all_grpc_classes[self._modelName]
         return make_ORMWrapper(cls(), self._stub, is_new=True)
 
 class ORMModelClass(object):
     def __init__(self, stub, model_name, package_name):
         self.model_name = model_name
+        self._stub = stub
         self.objects = ORMObjectManager(stub, model_name, package_name)
 
     @property
     def __name__(self):
         return self.model_name
 
+    @property
+    def content_type_id(self):
+        return self._stub.reverse_content_type_map[self.model_name]
+
 class ORMStub(object):
     def __init__(self, stub, package_name, invoker=None, caller_kind="grpcapi"):
         self.grpc_stub = stub
         self.all_model_names = []
+        self.all_grpc_classes = {}
+        self.content_type_map = {}
+        self.reverse_content_type_map = {}
         self.invoker = invoker
         self.caller_kind = caller_kind
 
@@ -307,6 +343,21 @@ class ORMStub(object):
                setattr(self,model_name, ORMModelClass(self, model_name, package_name))
 
                self.all_model_names.append(model_name)
+
+               grpc_class = _sym_db._classes["%s.%s" % (package_name, model_name)]
+               self.all_grpc_classes[model_name] = grpc_class
+
+               ct = grpc_class.DESCRIPTOR.GetOptions().Extensions._FindExtensionByName("xos.contentTypeId")
+               if ct:
+                   ct = grpc_class.DESCRIPTOR.GetOptions().Extensions[ct]
+                   if ct:
+                       self.content_type_map[ct] = model_name
+                       self.reverse_content_type_map[model_name] = ct
+
+    def genericForeignKeyResolve(self, content_type_id, id):
+        model_name = self.content_type_map[content_type_id]
+        model = getattr(self, model_name)
+        return model.objects.get(id=id)
 
     def listObjects(self):
         return self.all_model_names

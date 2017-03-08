@@ -6,7 +6,6 @@ import time
 from protos import xos_pb2
 from google.protobuf.empty_pb2 import Empty
 
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import authenticate as django_authenticate
 from django.db.models import F,Q
 from core.models import *
@@ -98,8 +97,6 @@ class XOSAPIHelperMixin(object):
         bases = inspect.getmro(obj.__class__)
         bases = [x for x in bases if issubclass(x, PlCoreBase) or issubclass(x, User)]
         p_obj.class_names = ",".join( [x.__name__ for x in bases] )
-
-        p_obj.self_content_type_id = ContentType.objects.get_for_model(obj).id
 
         return p_obj
 
