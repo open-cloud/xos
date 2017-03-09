@@ -53,6 +53,8 @@ message {{ object.camel() }} {
       float {{ field.name }} = {{ loop.index }};
     {%- elif field.get_internal_type() == "GenericIPAddressField" %}
       string {{ field.name }} = {{ loop.index }};
+    {%- elif field.get_internal_type() == "OneToOneField" %}
+      int32 {{ field.name }}_id = {{ loop.index }};
     {%- else %}
       UNKNOWN {{ field.get_internal_type() }} {{ field.name }} = {{ loop.index }};
     {%- endif %}
@@ -62,6 +64,7 @@ message {{ object.camel() }} {
     repeated int32 {{ ref.related_name }}_ids  = {{ loop.index+100 }} [(reverseForeignKey).modelName = "{{ ref.camel() }}"];
   {%- endfor %}
   string class_names = 201;
+  int32 self_content_type_id = 202;
 }
 
 message {{ object.camel() }}s {

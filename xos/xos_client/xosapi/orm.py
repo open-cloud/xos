@@ -202,9 +202,9 @@ class ORMWrapper(object):
     def ansible_tag(self):
         return "%s_%s" % (self._wrapped_class.__class__.__name__, self.id)
 
-    @property
-    def self_content_type_id(self):
-        return getattr(self.stub, self._wrapped_class.__class__.__name__).content_type_id
+#    @property
+#    def self_content_type_id(self):
+#        return getattr(self.stub, self._wrapped_class.__class__.__name__).content_type_id
 
 class ORMQuerySet(list):
     """ Makes lists look like django querysets """
