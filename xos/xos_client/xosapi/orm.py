@@ -425,4 +425,6 @@ def make_ORMWrapper(wrapped_class, *args, **kwargs):
 import convenience.instance
 import convenience.cordsubscriberroot
 import convenience.volttenant
+import convenience.vsgtenant
+import convenience.vroutertenant
 
