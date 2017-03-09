@@ -170,6 +170,20 @@ def parse_args():
 
     return args
 
+def setup_logging(args):
+    import logging
+    import structlog
+
+    verbosity_adjust = (args.verbose or 0) - (args.quiet or 0)
+    logging.basicConfig()
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG - 10*verbosity_adjust)
+
+    def logger_factory():
+        return logger
+
+    structlog.configure(logger_factory=logger_factory)
+
 def coreclient_reconnect(client, reconnect_callback, *args, **kwargs):
     global coreapi
 
@@ -194,7 +208,13 @@ def start_api(reconnect_callback, *args, **kwargs):
     reactor.run()
 
 def start_api_parseargs(reconnect_callback):
+    """ This function is an entrypoint for tests and other simple programs to
+        setup the API and get a callback when the API is ready.
+    """
+
     args = parse_args()
+
+    setup_logging(args)
 
     if args.username:
         start_api(reconnect_callback, endpoint=args.grpc_secure_endpoint, username=args.username, password=args.password)

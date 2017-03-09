@@ -11,7 +11,7 @@ import readline
 import rlcompleter
 
 from twisted.internet import reactor
-from xosapi.xos_grpc_client import InsecureClient, SecureClient
+from xosapi.xos_grpc_client import InsecureClient, SecureClient, setup_logging
 
 current_client = None
 
@@ -105,7 +105,7 @@ def login(username=None, password=None):
 
 def examples():
     print 'coreapi.Slice.objects.all() # list all slices'
-    print 's = coreapi.Slice.objects.new() # create a new slice'
+    print 's = Slice.objects.new() # create a new slice'
     print 's.name = "mysite_foo" # set a slice name'
     print 's.site_id = coreapi.Site.objects.all()[0].id # grab the first site'
     print 's.save() # save the slice'
@@ -130,7 +130,7 @@ def start_xossh(client):
 
         print "XOS Core server at %s" % client.endpoint
 
-        print 'Type "coreapi.listObjects()" for a list of all objects'
+        print 'Type "listObjects()" for a list of all objects'
         print 'Type "login("username", "password")" to switch to a secure shell'
         print 'Type "examples()" for some examples'
 
@@ -149,6 +149,11 @@ def start_xossh(client):
     reactor.callLater(0, functools.partial(do_xossh_prompt, client))
 
 def do_xossh_prompt(client):
+    for k in client.xos_orm.all_model_names:
+        locals()[k] = getattr(client.xos_orm, k)
+
+    locals()["listObjects"] = client.xos_orm.listObjects
+
     prompt = "xossh "
     try:
         while True:
@@ -205,6 +210,9 @@ def do_xossh_prompt(client):
 def main():
     global args
     args = parse_args()
+
+    setup_logging(args)
+
     login(username=args.username, password=args.password)
     reactor.run()
 
