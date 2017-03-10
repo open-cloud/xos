@@ -68,7 +68,7 @@ class XOSAPIHelperMixin(object):
                 setattr(p_obj, field.name, getattr(obj, field.name))
             elif (ftype == "AutoField"):
                 setattr(p_obj, field.name, int(getattr(obj, field.name)))
-            elif (ftype == "IntegerField") or (ftype == "PositiveIntegerField"):
+            elif (ftype == "IntegerField") or (ftype == "PositiveIntegerField") or (ftype == "BigIntegerField"):
                 setattr(p_obj, field.name, int(getattr(obj, field.name)))
             elif (ftype == "ForeignKey"):
                 setattr(p_obj, field.name+"_id", self.convertForeignKey(getattr(obj, field.name)))
@@ -126,7 +126,7 @@ class XOSAPIHelperMixin(object):
                     args[name] = val
                 elif (ftype == "AutoField"):
                     args[name] = val
-                elif (ftype == "IntegerField") or (ftype == "PositiveIntegerField"):
+                elif (ftype == "IntegerField") or (ftype == "PositiveIntegerField") or (ftype == "BigIntegerField"):
                     args[name] = val
                 elif (ftype == "ForeignKey"):
                     args[name] = val # field name already has "_id" at the end

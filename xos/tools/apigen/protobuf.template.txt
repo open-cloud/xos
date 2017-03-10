@@ -47,6 +47,8 @@ message {{ object.camel() }} {
       int32 {{ field.name }} = {{ loop.index }};
     {%- elif field.get_internal_type() == "IntegerField" %}
       int32 {{ field.name }} = {{ loop.index }};
+    {%- elif field.get_internal_type() == "BigIntegerField" %}
+      int64 {{ field.name }} = {{ loop.index }};
     {%- elif field.get_internal_type() == "PositiveIntegerField" %}
       uint32 {{ field.name }} = {{ loop.index }};
     {%- elif field.get_internal_type() == "FloatField" %}

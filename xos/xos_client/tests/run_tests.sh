@@ -8,3 +8,4 @@ docker run -it --entrypoint python xosproject/xos-client /tmp/xos_client/tests/o
 docker run -it --entrypoint python xosproject/xos-client /tmp/xos_client/tests/orm_listall.py -u xosadmin@opencord.org -p $PW -qq
 docker run -it --entrypoint python xosproject/xos-client /tmp/xos_client/tests/vtr_crud.py -u xosadmin@opencord.org -p $PW -qq
 docker run -it --entrypoint python xosproject/xos-client /tmp/xos_client/tests/vsg_introspect.py -u xosadmin@opencord.org -p $PW -qq
+docker run -it --entrypoint python xosproject/xos-client /tmp/xos_client/tests/csr_introspect.py -u xosadmin@opencord.org -p $PW -qq
