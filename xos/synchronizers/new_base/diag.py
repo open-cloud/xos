@@ -15,9 +15,17 @@ def update_diag(diag_class, loop_end=None, loop_start=None, syncrecord_start=Non
     try:
         diag = diag_class.objects.filter(name=observer_name).first()
         if (not diag):
-            diag = diag_class(name=observer_name)
+            if hasattr(diag_class.objects, "new"):
+                # api style
+                diag = diag_class.objects.new(name=observer_name)
+            else:
+                # django style
+                diag = diag_class(name=observer_name)
         br_str = diag.backend_register
-        br = json.loads(br_str)
+        if br_str:
+            br = json.loads(br_str)
+        else:
+            br = {}
         if loop_end:
             br['last_run'] = loop_end
         if loop_end and loop_start:

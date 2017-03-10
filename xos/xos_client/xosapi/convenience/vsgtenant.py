@@ -1,6 +1,10 @@
 from xosapi.orm import ORMWrapper, register_convenience_wrapper
 
 class ORMWrapperVSGTenant(ORMWrapper):
+    sync_attributes = ("wan_container_ip", "wan_container_mac", "wan_container_netbits",
+                       "wan_container_gateway_ip", "wan_container_gateway_mac",
+                       "wan_vm_ip", "wan_vm_mac")
+
     @property
     def volt(self):
         if not self.subscriber_tenant:
