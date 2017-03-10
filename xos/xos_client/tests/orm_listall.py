@@ -1,4 +1,5 @@
 import sys
+import traceback
 sys.path.append("..")
 
 from xosapi import xos_grpc_client
