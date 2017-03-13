@@ -1,4 +1,4 @@
-FROM xosproject/xos
+FROM xosproject/xos:candidate
 
 # install nodejs
 COPY containers/xos/nodesource.gpg.key /tmp/nodesource.gpg.key
@@ -17,4 +17,3 @@ RUN node -v
 RUN pip install selenium
 
 RUN npm install -g phantomjs
-

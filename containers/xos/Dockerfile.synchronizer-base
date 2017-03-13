@@ -1,4 +1,4 @@
-FROM xosproject/xos-client
+FROM xosproject/xos-client:candidate
 
 ADD xos/synchronizers/new_base /opt/xos/synchronizers/new_base
 ADD xos/xos/config.py /opt/xos/xos/config.py

@@ -1,14 +1,10 @@
-FROM xosproject/xos-base
+FROM xosproject/xos-base:candidate
 
 ARG XOS_GIT_COMMIT_HASH=unknown
 ARG XOS_GIT_COMMIT_DATE=unknown
 
 LABEL XOS_GIT_COMMIT_HASH=$XOS_GIT_COMMIT_HASH
 LABEL XOS_GIT_COMMIT_DATE=$XOS_GIT_COMMIT_DATE
-
-# Include certificates from Openstack
-ADD containers/xos/local_certs.crt /usr/local/share/ca-certificates/local_certs.crt
-RUN update-ca-certificates
 
 # Install XOS client
 ADD xos/xos_client /tmp/xos_client

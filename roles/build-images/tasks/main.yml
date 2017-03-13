@@ -1,0 +1,43 @@
+---
+# build-images/tasks/main.yml
+
+- name: Clean up chameleon temp directory
+  file:
+    path: "{{ cord_dir }}/orchestration/xos/containers/chameleon/tmp.chameleon"
+    state: absent
+  with_items: "{{ chameleon_dirs }}"
+
+- name: Populate chameleon temp directory
+  shell: cp -a "{{ cord_dir }}/component/chameleon" "{{ item }}"
+  with_items: "{{ chameleon_dirs }}"
+  tags:
+    - skip_ansible_lint # docker can't access files outside of build context, so we must copy
+
+# If an image was previously pulled it won't get built
+- name: Build images
+  docker_image:
+    name: "{{ item.name }}"
+    path: "{{ item.path }}"
+    tag: "{{ build_docker_tag }}"
+    dockerfile: "{{ item.dockerfile }}"
+    pull: False
+  with_items: "{{ docker_images }}"
+
+- name: Build optional images
+  docker_image:
+    name: "{{ item.name }}"
+    path: "{{ item.path }}"
+    tag: "{{ build_docker_tag }}"
+    dockerfile: "{{ item.dockerfile }}"
+    pull: False
+  with_items: "{{ docker_optional_images }}"
+  when: build_optional_images
+
+# Build extensions images
+- name: Build xos-gui-extensions docker images
+  docker_image:
+    name: "xosproject/gui-extension-{{ item.name }}"
+    path: "{{ cord_dir }}/{{ item.path }}"
+    tag: "{{ build_docker_tag }}"
+    pull: False
+  with_items: "{{ enabled_gui_extensions }}"

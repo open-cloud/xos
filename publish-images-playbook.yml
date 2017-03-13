@@ -1,0 +1,7 @@
+---
+# publish-xos-playbook.yml
+
+- name: Publish XOS docker images
+  hosts: localhost
+  roles:
+    - publish-images

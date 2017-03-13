@@ -1,0 +1,7 @@
+---
+# pull-images-playbook.yml
+
+- name: Create XOS docker images
+  hosts: localhost
+  roles:
+    - pull-images

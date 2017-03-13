@@ -1,0 +1,45 @@
+---
+# publish-xos-docker-images/tasks/main.yml
+
+# Remove the old local images to force them to be re-pushed
+- name: Remove old local XOS images
+  docker_image:
+    name: "{{ deploy_docker_registry }}/{{ item.name }}:{{ deploy_docker_tag }}"
+    state: absent
+  with_items: "{{ docker_images | selectattr('publish') | list }}"
+
+- name: Tag and push locally built images to docker registry
+  docker_image:
+    name: "{{ item.name }}:{{ deploy_docker_tag }}"
+    repository: "{{ deploy_docker_registry }}/{{ item.name }}:{{ deploy_docker_tag }}"
+    push: True
+  with_items: "{{ docker_images | selectattr('publish') | list }}"
+
+# Remove the old local images to force them to be re-pushed
+- name: Remove old local XOS GUI extension images
+  docker_image:
+    name: "{{ deploy_docker_registry }}/xosproject/gui-extension-{{ item.name }}:{{ deploy_docker_tag }}"
+    state: absent
+  with_items: "{{ enabled_gui_extensions }}"
+
+- name: Tag and push locally built images to docker registry
+  docker_image:
+    name: "xosproject/gui-extension-{{ item.name }}:{{ deploy_docker_tag }}"
+    repository: "{{ deploy_docker_registry }}/xosproject/gui-extension-{{ item.name }}:{{ deploy_docker_tag }}"
+    push: True
+  with_items: "{{ enabled_gui_extensions }}"
+
+# Remove the old local images to force them to be re-pushed
+- name: Remove old local miscellaneous images
+  docker_image:
+    name: "{{ deploy_docker_registry }}/{{ item }}"
+    state: absent
+  with_items: "{{ misc_docker_images }}"
+
+# Just needed for onboarding, will go away
+- name: Tag and push miscellaneous images
+  docker_image:
+    name: "{{ item }}"
+    repository: "{{ deploy_docker_registry }}/{{ item }}"
+    push: True
+  with_items: "{{ misc_docker_images }}"

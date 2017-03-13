@@ -1,4 +1,4 @@
-FROM xosproject/xos-base
+FROM xosproject/xos-base:candidate
 
 ARG XOS_GIT_COMMIT_HASH=unknown
 ARG XOS_GIT_COMMIT_DATE=unknown

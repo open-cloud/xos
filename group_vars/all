@@ -1,0 +1,70 @@
+---
+# group_vars/all
+
+# Defaults for XOS container build and publish roles.
+# Can be overridden by variables in the profile manifest.
+
+cord_dir: "{{ ansible_user_dir + '/cord' }}"
+
+chameleon_dirs:
+  - "{{ cord_dir }}/orchestration/xos/containers/chameleon/tmp.chameleon"
+  - "{{ cord_dir }}/orchestration/xos/containers/xos/tmp.chameleon"
+
+docker_images:
+  - name: "xosproject/xos-base"
+    path: "{{ cord_dir }}/orchestration/xos/containers/xos"
+    dockerfile: "Dockerfile.base"
+    pull: True
+    publish: False
+  - name: "xosproject/xos"
+    path: "{{ cord_dir }}/orchestration/xos"
+    dockerfile: "containers/xos/Dockerfile.xos"
+    pull: False
+    publish: True
+  - name: "xosproject/chameleon"
+    path: "{{ cord_dir }}/orchestration/xos/containers/chameleon"
+    dockerfile: "Dockerfile.chameleon"
+    pull: False
+    publish: True
+  - name: "xosproject/xos-client"
+    path: "{{ cord_dir }}/orchestration/xos"
+    dockerfile: "containers/xos/Dockerfile.client"
+    pull: False
+    publish: True
+  - name: "xosproject/xos-synchronizer-base"
+    path: "{{ cord_dir }}/orchestration/xos"
+    dockerfile: "containers/xos/Dockerfile.synchronizer-base"
+    pull: False
+    publish: True
+  - name: "xosproject/xos-rest-gw"
+    path: "{{ cord_dir }}/orchestration/xos-rest-gw"
+    dockerfile: "Dockerfile"
+    pull: False
+    publish: True
+  - name: "xosproject/xos-gui"
+    path: "{{ cord_dir }}/orchestration/xos-gui"
+    dockerfile: "Dockerfile"
+    pull: False
+    publish: True
+  - name: "xosproject/xos-gui-extension-builder"
+    path: "{{ cord_dir }}/orchestration/xos-gui/"
+    dockerfile: "Dockerfile.xos-gui-extension-builder"
+    pull: False
+    publish: False
+
+build_optional_images: False
+
+docker_optional_images:
+  - name: "xosprojext/xos-test"
+    dockerfile: "Dockerfile.test"
+    pull: False
+    publish: False
+
+build_docker_tag: "candidate"
+
+misc_docker_images:
+  - "node:argon"
+
+enabled_gui_extensions:
+  - name: sample
+    path: orchestration/xos-sample-gui-extension

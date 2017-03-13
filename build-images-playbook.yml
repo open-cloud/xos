@@ -1,0 +1,7 @@
+---
+# build-images-playbook.yml
+
+- name: Create XOS docker images
+  hosts: localhost
+  roles:
+    - build-images
