@@ -73,7 +73,7 @@ class DjangoModelAccessor(ModelAccessor):
     def is_type(self, obj, name):
         return type(obj) == self.get_model_class(name)
 
-    def is_type(self, obj, name):
+    def is_instance(self, obj, name):
         return isinstance(obj, self.get_model_class(name))
 
 
