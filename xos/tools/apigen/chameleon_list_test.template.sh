@@ -1,4 +1,4 @@
-source /opt/xos/grpc/tests/testconfig-chameleon.sh
+source /opt/xos/coreapi/tests/testconfig-chameleon.sh
 
 # test modeldefs
 curl -f --silent http://$HOSTNAME:8080/xosapi/v1/modeldefs > /dev/null
