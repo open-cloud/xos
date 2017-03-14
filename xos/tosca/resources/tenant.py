@@ -2,12 +2,11 @@ import importlib
 
 from xosresource import XOSResource
 from toscaparser.tosca_template import ToscaTemplate
-from core.models import Tenant, Service
+from core.models import Tenant, Service, Subscriber
 
 class XOSTenant(XOSResource):
     provides = "tosca.nodes.Tenant"
     xos_model = Tenant
-    name_field = None
     copyin_props = ("kind", "service_specific_attribute")
 
     def get_xos_args(self, throw_exception=True):
@@ -17,11 +16,21 @@ class XOSTenant(XOSResource):
         if provider_name:
             args["provider_service"] = self.get_xos_object(Service, throw_exception=throw_exception, name=provider_name)
 
+        subscriber_name = self.get_requirement("tosca.relationships.BelongsToSubscriber")
+        if subscriber_name:
+            args["subscriber_root"] = self.get_xos_object(Subscriber, throw_exception=throw_exception,
+                                                          name=subscriber_name)
+
+        tenant_name = self.get_requirement("tosca.relationships.BelongsToTenant")
+        if tenant_name:
+            args["subscriber_tenant"] = self.get_xos_object(Tenant, throw_exception=throw_exception,
+                                                          name=tenant_name)
+
         return args
 
     def get_existing_objs(self):
         args = self.get_xos_args(throw_exception=False)
-        provider_service = args.get("provider", None)
+        provider_service = args.get("provider_service", None)
         if provider_service:
             return [ self.get_xos_object(provider_service=provider_service) ]
         return []

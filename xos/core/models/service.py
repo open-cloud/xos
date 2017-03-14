@@ -634,6 +634,7 @@ class Tenant(PlCoreBase, AttributeMixin):
     # when subclassing a service, redefine KIND to describe the new service
     KIND = "generic"
 
+    name = StrippedCharField(max_length=200, blank=True, null=True)
     kind = StrippedCharField(max_length=30, default=KIND)
     provider_service = models.ForeignKey(
         Service, related_name='provided_tenants')
