@@ -29,5 +29,14 @@ class ORMWrapperVRouterTenant(ORMWrapper):
                 return int(parts[1].strip())
         return None
 
+    # Use for tenant_for_instance_id
+
+    def get_attribute(self, name, default=None):
+        if self.service_specific_attribute:
+            attributes = json.loads(self.service_specific_attribute)
+        else:
+            attributes = {}
+        return attributes.get(name, default)
+
 
 register_convenience_wrapper("VRouterTenant", ORMWrapperVRouterTenant)
