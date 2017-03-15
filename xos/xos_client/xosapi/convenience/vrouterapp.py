@@ -5,7 +5,7 @@ class ORMWrapperVRouterApp(ORMWrapper):
     @property
     def interfaces(self):
         app_interfaces = []
-        devices = self.stub.VRouterDevice.objects.filter(vrouter_service_id=self.id)
+        devices = self.stub.VRouterDevice.objects.filter(vrouter_service_id=self.vrouter_service.id)
         for device in devices:
             ports = self.stub.VRouterPort.objects.filter(vrouter_device_id=device.id)
             for port in ports:

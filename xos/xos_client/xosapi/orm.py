@@ -44,6 +44,14 @@ class ORMWrapper(object):
         reverse_fkmap=self.gen_reverse_fkmap()
         super(ORMWrapper, self).__setattr__("_reverse_fkmap", reverse_fkmap)
 
+    def create_attr(self, name, value=None):
+        """ setattr(self, ...) will fail for attributes that don't exist in the
+            wrapped grpc class. This is by design. However, if someone really
+            does want to attach a new attribute to this class, then they can
+            call create_attr()
+        """
+        super(ORMWrapper, self).__setattr__(name, value)
+
     def gen_fkmap(self):
         fkmap = {}
 
