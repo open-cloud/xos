@@ -7,6 +7,7 @@ from modelaccessor import ModelAccessor
 from django.db import connection
 from django.db.models import F, Q
 from django import setup as django_setup # django 1.7
+from django.contrib.contenttypes.models import ContentType
 
 from xos.logger import Logger, logging
 logger = Logger(level=logging.INFO)
@@ -76,4 +77,6 @@ class DjangoModelAccessor(ModelAccessor):
     def is_instance(self, obj, name):
         return isinstance(obj, self.get_model_class(name))
 
+    def get_content_type_id(self, obj):
+        return ContentType.objects.get_for_model(obj)
 

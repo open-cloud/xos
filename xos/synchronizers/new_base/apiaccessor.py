@@ -48,5 +48,8 @@ class CoreApiModelAccessor(ModelAccessor):
     def is_instance(self, obj, name):
         return name in obj.class_names.split(",")
 
+    def get_content_type_id(self, obj):
+        return obj.self_content_type_id
+
 
 
