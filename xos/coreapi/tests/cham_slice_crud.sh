@@ -1,4 +1,4 @@
-source /opt/xos/grpc/tests/testconfig-chameleon.sh
+source /opt/xos/coreapi/tests/testconfig-chameleon.sh
 
 RESPONSE=`curl -X POST -H "Content-Type: application/json" -d "{\"username\": \"$USERNAME\", \"password\": \"$PASSWORD\"}" http://$HOSTNAME:8080/xosapi/v1/utility/login`
 SESSIONID=`echo $RESPONSE | python -c "import json,sys; print json.load(sys.stdin)['sessionid']"`
