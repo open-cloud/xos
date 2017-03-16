@@ -1105,7 +1105,7 @@ class LoadableModuleResourceInline(XOSTabularInline):
 class ServiceControllerAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name",)
     list_display_links = ('backend_status_icon', 'name',)
-    fieldList = ["backend_status_text", "name", "xos", "version", "provides", "requires", "base_url", "synchronizer_run", "synchronizer_config", "no_start"]
+    fieldList = ["backend_status_text", "name", "xos", "version", "provides", "requires", "base_url", "synchronizer_run", "synchronizer_config", "image", "no_start", "no_build", "no_deploy"]
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
     inlines = [LoadableModuleResourceInline]

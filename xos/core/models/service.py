@@ -257,7 +257,11 @@ class ServiceController(LoadableModule):
     synchronizer_run = StrippedCharField(max_length=1024, help_text="synchronizer run command", null=True, blank=True)
     synchronizer_config = StrippedCharField(max_length=1024, help_text="synchronizer config file", null=True, blank=True)
 
+    image = StrippedCharField(max_length=200, help_text="docker image name", null=True, blank=True)
+
     no_start = models.BooleanField(help_text="Do not start the Synchronizer", default=False)
+    no_build = models.BooleanField(help_text="Do not build the Synchronizer container", default=False)
+    no_deploy = models.BooleanField(help_text="Do not add synchronizer container to onboarding-docker-compose", default=False)
 
 class ServiceControllerResource(LoadableModuleResource):
     class Meta:

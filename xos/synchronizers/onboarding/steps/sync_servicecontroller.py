@@ -36,6 +36,10 @@ class SyncServiceController(SyncStep, XOSBuilder):
         if unready:
             raise Exception("Controller %s has unready resources: %s" % (str(sc), ",".join([str(x) for x in unready])))
 
+        if sc.no_build:
+            # nothing to do for a no-build ServiceController
+            return
+
         dockerfile = self.create_synchronizer_dockerfile(sc)
         if dockerfile:
             dockerfiles=[dockerfile]

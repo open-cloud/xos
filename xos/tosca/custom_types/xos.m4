@@ -165,6 +165,18 @@ node_types:
                 type: string
                 required: false
                 description: third-party javascript files
+            image:
+                type: string
+                required: false
+                description: Image name for refactored synchronizer containers
+            no_build:
+                type: boolean
+                required: false
+                description: If true then refactored synchronizer container image is assumed
+            no_deploy:
+                type: boolean
+                required: false
+                description: If true then synchronizer container will not be added to docker-compose
 
     tosca.nodes.ServiceControllerResource:
         derived_from: tosca.nodes.Root

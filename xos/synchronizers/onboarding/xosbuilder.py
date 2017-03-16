@@ -412,7 +412,44 @@ class XOSBuilder(object):
                     logger.warning("Controller %s has unready resources" % str(c))
                     continue
 
-                if c.loadable_module_resources.filter(kind="synchronizer").exists():
+                if c.no_deploy:
+                    logger.info("Controller %s has no_deploy set" % str(c))
+
+                if c.no_build and c.image:
+                    # refactored synchronizer containers
+
+                    nb_volume_list=[{"host_path": "/opt/cord_profile/node_key",
+                                  "container_path": "/opt/cord_profile/node_key",
+                                  "read_only": True},
+                                 {"host_path": "/opt/cord/build/platform-install/credentials/xosadmin@opencord.org",
+                                  "container_path": "/opt/xos/services/%s/credentials/xosadmin@opencord.org" % c.name,
+                                  "read_only": True}]
+
+                    # keys inside onboarding sync are relative to /opt/xos/key_import
+                    # keys outside onboarding sync are relative to /opt/cord_profile
+                    if os.path.exists("/opt/xos/key_import/%s_rsa" % c.name):
+                        nb_volume_list.append({"host_path": "/opt/cord_profile/key_import/%s_rsa" % c.name,    # Note: not all services have keys
+                                  "container_path": "/opt/xos/services/%s/keys/%s_rsa" % (c.name, c.name),
+                                  "read_only": True})
+
+                    if c.name == "vtr":
+                        # VTR is special -- it has the vSG's private key
+                        nb_volume_list.append({"host_path": "/opt/cord_profile/key_import/vsg_rsa",
+                                  "container_path": "/opt/cord_profile/services/%s/keys/vsg_rsa" % c.name,
+                                  "read_only": True})
+
+                    nb_external_links = []
+                    if xos.redis_container_name:
+                        nb_external_links.append("%s:%s" % (xos.redis_container_name, "redis"))
+
+                    containers["%s-synchronizer" % c.name] = {
+                        "image": c.image,
+                        "volumes": nb_volume_list,
+                        "external_links": nb_external_links,
+                        "networks": networks}
+
+                elif c.loadable_module_resources.filter(kind="synchronizer").exists():
+                    # old-style synchronizer containers
                     if c.synchronizer_run and c.synchronizer_config:
                         command = 'bash -c "sleep 120; cd /opt/xos/synchronizers/%s; python ./%s -C %s"' % (c.name, c.synchronizer_run, c.synchronizer_config)
                     else:
