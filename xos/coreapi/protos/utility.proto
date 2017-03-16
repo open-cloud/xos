@@ -57,4 +57,11 @@ service utility {
             body: "*"
         };
   }
+
+  rpc NoOp(google.protobuf.Empty) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/xosapi/v1/utility/noop"
+            body: "*"
+        };
+  }
 };

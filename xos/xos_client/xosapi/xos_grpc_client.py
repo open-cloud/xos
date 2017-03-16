@@ -57,7 +57,9 @@ class XOSClient(chameleon_client.GrpcClient):
                 try:
                     sys.path.append(self.work_dir)
                     m_protos = __import__(api + "_pb2")
+                    reload(m_protos)
                     m_grpc = __import__(api + "_pb2_grpc")
+                    reload(m_grpc)
                 finally:
                     sys.path = orig_sys_path
 

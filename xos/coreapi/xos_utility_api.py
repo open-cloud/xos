@@ -104,3 +104,6 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
 
         return response
 
+    def NoOp(self, request, context):
+        return Empty()
+
