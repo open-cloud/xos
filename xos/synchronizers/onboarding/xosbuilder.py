@@ -434,8 +434,12 @@ class XOSBuilder(object):
 
                     if c.name == "vtr":
                         # VTR is special -- it has the vSG's private key
+                        # TODO: If docker-compose autogenerate remains a feature,
+                        #   then replace this special-purposing with a general-
+                        #   purpose mechanism for sharing private keys with
+                        #   trusted services.
                         nb_volume_list.append({"host_path": "/opt/cord_profile/key_import/vsg_rsa",
-                                  "container_path": "/opt/cord_profile/services/%s/keys/vsg_rsa" % c.name,
+                                  "container_path": "/opt/xos/services/%s/keys/vsg_rsa" % c.name,
                                   "read_only": True})
 
                     nb_external_links = []
