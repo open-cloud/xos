@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import inspect
 import sys
 import threading
 from django import db
@@ -361,7 +362,12 @@ class PlCoreBase(models.Model, PlModelMixIn):
             r = redis.Redis("redis")
             # NOTE the redis event has been extended with model properties to facilitate the support of real time notification in the UI
             # keep this monitored for performance reasons and eventually revert it back to fetch model properties via the REST API
-            payload = json.dumps({'pk': self.pk, 'changed_fields': changed_fields, 'object': model_to_dict(self)}, default=date_handler)
+            model = model_to_dict(self)
+            bases = inspect.getmro(self.__class__)
+            bases = [x for x in bases if issubclass(x, PlCoreBase)]
+            class_names = ",".join([x.__name__ for x in bases])
+            model['class_names'] = class_names
+            payload = json.dumps({'pk': self.pk, 'changed_fields': changed_fields, 'object': model}, default=date_handler)
             r.publish(self.__class__.__name__, payload)
         except ConnectionError:
             # Redis not running.
