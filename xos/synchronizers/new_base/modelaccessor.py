@@ -82,6 +82,9 @@ class ModelAccessor(object):
     def journal_object(self, o, operation, msg=None, timestamp=None):
         pass
 
+    def create_obj(self, cls, **kwargs):
+        raise Exception("Not Implemented")
+
 def import_models_to_globals():
     # add all models to globals
     for (k, v) in model_accessor.all_model_classes.items():

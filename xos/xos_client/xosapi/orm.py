@@ -336,7 +336,10 @@ class ORMObjectManager(object):
 
     def new(self, **kwargs):
         cls = self._stub.all_grpc_classes[self._modelName]
-        return make_ORMWrapper(cls(), self._stub, is_new=True)
+        o = make_ORMWrapper(cls(), self._stub, is_new=True)
+        for (k,v) in  kwargs.items():
+            setattr(o, k, v)
+        return o
 
 class ORMModelClass(object):
     def __init__(self, stub, model_name, package_name):

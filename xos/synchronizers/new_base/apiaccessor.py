@@ -51,5 +51,8 @@ class CoreApiModelAccessor(ModelAccessor):
     def get_content_type_id(self, obj):
         return obj.self_content_type_id
 
+    def create_obj(self, cls, **kwargs):
+        return cls.objects.new(**kwargs)
+
 
 

@@ -80,3 +80,6 @@ class DjangoModelAccessor(ModelAccessor):
     def get_content_type_id(self, obj):
         return ContentType.objects.get_for_model(obj)
 
+    def create_obj(self, cls, **kwargs):
+        return cls(**kwargs)
+
