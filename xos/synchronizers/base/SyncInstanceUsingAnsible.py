@@ -8,7 +8,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible_helper import run_template_ssh
-from core.models import Service, Slice, ControllerSlice, ControllerUser, ModelLink, CoarseTenant, Tenant, ServiceMonitoringAgentInfo
+from core.models import Service, Slice, ControllerSlice, ControllerUser, ModelLink, ServiceDependency, Tenant, ServiceMonitoringAgentInfo
 from xos.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
@@ -275,14 +275,14 @@ class SyncInstanceUsingAnsible(SyncStep):
             self.map_delete_outputs(o,res)
 
     #In order to enable the XOS watcher functionality for a synchronizer, define the 'watches' attribute
-    #in the derived class: eg. watches = [ModelLink(CoarseTenant,via='coarsetenant')]
-    #This base class implements the notification handler for handling CoarseTenant model notifications
+    #in the derived class: eg. watches = [ModelLink(ServiceDependency,via='servicedependency')]
+    #This base class implements the notification handler for handling ServiceDependency model notifications
     #If a synchronizer need to watch on multiple objects, the additional handlers need to be implemented
     #in the derived class and override the below handle_watched_object() method to route the notifications
     #accordingly
     def handle_watched_object(self, o):
         logger.info("handle_watched_object is invoked for object %s" % (str(o)),extra=o.tologdict())
-        if (type(o) is CoarseTenant):
+        if (type(o) is ServiceDependency):
            self.handle_service_composition_watch_notification(o)
         elif (type(o) is ServiceMonitoringAgentInfo):
            self.handle_service_monitoringagentinfo_watch_notification(o)

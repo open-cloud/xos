@@ -992,11 +992,7 @@ class TenantWithContainer(Tenant):
         super(TenantWithContainer, self).save(*args, **kwargs)
 
 
-class CoarseTenant(Tenant):
-    """ TODO: rename "CoarseTenant" --> "StaticTenant" """
-    class Meta:
-        proxy = True
-
+class ServiceDependency(Tenant):
     KIND = COARSE_KIND
 
     def save(self, *args, **kwargs):
@@ -1006,7 +1002,7 @@ class CoarseTenant(Tenant):
             raise XOSValidationError(
                 "subscriber_tenant and subscriber_user must be null")
 
-        super(CoarseTenant, self).save()
+        super(ServiceDependency, self).save()
 
 
 class Subscriber(TenantRoot):

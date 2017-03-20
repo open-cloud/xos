@@ -7,7 +7,8 @@ from django.contrib import admin
 # This is the generated API
 from xosapi import *
 
-from core.views.serviceGraph import ServiceGridView, ServiceGraphView
+from core.views.serviceGraph import ServiceGridView
+
 # from services.vbbu.view import *
 from core.views.mcordview import *
 # from core.views.analytics import AnalyticsAjaxView
@@ -62,10 +63,6 @@ urlpatterns = patterns(
     url(r'^mcord', MCordView.as_view(), name='mcord'),
 
     url(r'^serviceGrid', serviceClass(), name='serviceGrid'),
-
-    url(r'^serviceGrid', ServiceGridView.as_view(), name='serviceGrid'),
-
-    url(r'^serviceGraph.png', ServiceGraphView.as_view(), name='serviceGraph'),
 
     # url(r'^docs/', include('rest_framework_swagger.urls')),
 

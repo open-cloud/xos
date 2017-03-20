@@ -274,14 +274,14 @@ class SyncInstanceUsingAnsible(SyncStep):
             self.map_delete_outputs(o,res)
 
     #In order to enable the XOS watcher functionality for a synchronizer, define the 'watches' attribute
-    #in the derived class: eg. watches = [ModelLink(CoarseTenant,via='coarsetenant')]
-    #This base class implements the notification handler for handling CoarseTenant model notifications
+    #in the derived class: eg. watches = [ModelLink(ServiceDependency,via='servicedependency')]
+    #This base class implements the notification handler for handling ServiceDependency model notifications
     #If a synchronizer need to watch on multiple objects, the additional handlers need to be implemented
     #in the derived class and override the below handle_watched_object() method to route the notifications
     #accordingly
     def handle_watched_object(self, o):
         logger.info("handle_watched_object is invoked for object %s" % (str(o)),extra=o.tologdict())
-        if (model_accessor.is_type(o, "CoarseTenant")):
+        if (model_accessor.is_type(o, "ServiceDependency")):
            self.handle_service_composition_watch_notification(o)
         elif (model_accessor.is_type(o, "ServiceMonitoringAgentInfo")):
            self.handle_service_monitoringagentinfo_watch_notification(o)

@@ -1,5 +1,5 @@
 from xosresource import XOSResource
-from core.models import Service,User,CoarseTenant,AddressPool
+from core.models import Service,User,ServiceDependency,AddressPool
 
 class XOSService(XOSResource):
     provides = "tosca.nodes.Service"
@@ -10,11 +10,11 @@ class XOSService(XOSResource):
         for provider_service_name in self.get_requirements("tosca.relationships.TenantOfService"):
             provider_service = self.get_xos_object(Service, name=provider_service_name)
 
-            existing_tenancy = CoarseTenant.get_tenant_objects().filter(provider_service = provider_service, subscriber_service = obj)
+            existing_tenancy = ServiceDependency.objects.filter(provider_service = provider_service, subscriber_service = obj)
             if existing_tenancy:
                 self.info("Tenancy relationship from %s to %s already exists" % (str(obj), str(provider_service)))
             else:
-                tenancy = CoarseTenant(provider_service = provider_service,
+                tenancy = ServiceDependency(provider_service = provider_service,
                                        subscriber_service = obj)
                 tenancy.save()
 

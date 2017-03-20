@@ -1032,8 +1032,8 @@ class TenantPrivilegeInline(XOSTabularInline):
         return TenantPrivilege.select_by_user(request.user)
 
 
-class ProviderTenantInline(XOSTabularInline):
-    model = CoarseTenant
+class ProviderDependencyInline(XOSTabularInline):
+    model = ServiceDependency
     fields = ['provider_service', 'subscriber_service', 'connect_method']
     extra = 0
     suit_classes = 'suit-tab suit-tab-servicetenants'
@@ -1041,24 +1041,15 @@ class ProviderTenantInline(XOSTabularInline):
     verbose_name = 'provided tenant'
     verbose_name_plural = 'provided tenants'
 
-    def queryset(self, request):
-        qs = super(ProviderTenantInline, self).queryset(request)
-        return qs.filter(kind="coarse")
 
-
-class SubscriberTenantInline(XOSTabularInline):
-    model = CoarseTenant
+class SubscriberDependencyInline(XOSTabularInline):
+    model = ServiceDependency
     fields = ['provider_service', 'subscriber_service', 'connect_method']
     extra = 0
     suit_classes = 'suit-tab suit-tab-servicetenants'
     fk_name = 'subscriber_service'
     verbose_name = 'subscribed tenant'
     verbose_name_plural = 'subscribed tenants'
-
-    def queryset(self, request):
-        qs = super(SubscriberTenantInline, self).queryset(request)
-        return qs.filter(kind="coarse")
-
 
 class ServiceAttrAsTabInline(XOSTabularInline):
     model = ServiceAttribute
@@ -1082,8 +1073,8 @@ class ServiceAdmin(XOSBaseAdmin):
                  "view_url", "icon_url", "public_key", "private_key_fn", "service_specific_attribute", "service_specific_id"]
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
-    inlines = [ServiceAttrAsTabInline, SliceInline, ProviderTenantInline,
-               SubscriberTenantInline, ServicePrivilegeInline, ServiceMonitoringAgentInfoInline]
+    inlines = [ServiceAttrAsTabInline, SliceInline, ProviderDependencyInline,
+               SubscriberDependencyInline, ServicePrivilegeInline, ServiceMonitoringAgentInfoInline]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = fieldList
