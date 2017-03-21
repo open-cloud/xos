@@ -312,3 +312,13 @@ class SyncStep(object):
 
     def __call__(self, **args):
         return self.call(**args)
+
+# TODO: What does this do? It seems like it's just going to toss exceptions.
+
+class NullSyncStep(SyncStep):   # was SyncObject
+    provides=[] # Caller fills this in
+    requested_interval=0
+    observes=[] # Caller fills this in
+
+    def sync_record(self, r):
+        raise DeferredException('Waiting for Service dependency: %r'%r)

@@ -29,6 +29,8 @@ message Query {
         ALL=1;
         SYNCHRONIZER_DIRTY_OBJECTS = 2;
         SYNCHRONIZER_DELETED_OBJECTS = 3;
+        SYNCHRONIZER_DIRTY_POLICIES = 4;
+        SYNCHRONIZER_DELETED_POLICIES = 5;
     }
     QueryKind kind = 1;
     repeated QueryElement elements = 2;

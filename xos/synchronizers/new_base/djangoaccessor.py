@@ -38,6 +38,20 @@ class DjangoModelAccessor(ModelAccessor):
 
         return objs
 
+    def fetch_policies(self, main_objs, deletion=False):
+        if (type(main_objs) is not list):
+                main_objs=[main_objs]
+
+        objs = []
+        for main_obj in main_objs:
+            if (not deletion):
+                res = main_obj.objects.filter((Q(policed__lt=F('updated')) | Q(policed=None)) & Q(no_policy=False))
+            else:
+                res = main_obj.deleted_objects.filter(Q(policed__lt=F('updated')) | Q(policed=None))
+            objs.extend(res)
+
+        return objs
+
     def reset_queries(self):
         reset_queries()
 

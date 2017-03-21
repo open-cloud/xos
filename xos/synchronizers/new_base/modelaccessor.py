@@ -32,7 +32,11 @@ class ModelAccessor(object):
         """ Given a class name, return that model class """
         return name in self.all_model_classes
 
-    def fetch_pending(self, name, deletion=False):
+    def fetch_pending(self, main_objs, deletion=False):
+        """ Execute the default fetch_pending query """
+        raise Exception("Not Implemented")
+
+    def fetch_policies(self, main_objs, deletion=False):
         """ Execute the default fetch_pending query """
         raise Exception("Not Implemented")
 

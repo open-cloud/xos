@@ -28,6 +28,20 @@ class CoreApiModelAccessor(ModelAccessor):
 
         return objs
 
+    def fetch_policies(self, main_objs, deletion=False):
+        if (type(main_objs) is not list):
+                main_objs=[main_objs]
+
+        objs = []
+        for main_obj in main_objs:
+            if (not deletion):
+                lobjs = main_obj.objects.filter_special(main_obj.objects.SYNCHRONIZER_DIRTY_POLICIES)
+            else:
+                lobjs = main_obj.objects.filter_special(main_obj.objects.SYNCHRONIZER_DELETED_POLICIES)
+            objs.extend(lobjs)
+
+        return objs
+
     def obj_exists(self, o):
         # gRPC will default id to '0' for uninitialized objects
         return (o.id is not None) and (o.id != 0)

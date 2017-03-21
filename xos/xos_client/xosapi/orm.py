@@ -264,8 +264,10 @@ class ORMObjectManager(object):
     """ Manages a remote list of objects """
 
     # constants better agree with common.proto
-    SYNCHRONIZER_DIRTY_OBJECTS = 2;
-    SYNCHRONIZER_DELETED_OBJECTS = 3;
+    SYNCHRONIZER_DIRTY_OBJECTS = 2
+    SYNCHRONIZER_DELETED_OBJECTS = 3
+    SYNCHRONIZER_DIRTY_POLICIES = 4
+    SYNCHRONIZER_DELETED_POLICIES = 5
 
     def __init__(self, stub, modelName, packageName):
         self._stub = stub

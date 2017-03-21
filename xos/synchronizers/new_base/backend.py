@@ -72,6 +72,16 @@ class Backend:
             watcher_thread = threading.Thread(target=watcher.run,name='watcher')
             watcher_thread.start()
 
+        # start model policies thread
+        policies_dir = getattr(Config(), "observer_model_policies_dir", None)
+        if policies_dir:
+            from synchronizers.new_base.model_policy_loop import run_policy
+            model_policy_thread = threading.Thread(target=run_policy)
+            model_policy_thread.start()
+        else:
+            model_policy_thread = None
+            logger.info("Skipping model policies thread due to no model_policies dir.")
+
         while True:
             try:
                 time.sleep(1000)

@@ -16,7 +16,7 @@ from datetime import datetime
 from xos.logger import Logger, logging, logger
 from xos.config import Config, XOS_DIR
 from synchronizers.new_base.steps import *
-from syncstep import SyncStep
+from syncstep import SyncStep, NullSyncStep
 from toposort import toposort
 from synchronizers.new_base.error_mapper import *
 from synchronizers.new_base.steps.sync_object import SyncObject
@@ -241,17 +241,24 @@ class XOSObserver:
 
     def lookup_step_class(self, s):
         if ('#' in s):
-            raise Exception("# is not supported anymore. I hope it wasn't important.")
-
-        step = self.step_lookup[s]
+            return NullSyncStep
+        else:
+            step = self.step_lookup[s]
         return step
 
     def lookup_step(self, s):
         if ('#' in s):
-            raise Exception("# is not supported anymore. I hope it wasn't important.")
+            objname = s[1:]
+            so = NullSyncStep()
 
-        step_class = self.step_lookup[s]
-        step = step_class(driver=self.driver, error_map=self.error_mapper)
+            obj = model_accessor.get_model_class(objname)
+
+            so.provides = [obj]
+            so.observes = [obj]
+            step = so
+        else:
+            step_class = self.step_lookup[s]
+            step = step_class(driver=self.driver, error_map=self.error_mapper)
         return step
 
     def save_run_times(self):
