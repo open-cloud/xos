@@ -1,4 +1,4 @@
-from core.models import ServiceController, ServiceControllerResource, LoadableModule, LoadableModuleResource
+from core.models import ServiceController, LoadableModule, LoadableModuleResource
 
 from loadablemodule import XOSLoadableModule
 

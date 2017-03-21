@@ -39,8 +39,8 @@ def get_REST_patterns():
     # legacy - deprecated
         url(r'^xos/$', api_root),
     
-        url(r'xos/servicecontrollerresources/$', ServiceControllerResourceList.as_view(), name='servicecontrollerresource-list-legacy'),
-        url(r'xos/servicecontrollerresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceControllerResourceDetail.as_view(), name ='servicecontrollerresource-detail-legacy'),
+        url(r'xos/xoscomponentvolumecontainers/$', XOSComponentVolumeContainerList.as_view(), name='xoscomponentvolumecontainer-list-legacy'),
+        url(r'xos/xoscomponentvolumecontainers/(?P<pk>[a-zA-Z0-9\-]+)/$', XOSComponentVolumeContainerDetail.as_view(), name ='xoscomponentvolumecontainer-detail-legacy'),
     
         url(r'xos/xosvolumes/$', XOSVolumeList.as_view(), name='xosvolume-list-legacy'),
         url(r'xos/xosvolumes/(?P<pk>[a-zA-Z0-9\-]+)/$', XOSVolumeDetail.as_view(), name ='xosvolume-detail-legacy'),
@@ -258,9 +258,6 @@ def get_REST_patterns():
         url(r'xos/tenantrootprivileges/$', TenantRootPrivilegeList.as_view(), name='tenantrootprivilege-list-legacy'),
         url(r'xos/tenantrootprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', TenantRootPrivilegeDetail.as_view(), name ='tenantrootprivilege-detail-legacy'),
     
-        url(r'xos/xoscomponentvolumecontainers/$', XOSComponentVolumeContainerList.as_view(), name='xoscomponentvolumecontainer-list-legacy'),
-        url(r'xos/xoscomponentvolumecontainers/(?P<pk>[a-zA-Z0-9\-]+)/$', XOSComponentVolumeContainerDetail.as_view(), name ='xoscomponentvolumecontainer-detail-legacy'),
-    
         url(r'xos/slicecredentials/$', SliceCredentialList.as_view(), name='slicecredential-list-legacy'),
         url(r'xos/slicecredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceCredentialDetail.as_view(), name ='slicecredential-detail-legacy'),
     
@@ -286,8 +283,8 @@ def get_REST_patterns():
     # new - use these instead of the above
         url(r'^api/core/$', api_root),
     
-        url(r'api/core/servicecontrollerresources/$', ServiceControllerResourceList.as_view(), name='servicecontrollerresource-list'),
-        url(r'api/core/servicecontrollerresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceControllerResourceDetail.as_view(), name ='servicecontrollerresource-detail'),
+        url(r'api/core/xoscomponentvolumecontainers/$', XOSComponentVolumeContainerList.as_view(), name='xoscomponentvolumecontainer-list'),
+        url(r'api/core/xoscomponentvolumecontainers/(?P<pk>[a-zA-Z0-9\-]+)/$', XOSComponentVolumeContainerDetail.as_view(), name ='xoscomponentvolumecontainer-detail'),
     
         url(r'api/core/xosvolumes/$', XOSVolumeList.as_view(), name='xosvolume-list'),
         url(r'api/core/xosvolumes/(?P<pk>[a-zA-Z0-9\-]+)/$', XOSVolumeDetail.as_view(), name ='xosvolume-detail'),
@@ -505,9 +502,6 @@ def get_REST_patterns():
         url(r'api/core/tenantrootprivileges/$', TenantRootPrivilegeList.as_view(), name='tenantrootprivilege-list'),
         url(r'api/core/tenantrootprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', TenantRootPrivilegeDetail.as_view(), name ='tenantrootprivilege-detail'),
     
-        url(r'api/core/xoscomponentvolumecontainers/$', XOSComponentVolumeContainerList.as_view(), name='xoscomponentvolumecontainer-list'),
-        url(r'api/core/xoscomponentvolumecontainers/(?P<pk>[a-zA-Z0-9\-]+)/$', XOSComponentVolumeContainerDetail.as_view(), name ='xoscomponentvolumecontainer-detail'),
-    
         url(r'api/core/slicecredentials/$', SliceCredentialList.as_view(), name='slicecredential-list'),
         url(r'api/core/slicecredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceCredentialDetail.as_view(), name ='slicecredential-detail'),
     
@@ -534,7 +528,7 @@ def get_REST_patterns():
 @api_view(['GET'])
 def api_root_legacy(request, format=None):
     return Response({
-        'servicecontrollerresources': reverse('servicecontrollerresource-list-legacy', request=request, format=format),
+        'xoscomponentvolumecontainers': reverse('xoscomponentvolumecontainer-list-legacy', request=request, format=format),
         'xosvolumes': reverse('xosvolume-list-legacy', request=request, format=format),
         'serviceattributes': reverse('serviceattribute-list-legacy', request=request, format=format),
         'controllerimageses': reverse('controllerimages-list-legacy', request=request, format=format),
@@ -607,7 +601,6 @@ def api_root_legacy(request, format=None):
         'deploymentroles': reverse('deploymentrole-list-legacy', request=request, format=format),
         'projects': reverse('project-list-legacy', request=request, format=format),
         'tenantrootprivileges': reverse('tenantrootprivilege-list-legacy', request=request, format=format),
-        'xoscomponentvolumecontainers': reverse('xoscomponentvolumecontainer-list-legacy', request=request, format=format),
         'slicecredentials': reverse('slicecredential-list-legacy', request=request, format=format),
         'slicetags': reverse('slicetag-list-legacy', request=request, format=format),
         'networktemplates': reverse('networktemplate-list-legacy', request=request, format=format),
@@ -621,7 +614,7 @@ def api_root_legacy(request, format=None):
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
-        'servicecontrollerresources': reverse('servicecontrollerresource-list', request=request, format=format),
+        'xoscomponentvolumecontainers': reverse('xoscomponentvolumecontainer-list', request=request, format=format),
         'xosvolumes': reverse('xosvolume-list', request=request, format=format),
         'serviceattributes': reverse('serviceattribute-list', request=request, format=format),
         'controllerimageses': reverse('controllerimages-list', request=request, format=format),
@@ -694,7 +687,6 @@ def api_root(request, format=None):
         'deploymentroles': reverse('deploymentrole-list', request=request, format=format),
         'projects': reverse('project-list', request=request, format=format),
         'tenantrootprivileges': reverse('tenantrootprivilege-list', request=request, format=format),
-        'xoscomponentvolumecontainers': reverse('xoscomponentvolumecontainer-list', request=request, format=format),
         'slicecredentials': reverse('slicecredential-list', request=request, format=format),
         'slicetags': reverse('slicetag-list', request=request, format=format),
         'networktemplates': reverse('networktemplate-list', request=request, format=format),
@@ -762,7 +754,7 @@ class XOSModelSerializer(serializers.ModelSerializer):
 
 
 
-class ServiceControllerResourceSerializer(serializers.HyperlinkedModelSerializer):
+class XOSComponentVolumeContainerSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -775,10 +767,10 @@ class ServiceControllerResourceSerializer(serializers.HyperlinkedModelSerializer
         except:
             return None
     class Meta:
-        model = ServiceControllerResource
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','loadable_module','name','subdirectory','kind','format','url',)
+        model = XOSComponentVolumeContainer
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','component','name','container',)
 
-class ServiceControllerResourceIdSerializer(XOSModelSerializer):
+class XOSComponentVolumeContainerIdSerializer(XOSModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -791,8 +783,8 @@ class ServiceControllerResourceIdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
-        model = ServiceControllerResource
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','loadable_module','name','subdirectory','kind','format','url',)
+        model = XOSComponentVolumeContainer
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','component','name','container',)
 
 
 
@@ -3477,41 +3469,6 @@ class TenantRootPrivilegeIdSerializer(XOSModelSerializer):
 
 
 
-class XOSComponentVolumeContainerSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = XOSComponentVolumeContainer
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','component','name','container',)
-
-class XOSComponentVolumeContainerIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = XOSComponentVolumeContainer
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','component','name','container',)
-
-
-
-
 class SliceCredentialSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
@@ -3775,7 +3732,7 @@ class UserIdSerializer(XOSModelSerializer):
 
 serializerLookUp = {
 
-                 ServiceControllerResource: ServiceControllerResourceSerializer,
+                 XOSComponentVolumeContainer: XOSComponentVolumeContainerSerializer,
 
                  XOSVolume: XOSVolumeSerializer,
 
@@ -3921,8 +3878,6 @@ serializerLookUp = {
 
                  TenantRootPrivilege: TenantRootPrivilegeSerializer,
 
-                 XOSComponentVolumeContainer: XOSComponentVolumeContainerSerializer,
-
                  SliceCredential: SliceCredentialSerializer,
 
                  SliceTag: SliceTagSerializer,
@@ -3943,12 +3898,12 @@ serializerLookUp = {
 # Based on core/views/*.py
 
 
-class ServiceControllerResourceList(XOSListCreateAPIView):
-    queryset = ServiceControllerResource.objects.select_related().all()
-    serializer_class = ServiceControllerResourceSerializer
-    id_serializer_class = ServiceControllerResourceIdSerializer
+class XOSComponentVolumeContainerList(XOSListCreateAPIView):
+    queryset = XOSComponentVolumeContainer.objects.select_related().all()
+    serializer_class = XOSComponentVolumeContainerSerializer
+    id_serializer_class = XOSComponentVolumeContainerIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','loadable_module','name','subdirectory','kind','format','url',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','component','name','container',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -3962,13 +3917,13 @@ class ServiceControllerResourceList(XOSListCreateAPIView):
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
-        return ServiceControllerResource.select_by_user(self.request.user)
+        return XOSComponentVolumeContainer.select_by_user(self.request.user)
 
 
-class ServiceControllerResourceDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = ServiceControllerResource.objects.select_related().all()
-    serializer_class = ServiceControllerResourceSerializer
-    id_serializer_class = ServiceControllerResourceIdSerializer
+class XOSComponentVolumeContainerDetail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = XOSComponentVolumeContainer.objects.select_related().all()
+    serializer_class = XOSComponentVolumeContainerSerializer
+    id_serializer_class = XOSComponentVolumeContainerIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -3982,7 +3937,7 @@ class ServiceControllerResourceDetail(XOSRetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
-        return ServiceControllerResource.select_by_user(self.request.user)
+        return XOSComponentVolumeContainer.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
@@ -7367,53 +7322,6 @@ class TenantRootPrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
         return TenantRootPrivilege.select_by_user(self.request.user)
-
-    # update() is handled by XOSRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
-
-
-
-class XOSComponentVolumeContainerList(XOSListCreateAPIView):
-    queryset = XOSComponentVolumeContainer.objects.select_related().all()
-    serializer_class = XOSComponentVolumeContainerSerializer
-    id_serializer_class = XOSComponentVolumeContainerIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','component','name','container',)
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"query_params"):
-            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return XOSComponentVolumeContainer.select_by_user(self.request.user)
-
-
-class XOSComponentVolumeContainerDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = XOSComponentVolumeContainer.objects.select_related().all()
-    serializer_class = XOSComponentVolumeContainerSerializer
-    id_serializer_class = XOSComponentVolumeContainerIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"query_params"):
-            no_hyperlinks = self.request.query_params.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return XOSComponentVolumeContainer.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 

@@ -4,7 +4,7 @@ import base64
 from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
-from core.models import Service, ServiceController, ServiceControllerResource
+from core.models import Service, ServiceController, LoadableModuleResource
 from xos.logger import Logger, logging
 
 # xosbuilder will be in steps/..
@@ -15,9 +15,9 @@ from xosbuilder import XOSBuilder
 
 logger = Logger(level=logging.INFO)
 
-class SyncServiceControllerResource(SyncStep, XOSBuilder):
-    provides=[ServiceControllerResource]
-    observes=ServiceControllerResource
+class SyncLoadableModuleResource(SyncStep, XOSBuilder):
+    provides=[LoadableModuleResource]
+    observes=LoadableModuleResource
     requested_interval=0
 
     def __init__(self, **args):
@@ -25,7 +25,7 @@ class SyncServiceControllerResource(SyncStep, XOSBuilder):
         XOSBuilder.__init__(self)
 
     def sync_record(self, scr):
-        logger.info("Sync'ing ServiceControllerResource %s" % scr)
+        logger.info("Sync'ing LoadableModuleResource %s" % scr)
         self.download_resource(scr)
 
         # TODO: The following should be redone with watchers
@@ -51,6 +51,6 @@ class SyncServiceControllerResource(SyncStep, XOSBuilder):
         pass
 
     def fetch_pending(self, deleted=False):
-        pend = super(SyncServiceControllerResource, self).fetch_pending(deleted)
+        pend = super(SyncLoadableModuleResource, self).fetch_pending(deleted)
         return pend
 

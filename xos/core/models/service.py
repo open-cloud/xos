@@ -263,10 +263,6 @@ class ServiceController(LoadableModule):
     no_build = models.BooleanField(help_text="Do not build the Synchronizer container", default=False)
     no_deploy = models.BooleanField(help_text="Do not add synchronizer container to onboarding-docker-compose", default=False)
 
-class ServiceControllerResource(LoadableModuleResource):
-    class Meta:
-        proxy = True
-
 class Service(PlCoreBase, AttributeMixin):
     # when subclassing a service, redefine KIND to describe the new service
     KIND = "generic"

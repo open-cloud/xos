@@ -4,9 +4,9 @@
         "Library"
     ], 
     "ServiceController": [
-        "ServiceControllerResource"
+        "LoadableModuleResource"
     ],
     "Library": [
-        "ServiceControllerResource"
+        "LoadableModuleResource"
     ]
 }

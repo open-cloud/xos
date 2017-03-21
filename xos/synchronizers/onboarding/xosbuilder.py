@@ -8,7 +8,7 @@ import urlparse
 import xmlrpclib
 
 from xos.config import Config
-from core.models import Service, ServiceController, ServiceControllerResource, LoadableModule, LoadableModuleResource, XOS, XOSComponent
+from core.models import Service, ServiceController, LoadableModule, LoadableModuleResource, XOS, XOSComponent
 from xos.logger import Logger, logging
 
 from django.utils import timezone

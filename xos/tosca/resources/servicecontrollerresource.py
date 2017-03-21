@@ -4,12 +4,12 @@ import sys
 import tempfile
 
 from toscaparser.tosca_template import ToscaTemplate
-from core.models import ServiceControllerResource, ServiceController, LoadableModuleResource, LoadableModule
+from core.models import LoadableModuleResource, ServiceController, LoadableModule
 from xosresource import XOSResource
 
 class XOSServiceControllerResource(XOSResource):
     provides = "tosca.nodes.ServiceControllerResource"
-    xos_model = ServiceControllerResource
+    xos_model = LoadableModuleResource
     copyin_props = ["kind", "format", "url"]
 
     def get_xos_args(self, throw_exception=True):
