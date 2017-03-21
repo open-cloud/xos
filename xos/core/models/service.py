@@ -1005,24 +1005,6 @@ class ServiceDependency(Tenant):
         super(ServiceDependency, self).save()
 
 
-class Subscriber(TenantRoot):
-    """ Intermediate class for TenantRoots that are to be Subscribers """
-
-    class Meta:
-        proxy = True
-
-    KIND = "Subscriber"
-
-
-class Provider(TenantRoot):
-    """ Intermediate class for TenantRoots that are to be Providers """
-
-    class Meta:
-        proxy = True
-
-    KIND = "Provider"
-
-
 class TenantAttribute(PlCoreBase):
     name = models.CharField(help_text="Attribute Name", max_length=128)
     value = models.TextField(help_text="Attribute Value")

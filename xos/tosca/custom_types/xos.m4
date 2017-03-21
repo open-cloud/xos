@@ -608,14 +608,6 @@ node_types:
             xos_base_props
             xos_base_service_props
 
-    tosca.nodes.Subscriber:
-        derived_from: tosca.nodes.Root
-        description: XOS subscriber base class.
-        capabilities:
-            xos_base_subscriber_caps
-        properties:
-            xos_base_subscriber_props
-
     tosca.nodes.CORDSubscriber:
         derived_from: tosca.nodes.Root
         description: >

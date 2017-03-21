@@ -2,7 +2,7 @@ import importlib
 
 from xosresource import XOSResource
 from toscaparser.tosca_template import ToscaTemplate
-from core.models import Tenant, Service, Subscriber
+from core.models import Tenant, Service, TenantRoot
 
 class XOSTenant(XOSResource):
     provides = "tosca.nodes.Tenant"
@@ -18,7 +18,7 @@ class XOSTenant(XOSResource):
 
         subscriber_name = self.get_requirement("tosca.relationships.BelongsToSubscriber")
         if subscriber_name:
-            args["subscriber_root"] = self.get_xos_object(Subscriber, throw_exception=throw_exception,
+            args["subscriber_root"] = self.get_xos_object(TenantRoot, throw_exception=throw_exception,
                                                           name=subscriber_name)
 
         tenant_name = self.get_requirement("tosca.relationships.BelongsToTenant")
