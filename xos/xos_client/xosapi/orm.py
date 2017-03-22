@@ -357,6 +357,9 @@ class ORMModelClass(object):
     def content_type_id(self):
         return self._stub.reverse_content_type_map[self.model_name]
 
+    def __call__(self, *args, **kwargs):
+        return self.objects.new(*args, **kwargs)
+
 class ORMStub(object):
     def __init__(self, stub, package_name, invoker=None, caller_kind="grpcapi"):
         self.grpc_stub = stub
