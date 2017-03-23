@@ -30,6 +30,21 @@
   with_items: "{{ enabled_gui_extensions }}"
 
 # Remove the old local images to force them to be re-pushed
+- name: Remove old local synchronizer images
+  docker_image:
+    name: "{{ deploy_docker_registry }}/xosproject/{{ item.name }}-synchronizer:{{ deploy_docker_tag }}"
+    state: absent
+  with_items: "{{ xos_services }}"
+
+- name: Tag and push locally built synchronizer images to docker registry
+  docker_image:
+    name: "xosproject/{{ item.name }}-synchronizer:{{ deploy_docker_tag }}"
+    repository: "{{ deploy_docker_registry }}/xosproject/{{ item.name }}-synchronizer:{{ deploy_docker_tag }}"
+    push: True
+  with_items: "{{ xos_services }}"
+  when: not frontend_only and item.synchronizer is defined and item.synchronizer
+
+# Remove the old local images to force them to be re-pushed
 - name: Remove old local miscellaneous images
   docker_image:
     name: "{{ deploy_docker_registry }}/{{ item }}"

@@ -41,3 +41,14 @@
     tag: "{{ build_docker_tag }}"
     pull: False
   with_items: "{{ enabled_gui_extensions }}"
+
+# Build synchronizer images
+- name: Build synchronizer docker images
+  docker_image:
+    name: "xosproject/{{ item.name }}-synchronizer"
+    path: "{{ cord_dir }}/{{ item.path }}/xos/synchronizer"
+    dockerfile: "Dockerfile.synchronizer"
+    tag: "{{ build_docker_tag }}"
+    pull: False
+  with_items: "{{ xos_services }}"
+  when: not frontend_only and item.synchronizer is defined and item.synchronizer

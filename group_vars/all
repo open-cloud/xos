@@ -73,3 +73,7 @@ misc_docker_images:
 enabled_gui_extensions:
   - name: sample
     path: orchestration/xos-sample-gui-extension
+
+frontend_only: False
+
+xos_services: []
