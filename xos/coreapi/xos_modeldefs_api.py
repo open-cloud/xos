@@ -92,7 +92,15 @@ class ModelDefsService(modeldefs_pb2.modeldefsServicer, XOSAPIHelperMixin):
             modeldef.name = model.__name__
             modeldef.app = self.parseModuleName(model.__module__)
 
+            parent_field_names = [x.name for x in model._meta.parents.values() if x is not None]
+            for parent_model in model._meta.get_parent_list():
+                parent_field_names.extend([x.name for x in parent_model._meta.parents.values() if x is not None])
+
             for f in model._meta.fields:
+                if f.name in parent_field_names:
+                    # skip fields that are pointers to the parent class
+                    continue
+
                 field = modeldef.fields.add()
 
                 field.name = f.name
