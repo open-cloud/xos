@@ -1,0 +1,10 @@
+{% for object in generator.all() %}
+
+message {{ object.camel() }} {
+  {%- for field in object.fields %}
+     {{ xp_to_xproto(field, loop.index) }} {{xp_options(field)}};
+  {%- endfor %}
+}
+
++++ protos/{{ object }}.xproto
+{% endfor %}
