@@ -66,6 +66,7 @@ class XOSClient(chameleon_client.GrpcClient):
                 stub_class = getattr(m_grpc, api+"Stub")
 
                 setattr(self, api, stub_class(self.channel))
+                setattr(self, api+"_pb2", m_protos)
             else:
                 print >> sys.stderr, "failed to locate api", api
 

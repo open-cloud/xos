@@ -1,4 +1,5 @@
 import base64
+import fnmatch
 import os
 import sys
 import time
@@ -12,6 +13,7 @@ SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
 
 from django.contrib.auth import authenticate as django_authenticate
 import django.apps
+from django.db.models import F,Q
 from core.models import *
 from xos.exceptions import *
 from apihelper import XOSAPIHelperMixin
@@ -21,6 +23,20 @@ from apihelper import XOSAPIHelperMixin
 import inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 toscadir = os.path.join(currentdir, "../tosca")
+
+def is_internal_model(model):
+    """ things to be excluded from the dirty_models endpoints """
+    if 'django' in model.__module__:
+        return True
+    if 'cors' in model.__module__:
+        return True
+    if 'contenttypes' in model.__module__:
+        return True
+    if 'core.models.journal' in model.__module__:  # why?
+        return True
+    if 'core.models.project' in model.__module__:  # why?
+        return True
+    return False
 
 class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
     def __init__(self, thread_pool):
@@ -106,4 +122,51 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
 
     def NoOp(self, request, context):
         return Empty()
+
+    def ListDirtyModels(self, request, context):
+        dirty_models = utility_pb2.ModelList()
+
+        models = django.apps.apps.get_models()
+        for model in models:
+            if is_internal_model(model):
+                continue
+            fieldNames = [x.name for x in model._meta.fields]
+            if (not "enacted" in fieldNames) or (not "updated" in fieldNames):
+                continue
+            if (request.class_name) and (not fnmatch.fnmatch(model.__name__, request.class_name)):
+                continue
+            objs = model.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+            for obj in objs:
+                item = dirty_models.items.add()
+                item.class_name = model.__name__
+                item.id = obj.id
+
+        return dirty_models
+
+    def SetDirtyModels(self, request, context):
+        user=self.authenticate(context, required=True)
+
+        dirty_models = utility_pb2.ModelList()
+
+        models = django.apps.apps.get_models()
+        for model in models:
+            if is_internal_model(model):
+                continue
+            fieldNames = [x.name for x in model._meta.fields]
+            if (not "enacted" in fieldNames) or (not "updated" in fieldNames):
+                continue
+            if (request.class_name) and (not fnmatch.fnmatch(model.__name__, request.class_name)):
+                continue
+            objs = model.objects.all()
+            for obj in objs:
+                try:
+                     obj.caller = user
+                     obj.save()
+                except Exception, e:
+                    item = dirty_models.items.add()
+                    item.class_name = model.__name__
+                    item.id = obj.id
+                    item.info = str(e)
+
+        return dirty_models
 

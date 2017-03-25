@@ -28,6 +28,20 @@ message ToscaResponse {
     string messages = 2;
 };
 
+message ModelFilter {
+    string class_name = 1;
+};
+
+message ModelListEntry {
+    string class_name = 1;
+    int32 id = 2;
+    string info = 3;
+};
+
+message ModelList {
+    repeated ModelListEntry items = 1;
+};
+
 service utility {
 
   rpc Login(LoginRequest) returns (LoginResponse) {
@@ -62,6 +76,19 @@ service utility {
         option (google.api.http) = {
             post: "/xosapi/v1/utility/noop"
             body: "*"
+        };
+  }
+
+  rpc SetDirtyModels(ModelFilter) returns (ModelList) {
+        option (google.api.http) = {
+            post: "/xosapi/v1/utility/dirty_models"
+            body: "*"
+        };
+  }
+
+  rpc ListDirtyModels(ModelFilter) returns (ModelList) {
+        option (google.api.http) = {
+            get: "/xosapi/v1/utility/dirty_models"
         };
   }
 };

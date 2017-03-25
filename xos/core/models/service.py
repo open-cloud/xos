@@ -220,9 +220,11 @@ class XOSComponentLink(PlCoreBase):
     kind = models.CharField(max_length=20, choices=LINK_KIND, default='internal')
 
     def save(self, *args, **kwds):
-        existing = XOSComponentLink.objects.filter(container=self.container, alias=self.alias)
-        if len(existing) > 0:
-            raise XOSValidationError('XOSComponentLink for %s:%s already defined' % (self.container, self.alias))
+        # If this is a new object, then check to make sure it doesn't already exist
+        if not self.pk:
+            existing = XOSComponentLink.objects.filter(container=self.container, alias=self.alias)
+            if len(existing) > 0:
+                raise XOSValidationError('XOSComponentLink for %s:%s already defined' % (self.container, self.alias))
         super(XOSComponentLink, self).save(*args, **kwds)
 
 
@@ -235,9 +237,11 @@ class XOSComponentVolume(PlCoreBase):
     read_only = models.BooleanField(default=False, help_text="True if mount read-only")
 
     def save(self, *args, **kwds):
-        existing = XOSComponentVolume.objects.filter(container_path=self.container_path, host_path=self.host_path)
-        if len(existing) > 0:
-            raise XOSValidationError('XOSComponentVolume for %s:%s already defined' % (self.container_path, self.host_path))
+        # If this is a new object, then check to make sure it doesn't already exist
+        if not self.pk:
+            existing = XOSComponentVolume.objects.filter(container_path=self.container_path, host_path=self.host_path)
+            if len(existing) > 0:
+                raise XOSValidationError('XOSComponentVolume for %s:%s already defined' % (self.container_path, self.host_path))
         super(XOSComponentVolume, self).save(*args, **kwds)
 
 
@@ -247,9 +251,11 @@ class XOSComponentVolumeContainer(PlCoreBase):
     container = StrippedCharField(max_length=300, help_text="Volume Name")
 
     def save(self, *args, **kwds):
-        existing = XOSComponentVolumeContainer.objects.filter(name=self.name)
-        if len(existing) > 0:
-            raise XOSValidationError('XOSComponentVolumeContainer for %s:%s already defined' % (self.container_path, self.host_path))
+        # If this is a new object, then check to make sure it doesn't already exist
+        if not self.pk:
+            existing = XOSComponentVolumeContainer.objects.filter(name=self.name)
+            if len(existing) > 0:
+                raise XOSValidationError('XOSComponentVolumeContainer for %s:%s already defined' % (self.container_path, self.host_path))
         super(XOSComponentVolumeContainer, self).save(*args, **kwds)
 
 
