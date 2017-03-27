@@ -95,15 +95,6 @@ def run_playbook(ansible_hosts, ansible_config, fqp, opts):
     return (stats, aresults)
 
 def run_template(name, opts, path='', expected_num=None, ansible_config=None, ansible_hosts=None, run_ansible_script=None, object=None):
-    global uglylock
-    try:
-        if (uglylock):
-            pass
-    except NameError:
-        uglylock = threading.Lock()
-
-    uglylock.acquire()
-
     template = os_template_env.get_template(name)
     buffer = template.render(opts)
 
@@ -121,8 +112,6 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
     p.join()
     """
     stats,aresults = run_playbook(ansible_hosts,ansible_config,fqp,opts)
-
-    uglylock.release()
 
     error_msg = []
 
