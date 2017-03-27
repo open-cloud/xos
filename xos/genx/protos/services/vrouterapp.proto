@@ -1,0 +1,7 @@
+
+message VRouterApp {
+  required int32 vrouter_service = 1 [ null = False,  blank = False,  model = VRouterService,  modifier = required,  type = link,  port = apps,  db_index = True ];
+  required string name = 2 [ null = False,  max_length = 50,  blank = False,  help_text = "application name",  modifier = required,  db_index = False ];
+  required string control_plane_connect_point = 3 [ null = False,  max_length = 21,  blank = False,  help_text = "port identifier in ONOS",  modifier = required,  db_index = False ];
+  required bool ospf_enabled = 4 [ null = False,  default = True,  blank = True,  help_text = "ospf enabled",  modifier = required,  db_index = False ];
+}

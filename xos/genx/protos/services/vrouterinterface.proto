@@ -1,0 +1,7 @@
+
+message VRouterInterface {
+  required int32 vrouter_port = 1 [ null = False,  blank = False,  model = VRouterPort,  modifier = required,  type = link,  port = interfaces,  db_index = True ];
+  required string name = 2 [ null = False,  max_length = 10,  blank = False,  help_text = "interface name",  modifier = required,  db_index = False ];
+  required string mac = 3 [ null = False,  max_length = 17,  blank = False,  help_text = "interface mac",  modifier = required,  db_index = False ];
+  optional string vlan = 4 [ null = True,  max_length = 10,  blank = True,  help_text = "interface vlan id",  modifier = optional,  db_index = False ];
+}

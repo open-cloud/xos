@@ -1,0 +1,8 @@
+
+message VOLTDevice {
+  required string name = 1 [ null = False,  max_length = 254,  blank = False,  help_text = "name of device",  modifier = required,  db_index = False ];
+  required int32 volt_service = 2 [ null = False,  blank = False,  model = VOLTService,  modifier = required,  type = link,  port = volt_devices,  db_index = True ];
+  optional string openflow_id = 3 [ null = True,  max_length = 254,  blank = True,  help_text = "OpenFlow ID",  modifier = optional,  db_index = False ];
+  optional string driver = 4 [ null = True,  max_length = 254,  blank = True,  help_text = "driver",  modifier = optional,  db_index = False ];
+  optional int32 access_agent = 5 [ null = True,  blank = True,  model = AccessAgent,  modifier = optional,  type = link,  port = volt_devices,  db_index = True ];
+}

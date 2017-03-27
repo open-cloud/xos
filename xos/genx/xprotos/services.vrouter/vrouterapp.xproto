@@ -1,0 +1,8 @@
+
+
+message VRouterApp {
+     required manytoone vrouter_service->VRouterService:apps = 1 [db_index = True, null = False, blank = False];
+     required string name = 2 [help_text = "application name", max_length = 50, null = False, db_index = False, blank = False];
+     required string control_plane_connect_point = 3 [help_text = "port identifier in ONOS", max_length = 21, null = False, db_index = False, blank = False];
+     required bool ospf_enabled = 4 [help_text = "ospf enabled", default = True, null = False, db_index = False, blank = True];
+}

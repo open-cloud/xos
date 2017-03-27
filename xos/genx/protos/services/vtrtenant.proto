@@ -1,0 +1,21 @@
+
+message VTRTenant {
+  optional string name = 1 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  modifier = optional,  db_index = False ];
+  required string kind = 2 [ null = False,  default = "generic",  max_length = 30,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
+  required int32 provider_service = 3 [ null = False,  blank = False,  model = Service,  modifier = required,  type = link,  port = provided_tenants,  db_index = True ];
+  optional int32 subscriber_service = 4 [ null = True,  blank = True,  model = Service,  modifier = optional,  type = link,  port = subscribed_tenants,  db_index = True ];
+  optional int32 subscriber_tenant = 5 [ null = True,  blank = True,  model = Tenant,  modifier = optional,  type = link,  port = subscribed_tenants,  db_index = True ];
+  optional int32 subscriber_user = 6 [ null = True,  blank = True,  model = User,  modifier = optional,  type = link,  port = subscribed_tenants,  db_index = True ];
+  optional int32 subscriber_root = 7 [ null = True,  blank = True,  model = TenantRoot,  modifier = optional,  type = link,  port = subscribed_tenants,  db_index = True ];
+  optional int32 subscriber_network = 8 [ null = True,  blank = True,  model = Network,  modifier = optional,  type = link,  port = subscribed_tenants,  db_index = True ];
+  optional string service_specific_id = 9 [ null = True,  max_length = 30,  content_type = "stripped",  blank = True,  modifier = optional,  db_index = False ];
+  optional string service_specific_attribute = 10 [ db_index = False,  modifier = optional,  null = True,  blank = True ];
+  required string connect_method = 11 [ null = False,  default = "na",  choices = "(('public', 'Public'), ('private', 'Private'), ('private-unidirectional', 'Private Unidirectional'), ('na', 'Not Applicable'))",  max_length = 30,  blank = False,  modifier = required,  db_index = False ];
+  required string test = 12 [ null = False,  choices = "(('ping', 'Ping'), ('traceroute', 'Trace Route'), ('tcpdump', 'Tcp Dump'))",  max_length = 30,  content_type = "stripped",  blank = False,  help_text = "type of test",  modifier = required,  db_index = False ];
+  required string scope = 13 [ null = False,  choices = "(('container', 'Container'), ('vm', 'VM'))",  max_length = 30,  content_type = "stripped",  blank = False,  help_text = "scope of test",  modifier = required,  db_index = False ];
+  optional string argument = 14 [ null = True,  max_length = 40,  content_type = "stripped",  blank = True,  modifier = optional,  db_index = False ];
+  optional string result = 15 [ db_index = False,  modifier = optional,  null = True,  blank = True ];
+  optional string result_code = 16 [ null = True,  max_length = 32,  content_type = "stripped",  blank = True,  modifier = optional,  db_index = False ];
+  required int32 target_type = 17 [ null = False,  blank = False,  model = ContentType,  modifier = required,  type = link,  port = vtrtenant,  db_index = True ];
+  required uint32 target_id = 18 [ db_index = False,  modifier = required,  null = False,  blank = False ];
+}

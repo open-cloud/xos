@@ -1,0 +1,9 @@
+
+
+message VRouterDevice {
+     optional string name = 1 [help_text = "device friendly name", max_length = 20, null = True, db_index = False, blank = True];
+     required string openflow_id = 2 [help_text = "device identifier in ONOS", max_length = 20, null = False, db_index = False, blank = False];
+     required string config_key = 3 [default = "basic", max_length = 32, blank = False, help_text = "configuration key", null = False, db_index = False];
+     required string driver = 4 [help_text = "driver type", max_length = 32, null = False, db_index = False, blank = False];
+     required manytoone vrouter_service->VRouterService:devices = 5 [db_index = True, null = False, blank = False];
+}

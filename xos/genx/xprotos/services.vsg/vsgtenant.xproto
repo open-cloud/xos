@@ -1,0 +1,20 @@
+
+
+message VSGTenant {
+     optional string name = 1 [db_index = False, max_length = 200, null = True, content_type = "stripped", blank = True];
+     required string kind = 2 [default = "generic", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
+     required manytoone provider_service->Service:provided_tenants = 3 [db_index = True, null = False, blank = False];
+     optional manytoone subscriber_service->Service:subscribed_tenants = 4 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_tenant->Tenant:subscribed_tenants = 5 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_user->User:subscribed_tenants = 6 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_root->TenantRoot:subscribed_tenants = 7 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_network->Network:subscribed_tenants = 8 [db_index = True, null = True, blank = True];
+     optional string service_specific_id = 9 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
+     optional string service_specific_attribute = 10 [db_index = False, null = True, blank = True];
+     required string connect_method = 11 [default = "na", choices = "(('public', 'Public'), ('private', 'Private'), ('private-unidirectional', 'Private Unidirectional'), ('na', 'Not Applicable'))", max_length = 30, blank = False, null = False, db_index = False];
+     optional manytoone instance->Instance:+ = 12 [help_text = "Instance used by this Tenant", null = True, db_index = True, blank = True];
+     optional manytoone creator->User:+ = 13 [help_text = "Creator of this Tenant", null = True, db_index = True, blank = True];
+     optional string external_hostname = 14 [max_length = 30, content_type = "stripped", blank = True, help_text = "External host name", null = True, db_index = False];
+     optional string external_container = 15 [max_length = 30, content_type = "stripped", blank = True, help_text = "External host name", null = True, db_index = False];
+     optional string last_ansible_hash = 16 [db_index = False, max_length = 128, null = True, content_type = "stripped", blank = True];
+}

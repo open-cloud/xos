@@ -1,0 +1,22 @@
+
+
+message VTRTenant {
+     optional string name = 1 [db_index = False, max_length = 200, null = True, content_type = "stripped", blank = True];
+     required string kind = 2 [default = "generic", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
+     required manytoone provider_service->Service:provided_tenants = 3 [db_index = True, null = False, blank = False];
+     optional manytoone subscriber_service->Service:subscribed_tenants = 4 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_tenant->Tenant:subscribed_tenants = 5 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_user->User:subscribed_tenants = 6 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_root->TenantRoot:subscribed_tenants = 7 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_network->Network:subscribed_tenants = 8 [db_index = True, null = True, blank = True];
+     optional string service_specific_id = 9 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
+     optional string service_specific_attribute = 10 [db_index = False, null = True, blank = True];
+     required string connect_method = 11 [default = "na", choices = "(('public', 'Public'), ('private', 'Private'), ('private-unidirectional', 'Private Unidirectional'), ('na', 'Not Applicable'))", max_length = 30, blank = False, null = False, db_index = False];
+     required string test = 12 [choices = "(('ping', 'Ping'), ('traceroute', 'Trace Route'), ('tcpdump', 'Tcp Dump'))", max_length = 30, content_type = "stripped", blank = False, help_text = "type of test", null = False, db_index = False];
+     required string scope = 13 [choices = "(('container', 'Container'), ('vm', 'VM'))", max_length = 30, content_type = "stripped", blank = False, help_text = "scope of test", null = False, db_index = False];
+     optional string argument = 14 [db_index = False, max_length = 40, null = True, content_type = "stripped", blank = True];
+     optional string result = 15 [db_index = False, null = True, blank = True];
+     optional string result_code = 16 [db_index = False, max_length = 32, null = True, content_type = "stripped", blank = True];
+     required manytoone target_type->ContentType:vtrtenant = 17 [db_index = True, null = False, blank = False];
+     required uint32 target_id = 18 [db_index = False, null = False, blank = False];
+}
