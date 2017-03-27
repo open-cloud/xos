@@ -1,0 +1,7 @@
+
+message NetworkParameter {
+  required int32 parameter = 1 [ null = False,  blank = False,  help_text = "The type of the parameter",  model = NetworkParameterType,  modifier = required,  type = link,  port = networkparameters,  db_index = True ];
+  required string value = 2 [ null = False,  max_length = 1024,  blank = False,  help_text = "The value of this parameter",  modifier = required,  db_index = False ];
+  required int32 content_type = 3 [ null = False,  blank = False,  model = ContentType,  modifier = required,  type = link,  port = networkparameter,  db_index = True ];
+  required uint32 object_id = 4 [ db_index = False,  modifier = required,  null = False,  blank = False ];
+}

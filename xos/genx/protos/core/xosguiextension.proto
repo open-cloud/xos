@@ -1,0 +1,5 @@
+
+message XOSGuiExtension {
+  required string name = 1 [ null = False,  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "Name of the GUI Extensions",  modifier = required,  db_index = False ];
+  required string files = 2 [ null = False,  max_length = 1024,  content_type = "stripped",  blank = False,  help_text = "List of comma separated file composing the view",  modifier = required,  db_index = False ];
+}

@@ -1,0 +1,5 @@
+
+
+message Account {
+     required manytoone site->Site:accounts = 1 [help_text = "Site for this account", null = False, db_index = True, blank = False];
+}

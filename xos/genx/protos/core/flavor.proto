@@ -1,0 +1,8 @@
+
+message Flavor {
+  required string name = 1 [ null = False,  max_length = 32,  content_type = "stripped",  blank = False,  help_text = "name of this flavor, as displayed to users",  modifier = required,  db_index = False ];
+  optional string description = 2 [ null = True,  max_length = 1024,  content_type = "stripped",  blank = True,  modifier = optional,  db_index = False ];
+  required string flavor = 3 [ null = False,  max_length = 32,  content_type = "stripped",  blank = False,  help_text = "flavor string used to configure deployments",  modifier = required,  db_index = False ];
+  required int32 order = 4 [ null = False,  default = 0,  blank = False,  help_text = "used to order flavors when displayed in a list",  modifier = required,  db_index = False ];
+  required bool default = 5 [ null = False,  default = False,  blank = True,  help_text = "make this a default flavor to use when creating new instances",  modifier = required,  db_index = False ];
+}

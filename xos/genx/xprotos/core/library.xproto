@@ -1,0 +1,10 @@
+
+
+message Library {
+     required manytoone xos->XOS:loadable_modules = 1 [help_text = "Pointer to XOS", default = "get_xos()", null = False, db_index = True, blank = False];
+     required string name = 2 [max_length = 30, content_type = "stripped", blank = False, help_text = "Service Name", null = False, db_index = False];
+     optional string base_url = 3 [max_length = 1024, content_type = "stripped", blank = True, help_text = "Base URL, allows use of relative URLs for resources", null = True, db_index = False];
+     optional string version = 4 [default = "1.0.0", max_length = 30, content_type = "stripped", blank = True, help_text = "Version of Service Controller", null = True, db_index = False];
+     optional string provides = 5 [max_length = 254, content_type = "stripped", blank = True, help_text = "Comma-separated list of things provided", null = True, db_index = False];
+     optional string requires = 6 [max_length = 254, content_type = "stripped", blank = True, help_text = "Comma-separated list of required Service Controllers", null = True, db_index = False];
+}

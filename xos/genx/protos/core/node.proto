@@ -1,0 +1,6 @@
+
+message Node {
+  required string name = 1 [ null = False,  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "Name of the Node",  modifier = required,  db_index = False ];
+  required int32 site_deployment = 2 [ null = False,  blank = False,  model = SiteDeployment,  modifier = required,  type = link,  port = nodes,  db_index = True ];
+  optional int32 site = 3 [ null = True,  blank = True,  model = Site,  modifier = optional,  type = link,  port = nodes,  db_index = True ];
+}

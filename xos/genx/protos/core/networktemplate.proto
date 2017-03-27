@@ -1,0 +1,14 @@
+
+message NetworkTemplate {
+  required string name = 1 [ db_index = False,  max_length = 32,  modifier = required,  null = False,  blank = False ];
+  optional string description = 2 [ db_index = False,  max_length = 1024,  modifier = optional,  null = True,  blank = True ];
+  required int32 guaranteed_bandwidth = 3 [ db_index = False,  default = 0,  modifier = required,  null = False,  blank = False ];
+  required string visibility = 4 [ null = False,  default = "private",  choices = "(('public', 'public'), ('private', 'private'))",  max_length = 30,  blank = False,  modifier = required,  db_index = False ];
+  required string translation = 5 [ null = False,  default = "none",  choices = "(('none', 'none'), ('NAT', 'NAT'))",  max_length = 30,  blank = False,  modifier = required,  db_index = False ];
+  optional string access = 6 [ null = True,  choices = "((None, 'None'), ('indirect', 'Indirect'), ('direct', 'Direct'))",  max_length = 30,  blank = True,  help_text = "Advertise this network as a means for other slices to contact this slice",  modifier = optional,  db_index = False ];
+  optional string shared_network_name = 7 [ db_index = False,  max_length = 30,  modifier = optional,  null = True,  blank = True ];
+  optional string shared_network_id = 8 [ null = True,  max_length = 256,  blank = True,  help_text = "Quantum network",  modifier = optional,  db_index = False ];
+  required string topology_kind = 9 [ null = False,  default = "bigswitch",  choices = "(('bigswitch', 'BigSwitch'), ('physical', 'Physical'), ('custom', 'Custom'))",  max_length = 30,  blank = False,  modifier = required,  db_index = False ];
+  optional string controller_kind = 10 [ null = True,  choices = "((None, 'None'), ('onos', 'ONOS'), ('custom', 'Custom'))",  max_length = 30,  blank = True,  modifier = optional,  db_index = False ];
+  optional string vtn_kind = 11 [ null = True,  default = "PRIVATE",  choices = "(('PRIVATE', 'Private'), ('PUBLIC', 'Public'), ('MANAGEMENT_LOCAL', 'Management Local'), ('MANAGEMENT_HOST', 'Management Host'), ('VSG', 'VSG'), ('ACCESS_AGENT', 'Access Agent'))",  max_length = 30,  blank = True,  modifier = optional,  db_index = False ];
+}

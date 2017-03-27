@@ -1,0 +1,9 @@
+
+message Image {
+  required string name = 1 [ null = False,  max_length = 256,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
+  required string kind = 2 [ null = False,  default = "vm",  choices = "(('vm', 'Virtual Machine'), ('container', 'Container'))",  max_length = 30,  blank = False,  modifier = required,  db_index = False ];
+  required string disk_format = 3 [ null = False,  max_length = 256,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
+  required string container_format = 4 [ null = False,  max_length = 256,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
+  optional string path = 5 [ null = True,  max_length = 256,  content_type = "stripped",  blank = True,  help_text = "Path to image on local disk",  modifier = optional,  db_index = False ];
+  optional string tag = 6 [ null = True,  max_length = 256,  content_type = "stripped",  blank = True,  help_text = "For Docker Images, tag of image",  modifier = optional,  db_index = False ];
+}

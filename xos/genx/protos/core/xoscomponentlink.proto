@@ -1,0 +1,7 @@
+
+message XOSComponentLink {
+  required int32 component = 1 [ null = False,  blank = False,  help_text = "The Component object for this Link",  model = XOSComponent,  modifier = required,  type = link,  port = links,  db_index = True ];
+  required string container = 2 [ null = False,  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "container to link",  modifier = required,  db_index = False ];
+  required string alias = 3 [ null = False,  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "alias for the link",  modifier = required,  db_index = False ];
+  required string kind = 4 [ null = False,  default = "internal",  choices = "(('internal', 'Internal'), ('external', 'External'))",  max_length = 20,  blank = False,  modifier = required,  db_index = False ];
+}

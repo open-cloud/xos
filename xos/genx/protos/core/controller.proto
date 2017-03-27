@@ -1,0 +1,15 @@
+
+message Controller {
+  required string name = 1 [ null = False,  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "Name of the Controller",  modifier = required,  db_index = False ];
+  required string backend_type = 2 [ null = False,  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "Type of compute controller, e.g. EC2, OpenStack, or OpenStack version",  modifier = required,  db_index = False ];
+  required string version = 3 [ null = False,  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "Controller version",  modifier = required,  db_index = False ];
+  optional string auth_url = 4 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "Auth url for the compute controller",  modifier = optional,  db_index = False ];
+  optional string admin_user = 5 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "Username of an admin user at this controller",  modifier = optional,  db_index = False ];
+  optional string admin_password = 6 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "Password of theadmin user at this controller",  modifier = optional,  db_index = False ];
+  optional string admin_tenant = 7 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "Name of the tenant the admin user belongs to",  modifier = optional,  db_index = False ];
+  optional string domain = 8 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "Name of the domain this controller belongs to",  modifier = optional,  db_index = False ];
+  optional string rabbit_host = 9 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "IP address of rabbitmq server at this controller",  modifier = optional,  db_index = False ];
+  optional string rabbit_user = 10 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "Username of rabbitmq server at this controller",  modifier = optional,  db_index = False ];
+  optional string rabbit_password = 11 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "Password of rabbitmq server at this controller",  modifier = optional,  db_index = False ];
+  required int32 deployment = 12 [ null = False,  blank = False,  model = Deployment,  modifier = required,  type = link,  port = controllerdeployments,  db_index = True ];
+}

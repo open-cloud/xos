@@ -1,0 +1,7 @@
+
+message ControllerDashboardView {
+  required int32 controller = 1 [ null = False,  blank = False,  model = Controller,  modifier = required,  type = link,  port = controllerdashboardviews,  db_index = True ];
+  required int32 dashboardView = 2 [ null = False,  blank = False,  model = DashboardView,  modifier = required,  type = link,  port = controllerdashboardviews,  db_index = True ];
+  required bool enabled = 3 [ db_index = False,  default = True,  modifier = required,  null = False,  blank = True ];
+  required string url = 4 [ null = False,  max_length = 1024,  content_type = "stripped",  blank = False,  help_text = "URL of Dashboard",  modifier = required,  db_index = False ];
+}

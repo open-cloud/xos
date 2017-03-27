@@ -1,0 +1,4 @@
+
+message SiteRole {
+  required string role = 1 [ null = False,  choices = "(('admin', 'Admin'), ('pi', 'PI'), ('tech', 'Tech'), ('billing', 'Billing'))",  max_length = 30,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
+}

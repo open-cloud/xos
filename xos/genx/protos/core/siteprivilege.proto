@@ -1,0 +1,6 @@
+
+message SitePrivilege {
+  required int32 user = 1 [ null = False,  blank = False,  model = User,  modifier = required,  type = link,  port = siteprivileges,  db_index = True ];
+  required int32 site = 2 [ null = False,  blank = False,  model = Site,  modifier = required,  type = link,  port = siteprivileges,  db_index = True ];
+  required int32 role = 3 [ null = False,  blank = False,  model = SiteRole,  modifier = required,  type = link,  port = siteprivileges,  db_index = True ];
+}

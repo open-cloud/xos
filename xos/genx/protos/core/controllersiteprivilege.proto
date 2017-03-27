@@ -1,0 +1,6 @@
+
+message ControllerSitePrivilege {
+  required int32 controller = 1 [ null = False,  blank = False,  model = Controller,  modifier = required,  type = link,  port = controllersiteprivileges,  db_index = True ];
+  required int32 site_privilege = 2 [ null = False,  blank = False,  model = SitePrivilege,  modifier = required,  type = link,  port = controllersiteprivileges,  db_index = True ];
+  optional string role_id = 3 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "Keystone id",  modifier = optional,  db_index = True ];
+}

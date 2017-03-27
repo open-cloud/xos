@@ -1,0 +1,5 @@
+
+message NetworkSlice {
+  required int32 network = 1 [ null = False,  blank = False,  model = Network,  modifier = required,  type = link,  port = networkslices,  db_index = True ];
+  required int32 slice = 2 [ null = False,  blank = False,  model = Slice,  modifier = required,  type = link,  port = networkslices,  db_index = True ];
+}

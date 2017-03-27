@@ -1,0 +1,13 @@
+
+
+message ServiceResource {
+     required manytoone serviceClass->ServiceClass:serviceresources = 1 [db_index = True, null = False, blank = False];
+     required string name = 2 [db_index = False, max_length = 32, null = False, content_type = "stripped", blank = False];
+     required int32 maxUnitsDeployment = 3 [default = 1, null = False, db_index = False, blank = False];
+     required int32 maxUnitsNode = 4 [default = 1, null = False, db_index = False, blank = False];
+     required int32 maxDuration = 5 [default = 1, null = False, db_index = False, blank = False];
+     required int32 bucketInRate = 6 [default = 0, null = False, db_index = False, blank = False];
+     required int32 bucketMaxSize = 7 [default = 0, null = False, db_index = False, blank = False];
+     required int32 cost = 8 [default = 0, null = False, db_index = False, blank = False];
+     required bool calendarReservable = 9 [default = True, null = False, db_index = False, blank = True];
+}

@@ -1,0 +1,6 @@
+
+message SlicePrivilege {
+  required int32 user = 1 [ null = False,  blank = False,  model = User,  modifier = required,  type = link,  port = sliceprivileges,  db_index = True ];
+  required int32 slice = 2 [ null = False,  blank = False,  model = Slice,  modifier = required,  type = link,  port = sliceprivileges,  db_index = True ];
+  required int32 role = 3 [ null = False,  blank = False,  model = SliceRole,  modifier = required,  type = link,  port = sliceprivileges,  db_index = True ];
+}

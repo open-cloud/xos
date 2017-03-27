@@ -1,0 +1,6 @@
+
+message SliceTag {
+  required int32 slice = 1 [ null = False,  blank = False,  model = Slice,  modifier = required,  type = link,  port = slicetags,  db_index = True ];
+  required string name = 2 [ null = False,  choices = "(('privatekey', 'Private Key'), ('publickey', 'Public Key'))",  max_length = 30,  content_type = "stripped",  blank = False,  help_text = "The name of this tag",  modifier = required,  db_index = False ];
+  required string value = 3 [ null = False,  max_length = 1024,  content_type = "stripped",  blank = False,  help_text = "The value of this tag",  modifier = required,  db_index = False ];
+}

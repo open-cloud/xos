@@ -1,0 +1,13 @@
+
+message Site {
+  required string name = 1 [ null = False,  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "Name for this Site",  modifier = required,  db_index = False ];
+  optional string site_url = 2 [ null = True,  max_length = 512,  content_type = "url",  blank = True,  help_text = "Site's Home URL Page",  modifier = optional,  db_index = False ];
+  required bool enabled = 3 [ null = False,  default = True,  blank = True,  help_text = "Status for this Site",  modifier = required,  db_index = False ];
+  required bool hosts_nodes = 4 [ null = False,  default = True,  blank = True,  help_text = "Indicates whether or not the site host nodes",  modifier = required,  db_index = False ];
+  required bool hosts_users = 5 [ null = False,  default = True,  blank = True,  help_text = "Indicates whether or not the site manages user accounts",  modifier = required,  db_index = False ];
+  optional float longitude = 6 [ db_index = False,  modifier = optional,  null = True,  blank = True ];
+  optional float latitude = 7 [ db_index = False,  modifier = optional,  null = True,  blank = True ];
+  required string login_base = 8 [ null = False,  max_length = 50,  content_type = "stripped",  blank = False,  help_text = "Prefix for Slices associated with this Site",  modifier = required,  db_index = False ];
+  required bool is_public = 9 [ null = False,  default = True,  blank = True,  help_text = "Indicates the visibility of this site to other members",  modifier = required,  db_index = False ];
+  required string abbreviated_name = 10 [ null = False,  max_length = 80,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
+}

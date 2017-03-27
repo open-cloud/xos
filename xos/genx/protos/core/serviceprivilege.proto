@@ -1,0 +1,6 @@
+
+message ServicePrivilege {
+  required int32 user = 1 [ null = False,  blank = False,  model = User,  modifier = required,  type = link,  port = serviceprivileges,  db_index = True ];
+  required int32 service = 2 [ null = False,  blank = False,  model = Service,  modifier = required,  type = link,  port = serviceprivileges,  db_index = True ];
+  required int32 role = 3 [ null = False,  blank = False,  model = ServiceRole,  modifier = required,  type = link,  port = serviceprivileges,  db_index = True ];
+}

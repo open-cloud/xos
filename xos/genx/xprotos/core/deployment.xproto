@@ -1,0 +1,6 @@
+
+
+message Deployment {
+     required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the Deployment", null = False, db_index = False];
+     required string accessControl = 2 [default = "allow all", max_length = 200, blank = False, help_text = "Access control list that specifies which sites/users may use nodes in this deployment", null = False, db_index = False];
+}

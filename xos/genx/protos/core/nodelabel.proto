@@ -1,0 +1,4 @@
+
+message NodeLabel {
+  required string name = 1 [ null = False,  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "label name",  modifier = required,  db_index = False ];
+}

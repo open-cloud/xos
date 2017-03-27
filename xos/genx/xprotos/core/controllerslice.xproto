@@ -1,0 +1,7 @@
+
+
+message ControllerSlice {
+     required manytoone controller->Controller:controllerslices = 1 [db_index = True, null = False, blank = False];
+     required manytoone slice->Slice:controllerslices = 2 [db_index = True, null = False, blank = False];
+     optional string tenant_id = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "Keystone tenant id", null = True, db_index = False];
+}

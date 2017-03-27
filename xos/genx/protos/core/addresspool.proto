@@ -1,0 +1,10 @@
+
+message AddressPool {
+  required string name = 1 [ db_index = False,  max_length = 32,  modifier = required,  null = False,  blank = False ];
+  optional string addresses = 2 [ db_index = False,  modifier = optional,  null = True,  blank = True ];
+  optional string gateway_ip = 3 [ db_index = False,  max_length = 32,  modifier = optional,  null = True,  blank = False ];
+  optional string gateway_mac = 4 [ db_index = False,  max_length = 32,  modifier = optional,  null = True,  blank = False ];
+  optional string cidr = 5 [ db_index = False,  max_length = 32,  modifier = optional,  null = True,  blank = False ];
+  optional string inuse = 6 [ db_index = False,  modifier = optional,  null = True,  blank = True ];
+  optional int32 service = 7 [ null = True,  blank = True,  model = Service,  modifier = optional,  type = link,  port = addresspools,  db_index = True ];
+}

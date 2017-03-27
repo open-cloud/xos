@@ -52,21 +52,29 @@ def main():
         current_buffer = []
         for l in lines:
             if (l.startswith('+++')):
-                filename = l[4:]
-                fil = open(filename,'w')
+                path = l[4:]
+                
+                direc,filename = path.rsplit('/',1)
+                os.system('mkdir -p %s'%direc)
+              
+                fil = open(path,'w')
                 buf = '\n'.join(current_buffer)
 
                 obuf = buf
+
+                """
                 for d in options.dict:
                     df = open(d).read()
                     d = json.loads(df)
 
                     pattern = re.compile(r'\b(' + '|'.join(d.keys()) + r')\b')
                     obuf = pattern.sub(lambda x: d[x.group()], buf)
+                """
+
                 fil.write(obuf)
                 fil.close()
 
-                print 'Written to file %s'%filename
+                print 'Written to file %s'%path
                 current_buffer = []
             else:
                 current_buffer.append(l)

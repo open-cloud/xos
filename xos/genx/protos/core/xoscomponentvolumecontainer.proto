@@ -1,0 +1,6 @@
+
+message XOSComponentVolumeContainer {
+  required int32 component = 1 [ null = False,  blank = False,  help_text = "The Component object for this VolumeContainer",  model = XOSComponent,  modifier = required,  type = link,  port = volumecontainers,  db_index = True ];
+  required string name = 2 [ null = False,  max_length = 300,  content_type = "stripped",  blank = False,  help_text = "Volume Name",  modifier = required,  db_index = False ];
+  required string container = 3 [ null = False,  max_length = 300,  content_type = "stripped",  blank = False,  help_text = "Volume Name",  modifier = required,  db_index = False ];
+}

@@ -1,0 +1,9 @@
+
+message LoadableModuleResource {
+  required int32 loadable_module = 1 [ null = False,  blank = False,  help_text = "The Loadable Module this resource is associated with",  model = LoadableModule,  modifier = required,  type = link,  port = loadable_module_resources,  db_index = True ];
+  required string name = 2 [ null = False,  max_length = 30,  content_type = "stripped",  blank = False,  help_text = "Object Name",  modifier = required,  db_index = False ];
+  optional string subdirectory = 3 [ null = True,  max_length = 1024,  content_type = "stripped",  blank = True,  help_text = "optional subdirectory",  modifier = optional,  db_index = False ];
+  required string kind = 4 [ null = False,  choices = "(('models', 'Models'), ('admin', 'Admin'), ('admin_template', 'Admin Template'), ('django_library', 'Django Library'), ('synchronizer', 'Synchronizer'), ('rest_service', 'REST API (service)'), ('rest_tenant', 'REST API (tenant)'), ('tosca_custom_types', 'Tosca Custom Types'), ('tosca_resource', 'Tosca Resource'), ('private_key', 'Private Key'), ('public_key', 'Public Key'), ('vendor_js', 'Vendor Javascript'))",  max_length = 30,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
+  required string format = 5 [ null = False,  choices = "(('python', 'Python'), ('manifest', 'Manifest'), ('docker', 'Docker Container'), ('yaml', 'YAML'), ('raw', 'raw'), ('javascript', 'Javascript'))",  max_length = 30,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
+  optional string url = 6 [ null = True,  max_length = 1024,  content_type = "stripped",  blank = True,  help_text = "URL of resource",  modifier = optional,  db_index = False ];
+}

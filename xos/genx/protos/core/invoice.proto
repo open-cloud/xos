@@ -1,0 +1,5 @@
+
+message Invoice {
+  required string date = 1 [ db_index = False,  modifier = required,  null = False,  content_type = "date",  blank = False ];
+  required int32 account = 2 [ null = False,  blank = False,  model = Account,  modifier = required,  type = link,  port = invoices,  db_index = True ];
+}

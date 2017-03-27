@@ -1,0 +1,7 @@
+
+
+message SlicePrivilege {
+     required manytoone user->User:sliceprivileges = 1 [db_index = True, null = False, blank = False];
+     required manytoone slice->Slice:sliceprivileges = 2 [db_index = True, null = False, blank = False];
+     required manytoone role->SliceRole:sliceprivileges = 3 [db_index = True, null = False, blank = False];
+}

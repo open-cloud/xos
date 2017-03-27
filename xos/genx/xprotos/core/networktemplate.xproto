@@ -1,0 +1,15 @@
+
+
+message NetworkTemplate {
+     required string name = 1 [db_index = False, max_length = 32, null = False, blank = False];
+     optional string description = 2 [db_index = False, max_length = 1024, null = True, blank = True];
+     required int32 guaranteed_bandwidth = 3 [default = 0, null = False, db_index = False, blank = False];
+     required string visibility = 4 [default = "private", choices = "(('public', 'public'), ('private', 'private'))", max_length = 30, blank = False, null = False, db_index = False];
+     required string translation = 5 [default = "none", choices = "(('none', 'none'), ('NAT', 'NAT'))", max_length = 30, blank = False, null = False, db_index = False];
+     optional string access = 6 [choices = "((None, 'None'), ('indirect', 'Indirect'), ('direct', 'Direct'))", max_length = 30, blank = True, help_text = "Advertise this network as a means for other slices to contact this slice", null = True, db_index = False];
+     optional string shared_network_name = 7 [db_index = False, max_length = 30, null = True, blank = True];
+     optional string shared_network_id = 8 [help_text = "Quantum network", max_length = 256, null = True, db_index = False, blank = True];
+     required string topology_kind = 9 [default = "bigswitch", choices = "(('bigswitch', 'BigSwitch'), ('physical', 'Physical'), ('custom', 'Custom'))", max_length = 30, blank = False, null = False, db_index = False];
+     optional string controller_kind = 10 [blank = True, max_length = 30, null = True, db_index = False, choices = "((None, 'None'), ('onos', 'ONOS'), ('custom', 'Custom'))"];
+     optional string vtn_kind = 11 [default = "PRIVATE", choices = "(('PRIVATE', 'Private'), ('PUBLIC', 'Public'), ('MANAGEMENT_LOCAL', 'Management Local'), ('MANAGEMENT_HOST', 'Management Host'), ('VSG', 'VSG'), ('ACCESS_AGENT', 'Access Agent'))", max_length = 30, blank = True, null = True, db_index = False];
+}

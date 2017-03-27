@@ -1,0 +1,8 @@
+
+message DashboardView {
+  required string name = 1 [ null = False,  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "Name of the View",  modifier = required,  db_index = False ];
+  required string url = 2 [ null = False,  max_length = 1024,  content_type = "stripped",  blank = False,  help_text = "URL of Dashboard",  modifier = required,  db_index = False ];
+  required bool enabled = 3 [ db_index = False,  default = True,  modifier = required,  null = False,  blank = True ];
+  required string icon = 4 [ null = False,  default = "default-icon.png",  max_length = 200,  blank = False,  help_text = "Icon for Dashboard",  modifier = required,  db_index = False ];
+  required string icon_active = 5 [ null = False,  default = "default-icon-active.png",  max_length = 200,  blank = False,  help_text = "Icon for active Dashboard",  modifier = required,  db_index = False ];
+}

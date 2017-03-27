@@ -1,0 +1,8 @@
+
+
+message SiteDeployment {
+     required manytoone site->Site:sitedeployments = 1 [db_index = True, null = False, blank = False];
+     required manytoone deployment->Deployment:sitedeployments = 2 [db_index = True, null = False, blank = False];
+     optional manytoone controller->Controller:sitedeployments = 3 [db_index = True, null = True, blank = True];
+     optional string availability_zone = 4 [max_length = 200, content_type = "stripped", blank = True, help_text = "OpenStack availability zone", null = True, db_index = False];
+}

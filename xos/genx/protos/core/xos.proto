@@ -1,0 +1,14 @@
+
+message XOS {
+  required string name = 1 [ null = False,  default = "XOS",  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "Name of XOS",  modifier = required,  db_index = False ];
+  required int32 ui_port = 2 [ null = False,  default = 80,  blank = False,  help_text = "Port for XOS UI",  modifier = required,  db_index = False ];
+  required int32 bootstrap_ui_port = 3 [ null = False,  default = 81,  blank = False,  help_text = "Port for XOS Bootstrap UI",  modifier = required,  db_index = False ];
+  required string db_container_name = 4 [ null = False,  default = "xos_db",  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "name of XOS db container",  modifier = required,  db_index = False ];
+  required string redis_container_name = 5 [ null = False,  default = "",  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "name of XOS redis container",  modifier = required,  db_index = False ];
+  required string docker_project_name = 6 [ null = False,  max_length = 200,  content_type = "stripped",  blank = False,  help_text = "docker project name",  modifier = required,  db_index = False ];
+  required bool enable_build = 7 [ null = False,  default = True,  blank = True,  help_text = "True if Onboarding Synchronizer should build XOS as necessary",  modifier = required,  db_index = False ];
+  required bool frontend_only = 8 [ null = False,  default = False,  blank = True,  help_text = "If True, XOS will not start synchronizer containers",  modifier = required,  db_index = False ];
+  required string source_ui_image = 9 [ null = False,  default = "xosproject/xos",  max_length = 200,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
+  optional string extra_hosts = 10 [ null = True,  max_length = 1024,  content_type = "stripped",  blank = True,  help_text = "list of hostname mappings that will be passed to docker-compose",  modifier = optional,  db_index = False ];
+  required bool no_start = 11 [ null = False,  default = False,  blank = True,  help_text = "Do not start the XOS UI inside of the UI docker container",  modifier = required,  db_index = False ];
+}

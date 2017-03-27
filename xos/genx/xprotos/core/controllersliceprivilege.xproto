@@ -1,0 +1,7 @@
+
+
+message ControllerSlicePrivilege {
+     required manytoone controller->Controller:controllersliceprivileges = 1 [db_index = True, null = False, blank = False];
+     required manytoone slice_privilege->SlicePrivilege:controllersliceprivileges = 2 [db_index = True, null = False, blank = False];
+     optional string role_id = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "Keystone id", null = True, db_index = True];
+}

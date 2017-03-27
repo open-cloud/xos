@@ -1,0 +1,6 @@
+
+message UserDashboardView {
+  required int32 user = 1 [ null = False,  blank = False,  model = User,  modifier = required,  type = link,  port = userdashboardviews,  db_index = True ];
+  required int32 dashboardView = 2 [ null = False,  blank = False,  model = DashboardView,  modifier = required,  type = link,  port = userdashboardviews,  db_index = True ];
+  required int32 order = 3 [ db_index = False,  default = 0,  modifier = required,  null = False,  blank = False ];
+}

@@ -1,0 +1,10 @@
+
+
+message Port {
+     required manytoone network->Network:links = 1 [db_index = True, null = False, blank = False];
+     optional manytoone instance->Instance:ports = 2 [db_index = True, null = True, blank = True];
+     optional string ip = 3 [max_length = 39, content_type = "ip", blank = True, help_text = "Instance ip address", null = True, db_index = False];
+     optional string port_id = 4 [help_text = "Neutron port id", max_length = 256, null = True, db_index = False, blank = True];
+     optional string mac = 5 [help_text = "MAC address associated with this port", max_length = 256, null = True, db_index = False, blank = True];
+     required bool xos_created = 6 [default = False, null = False, db_index = False, blank = True];
+}

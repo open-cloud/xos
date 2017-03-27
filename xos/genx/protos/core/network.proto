@@ -1,0 +1,20 @@
+
+message Network {
+  required string name = 1 [ db_index = False,  max_length = 32,  modifier = required,  null = False,  blank = False ];
+  required int32 template = 2 [ null = False,  blank = False,  model = NetworkTemplate,  modifier = required,  type = link,  port = network,  db_index = True ];
+  required string subnet = 3 [ db_index = False,  max_length = 32,  modifier = required,  null = False,  blank = True ];
+  required string start_ip = 4 [ db_index = False,  max_length = 32,  modifier = required,  null = False,  blank = True ];
+  required string end_ip = 5 [ db_index = False,  max_length = 32,  modifier = required,  null = False,  blank = True ];
+  optional string ports = 6 [ db_index = False,  max_length = 1024,  modifier = optional,  null = True,  blank = True ];
+  optional string labels = 7 [ db_index = False,  max_length = 1024,  modifier = optional,  null = True,  blank = True ];
+  required int32 owner = 8 [ null = False,  blank = False,  help_text = "Slice that owns control of this Network",  model = Slice,  modifier = required,  type = link,  port = ownedNetworks,  db_index = True ];
+  required int32 guaranteed_bandwidth = 9 [ db_index = False,  default = 0,  modifier = required,  null = False,  blank = False ];
+  required bool permit_all_slices = 10 [ db_index = False,  default = False,  modifier = required,  null = False,  blank = True ];
+  optional string topology_parameters = 11 [ db_index = False,  modifier = optional,  null = True,  blank = True ];
+  optional string controller_url = 12 [ db_index = False,  max_length = 1024,  modifier = optional,  null = True,  blank = True ];
+  optional string controller_parameters = 13 [ db_index = False,  modifier = optional,  null = True,  blank = True ];
+  optional string network_id = 14 [ null = True,  max_length = 256,  blank = True,  help_text = "Quantum network",  modifier = optional,  db_index = False ];
+  optional string router_id = 15 [ null = True,  max_length = 256,  blank = True,  help_text = "Quantum router id",  modifier = optional,  db_index = False ];
+  optional string subnet_id = 16 [ null = True,  max_length = 256,  blank = True,  help_text = "Quantum subnet id",  modifier = optional,  db_index = False ];
+  required bool autoconnect = 17 [ null = False,  default = True,  blank = True,  help_text = "This network can be autoconnected to the slice that owns it",  modifier = required,  db_index = False ];
+}
