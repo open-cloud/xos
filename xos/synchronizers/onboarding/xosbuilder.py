@@ -423,6 +423,9 @@ class XOSBuilder(object):
                                   "read_only": True},
                                  {"host_path": "/opt/cord/build/platform-install/credentials/xosadmin@opencord.org",
                                   "container_path": "/opt/xos/services/%s/credentials/xosadmin@opencord.org" % c.name,
+                                  "read_only": True},
+                                 {"host_path": "/opt/cord_profile/im_cert_chain.pem",
+                                  "container_path": "/usr/local/share/ca-certificates/local_certs.crt",
                                   "read_only": True}]
 
                     # keys inside onboarding sync are relative to /opt/xos/key_import

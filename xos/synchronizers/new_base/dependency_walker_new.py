@@ -20,7 +20,7 @@ logger = Logger(level=logging.INFO)
 missing_links={}
 
 try:
-	dep_data = open(Config().dependency_graph).read()
+	dep_data = open(Config().observer_dependency_graph).read()
 except:
 	dep_data = open(XOS_DIR + '/model-deps').read()
 

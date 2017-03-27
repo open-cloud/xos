@@ -67,10 +67,7 @@ class Logger:
 
         # default is to locate loggername from the logfile if avail.
         if not logfile:
-            try:
-                logfile = Config().logfile
-            except:
-                logfile = "/var/log/xos.log"
+            logfile = getattr(Config(), "log_file", "/var/log/xos.log")
 
         # allow config-file override of console/logfile level
         level_str = getattr(Config(), "log_level", None)

@@ -71,7 +71,7 @@ def execute_model_policy(instance, deleted):
 
     # These are the models whose children get deleted when they are
     delete_policy_models = ['Slice','Instance','Network']
-    sender_name = instance.__class__.__name__
+    sender_name = getattr(instance, "model_name", instance.__class__.__name__)
     policy_name = 'model_policy_%s'%sender_name
     noargs = False
 
@@ -82,7 +82,7 @@ def execute_model_policy(instance, deleted):
         walk_inv_deps(delete_if_inactive, instance)
 
     try:
-        policy_handler = model_policies.get(policy_name, None) # getattr(model_policies, policy_name, None)
+        policy_handler = model_policies.get(policy_name, None)
         logger.debug("MODEL POLICY: handler %s %s" % (policy_name, policy_handler))
         if policy_handler is not None:
             if (deleted):

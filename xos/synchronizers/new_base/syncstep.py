@@ -27,6 +27,8 @@ def elim_dups(backend_str):
 def deepgetattr(obj, attr):
     return reduce(getattr, attr.split('.'), obj)
 
+def obj_class_name(obj):
+    return getattr(obj, "model_name", obj.__class__.__name__)
 
 class InnocuousException(Exception):
     pass
@@ -120,11 +122,11 @@ class SyncStep(object):
                 if (obj.backend_status != failed.backend_status):
                     obj.backend_status = failed.backend_status
                     obj.save(update_fields=['backend_status'])
-                raise FailedDependency("Failed dependency for %s:%s peer %s:%s failed  %s:%s" % (obj.__class__.__name__, str(getattr(obj,"pk","no_pk")), peer_object.__class__.__name__, str(getattr(peer_object,"pk","no_pk")), failed.__class__.__name__, str(getattr(failed,"pk","no_pk"))))
+                raise FailedDependency("Failed dependency for %s:%s peer %s:%s failed  %s:%s" % (obj_class_name(obj), str(getattr(obj,"pk","no_pk")), obj_class_name(peer_object), str(getattr(peer_object,"pk","no_pk")), obj_class_name(failed), str(getattr(failed,"pk","no_pk"))))
 
 
     def sync_record(self, o):
-        logger.debug("Sync_record called for %s %s" % (o.__class__.__name__, str(o)))
+        logger.debug("Sync_record called for %s %s" % (obj_class_name(o), str(o)))
 
 #        try:
 #            controller = o.get_controller()
