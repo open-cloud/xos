@@ -1,0 +1,6 @@
+{% for m in proto.messages %}
+  {%- for l in m.links %}
+  {{ l.src_port }} -> {{ l.dst_port }};
+  {%- endfor %}
+}
+{% endfor %}

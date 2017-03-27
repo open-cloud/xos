@@ -1,0 +1,21 @@
+{% for m in proto.messages %}
+
+{%- for l in m.links %}
+from core.models.{{ l.peer | lower }} import {{ l.peer }} 
+{%- endfor %}
+
+{{ include_file('header.py') }}
+{{ include_file(m+'_header.py') }}
+
+class {{ m.name }}({{ m.bclass }}):
+  # Primitive Fields (Not Relations)
+  {%- for f in m.fields %}
+  {{ f.name }} = {{ xproto_django_type(f.type, f.options) }}( {{ xproto_django_options_str(f) }} );
+  {%- endfor %}
+
+  # Relations
+  {%- for l in m.links %}
+  {{ l.src_port }} = {{ l.dst_port }} {{ xproto_django_link_type(l) }}( {{ l.peer }}, {{ xproto_django_options_str(l) }} );
+  {%- endfor %}
+}
+{% endfor %}

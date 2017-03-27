@@ -1,0 +1,11 @@
+{% for m in proto.messages %}
+message {{ m.name }} {
+  {%- for f in m.fields %}
+  {{ f.modifier }} {{f.type}} {{f.name}} = {{ f.id }}{% if f.options %} [{% for k,v in f.options.iteritems() %} {{ k }} = {{ v}}{% if not loop.last %},{% endif %} {% endfor %}]{% endif %};
+  {%- endfor %}
+
+  {%- for l in m.links %}
+  {{ l.link_type }}
+  {%- endfor %}
+}
+{% endfor %}

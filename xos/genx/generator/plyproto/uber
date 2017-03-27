@@ -1,0 +1,17 @@
+from .model import *
+import pdb
+import argparse
+import plyproto.parser as plyproto
+
+parse = argparse.ArgumentParser(description='XOS code generator')
+parse.add_argument('--xosproto', dest='input', action='store',default=None, help='Filename in XOS-enhanced Protobufs')
+parse.add_argument('--proto', dest='input', action='store',default=None, help='Filename in Protobufs')
+parse.add_argument('--output', dest='output', action='store',default=None, help='Output format, corresponding to <output>.yaml file')
+
+args = parse.parse_args()
+
+parser = plyproto.ProtobufAnalyzer()
+input = open(args.input).read()
+
+ast = parser.parse_string(input)
+priint ast
