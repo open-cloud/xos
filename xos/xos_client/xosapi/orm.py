@@ -462,4 +462,7 @@ import convenience.service
 import convenience.tenant
 import convenience.onosapp
 import convenience.controller
+import convenience.user
+import convenience.slice
+import convenience.port
 
