@@ -11,7 +11,7 @@ import readline
 import rlcompleter
 
 from twisted.internet import reactor
-from xosapi.xos_grpc_client import InsecureClient, SecureClient, setup_logging
+from xosapi.xos_grpc_client import InsecureClient, SecureClient, setup_logging, Empty
 
 current_client = None
 
@@ -103,6 +103,20 @@ def login(username=None, password=None):
         client.set_reconnect_callback(functools.partial(start_xossh, client))
         client.start()
 
+def setDirtyModels(*args, **kwargs):
+    return current_client.utility.SetDirtyModels(current_client.utility_pb2.ModelFilter(*args, **kwargs))
+
+def listDirtyModels(*args, **kwargs):
+    return current_client.utility.ListDirtyModels(current_client.utility_pb2.ModelFilter(*args, **kwargs))
+
+def listModelDefs():
+    return current_client.modeldefs.ListModelDefs(Empty())
+
+def listUtility():
+    print 'setDirtyModels(class_name=None)'
+    print 'listDirtyModels(class_name=None)'
+    print 'listModelDefs()'
+
 def examples():
     print 'coreapi.Slice.objects.all() # list all slices'
     print 's = Slice.objects.new() # create a new slice'
@@ -131,6 +145,7 @@ def start_xossh(client):
         print "XOS Core server at %s" % client.endpoint
 
         print 'Type "listObjects()" for a list of all objects'
+        print 'Type "listUtility()" for a list of utility functions'
         print 'Type "login("username", "password")" to switch to a secure shell'
         print 'Type "examples()" for some examples'
 

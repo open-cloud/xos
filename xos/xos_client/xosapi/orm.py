@@ -392,9 +392,6 @@ class ORMStub(object):
         model = getattr(self, model_name)
         return model.objects.get(id=id)
 
-    def listObjects(self):
-        return self.all_model_names
-
     def add_default_metadata(self, metadata):
         default_metadata = [ ("caller_kind", self.caller_kind) ]
 
@@ -437,6 +434,9 @@ class ORMStub(object):
 
     def make_Query(self):
         return _sym_db._classes["xos.Query"]()
+
+    def listObjects(self):
+        return self.all_model_names
 
 def register_convenience_wrapper(class_name, wrapper):
     global convenience_wrappers
