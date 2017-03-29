@@ -46,10 +46,13 @@ def format_options_string(d):
         lst = []
         for k,v in d.items():
             if (type(v)==str and v.startswith('"')): 
-                tup = eval(v[1:-1])
-                if (type(tup)==tuple):
-                    lst.append('%s = %r'%(k,tup))
-                else:
+                try:
+                    tup = eval(v[1:-1])
+                    if (type(tup)==tuple):
+                        lst.append('%s = %r'%(k,tup))
+                    else:
+                        lst.append('%s = %s'%(k,v))
+                except:
                     lst.append('%s = %s'%(k,v))
             elif (type(v)==bool):
                 lst.append('%s = %r'%(k,bool(v)))
