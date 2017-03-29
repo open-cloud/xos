@@ -435,7 +435,7 @@ class XOSBuilder(object):
                                   "container_path": "/opt/xos/services/%s/keys/%s_rsa" % (c.name, c.name),
                                   "read_only": True})
 
-                    if c.name == "vtr":
+                    if c.name.lower() == "vtr":
                         # VTR is special -- it has the vSG's private key
                         # TODO: If docker-compose autogenerate remains a feature,
                         #   then replace this special-purposing with a general-
@@ -444,6 +444,17 @@ class XOSBuilder(object):
                         nb_volume_list.append({"host_path": "/opt/cord_profile/key_import/vsg_rsa",
                                   "container_path": "/opt/xos/services/%s/keys/vsg_rsa" % c.name,
                                   "read_only": True})
+
+                    if c.name.lower() == "openstack":
+                        # OpenStack is special -- it needs to onboard images to glance
+                        # TODO: If docker-compose autogenerate remains a feature,
+                        #   then replace this special-purposing with a general-
+                        #   purpose mechanism allowing volume mounts to specific
+                        #   containers.
+                        nb_volume_list.append({"host_path": "/opt/cord_profile/images",
+                                  "container_path": "/opt/xos/images",
+                                  "read_only": True})
+
 
                     nb_external_links = []
                     if xos.redis_container_name:
