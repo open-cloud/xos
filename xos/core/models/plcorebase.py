@@ -303,6 +303,28 @@ class PlCoreBase(models.Model, PlModelMixIn):
                             journal_object(model, "delete.cascade.mark_deleted", msg="root = %r" % self)
                             model.save(update_fields=['enacted','deleted','policed'], silent=silent)
 
+    def serialize_for_redis(self):
+        """ Serialize the object for posting to redis.
+
+            The API serializes ForeignKey fields by naming them <name>_id
+            whereas model_to_dict leaves them with the original name. Modify
+            the results of model_to_dict to provide the same fieldnames.
+        """
+
+        field_types = {}
+        for f in self._meta.fields:
+            field_types[f.name] = f.get_internal_type()
+
+        fields = model_to_dict(self)
+        for k in fields.keys():
+            if field_types.get(k,None) == "ForeignKey":
+                new_key_name = "%s_id" % k
+                if (k in fields) and (new_key_name not in fields):
+                    fields[new_key_name] = fields[k]
+                    del fields[k]
+
+        return fields
+
     def save(self, *args, **kwargs):
         journal_object(self, "plcorebase.save")
 
@@ -362,7 +384,7 @@ class PlCoreBase(models.Model, PlModelMixIn):
             r = redis.Redis("redis")
             # NOTE the redis event has been extended with model properties to facilitate the support of real time notification in the UI
             # keep this monitored for performance reasons and eventually revert it back to fetch model properties via the REST API
-            model = model_to_dict(self)
+            model = self.serialize_for_redis()
             bases = inspect.getmro(self.__class__)
             bases = [x for x in bases if issubclass(x, PlCoreBase)]
             class_names = ",".join([x.__name__ for x in bases])
