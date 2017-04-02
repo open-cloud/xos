@@ -44,22 +44,14 @@ DEBUG = logging.DEBUG
 class Logger:
 
     def __init__(self, logfile=None, loggername=None, level=logging.INFO):
-        logstash_level = logging.DEBUG
-        try:
-            config_level = Config().observer_log_level
-            if (config_level):
-                level = getattr(logging, config_level)
-                logstash_level = getattr(logging, config_level)
-        except:
-            pass
 
         # Logstash config - try as specified explicitly in config
         try:
             logstash_host, logstash_port = Config().observer_logstash_hostport.split(':')
             logstash_handler = logstash.LogstashHandler(
                 logstash_host, int(logstash_port), version=1)
-
-            logstash_handler.setLevel(logstash_level)
+            # always log at DEBUG level to logstash
+            logstash_handler.setLevel(logging.DEBUG)
         except:
             logstash_handler = None
 
@@ -69,7 +61,7 @@ class Logger:
                 logstash_handler = logstash.LogstashHandler(
                     "cordloghost", 5617, version=1)
                 # always log at DEBUG level to logstash
-                logstash_handler.setLevel(logstash_level)
+                logstash_handler.setLevel(logging.DEBUG)
             except:
                 logstash_handler = None
 
