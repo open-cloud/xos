@@ -41,6 +41,9 @@ def is_model_class(model):
 
     return False
 
+def bases(model):
+    return ','.join([b.__name__ for b in model.__bases__])
+
 def module_has_models(module):
     """ return True if 'module' contains any models we're interested in """
     for k in dir(module):
@@ -192,6 +195,7 @@ class Generator(dict):
                     print "KeyError: %r"%o.__name__
 
                 obj.class_name = o.class_name
+                obj.bases = bases(o)
 
                 file_name = o.__module__.rsplit('.',1)[1]
 
@@ -350,7 +354,6 @@ def main():
                 direc,filename = path.rsplit('/',1)
                 os.system('mkdir -p %s'%direc)
               
-                pdb.set_trace()
                 fil = open(path,'w')
                 buf = '\n'.join(current_buffer)
 
