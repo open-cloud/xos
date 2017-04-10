@@ -338,7 +338,7 @@ class XOSBuilder(object):
         # eventually xos_ui will go away, and only xos_core shall remain.
 
         containers["xos_ui"] = {
-            "image": "xosproject/xos-ui",
+            "image": xos.dest_ui_image,
             "command": "python /opt/xos/manage.py runserver 0.0.0.0:%d --insecure --makemigrations" % xos.ui_port,
             "networks": networks,
             "ports": {"%d" % xos.ui_port: "%d" % xos.ui_port},
@@ -350,7 +350,7 @@ class XOSBuilder(object):
         core_volume_list = volume_list + [{"host_path": "/var/run/docker.sock", "container_path": "/var/run/docker.sock", "read_only": False}]
 
         containers["xos_core"] = {
-            "image": "xosproject/xos-ui",
+            "image": xos.dest_ui_image,
             "command": 'bash -c "cd coreapi; bash ./start_coreapi.sh"',
             "networks": networks,
             "ports": {"50055": "50055", "50051" : "50051"},

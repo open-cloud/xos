@@ -1,0 +1,10 @@
+FROM xosproject/xos:candidate
+
+ARG XOS_GIT_COMMIT_HASH=unknown
+ARG XOS_GIT_COMMIT_DATE=unknown
+
+LABEL XOS_GIT_COMMIT_HASH=$XOS_GIT_COMMIT_HASH
+LABEL XOS_GIT_COMMIT_DATE=$XOS_GIT_COMMIT_DATE
+
+# Install file from corebuilder
+ADD containers/xos/BUILD /

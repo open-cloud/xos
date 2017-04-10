@@ -65,6 +65,14 @@ node_types:
                 type: string
                 required: false
                 description: Source UI docker image name
+            dest_ui_image:
+                type: string
+                required: false
+                description: Dest UI docker image name
+            cert_chain_name:
+                type: string
+                required: false
+                description: Name of file that holds certificate chain
             enable_build:
                 type: boolean
                 required: false
@@ -80,7 +88,11 @@ node_types:
             no_start:
                 type: boolean
                 required: false
-                description: Wheter to start the Django server or not
+                description: Whether to start the Django server or not
+            no_build:
+                type: boolean
+                required: false
+                description: Whether to build the core UI image
 
     tosca.nodes.XOSVolume:
         derived_from: tosca.nodes.Root

@@ -2,4 +2,4 @@
 
 # This is a stub for launching xossh in the xosproject/xos-client container
 
-docker run -it -v /opt/cord_profile/im_cert_chain.pem:/usr/local/share/ca-certificates/local_certs.crt xosproject/xos-client:candidate -u xosadmin@opencord.org -p `cat /opt/cord/build/platform-install/credentials/xosadmin@opencord.org`
+docker run --rm -it -v /opt/cord_profile/im_cert_chain.pem:/usr/local/share/ca-certificates/local_certs.crt xosproject/xos-client:candidate -u xosadmin@opencord.org -p `cat /opt/cord/build/platform-install/credentials/xosadmin@opencord.org`

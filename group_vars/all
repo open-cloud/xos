@@ -51,6 +51,11 @@ docker_images:
     dockerfile: "Dockerfile.xos-gui-extension-builder"
     pull: False
     publish: False
+  - name: "xosproject/xos-corebuilder"
+    path: "{{ cord_dir }}/orchestration/xos"
+    dockerfile: "containers/xos/Dockerfile.corebuilder"
+    pull: False
+    publish: True
 
 build_optional_images: False
 

@@ -1,0 +1,17 @@
+FROM xosproject/xos-base:candidate
+
+ARG XOS_GIT_COMMIT_HASH=unknown
+ARG XOS_GIT_COMMIT_DATE=unknown
+
+LABEL XOS_GIT_COMMIT_HASH=$XOS_GIT_COMMIT_HASH
+LABEL XOS_GIT_COMMIT_DATE=$XOS_GIT_COMMIT_DATE
+
+# Install the corebuilder tools and the tosca custom_types that it needs
+ADD xos/tools/corebuilder /opt/xos/tools/corebuilder
+ADD xos/tosca/custom_types /opt/xos/tools/corebuilder/custom_types
+
+ENV HOME /root
+WORKDIR /opt/xos/tools/corebuilder
+
+ENTRYPOINT ["/usr/bin/python", "corebuilder.py"]
+

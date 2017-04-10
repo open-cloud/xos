@@ -52,7 +52,11 @@ class SyncXOS(SyncStep, XOSBuilder):
 
         self.create_docker_compose()
 
-        dockerfiles = [self.create_ui_dockerfile()]
+        if xos.no_build:
+            dockerfiles = []
+        else:
+            dockerfiles = [self.create_ui_dockerfile()]
+
         tenant_fields = {"dockerfiles": dockerfiles,
                          "build_dir": self.build_dir,
                          "docker_project_name": xos.docker_project_name,
