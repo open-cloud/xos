@@ -211,9 +211,9 @@ class Generator(dict):
 		self[str(obj).lower()]=obj
 
 	def compute_links(self):
-                base_props = [f.name for f in PlCoreBase._meta.fields] + ['id']
 
 		for obj in self.values():
+                	base_props = [f.name for f in obj.model.__base__._meta.fields] + ['id']
 			#if (str(obj)=='network'):
 			#	pdb.set_trace()
 			fields = obj.model._meta.fields
