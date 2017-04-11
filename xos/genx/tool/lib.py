@@ -11,6 +11,9 @@ def django_content_type_string(xptags):
     elif (content_type=='stripped' or content_type=='"stripped"'):
         return 'StrippedCharField'
 
+def xproto_eval(arg):
+    return eval(arg)
+
 def django_string_type(xptags):
     if ('content_type' in xptags):
         return django_content_type_string(xptags)

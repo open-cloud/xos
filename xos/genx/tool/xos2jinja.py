@@ -77,6 +77,7 @@ class XOS2Jinja(m.Visitor):
 
     def visit_LinkDefinition(self, obj):
         s={}
+
         s['link_type'] = obj.link_type.pval
         s['src_port'] = obj.src_port.value.pval
         s['name'] = obj.src_port.value.pval
@@ -96,7 +97,8 @@ class XOS2Jinja(m.Visitor):
         return True
 
     def visit_FieldDefinition_post(self, obj):
-        s={'_type':'field'}
+        s= {}
+        
         if isinstance(obj.ftype, m.Name):
             s['type'] = obj.ftype.value
         else:
@@ -112,6 +114,14 @@ class XOS2Jinja(m.Visitor):
             opts[k] = v
 
         s['options'] = opts
+        try:
+            last_link = self.stack[-1]['_type']
+            if (last_link=='link'):
+                s['link'] = True
+        except:
+            pass
+        s['_type'] = 'field'
+
         self.stack.push(s)
         return True
 
