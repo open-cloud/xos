@@ -24,4 +24,5 @@ class {{ m.name }}{{ xproto_base_def(m.bases) }}:
   {%- if file_exists(m.name|lower + '_model.py') -%}{{ include_file(m.name|lower + '_model.py') | indent(width=2)}}{%- endif %}
 
 {% if file_exists(m.name|lower+'_bottom.py') -%}{{ include_file(m.name|lower+'_bottom.py') }}{% endif %}
++++ models/{{m.name|lower}}.py
 {% endfor %}
