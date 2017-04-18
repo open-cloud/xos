@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import pytz
 import inspect
 import sys
 import threading
@@ -15,12 +16,16 @@ from django.core.exceptions import PermissionDenied
 from model_autodeletion import ephemeral_models
 from cgi import escape as html_escape
 from journal import journal_object
+from django.db.models.deletion import Collector
+from django.db import router
 
 import redis
 from redis import ConnectionError
 
-
 def date_handler(obj):
+    if isinstance(obj, pytz.tzfile.DstTzInfo):
+        # json can't serialize DstTzInfo
+        return str(obj)
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
 
 try:
@@ -201,10 +206,62 @@ class PlModelMixIn(object):
                 return
         raise Exception("Field value %s is not in %s" % (field, str(choices)))
 
+    def serialize_for_redis(self):
+        """ Serialize the object for posting to redis.
+
+            The API serializes ForeignKey fields by naming them <name>_id
+            whereas model_to_dict leaves them with the original name. Modify
+            the results of model_to_dict to provide the same fieldnames.
+        """
+
+        field_types = {}
+        for f in self._meta.fields:
+            field_types[f.name] = f.get_internal_type()
+
+        fields = model_to_dict(self)
+        for k in fields.keys():
+            if field_types.get(k,None) == "ForeignKey":
+                new_key_name = "%s_id" % k
+                if (k in fields) and (new_key_name not in fields):
+                    fields[new_key_name] = fields[k]
+                    del fields[k]
+
+        return fields
+
+    def push_redis_event(self):
+        # Transmit update via Redis
+        changed_fields = []
+
+        if self.pk is not None:
+            my_model = type(self)
+            try:
+                orig = my_model.objects.get(pk=self.pk)
+
+                for f in my_model._meta.fields:
+                    oval = getattr(orig, f.name)
+                    nval = getattr(self, f.name)
+                    if oval != nval:
+                        changed_fields.append(f.name)
+            except:
+                changed_fields.append('__lookup_error')
+
+        try:
+            r = redis.Redis("redis")
+            # NOTE the redis event has been extended with model properties to facilitate the support of real time notification in the UI
+            # keep this monitored for performance reasons and eventually revert it back to fetch model properties via the REST API
+            model = self.serialize_for_redis()
+            bases = inspect.getmro(self.__class__)
+            bases = [x for x in bases if issubclass(x, PlCoreBase)]
+            class_names = ",".join([x.__name__ for x in bases])
+            model['class_names'] = class_names
+            payload = json.dumps({'pk': self.pk, 'changed_fields': changed_fields, 'object': model}, default=date_handler)
+            r.publish(self.__class__.__name__, payload)
+        except ConnectionError:
+            # Redis not running.
+            pass
+
 # For cascading deletes, we need a Collector that doesn't do fastdelete,
 # so we get a full list of models.
-from django.db.models.deletion import Collector
-from django.db import router
 class XOSCollector(Collector):
   def can_fast_delete(self, *args, **kwargs):
     return False
@@ -303,28 +360,6 @@ class PlCoreBase(models.Model, PlModelMixIn):
                             journal_object(model, "delete.cascade.mark_deleted", msg="root = %r" % self)
                             model.save(update_fields=['enacted','deleted','policed'], silent=silent)
 
-    def serialize_for_redis(self):
-        """ Serialize the object for posting to redis.
-
-            The API serializes ForeignKey fields by naming them <name>_id
-            whereas model_to_dict leaves them with the original name. Modify
-            the results of model_to_dict to provide the same fieldnames.
-        """
-
-        field_types = {}
-        for f in self._meta.fields:
-            field_types[f.name] = f.get_internal_type()
-
-        fields = model_to_dict(self)
-        for k in fields.keys():
-            if field_types.get(k,None) == "ForeignKey":
-                new_key_name = "%s_id" % k
-                if (k in fields) and (new_key_name not in fields):
-                    fields[new_key_name] = fields[k]
-                    del fields[k]
-
-        return fields
-
     def save(self, *args, **kwargs):
         journal_object(self, "plcorebase.save")
 
@@ -358,42 +393,13 @@ class PlCoreBase(models.Model, PlModelMixIn):
         if (caller_kind!="synchronizer") or always_update_timestamp:
             self.updated = timezone.now()
 
-        # Transmit update via Redis
-        changed_fields = []
-
-        if self.pk is not None:
-            my_model = type(self)
-            try:
-                orig = my_model.objects.get(pk=self.pk)
-
-                for f in my_model._meta.fields:
-                    oval = getattr(orig, f.name)
-                    nval = getattr(self, f.name)
-                    if oval != nval:
-                        changed_fields.append(f.name)
-            except:
-                changed_fields.append('__lookup_error')
-
         journal_object(self, "plcorebase.save.super_save")
 
         super(PlCoreBase, self).save(*args, **kwargs)
 
         journal_object(self, "plcorebase.save.super_save_returned")
 
-        try:
-            r = redis.Redis("redis")
-            # NOTE the redis event has been extended with model properties to facilitate the support of real time notification in the UI
-            # keep this monitored for performance reasons and eventually revert it back to fetch model properties via the REST API
-            model = self.serialize_for_redis()
-            bases = inspect.getmro(self.__class__)
-            bases = [x for x in bases if issubclass(x, PlCoreBase)]
-            class_names = ",".join([x.__name__ for x in bases])
-            model['class_names'] = class_names
-            payload = json.dumps({'pk': self.pk, 'changed_fields': changed_fields, 'object': model}, default=date_handler)
-            r.publish(self.__class__.__name__, payload)
-        except ConnectionError:
-            # Redis not running.
-            pass
+        self.push_redis_event()
 
         # This is a no-op if observer_disabled is set
         # if not silent:

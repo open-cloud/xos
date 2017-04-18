@@ -8,15 +8,21 @@ from operator import attrgetter, itemgetter
 
 from core.middleware import get_request
 from core.models import DashboardView, PlCoreBase, PlModelMixIn, Site, ModelLink
-from core.models.plcorebase import StrippedCharField
+from core.models.plcorebase import StrippedCharField, XOSCollector
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
+from django.db import transaction
+from django.db import router
 from django.db.models import F, Q
 from django.forms.models import model_to_dict
 from django.utils import timezone
 from timezones.fields import TimeZoneField
+from journal import journal_object
+
+import redis
+from redis import ConnectionError
 
 # ------ from plcorebase.py ------
 try:
@@ -170,6 +176,7 @@ class User(AbstractBaseUser, PlModelMixIn):
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
         self._initial = self._dict  # for PlModelMixIn
+        self.silent = False
 
     def isReadOnlyUser(self):
         return self.is_readonly
@@ -181,24 +188,6 @@ class User(AbstractBaseUser, PlModelMixIn):
     def get_short_name(self):
         # The user is identified by their email address
         return self.email
-
-    def delete(self, *args, **kwds):
-        # so we have something to give the observer
-        purge = kwds.get('purge', False)
-        if purge:
-            del kwds['purge']
-        try:
-            purge = purge or observer_disabled
-        except NameError:
-            pass
-
-        if (purge):
-            super(User, self).delete(*args, **kwds)
-        else:
-            if (not self.write_protect):
-                self.deleted = True
-                self.enacted = None
-                self.save(update_fields=['enacted', 'deleted'])
 
     @property
     def keyname(self):
@@ -248,12 +237,57 @@ class User(AbstractBaseUser, PlModelMixIn):
 #            roles[slice_membership.role.role_type].append(slice_membership.slice.name)
 #        return roles
 
+    def delete(self, *args, **kwds):
+        # so we have something to give the observer
+        purge = kwds.get('purge',False)
+        if purge:
+            del kwds['purge']
+        silent = kwds.get('silent',False)
+        if silent:
+            del kwds['silent']
+        try:
+            purge = purge or observer_disabled
+        except NameError:
+            pass
+
+        if (purge):
+            journal_object(self, "delete.purge")
+            super(User, self).delete(*args, **kwds)
+        else:
+            if (not self.write_protect ):
+                self.deleted = True
+                self.enacted=None
+                self.policed=None
+                journal_object(self, "delete.mark_deleted")
+                self.save(update_fields=['enacted','deleted','policed'], silent=silent)
+
+                collector = XOSCollector(using=router.db_for_write(self.__class__, instance=self))
+                collector.collect([self])
+                with transaction.atomic():
+                    for (k, models) in collector.data.items():
+                        for model in models:
+                            if model.deleted:
+                                # in case it's already been deleted, don't delete again
+                                continue
+                            model.deleted = True
+                            model.enacted=None
+                            model.policed=None
+                            journal_object(model, "delete.cascade.mark_deleted", msg="root = %r" % self)
+                            model.save(update_fields=['enacted','deleted','policed'], silent=silent)
+
     def save(self, *args, **kwargs):
+        journal_object(self, "plcorebase.save")
+
         if not self.id:
             self.set_password(self.password)
         if self.is_active and self.is_registering:
             self.send_temporary_password()
             self.is_registering = False
+
+        # let the user specify silence as either a kwarg or an instance varible
+        silent = self.silent
+        if "silent" in kwargs:
+            silent=silent or kwargs.pop("silent")
 
         caller_kind = "unknown"
 
@@ -267,10 +301,32 @@ class User(AbstractBaseUser, PlModelMixIn):
         if "always_update_timestamp" in kwargs:
             always_update_timestamp = always_update_timestamp or kwargs.pop("always_update_timestamp")
 
-        # TODO: plCoreBase logic for updating timestamps is missing
+        # SMBAKER: if an object is trying to delete itself, or if the observer
+        # is updating an object's backend_* fields, then let it slip past the
+        # composite key check.
+        ignore_composite_key_check=False
+        if "update_fields" in kwargs:
+            ignore_composite_key_check=True
+            for field in kwargs["update_fields"]:
+                if not (field in ["backend_register", "backend_status", "deleted", "enacted", "updated"]):
+                    ignore_composite_key_check=False
+
+        if (caller_kind!="synchronizer") or always_update_timestamp:
+            self.updated = timezone.now()
 
         self.username = self.email
+
+        journal_object(self, "plcorebase.save.super_save")
+
         super(User, self).save(*args, **kwargs)
+
+        journal_object(self, "plcorebase.save.super_save_returned")
+
+        self.push_redis_event()
+
+        # This is a no-op if observer_disabled is set
+        # if not silent:
+        #    notify_observer()
 
         self._initial = self._dict
 
