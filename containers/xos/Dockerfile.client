@@ -1,10 +1,28 @@
+# xosproject/xos-client
 FROM xosproject/xos-base:candidate
 
-ARG XOS_GIT_COMMIT_HASH=unknown
-ARG XOS_GIT_COMMIT_DATE=unknown
+# Label image
+ARG org_label_schema_schema_version=1.0
+ARG org_label_schema_name=xos-client
+ARG org_label_schema_version=unknown
+ARG org_label_schema_vcs_url=unknown
+ARG org_label_schema_vcs_ref=unknown
+ARG org_label_schema_build_date=unknown
+ARG org_opencord_vcs_commit_date=unknown
+ARG org_opencord_component_chameleon_version=unknown
+ARG org_opencord_component_chameleon_vcs_url=unknown
+ARG org_opencord_component_chameleon_vcs_ref=unknown
 
-LABEL XOS_GIT_COMMIT_HASH=$XOS_GIT_COMMIT_HASH
-LABEL XOS_GIT_COMMIT_DATE=$XOS_GIT_COMMIT_DATE
+LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
+      org.label-schema.name=$org_label_schema_name \
+      org.label-schema.version=$org_label_schema_version \
+      org.label-schema.vcs-url=$org_label_schema_vcs_url \
+      org.label-schema.vcs-ref=$org_label_schema_vcs_ref \
+      org.label-schema.build-date=$org_label_schema_build_date \
+      org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date \
+      org.opencord.component.chameleon.version=$org_opencord_component_chameleon_version \
+      org.opencord.component.chameleon.vcs-url=$org_opencord_component_chameleon_vcs_url \
+      org.opencord.component.chameleon.vcs-ref=$org_opencord_component_chameleon_vcs_ref
 
 # Install XOS client
 ADD xos/xos_client /tmp/xos_client

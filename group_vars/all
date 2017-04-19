@@ -60,7 +60,7 @@ docker_images:
 build_optional_images: False
 
 docker_optional_images:
-  - name: "xosprojext/xos-test"
+  - name: "xosproject/xos-test"
     dockerfile: "Dockerfile.test"
     pull: False
     publish: False
