@@ -36,8 +36,8 @@ docker_images:
     dockerfile: "containers/xos/Dockerfile.synchronizer-base"
     pull: False
     publish: True
-  - name: "xosproject/xos-rest-gw"
-    path: "{{ cord_dir }}/orchestration/xos-rest-gw"
+  - name: "xosproject/xos-ws"
+    path: "{{ cord_dir }}/orchestration/xos-rest-gw" # TODO rename repo
     dockerfile: "Dockerfile"
     pull: False
     publish: True
@@ -70,9 +70,7 @@ build_docker_tag: "candidate"
 misc_docker_images:
   - "node:argon"
 
-enabled_gui_extensions:
-  - name: sample
-    path: orchestration/xos-sample-gui-extension
+enabled_gui_extensions: []
 
 frontend_only: False
 
