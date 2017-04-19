@@ -154,7 +154,8 @@ class LoadableModule(PlCoreBase):
         return (satisfied, missing)
 
 class LoadableModuleResource(PlCoreBase):
-    KIND_CHOICES = (('models', 'Models'),
+    KIND_CHOICES = (('xproto', 'XProto'),
+                    ('models', 'Models'),
                     ('admin', 'Admin'),
                     ('admin_template', 'Admin Template'),
                     ('django_library', 'Django Library'),
@@ -167,7 +168,8 @@ class LoadableModuleResource(PlCoreBase):
                     ('public_key', 'Public Key'),
                     ('vendor_js', 'Vendor Javascript'))
 
-    FORMAT_CHOICES = (('python', 'Python'),
+    FORMAT_CHOICES = (('xproto', 'XProto'),
+                      ('python', 'Python'),
                       ('manifest', 'Manifest'),
                       ('docker', 'Docker Container'),
                       ('yaml', 'YAML'),

@@ -244,6 +244,10 @@ node_types:
                 type: string
                 required: false
                 description: Comma-separated list of requirements
+            xproto:
+                type: string
+                required: false
+                description: url of xproto
             models:
                 type: string
                 required: false

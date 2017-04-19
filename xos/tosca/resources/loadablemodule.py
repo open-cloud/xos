@@ -46,6 +46,7 @@ class XOSLoadableModule(XOSResource):
 
     def postprocess(self, obj):
         # allow these common resource to be specified directly by the LoadableModule tosca object and its descendents
+        self.postprocess_resource_prop(obj, "xproto", "xproto")
         self.postprocess_resource_prop(obj, "models", "python")
         self.postprocess_resource_prop(obj, "admin", "python")
         self.postprocess_resource_prop(obj, "django_library", "python")

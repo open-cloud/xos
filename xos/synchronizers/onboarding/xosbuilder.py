@@ -22,9 +22,9 @@ def add_unique(list, item):
 
 
 class XOSBuilder(object):
-    UI_KINDS = ["models", "admin", "admin_template", "django_library", "rest_service", "rest_tenant", "tosca_custom_types", "tosca_resource","public_key","vendor_js"]
+    UI_KINDS = ["models", "xproto", "admin", "admin_template", "django_library", "rest_service", "rest_tenant", "tosca_custom_types", "tosca_resource","public_key","vendor_js"]
     SYNC_CONTROLLER_KINDS = ["synchronizer", "private_key", "public_key"]
-    SYNC_ALLCONTROLLER_KINDS = ["models", "django_library"]
+    SYNC_ALLCONTROLLER_KINDS = ["models", "xproto", "django_library"]
 
     def __init__(self):
         self.build_dir = "/opt/xos/BUILD/"
@@ -36,6 +36,7 @@ class XOSBuilder(object):
         xos_base = "opt/xos"
         service_name = scr.loadable_module.name
         base_dirs = {"models": "%s/services/%s/" % (xos_base, service_name),
+                     "xproto": "%s/services/%s/xproto/" % (xos_base, service_name),
                      "admin": "%s/services/%s/" % (xos_base, service_name),
                      "admin_template": "%s/services/%s/templates/" % (xos_base, service_name),
                      "django_library": "%s/services/%s/" % (xos_base, service_name),
