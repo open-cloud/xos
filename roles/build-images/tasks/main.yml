@@ -21,6 +21,7 @@
     tag: "{{ build_docker_tag }}"
     dockerfile: "{{ item.dockerfile }}"
     pull: False
+    force: "{{ item.rebuild | default(False) }}"
   with_items: "{{ docker_images }}"
 
 - name: Build optional images
@@ -30,6 +31,7 @@
     tag: "{{ build_docker_tag }}"
     dockerfile: "{{ item.dockerfile }}"
     pull: False
+    force: "{{ item.rebuild | default(False) }}"
   with_items: "{{ docker_optional_images }}"
   when: build_optional_images
 
@@ -40,6 +42,7 @@
     path: "{{ cord_dir }}/{{ item.path }}"
     tag: "{{ build_docker_tag }}"
     pull: False
+    force: "{{ item.rebuild | default(False) }}"
   with_items: "{{ enabled_gui_extensions }}"
 
 # Build synchronizer images
@@ -50,5 +53,6 @@
     dockerfile: "Dockerfile.synchronizer"
     tag: "{{ build_docker_tag }}"
     pull: False
+    force: "{{ item.rebuild | default(False) }}"
   with_items: "{{ xos_services }}"
   when: not frontend_only and item.synchronizer is defined and item.synchronizer
