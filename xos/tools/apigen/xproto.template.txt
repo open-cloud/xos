@@ -1,7 +1,7 @@
 {% for object in generator.all() %}
 
 message {{ object.camel() }} ({%- if (object.bases) -%}{{ object.bases}}){%- endif -%} {
-  {%- for field in object.fields %}
+  {%- for field in object.all_fields %}
      {{ xp_to_xproto(field, loop.index) }} {{xp_options(field)}};
   {%- endfor %}
 }

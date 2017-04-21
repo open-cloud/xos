@@ -18,6 +18,7 @@ sys.path.append('.')
 sys.path.append('/opt/xos')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.db.models.fields.related import ForeignKey, ManyToManyField
+from django.contrib.contenttypes.fields import GenericRelation
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
@@ -184,7 +185,7 @@ class Generator(dict):
 	def add_object(self, o):
                 global app_map
 		obj = GenObj(o)
-		fields = o._meta.fields
+		fields = o._meta.get_fields(include_hidden=False)
                 try:
                     obj.app = app_map[o.__name__] # full name
                     if hasattr(o, "_meta") and hasattr(o._meta, "app_label"):
@@ -208,42 +209,51 @@ class Generator(dict):
                 except KeyError:
                     self.apps[obj.app] = {file_name:[obj]}
 
+
 		self[str(obj).lower()]=obj
 
 	def compute_links(self):
 
 		for obj in self.values():
                 	base_props = [f.name for f in obj.model.__base__._meta.fields] + ['id']
-			#if (str(obj)=='network'):
-			#	pdb.set_trace()
-			fields = obj.model._meta.fields
+			fields = list(obj.model._meta.fields + obj.model._meta.many_to_many)
+
+                        other_fields = obj.model._meta.get_fields()
+                        for o in other_fields:
+                            if (type(o)==GenericRelation): fields+=[o]
+
+
 			for f in fields:
-				if (f and f.rel):
+                                if f.name in base_props or type(f).__name__=='ManyToOneRel': continue
+
+				if (f and hasattr(f, 'rel') and f.rel):
 					to_name = str(f.rel.to)
 				else:
 					to_name = None
 
-				if type(f)==ForeignKey and to_name and to_name in self.keys():
-					refobj = self[f.to_name]
 
-					if (str(obj)=='slice' and f.to_name=='networks'):
-						obj.refs.append(refobj)
-					related_name = f.related_query_name()
-					if (related_name!='+' and related_name.lower()!=str(obj).lower()):
-						cobj = copy.deepcopy(obj)
-						cobj.multi = True
-						cobj.plural_name = related_name
-						refobj.refs.append(cobj)
-                                elif f.name.endswith("_ptr"):
+                                if f.name.endswith("_ptr"):
                                         # django inherited model, for example HPCService
                                         # cause swagger and REST to break
                                         pass
 				else:
                                         f.type = f.__class__.__name__
+
                                         if (type(f)==ForeignKey):
                                             f.related.model.class_name = f.related.model.__name__
+                                        elif (type(f)==ManyToManyField or type(f)==GenericRelation):
+                                            f.related.model.class_name = f.related.model.__name__
+                                            try:
+                                               f.related.model.through = f.related.through.__name__
+                                            except AttributeError: 
+                                               pass
+                                
+                
                                         if (f.name not in base_props):
                                             obj.fields.append(f)
+                                        
+                                        #if (f.name == 'tags'): pdb.set_trace()
+
                                         obj.all_fields.append(f)
                                         obj.props.append(f.name)
 

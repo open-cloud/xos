@@ -76,13 +76,35 @@ def xp_options(field):
     return format_options_string(output_dict)
     
 def xp_to_xproto(field, idx):
-    t = field.get_internal_type()
+    at = type(field).__name__
+    try:
+        t = field.get_internal_type()
+    except AttributeError:
+        t = type(field).__name__
+
     link = False
+    through = None
 
     if (t=='CharField' or t=='TextField' or t=='SlugField'):
         xptype = 'string'
     elif (t=='BooleanField'):
         xptype = 'bool'
+    elif (t=='ManyToManyField'):
+        if (at=='ManyToManyField'):
+	    xptype = 'manytomany'
+	    peer = field.related.model.__name__
+	    through = field.related.model.through
+	    if (field.related.name):
+		dst_port = ':' + field.related.name
+	    else:
+		dst_port = ''
+        else:
+            xptype = 'manytomany'
+	    peer = field.related.model.__name__
+	    dst_port = ''
+
+
+        link = True
     elif (t=='ForeignKey'):
         xptype = 'manytoone'
         peer = field.related.model.__name__
@@ -107,7 +129,9 @@ def xp_to_xproto(field, idx):
         xptype = 'string'
     elif (t=='OneToOneField'):
         link = True
- 
+         
+    else:
+        raise Exception('Bad field')
     
     if (field.null==False):
        modifier = 'required'
@@ -115,7 +139,12 @@ def xp_to_xproto(field, idx):
        modifier = 'optional'
 
     if (link):
-       str = '%s %s %s->%s%s = %d'%(modifier, xptype, field.name, peer, dst_port, idx)
+       if (through):
+          dst_model = '%s/%s'%(peer,through)
+       else:
+          dst_model = '%s'%peer
+
+       str = '%s %s %s->%s%s = %d'%(modifier, xptype, field.name, dst_model, dst_port, idx)
     else:
        str = '%s %s %s = %d'%(modifier, xptype, field.name, idx)
 
