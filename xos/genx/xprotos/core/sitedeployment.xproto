@@ -1,6 +1,6 @@
 
 
-message SiteDeployment {
+message SiteDeployment (PlCoreBase){
      required manytoone site->Site:sitedeployments = 1 [db_index = True, null = False, blank = False];
      required manytoone deployment->Deployment:sitedeployments = 2 [db_index = True, null = False, blank = False];
      optional manytoone controller->Controller:sitedeployments = 3 [db_index = True, null = True, blank = True];

@@ -1,6 +1,6 @@
 
 
-message ServicePrivilege {
+message ServicePrivilege (PlCoreBase){
      required manytoone user->User:serviceprivileges = 1 [db_index = True, null = False, blank = False];
      required manytoone service->Service:serviceprivileges = 2 [db_index = True, null = False, blank = False];
      required manytoone role->ServiceRole:serviceprivileges = 3 [db_index = True, null = False, blank = False];

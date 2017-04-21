@@ -1,6 +1,6 @@
 
 
-message ControllerImages {
+message ControllerImages (PlCoreBase){
      required manytoone image->Image:controllerimages = 1 [db_index = True, null = False, blank = False];
      required manytoone controller->Controller:controllerimages = 2 [db_index = True, null = False, blank = False];
      optional string glance_image_id = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "Glance image id", null = True, db_index = False];

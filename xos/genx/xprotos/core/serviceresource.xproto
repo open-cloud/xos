@@ -1,6 +1,6 @@
 
 
-message ServiceResource {
+message ServiceResource (PlCoreBase){
      required manytoone serviceClass->ServiceClass:serviceresources = 1 [db_index = True, null = False, blank = False];
      required string name = 2 [db_index = False, max_length = 32, null = False, content_type = "stripped", blank = False];
      required int32 maxUnitsDeployment = 3 [default = 1, null = False, db_index = False, blank = False];

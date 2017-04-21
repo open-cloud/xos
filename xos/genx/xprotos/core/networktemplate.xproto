@@ -1,6 +1,6 @@
 
 
-message NetworkTemplate {
+message NetworkTemplate (PlCoreBase,ParameterMixin){
      required string name = 1 [db_index = False, max_length = 32, null = False, blank = False];
      optional string description = 2 [db_index = False, max_length = 1024, null = True, blank = True];
      required int32 guaranteed_bandwidth = 3 [default = 0, null = False, db_index = False, blank = False];

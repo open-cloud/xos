@@ -1,6 +1,6 @@
 
 
-message TenantRootPrivilege {
+message TenantRootPrivilege (PlCoreBase){
      required manytoone user->User:tenant_root_privileges = 1 [db_index = True, null = False, blank = False];
      required manytoone tenant_root->TenantRoot:tenant_root_privileges = 2 [db_index = True, null = False, blank = False];
      required manytoone role->TenantRootRole:tenant_root_privileges = 3 [db_index = True, null = False, blank = False];

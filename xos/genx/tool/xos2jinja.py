@@ -81,11 +81,19 @@ class XOS2Jinja(m.Visitor):
         s['link_type'] = obj.link_type.pval
         s['src_port'] = obj.src_port.value.pval
         s['name'] = obj.src_port.value.pval
+
         try:
             s['dst_port'] = obj.dst_port.value.pval
         except AttributeError:
             s['dst_port'] = ''
-        s['peer'] = obj.name
+
+
+        try:
+            s['through'] = obj.through.pval
+        except AttributeError:
+            s['through'] = ''
+
+        s['peer'] = obj.name.pval
         s['_type'] = 'link'
         s['options'] = {'modifier':'optional'}
 
@@ -192,7 +200,11 @@ class XOS2Jinja(m.Visitor):
         count = self.count_stack.pop()
         messages = []
         for i in range(0,count):
-            m = self.stack.pop()
+            try:
+                m = self.stack.pop()
+            except IndexError:
+                pdb.set_trace()
+
             messages.insert(0,m)
 
         self.messages = messages

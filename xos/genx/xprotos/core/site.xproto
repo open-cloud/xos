@@ -1,6 +1,6 @@
 
 
-message Site {
+message Site (PlCoreBase){
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name for this Site", null = False, db_index = False];
      optional string site_url = 2 [max_length = 512, content_type = "url", blank = True, help_text = "Site's Home URL Page", null = True, db_index = False];
      required bool enabled = 3 [help_text = "Status for this Site", default = True, null = False, db_index = False, blank = True];
@@ -11,4 +11,6 @@ message Site {
      required string login_base = 8 [max_length = 50, content_type = "stripped", blank = False, help_text = "Prefix for Slices associated with this Site", null = False, db_index = False];
      required bool is_public = 9 [help_text = "Indicates the visibility of this site to other members", default = True, null = False, db_index = False, blank = True];
      required string abbreviated_name = 10 [db_index = False, max_length = 80, null = False, content_type = "stripped", blank = False];
+     required manytomany deployments->Deployment/DashboardView_deployments:sites = 11 [help_text = "Select which sites are allowed to host nodes in this deployment", null = False, db_index = False, blank = True];
+     required manytomany tags->Tag = 12 [db_index = False, null = False, blank = True];
 }

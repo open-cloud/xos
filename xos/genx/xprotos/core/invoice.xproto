@@ -1,6 +1,6 @@
 
 
-message Invoice {
+message Invoice (PlCoreBase){
      required string date = 1 [db_index = False, null = False, content_type = "date", blank = False];
      required manytoone account->Account:invoices = 2 [db_index = True, null = False, blank = False];
 }

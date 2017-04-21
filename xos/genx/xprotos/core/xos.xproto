@@ -1,6 +1,6 @@
 
 
-message XOS {
+message XOS (PlCoreBase){
      required string name = 1 [default = "XOS", max_length = 200, content_type = "stripped", blank = False, help_text = "Name of XOS", null = False, db_index = False];
      required int32 ui_port = 2 [help_text = "Port for XOS UI", default = 80, null = False, db_index = False, blank = False];
      required int32 bootstrap_ui_port = 3 [help_text = "Port for XOS Bootstrap UI", default = 81, null = False, db_index = False, blank = False];

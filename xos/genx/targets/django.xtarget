@@ -1,27 +1,34 @@
-{% for m in proto.messages %}
 
 from header import *
-
-{% if file_exists(m.name|lower+'_header.py') -%}from {{m.name|lower}}_header import *{% endif %}
-
-{% if file_exists(m.name|lower+'_top.py') -%}{{ include_file(m.name|lower+'_top.py') }}{% endif %}
+{% for m in proto.messages %}
+{% if file_exists(xproto_base_name(m.name)+'_header.py'|lower) -%}from {{m.name|lower}}_header import *{% endif %}
+{% if file_exists(xproto_base_name(m.name)+'_top.py'|lower) -%}{{ include_file(xproto_base_name(m.name)|lower+'_top.py') }}{% endif %}
 
 {%- for l in m.links %}
 from core.models.{{ l.peer | lower }} import {{ l.peer }} 
 {%- endfor %}
+{% for b in m.bases %}
+{% if b!='PlCoreBase' and b!='AttributeMixin'%}
+from core.models.{{b | lower}} import {{ b }}
+{% endif %}
+{% endfor %}
+
 
 class {{ m.name }}{{ xproto_base_def(m.bases) }}:
   # Primitive Fields (Not Relations)
-  {%- for f in m.fields %}
+  {% for f in m.fields %}
+  {%- if not f.link -%}
   {{ f.name }} = {{ xproto_django_type(f.type, f.options) }}( {{ xproto_django_options_str(f) }} )
+  {% endif %}
   {%- endfor %}
 
   # Relations
-  {%- for l in m.links %}
+  {% for l in m.links %}
   {{ l.src_port }} = {{ xproto_django_link_type(l) }}( {{ l.peer }}, {{ xproto_django_options_str(l, l.dst_port ) }} )
   {%- endfor %}
 
-  {%- if file_exists(m.name|lower + '_model.py') -%}{{ include_file(m.name|lower + '_model.py') | indent(width=2)}}{%- endif %}
+  {% if file_exists(m.name|lower + '_model.py') -%}{{ include_file(m.name|lower + '_model.py') | indent(width=2)}}{%- endif %}
 
-{% if file_exists(m.name|lower+'_bottom.py') -%}{{ include_file(m.name|lower+'_bottom.py') }}{% endif %}
+{% if file_exists(xproto_base_name(m.name)|lower+'_bottom.py') -%}{{ include_file(xproto_base_name(m.name)|lower+'_bottom.py') }}{% endif %}
++++ models/{{m.name|lower}}.py
 {% endfor %}

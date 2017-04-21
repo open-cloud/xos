@@ -1,26 +1,41 @@
 import pdb
+import re
+
+def xproto_eval(arg):
+    return eval(arg)
 
 def django_content_type_string(xptags):
     # Check possibility of KeyError in caller
     content_type = xptags['content_type']
 
+    try:
+        content_type = eval(content_type)
+    except:
+        pass
+
     if (content_type=='url'):
         return 'URLField'
+    if (content_type=='date'):
+        return 'DateTimeField'
     elif (content_type=='ip'):
         return 'GenericIPAddressField'
     elif (content_type=='stripped' or content_type=='"stripped"'):
         return 'StrippedCharField'
-
-def xproto_eval(arg):
-    return eval(arg)
+    else:
+        pdb.set_trace()
 
 def django_string_type(xptags):
+    try:
+        max_length = eval(xptags['max_length'])
+    except:
+        max_length = 1024 * 1024
+
     if ('content_type' in xptags):
         return django_content_type_string(xptags)
-    elif ('indexed' not in xptags):
-        return 'TextField'
-    else:
+    elif (max_length<1024*1024):
         return 'CharField'
+    else:
+        return 'TextField'
 
 def xproto_base_def(base):
     if (not base):
@@ -51,7 +66,7 @@ def xproto_django_link_type(f):
         return 'ForeignKey'
     elif (f['link_type']=='manytomany'):
         if (f['dst_port']):
-            return 'ManyToManyRelation'
+            return 'ManyToManyField'
         else:
             return 'GenericRelation'
 
@@ -59,9 +74,12 @@ def format_options_string(d):
     if (not d):
         return ''
     else:
+
         lst = []
         for k,v in d.items():
-            if (type(v)==str and v.startswith('"')): 
+            if (type(v)==str and k=='default' and v.endswith('()"')):
+                lst.append('%s = %s'%(k,v[1:-3]))
+            elif (type(v)==str and v.startswith('"')): 
                 try:
                     tup = eval(v[1:-1])
                     if (type(tup)==tuple):
@@ -81,7 +99,7 @@ def format_options_string(d):
         return ', '.join(lst)
 
 def map_xproto_to_django(f):
-    allowed_keys=['help_text','default','max_length','modifier','blank','choices','db_index','null'] 
+    allowed_keys=['help_text','default','max_length','modifier','blank','choices','db_index','null','editable','on_delete','verbose_name'] 
 
     m = {'modifier':{'optional':True, 'required':False, '_target':'null'}}
     out = {}
@@ -96,12 +114,41 @@ def map_xproto_to_django(f):
     return out
 
 
+def xproto_django_link_options_str(field, dport=None):
+    output_dict = map_xproto_to_django(field)
+
+    if (dport and (dport=='+' or '+' not in dport)):
+        output_dict['related_name'] = '%r'%dport
+
+    try:
+        if field['through'] and not field['through'].endswith('_'+field.name):
+            output_dict['through'] = field['through']
+    except:
+        pass
+
+    return format_options_string(output_dict)
+
 def xproto_django_options_str(field, dport=None):
     output_dict = map_xproto_to_django(field)
 
     if (dport=='_'):
         dport = '+'
 
-    if (dport):
+    if (dport and (dport=='+' or '+' not in dport)):
         output_dict['related_name'] = '%r'%dport
+
     return format_options_string(output_dict)
+
+def xproto_base_name(n):
+    # Hack - Refactor NetworkParameter* to make this go away
+    if (n.startswith('NetworkParameter')):
+        return '_'
+
+    expr = r'^[A-Z][a-z]+'
+
+    try:
+        match = re.findall(expr, n)[0]
+    except:
+        return '_'
+
+    return match

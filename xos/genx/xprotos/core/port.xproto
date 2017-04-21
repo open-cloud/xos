@@ -1,6 +1,6 @@
 
 
-message Port {
+message Port (PlCoreBase,ParameterMixin){
      required manytoone network->Network:links = 1 [db_index = True, null = False, blank = False];
      optional manytoone instance->Instance:ports = 2 [db_index = True, null = True, blank = True];
      optional string ip = 3 [max_length = 39, content_type = "ip", blank = True, help_text = "Instance ip address", null = True, db_index = False];

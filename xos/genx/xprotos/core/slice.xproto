@@ -1,6 +1,4 @@
-
-
-message Slice {
+message Slice (PlCoreBase){
      required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", null = False, db_index = False];
      required bool enabled = 2 [help_text = "Status for this Slice", default = True, null = False, db_index = False, blank = True];
      required bool omf_friendly = 3 [default = False, null = False, db_index = False, blank = True];
@@ -18,4 +16,5 @@ message Slice {
      optional manytoone default_node->Node:slices = 15 [db_index = True, null = True, blank = True];
      optional string mount_data_sets = 16 [default = "GenBank", max_length = 256, content_type = "stripped", blank = True, null = True, db_index = False];
      required string default_isolation = 17 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))", max_length = 30, blank = False, null = False, db_index = False];
+     required manytomany tags->Tag = 18 [db_index = False, null = False, blank = True];
 }

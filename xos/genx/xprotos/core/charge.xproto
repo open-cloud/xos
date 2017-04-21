@@ -1,6 +1,6 @@
 
 
-message Charge {
+message Charge (PlCoreBase){
      required manytoone account->Account:charges = 1 [db_index = True, null = False, blank = False];
      optional manytoone slice->Slice:charges = 2 [db_index = True, null = True, blank = True];
      required string kind = 3 [default = "besteffort", choices = "(('besteffort', 'besteffort'), ('reservation', 'reservation'), ('monthlyfee', 'monthlyfee'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];

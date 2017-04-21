@@ -1,6 +1,6 @@
 
 
-message ReservedResource {
+message ReservedResource (PlCoreBase){
      required manytoone instance->Instance:reservedresources = 1 [db_index = True, null = False, blank = False];
      required manytoone resource->ServiceResource:reservedresources = 2 [db_index = True, null = False, blank = False];
      required int32 quantity = 3 [default = 1, null = False, db_index = False, blank = False];

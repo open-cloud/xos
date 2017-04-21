@@ -1,6 +1,6 @@
 
 
-message XOSComponentVolumeContainer {
+message XOSComponentVolumeContainer (PlCoreBase){
      required manytoone component->XOSComponent:volumecontainers = 1 [help_text = "The Component object for this VolumeContainer", null = False, db_index = True, blank = False];
      required string name = 2 [max_length = 300, content_type = "stripped", blank = False, help_text = "Volume Name", null = False, db_index = False];
      required string container = 3 [max_length = 300, content_type = "stripped", blank = False, help_text = "Volume Name", null = False, db_index = False];

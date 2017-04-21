@@ -1,6 +1,6 @@
 
 
-message TenantPrivilege {
+message TenantPrivilege (PlCoreBase){
      required manytoone user->User:tenantprivileges = 1 [db_index = True, null = False, blank = False];
      required manytoone tenant->Tenant:tenantprivileges = 2 [db_index = True, null = False, blank = False];
      required manytoone role->TenantRole:tenantprivileges = 3 [db_index = True, null = False, blank = False];

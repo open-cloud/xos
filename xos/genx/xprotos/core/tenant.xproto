@@ -1,6 +1,6 @@
 
 
-message Tenant {
+message Tenant (PlCoreBase,AttributeMixin){
      optional string name = 1 [db_index = False, max_length = 200, null = True, content_type = "stripped", blank = True];
      required string kind = 2 [default = "generic", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
      required manytoone provider_service->Service:provided_tenants = 3 [db_index = True, null = False, blank = False];

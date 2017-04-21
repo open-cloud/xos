@@ -1,6 +1,6 @@
 
 
-message Controller {
+message Controller (PlCoreBase){
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the Controller", null = False, db_index = False];
      required string backend_type = 2 [max_length = 200, content_type = "stripped", blank = False, help_text = "Type of compute controller, e.g. EC2, OpenStack, or OpenStack version", null = False, db_index = False];
      required string version = 3 [max_length = 200, content_type = "stripped", blank = False, help_text = "Controller version", null = False, db_index = False];

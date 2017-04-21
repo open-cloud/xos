@@ -1,6 +1,6 @@
 
 
-message DeploymentPrivilege {
+message DeploymentPrivilege (PlCoreBase){
      required manytoone user->User:deploymentprivileges = 1 [db_index = True, null = False, blank = False];
      required manytoone deployment->Deployment:deploymentprivileges = 2 [db_index = True, null = False, blank = False];
      required manytoone role->DeploymentRole:deploymentprivileges = 3 [db_index = True, null = False, blank = False];

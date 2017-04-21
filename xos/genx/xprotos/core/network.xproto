@@ -1,6 +1,6 @@
 
 
-message Network {
+message Network (PlCoreBase,ParameterMixin){
      required string name = 1 [db_index = False, max_length = 32, null = False, blank = False];
      required manytoone template->NetworkTemplate:network = 2 [db_index = True, null = False, blank = False];
      required string subnet = 3 [db_index = False, max_length = 32, null = False, blank = True];
@@ -18,4 +18,7 @@ message Network {
      optional string router_id = 15 [help_text = "Quantum router id", max_length = 256, null = True, db_index = False, blank = True];
      optional string subnet_id = 16 [help_text = "Quantum subnet id", max_length = 256, null = True, db_index = False, blank = True];
      required bool autoconnect = 17 [help_text = "This network can be autoconnected to the slice that owns it", default = True, null = False, db_index = False, blank = True];
+     required manytomany permitted_slices->Slice/NetworkSlice:availableNetworks = 18 [db_index = False, null = False, blank = True];
+     required manytomany slices->Slice/NetworkSlice:networks = 19 [db_index = False, null = False, blank = True];
+     required manytomany instances->Instance/Port:networks = 20 [db_index = False, null = False, blank = True];
 }

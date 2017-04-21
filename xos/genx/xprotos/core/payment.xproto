@@ -1,6 +1,6 @@
 
 
-message Payment {
+message Payment (PlCoreBase){
      required manytoone account->Account:payments = 1 [db_index = True, null = False, blank = False];
      required float amount = 2 [default = 0.0, null = False, db_index = False, blank = False];
      required string date = 3 [default = "now()", null = False, db_index = False, content_type = "date", blank = False];

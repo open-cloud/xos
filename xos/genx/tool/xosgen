@@ -16,15 +16,16 @@ import lib
 parse = argparse.ArgumentParser(description='XOS code generator')
 parse.add_argument('--rev', dest='rev', action='store_true',default=False, help='Convert proto to xproto')
 parse.add_argument('--input', dest='input', action='store',default=None, help='Filename in Protobufs')
-parse.add_argument('--output', dest='output', action='store',default=None, help='Output format, corresponding to <output>.yaml file')
+parse.add_argument('--target', dest='target', action='store',default=None, help='Output format, corresponding to <output>.yaml file')
+parse.add_argument('--output', dest='output', action='store',default=None, help='Destination path')
 
 args = parse.parse_args()
 
 def file_exists(name):
-    return (os.path.exists(name))
+    return (os.path.exists('attic/'+name))
 
 def include_file(name):
-    return open(name).read()
+    return open('attic/'+name).read()
     # FIXME: Support templates in the future
     #return jinja2.Markup(loader.get_source(env, name)[0])
 
@@ -44,7 +45,7 @@ def main():
         ast = parser.parse_string(input,debug=0)
         ast.accept(v)
         
-        template_name = os.path.abspath(args.output)
+        template_name = os.path.abspath(args.target)
 
 	os_template_loader = jinja2.FileSystemLoader( searchpath=[os.path.split(template_name)[0]])
         os_template_env = jinja2.Environment(loader=os_template_loader)
@@ -62,7 +63,8 @@ def main():
         current_buffer = []
         for l in lines:
             if (l.startswith('+++')):
-                path = l[4:]
+                prefix = args.output.rsplit('/',1)[0]
+                path = prefix+'/'+l[4:]
                 
                 direc,filename = path.rsplit('/',1)
                 os.system('mkdir -p %s'%direc)

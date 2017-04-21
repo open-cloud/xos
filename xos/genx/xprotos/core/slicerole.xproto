@@ -1,5 +1,5 @@
 
 
-message SliceRole {
+message SliceRole (PlCoreBase){
      required string role = 1 [choices = "(('admin', 'Admin'), ('default', 'Default'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
 }

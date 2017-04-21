@@ -1,6 +1,6 @@
 
 
-message XOSGuiExtension {
+message XOSGuiExtension (PlCoreBase){
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the GUI Extensions", null = False, db_index = False];
      required string files = 2 [max_length = 1024, content_type = "stripped", blank = False, help_text = "List of comma separated file composing the view", null = False, db_index = False];
 }
