@@ -1,9 +1,6 @@
 import pdb
 import re
 
-def xproto_eval(arg):
-    return eval(arg)
-
 def django_content_type_string(xptags):
     # Check possibility of KeyError in caller
     content_type = xptags['content_type']
@@ -121,9 +118,10 @@ def xproto_django_link_options_str(field, dport=None):
         output_dict['related_name'] = '%r'%dport
 
     try:
-        if field['through'] and not field['through'].endswith('_'+field.name):
-            output_dict['through'] = field['through']
-    except:
+        if field['through']:
+            if not field['through'].endswith('_'+field['name']):
+                output_dict['through'] = '%r'%field['through']
+    except KeyError:
         pass
 
     return format_options_string(output_dict)

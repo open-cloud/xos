@@ -18,14 +18,16 @@ parse.add_argument('--rev', dest='rev', action='store_true',default=False, help=
 parse.add_argument('--input', dest='input', action='store',default=None, help='Filename in Protobufs')
 parse.add_argument('--target', dest='target', action='store',default=None, help='Output format, corresponding to <output>.yaml file')
 parse.add_argument('--output', dest='output', action='store',default=None, help='Destination path')
+parse.add_argument('--attic', dest='attic', action='store',default=None, help='The location at which static files are stored')
+parse.add_argument('--kvpairs', dest='kv', action='store',default=None, help='Key value pairs to make available to the target')
 
 args = parse.parse_args()
 
 def file_exists(name):
-    return (os.path.exists('attic/'+name))
+    return (os.path.exists(args.attic+'/'+name))
 
 def include_file(name):
-    return open('attic/'+name).read()
+    return open(args.attic+'/'+name).read()
     # FIXME: Support templates in the future
     #return jinja2.Markup(loader.get_source(env, name)[0])
 
@@ -57,18 +59,29 @@ def main():
                 os_template_env.globals[f] = getattr(lib, f)
 
         template = os_template_env.get_template(os.path.split(template_name)[1])
-        rendered = template.render({"proto": {'messages':v.messages}})
+        context = {}
+
+        try:
+            for s in args.kv.split(','):
+                k,val=s.split(':')
+                context[k]=val
+        except:
+            pass
+
+        rendered = template.render({"proto": {'messages':v.messages},"context":context})
 
         lines = rendered.splitlines()
         current_buffer = []
         for l in lines:
             if (l.startswith('+++')):
-                prefix = args.output.rsplit('/',1)[0]
-                path = prefix+'/'+l[4:]
+                prefixes = args.output.rsplit('/',1)
+                if (len(prefixes)>1):
+                    path = prefix+'/'+l[4:]
+                    direc = prefix
+                    os.system('mkdir -p %s'%direc)
+                else:
+                    path = l[4:]
                 
-                direc,filename = path.rsplit('/',1)
-                os.system('mkdir -p %s'%direc)
-              
                 fil = open(path,'w')
                 buf = '\n'.join(current_buffer)
 
