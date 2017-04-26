@@ -1,0 +1,8 @@
+
+
+message XOSComponentLink (PlCoreBase){
+     required manytoone component->XOSComponent:links = 1 [help_text = "The Component object for this Link", null = False, db_index = True, blank = False];
+     required string container = 2 [max_length = 200, content_type = "stripped", blank = False, help_text = "container to link", null = False, db_index = False];
+     required string alias = 3 [max_length = 200, content_type = "stripped", blank = False, help_text = "alias for the link", null = False, db_index = False];
+     required string kind = 4 [default = "internal", choices = "(('internal', 'Internal'), ('external', 'External'))", max_length = 20, blank = False, null = False, db_index = False];
+}

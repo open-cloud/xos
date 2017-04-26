@@ -1,0 +1,13 @@
+
+
+message Program (PlCoreBase){
+     required string name = 1 [max_length = 30, content_type = "stripped", blank = False, help_text = "Service Name", null = False, db_index = False];
+     optional string description = 2 [help_text = "Description of Service", max_length = 254, null = True, db_index = False, blank = True];
+     required string kind = 3 [choices = "(('tosca', 'Tosca'),)", max_length = 30, content_type = "stripped", blank = False, help_text = "Kind of service", null = False, db_index = False];
+     optional string command = 4 [choices = "(('run', 'Run'), ('destroy', 'Destroy'))", max_length = 30, content_type = "stripped", blank = True, help_text = "Command to run", null = True, db_index = False];
+     optional manytoone owner->User:programs = 5 [db_index = True, null = True, blank = False];
+     optional string contents = 6 [help_text = "Contents of Program", null = True, db_index = False, blank = True];
+     optional string output = 7 [help_text = "Output of Program", null = True, db_index = False, blank = True];
+     optional string messages = 8 [help_text = "Debug messages", null = True, db_index = False, blank = True];
+     optional string status = 9 [help_text = "Status of program", max_length = 30, null = True, db_index = False, blank = True];
+}

@@ -1,0 +1,10 @@
+
+
+message LoadableModuleResource (PlCoreBase){
+     required manytoone loadable_module->LoadableModule:loadable_module_resources = 1 [help_text = "The Loadable Module this resource is associated with", null = False, db_index = True, blank = False];
+     required string name = 2 [max_length = 30, content_type = "stripped", blank = False, help_text = "Object Name", null = False, db_index = False];
+     optional string subdirectory = 3 [max_length = 1024, content_type = "stripped", blank = True, help_text = "optional subdirectory", null = True, db_index = False];
+     required string kind = 4 [choices = "(('models', 'Models'), ('admin', 'Admin'), ('admin_template', 'Admin Template'), ('django_library', 'Django Library'), ('synchronizer', 'Synchronizer'), ('rest_service', 'REST API (service)'), ('rest_tenant', 'REST API (tenant)'), ('tosca_custom_types', 'Tosca Custom Types'), ('tosca_resource', 'Tosca Resource'), ('private_key', 'Private Key'), ('public_key', 'Public Key'), ('vendor_js', 'Vendor Javascript'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
+     required string format = 5 [choices = "(('python', 'Python'), ('manifest', 'Manifest'), ('docker', 'Docker Container'), ('yaml', 'YAML'), ('raw', 'raw'), ('javascript', 'Javascript'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
+     optional string url = 6 [max_length = 1024, content_type = "stripped", blank = True, help_text = "URL of resource", null = True, db_index = False];
+}

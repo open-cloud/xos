@@ -345,7 +345,7 @@ class User(AbstractBaseUser, PlModelMixIn):
         msg.send()
 
     def can_update(self, user):
-        from core.models import SitePrivilege
+        from core.models.siteprivilege import SitePrivilege
         _cant_update_fieldName = None
         if user.can_update_root():
             return True
@@ -382,7 +382,7 @@ class User(AbstractBaseUser, PlModelMixIn):
         return False
 
     def can_update_deployment(self, deployment):
-        from core.models.site import DeploymentPrivilege
+        from core.models.deploymentprivilege import DeploymentPrivilege
         if self.can_update_root():
             return True
 
@@ -394,7 +394,7 @@ class User(AbstractBaseUser, PlModelMixIn):
         return False
 
     def can_update_site(self, site, allow=[]):
-        from core.models.site import SitePrivilege
+        from core.models.siteprivilege import SitePrivilege
         if self.can_update_root():
             return True
         if SitePrivilege.objects.filter(
@@ -403,7 +403,7 @@ class User(AbstractBaseUser, PlModelMixIn):
         return False
 
     def can_update_slice(self, slice):
-        from core.models.slice import SlicePrivilege
+        from core.models.sliceprivilege import SlicePrivilege
         if self.can_update_root():
             return True
         if self == slice.creator:
@@ -417,7 +417,7 @@ class User(AbstractBaseUser, PlModelMixIn):
         return False
 
     def can_update_service(self, service, allow=[]):
-        from core.models.service import ServicePrivilege
+        from core.models.serviceprivilege import ServicePrivilege
         if self.can_update_root():
             return True
         if ServicePrivilege.objects.filter(
@@ -426,7 +426,8 @@ class User(AbstractBaseUser, PlModelMixIn):
         return False
 
     def can_update_tenant_root(self, tenant_root, allow=[]):
-        from core.models.service import TenantRoot, TenantRootPrivilege
+        from core.models.tenantroot import TenantRoot
+        from core.models.tenantrootprivilege import TenantRootPrivilege
         if self.can_update_root():
             return True
         if TenantRootPrivilege.objects.filter(
@@ -435,7 +436,8 @@ class User(AbstractBaseUser, PlModelMixIn):
         return False
 
     def can_update_tenant(self, tenant, allow=[]):
-        from core.models.service import Tenant, TenantPrivilege
+        from core.models.tenant import Tenant
+        from core.models.tenantprivilege import TenantPrivilege
         if self.can_update_root():
             return True
         if TenantPrivilege.objects.filter(
@@ -568,7 +570,7 @@ class User(AbstractBaseUser, PlModelMixIn):
             qs = User.objects.all()
         else:
             # can see all users at any site where this user has pi role
-            from core.models.site import SitePrivilege
+            from core.models.siteprivilege import SitePrivilege
             site_privs = SitePrivilege.objects.filter(user=user)
             sites = [sp.site for sp in site_privs if sp.role.role in [
                 'Admin', 'admin', 'pi']]

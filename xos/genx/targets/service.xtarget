@@ -1,0 +1,49 @@
+from header import *
+
+{% for m in proto.messages %}
+{% if file_exists(m.name|lower+'_header.py') -%}from {{m.name|lower }}_header import *{% endif %}
+{% if file_exists(m.name|lower+'_top.py') -%}{{ include_file(m.name|lower+'_top.py') }} {% endif %}
+
+{%- for l in m.links -%}
+{% if l.peer not in proto.message_names -%}
+from core.models import {{ l.peer }} 
+{%- endif -%}
+{%- endfor -%}
+{%- for b in m.bases -%}
+{%- if b!='PlCoreBase' and 'Mixin' not in b -%}
+#from core.models.{{b | lower}} import {{ b }}
+from core.models import {{ b }}
+{%- endif -%}
+{% endfor %}
+
+{% endfor %}
+
+{% for m in proto.messages %}
+
+class {{ m.name }}{{ xproto_base_def(m.bases) }}:
+
+  KIND = {{ xproto_first_non_empty([m.options.kind, options.kind, options.name, "Set a kind in your xproto!"]) }}
+
+  class Meta:
+      app_label = {{ xproto_first_non_empty([m.options.app_label, options.app_label, options.name, "Set an app label in your xproto!"]) | lower}}
+      # name = {{ xproto_first_non_empty([m.options.name, options.name, "Set a name in your xproto!"]) }}
+      verbose_name = {{ xproto_first_non_empty([m.options.verbose_name, options.verbose_name, "Set a verbose name in your xproto!"]) }}
+
+  # Primitive Fields (Not Relations)
+  {% for f in m.fields %}
+  {%- if not f.link -%}
+  {{ f.name }} = {{ xproto_django_type(f.type, f.options) }}( {{ xproto_django_options_str(f) }} )
+  {% endif %}
+  {%- endfor %}
+
+  # Relations
+  {% for l in m.links %}
+  {{ l.src_port }} = {{ xproto_django_link_type(l) }}( {%- if l.peer==m.name -%}'self'{%- else -%}{{ l.peer }} {%- endif -%}, {{ xproto_django_options_str(l, l.dst_port ) }} )
+  {%- endfor %}
+
+  {% if file_exists(m.name|lower + '_model.py') -%}{{ include_file(m.name|lower + '_model.py') | indent(width=2)}}{%- endif %}
+  pass
+
+{% if file_exists(m.name|lower+'_bottom.py') -%}{{ include_file(m.name|lower+'_bottom.py') }}{% endif %}
+{% endfor %}
++++ models.py

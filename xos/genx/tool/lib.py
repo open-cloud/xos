@@ -40,6 +40,10 @@ def xproto_base_def(base):
     else:
         return '(' + ','.join(base) + ')'
 
+def xproto_first_non_empty(lst):
+    for l in lst:
+        if l: return l
+
 def xproto_django_type(xptype, xptags):
     if (xptype=='string'):
         return django_string_type(xptags)

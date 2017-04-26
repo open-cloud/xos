@@ -7,6 +7,20 @@ import sys
 import jinja2
 import os
 
+def count_messages(body):
+    count = 0
+    for e in body:
+        if (type(e)==m.MessageDefinition):
+            count+=1
+    return count
+
+def count_fields(body):
+    count = 0
+    for e in body:
+        if (type(e) in [m.LinkDefinition,m.FieldDefinition,m.LinkSpec]):
+            count+=1
+    return count
+
 class Stack(list):
     def push(self,x):
         self.append(x)
@@ -15,12 +29,15 @@ class Stack(list):
     in addition to traversing it '''
 class XOS2Jinja(m.Visitor):
     stack = Stack()
+    options = {}
+    message_options = {}
     count_stack = Stack()
     content=""
     offset=0
     doNameSanitization=False
     statementsChanged=0
     prefix=""
+    current_message_name = None
 
     def get_stack(self):
         return stack
@@ -41,7 +58,11 @@ class XOS2Jinja(m.Visitor):
         return True
 
     def visit_OptionStatement(self, obj):
-        '''Ignore'''
+        if (self.current_message_name):
+            self.message_options[obj.name.value.pval] = obj.value.value.pval
+        else:
+            self.options[obj.name.value.pval] = obj.value.value.pval
+
         return True
 
     def visit_LU(self, obj):
@@ -148,7 +169,9 @@ class XOS2Jinja(m.Visitor):
         return True
 
     def visit_MessageDefinition(self, obj):
-        self.count_stack.push(len(obj.body))
+        self.current_message_name = obj.name.value.pval
+        self.message_options = {}
+        self.count_stack.push(count_fields(obj.body))
         return True
     
     def visit_MessageDefinition_post(self, obj):
@@ -168,7 +191,8 @@ class XOS2Jinja(m.Visitor):
                 fields.insert(0,f)
                 last_field = f
 
-        self.stack.push({'name':obj.name.value.pval,'fields':fields,'links':links, 'bases':obj.bases})
+        self.stack.push({'name':obj.name.value.pval,'fields':fields,'links':links, 'bases':obj.bases, 'options':self.message_options})
+        self.current_message_name = None
         return True
 
     def visit_MessageExtension(self, obj):
@@ -192,8 +216,9 @@ class XOS2Jinja(m.Visitor):
     def visit_DotName(self, obj):
         return True
 
+    
     def visit_Proto(self, obj):
-        self.count_stack.push(len(obj.body))
+        self.count_stack.push(count_messages(obj.body))
         return True
     
     def visit_Proto_post(self, obj):
@@ -203,7 +228,7 @@ class XOS2Jinja(m.Visitor):
             try:
                 m = self.stack.pop()
             except IndexError:
-                pdb.set_trace()
+                pass
 
             messages.insert(0,m)
 

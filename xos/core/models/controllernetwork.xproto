@@ -1,0 +1,14 @@
+
+
+message ControllerNetwork (PlCoreBase){
+     required manytoone network->Network:controllernetworks = 1 [db_index = True, null = False, blank = False];
+     required manytoone controller->Controller:controllernetworks = 2 [db_index = True, null = False, blank = False];
+     required string subnet = 3 [db_index = False, max_length = 32, null = False, blank = True];
+     required string start_ip = 4 [db_index = False, max_length = 32, null = False, blank = True];
+     required string stop_ip = 5 [db_index = False, max_length = 32, null = False, blank = True];
+     optional string net_id = 6 [help_text = "Neutron network", max_length = 256, null = True, db_index = False, blank = True];
+     optional string router_id = 7 [help_text = "Neutron router id", max_length = 256, null = True, db_index = False, blank = True];
+     optional string subnet_id = 8 [help_text = "Neutron subnet id", max_length = 256, null = True, db_index = False, blank = True];
+     optional string gateway = 9 [db_index = False, max_length = 32, null = True, blank = True];
+     optional string segmentation_id = 10 [db_index = False, max_length = 32, null = True, blank = True];
+}
