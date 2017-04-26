@@ -1,14 +1,18 @@
 
 from header import *
 {% for m in proto.messages %}
-{% if file_exists(xproto_base_name(m.name)+'_header.py'|lower) -%}from {{m.name|lower}}_header import *{% endif %}
-{% if file_exists(xproto_base_name(m.name)+'_top.py'|lower) -%}{{ include_file(xproto_base_name(m.name)|lower+'_top.py') }}{% endif %}
+{% if file_exists(xproto_base_name(m.name)|lower+'_header.py') -%}from {{xproto_base_name(m.name)|lower }}_header import *{% endif %}
+{% if file_exists(xproto_base_name(m.name)|lower+'_top.py') -%}{{ include_file(xproto_base_name(m.name)|lower+'_top.py') }} {% endif %}
 
 {%- for l in m.links %}
+
+{% if l.peer != m.name %}
 from core.models.{{ l.peer | lower }} import {{ l.peer }} 
+{% endif %}
+
 {%- endfor %}
 {% for b in m.bases %}
-{% if b!='PlCoreBase' and b!='AttributeMixin'%}
+{% if b!='PlCoreBase' and 'Mixin' not in b%}
 from core.models.{{b | lower}} import {{ b }}
 {% endif %}
 {% endfor %}
@@ -24,11 +28,11 @@ class {{ m.name }}{{ xproto_base_def(m.bases) }}:
 
   # Relations
   {% for l in m.links %}
-  {{ l.src_port }} = {{ xproto_django_link_type(l) }}( {{ l.peer }}, {{ xproto_django_options_str(l, l.dst_port ) }} )
+  {{ l.src_port }} = {{ xproto_django_link_type(l) }}( {%- if l.peer==m.name -%}'self'{%- else -%}{{ l.peer }} {%- endif -%}, {{ xproto_django_link_options_str(l, l.dst_port ) }} )
   {%- endfor %}
 
   {% if file_exists(m.name|lower + '_model.py') -%}{{ include_file(m.name|lower + '_model.py') | indent(width=2)}}{%- endif %}
+  pass
 
 {% if file_exists(xproto_base_name(m.name)|lower+'_bottom.py') -%}{{ include_file(xproto_base_name(m.name)|lower+'_bottom.py') }}{% endif %}
-+++ models/{{m.name|lower}}.py
 {% endfor %}

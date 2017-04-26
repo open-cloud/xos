@@ -1,4 +1,3 @@
-
 message LoadableModule {
   required int32 xos = 1 [ null = False,  default = "get_xos()",  blank = False,  help_text = "Pointer to XOS",  model = XOS,  modifier = required,  type = link,  port = loadable_modules,  db_index = True ];
   required string name = 2 [ null = False,  max_length = 30,  content_type = "stripped",  blank = False,  help_text = "Service Name",  modifier = required,  db_index = False ];

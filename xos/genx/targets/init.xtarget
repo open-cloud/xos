@@ -1,0 +1,15 @@
+# The hardcoded entries cannot be inferred from the models. To get rid of in the long run
+# 
+
+from .plcorebase import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager,PlModelMixIn,ModelLink
+from .singletonmodel import SingletonModel
+from .site import Site
+from .dashboardview import DashboardView
+from .user import User
+from .user import UserDashboardView
+from .header import ControllerManager, ControllerDeletionManager, ControllerLinkManager,ControllerLinkDeletionManager
+from .journal import JournalEntry, journal_object
+
+{% for m in proto.messages -%}
+from .{{ m.name | lower }} import {{ m.name }} 
+{% endfor -%}
