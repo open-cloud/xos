@@ -56,6 +56,11 @@ docker_images:
     dockerfile: "containers/xos/Dockerfile.corebuilder"
     pull: False
     publish: True
+  - name: "nginx:latest"
+    path: ""
+    dockerfile: ""
+    pull: True
+    publish: False
 
 build_optional_images: False
 
