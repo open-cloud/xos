@@ -1,0 +1,8 @@
+
+
+message ControllerDashboardView (PlCoreBase){
+     required manytoone controller->Controller:controllerdashboardviews = 1 [db_index = True, null = False, blank = False];
+     required manytoone dashboardView->DashboardView:controllerdashboardviews = 2 [db_index = True, null = False, blank = False];
+     required bool enabled = 3 [default = True, null = False, db_index = False, blank = True];
+     required string url = 4 [max_length = 1024, content_type = "stripped", blank = False, help_text = "URL of Dashboard", null = False, db_index = False];
+}

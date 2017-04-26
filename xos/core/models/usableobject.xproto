@@ -1,0 +1,5 @@
+
+
+message UsableObject (PlCoreBase){
+     required string name = 1 [db_index = False, max_length = 1024, null = False, content_type = "stripped", blank = False];
+}

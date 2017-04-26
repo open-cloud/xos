@@ -5,6 +5,9 @@ FROM xosproject/xos-base:candidate
 ADD xos/tools/corebuilder /opt/xos/tools/corebuilder
 ADD xos/tosca/custom_types /opt/xos/tools/corebuilder/custom_types
 
+# Temporary fix. This should go away when we update xos-core to a more recent image.
+RUN pip install git+https://github.com/sb98052/plyprotobuf
+
 ENV HOME /root
 WORKDIR /opt/xos/tools/corebuilder
 

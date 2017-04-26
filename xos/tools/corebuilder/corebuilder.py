@@ -1,3 +1,7 @@
+#!/usr/bin/python
+
+from stat import *
+
 """ CoreBuilder
 
     Read XOS Tosca Onboarding Recipes and generate a BUILD directory.
@@ -106,8 +110,13 @@ class XOSCoreBuilder(object):
 
     def get_dest_dir(self, kind, service_name):
         xos_base = "opt/xos"
+        if service_name!='core':
+            service_subdir = 'services'
+        else:
+            service_subdir = ''
+
         base_dirs = {"models": "%s/services/%s/" % (xos_base, service_name),
-                     "xproto": "%s/services/%s/xproto/" % (xos_base, service_name),
+                     "xproto": "%s/%s/%s/" % (xos_base, service_subdir, service_name),
                      "admin": "%s/services/%s/" % (xos_base, service_name),
                      "admin_template": "%s/services/%s/templates/" % (xos_base, service_name),
                      "django_library": "%s/services/%s/" % (xos_base, service_name),
@@ -119,6 +128,7 @@ class XOSCoreBuilder(object):
                      "private_key": "%s/services/%s/keys/" % (xos_base, service_name),
                      "public_key": "%s/services/%s/keys/" % (xos_base, service_name),
                      "vendor_js": "%s/core/xoslib/static/vendor/" % (xos_base)}
+
         dest_dir = base_dirs[kind]
 
         return dest_dir
@@ -134,6 +144,7 @@ class XOSCoreBuilder(object):
         fixups = ( ("/opt/xos_services/olt/", "/opt/cord/onos-apps/apps/olt/"),
                    ("/opt/xos_services/vtn/", "/opt/cord/onos-apps/apps/vtn/"),
                    ("/opt/xos_services/", "/opt/cord/orchestration/xos_services/"),
+                   ("/opt/xos/core/", "/opt/cord/orchestration/xos/xos/core/"),
                    ("/opt/xos_libraries/", "/opt/cord/orchestration/xos_libraries/") )
 
         for (pattern, replace) in fixups:
@@ -197,7 +208,7 @@ class XOSCoreBuilder(object):
 
             # If the ServiceController has models, then add it to the list of
             # django apps.
-            if (k=="models"):
+            if (k in ["models","xproto"] and service_name!="core"):
                 self.app_names.append(service_name)
 
             # filenames can be comma-separated
@@ -236,7 +247,7 @@ class XOSCoreBuilder(object):
                 dest_dir = self.get_dest_dir(k, service_name)
                 dest_fn = os.path.join(dest_dir, subdirectory, os.path.basename(src_fn))
 
-                self.resources.append( (k, src_fn, dest_fn) )
+                self.resources.append( (k, src_fn, dest_fn, service_name) )
 
                 # add __init__.py files anywhere that we created a new
                 # directory.
@@ -258,18 +269,34 @@ class XOSCoreBuilder(object):
                 shutil.rmtree(os.path.join(BUILD_DIR, dir))
 
         # Copy all of the resources into the build directory
-        for (kind, src_fn, dest_fn) in self.resources:
-#            if (kind == "xproto"):
-#               build_dest_dir = os.path.join(BUILD_DIR, os.path.dirname(dest_fn))
-
-                # TODO: If we wanted to statically compile xproto files, then
-                #   this is where we could do it. src_fn would be the name of
-                #   the xproto file, and build_dest_dir would be the place
-                #   to store the generated files.
-
+        for (kind, src_fn, dest_fn, service_name) in self.resources:
             build_dest_fn = os.path.join(BUILD_DIR, dest_fn)
             makedirs_if_noexist(os.path.dirname(build_dest_fn))
-            shutil.copyfile(src_fn, build_dest_fn)
+            if (os.path.isdir(src_fn)):
+                if (not os.path.isdir(build_dest_fn)):
+                    shutil.copytree(src_fn, build_dest_fn, symlinks=True)
+                else:
+                    os.system('cp -R %s/*.xproto %s/attic %s/*header.py %s'%(src_fn, src_fn, src_fn, build_dest_fn))
+            else:
+                shutil.copyfile(src_fn, build_dest_fn)
+
+            if (kind=='xproto'):
+                # Invoke xproto toolchain in the destination directory
+                xosgen_path = '/opt/cord/orchestration/xos/xos/genx'
+                is_service = service_name!='core'
+
+                if (is_service):
+                    makefile_name = 'Makefile.service'
+                else:
+                    makefile_name = 'Makefile'
+
+                xproto_makefile = '%s/tool/%s'%(xosgen_path,makefile_name)
+                xproto_makefile_dst = '/'.join([build_dest_fn, makefile_name])
+                shutil.copyfile(xproto_makefile, xproto_makefile_dst)
+
+                if (os.system('make -C %s -f %s PREFIX=%s'%(build_dest_fn, makefile_name, xosgen_path))):
+                    raise Exception('xproto build failed!')
+
 
         # Create the __init__.py files
         for fn in self.inits:

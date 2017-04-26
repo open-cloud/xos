@@ -1,0 +1,18 @@
+# Replace the line below with the location of xosgen
+PREFIX=.
+XOSGEN=$(PREFIX)/tool/xosgen
+
+DJANGO_TARGET=$(PREFIX)/targets/service.xtarget
+XPROTOS_TMP := $(shell mktemp)
+
+xprotos = $(wildcard *.xproto)
+
+all: models.py
+
+models.py: $(xprotos)
+	$(XOSGEN) --attic attic --input $< --target $(DJANGO_TARGET) --output $@
+
+.PHONY: all
+	
+clean:
+	rm -f models.py
