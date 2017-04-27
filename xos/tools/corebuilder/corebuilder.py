@@ -39,6 +39,7 @@
             /opt/cord/orchestration/xos_libraries/ng-xos-lib/ng-xos-lib-onboard.yaml
 """
 
+import argparse
 import os
 import pdb
 import shutil
@@ -54,6 +55,24 @@ BUILD_DIR = "/opt/xos_corebuilder/BUILD"
 def makedirs_if_noexist(pathname):
     if not os.path.exists(pathname):
         os.makedirs(pathname)
+
+class CoreBuilderException(Exception):
+    pass
+
+class CoreBuilderMissingRecipeException(CoreBuilderException):
+    pass
+
+class CoreBuilderMalformedValueException(CoreBuilderException):
+    pass
+
+class CoreBuilderMalformedUrlException(CoreBuilderException):
+    pass
+
+class CoreBuilderMissingResourceException(CoreBuilderException):
+    pass
+
+class CoreBuilderUnknownResourceException(CoreBuilderException):
+    pass
 
 class XOSCoreBuilder(object):
     def __init__(self, recipe_list, parent_dir=None):
@@ -74,6 +93,8 @@ class XOSCoreBuilder(object):
         self.app_names = []
 
         for recipe in recipe_list:
+            if not os.path.exists(recipe):
+                raise CoreBuilderMissingRecipeException("Onboarding Recipe %s does not exist" % recipe)
             tosca_yaml = open(recipe).read()
             self.execute_recipe(tosca_yaml)
 
@@ -149,7 +170,7 @@ class XOSCoreBuilder(object):
             # Library works just like ServiceController
             self.execute_servicecontroller(nodetemplate)
         else:
-            raise Exception("Nodetemplate %s's type %s is not a known resource" % (nodetemplate.name, nodetemplate.type))
+            raise CoreBuilderUnknownResourceException("Nodetemplate %s's type %s is not a known resource" % (nodetemplate.name, nodetemplate.type))
 
     def execute_servicecontroller(self, nodetemplate):
         service_name = nodetemplate.name
@@ -193,9 +214,9 @@ class XOSCoreBuilder(object):
                            if lhs=="subdirectory":
                                subdirectory=rhs
                            else:
-                               raise Exception("Malformed value %s" % value)
+                               raise CoreBuilderMalformedValueException("Malformed value %s in resource %s of recipe %s" % (v, k, nodetemplate.name))
                        else:
-                           raise Exception("Malformed value %s" % value)
+                           raise CoreBuilderMalformedValueException("Malformed value %s in resource %s of recipe %s" % (v, k, nodetemplate.name))
                     src_fn = parts[-1]
 
                 # apply base_url to src_fn
@@ -204,13 +225,13 @@ class XOSCoreBuilder(object):
 
                 # ensure that it's a file:// url
                 if not src_fn.startswith("file://"):
-                    raise Exception("%s does not start with file://" % src_fn)
+                    raise CoreBuilderMalformedUrlException("Resource `%s: %s` of recipe %s does not start with file://" % (k, src_fn, nodetemplate.name))
                 src_fn = src_fn[7:]
 
                 src_fn = self.fixup_path(src_fn)
 
                 if not os.path.exists(src_fn):
-                    raise Exception("%s does not exist" % src_fn)
+                    raise CoreBuilderMissingResourceException("Resource '%s: %s' of recipe %s does not exist" % (k, src_fn, nodetemplate.name))
 
                 dest_dir = self.get_dest_dir(k, service_name)
                 dest_fn = os.path.join(dest_dir, subdirectory, os.path.basename(src_fn))
@@ -266,12 +287,40 @@ class XOSCoreBuilder(object):
         makedirs_if_noexist(os.path.dirname(app_list_fn))
         file(app_list_fn, "w").write("\n".join(["services.%s" % x for x in self.app_names])+"\n")
 
-def main():
-   if len(sys.argv)<=1:
-       print >> sys.stderr, "Syntax: corebuilder.py [recipe1, recipe2, ...]"
+def parse_args():
+    parser = argparse.ArgumentParser()
 
-   builder = XOSCoreBuilder(sys.argv[1:])
-   builder.build()
+    _help = 'enable verbose logging'
+    parser.add_argument('-v', '--verbose',
+                        dest='verbose',
+                        action='store_true',
+                        default=False,
+                        help=_help)
+
+    _help = 'list of onboarding recipe filenames'
+    parser.add_argument('recipe_names',
+                        metavar="RECIPE",
+                        nargs='+',
+                        help=_help)
+
+    args = parser.parse_args()
+
+    return args
+
+def main():
+   global options
+
+   options = parse_args()
+
+   try:
+       builder = XOSCoreBuilder(options.recipe_names)
+       builder.build()
+   except CoreBuilderException, e:
+       if options.verbose:
+           traceback.print_exc()
+       else:
+           print >> sys.stderr, "Error:", str(e)
+       sys.exit(-1)
 
 if __name__ == "__main__":
     main()
