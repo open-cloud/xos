@@ -16,7 +16,7 @@ import django.apps
 from django.db.models import F,Q
 from core.models import *
 from xos.exceptions import *
-from apihelper import XOSAPIHelperMixin
+from apihelper import XOSAPIHelperMixin, translate_exceptions
 
 # The Tosca engine expects to be run from /opt/xos/tosca/ or equivalent. It
 # needs some sys.path fixing up.
@@ -45,13 +45,14 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
     def stop(self):
         pass
 
+    @translate_exceptions
     def Login(self, request, context):
         if not request.username:
-            raise XOSPermissionDenied("No username")
+            raise XOSNotAuthenticated("No username")
 
         u=django_authenticate(username=request.username, password=request.password)
         if not u:
-            raise XOSPermissionDenied("Failed to authenticate user %s" % request.username)
+            raise XOSNotAuthenticated("Failed to authenticate user %s" % request.username)
 
         session = SessionStore()
         auth = {"username": request.username, "password": request.password}
@@ -65,6 +66,7 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
 
         return response
 
+    @translate_exceptions
     def Logout(self, request, context):
         for (k, v) in context.invocation_metadata():
             if (k.lower()=="x-xossession"):
@@ -74,6 +76,7 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
                     s.save()
         return Empty()
 
+    @translate_exceptions
     def RunTosca(self, request, context):
         user=self.authenticate(context, required=True)
 
@@ -97,6 +100,7 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
 
         return response
 
+    @translate_exceptions
     def DestroyTosca(self, request, context):
         user=self.authenticate(context, required=True)
 
@@ -120,9 +124,11 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
 
         return response
 
+    @translate_exceptions
     def NoOp(self, request, context):
         return Empty()
 
+    @translate_exceptions
     def ListDirtyModels(self, request, context):
         dirty_models = utility_pb2.ModelList()
 
@@ -143,6 +149,7 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
 
         return dirty_models
 
+    @translate_exceptions
     def SetDirtyModels(self, request, context):
         user=self.authenticate(context, required=True)
 
