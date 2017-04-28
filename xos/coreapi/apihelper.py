@@ -5,6 +5,7 @@ import pytz
 import time
 from protos import xos_pb2
 from google.protobuf.empty_pb2 import Empty
+import grpc
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import authenticate as django_authenticate
@@ -15,6 +16,25 @@ from xos.exceptions import *
 from importlib import import_module
 from django.conf import settings
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
+
+def translate_exceptions(function):
+    def wrapper(*args, **kwargs):
+        try:
+            return function(*args, **kwargs)
+        except Exception, e:
+            if "context" in kwargs:
+                context = kwargs["context"]
+            else:
+                context = args[2]
+            context.set_details(str(e))
+            if (type(e) == XOSPermissionDenied):
+                context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            elif (type(e) == XOSValidationError):
+                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            elif (type(e) == XOSNotAuthenticated):
+                context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+            raise
+    return wrapper
 
 class XOSAPIHelperMixin(object):
     def __init__(self):
