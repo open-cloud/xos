@@ -1,10 +1,15 @@
 # xosproject/chameleon
 FROM xosproject/xos-base
 
-MAINTAINER Scott Baker    <scottb@onlab.us>
-MAINTAINER Zsolt Haraszti <zharaszt@ciena.com>
-MAINTAINER Ali Al-Shabibi <ali.al-shabibi@onlab.us>
-MAINTAINER Nathan Knuth   <nathan.knuth@tibitcom.com>
+# xos-base already has protoc and dependencies installed
+
+# Bundle app source
+RUN mkdir /chameleon && touch /chameleon/__init__.py
+ENV PYTHONPATH=/chameleon
+COPY tmp.chameleon /chameleon/chameleon
+
+# Build the protos
+RUN chdir chameleon/chameleon/protos && VOLTHA_BASE=anything make
 
 # Label image
 ARG org_label_schema_schema_version=1.0
@@ -29,15 +34,6 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.opencord.component.chameleon.vcs-url=$org_opencord_component_chameleon_vcs_url \
       org.opencord.component.chameleon.vcs-ref=$org_opencord_component_chameleon_vcs_ref
 
-# xos-base already has protoc and dependencies installed
-
-# Bundle app source
-RUN mkdir /chameleon && touch /chameleon/__init__.py
-ENV PYTHONPATH=/chameleon
-COPY tmp.chameleon /chameleon/chameleon
-
-# Build the protos
-RUN chdir chameleon/chameleon/protos && VOLTHA_BASE=anything make
-
 # Exposing process and default entry point
 CMD ["python", "chameleon/chameleon/main.py"]
+

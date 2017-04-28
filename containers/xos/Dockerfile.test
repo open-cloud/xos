@@ -1,6 +1,20 @@
 # xosproject/xos-test
 FROM xosproject/xos:candidate
 
+# install nodejs
+COPY containers/xos/nodesource.gpg.key /tmp/nodesource.gpg.key
+
+RUN apt-key add /tmp/nodesource.gpg.key \
+ && echo "deb https://deb.nodesource.com/node_4.x trusty main" \
+    > /etc/apt/sources.list.d/nodesource.list \
+ && apt-get update \
+ && apt-get install -y --force-yes \
+    nodejs \
+ && rm -rf /var/lib/apt/lists/* \
+ && node -v \
+ && pip install selenium \
+ && npm install -g phantomjs
+
 # Label image
 ARG org_label_schema_schema_version=1.0
 ARG org_label_schema_name=xos-test
@@ -18,20 +32,3 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.label-schema.build-date=$org_label_schema_build_date \
       org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date
 
-# install nodejs
-COPY containers/xos/nodesource.gpg.key /tmp/nodesource.gpg.key
-
-RUN apt-key add /tmp/nodesource.gpg.key \
- && echo "deb https://deb.nodesource.com/node_4.x trusty main" \
-    > /etc/apt/sources.list.d/nodesource.list
-
-RUN apt-get update \
- && apt-get install -y --force-yes \
-    nodejs \
- && rm -rf /var/lib/apt/lists/*
-
-RUN node -v
-
-RUN pip install selenium
-
-RUN npm install -g phantomjs

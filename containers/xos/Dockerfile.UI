@@ -1,6 +1,9 @@
 # xosproject/xos-ui
 FROM xosproject/xos:candidate
 
+# Install file from corebuilder
+ADD containers/xos/BUILD /
+
 # Label image
 ARG org_label_schema_schema_version=1.0
 ARG org_label_schema_name=xos-corebuilder
@@ -18,5 +21,3 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.label-schema.build-date=$org_label_schema_build_date \
       org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date
 
-# Install file from corebuilder
-ADD containers/xos/BUILD /
