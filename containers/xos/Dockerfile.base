@@ -1,24 +1,6 @@
 # Dockerfile.base
 # This image isn't used, but installs the prereqs for the other XOS images
 FROM ubuntu:14.04.5
-MAINTAINER Zack Williams <zdw@cs.arizona.edu>
-
-# Label image
-ARG org_label_schema_schema_version=1.0
-ARG org_label_schema_name=xos-base
-ARG org_label_schema_version=unknown
-ARG org_label_schema_vcs_url=unknown
-ARG org_label_schema_vcs_ref=unknown
-ARG org_label_schema_build_date=unknown
-ARG org_opencord_vcs_commit_date=unknown
-
-LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
-      org.label-schema.name=$org_label_schema_name \
-      org.label-schema.version=$org_label_schema_version \
-      org.label-schema.vcs-url=$org_label_schema_vcs_url \
-      org.label-schema.vcs-ref=$org_label_schema_vcs_ref \
-      org.label-schema.build-date=$org_label_schema_build_date \
-      org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date
 
 # Install apt packages, including docker
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
@@ -94,4 +76,21 @@ RUN curl -fLsS $JQUERYUI_THEMES_DL_URL -o jquery-ui-themes.zip && \
     unzip jquery-ui-themes.zip && \
     mv jquery-ui-themes-*/themes/smoothness/jquery-ui.min.css /usr/local/lib/python2.7/dist-packages/suit/static/suit/css/ && \
     rm -rf jquery-ui-themes.zip jquery-ui-themes-*
+
+# Label image
+ARG org_label_schema_schema_version=1.0
+ARG org_label_schema_name=xos-base
+ARG org_label_schema_version=unknown
+ARG org_label_schema_vcs_url=unknown
+ARG org_label_schema_vcs_ref=unknown
+ARG org_label_schema_build_date=unknown
+ARG org_opencord_vcs_commit_date=unknown
+
+LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
+      org.label-schema.name=$org_label_schema_name \
+      org.label-schema.version=$org_label_schema_version \
+      org.label-schema.vcs-url=$org_label_schema_vcs_url \
+      org.label-schema.vcs-ref=$org_label_schema_vcs_ref \
+      org.label-schema.build-date=$org_label_schema_build_date \
+      org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date
 

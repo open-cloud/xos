@@ -1,6 +1,18 @@
 # xosproject/xos-client
 FROM xosproject/xos-base:candidate
 
+# Install XOS client
+ADD xos/xos_client /tmp/xos_client
+
+# Install chameleon
+ADD containers/xos/tmp.chameleon /tmp/xos_client/xosapi/chameleon
+
+#ENV HOME /root
+#WORKDIR /opt/xos
+
+# install the client library and xossh
+RUN chdir /tmp/xos_client && make
+
 # Label image
 ARG org_label_schema_schema_version=1.0
 ARG org_label_schema_name=xos-client
@@ -24,16 +36,5 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.opencord.component.chameleon.vcs-url=$org_opencord_component_chameleon_vcs_url \
       org.opencord.component.chameleon.vcs-ref=$org_opencord_component_chameleon_vcs_ref
 
-# Install XOS client
-ADD xos/xos_client /tmp/xos_client
-
-# Install chameleon
-ADD containers/xos/tmp.chameleon /tmp/xos_client/xosapi/chameleon
-
-#ENV HOME /root
-#WORKDIR /opt/xos
-
-# install the client library and xossh
-RUN chdir /tmp/xos_client && make
 
 ENTRYPOINT ["xossh"]
