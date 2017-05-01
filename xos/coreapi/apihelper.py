@@ -26,7 +26,7 @@ def translate_exceptions(function):
                 context = kwargs["context"]
             else:
                 context = args[2]
-            context.set_details(str(e))
+            context.set_details(e.json_detail)
             if (type(e) == XOSPermissionDenied):
                 context.set_code(grpc.StatusCode.PERMISSION_DENIED)
             elif (type(e) == XOSValidationError):
