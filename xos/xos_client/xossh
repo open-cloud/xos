@@ -118,7 +118,8 @@ def listUtility():
     print 'listModelDefs()'
 
 def examples():
-    print 'coreapi.Slice.objects.all() # list all slices'
+    print 'Slice.objects.all() # list all slices'
+    print 'Slice.objects.first().dump() # dump the first slice'
     print 's = Slice.objects.new() # create a new slice'
     print 's.name = "mysite_foo" # set a slice name'
     print 's.site_id = coreapi.Site.objects.all()[0].id # grab the first site'

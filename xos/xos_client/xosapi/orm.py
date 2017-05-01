@@ -164,7 +164,28 @@ class ORMWrapper(object):
             setattr(self._wrapped_class, name, value)
 
     def __repr__(self):
+        class_name = self._wrapped_class.__class__.__name__
+        id = getattr(self._wrapped_class, "id", "noid")
+        name = getattr(self._wrapped_class, "name", None)
+        if name:
+            return "<%s: %s>" % (class_name, name)
+        else:
+            return "<%s: id-%s>" % (class_name, id)
+
+    def __str__(self):
+        class_name = self._wrapped_class.__class__.__name__
+        id = getattr(self._wrapped_class, "id", "noid")
+        name = getattr(self._wrapped_class, "name", None)
+        if name:
+            return name
+        else:
+            return "%s-%s" % (class_name, id)
+
+    def dumpstr(self):
         return self._wrapped_class.__repr__()
+
+    def dump(self):
+        print self.dumpstr()
 
     def invalidate_cache(self, name=None):
         if name:
