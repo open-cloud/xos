@@ -12,9 +12,9 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" \
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --force-yes\
     python-software-properties \
     software-properties-common \
-    postgresql-$PGSQL_VERSION \
-    postgresql-client-$PGSQL_VERSION \
-    postgresql-contrib-$PGSQL_VERSION \
+    postgresql-${PGSQL_VERSION} \
+    postgresql-client-${PGSQL_VERSION} \
+    postgresql-contrib-${PGSQL_VERSION} \
  && rm -rf /var/lib/apt/lists/*
 
 # Workaround for AUFS issue
@@ -28,10 +28,10 @@ RUN /etc/init.d/postgresql start && \
     psql --command "CREATE DATABASE xos"
 
 # Allow remote connections.
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/$PGSQL_VERSION/main/pg_hba.conf
-RUN echo "host all  all    0.0.0.0/0  password" >> /etc/postgresql/$PGSQL_VERSION/main/pg_hba.conf
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/${PGSQL_VERSION}/main/pg_hba.conf
+RUN echo "host all  all    0.0.0.0/0  password" >> /etc/postgresql/${PGSQL_VERSION}/main/pg_hba.conf
 
-RUN echo "listen_addresses='*'" >> /etc/postgresql/$PGSQL_VERSION/main/postgresql.conf
+RUN echo "listen_addresses='*'" >> /etc/postgresql/${PGSQL_VERSION}/main/postgresql.conf
 
 # Expose the PostgreSQL port
 EXPOSE 5432
@@ -55,4 +55,4 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.label-schema.build-date=$org_label_schema_build_date \
       org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date
 
-CMD ["/usr/lib/postgresql/$PGSQL_VERSION/bin/postgres", "-D", "/var/lib/postgresql/$PGSQL_VERSION/main", "-c", "config_file=/etc/postgresql/$PGSQL_VERSION/main/postgresql.conf"]
+CMD /usr/lib/postgresql/${PGSQL_VERSION}/bin/postgres -D /var/lib/postgresql/${PGSQL_VERSION}/main -c config_file=/etc/postgresql/${PGSQL_VERSION}/main/postgresql.conf
