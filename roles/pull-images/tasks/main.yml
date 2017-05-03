@@ -5,4 +5,5 @@
   docker_image:
     name: "{{ item.name }}"
     repository: "{{ item.name }}:{{ build_docker_tag }}"
+    force: True
   with_items: "{{ docker_images | selectattr('pull') | list }}"

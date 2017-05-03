@@ -15,7 +15,13 @@ docker_images:
     path: "{{ cord_dir }}/orchestration/xos/containers/xos"
     dockerfile: "Dockerfile.base"
     pull: True
+    build: False
     publish: False
+  - name: "xosproject/xos-postgres"
+    path: "{{ cord_dir }}/orchestration/xos/containers/postgresql"
+    dockerfile: "Dockerfile"
+    pull: True
+    publish: True
   - name: "xosproject/xos"
     path: "{{ cord_dir }}/orchestration/xos"
     dockerfile: "containers/xos/Dockerfile.xos"
