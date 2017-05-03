@@ -1,5 +1,5 @@
 # xosproject/chameleon
-FROM xosproject/xos-base
+FROM xosproject/xos-base:candidate
 
 # xos-base already has protoc and dependencies installed
 

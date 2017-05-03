@@ -37,22 +37,6 @@ base:
 	sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm \
 	-f Dockerfile.base -t xosproject/xos-base ${BUILD_ARGS} .
 
-build:
-	sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm \
-	-f Dockerfile -t ${IMAGE_NAME} ${BUILD_ARGS} .
-
-custom:
-	docker build --no-cache=${NO_DOCKER_CACHE} --rm \
-	--build-arg XOS_GIT_REPO=${XOS_GIT_REPO} \
-	--build-arg XOS_GIT_BRANCH=${XOS_GIT_BRANCH} \
-	-f Dockerfile -t ${IMAGE_NAME} ${BUILD_ARGS} .
-
-devel:
-	sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm \
-	--build-arg XOS_GIT_COMMIT_HASH="${XOS_GIT_COMMIT_HASH}" \
-	--build-arg XOS_GIT_COMMIT_DATE="${XOS_GIT_COMMIT_DATE}" \
-	-f Dockerfile.devel -t ${IMAGE_NAME} ${BUILD_ARGS} ../..
-
 test:
 	sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm \
 	-f Dockerfile.test -t xosproject/xos-test ${BUILD_ARGS} ../..
