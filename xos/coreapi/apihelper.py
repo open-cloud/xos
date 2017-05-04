@@ -18,6 +18,7 @@ from django.conf import settings
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
 
 def translate_exceptions(function):
+    """ this decorator translates XOS exceptions to grpc status codes """
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
@@ -35,6 +36,60 @@ def translate_exceptions(function):
                 context.set_code(grpc.StatusCode.UNAUTHENTICATED)
             raise
     return wrapper
+
+
+bench_tStart = time.time()
+bench_ops = 0
+def benchmark(function):
+    """ this decorator will report gRPC benchmark statistics every 10 seconds """
+    def wrapper(*args, **kwargs):
+        global bench_tStart
+        global bench_ops
+        result = function(*args, **kwargs)
+        bench_ops = bench_ops+1
+        elap = time.time() - bench_tStart
+        if (elap >= 10):
+            print "performance %d" % (bench_ops/elap)
+            bench_ops=0
+            bench_tStart = time.time()
+        return result
+    return wrapper
+
+class CachedAuthenticator(object):
+    """ Django Authentication is very slow (~ 10 ops/second), so cache
+        authentication results and reuse them.
+    """
+
+    def __init__(self):
+        self.cached_creds = {}
+        self.timeout = 10          # keep cache entries around for 10s
+
+    def authenticate(self, username, password):
+        self.trim()
+
+        key = "%s:%s" % (username, password)
+        cred = self.cached_creds.get(key, None)
+        if cred:
+            user = User.objects.filter(id=cred["user_id"])
+            if user:
+               user = user[0]
+               #print "cached authenticated %s:%s as %s" % (username, password, user)
+               return user
+
+        user = django_authenticate(username=username, password=password)
+        if user:
+            #print "django authenticated %s:%s as %s" % (username, password, user)
+            self.cached_creds[key] = {"timeout": time.time() + self.timeout, "user_id": user.id}
+
+        return user
+
+    def trim(self):
+        """ Delete all cache entries that have expired """
+        for (k, v) in list(self.cached_creds.items()):
+            if time.time() > v["timeout"]:
+                del self.cached_creds[k]
+
+cached_authenticator = CachedAuthenticator()
 
 class XOSAPIHelperMixin(object):
     def __init__(self):
@@ -284,10 +339,9 @@ class XOSAPIHelperMixin(object):
                 if (method.lower() == "basic"):
                     auth = base64.b64decode(auth)
                     (username, password) = auth.split(":")
-                    user = django_authenticate(username=username, password=password)
+                    user = cached_authenticator.authenticate(username=username, password=password)
                     if not user:
                         raise XOSPermissionDenied("failed to authenticate %s:%s" % (username, password))
-                    print "authenticated %s:%s as %s" % (username, password, user)
                     return user
             elif (k.lower()=="x-xossession"):
                  s = SessionStore(session_key=v)
