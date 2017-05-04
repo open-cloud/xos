@@ -41,6 +41,7 @@ def is_internal_model(model):
 class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
     def __init__(self, thread_pool):
         self.thread_pool = thread_pool
+        XOSAPIHelperMixin.__init__(self)
 
     def stop(self):
         pass
@@ -126,6 +127,11 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
 
     @translate_exceptions
     def NoOp(self, request, context):
+        return Empty()
+
+    @translate_exceptions
+    def AuthenticatedNoOp(self, request, context):
+        self.authenticate(context, required=True)
         return Empty()
 
     @translate_exceptions

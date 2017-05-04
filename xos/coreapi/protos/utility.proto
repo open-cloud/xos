@@ -79,6 +79,13 @@ service utility {
         };
   }
 
+  rpc AuthenticatedNoOp(google.protobuf.Empty) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/xosapi/v1/utility/auth_noop"
+            body: "*"
+        };
+  }
+
   rpc SetDirtyModels(ModelFilter) returns (ModelList) {
         option (google.api.http) = {
             post: "/xosapi/v1/utility/dirty_models"
