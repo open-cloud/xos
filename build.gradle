@@ -31,9 +31,9 @@ ext {
             : 'candidate'
 }
 
-# Pull XOS images that exist on Docker Hub.
-# All images will get rebuilt during the buildImages step, but may at least
-# be able to use some intermediate images.
+// Pull XOS images that exist on Docker Hub.
+// All images will get rebuilt during the buildImages step, but may at least
+// be able to use some intermediate images.
 task fetch(type: Exec) {
   executable = "ansible-playbook"
   args = [
@@ -43,7 +43,7 @@ task fetch(type: Exec) {
     "pull-xos-playbook.yml" ]
 }
 
-# Build all XOS images from source.
+// Build all XOS images from source.
 task buildImages(type: Exec) {
   executable = "ansible-playbook"
   args = [
@@ -53,7 +53,7 @@ task buildImages(type: Exec) {
     "build-xos-playbook.yml" ]
 }
 
-# Publish XOS images to the head node registry.
+// Publish XOS images to the head node registry.
 task publish(type: Exec) {
   executable = "ansible-playbook"
   args = [ "-i", "../../build/genconfig/cord-inv",
