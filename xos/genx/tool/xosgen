@@ -36,15 +36,16 @@ env = jinja2.Environment(loader=loader)
 
 def main():
     try:
-        if (not args.rev):
-            v = XOS2Jinja()
-        else:
-            v = Proto2XProto()
 
         parser = plyproto.ProtobufAnalyzer()
         input = open(args.input).read()
-
         ast = parser.parse_string(input,debug=0)
+
+        if (args.rev):
+            v = Proto2XProto()
+            ast.accept(v)
+        
+        v = XOS2Jinja()
         ast.accept(v)
         
         template_name = os.path.abspath(args.target)

@@ -34,8 +34,6 @@ class XOS2Jinja(m.Visitor):
     count_stack = Stack()
     content=""
     offset=0
-    doNameSanitization=False
-    statementsChanged=0
     prefix=""
     current_message_name = None
 
@@ -58,10 +56,11 @@ class XOS2Jinja(m.Visitor):
         return True
 
     def visit_OptionStatement(self, obj):
-        if (self.current_message_name):
-            self.message_options[obj.name.value.pval] = obj.value.value.pval
-        else:
-            self.options[obj.name.value.pval] = obj.value.value.pval
+        if not hasattr(obj,'mark_for_deletion'):
+            if (self.current_message_name):
+                self.message_options[obj.name.value.pval] = obj.value.value.pval
+            else:
+                self.options[obj.name.value.pval] = obj.value.value.pval
 
         return True
 
@@ -99,22 +98,30 @@ class XOS2Jinja(m.Visitor):
     def visit_LinkDefinition(self, obj):
         s={}
 
-        s['link_type'] = obj.link_type.pval
+        try:
+            s['link_type'] = obj.link_type.pval
+        except AttributeError:
+            s['link_type'] = obj.link_type
+
         s['src_port'] = obj.src_port.value.pval
         s['name'] = obj.src_port.value.pval
 
         try:
             s['dst_port'] = obj.dst_port.value.pval
         except AttributeError:
-            s['dst_port'] = ''
+            s['dst_port'] = obj.dst_port
 
 
         try:
             s['through'] = obj.through.pval
         except AttributeError:
-            s['through'] = ''
+            s['through'] = obj.through
 
-        s['peer'] = obj.name.pval
+        try:
+            s['peer'] = obj.name.pval
+        except AttributeError:
+            s['peer'] = obj.name
+
         s['_type'] = 'link'
         s['options'] = {'modifier':'optional'}
 
@@ -179,7 +186,10 @@ class XOS2Jinja(m.Visitor):
         fields = []
         links = []
         last_field = None
-        obj.bases = map(lambda x:x.pval, obj.bases)
+        try:
+            obj.bases = map(lambda x:x.pval, obj.bases)
+        except AttributeError:
+            pass
 
         for i in range(0,stack_num):
             f = self.stack.pop()

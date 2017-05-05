@@ -1,0 +1,18 @@
+{% for k,v in options.iteritems() %}
+option {{ k }} = {{ v }};
+{% endfor %}
+
+{% for m in proto.messages %}
+message {{ m.name }} ({{ m.bases | join(",") }}){
+  {%- for f in m.fields %}
+  {% if not f.link %}
+  {{ f.modifier }} {{f.type}} {{f.name}} = {{ f.id }}{% if f.options %} [{% for k,v in f.options.iteritems() %} {{ k }} = {{ v }}{% if not loop.last %},{% endif %} {% endfor %}]{% endif %};
+  {% endif %}
+  {%- endfor %}
+  
+  {%- for l in m.links %}
+  {{ l }}
+  {{ l.modifier }} {{ l.link_type }} {{ l.name }} -> {{ l.peer }}:{{ l.dst_port }} = 1 {% if l.options %} [{% for k,v in l.options.iteritems() %} {{ k }} = {{ v }}{% if not loop.last %},{% endif %} {% endfor %}]{% endif %};
+  {%- endfor -%}
+}
+{% endfor %}

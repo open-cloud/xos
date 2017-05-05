@@ -11,14 +11,59 @@ class Stack(list):
     def push(self,x):
         self.append(x)
 
-''' Proto2XProto overrides the underlying visitor pattern to transform the tree
-    in addition to traversing it '''
+def replace_link(obj):
+        try:
+            link = obj.link
+            try:
+                through = link['through']
+            except KeyError:
+                through = None
+
+            try:
+                through_str = through[1:-1]
+            except TypeError:
+                through_str = None
+
+            ls = m.LinkSpec(obj, m.LinkDefinition(link['link'][1:-1],obj.name,link['model'][1:-1],link['port'][1:-1],through_str))
+            return ls
+        except:
+            return obj
+
 class Proto2XProto(m.Visitor):
     stack = Stack()
     count_stack = Stack()
     content=""
     offset=0
     statementsChanged=0
+    message_options = {}
+    options = {}
+    current_message_name = None
+    
+    xproto_message_options = ['bases']
+    xproto_field_options = ['model']
+    
+    
+    def proto_to_xproto_field(self, obj):
+        try:
+            opts = {}
+            for fd in obj.fieldDirective:
+                k = fd.pval.name.value.pval
+                v = fd.pval.value.value.pval
+                opts[k]=v
+
+            if ('model' in opts and 'link' in opts and 'port' in opts):
+                obj.link = opts
+            pass
+        except KeyError:
+            raise
+
+    def proto_to_xproto_message(self, obj):
+        try:
+            bases = self.message_options['bases'].split(',')
+            bases = map(lambda x:x[1:-1], bases)
+            obj.bases = bases
+        except KeyError:
+            raise
 
     def map_field(self, obj, s):
         if 'model' in s:
@@ -48,7 +93,14 @@ class Proto2XProto(m.Visitor):
         return True
 
     def visit_OptionStatement(self, obj):
-        '''Ignore'''
+        if (self.current_message_name):
+            k = obj.name.value.pval
+            self.message_options[k] = obj.value.value.pval
+            if (k in self.xproto_message_options):
+               obj.mark_for_deletion = True  
+        else:
+            self.options[obj.name.value.pval] = obj.value.value.pval
+
         return True
 
     def visit_LU(self, obj):
@@ -61,20 +113,6 @@ class Proto2XProto(m.Visitor):
         return True
 
     def visit_FieldDirective_post(self, obj):
-        try:
-            name = obj.name.value.pval
-        except AttributeError:
-            name = obj.name.value
-
-        try:
-            value = obj.value.value.pval
-        except AttributeError:
-            try:
-                value = obj.value.value
-            except AttributeError:
-                value = obj.value.pval
-
-        self.stack.push([name,value])
         return True
 
     def visit_FieldType(self, obj):
@@ -84,19 +122,10 @@ class Proto2XProto(m.Visitor):
         return True
 
     def visit_FieldDefinition(self, obj):
-        self.count_stack.push(len(obj.fieldDirective))
         return True
 
     def visit_FieldDefinition_post(self, obj):
-        opts = {}
-        n = self.count_stack.pop()
-        for i in range(0, n):
-            k,v = self.stack.pop()
-            opts[k] = v
-
-        f = self.map_field(obj, opts)
-        self.stack.push(f)
-        #self.stack::declare.push(f)
+        self.proto_to_xproto_field(obj)
         return True
 
     def visit_EnumFieldDefinition(self, obj):
@@ -106,17 +135,17 @@ class Proto2XProto(m.Visitor):
         return True
 
     def visit_MessageDefinition(self, obj):
-        self.count_stack.push(len(obj.body))
+        self.current_message_name = obj.name.value.pval
+        self.message_options = {}
+
         return True
     
     def visit_MessageDefinition_post(self, obj):
-        stack_num = self.count_stack.pop()
-        lst = []
+        self.proto_to_xproto_message(obj)
+        obj.body = filter(lambda x:not hasattr(x, 'mark_for_deletion'), obj.body)
+        obj.body = map(replace_link, obj.body)
 
-        for n in range(0,stack_num):
-            lst.append(self.stack.pop())
-
-        obj.body = lst
+        self.current_message_name = None
         return True
 
     def visit_MessageExtension(self, obj):
