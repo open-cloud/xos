@@ -79,7 +79,7 @@ docker_optional_images:
 build_docker_tag: "candidate"
 
 misc_docker_images:
-  - "node:argon"
+  - "node:7.9.0"
 
 enabled_gui_extensions: []
 
