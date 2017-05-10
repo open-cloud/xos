@@ -3,5 +3,5 @@ def save(self, *args, **kwds):
     if not self.pk:
         existing = XOSComponentLink.objects.filter(container=self.container, alias=self.alias)
         if len(existing) > 0:
-            raise XOSValidationError('XOSComponentLink for %s:%s already defined' % (self.container, self.alias))
+            raise XOSValidationError('XOSComponentLink for %s:%s already defined' % (self.container, self.alias), {'pk' : 'XOSComponentLink for %s:%s already defined' % (self.container, self.alias)})
     super(XOSComponentLink, self).save(*args, **kwds)

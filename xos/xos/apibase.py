@@ -23,7 +23,7 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(self.object, data=request.data, partial=partial)
 
         if not serializer.is_valid():
-            raise XOSValidationError(fields=serializer._errors)
+            raise XOSValidationError('Invalid serializer', fields=serializer._errors)
 
         # Do the XOS perm check
 
@@ -65,7 +65,7 @@ class XOSListCreateAPIView(generics.ListCreateAPIView):
         # In rest_framework 3.x: we can pass raise_exception=True instead of
         # raising the exception ourselves
         if not serializer.is_valid():
-            raise XOSValidationError(fields=serializer._errors)
+            raise XOSValidationError('Invalid serializer', fields=serializer._errors)
 
         # now do XOS can_update permission checking
         obj = serializer.Meta.model(**serializer.validated_data)
