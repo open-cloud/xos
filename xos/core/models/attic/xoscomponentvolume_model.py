@@ -3,6 +3,6 @@ def save(self, *args, **kwds):
     if not self.pk:
         existing = XOSComponentVolume.objects.filter(container_path=self.container_path, host_path=self.host_path)
         if len(existing) > 0:
-            raise XOSValidationError('XOSComponentVolume for %s:%s already defined' % (self.container_path, self.host_path))
+            raise XOSValidationError('XOSComponentVolume for %s:%s already defined' % (self.container_path, self.host_path), {'pk' : 'XOSComponentVolume for %s:%s already defined' % (self.container_path, self.host_path)})
     super(XOSComponentVolume, self).save(*args, **kwds)
 
