@@ -1,9 +1,0 @@
-
-
-message XOSComponent (LoadableModule){
-     required string image = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "docker image name", null = False, db_index = False];
-     optional string command = 2 [max_length = 1024, content_type = "stripped", blank = True, help_text = "docker run command", null = True, db_index = False];
-     optional string ports = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "port binding", null = True, db_index = False];
-     optional string extra = 4 [max_length = 200, content_type = "stripped", blank = True, help_text = "extra information needed by containers", null = True, db_index = False];
-     required bool no_start = 5 [help_text = "Do not start the Component", default = False, null = False, db_index = False, blank = True];
-}

@@ -13,5 +13,4 @@ message Service (PlCoreBase,AttributeMixin){
      optional string private_key_fn = 10 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
      optional string service_specific_id = 11 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
      optional string service_specific_attribute = 12 [db_index = False, null = True, blank = True];
-     optional manytoone controller->ServiceController:services = 13 [help_text = "The Service Controller this Service uses", null = True, db_index = True, blank = True];
 }

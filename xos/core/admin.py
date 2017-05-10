@@ -1087,71 +1087,12 @@ class ServiceAdmin(XOSBaseAdmin):
                       ('servicemonitoringagents', 'Monitoring Agents')
                       )
 
-class LoadableModuleResourceInline(XOSTabularInline):
-    model = LoadableModuleResource
-    fields = ['name', 'kind', 'format', 'url']
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-resources'
-
-class ServiceControllerAdmin(XOSBaseAdmin):
-    list_display = ("backend_status_icon", "name",)
-    list_display_links = ('backend_status_icon', 'name',)
-    fieldList = ["backend_status_text", "name", "xos", "version", "provides", "requires", "base_url", "synchronizer_run", "synchronizer_config", "image", "no_start", "no_build", "no_deploy"]
-    fieldsets = [
-        (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
-    inlines = [LoadableModuleResourceInline]
-    readonly_fields = ('backend_status_text', )
-
-    user_readonly_fields = fieldList
-
-    suit_form_tabs = (('general', 'Service Controller Details'),
-                      ('resources', 'Resources'),
-                      )
-
-class LibraryAdmin(XOSBaseAdmin):
-    list_display = ("backend_status_icon", "name",)
-    list_display_links = ('backend_status_icon', 'name',)
-    fieldList = ["backend_status_text", "name", "xos", "version", "provides", "requires", "base_url"]
-    fieldsets = [
-        (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
-    inlines = [LoadableModuleResourceInline]
-    readonly_fields = ('backend_status_text', )
-
-    user_readonly_fields = fieldList
-
-    suit_form_tabs = (('general', 'Library Details'),
-                      ('resources', 'Resources'),
-                      )
-
-class XOSComponentAdmin(XOSBaseAdmin):
-    list_display = ("backend_status_icon", "name",)
-    list_display_links = ('backend_status_icon', 'name',)
-    fieldList = ["backend_status_text", "name", "xos", "version", "provides", "requires", "base_url", "no_start"]
-    fieldsets = [
-        (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
-    inlines = [LoadableModuleResourceInline]
-    readonly_fields = ('backend_status_text', )
-
-    user_readonly_fields = fieldList
-
-    suit_form_tabs = (('general', 'Component Details'),
-                      ('resources', 'Resources'),
-                      )
-
-class XOSVolumeInline(XOSTabularInline):
-    model = XOSVolume
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-volumes'
-    fields = ['container_path', 'host_path', 'read_only']
-
 class XosModelAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name",)
     list_display_links = ('backend_status_icon', 'name',)
-    fieldList = ["name", "ui_port", "bootstrap_ui_port", "docker_project_name", "db_container_name", "redis_container_name", "enable_build", "frontend_only",
-                 "source_ui_image", "dest_ui_image", "cert_chain_name", "extra_hosts", "no_start", "no_build"]
+    fieldList = ["name",]
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
-    inlines = [XOSVolumeInline]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = fieldList
@@ -2523,9 +2464,6 @@ admin.site.register(Controller, ControllerAdmin)
 admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
 admin.site.register(Service, ServiceAdmin)
-admin.site.register(ServiceController, ServiceControllerAdmin)
-admin.site.register(Library, LibraryAdmin)
-admin.site.register(XOSComponent, XOSComponentAdmin)
 admin.site.register(XOS, XosModelAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Port, PortAdmin)
