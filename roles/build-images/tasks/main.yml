@@ -22,7 +22,6 @@
     dockerfile: "{{ item.dockerfile }}"
     pull: False
     force: True
-    rm: False
   with_items: "{{ docker_images }}"
   when: "{{ item.build | default(True) }}"
 
@@ -34,7 +33,6 @@
     dockerfile: "{{ item.dockerfile }}"
     pull: False
     force: True
-    rm: False
   with_items: "{{ docker_optional_images }}"
   when: build_optional_images
 
@@ -46,7 +44,6 @@
     tag: "{{ build_docker_tag }}"
     pull: False
     force: True
-    rm: False
   with_items: "{{ enabled_gui_extensions }}"
 
 # Build synchronizer images
@@ -58,6 +55,5 @@
     tag: "{{ build_docker_tag }}"
     pull: False
     force: True
-    rm: False
   with_items: "{{ xos_services }}"
   when: not frontend_only and item.synchronizer is defined and item.synchronizer
