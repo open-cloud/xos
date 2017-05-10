@@ -1,8 +1,0 @@
-
-
-message XOSVolume (PlCoreBase){
-     required manytoone xos->XOS:volumes = 1 [help_text = "The XOS object for this Volume", null = False, db_index = True, blank = False];
-     required string container_path = 2 [max_length = 1024, content_type = "stripped", blank = False, help_text = "Path of Volume in Container", null = False, db_index = False];
-     required string host_path = 3 [max_length = 1024, content_type = "stripped", blank = False, help_text = "Path of Volume in Host", null = False, db_index = False];
-     required bool read_only = 4 [help_text = "True if mount read-only", default = False, null = False, db_index = False, blank = True];
-}

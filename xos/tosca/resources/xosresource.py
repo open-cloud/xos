@@ -10,6 +10,7 @@ class XOSResource(object):
     xos_model = None
     name_field = "name"
     copyin_props = []
+    obsolete_props = []
     provides = None
 
     def __init__(self, user, nodetemplate, engine):
@@ -232,6 +233,9 @@ class XOSResource(object):
         if self.name_field:
             args[self.name_field] = self.obj_name
 
+        for prop in self.obsolete_props:
+            self.warning("WARNING: Property %s of object %s is obsolete" % (prop, self.xos_model.__class__.__name__))
+
         # copy simple string properties from the template into the arguments
         for prop in self.copyin_props:
             v = self.get_property(prop)
@@ -271,5 +275,8 @@ class XOSResource(object):
             obj.delete(purge=True)   # XXX TODO: turn off purge before production
 
     def info(self, s):
+        self.engine.log(s)
+
+    def warning(self, s):
         self.engine.log(s)
 

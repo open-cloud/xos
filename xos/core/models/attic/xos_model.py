@@ -10,13 +10,5 @@ def save(self, *args, **kwds):
 #        return user.can_update_site(self.site, allow=['tech'])
 
 def rebuild(self, services=[]):
-    # If `services` is empty, then only rebuild the UI
-    # Otherwise, only rebuild the services listed in `services`
-    with transaction.atomic():
-        for loadable_module in self.loadable_modules.all():
-            if (services) and (loadable_module.name not in services):
-                continue
-            for lmr in loadable_module.loadable_module_resources.all():
-               lmr.save()
-            loadable_module.save()
-        self.save()
+    raise Exception("Not Implemented")
+
