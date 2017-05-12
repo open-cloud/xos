@@ -1,6 +1,0 @@
-
-message ControllerSite {
-  required int32 site = 1 [ null = False,  blank = False,  model = Site,  modifier = required,  type = link,  port = controllersite,  db_index = True ];
-  optional int32 controller = 2 [ null = True,  blank = True,  model = Controller,  modifier = optional,  type = link,  port = controllersite,  db_index = True ];
-  optional string tenant_id = 3 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "Keystone tenant id",  modifier = optional,  db_index = True ];
-}

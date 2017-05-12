@@ -1,9 +1,0 @@
-
-
-message XOSComponentVolume (PlCoreBase){
-     required manytoone component->XOSComponent:volumes = 1 [help_text = "The Component object for this Volume", null = False, db_index = True, blank = False];
-     required string name = 2 [max_length = 300, content_type = "stripped", blank = False, help_text = "Volume Name", null = False, db_index = False];
-     required string container_path = 3 [max_length = 1024, content_type = "stripped", blank = False, help_text = "Path of Volume in Container", null = False, db_index = False];
-     required string host_path = 4 [max_length = 1024, content_type = "stripped", blank = False, help_text = "Path of Volume in Host", null = False, db_index = False];
-     required bool read_only = 5 [help_text = "True if mount read-only", default = False, null = False, db_index = False, blank = True];
-}

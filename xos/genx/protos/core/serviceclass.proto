@@ -1,9 +1,0 @@
-
-message ServiceClass {
-  required string name = 1 [ null = False,  max_length = 32,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
-  required string description = 2 [ null = False,  max_length = 255,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
-  required int32 commitment = 3 [ db_index = False,  default = 365,  modifier = required,  null = False,  blank = False ];
-  required int32 membershipFee = 4 [ db_index = False,  default = 0,  modifier = required,  null = False,  blank = False ];
-  required int32 membershipFeeMonths = 5 [ db_index = False,  default = 12,  modifier = required,  null = False,  blank = False ];
-  required bool upgradeRequiresApproval = 6 [ db_index = False,  default = False,  modifier = required,  null = False,  blank = True ];
-}

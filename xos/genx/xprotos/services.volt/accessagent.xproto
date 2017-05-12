@@ -1,7 +1,0 @@
-
-
-message AccessAgent {
-     required string name = 1 [help_text = "name of agent", max_length = 254, null = False, db_index = False, blank = False];
-     required manytoone volt_service->VOLTService:access_agents = 2 [db_index = True, null = False, blank = False];
-     optional string mac = 3 [help_text = "MAC Address or Access Agent", max_length = 32, null = True, db_index = False, blank = True];
-}

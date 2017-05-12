@@ -1,7 +1,0 @@
-
-message VRouterPort {
-  optional string name = 1 [ null = True,  max_length = 20,  blank = True,  help_text = "port friendly name",  modifier = optional,  db_index = False ];
-  required string openflow_id = 2 [ null = False,  max_length = 21,  blank = False,  help_text = "port identifier in ONOS",  modifier = required,  db_index = False ];
-  required int32 vrouter_device = 3 [ null = False,  blank = False,  model = VRouterDevice,  modifier = required,  type = link,  port = ports,  db_index = True ];
-  required int32 vrouter_service = 4 [ null = False,  blank = False,  model = VRouterService,  modifier = required,  type = link,  port = device_ports,  db_index = True ];
-}

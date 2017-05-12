@@ -1,6 +1,0 @@
-
-message AccessDevice {
-  required int32 volt_device = 1 [ null = False,  blank = False,  model = VOLTDevice,  modifier = required,  type = link,  port = access_devices,  db_index = True ];
-  optional int32 uplink = 2 [ db_index = False,  modifier = optional,  null = True,  blank = True ];
-  optional int32 vlan = 3 [ db_index = False,  modifier = optional,  null = True,  blank = True ];
-}

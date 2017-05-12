@@ -1,7 +1,0 @@
-
-
-message ControllerUser (PlCoreBase){
-     required manytoone user->User:controllerusers = 1 [db_index = True, null = False, blank = False];
-     required manytoone controller->Controller:controllersusers = 2 [db_index = True, null = False, blank = False];
-     optional string kuser_id = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "Keystone user id", null = True, db_index = False];
-}

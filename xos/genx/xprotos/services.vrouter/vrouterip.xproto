@@ -1,7 +1,0 @@
-
-
-message VRouterIp {
-     optional string name = 1 [help_text = "ip friendly name", max_length = 20, null = True, db_index = False, blank = True];
-     required manytoone vrouter_interface->VRouterInterface:ips = 2 [db_index = True, null = False, blank = False];
-     required string ip = 3 [help_text = "interface ips", max_length = 19, null = False, db_index = False, blank = False];
-}

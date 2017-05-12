@@ -1,7 +1,0 @@
-
-
-message SitePrivilege (PlCoreBase){
-     required manytoone user->User:siteprivileges = 1 [db_index = True, null = False, blank = False];
-     required manytoone site->Site:siteprivileges = 2 [db_index = True, null = False, blank = False];
-     required manytoone role->SiteRole:siteprivileges = 3 [db_index = True, null = False, blank = False];
-}

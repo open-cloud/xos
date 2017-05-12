@@ -1,6 +1,0 @@
-
-message ControllerUser {
-  required int32 user = 1 [ null = False,  blank = False,  model = User,  modifier = required,  type = link,  port = controllerusers,  db_index = True ];
-  required int32 controller = 2 [ null = False,  blank = False,  model = Controller,  modifier = required,  type = link,  port = controllersusers,  db_index = True ];
-  optional string kuser_id = 3 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "Keystone user id",  modifier = optional,  db_index = False ];
-}

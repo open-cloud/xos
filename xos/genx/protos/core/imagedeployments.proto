@@ -1,5 +1,0 @@
-
-message ImageDeployments {
-  required int32 image = 1 [ null = False,  blank = False,  model = Image,  modifier = required,  type = link,  port = imagedeployments,  db_index = True ];
-  required int32 deployment = 2 [ null = False,  blank = False,  model = Deployment,  modifier = required,  type = link,  port = imagedeployments,  db_index = True ];
-}

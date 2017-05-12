@@ -1,7 +1,0 @@
-
-message ReservedResource {
-  required int32 instance = 1 [ null = False,  blank = False,  model = Instance,  modifier = required,  type = link,  port = reservedresources,  db_index = True ];
-  required int32 resource = 2 [ null = False,  blank = False,  model = ServiceResource,  modifier = required,  type = link,  port = reservedresources,  db_index = True ];
-  required int32 quantity = 3 [ db_index = False,  default = 1,  modifier = required,  null = False,  blank = False ];
-  required int32 reservationSet = 4 [ null = False,  blank = False,  model = Reservation,  modifier = required,  type = link,  port = reservedresources,  db_index = True ];
-}

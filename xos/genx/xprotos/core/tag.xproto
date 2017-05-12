@@ -1,9 +1,0 @@
-
-
-message Tag (PlCoreBase){
-     required manytoone service->Service:tags = 1 [help_text = "The Service this Tag is associated with", null = False, db_index = True, blank = False];
-     required string name = 2 [help_text = "The name of this tag", max_length = 128, null = False, db_index = True, blank = False];
-     required string value = 3 [max_length = 1024, content_type = "stripped", blank = False, help_text = "The value of this tag", null = False, db_index = False];
-     required manytoone content_type->ContentType:tag = 4 [db_index = True, null = False, blank = False];
-     required uint32 object_id = 5 [db_index = False, null = False, blank = False];
-}

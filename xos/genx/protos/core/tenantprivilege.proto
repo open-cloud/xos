@@ -1,6 +1,0 @@
-
-message TenantPrivilege {
-  required int32 user = 1 [ null = False,  blank = False,  model = User,  modifier = required,  type = link,  port = tenantprivileges,  db_index = True ];
-  required int32 tenant = 2 [ null = False,  blank = False,  model = Tenant,  modifier = required,  type = link,  port = tenantprivileges,  db_index = True ];
-  required int32 role = 3 [ null = False,  blank = False,  model = TenantRole,  modifier = required,  type = link,  port = tenantprivileges,  db_index = True ];
-}

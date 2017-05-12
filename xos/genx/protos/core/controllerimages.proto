@@ -1,6 +1,0 @@
-
-message ControllerImages {
-  required int32 image = 1 [ null = False,  blank = False,  model = Image,  modifier = required,  type = link,  port = controllerimages,  db_index = True ];
-  required int32 controller = 2 [ null = False,  blank = False,  model = Controller,  modifier = required,  type = link,  port = controllerimages,  db_index = True ];
-  optional string glance_image_id = 3 [ null = True,  max_length = 200,  content_type = "stripped",  blank = True,  help_text = "Glance image id",  modifier = optional,  db_index = False ];
-}
