@@ -1,6 +1,0 @@
-
-message AccessAgent {
-  required string name = 1 [ null = False,  max_length = 254,  blank = False,  help_text = "name of agent",  modifier = required,  db_index = False ];
-  required int32 volt_service = 2 [ null = False,  blank = False,  model = VOLTService,  modifier = required,  type = link,  port = access_agents,  db_index = True ];
-  optional string mac = 3 [ null = True,  max_length = 32,  blank = True,  help_text = "MAC Address or Access Agent",  modifier = optional,  db_index = False ];
-}

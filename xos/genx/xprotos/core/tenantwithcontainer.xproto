@@ -1,8 +1,0 @@
-
-
-message TenantWithContainer (Tenant){
-     optional manytoone instance->Instance:+ = 1 [help_text = "Instance used by this Tenant", null = True, db_index = True, blank = True];
-     optional manytoone creator->User:+ = 2 [help_text = "Creator of this Tenant", null = True, db_index = True, blank = True];
-     optional string external_hostname = 3 [max_length = 30, content_type = "stripped", blank = True, help_text = "External host name", null = True, db_index = False];
-     optional string external_container = 4 [max_length = 30, content_type = "stripped", blank = True, help_text = "External host name", null = True, db_index = False];
-}

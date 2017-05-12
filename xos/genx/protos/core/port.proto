@@ -1,9 +1,0 @@
-
-message Port {
-  required int32 network = 1 [ null = False,  blank = False,  model = Network,  modifier = required,  type = link,  port = links,  db_index = True ];
-  optional int32 instance = 2 [ null = True,  blank = True,  model = Instance,  modifier = optional,  type = link,  port = ports,  db_index = True ];
-  optional string ip = 3 [ null = True,  max_length = 39,  content_type = "ip",  blank = True,  help_text = "Instance ip address",  modifier = optional,  db_index = False ];
-  optional string port_id = 4 [ null = True,  max_length = 256,  blank = True,  help_text = "Neutron port id",  modifier = optional,  db_index = False ];
-  optional string mac = 5 [ null = True,  max_length = 256,  blank = True,  help_text = "MAC address associated with this port",  modifier = optional,  db_index = False ];
-  required bool xos_created = 6 [ db_index = False,  default = False,  modifier = required,  null = False,  blank = True ];
-}

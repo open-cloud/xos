@@ -1,6 +1,0 @@
-
-message AgentPortMapping {
-  required int32 access_agent = 1 [ null = False,  blank = False,  model = AccessAgent,  modifier = required,  type = link,  port = port_mappings,  db_index = True ];
-  optional string mac = 2 [ null = True,  max_length = 32,  blank = True,  help_text = "MAC Address",  modifier = optional,  db_index = False ];
-  optional string port = 3 [ null = True,  max_length = 32,  blank = True,  help_text = "Openflow port ID",  modifier = optional,  db_index = False ];
-}

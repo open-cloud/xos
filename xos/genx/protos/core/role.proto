@@ -1,7 +1,0 @@
-
-message Role {
-  required string role_type = 1 [ null = False,  max_length = 80,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
-  optional string role = 2 [ null = True,  max_length = 80,  content_type = "stripped",  blank = True,  modifier = optional,  db_index = False ];
-  required string description = 3 [ null = False,  max_length = 120,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
-  required int32 content_type = 4 [ null = False,  blank = False,  model = ContentType,  modifier = required,  type = link,  port = role,  db_index = True ];
-}

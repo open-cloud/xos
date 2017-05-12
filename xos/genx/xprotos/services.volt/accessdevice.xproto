@@ -1,7 +1,0 @@
-
-
-message AccessDevice {
-     required manytoone volt_device->VOLTDevice:access_devices = 1 [db_index = True, null = False, blank = False];
-     optional int32 uplink = 2 [db_index = False, null = True, blank = True];
-     optional int32 vlan = 3 [db_index = False, null = True, blank = True];
-}

@@ -1,8 +1,0 @@
-
-
-message Role (PlCoreBase){
-     required string role_type = 1 [db_index = False, max_length = 80, null = False, content_type = "stripped", blank = False];
-     optional string role = 2 [db_index = False, max_length = 80, null = True, content_type = "stripped", blank = True];
-     required string description = 3 [db_index = False, max_length = 120, null = False, content_type = "stripped", blank = False];
-     required manytoone content_type->ContentType:role = 4 [db_index = True, null = False, blank = False];
-}

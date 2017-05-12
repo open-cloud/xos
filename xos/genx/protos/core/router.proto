@@ -1,5 +1,0 @@
-
-message Router {
-  required string name = 1 [ db_index = False,  max_length = 32,  modifier = required,  null = False,  blank = False ];
-  required int32 owner = 2 [ null = False,  blank = False,  model = Slice,  modifier = required,  type = link,  port = routers,  db_index = True ];
-}

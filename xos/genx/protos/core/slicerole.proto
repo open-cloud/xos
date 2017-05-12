@@ -1,4 +1,0 @@
-
-message SliceRole {
-  required string role = 1 [ null = False,  choices = "(('admin', 'Admin'), ('default', 'Default'))",  max_length = 30,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
-}

@@ -1,4 +1,0 @@
-
-message Account {
-  required int32 site = 1 [ null = False,  blank = False,  help_text = "Site for this account",  model = Site,  modifier = required,  type = link,  port = accounts,  db_index = True ];
-}

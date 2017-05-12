@@ -1,8 +1,0 @@
-
-message XOSComponentVolume {
-  required int32 component = 1 [ null = False,  blank = False,  help_text = "The Component object for this Volume",  model = XOSComponent,  modifier = required,  type = link,  port = volumes,  db_index = True ];
-  required string name = 2 [ null = False,  max_length = 300,  content_type = "stripped",  blank = False,  help_text = "Volume Name",  modifier = required,  db_index = False ];
-  required string container_path = 3 [ null = False,  max_length = 1024,  content_type = "stripped",  blank = False,  help_text = "Path of Volume in Container",  modifier = required,  db_index = False ];
-  required string host_path = 4 [ null = False,  max_length = 1024,  content_type = "stripped",  blank = False,  help_text = "Path of Volume in Host",  modifier = required,  db_index = False ];
-  required bool read_only = 5 [ null = False,  default = False,  blank = True,  help_text = "True if mount read-only",  modifier = required,  db_index = False ];
-}

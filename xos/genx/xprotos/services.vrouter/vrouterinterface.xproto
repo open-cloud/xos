@@ -1,8 +1,0 @@
-
-
-message VRouterInterface {
-     required manytoone vrouter_port->VRouterPort:interfaces = 1 [db_index = True, null = False, blank = False];
-     required string name = 2 [help_text = "interface name", max_length = 10, null = False, db_index = False, blank = False];
-     required string mac = 3 [help_text = "interface mac", max_length = 17, null = False, db_index = False, blank = False];
-     optional string vlan = 4 [help_text = "interface vlan id", max_length = 10, null = True, db_index = False, blank = True];
-}

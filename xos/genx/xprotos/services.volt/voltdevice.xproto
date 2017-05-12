@@ -1,9 +1,0 @@
-
-
-message VOLTDevice {
-     required string name = 1 [help_text = "name of device", max_length = 254, null = False, db_index = False, blank = False];
-     required manytoone volt_service->VOLTService:volt_devices = 2 [db_index = True, null = False, blank = False];
-     optional string openflow_id = 3 [help_text = "OpenFlow ID", max_length = 254, null = True, db_index = False, blank = True];
-     optional string driver = 4 [help_text = "driver", max_length = 254, null = True, db_index = False, blank = True];
-     optional manytoone access_agent->AccessAgent:volt_devices = 5 [db_index = True, null = True, blank = True];
-}

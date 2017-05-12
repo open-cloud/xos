@@ -1,7 +1,0 @@
-
-
-message AgentPortMapping {
-     required manytoone access_agent->AccessAgent:port_mappings = 1 [db_index = True, null = False, blank = False];
-     optional string mac = 2 [help_text = "MAC Address", max_length = 32, null = True, db_index = False, blank = True];
-     optional string port = 3 [help_text = "Openflow port ID", max_length = 32, null = True, db_index = False, blank = True];
-}

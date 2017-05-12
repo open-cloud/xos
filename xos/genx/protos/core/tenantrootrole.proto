@@ -1,4 +1,0 @@
-
-message TenantRootRole {
-  required string role = 1 [ null = False,  choices = "(('admin', 'Admin'), ('access', 'Access'))",  max_length = 30,  content_type = "stripped",  blank = False,  modifier = required,  db_index = False ];
-}

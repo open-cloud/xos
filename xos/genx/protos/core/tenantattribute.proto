@@ -1,6 +1,0 @@
-
-message TenantAttribute {
-  required string name = 1 [ null = False,  max_length = 128,  blank = False,  help_text = "Attribute Name",  modifier = required,  db_index = False ];
-  required string value = 2 [ db_index = False,  help_text = "Attribute Value",  modifier = required,  null = False,  blank = False ];
-  required int32 tenant = 3 [ null = False,  blank = False,  help_text = "The Tenant this attribute is associated with",  model = Tenant,  modifier = required,  type = link,  port = tenantattributes,  db_index = True ];
-}

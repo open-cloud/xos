@@ -1,7 +1,0 @@
-
-
-message Reservation (PlCoreBase){
-     required string startTime = 1 [db_index = False, null = False, content_type = "date", blank = False];
-     required manytoone slice->Slice:reservations = 2 [db_index = True, null = False, blank = False];
-     required int32 duration = 3 [default = 1, null = False, db_index = False, blank = False];
-}
