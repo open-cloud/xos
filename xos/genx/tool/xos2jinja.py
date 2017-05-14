@@ -34,7 +34,6 @@ class XOS2Jinja(m.Visitor):
     count_stack = Stack()
     content=""
     offset=0
-    prefix=""
     current_message_name = None
 
     def get_stack(self):
@@ -172,7 +171,6 @@ class XOS2Jinja(m.Visitor):
         if self.verbose > 3:
             print "Enum, [%s] body=%s\n\n" % (obj.name, obj.body)
 
-        self.prefixize(obj.name, obj.name.value)
         return True
 
     def visit_MessageDefinition(self, obj):
