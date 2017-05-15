@@ -10,10 +10,14 @@ Xossh is a shell for interactively using the xos client API and client ORM layer
 
 ## Running Unit Tests ##
 
-Some unit tests (orm\_test.py) require an environment where the xos\_client library is installed, and a core API container is available to serve the API. It's suggested that the xos-client container be used together with a frontend or CiaB installation. For example,
+Some unit tests (orm\_test.py) optionally support an environment where the xos\_client library is installed, and a core API container is available to serve the API. This allows testing against the actual grpc client, instead of the mock-up. It's suggested that the xos-client container be used together with a frontend or CiaB installation.
 
     docker run --rm -it --entrypoint bash docker-registry:5000/xosproject/xos-client:candidate
 
 Once inside of the container, run the test(s). For example,
 
-    python ./usr/local/lib/python2.7/dist-packages/xosapi/orm_test.py
+    python /usr/local/lib/python2.7/dist-packages/xosapi/orm_test.py -R
+
+The test may be run using a mock-up of the grpc client by omitting the -R option:
+    
+    python orm-test.py

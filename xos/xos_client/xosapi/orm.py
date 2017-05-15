@@ -20,12 +20,7 @@ u=c.xos_orm.User.objects.get(id=1)
 """
 
 import functools
-import grpc
-from google.protobuf.empty_pb2 import Empty
 import time
-
-from google.protobuf import symbol_database as _symbol_database
-_sym_db = _symbol_database.Default()
 
 convenience_wrappers = {}
 
@@ -305,10 +300,10 @@ class ORMObjectManager(object):
         return ORMQuerySet(result)
 
     def all(self):
-        return self.wrap_list(self._stub.invoke("List%s" % self._modelName, Empty()))
+        return self.wrap_list(self._stub.invoke("List%s" % self._modelName, self._stub.make_empty()))
 
     def first(self):
-        objs=self.wrap_list(self._stub.invoke("List%s" % self._modelName, Empty()))
+        objs=self.wrap_list(self._stub.invoke("List%s" % self._modelName, self._stub.make_empty()))
         if not objs:
             return None
         return objs[0]
@@ -382,7 +377,7 @@ class ORMModelClass(object):
         return self.objects.new(*args, **kwargs)
 
 class ORMStub(object):
-    def __init__(self, stub, package_name, invoker=None, caller_kind="grpcapi"):
+    def __init__(self, stub, package_name, invoker=None, caller_kind="grpcapi", sym_db = None, empty = None):
         self.grpc_stub = stub
         self.all_model_names = []
         self.all_grpc_classes = {}
@@ -391,6 +386,17 @@ class ORMStub(object):
         self.invoker = invoker
         self.caller_kind = caller_kind
 
+        if not sym_db:
+            from google.protobuf import symbol_database as _symbol_database
+            sym_db = _symbol_database.Default()
+
+        self._sym_db = sym_db
+
+        if not empty:
+            from google.protobuf.empty_pb2 import Empty
+            empty = Empty
+        self._empty = empty
+
         for name in dir(stub):
            if name.startswith("Get"):
                model_name = name[3:]
@@ -398,7 +404,7 @@ class ORMStub(object):
 
                self.all_model_names.append(model_name)
 
-               grpc_class = _sym_db._classes["%s.%s" % (package_name, model_name)]
+               grpc_class = self._sym_db._classes["%s.%s" % (package_name, model_name)]
                self.all_grpc_classes[model_name] = grpc_class
 
                ct = grpc_class.DESCRIPTOR.GetOptions().Extensions._FindExtensionByName("xos.contentTypeId")
@@ -451,10 +457,13 @@ class ORMStub(object):
                     raise
 
     def make_ID(self, id):
-        return _sym_db._classes["xos.ID"](id=id)
+        return self._sym_db._classes["xos.ID"](id=id)
+
+    def make_empty(self):
+        return self._empty()
 
     def make_Query(self):
-        return _sym_db._classes["xos.Query"]()
+        return self._sym_db._classes["xos.Query"]()
 
     def listObjects(self):
         return self.all_model_names
