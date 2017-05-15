@@ -468,14 +468,6 @@ class PlStackGenericTabularInline(GenericTabularInline):
     backend_status_icon.short_description = ""
 
 
-class ReservationInline(XOSTabularInline):
-    model = Reservation
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-reservations'
-
-    def queryset(self, request):
-        return Reservation.select_by_user(request.user)
-
 
 class TagInline(PlStackGenericTabularInline):
     model = Tag
@@ -1287,7 +1279,7 @@ class SliceAdmin(XOSBaseAdmin):
                     'serviceClass', 'slice_url', 'max_instances')
     list_display_links = ('backend_status_icon', 'name', )
     normal_inlines = [SlicePrivilegeInline, InstanceInline,
-                      TagInline, ReservationInline, SliceNetworkInline]
+                      TagInline, SliceNetworkInline]
     inlines = normal_inlines
     admin_inlines = [ControllerSliceInline]
     suit_form_includes = (('slice_instance_tab.html', 'bottom', 'instances'),)
@@ -1300,7 +1292,6 @@ class SliceAdmin(XOSBaseAdmin):
                 ('slicenetworks', 'Networks'),
                 ('sliceprivileges', 'Privileges'),
                 ('instances', 'Instances'),
-                #('reservations','Reservations'),
                 ('tags', 'Tags'),
                 ]
 
@@ -1389,7 +1380,7 @@ class SliceAdmin(XOSBaseAdmin):
         #    try to make this work post-demo.
         if (obj is not None) and (obj.name == "mysite_vcpe"):
             cord_vcpe_inlines = [SlicePrivilegeInline, CordInstanceInline,
-                                 TagInline, ReservationInline, SliceNetworkInline]
+                                 TagInline, SliceNetworkInline]
 
             inlines = []
             for inline_class in cord_vcpe_inlines:
@@ -1903,162 +1894,6 @@ class ServiceClassAdmin(XOSBaseAdmin):
     user_readonly_inlines = []
 
 
-class ReservedResourceInline(XOSTabularInline):
-    model = ReservedResource
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-reservedresources'
-
-    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        field = super(ReservedResourceInline, self).formfield_for_foreignkey(
-            db_field, request, **kwargs)
-
-        if db_field.name == 'resource':
-            # restrict resources to those that the slice's service class allows
-            if request._slice is not None:
-                field.queryset = field.queryset.filter(
-                    serviceClass=request._slice.serviceClass, calendarReservable=True)
-                if len(field.queryset) > 0:
-                    field.initial = field.queryset.all()[0]
-            else:
-                field.queryset = field.queryset.none()
-        elif db_field.name == 'instance':
-            # restrict instances to those that belong to the slice
-            if request._slice is not None:
-                field.queryset = field.queryset.filter(slice=request._slice)
-            else:
-                field.queryset = field.queryset.none()
-
-        return field
-
-    def queryset(self, request):
-        return ReservedResource.select_by_user(request.user)
-
-
-class ReservationChangeForm(forms.ModelForm):
-
-    class Meta:
-        model = Reservation
-        widgets = {
-            'slice': LinkedSelect
-        }
-        fields = '__all__'
-
-
-class ReservationAddForm(forms.ModelForm):
-    slice = forms.ModelChoiceField(queryset=Slice.objects.all(), widget=forms.Select(
-        attrs={"onChange": "document.getElementById('id_refresh').value=1; submit()"}))
-    refresh = forms.CharField(widget=forms.HiddenInput())
-
-    class Media:
-        css = {'all': ('xos.css',)}   # .field-refresh { display: none; }
-
-    def clean_slice(self):
-        slice = self.cleaned_data.get("slice")
-        x = ServiceResource.objects.filter(
-            serviceClass=slice.serviceClass, calendarReservable=True)
-        if len(x) == 0:
-            raise forms.ValidationError(
-                "The slice you selected does not have a service class that allows reservations")
-        return slice
-
-    class Meta:
-        model = Reservation
-        widgets = {
-            'slice': LinkedSelect
-        }
-        fields = '__all__'
-
-
-class ReservationAddRefreshForm(ReservationAddForm):
-    """ This form is displayed when the Reservation Form receives an update
-        from the Slice dropdown onChange handler. It doesn't validate the
-        data and doesn't save the data. This will cause the form to be
-        redrawn.
-    """
-
-    """ don't validate anything other than slice """
-    dont_validate_fields = ("startTime", "duration")
-
-    def full_clean(self):
-        result = super(ReservationAddForm, self).full_clean()
-
-        for fieldname in self.dont_validate_fields:
-            if fieldname in self._errors:
-                del self._errors[fieldname]
-
-        return result
-
-    """ don't save anything """
-
-    def is_valid(self):
-        return False
-
-
-class ReservationAdmin(XOSBaseAdmin):
-    fieldList = ['backend_status_text', 'slice', 'startTime', 'duration']
-    fieldsets = [('Reservation Details', {
-                  'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', )
-    list_display = ('startTime', 'duration')
-    form = ReservationAddForm
-
-    suit_form_tabs = (('general', 'Reservation Details'),
-                      ('reservedresources', 'Reserved Resources'))
-
-    inlines = [ReservedResourceInline]
-    user_readonly_fields = fieldList
-
-    def add_view(self, request, form_url='', extra_context=None):
-        timezone.activate(request.user.timezone)
-        request._refresh = False
-        request._slice = None
-        if request.method == 'POST':
-            # "refresh" will be set to "1" if the form was submitted due to
-            # a change in the Slice dropdown.
-            if request.POST.get("refresh", "1") == "1":
-                request._refresh = True
-                request.POST["refresh"] = "0"
-
-            # Keep track of the slice that was selected, so the
-            # reservedResource inline can filter items for the slice.
-            request._slice = request.POST.get("slice", None)
-            if (request._slice is not None):
-                request._slice = Slice.objects.get(id=request._slice)
-
-        result = super(ReservationAdmin, self).add_view(
-            request, form_url, extra_context)
-        return result
-
-    def changelist_view(self, request, extra_context=None):
-        timezone.activate(request.user.timezone)
-        return super(ReservationAdmin, self).changelist_view(request, extra_context)
-
-    def get_form(self, request, obj=None, **kwargs):
-        request._obj_ = obj
-        if obj is not None:
-            # For changes, set request._slice to the slice already set in the
-            # object.
-            request._slice = obj.slice
-            self.form = ReservationChangeForm
-        else:
-            if getattr(request, "_refresh", False):
-                self.form = ReservationAddRefreshForm
-            else:
-                self.form = ReservationAddForm
-        return super(ReservationAdmin, self).get_form(request, obj, **kwargs)
-
-    def get_readonly_fields(self, request, obj=None):
-        if (obj is not None):
-            # Prevent slice from being changed after the reservation has been
-            # created.
-            return ['slice']
-        else:
-            return []
-
-    def queryset(self, request):
-        return Reservation.select_by_user(request.user)
-
-
 class NetworkParameterTypeAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", )
     list_display_links = ('backend_status_icon', 'name', )
@@ -2222,132 +2057,6 @@ def cache_credentials(sender, user, request, **kwds):
     request.session['auth'] = auth
 user_logged_in.connect(cache_credentials)
 
-
-def dollar_field(fieldName, short_description):
-    def newFunc(self, obj):
-        try:
-            x = "$ %0.2f" % float(getattr(obj, fieldName, 0.0))
-        except:
-            x = getattr(obj, fieldName, 0.0)
-        return x
-    newFunc.short_description = short_description
-    return newFunc
-
-
-def right_dollar_field(fieldName, short_description):
-    def newFunc(self, obj):
-        try:
-            #x= '<div align=right style="width:6em">$ %0.2f</div>' % float(getattr(obj, fieldName, 0.0))
-            x = '<div align=right>$ %0.2f</div>' % float(
-                getattr(obj, fieldName, 0.0))
-        except:
-            x = getattr(obj, fieldName, 0.0)
-        return x
-    newFunc.short_description = short_description
-    newFunc.allow_tags = True
-    return newFunc
-
-
-class InvoiceChargeInline(XOSTabularInline):
-    model = Charge
-    extra = 0
-    verbose_name_plural = "Charges"
-    verbose_name = "Charge"
-    exclude = ['account']
-    fields = ["date", "kind", "state", "object",
-              "coreHours", "dollar_amount", "slice"]
-    readonly_fields = ["date", "kind", "state",
-                       "object", "coreHours", "dollar_amount", "slice"]
-    can_delete = False
-    max_num = 0
-
-    dollar_amount = right_dollar_field("amount", "Amount")
-
-
-class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ("date", "account")
-
-    inlines = [InvoiceChargeInline]
-
-    fields = ["date", "account", "dollar_amount"]
-    readonly_fields = ["date", "account", "dollar_amount"]
-
-    dollar_amount = dollar_field("amount", "Amount")
-
-
-class InvoiceInline(XOSTabularInline):
-    model = Invoice
-    extra = 0
-    verbose_name_plural = "Invoices"
-    verbose_name = "Invoice"
-    fields = ["date", "dollar_amount"]
-    readonly_fields = ["date", "dollar_amount"]
-    suit_classes = 'suit-tab suit-tab-accountinvoice'
-    can_delete = False
-    max_num = 0
-
-    dollar_amount = right_dollar_field("amount", "Amount")
-
-
-class PendingChargeInline(XOSTabularInline):
-    model = Charge
-    extra = 0
-    verbose_name_plural = "Charges"
-    verbose_name = "Charge"
-    exclude = ["invoice"]
-    fields = ["date", "kind", "state", "object",
-              "coreHours", "dollar_amount", "slice"]
-    readonly_fields = ["date", "kind", "state",
-                       "object", "coreHours", "dollar_amount", "slice"]
-    suit_classes = 'suit-tab suit-tab-accountpendingcharges'
-    can_delete = False
-    max_num = 0
-
-    def queryset(self, request):
-        qs = super(PendingChargeInline, self).queryset(request)
-        qs = qs.filter(state="pending")
-        return qs
-
-    dollar_amount = right_dollar_field("amount", "Amount")
-
-
-class PaymentInline(XOSTabularInline):
-    model = Payment
-    extra = 1
-    verbose_name_plural = "Payments"
-    verbose_name = "Payment"
-    fields = ["date", "dollar_amount"]
-    readonly_fields = ["date", "dollar_amount"]
-    suit_classes = 'suit-tab suit-tab-accountpayments'
-    can_delete = False
-    max_num = 0
-
-    dollar_amount = right_dollar_field("amount", "Amount")
-
-
-class AccountAdmin(admin.ModelAdmin):
-    list_display = ("site", "balance_due")
-
-    inlines = [InvoiceInline, PaymentInline, PendingChargeInline]
-
-    fieldsets = [
-        (None, {'fields': ['site', 'dollar_balance_due', 'dollar_total_invoices', 'dollar_total_payments'], 'classes':['suit-tab suit-tab-general']}), ]
-
-    readonly_fields = ['site', 'dollar_balance_due',
-                       'dollar_total_invoices', 'dollar_total_payments']
-
-    suit_form_tabs = (
-        ('general', 'Account Details'),
-        ('accountinvoice', 'Invoices'),
-        ('accountpayments', 'Payments'),
-        ('accountpendingcharges', 'Pending Charges'),
-    )
-
-    dollar_balance_due = dollar_field("balance_due", "Balance Due")
-    dollar_total_invoices = dollar_field("total_invoices", "Total Invoices")
-    dollar_total_payments = dollar_field("total_payments", "Total Payments")
-
-
 class ProgramForm(forms.ModelForm):
 
     class Meta:
@@ -2470,8 +2179,6 @@ admin.site.register(Port, PortAdmin)
 admin.site.register(Router, RouterAdmin)
 admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
 admin.site.register(Program, ProgramAdmin)
-#admin.site.register(Account, AccountAdmin)
-#admin.site.register(Invoice, InvoiceAdmin)
 
 if True:
     admin.site.register(NetworkParameterType, NetworkParameterTypeAdmin)
