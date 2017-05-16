@@ -25,3 +25,10 @@ xos/configurations/setup/
 migrations/
 onboarding-docker-compose/
 key_import/
+
+# tmp files
+containers/chameleon/tmp.chameleon/
+containers/xos/local_certs.crt
+containers/xos/tmp.chameleon/
+containers/xos/BUILD/
+venv-xos/
