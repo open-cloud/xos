@@ -1,19 +1,14 @@
 import datetime
 import json
-import os
 import pytz
 import inspect
 import sys
 import threading
-from django import db
 from django.db import models
 from django.db import transaction
 from django.forms.models import model_to_dict
-from django.core.urlresolvers import reverse
-from django.forms.models import model_to_dict
 from django.utils import timezone
 from django.core.exceptions import PermissionDenied
-from model_autodeletion import ephemeral_models
 from cgi import escape as html_escape
 from journal import journal_object
 from django.db.models.deletion import Collector
@@ -426,10 +421,6 @@ class PlCoreBase(models.Model, PlModelMixIn):
         # This should be overridden by descendant classes that want to perform
         # filtering of visible objects by user.
         return cls.objects.all()
-
-    @classmethod
-    def is_ephemeral(cls):
-        return cls in ephemeral_models
 
     def tologdict(self):
         try:
