@@ -32,3 +32,4 @@ containers/xos/local_certs.crt
 containers/xos/tmp.chameleon/
 containers/xos/BUILD/
 venv-xos/
+_book/
