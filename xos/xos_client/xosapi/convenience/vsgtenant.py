@@ -50,7 +50,7 @@ class ORMWrapperVSGTenant(ORMWrapper):
 
     @property
     def wan_vm_ip(self):
-        tags = self.stub.Tag.objects.filter(name="vm_vrouter_tenant", object_id=self.instance.id, content_type_id=self.instance.self_content_type_id)
+        tags = self.stub.Tag.objects.filter(name="vm_vrouter_tenant", object_id=self.instance.id, content_type=self.instance.self_content_type_id)
         if tags:
             tenant = self.stub.VRouterTenant.objects.get(id=int(tags[0].value))
             return tenant.public_ip
@@ -59,7 +59,7 @@ class ORMWrapperVSGTenant(ORMWrapper):
 
     @property
     def wan_vm_mac(self):
-        tags = self.stub.Tag.objects.filter(name="vm_vrouter_tenant", object_id=self.instance.id, content_type_id=self.instance.self_content_type_id)
+        tags = self.stub.Tag.objects.filter(name="vm_vrouter_tenant", object_id=self.instance.id, content_type=self.instance.self_content_type_id)
         if tags:
             tenant = self.stub.VRouterTenant.objects.get(id=int(tags[0].value))
             return tenant.public_mac

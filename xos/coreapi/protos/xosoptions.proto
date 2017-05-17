@@ -25,6 +25,6 @@ extend google.protobuf.FieldOptions {
 }
 
 extend google.protobuf.MessageOptions {
-  int32 contentTypeId = 1001;
+  string contentTypeId = 1001;
 }
 

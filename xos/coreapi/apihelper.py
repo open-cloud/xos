@@ -192,7 +192,7 @@ class XOSAPIHelperMixin(object):
         bases = [x for x in bases if issubclass(x, PlCoreBase) or issubclass(x, User)]
         p_obj.class_names = ",".join( [x.__name__ for x in bases] )
 
-        p_obj.self_content_type_id = ContentType.objects.get_for_model(obj).id
+        p_obj.self_content_type_id = obj.get_content_type_key()
 
         return p_obj
 

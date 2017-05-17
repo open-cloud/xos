@@ -9,13 +9,14 @@ ContentTypeIdCounter = 0;
 ContentTypeMap = {}
 
 class FakeObj(object):
-    def __init__(self, defaults={"id": 0}, **kwargs):
+    def __init__(self, fields=[], **kwargs):
         super(FakeObj, self).__setattr__("is_set", {})
         super(FakeObj, self).__setattr__("fields", [])
 
-        for (k,v) in defaults.items():
-            self.fields.append(k)
-            setattr(self, k, v)
+        for f in fields:
+            name = f["name"]
+            self.fields.append(name)
+            setattr(self, name, f["default"])
 
         super(FakeObj, self).__setattr__("is_set", {})
         for (k,v) in kwargs.items():
@@ -48,10 +49,32 @@ class FakeExtensionManager(object):
             return self.extensions[name]
         return default
 
+class FakeFieldOption(object):
+    def __init__(self, modelName=None):
+        self.modelName = modelName
+
+class FakeField(object):
+    def __init__(self, field):
+        extensions = {}
+
+        fk_model = field.get("fk_model", None)
+        if fk_model:
+            extensions["xos.foreignKey"] = FakeFieldOption(modelName=fk_model)
+
+        fk_reverse = field.get("fk_reverse", None)
+        if fk_reverse:
+            extensions["xos.reverseForeignKey"] = FakeFieldOption(modelName=fk_reverse)
+
+        self.Extensions = FakeExtensionManager(self, extensions)
+
+    def GetOptions(self):
+        return self
+
 class FakeDescriptor(object):
     def __init__(self, objName):
         global ContentTypeIdCounter
         global ContentTypeMap
+        self.objName = objName
         if objName in ContentTypeMap:
             ct = ContentTypeMap[objName]
         else:
@@ -65,21 +88,38 @@ class FakeDescriptor(object):
 
     @property
     def fields_by_name(self):
-        # TODO: everything
-        return {}
+        cls = globals()[self.objName]
+        fbn = {}
+        for field in cls.FIELDS:
+            fake_field = FakeField(field)
+            fbn[ field["name"] ] = fake_field
+
+        return fbn
 
 class Slice(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "name", "default": ""},
+               {"name": "site_id", "default": 0, "fk_model": "Site"} )
+
     def __init__(self, **kwargs):
-        defaults = {"id": 0,
-                    "name": ""}
-        return super(Slice, self).__init__(defaults, **kwargs)
+        return super(Slice, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("Slice")
+
+class Site(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "name", "default": ""},
+               {"name": "slice_ids", "default": 0, "fk_reverse": "Slice"} )
+
+    def __init__(self, **kwargs):
+        return super(Site, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("Site")
 
 class FakeStub(object):
     def __init__(self):
         self.objs = {}
-        for name in ["Slice"]:
+        for name in ["Slice", "Site"]:
             setattr(self, "Get%s" % name, functools.partial(self.get, name))
             setattr(self, "List%s" % name, functools.partial(self.list, name))
             setattr(self, "Create%s" % name, functools.partial(self.create, name))
@@ -118,7 +158,7 @@ class FakeStub(object):
 class FakeSymDb(object):
     def __init__(self):
         self._classes = {}
-        for name in ["Slice"]:
+        for name in ["Slice", "Site"]:
             self._classes["xos.%s" % name] = globals()[name]
 
 

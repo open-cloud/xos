@@ -20,6 +20,7 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 from timezones.fields import TimeZoneField
 from journal import journal_object
+from django.contrib.contenttypes.models import ContentType
 
 import redis
 from redis import ConnectionError
@@ -607,6 +608,21 @@ class User(AbstractBaseUser, PlModelMixIn):
             self.is_admin = False
             for db in self.userdashboardviews.all():
                 db.delete()
+
+    def get_content_type_key(self):
+        ct = ContentType.objects.get_for_model(self.__class__)
+        return "%s.%s" % (ct.app_label, ct.model)
+
+    @staticmethod
+    def get_content_type_from_key(key):
+        (app_name, model_name) = key.split(".")
+        return ContentType.objects.get_by_natural_key(app_name, model_name)
+
+    @staticmethod
+    def get_content_object(content_type, object_id):
+        ct = User.get_content_type_from_key(content_type)
+        cls = ct.model_class()
+        return cls.objects.get(id=object_id)
 
 
 class UserDashboardView(PlCoreBase):

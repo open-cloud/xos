@@ -47,6 +47,12 @@ class ORMWrapper(object):
         """
         super(ORMWrapper, self).__setattr__(name, value)
 
+    def get_generic_foreignkeys(self):
+        """ this is a placeholder until generic foreign key support is added
+            to xproto.
+        """
+        return []
+
     def gen_fkmap(self):
         fkmap = {}
 
@@ -64,6 +70,9 @@ class ORMWrapper(object):
                    type_name = name[:-3] + "_type_id"
                    if type_name in all_field_names:
                        fkmap[name[:-3]] = {"src_fieldName": name, "ct_fieldName": type_name, "kind": "generic_fk"}
+
+        for gfk in self.get_generic_foreignkeys():
+            fkmap[gfk["name"]] = {"src_fieldName": gfk["id"], "ct_fieldName": gfk["content_type"], "kind": "generic_fk"}
 
         return fkmap
 
@@ -495,4 +504,5 @@ import convenience.controller
 import convenience.user
 import convenience.slice
 import convenience.port
-
+import convenience.tag
+import convenience.vtrtenant

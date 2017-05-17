@@ -848,8 +848,7 @@ class DeploymentAdmin(XOSBaseAdmin):
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
     # node no longer directly connected to deployment
-    #inlines = [DeploymentPrivilegeInline,NodeInline,TagInline,ImageDeploymentsInline]
-    inlines = [DeploymentPrivilegeInline, TagInline,
+    inlines = [DeploymentPrivilegeInline,
                ImageDeploymentsInline, SiteDeploymentInline]
     list_display = ['backend_status_icon', 'name']
     list_display_links = ('backend_status_icon', 'name', )
@@ -1129,7 +1128,7 @@ class SiteAdmin(XOSBaseAdmin):
                     'login_base', 'site_url', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
     filter_horizontal = ('deployments',)
-    inlines = [SliceInline, UserInline, TagInline,
+    inlines = [SliceInline, UserInline,
                SitePrivilegeInline, SiteNodeInline]
     admin_inlines = [ControllerSiteInline]
     search_fields = ['name']
@@ -1279,7 +1278,7 @@ class SliceAdmin(XOSBaseAdmin):
                     'serviceClass', 'slice_url', 'max_instances')
     list_display_links = ('backend_status_icon', 'name', )
     normal_inlines = [SlicePrivilegeInline, InstanceInline,
-                      TagInline, SliceNetworkInline]
+                      SliceNetworkInline]
     inlines = normal_inlines
     admin_inlines = [ControllerSliceInline]
     suit_form_includes = (('slice_instance_tab.html', 'bottom', 'instances'),)
@@ -1292,7 +1291,6 @@ class SliceAdmin(XOSBaseAdmin):
                 ('slicenetworks', 'Networks'),
                 ('sliceprivileges', 'Privileges'),
                 ('instances', 'Instances'),
-                ('tags', 'Tags'),
                 ]
 
         request = getattr(_thread_locals, "request", None)
@@ -1380,7 +1378,7 @@ class SliceAdmin(XOSBaseAdmin):
         #    try to make this work post-demo.
         if (obj is not None) and (obj.name == "mysite_vcpe"):
             cord_vcpe_inlines = [SlicePrivilegeInline, CordInstanceInline,
-                                 TagInline, SliceNetworkInline]
+                                 SliceNetworkInline]
 
             inlines = []
             for inline_class in cord_vcpe_inlines:
@@ -1499,16 +1497,16 @@ class NodeAdmin(XOSBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     list_filter = ('site_deployment',)
 
-    inlines = [TagInline, InstanceInline]
+    inlines = [InstanceInline]
     fieldsets = [('Node Details', {'fields': ['backend_status_text', 'name', 'site_deployment'], 'classes':['suit-tab suit-tab-details']}),
                  ('Labels', {'fields': ['nodelabels'], 'classes':['suit-tab suit-tab-labels']})]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = ['name', 'site_deployment']
-    user_readonly_inlines = [TagInline, InstanceInline]
+    user_readonly_inlines = [InstanceInline]
 
     suit_form_tabs = (('details', 'Node Details'), ('instances',
-                                                    'Instances'), ('labels', 'Labels'), ('tags', 'Tags'))
+                                                    'Instances'), ('labels', 'Labels'))
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -1538,13 +1536,12 @@ class InstanceForm(forms.ModelForm):
         }
         fields = '__all__'
 
-
 class TagAdmin(XOSBaseAdmin):
     list_display = ['backend_status_icon', 'service',
-                    'name', 'value', 'content_type', 'content_object', ]
+                    'name', 'value', 'content_type', 'object_id', ]
     list_display_links = list_display
     user_readonly_fields = ['service', 'name',
-                            'value', 'content_type', 'content_object', ]
+                            'value', 'content_type', 'object_id', ]
     user_readonly_inlines = []
 
 
@@ -1574,9 +1571,9 @@ class InstanceAdmin(XOSBaseAdmin):
                           'all_ips_string', 'instance_id', )
 
     suit_form_tabs = (('general', 'Instance Details'), ('ports', 'Ports'),
-                      ('container', 'Container Settings'), ('tags', 'Tags'))
+                      ('container', 'Container Settings'),)
 
-    inlines = [TagInline, InstancePortInline]
+    inlines = [InstancePortInline]
 
     user_readonly_fields = ['slice', 'deployment',
                             'node', 'ip', 'instance_name', 'flavor', 'image']
@@ -1654,40 +1651,6 @@ class InstanceAdmin(XOSBaseAdmin):
             db_field, request, **kwargs)
 
         return field
-
-# class ContainerPortInline(XOSTabularInline):
-#    fields = ['backend_status_icon', 'network', 'container', 'ip', 'mac', 'segmentation_id']
-#    readonly_fields = ("backend_status_icon", "ip", "mac", "segmentation_id")
-#    model = Port
-#    selflink_fieldname = "network"
-#    extra = 0
-#    verbose_name_plural = "Ports"
-#    verbose_name = "Port"
-#    suit_classes = 'suit-tab suit-tab-ports'
-
-# class ContainerAdmin(XOSBaseAdmin):
-#    fieldsets = [
-#        ('Container Details', {'fields': ['backend_status_text', 'slice', 'node', 'docker_image', 'volumes', 'no_sync'], 'classes': ['suit-tab suit-tab-general'], })
-#    ]
-#    readonly_fields = ('backend_status_text', )
-#    list_display = ['backend_status_icon', 'id']
-#    list_display_links = ('backend_status_icon', 'id', )
-#
-#    suit_form_tabs =(('general', 'Container Details'), ('ports', 'Ports'))
-#
-#    inlines = [TagInline, ContainerPortInline]
-#
-#    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-#        if db_field.name == 'slice':
-#            kwargs['queryset'] = Slice.select_by_user(request.user)
-#
-#        return super(ContainerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-#
-#    def queryset(self, request):
-#        # admins can see all instances. Users can only see instances of
-#        # the slices they belong to.
-#        return Container.select_by_user(request.user)
-
 
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required

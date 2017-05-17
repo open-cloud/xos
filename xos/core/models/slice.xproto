@@ -16,5 +16,4 @@ message Slice (PlCoreBase){
      optional manytoone default_node->Node:slices = 15 [db_index = True, null = True, blank = True];
      optional string mount_data_sets = 16 [default = "GenBank", max_length = 256, content_type = "stripped", blank = True, null = True, db_index = False];
      required string default_isolation = 17 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))", max_length = 30, blank = False, null = False, db_index = False];
-     required manytomany tags->Tag = 18 [db_index = False, null = False, blank = True];
 }

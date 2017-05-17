@@ -788,7 +788,7 @@ class NetworkParameterSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = NetworkParameter
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','value','object_id','parameter','content_type',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','value','content_type','object_id','parameter',)
 
 class NetworkParameterIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -804,7 +804,7 @@ class NetworkParameterIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = NetworkParameter
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','value','object_id','parameter','content_type',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','value','content_type','object_id','parameter',)
 
 
 
@@ -1006,7 +1006,7 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Tag
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','value','object_id','service','content_type',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','value','content_type','object_id','service',)
 
 class TagIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1022,7 +1022,7 @@ class TagIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Tag
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','value','object_id','service','content_type',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','value','content_type','object_id','service',)
 
 
 
@@ -3371,7 +3371,7 @@ class NetworkParameterList(XOSListCreateAPIView):
     serializer_class = NetworkParameterSerializer
     id_serializer_class = NetworkParameterIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','value','object_id','parameter','content_type',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','value','content_type','object_id','parameter',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -3653,7 +3653,7 @@ class TagList(XOSListCreateAPIView):
     serializer_class = TagSerializer
     id_serializer_class = TagIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','value','object_id','service','content_type',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_need_delete','backend_need_reap','backend_status','deleted','write_protect','lazy_blocked','no_sync','no_policy','name','value','content_type','object_id','service',)
 
     def get_serializer_class(self):
         no_hyperlinks=False

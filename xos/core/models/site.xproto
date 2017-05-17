@@ -12,5 +12,4 @@ message Site (PlCoreBase){
      required bool is_public = 9 [help_text = "Indicates the visibility of this site to other members", default = True, null = False, db_index = False, blank = True];
      required string abbreviated_name = 10 [db_index = False, max_length = 80, null = False, content_type = "stripped", blank = False];
      required manytomany deployments->Deployment/SiteDeployment:sites = 11 [help_text = "Select which sites are allowed to host nodes in this deployment", null = False, db_index = False, blank = True];
-     required manytomany tags->Tag = 12 [db_index = False, null = False, blank = True];
 }

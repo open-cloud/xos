@@ -18,7 +18,7 @@ class XOSTag(XOSResource):
         target_name = self.get_requirement("tosca.relationships.TagsObject", throw_exception=throw_exception)
         if target_name:
             target_model = self.engine.name_to_xos_model(self.user, target_name)
-            args["content_type"] = ContentType.objects.get_for_model(target_model)
+            args["content_type"] = target_model.get_content_type_key()
             args["object_id"] = target_model.id
 
         service_name = self.get_requirement("tosca.relationships.MemberOfService", throw_exception=throw_exception)
