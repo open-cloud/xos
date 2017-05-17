@@ -54,10 +54,11 @@ class XProtoTest(unittest.TestCase):
         args.rev = rev
 	args.kv = kv
         args.attic = XPROTO_DIR
-        args.input = XPROTO_PATH
+        args.inputs = [XPROTO_PATH]
         args.output = OUTPUT_PATH
         args.target = TARGET_FILE
         g = XOSGenerator(args)
+        g.input = open(XPROTO_PATH).read()
         g.generate()
     
     def get_output(self):

@@ -8,7 +8,7 @@ XPROTOS_TMP := $(shell mktemp)
 
 # Rule to compile Python files
 %.py: %.xproto
-	$(XOSGEN) --attic attic --input $< --target $(DJANGO_TARGET) --output $@ 
+	$(XOSGEN) --attic attic --target $(DJANGO_TARGET) --output $@ $<
 
 # Rule to produce test results
 %.ok: %.py
@@ -26,7 +26,7 @@ all: $(pys) __init__.py
 
 __init__.py: $(xprotos)
 	cat $(xprotos) > $(XPROTOS_TMP)
-	$(XOSGEN) --attic attic --input $(XPROTOS_TMP) --target $(INIT_TARGET) --output $@ | awk '!seen[$$0]++' > __init__.py
+	$(XOSGEN) --attic attic --target $(INIT_TARGET) --output $@ $(XPROTOS_TMP) | awk '!seen[$$0]++' > __init__.py
 
 tests: $(oks)
 	

@@ -21,12 +21,20 @@ class XOSGenerator:
 
     def file_exists(self):
         def file_exists2(name):
-            return (os.path.exists(self.args.attic+'/'+name))
+            try:
+                path = self.args.attic+'/'+name
+            except TypeError:
+                path = name
+            return (os.path.exists(path))
         return file_exists2
 
     def include_file(self):
         def include_file2(name):
-            return open(self.args.attic+'/'+name).read()
+            try:
+                path = self.args.attic+'/'+name
+            except TypeError:
+                path = name
+            return open(path).read()
         return include_file2
         # FIXME: Support templates in the future
         #return jinja2.Markup(loader.get_source(env, name)[0])
@@ -34,7 +42,7 @@ class XOSGenerator:
     def generate(self):
         try:
             parser = plyproto.ProtobufAnalyzer()
-            input = open(self.args.input).read()
+            input = self.input
             ast = parser.parse_string(input,debug=0)
 
             if (self.args.rev):
@@ -117,7 +125,7 @@ class XOSGenerator:
 
 
         except Exception as e:
-            print "    Error occurred! file[%s]" % (self.args.input), e
+            print "    Error occurred! file[%s]" % (self.args.inputs), e
             print '-'*60
             traceback.print_exc(file=sys.stdout)
             print '-'*60
