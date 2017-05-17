@@ -1,5 +1,15 @@
 import pdb
 import re
+from pattern import en
+
+def xproto_pluralize(field):
+    try:
+        # The user has set a plural, as an exception that cannot be handled automatically
+        plural = field['options']['plural']
+    except KeyError:
+        plural = en.pluralize(field['name'])
+
+    return plural
 
 def django_content_type_string(xptags):
     # Check possibility of KeyError in caller

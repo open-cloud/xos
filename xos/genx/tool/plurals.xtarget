@@ -1,0 +1,6 @@
+{% for m in proto.messages %}
+Model {{ m.name }}:
+{% for f in m.fields -%}
+The plural of {{ f.name}} is {{ xproto_pluralize(f) }}.
+{% endfor %}
+{%- endfor %}
