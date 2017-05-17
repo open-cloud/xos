@@ -178,6 +178,13 @@ class XOS2Jinja(m.Visitor):
         n = self.count_stack.pop()
         for i in range(0, n):
             k,v = self.stack.pop()
+
+            # The two lines below may be added to eliminate "" around an option. 
+            # Right now, this is handled in targets. FIXME
+            #
+            # if (v.startswith('"') and v.endswith('"')):
+            #    v = v[1:-1]
+
             opts[k] = v
 
         s['options'] = opts

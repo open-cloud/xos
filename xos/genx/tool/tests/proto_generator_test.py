@@ -2,11 +2,7 @@ from xproto_test_base import *
 
 # Generate Protobuf from Xproto and then parse the resulting Protobuf
 class XProtoProtobufGeneratorTest(XProtoTest):
-    # This test is disabled because of a bug in Protobuf generation from xproto
-    # Namely, options appear with repeated double quotes: foo=""bar"" 
-    # TODO: Fix this bug, and re-enable this test
-
-    def __disabled_test_proto_generator(self):
+    def test_proto_generator(self):
         xproto = \
 """
 message VRouterPort (XOSBase){
@@ -22,7 +18,7 @@ message VRouterPort (XOSBase){
 message {{ m.name }} {
   option bases = "{{ m.bases | join(",") }}";
   {%- for f in m.fields %}
-  {{ f.modifier }} {{f.type}} {{f.name}} = {{ f.id }}{% if f.options %} [{% for k,v in f.options.iteritems() %} {{ k }} = "{{ v}}"{% if not loop.last %},{% endif %} {% endfor %}]{% endif %};
+  {{ f.modifier }} {{f.type}} {{f.name}} = {{ f.id }}{% if f.options %} [{% for k,v in f.options.iteritems() %} {{ k }} = "{{ xproto_unquote(v)}}"{% if not loop.last %},{% endif %} {% endfor %}]{% endif %};
   {%- endfor %}
 }
 {% endfor %}
@@ -31,6 +27,7 @@ message {{ m.name }} {
         self.generate(xproto = xproto, target = target)
         self.generate(xproto = self.get_output(), target = "{{ proto }}")
 	output = self.get_output()
+        self.assertIn("VRouterService", output)
 
 if __name__ == '__main__':
     unittest.main()

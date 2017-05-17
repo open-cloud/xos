@@ -29,6 +29,11 @@ def xproto_pluralize(field):
 
     return plural
 
+def xproto_unquote(s):
+    if (s.startswith('"') and s.endswith('"')):
+        s = s[1:-1]
+    return s
+
 def django_content_type_string(xptags):
     # Check possibility of KeyError in caller
     content_type = xptags['content_type']
