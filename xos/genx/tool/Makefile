@@ -1,6 +1,6 @@
 # Replace the line below with the location of xosgen
 PREFIX=../
-XOSGEN=$(PREFIX)/tool/xosgen
+XOSGEN=python $(PREFIX)/tool/xosgen
 
 DJANGO_TARGET=$(PREFIX)/targets/django-split.xtarget
 INIT_TARGET=$(PREFIX)/targets/init.xtarget
