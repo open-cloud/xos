@@ -249,9 +249,11 @@ class XOSCoreBuilder(object):
 
                 self.resources.append( (k, src_fn, dest_fn, service_name) )
 
-                # add __init__.py files anywhere that we created a new
+                # Add __init__.py files anywhere that we created a new
                 # directory.
-                if k in ["admin", "models", "rest_service", "rest_tenant"]:
+                # NOTE: omitting core, out of concern it could interfere with
+                #       core's __init__.py file.
+                if ((k in ["admin", "models", "rest_service", "rest_tenant", "xproto"]) and (service_name!="core")):
                     if dest_dir not in self.inits:
                         self.inits.append(dest_dir)
 
