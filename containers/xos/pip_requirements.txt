@@ -95,6 +95,7 @@ oslo.service==1.16.0
 oslo.utils==3.16.0
 osprofiler==1.4.0
 paramiko==2.0.2
+pattern==2.6
 pbr==1.10.0
 pika==0.10.0
 pika-pool==0.1.3
