@@ -71,6 +71,7 @@ klein==16.12.0
 kombu==3.0.35
 lxml==3.6.4
 meld3==0.6.10
+mock==2.0.0
 monotonic==1.2
 msgpack-python==0.4.8
 munch==2.0.4
@@ -103,13 +104,14 @@ positional==1.1.1
 prettytable==0.7.2
 protobuf==3.2.0
 psycopg2==2.6.2
-pyOpenSSL==16.1.0
+pyOpenSSL==16.2.0
 pyasn1==0.1.9
 pyasn1-modules==0.0.8
 pycparser==2.14
 pycrypto==2.6.1
 pycurl==7.43.0
 pygraphviz==1.3.1
+pykwalify==1.6.0
 pyparsing==2.1.8
 python-cinderclient==1.8.0
 python-consul==0.7.0
@@ -135,6 +137,8 @@ requestsexceptions==1.1.3
 retrying==1.3.3
 rfc3986==0.4.1
 rsa==3.4.2
+ruamel.ordereddict==0.4.9
+ruamel.yaml==0.11.15
 shade==1.9.0
 simplejson==3.8.2
 six==1.10.0

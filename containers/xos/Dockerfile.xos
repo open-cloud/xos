@@ -3,6 +3,7 @@ FROM xosproject/xos-base:candidate
 
 # Install XOS
 ADD xos /opt/xos
+ADD lib /opt/xos/lib
 
 RUN chmod +x /opt/xos/tools/xos-manage \
  && mkdir -p /opt/cord_profile /opt/xos_services /opt/xos_libraries \
@@ -14,6 +15,10 @@ ENV HOME /root
 
 # Define working directory
 WORKDIR /opt/xos
+
+# Install the config module
+RUN cd /opt/xos/lib/xos-config/; \
+	python setup.py install
 
 # Label image
 ARG org_label_schema_schema_version=1.0

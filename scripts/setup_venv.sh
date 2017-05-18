@@ -23,10 +23,14 @@ if [ ! $VIRTUAL_ENV ]; then
 fi
 
 # install pip requirements
-if pip install -r $REQUIREMENTS
+if \
+pip install cryptography --global-option=build_ext --global-option="-L/usr/local/opt/openssl/lib" --global-option="-I/usr/local/opt/openssl/include" && \
+pip install -r $REQUIREMENTS && \
+cd $BASEDIR/lib/xos-config; python setup.py install
   then
     echo "Requirements installed."
     echo "Virtualenv ready"
   else
     echo "An error occurred"
 fi
+cd $BASEDIR

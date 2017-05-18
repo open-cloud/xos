@@ -67,6 +67,16 @@ docker_images:
     dockerfile: ""
     pull: True
     publish: False
+  - name: "gliderlabs/consul-server:latest"
+    path: ""
+    dockerfile: ""
+    pull: True
+    publish: False
+  - name: "gliderlabs/registrator:latest"
+    path: ""
+    dockerfile: ""
+    pull: True
+    publish: False
 
 build_optional_images: False
 

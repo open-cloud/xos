@@ -1,0 +1,21 @@
+map:
+  name:
+    type: str
+    required: True
+  database:
+    type: map
+    map:
+      username:
+        type: str
+      password:
+        type: str
+  logging:
+    type: map
+    map:
+      level:
+        type: str
+      channels:
+        type: seq
+        sequence:
+          - type: str
+            enum: ['file', 'console', 'elkstack']

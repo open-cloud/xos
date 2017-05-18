@@ -1,0 +1,9 @@
+name: xos-core
+database:
+  username: test
+  password: safe
+logging:
+  level: info
+  channels:
+    - file
+    - console
