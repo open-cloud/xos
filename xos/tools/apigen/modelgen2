@@ -24,7 +24,7 @@ from django.contrib.contenttypes.models import ContentType
 
 django.setup()
 
-from core.models import PlCoreBase
+from core.models import XOSBase
 
 options = None
 
@@ -37,7 +37,7 @@ def is_model_class(model):
         return False
     bases = inspect.getmro(model)
     bases = [x.__name__ for x in bases]
-    if ("PlCoreBase" in bases) or ("PlModelMixIn" in bases):
+    if ("XOSBase" in bases) or ("PlModelMixIn" in bases):
         return True
 
     return False
@@ -307,9 +307,9 @@ def main():
         parser.add_option("-a", "--app", dest="apps",
              help="list of applications to parse", metavar="APP", default=[], action="append")
         parser.add_option("-b", "--blacklist", dest="blacklist",
-             help="add model name to blacklist", metavar="MODEL", default=["SingletonModel", "PlCoreBase"], action="append")
+             help="add model name to blacklist", metavar="MODEL", default=["SingletonModel", "XOSBase"], action="append")
         parser.add_option("-n", "--no-rest", dest="norest",
-             help="do not generate rest api for model", metavar="MODEL", default=["SingletonModel", "PlCoreBase"], action="append")
+             help="do not generate rest api for model", metavar="MODEL", default=["SingletonModel", "XOSBase"], action="append")
         parser.add_option("-l", "--local", dest="local",
              help="skip base models", metavar="MODEL", default=False, action="store_true")
         (options, args) = parser.parse_args(sys.argv[1:])

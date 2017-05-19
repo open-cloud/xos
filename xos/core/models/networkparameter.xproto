@@ -1,6 +1,6 @@
 
 
-message NetworkParameter (PlCoreBase){
+message NetworkParameter (XOSBase){
      required manytoone parameter->NetworkParameterType:networkparameters = 1 [help_text = "The type of the parameter", null = False, db_index = True, blank = False];
      required string value = 2 [help_text = "The value of this parameter", max_length = 1024, null = False, db_index = False, blank = False];
      required string content_type = 4 [max_length = 1024, content_type = "stripped", blank = False, help_text = "Content type id linked to this network parameter", null = False, db_index = False];

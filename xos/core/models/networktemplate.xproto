@@ -1,6 +1,6 @@
 
 
-message NetworkTemplate (PlCoreBase,ParameterMixin){
+message NetworkTemplate (XOSBase,ParameterMixin){
      required string name = 1 [db_index = False, max_length = 32, null = False, blank = False];
      optional string description = 2 [db_index = False, max_length = 1024, null = True, blank = True];
      required string visibility = 4 [default = "private", choices = "(('public', 'public'), ('private', 'private'))", max_length = 30, blank = False, null = False, db_index = False];

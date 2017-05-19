@@ -185,11 +185,11 @@ class XOSAPIHelperMixin(object):
                 getattr(p_obj,related_name+"_ids").append(rel_obj.id)
 
         # Generate a list of class names for the object. This includes its
-        # ancestors. Anything that is a descendant of PlCoreBase or User
+        # ancestors. Anything that is a descendant of XOSBase or User
         # counts.
 
         bases = inspect.getmro(obj.__class__)
-        bases = [x for x in bases if issubclass(x, PlCoreBase) or issubclass(x, User)]
+        bases = [x for x in bases if issubclass(x, XOSBase) or issubclass(x, User)]
         p_obj.class_names = ",".join( [x.__name__ for x in bases] )
 
         p_obj.self_content_type_id = obj.get_content_type_key()

@@ -1,6 +1,6 @@
 
 
-message AddressPool (PlCoreBase){
+message AddressPool (XOSBase){
      required string name = 1 [db_index = False, max_length = 32, null = False, blank = False];
      optional string addresses = 2 [db_index = False, null = True, blank = True];
      optional string gateway_ip = 3 [db_index = False, max_length = 32, null = True, blank = False];

@@ -7,8 +7,8 @@ from collections import defaultdict
 from operator import attrgetter, itemgetter
 
 from core.middleware import get_request
-from core.models import DashboardView, PlCoreBase, PlModelMixIn, Site, ModelLink
-from core.models.plcorebase import StrippedCharField, XOSCollector
+from core.models import DashboardView, XOSBase, PlModelMixIn, Site, ModelLink
+from core.models.xosbase import StrippedCharField, XOSCollector
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives
@@ -25,7 +25,7 @@ from django.contrib.contenttypes.models import ContentType
 import redis
 from redis import ConnectionError
 
-# ------ from plcorebase.py ------
+# ------ from xosbase.py ------
 try:
     # This is a no-op if observer_disabled is set to 1 in the config file
     from synchronizers.base import *
@@ -277,7 +277,7 @@ class User(AbstractBaseUser, PlModelMixIn):
                             model.save(update_fields=['enacted','deleted','policed'], silent=silent)
 
     def save(self, *args, **kwargs):
-        journal_object(self, "plcorebase.save")
+        journal_object(self, "xosbase.save")
 
         if not self.id:
             self.set_password(self.password)
@@ -317,11 +317,11 @@ class User(AbstractBaseUser, PlModelMixIn):
 
         self.username = self.email
 
-        journal_object(self, "plcorebase.save.super_save")
+        journal_object(self, "xosbase.save.super_save")
 
         super(User, self).save(*args, **kwargs)
 
-        journal_object(self, "plcorebase.save.super_save_returned")
+        journal_object(self, "xosbase.save.super_save_returned")
 
         self.push_redis_event()
 
@@ -625,7 +625,7 @@ class User(AbstractBaseUser, PlModelMixIn):
         return cls.objects.get(id=object_id)
 
 
-class UserDashboardView(PlCoreBase):
+class UserDashboardView(XOSBase):
     user = models.ForeignKey(User, related_name='userdashboardviews')
     dashboardView = models.ForeignKey(
         DashboardView, related_name='userdashboardviews')

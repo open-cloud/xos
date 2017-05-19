@@ -94,7 +94,7 @@ def import_models_to_globals():
     for (k, v) in model_accessor.all_model_classes.items():
         globals()[k] = v
 
-    # plcorebase doesn't exist from the synchronizer's perspective, so fake out
+    # xosbase doesn't exist from the synchronizer's perspective, so fake out
     # ModelLink.
     if "ModelLink" not in globals():
         class ModelLink:

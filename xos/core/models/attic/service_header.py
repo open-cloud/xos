@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from core.models.xos import XOS
-from core.models.plcorebase import *
+from core.models.xosbase import *
 from django.core.validators import URLValidator
 import urlparse
 from operator import attrgetter

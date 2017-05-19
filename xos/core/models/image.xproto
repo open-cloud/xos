@@ -1,6 +1,6 @@
 
 
-message Image (PlCoreBase){
+message Image (XOSBase){
      required string name = 1 [db_index = False, max_length = 256, null = False, content_type = "stripped", blank = False];
      required string kind = 2 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'))", max_length = 30, blank = False, null = False, db_index = False];
      required string disk_format = 3 [db_index = False, max_length = 256, null = False, content_type = "stripped", blank = False];

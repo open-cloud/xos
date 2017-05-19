@@ -1,4 +1,4 @@
-from core.models import User,Site,Service,PlCoreBase,Slice,SlicePrivilege
+from core.models import User,Site,Service,XOSBase,Slice,SlicePrivilege
 import os
 from django.db import models
 from django.db.models import Q
@@ -16,7 +16,7 @@ class SyndicateService(Service):
     def __unicode__(self):  return u'Syndicate Service'
 
 
-class SyndicatePrincipal(PlCoreBase):
+class SyndicatePrincipal(XOSBase):
     class Meta:
         app_label = "syndicate_storage"
 
@@ -28,7 +28,7 @@ class SyndicatePrincipal(PlCoreBase):
     def __unicode__self(self):  return "%s" % self.principal_id
 
 
-class Volume(PlCoreBase):
+class Volume(XOSBase):
     class Meta:
         app_label = "syndicate_storage"
 
@@ -64,7 +64,7 @@ class Volume(PlCoreBase):
         return qs
 
 
-class VolumeAccessRight(PlCoreBase):
+class VolumeAccessRight(XOSBase):
     class Meta:
         app_label = "syndicate_storage"
 
@@ -171,7 +171,7 @@ class ObserverSecretValue( models.TextField ):
           raise syndicatelib.SyndicateObserverError( "Internal Syndicate Observer error: No slice secret generated" )
                                                     
 
-class SliceSecret(models.Model):        # NOTE: not a PlCoreBase
+class SliceSecret(models.Model):        # NOTE: not a XOSBase
     class Meta:
        app_label = "syndicate_storage"
     
@@ -195,7 +195,7 @@ class SliceSecret(models.Model):        # NOTE: not a PlCoreBase
         return qs
  
 
-class VolumeSlice(PlCoreBase):
+class VolumeSlice(XOSBase):
     class Meta:
         app_label = "syndicate_storage"
 

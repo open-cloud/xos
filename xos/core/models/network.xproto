@@ -1,6 +1,6 @@
 
 
-message Network (PlCoreBase,ParameterMixin){
+message Network (XOSBase,ParameterMixin){
      required string name = 1 [db_index = False, max_length = 32, null = False, blank = False];
      required manytoone template->NetworkTemplate:network = 2 [db_index = True, null = False, blank = False];
      required string subnet = 3 [db_index = False, max_length = 32, null = False, blank = True];

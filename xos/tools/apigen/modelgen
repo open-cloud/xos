@@ -22,7 +22,7 @@ from django.contrib.contenttypes.models import ContentType
 
 django.setup()
 
-from core.models import PlCoreBase
+from core.models import XOSBase
 
 options = None
 
@@ -34,7 +34,7 @@ def is_model_class(model):
         return False
     bases = inspect.getmro(model)
     bases = [x.__name__ for x in bases]
-    if ("PlCoreBase" in bases) or ("PlModelMixIn" in bases):
+    if ("XOSBase" in bases) or ("PlModelMixIn" in bases):
         return True
 
     return False
@@ -127,7 +127,6 @@ class GenObj(object):
 		self.refs = []
                 self.reverse_refs = []
 		self.plural_name = None
-                self.content_type_id = ContentType.objects.get_for_model(m).id
 
 	def plural(self):
 		if (self.plural_name):
@@ -204,7 +203,7 @@ class Generator(dict):
 		self[str(obj).lower()]=obj
 
 	def compute_links(self):
-                base_props = [f.name for f in PlCoreBase._meta.fields]
+                base_props = [f.name for f in XOSBase._meta.fields]
 
 		for obj in self.values():
 			#if (str(obj)=='network'):
@@ -290,9 +289,9 @@ def main():
         parser.add_option("-a", "--app", dest="apps",
              help="list of applications to parse", metavar="APP", default=[], action="append")
         parser.add_option("-b", "--blacklist", dest="blacklist",
-             help="add model name to blacklist", metavar="MODEL", default=["SingletonModel", "PlCoreBase"], action="append")
+             help="add model name to blacklist", metavar="MODEL", default=["SingletonModel", "XOSBase"], action="append")
         parser.add_option("-n", "--no-rest", dest="norest",
-             help="do not generate rest api for model", metavar="MODEL", default=["SingletonModel", "PlCoreBase"], action="append")
+             help="do not generate rest api for model", metavar="MODEL", default=["SingletonModel", "XOSBase"], action="append")
 
         (options, args) = parser.parse_args(sys.argv[1:])
 

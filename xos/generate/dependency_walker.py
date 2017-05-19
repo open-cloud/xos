@@ -85,7 +85,7 @@ def __walk_deps(fn, object, deps):
 				peer_objects = []
 
 			for o in peer_objects:
-				#if (isinstance(o,PlCoreBase)):
+				#if (isinstance(o,XOSBase)):
 				if (hasattr(o,'updated')):
 					fn(o, object)
 					ret.append(o)

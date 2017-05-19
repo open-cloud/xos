@@ -1,6 +1,6 @@
 
 
-message ControllerSite (PlCoreBase){
+message ControllerSite (XOSBase){
      required manytoone site->Site:controllersite = 1 [db_index = True, null = False, blank = False];
      optional manytoone controller->Controller:controllersite = 2 [db_index = True, null = True, blank = True];
      optional string tenant_id = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "Keystone tenant id", null = True, db_index = True];

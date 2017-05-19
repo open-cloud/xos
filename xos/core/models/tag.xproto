@@ -1,6 +1,6 @@
 
 
-message Tag (PlCoreBase){
+message Tag (XOSBase){
      required manytoone service->Service:tags = 1 [help_text = "The Service this Tag is associated with", null = False, db_index = True, blank = False];
      required string name = 2 [help_text = "The name of this tag", max_length = 128, null = False, db_index = True, blank = False];
      required string value = 3 [max_length = 1024, content_type = "stripped", blank = False, help_text = "The value of this tag", null = False, db_index = False];

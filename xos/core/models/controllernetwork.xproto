@@ -1,6 +1,6 @@
 
 
-message ControllerNetwork (PlCoreBase){
+message ControllerNetwork (XOSBase){
      required manytoone network->Network:controllernetworks = 1 [db_index = True, null = False, blank = False];
      required manytoone controller->Controller:controllernetworks = 2 [db_index = True, null = False, blank = False];
      required string subnet = 3 [db_index = False, max_length = 32, null = False, blank = True];

@@ -25,7 +25,7 @@ from django.db.transaction import atomic
 from django.dispatch import receiver
 from django.utils import timezone
 from django.db import models as django_models
-from core.models.plcorebase import XOSCollector
+from core.models.xosbase import XOSCollector
 from django.db import router
 from xos.logger import Logger, logging
 

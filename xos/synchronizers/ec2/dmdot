@@ -21,7 +21,7 @@ g = globals()
 model_classes = []
 class_names = []
 for c in g.values():
-	if type(c)==type(PlCoreBase):
+	if type(c)==type(XOSBase):
 		model_classes.append(c)
 		class_names.append(c.__name__)
 

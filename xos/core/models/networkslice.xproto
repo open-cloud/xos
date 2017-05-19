@@ -1,6 +1,6 @@
 
 
-message NetworkSlice (PlCoreBase){
+message NetworkSlice (XOSBase){
      required manytoone network->Network:networkslices = 1 [db_index = True, null = False, blank = False];
      required manytoone slice->Slice:networkslices = 2 [db_index = True, null = False, blank = False];
 }

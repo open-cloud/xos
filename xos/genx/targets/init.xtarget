@@ -1,7 +1,7 @@
 # The hardcoded entries cannot be inferred from the models. To get rid of in the long run
 # 
 
-from .plcorebase import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager,PlModelMixIn,ModelLink
+from .xosbase import XOSBase,XOSBaseManager,XOSBaseDeletionManager,PlModelMixIn,ModelLink
 from .contenttype import ContentType
 from .site import Site
 from .dashboardview import DashboardView

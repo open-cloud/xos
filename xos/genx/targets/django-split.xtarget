@@ -1,7 +1,6 @@
 
-from header import *
 {% for m in proto.messages %}
-{% if file_exists(xproto_base_name(m.name)|lower+'_header.py') -%}from {{xproto_base_name(m.name)|lower }}_header import *{% endif %}
+{% if file_exists(xproto_base_name(m.name)|lower+'_header.py') -%}from {{xproto_base_name(m.name)|lower }}_header import *{%- else -%}from header import *{% endif %}
 {% if file_exists(xproto_base_name(m.name)|lower+'_top.py') -%}{{ include_file(xproto_base_name(m.name)|lower+'_top.py') }} {% endif %}
 
 {%- for l in m.links %}
@@ -12,13 +11,13 @@ from core.models.{{ l.peer | lower }} import {{ l.peer }}
 
 {%- endfor %}
 {% for b in m.bases %}
-{% if b!='PlCoreBase' and 'Mixin' not in b%}
+{% if b!='XOSBase' and 'Mixin' not in b%}
 from core.models.{{b | lower}} import {{ b }}
 {% endif %}
 {% endfor %}
 
 
-class {{ m.name }}{{ xproto_base_def(m.bases) }}:
+class {{ m.name }}{{ xproto_base_def(m.name, m.bases) }}:
   # Primitive Fields (Not Relations)
   {% for f in m.fields %}
   {%- if not f.link -%}

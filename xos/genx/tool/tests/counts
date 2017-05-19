@@ -2,7 +2,7 @@
 
 import core.models
 import inspect
-from core.models import PlCoreBase, PlModelMixIn
+from core.models import XOSBase, PlModelMixIn
 import pdb
 
 def count(lst):
@@ -21,7 +21,7 @@ def is_model_class(model):
         return False
     bases = inspect.getmro(model)
     bases = [x.__name__ for x in bases]
-    if ("PlCoreBase" in bases) or ("PlModelMixIn" in bases):
+    if ("XOSBase" in bases) or ("PlModelMixIn" in bases):
         return True
 
     return False

@@ -1,5 +1,5 @@
 
 
-message Diag (PlCoreBase){
+message Diag (XOSBase){
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the synchronizer", null = False, db_index = False];
 }

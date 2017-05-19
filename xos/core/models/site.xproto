@@ -1,6 +1,6 @@
 
 
-message Site (PlCoreBase){
+message Site (XOSBase){
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name for this Site", null = False, db_index = False];
      optional string site_url = 2 [max_length = 512, content_type = "url", blank = True, help_text = "Site's Home URL Page", null = True, db_index = False];
      required bool enabled = 3 [help_text = "Status for this Site", default = True, null = False, db_index = False, blank = True];

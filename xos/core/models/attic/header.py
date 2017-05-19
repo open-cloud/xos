@@ -4,7 +4,7 @@ import sys
 import json
 import operator
 from operator import attrgetter
-from core.models.plcorebase import *
+from core.models.xosbase import *
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import now
@@ -97,5 +97,3 @@ def get_default_flavor(controller = None):
             return flavor
 
     return flavors[0]
-
-

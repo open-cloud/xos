@@ -62,8 +62,10 @@ def django_string_type(xptags):
     else:
         return 'TextField'
 
-def xproto_base_def(base):
-    if (not base):
+def xproto_base_def(model_name, base):
+    if (model_name=='XOSBase'):
+        return '(models.Model, PlModelMixIn)'
+    elif (not base):
         return ''
     else:
         return '(' + ','.join(base) + ')'
@@ -137,7 +139,7 @@ def format_options_string(d):
         return ', '.join(lst)
 
 def map_xproto_to_django(f):
-    allowed_keys=['help_text','default','max_length','modifier','blank','choices','db_index','null','editable','on_delete','verbose_name'] 
+    allowed_keys=['help_text','default','max_length','modifier','blank','choices','db_index','null','editable','on_delete','verbose_name', 'auto_now_add'] 
 
     m = {'modifier':{'optional':True, 'required':False, '_target':'null'}}
     out = {}
@@ -183,7 +185,7 @@ def xproto_base_name(n):
     if (n.startswith('NetworkParameter')):
         return '_'
 
-    expr = r'^[A-Z][a-z]+'
+    expr = r'^[A-Z]+[a-z]*'
 
     try:
         match = re.findall(expr, n)[0]

@@ -46,15 +46,15 @@ for app in apps:
     #models_module = imp.load_source(app, ".")
     models_module = __import__(app)
     for part in app.split(".")[1:]:
-        if hasattr(models_module, "PlCoreBase"):
+        if hasattr(models_module, "XOSBase"):
             break
         models_module = getattr(models_module,part)
 
-    PlCoreBase = getattr(models_module,"PlCoreBase")
+    XOSBase = getattr(models_module,"XOSBase")
 
     for classname in dir(models_module):
         c = getattr(models_module, classname, None)
-        if type(c)==type(PlCoreBase):
+        if type(c)==type(XOSBase):
             model_classes.append(c)
             class_names.append(c.__name__)
             lower_class_names[c.__name__.lower()] = c

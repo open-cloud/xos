@@ -10,7 +10,7 @@ from core.models import {{ l.peer }}
 {%- endif -%}
 {%- endfor -%}
 {%- for b in m.bases -%}
-{%- if b!='PlCoreBase' and 'Mixin' not in b -%}
+{%- if b!='XOSBase' and 'Mixin' not in b -%}
 #from core.models.{{b | lower}} import {{ b }}
 from core.models import {{ b }}
 {%- endif -%}
@@ -20,7 +20,7 @@ from core.models import {{ b }}
 
 {% for m in proto.messages %}
 
-class {{ m.name }}{{ xproto_base_def(m.bases) }}:
+class {{ m.name }}{{ xproto_base_def(m.name, m.bases) }}:
 
   KIND = {{ xproto_first_non_empty([m.options.kind, options.kind, options.name, "Set a kind in your xproto!"]) }}
 

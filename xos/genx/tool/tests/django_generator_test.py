@@ -5,7 +5,7 @@ class XProtoProtobufGeneratorTest(XProtoTest):
     def test_proto_generator(self):
         xproto = \
 """
-message VRouterPort (PlCoreBase){
+message VRouterPort (XOSBase){
      optional string name = 1 [help_text = "port friendly name", max_length = 20, null = True, db_index = False, blank = True];
      required string openflow_id = 2 [help_text = "port identifier in ONOS", max_length = 21, null = False, db_index = False, blank = False];
      required manytoone vrouter_device->VRouterDevice:ports = 3 [db_index = True, null = False, blank = False];
@@ -27,7 +27,7 @@ from core.models.{{ l.peer | lower }} import {{ l.peer }}
 
 {%- endfor %}
 {% for b in m.bases %}
-{% if b!='PlCoreBase' and 'Mixin' not in b%}
+{% if b!='XOSBase' and 'Mixin' not in b%}
 from core.models.{{b | lower}} import {{ b }}
 {% endif %}
 {% endfor %}
