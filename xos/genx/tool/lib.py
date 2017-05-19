@@ -2,6 +2,9 @@ import pdb
 import re
 from pattern import en
 
+def xproto_unquote(s):
+    return unquote(s)
+
 def unquote(s):
     if (s.startswith('"') and s.endswith('"')):
         return s[1:-1]
@@ -44,7 +47,7 @@ def django_content_type_string(xptags):
     elif (content_type=='stripped' or content_type=='"stripped"'):
         return 'StrippedCharField'
     else:
-        pdb.set_trace()
+        raise Exception('Unknown Type: %s'%content_type)
 
 def django_string_type(xptags):
     try:
@@ -68,6 +71,15 @@ def xproto_base_def(base):
 def xproto_first_non_empty(lst):
     for l in lst:
         if l: return l
+
+def xproto_api_type(field):
+    try:
+        if (unquote(field['options']['content_type'])=='date'):
+            return 'float'
+    except KeyError:
+        pass
+
+    return field['type']
 
 def xproto_django_type(xptype, xptags):
     if (xptype=='string'):
@@ -180,3 +192,15 @@ def xproto_base_name(n):
 
     return match
 
+def xproto_base_fields(m, table):
+    fields = []
+
+    for b in m['bases']:
+        if b in table:
+            base_fields = xproto_base_fields(table[b], table)
+
+            model_fields = table[b]['fields']
+            fields.extend(base_fields)
+            fields.extend(model_fields)
+
+    return fields

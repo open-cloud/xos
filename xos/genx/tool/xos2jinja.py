@@ -29,6 +29,7 @@ class Stack(list):
     in addition to traversing it '''
 class XOS2Jinja(m.Visitor):
     stack = Stack()
+    models = {}
     options = {}
     message_options = {}
     count_stack = Stack()
@@ -199,7 +200,9 @@ class XOS2Jinja(m.Visitor):
                 fields.insert(0,f)
                 last_field = f
 
-        self.stack.push({'name':obj.name.value.pval,'fields':fields,'links':links, 'bases':obj.bases, 'options':self.message_options})
+        model_def = {'name':obj.name.value.pval,'fields':fields,'links':links, 'bases':obj.bases, 'options':self.message_options}
+        self.stack.push(model_def)
+        self.models[obj.name.value.pval] = model_def
         self.current_message_name = None
         return True
 

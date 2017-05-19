@@ -76,7 +76,7 @@ class XOSGenerator:
             except:
                 pass
 
-            rendered = template.render({"proto": {'messages':v.messages, 'message_names':[m['name'] for m in v.messages]},"context":context,"options":v.options})
+            rendered = template.render({"proto": {'message_table':v.models, 'messages':v.messages, 'message_names':[m['name'] for m in v.messages]},"context":context,"options":v.options})
 
             lines = rendered.splitlines()
             current_buffer = []
