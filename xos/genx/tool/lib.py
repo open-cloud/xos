@@ -2,10 +2,25 @@ import pdb
 import re
 from pattern import en
 
+def unquote(s):
+    if (s.startswith('"') and s.endswith('"')):
+        return s[1:-1]
+
+def xproto_singularize(field):
+    try:
+        # The user has set a singular, as an exception that cannot be handled automatically
+        singular = field['options']['singular']
+        singular = unquote(singular)
+    except KeyError:
+        singular = en.singularize(field['name'])
+
+    return singular
+
 def xproto_pluralize(field):
     try:
         # The user has set a plural, as an exception that cannot be handled automatically
         plural = field['options']['plural']
+        plural = unquote(plural)
     except KeyError:
         plural = en.pluralize(field['name'])
 

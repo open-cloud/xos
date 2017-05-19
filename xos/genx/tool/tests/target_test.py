@@ -28,6 +28,30 @@ class XProtoTargetTests(XProtoTest):
         self.generate(target=target, kv='what:what is what')
         self.assertIn("what is what", self.get_output())
 
+    def test_singularize(self):
+        proto = \
+"""
+  message TestSingularize {
+      // The following field has an explicitly specified singular
+      required int many = 1 [singular = "one"];
+      // The following fields have automatically computed singulars
+      required int sheep = 2;
+      required int radii = 2;
+      required int slices = 2;
+      required int networks = 2;
+      required int omf_friendlies = 2;
+  }
+"""
+
+        target = \
+"""
+{% for m in proto.messages.0.fields -%}
+{{ xproto_singularize(m) }},
+{%- endfor %}
+"""
+        self.generate(xproto=proto, target=target)
+        self.assertEqual("one,sheep,radius,slice,network,omf_friendly", self.get_output().lstrip().rstrip().rstrip(','))
+
     def test_pluralize(self):
         proto = \
 """
