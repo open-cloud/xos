@@ -22,7 +22,7 @@ for c in dir(core.models):
         classname = c.__class__.__name__
         classname = classname[0].lower() + classname[1:]
 
-        if (classname in ["plCoreBase", "singletonModel"]):
+        if (classname in ["plCoreBase", ]):
             continue
 
         fieldNames = [f.name for f in c._meta.fields]

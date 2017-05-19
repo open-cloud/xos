@@ -1,4 +1,4 @@
-from core.models import User,Site,Service,SingletonModel,PlCoreBase,Slice,SlicePrivilege
+from core.models import User,Site,Service,PlCoreBase,Slice,SlicePrivilege
 import os
 from django.db import models
 from django.db.models import Q
@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 # Create your models here.
 
-class SyndicateService(SingletonModel,Service):
+class SyndicateService(Service):
     class Meta:
         app_label = "syndicate_storage"
         verbose_name = "Syndicate Service"

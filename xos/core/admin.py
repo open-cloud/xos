@@ -1864,21 +1864,6 @@ class NetworkParameterTypeAdmin(XOSBaseAdmin):
     user_readonly_inlines = []
 
 
-class RouterAdmin(XOSBaseAdmin):
-    list_display = ("backend_status_icon", "name", )
-    list_display_links = ('backend_status_icon', 'name', )
-    user_readonly_fields = ['name']
-    user_readonly_inlines = []
-
-
-class RouterInline(XOSTabularInline):
-    model = Router.networks.through
-    extra = 0
-    verbose_name_plural = "Routers"
-    verbose_name = "Router"
-    suit_classes = 'suit-tab suit-tab-routers'
-
-
 class NetworkParameterInline(PlStackGenericTabularInline):
     model = NetworkParameter
     extra = 0
@@ -1937,8 +1922,7 @@ class NetworkAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", "subnet", "ports", "labels")
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ("subnet", )
-    inlines = [NetworkParameterInline, NetworkPortInline,
-               NetworkSlicesInline, RouterInline]
+    inlines = [NetworkPortInline, NetworkSlicesInline]  # NetworkParameterInline,
     admin_inlines = [ControllerNetworkInline]
 
     form = NetworkForm
@@ -1965,7 +1949,6 @@ class NetworkAdmin(XOSBaseAdmin):
                 ('netparams', 'Parameters'),
                 ('ports', 'Ports'),
                 ('networkslices', 'Slices'),
-                ('routers', 'Routers'),
                 ]
 
         request = getattr(_thread_locals, "request", None)
@@ -1981,19 +1964,18 @@ class NetworkTemplateAdmin(XOSBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ["name", "guaranteed_bandwidth", "visibility"]
     user_readonly_inlines = []
-    inlines = [NetworkParameterInline, ]
+    # inlines = [NetworkParameterInline, ]
     fieldsets = [
         (None, {'fields': ['name', 'description', 'guaranteed_bandwidth', 'visibility', 'translation', 'access', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind', 'vtn_kind'],
                 'classes':['suit-tab suit-tab-general']}), ]
-    suit_form_tabs = (('general', 'Network Template Details'),
-                      ('netparams', 'Parameters'))
+    suit_form_tabs = (('general', 'Network Template Details'), ('netparams', 'Parameters'))
 
 
 class PortAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "id", "ip")
     list_display_links = ('backend_status_icon', 'id')
     readonly_fields = ("subnet", )
-    inlines = [NetworkParameterInline]
+    #inlines = [NetworkParameterInline]
 
     fieldsets = [
         (None, {'fields': ['backend_status_text', 'network', 'instance', 'ip', 'port_id', 'mac'],
@@ -2020,54 +2002,11 @@ def cache_credentials(sender, user, request, **kwds):
     request.session['auth'] = auth
 user_logged_in.connect(cache_credentials)
 
-class ProgramForm(forms.ModelForm):
-
-    class Meta:
-        model = Program
-        widgets = {
-            'contents': UploadTextareaWidget(attrs={'rows': 20, 'cols': 80, 'class': "input-xxlarge"}),
-            'description': forms.Textarea(attrs={'rows': 3, 'cols': 80, 'class': 'input-xxlarge'}),
-            'messages': forms.Textarea(attrs={'rows': 20, 'cols': 80, 'class': 'input-xxlarge'}),
-            'output': forms.Textarea(attrs={'rows': 3, 'cols': 80, 'class': 'input-xxlarge'})
-        }
-        fields = '__all__'
-
-
-class ProgramAdmin(XOSBaseAdmin):
-    list_display = ("name", "status")
-    list_display_links = ('name', "status")
-
-    form = ProgramForm
-
-    fieldsets = [
-        (None, {'fields': ['name', 'command', 'kind', 'description', 'output', 'status'],
-                'classes':['suit-tab suit-tab-general']}),
-        (None, {'fields': ['contents'],
-                'classes':['suit-tab suit-tab-contents']}),
-        (None, {'fields': ['messages'],
-                'classes':['suit-tab suit-tab-messages']}),
-    ]
-
-    readonly_fields = ("status",)
-
-    @property
-    def suit_form_tabs(self):
-        tabs = [('general', 'Program Details'),
-                ('contents', 'Program Source'),
-                ('messages', 'Messages'),
-                ]
-
-        request = getattr(_thread_locals, "request", None)
-        if request and request.user.is_admin:
-            tabs.append(('admin-only', 'Admin-Only'))
-
-        return tabs
-
 
 class AddressPoolForm(forms.ModelForm):
 
     class Meta:
-        model = Program
+        model = AddressPool
         widgets = {
             'addresses': UploadTextareaWidget(attrs={'rows': 20, 'cols': 80, 'class': "input-xxlarge"}),
         }
@@ -2089,14 +2028,8 @@ class AddressPoolAdmin(XOSBaseAdmin):
 
     @property
     def suit_form_tabs(self):
-        tabs = [('general', 'Program Details'),
-                ('contents', 'Program Source'),
-                ('messages', 'Messages'),
+        tabs = [('general', 'Address Pool Details'),
                 ]
-
-#        request=getattr(_thread_locals, "request", None)
-#        if request and request.user.is_admin:
-#            tabs.append( ('admin-only', 'Admin-Only') )
 
         return tabs
 
@@ -2139,9 +2072,7 @@ admin.site.register(Service, ServiceAdmin)
 admin.site.register(XOS, XosModelAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Port, PortAdmin)
-admin.site.register(Router, RouterAdmin)
 admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
-admin.site.register(Program, ProgramAdmin)
 
 if True:
     admin.site.register(NetworkParameterType, NetworkParameterTypeAdmin)
@@ -2152,8 +2083,6 @@ if True:
     admin.site.register(SliceRole)
     admin.site.register(Node, NodeAdmin)
     admin.site.register(NodeLabel, NodeLabelAdmin)
-    #admin.site.register(SlicePrivilege, SlicePrivilegeAdmin)
-    #admin.site.register(SitePrivilege, SitePrivilegeAdmin)
     admin.site.register(Instance, InstanceAdmin)
     admin.site.register(Image, ImageAdmin)
     admin.site.register(DashboardView, DashboardViewAdmin)

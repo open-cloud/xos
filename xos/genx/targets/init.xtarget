@@ -3,7 +3,6 @@
 
 from .plcorebase import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager,PlModelMixIn,ModelLink
 from .contenttype import ContentType
-from .singletonmodel import SingletonModel
 from .site import Site
 from .dashboardview import DashboardView
 from .user import User
