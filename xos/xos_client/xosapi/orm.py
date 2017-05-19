@@ -386,7 +386,7 @@ class ORMModelClass(object):
         return self.objects.new(*args, **kwargs)
 
 class ORMStub(object):
-    def __init__(self, stub, package_name, invoker=None, caller_kind="grpcapi", sym_db = None, empty = None):
+    def __init__(self, stub, package_name, invoker=None, caller_kind="grpcapi", sym_db = None, empty = None, enable_backoff=True):
         self.grpc_stub = stub
         self.all_model_names = []
         self.all_grpc_classes = {}
@@ -394,6 +394,7 @@ class ORMStub(object):
         self.reverse_content_type_map = {}
         self.invoker = invoker
         self.caller_kind = caller_kind
+        self.enable_backoff = enable_backoff
 
         if not sym_db:
             from google.protobuf import symbol_database as _symbol_database
@@ -446,9 +447,10 @@ class ORMStub(object):
             # Hook in place to call Chameleon's invoke method, as soon as we
             # have rewritten the synchronizer to use reactor.
             return self.invoker.invoke(self.grpc_stub.__class__, name, request, metadata={}).result[0]
-        else:
+        elif self.enable_backoff:
             # Our own retry mechanism. This works fine if there is a temporary
             # failure in connectivity, but does not re-download gRPC schema.
+            import grpc
             while True:
                 backoff = [0.5, 1, 2, 4, 8]
                 try:
@@ -464,6 +466,10 @@ class ORMStub(object):
                         raise
                 except:
                     raise
+        else:
+            method = getattr(self.grpc_stub, name)
+            return method(request, metadata=metadata)
+
 
     def make_ID(self, id):
         return self._sym_db._classes["xos.ID"](id=id)
@@ -506,3 +512,4 @@ import convenience.slice
 import convenience.port
 import convenience.tag
 import convenience.vtrtenant
+

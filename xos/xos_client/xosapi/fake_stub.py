@@ -5,7 +5,6 @@
 
 import functools
 
-ContentTypeIdCounter = 0;
 ContentTypeMap = {}
 
 class FakeObj(object):
@@ -35,6 +34,10 @@ class FakeObj(object):
     def __setattr__(self, name, value):
         self.is_set[name] = True
         super(FakeObj, self).__setattr__(name, value)
+
+    @property
+    def self_content_type_id(self):
+        return "xos.%s" % self.__class__.__name__.lower()
 
 class FakeExtensionManager(object):
     def __init__(self, obj, extensions):
@@ -78,8 +81,7 @@ class FakeDescriptor(object):
         if objName in ContentTypeMap:
             ct = ContentTypeMap[objName]
         else:
-            ct = ContentTypeIdCounter
-            ContentTypeIdCount = ContentTypeIdCounter + 1
+            ct = "xos.%s" % objName.lower()
             ContentTypeMap[objName] = ct
         self.Extensions = FakeExtensionManager(self, {"xos.contentTypeId": ct})
 
@@ -116,10 +118,41 @@ class Site(FakeObj):
 
     DESCRIPTOR = FakeDescriptor("Site")
 
+class Service(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "name", "default": ""}, )
+
+    def __init__(self, **kwargs):
+        return super(Service, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("Service")
+
+class Tag(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "service_id", "default": None},
+               {"name": "name", "default": ""},
+               {"name": "value", "default": ""},
+               {"name": "content_type", "default": None},
+               {"name": "object_id", "default": None},
+               {"name": "slice_ids", "default": 0, "fk_reverse": "Slice"} )
+
+    def __init__(self, **kwargs):
+        return super(Tag, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("Tag")
+
+class ID(FakeObj):
+    pass
+
+class FakeItemList(object):
+    def __init__(self, items):
+        self.items = items
+
 class FakeStub(object):
     def __init__(self):
+        self.id_counter = 1
         self.objs = {}
-        for name in ["Slice", "Site"]:
+        for name in ["Slice", "Site", "Tag", "Service"]:
             setattr(self, "Get%s" % name, functools.partial(self.get, name))
             setattr(self, "List%s" % name, functools.partial(self.list, name))
             setattr(self, "Create%s" % name, functools.partial(self.create, name))
@@ -130,35 +163,39 @@ class FakeStub(object):
     def make_key(self, name, id):
         return "%s:%d" % (name, id.id)
 
-    def get(self, classname, id):
+    def get(self, classname, id, metadata=None):
         obj = self.objs.get(self.make_key(classname, id), None)
         return obj
 
-    def list(self, classname, empty):
-        items = None
+    def list(self, classname, empty, metadata=None):
+        items = []
         for (k,v) in self.objs.items():
             (this_classname, id) = k.split(":")
             if this_classname == classname:
                     items.append(v)
-        return items
+        return FakeItemList(items)
 
-    def create(self, classname, obj):
+    def create(self, classname, obj, metadata=None):
+        obj.id = self.id_counter
+        self.id_counter = self.id_counter + 1
         k = self.make_key(classname, FakeObj(id=obj.id))
         self.objs[k] = obj
+        return obj
 
-    def update(self, classname, obj):
+    def update(self, classname, obj, metadata=None):
         # TODO: partial update support?
         k = self.make_key(classname, FakeObj(id=obj.id))
         self.objs[k] = obj
+        return obj
 
-    def delete(self, classname, id):
+    def delete(self, classname, id, metadata=None):
         k = self.make_key(classname, id)
         del self.objs[k]
 
 class FakeSymDb(object):
     def __init__(self):
         self._classes = {}
-        for name in ["Slice", "Site"]:
+        for name in ["Slice", "Site", "ID", "Tag", "Service"]:
             self._classes["xos.%s" % name] = globals()[name]
 
 

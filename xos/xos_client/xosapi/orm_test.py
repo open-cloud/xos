@@ -16,7 +16,7 @@ class TestORM(unittest.TestCase):
     def make_coreapi(self):
         if USE_FAKE_STUB:
             stub = FakeStub()
-            api = ORMStub(stub=stub, package_name = "xos", sym_db = FakeSymDb(), empty = FakeObj)
+            api = xosapi.orm.ORMStub(stub=stub, package_name = "xos", sym_db = FakeSymDb(), empty = FakeObj, enable_backoff = False)
             return api
         else:
             return xos_grpc_client.coreapi
@@ -57,11 +57,110 @@ class TestORM(unittest.TestCase):
         self.assertNotEqual(s, None)
         self.assertEqual(s.dumpstr(), '')
 
+    def test_create(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+
+    def test_get(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        got_site = orm.Site.objects.get(id = site.id)
+        self.assertNotEqual(got_site, None)
+        self.assertEqual(got_site.id, site.id)
+
+    def test_delete(self):
+        orm = self.make_coreapi()
+        orig_len_sites = len(orm.Site.objects.all())
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        site.delete()
+        sites = orm.Site.objects.all()
+        self.assertEqual(len(sites), orig_len_sites)
+
+    def test_objects_all(self):
+        orm = self.make_coreapi()
+        orig_len_sites = len(orm.Site.objects.all())
+        site = orm.Site(name="mysite")
+        site.save()
+        sites = orm.Site.objects.all()
+        self.assertEqual(len(sites), orig_len_sites+1)
+
+    def test_objects_first(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite")
+        site.save()
+        site = orm.Site.objects.first()
+        self.assertNotEqual(site, None)
+
+    def test_content_type_map(self):
+        orm = self.make_coreapi()
+        self.assertTrue( "Slice" in orm.content_type_map.values() )
+        self.assertTrue( "Site" in orm.content_type_map.values() )
+        self.assertTrue( "Tag" in orm.content_type_map.values() )
+
+    def test_foreign_key_get(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        slice = orm.Slice(name="mysite_foo", site_id = site.id)
+        slice.save()
+        self.assertTrue(slice.id > 0)
+        self.assertNotEqual(slice.site, None)
+        self.assertEqual(slice.site.id, site.id)
+
+    def test_foreign_key_set(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        slice = orm.Slice(name="mysite_foo", site = site)
+        slice.save()
+        slice.invalidate_cache()
+        self.assertTrue(slice.id > 0)
+        self.assertNotEqual(slice.site, None)
+        self.assertEqual(slice.site.id, site.id)
+
+    def test_generic_foreign_key_get(self):
+        orm = self.make_coreapi()
+        service = orm.Service(name="myservice")
+        service.save()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        tag = orm.Tag(service=service, name="mytag", value="somevalue", content_type=site.self_content_type_id, object_id=site.id)
+        tag.save()
+        self.assertTrue(tag.id > 0)
+        self.assertNotEqual(tag.content_object, None)
+        self.assertEqual(tag.content_object.id, site.id)
+
+    def test_generic_foreign_key_set(self):
+        orm = self.make_coreapi()
+        service = orm.Service(name="myservice")
+        service.save()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        tag = orm.Tag(service=service, name="mytag", value="somevalue")
+        tag.content_object = site
+        tag.invalidate_cache()
+        self.assertEqual(tag.content_type, site.self_content_type_id)
+        self.assertEqual(tag.object_id, site.id)
+        tag.save()
+        self.assertTrue(tag.id > 0)
+        self.assertNotEqual(tag.content_object, None)
+        self.assertEqual(tag.content_object.id, site.id)
+
 if USE_FAKE_STUB:
     sys.path.append("..")
 
+    import xosapi.orm
     from fake_stub import FakeStub, FakeSymDb, FakeObj
-    from orm import ORMStub
 
     print "Using Fake Stub"
 
@@ -77,6 +176,7 @@ else:
 
     def test_callback():
         try:
+            sys.argv = sys.argv[:1] # unittest does not like xos_grpc_client's command line arguments (TODO: find a cooperative approach)
             unittest.main()
         except exceptions.SystemExit, e:
             global exitStatus
