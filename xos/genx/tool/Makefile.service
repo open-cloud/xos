@@ -10,7 +10,7 @@ xprotos = $(wildcard *.xproto)
 all: models.py
 
 models.py: $(xprotos)
-	$(XOSGEN) --attic attic --input $< --target $(DJANGO_TARGET) --output $@
+	$(XOSGEN) --attic attic --target $(DJANGO_TARGET) --output $@ $<
 
 .PHONY: all
 	
