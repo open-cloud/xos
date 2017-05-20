@@ -269,8 +269,8 @@ message Service (XOSBase,AttributeMixin) {
      required bool published = 6 [default = True, null = False, db_index = False, blank = True];
      optional string view_url = 7 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
      optional string icon_url = 8 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
-     optional string public_key = 9 [help_text = "Public key string", max_length = 1024, null = True, db_index = False, blank = True];
-     optional string private_key_fn = 10 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
+     optional string public_key = 9 [help_text = "Public key string", max_length = 4096, null = True, db_index = False, blank = True];
+     optional string private_key_fn = 10 [db_index = False, max_length = 4096, null = True, content_type = "stripped", blank = True];
      optional string service_specific_id = 11 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
      optional string service_specific_attribute = 12 [db_index = False, null = True, blank = True];
 }

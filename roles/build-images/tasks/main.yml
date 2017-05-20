@@ -3,12 +3,12 @@
 
 - name: Clean up chameleon temp directory
   file:
-    path: "{{ cord_dir }}/orchestration/xos/containers/chameleon/tmp.chameleon"
+    path: "{{ build_cord_dir }}/orchestration/xos/containers/chameleon/tmp.chameleon"
     state: absent
   with_items: "{{ chameleon_dirs }}"
 
 - name: Populate chameleon temp directory
-  shell: cp -a "{{ cord_dir }}/component/chameleon" "{{ item }}"
+  shell: cp -a "{{ build_cord_dir }}/component/chameleon" "{{ item }}"
   with_items: "{{ chameleon_dirs }}"
   tags:
     - skip_ansible_lint # docker can't access files outside of build context, so we must copy
@@ -40,7 +40,7 @@
 - name: Build xos-gui-extensions docker images
   docker_image:
     name: "xosproject/gui-extension-{{ item.name }}"
-    path: "{{ cord_dir }}/{{ item.path }}"
+    path: "{{ build_cord_dir }}/{{ item.path }}"
     tag: "{{ build_docker_tag }}"
     pull: False
     force: True
@@ -50,7 +50,7 @@
 - name: Build synchronizer docker images
   docker_image:
     name: "xosproject/{{ item.name }}-synchronizer"
-    path: "{{ cord_dir }}/{{ item.path }}/xos/synchronizer"
+    path: "{{ build_cord_dir }}/{{ item.path }}/xos/synchronizer"
     dockerfile: "Dockerfile.synchronizer"
     tag: "{{ build_docker_tag }}"
     pull: False
