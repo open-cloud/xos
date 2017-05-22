@@ -1,7 +1,0 @@
-Add to the following in settings.py
-
-    STATICFILES_DIRS=
-	XOS_DIR + "/core/xoslib/static/",
-
-    TEMPLATE_DIRS=
-        XOS_DIR + "/xoslib/templates",

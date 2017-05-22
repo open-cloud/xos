@@ -144,7 +144,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     XOS_DIR + "/templates",
-    XOS_DIR + "/core/xoslib/templates",
+#    XOS_DIR + "/core/xoslib/templates",
 )
 
 INSTALLED_APPS = (
