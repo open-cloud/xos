@@ -359,10 +359,10 @@ class SlicePlusIdSerializer(PlusModelSerializer):
 
         class Meta:
             model = SlicePlus
-            fields = ('humanReadableName', 'id', 'created', 'updated', 'enacted', 'name', 'enabled', 'omf_friendly',
+            fields = ('humanReadableName', 'id', 'created', 'updated', 'enacted', 'name', 'enabled',
                       'description', 'slice_url', 'site', 'max_instances', 'service', 'network', 'mount_data_sets',
                       'default_image', 'default_flavor',
-                      'serviceClass', 'creator',
+                      'creator',
 
                       # these are the value-added fields from SlicePlus
                       'networks', 'network_ports', 'backendIcon', 'backendHtml',

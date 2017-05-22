@@ -571,7 +571,7 @@ class UserInline(XOSTabularInline):
 
 class SliceInline(XOSTabularInline):
     model = Slice
-    fields = ['backend_status_icon', 'name', 'site', 'serviceClass', 'service']
+    fields = ['backend_status_icon', 'name', 'site', 'service']
     readonly_fields = ('backend_status_icon', )
     extra = 0
     suit_classes = 'suit-tab suit-tab-slices'
@@ -1269,13 +1269,13 @@ class ControllerSliceInline(XOSTabularInline):
 
 class SliceAdmin(XOSBaseAdmin):
     form = SliceForm
-    fieldList = ['backend_status_text', 'site', 'name', 'serviceClass', 'enabled',
+    fieldList = ['backend_status_text', 'site', 'name', 'enabled',
                  'description', 'service', 'slice_url', 'max_instances', "default_isolation", "default_image", "network"]
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes': [
                   'suit-tab suit-tab-general']}), ]
     readonly_fields = ('backend_status_text', )
     list_display = ('backend_status_icon', 'name', 'site',
-                    'serviceClass', 'slice_url', 'max_instances')
+                    'slice_url', 'max_instances')
     list_display_links = ('backend_status_icon', 'name', )
     normal_inlines = [SlicePrivilegeInline, InstanceInline,
                       SliceNetworkInline]
@@ -1842,21 +1842,6 @@ class DashboardViewAdmin(XOSBaseAdmin):
                       ('controllers', 'Per-controller Dashboard Details'))
 
 
-class ServiceResourceInline(XOSTabularInline):
-    model = ServiceResource
-    extra = 0
-
-
-class ServiceClassAdmin(XOSBaseAdmin):
-    list_display = ('backend_status_icon', 'name',
-                    'commitment', 'membershipFee')
-    list_display_links = ('backend_status_icon', 'name', )
-    inlines = [ServiceResourceInline]
-
-    user_readonly_fields = ['name', 'commitment', 'membershipFee']
-    user_readonly_inlines = []
-
-
 class NetworkParameterTypeAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", )
     list_display_links = ('backend_status_icon', 'name', )
@@ -1929,8 +1914,8 @@ class NetworkAdmin(XOSBaseAdmin):
 
     fieldsets = [
         (None, {'fields': ['backend_status_text', 'name', 'template', 'ports', 'labels',
-                           'owner', 'guaranteed_bandwidth', 'permit_all_slices',
-                           'permitted_slices', 'network_id', 'router_id', 'subnet_id',
+                           'owner', 'permit_all_slices',
+                           'permitted_slices',
                            'subnet', 'autoconnect'],
                 'classes':['suit-tab suit-tab-general']}),
         (None, {'fields': ['topology_parameters', 'controller_url', 'controller_parameters'],
@@ -1938,9 +1923,9 @@ class NetworkAdmin(XOSBaseAdmin):
     ]
 
     readonly_fields = ('backend_status_text', )
-    user_readonly_fields = ['name', 'template', 'ports', 'labels', 'owner', 'guaranteed_bandwidth',
-                            'permit_all_slices', 'permitted_slices', 'network_id', 'router_id',
-                            'subnet_id', 'subnet', 'autoconnect']
+    user_readonly_fields = ['name', 'template', 'ports', 'labels', 'owner',
+                            'permit_all_slices', 'permitted_slices',
+                            'subnet', 'autoconnect']
 
     @property
     def suit_form_tabs(self):
@@ -1959,14 +1944,13 @@ class NetworkAdmin(XOSBaseAdmin):
 
 
 class NetworkTemplateAdmin(XOSBaseAdmin):
-    list_display = ("backend_status_icon", "name",
-                    "guaranteed_bandwidth", "visibility")
+    list_display = ("backend_status_icon", "name", "visibility")
     list_display_links = ('backend_status_icon', 'name', )
-    user_readonly_fields = ["name", "guaranteed_bandwidth", "visibility"]
+    user_readonly_fields = ["name", "visibility"]
     user_readonly_inlines = []
     # inlines = [NetworkParameterInline, ]
     fieldsets = [
-        (None, {'fields': ['name', 'description', 'guaranteed_bandwidth', 'visibility', 'translation', 'access', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind', 'vtn_kind'],
+        (None, {'fields': ['name', 'description', 'visibility', 'translation', 'access', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind', 'vtn_kind'],
                 'classes':['suit-tab suit-tab-general']}), ]
     suit_form_tabs = (('general', 'Network Template Details'), ('netparams', 'Parameters'))
 
@@ -2076,7 +2060,6 @@ admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
 
 if True:
     admin.site.register(NetworkParameterType, NetworkParameterTypeAdmin)
-    admin.site.register(ServiceClass, ServiceClassAdmin)
     admin.site.register(Tag, TagAdmin)
     admin.site.register(ControllerRole)
     admin.site.register(SiteRole)

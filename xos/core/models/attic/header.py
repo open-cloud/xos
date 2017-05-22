@@ -137,13 +137,6 @@ class InstanceManager(PlCoreBaseManager):
     def get_query_set(self):
         return self.get_queryset()
         
-def get_default_serviceclass():
-    from core.models.serviceclass import ServiceClass
-    try:
-        return ServiceClass.objects.get(name="Best Effort")
-    except ServiceClass.DoesNotExist:
-        return None
-
 class ControllerLinkDeletionManager(PlCoreBaseDeletionManager):
     def get_queryset(self):
         parent=super(ControllerLinkDeletionManager, self)
