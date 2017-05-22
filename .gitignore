@@ -33,3 +33,4 @@ containers/xos/tmp.chameleon/
 containers/xos/BUILD/
 venv-xos/
 _book/
+.noseids
