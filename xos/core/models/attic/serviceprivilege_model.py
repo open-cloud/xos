@@ -1,9 +1,6 @@
 class Meta:
     unique_together = ('user', 'service', 'role')
 
-def __unicode__(self): return u'%s %s %s' % (
-    self.service, self.user, self.role)
-
 def can_update(self, user):
     if not self.service.enabled:
         raise PermissionDenied, "Cannot modify permission(s) of a disabled service"

@@ -13,8 +13,6 @@ def tologdict(self):
         pass
     return d
 
-def __unicode__(self):  return u'%s %s'  % (self.slice, self.controller)
-
 @staticmethod
 def select_by_user(user):
     if user.is_admin:

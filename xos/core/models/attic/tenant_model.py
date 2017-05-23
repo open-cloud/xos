@@ -5,9 +5,6 @@ def __init__(self, *args, **kwargs):
     self._meta.get_field("kind").default = self.KIND
     super(Tenant, self).__init__(*args, **kwargs)
 
-def __unicode__(self):
-    return u"%s-tenant-%s" % (str(self.kind), str(self.id))
-
 @classmethod
 def get_tenant_objects(cls):
     return cls.objects.filter(kind=cls.KIND)

@@ -1,8 +1,6 @@
 class Meta:
     unique_together = ('user', 'deployment', 'role')
 
-def __unicode__(self):  return u'%s %s %s' % (self.deployment, self.user, self.role)
-
 def can_update(self, user):
     return user.can_update_deployment(self)
 

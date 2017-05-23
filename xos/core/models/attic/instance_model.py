@@ -13,20 +13,6 @@ def tologdict(self):
         pass
     return d
 
-def __unicode__(self):
-    if self.name and Slice.objects.filter(id=self.slice_id) and (self.name != self.slice.name):
-        # NOTE: The weird check on self.slice_id was due to a problem when
-        #   deleting the slice before the instance.
-        return u'%s' % self.name
-    elif self.instance_name:
-        return u'%s' % (self.instance_name)
-    elif self.id:
-        return u'uninstantiated-%s' % str(self.id)
-    elif self.slice:
-        return u'unsaved-instance on %s' % self.slice.name
-    else:
-        return u'unsaved-instance'
-
 def save(self, *args, **kwds):
     if not self.name:
         self.name = self.slice.name

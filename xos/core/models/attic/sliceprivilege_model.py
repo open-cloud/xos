@@ -1,8 +1,6 @@
 class Meta:
     unique_together = ('user', 'slice', 'role')
 
-def __unicode__(self):  return u'%s %s %s' % (self.slice, self.user, self.role)
-
 def save(self, *args, **kwds):
     super(SlicePrivilege, self).save(*args, **kwds)
 

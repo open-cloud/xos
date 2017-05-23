@@ -13,12 +13,6 @@ def save(self, *args, **kwds):
 
     super(Port, self).save(*args, **kwds)
 
-def __unicode__(self):
-    if self.instance:
-        return u'%s-%s' % (self.network.name, self.instance.instance_name)
-    else:
-        return u'%s-unboundport-%s' % (self.network.name, self.id)
-
 def can_update(self, user):
     if self.instance:
         return user.can_update_slice(self.instance.slice)

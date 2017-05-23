@@ -1,6 +1,3 @@
-def __unicode__(self):
-    return self.name
-
 def can_update(self, user):
     return user.can_update_root()
 

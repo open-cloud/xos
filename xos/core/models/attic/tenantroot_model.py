@@ -5,12 +5,6 @@ def __init__(self, *args, **kwargs):
     self._meta.get_field("kind").default = self.KIND
     super(TenantRoot, self).__init__(*args, **kwargs)
 
-def __unicode__(self):
-    if not self.name:
-        return u"%s-tenant_root-#%s" % (str(self.kind), str(self.id))
-    else:
-        return self.name
-
 def can_update(self, user):
     return user.can_update_tenant_root(self, allow=['admin'])
 

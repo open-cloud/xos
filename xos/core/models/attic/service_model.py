@@ -34,8 +34,6 @@ def serviceattribute_dict(self):
         attrs[attr.name] = attr.value
     return attrs
 
-def __unicode__(self): return u'%s' % (self.name)
-
 def can_update(self, user):
     return user.can_update_service(self, allow=['admin'])
 

@@ -431,6 +431,15 @@ class PlCoreBase(models.Model, PlModelMixIn):
 
         return d
 
+    # for the old django admin UI
+    def __unicode__(self):
+        if hasattr(self, "name") and self.name:
+            return u'%s' % self.name
+        elif hasattr(self, "id") and self.id:
+            return u'%s-%s' % (self.__class__.__name__, self.id)
+        else:
+            return u'%s-unsaved' % self.__class__.__name__
+
     def get_content_type_key(self):
         ct = ContentType.objects.get_for_model(self.__class__)
         return "%s.%s" % (ct.app_label, ct.model)

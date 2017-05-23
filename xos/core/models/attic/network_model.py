@@ -1,5 +1,3 @@
-def __unicode__(self):  return u'%s' % (self.name)
-
 def save(self, *args, **kwds):
     super(Network, self).save(*args, **kwds)
 

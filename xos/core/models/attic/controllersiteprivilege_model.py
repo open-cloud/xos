@@ -4,8 +4,6 @@ deleted_objects = ControllerLinkDeletionManager()
 class Meta:
     unique_together = ('controller', 'site_privilege', 'role_id')
 
-def __unicode__(self):  return u'%s %s' % (self.controller, self.site_privilege)
-
 def can_update(self, user):
     if user.is_readonly:
         return False

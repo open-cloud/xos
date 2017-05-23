@@ -12,8 +12,6 @@ def save(self, *args, **kwds):
 
     super(NetworkSlice, self).save(*args, **kwds)
 
-def __unicode__(self):  return u'%s-%s' % (self.network.name, self.slice.name)
-
 def can_update(self, user):
     return user.can_update_slice(self.slice)
 

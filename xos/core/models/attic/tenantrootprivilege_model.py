@@ -1,9 +1,6 @@
 class Meta:
     unique_together = ('user', 'tenant_root', 'role')
 
-def __unicode__(self): return u'%s %s %s' % (
-    self.tenant_root, self.user, self.role)
-
 def save(self, *args, **kwds):
     if not self.user.is_active:
         raise PermissionDenied, "Cannot modify role(s) of a disabled user"

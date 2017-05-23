@@ -1,7 +1,5 @@
 NETWORK_CHOICES = ((None, 'Default'), ('host', 'Host'), ('bridged', 'Bridged'), ('noauto', 'No Automatic Networks'))
 
-def __unicode__(self):  return u'%s' % (self.name)
-
 @property
 def slicename(self):
     return "%s_%s" % (self.site.login_base, self.name)
