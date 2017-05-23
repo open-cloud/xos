@@ -170,7 +170,7 @@ class SyncStep(object):
         path = ''.join(main_objs.__name__).lower()
 
         tenant_fields['delete']=True
-        res = run_template(self.playbook, tenant_fields, ath=path)
+        res = run_template(self.playbook, tenant_fields, path=path)
         try:
                 self.map_delete_outputs(o,res)
         except AttributeError:

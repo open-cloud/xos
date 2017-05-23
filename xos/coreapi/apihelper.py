@@ -244,8 +244,22 @@ class XOSAPIHelperMixin(object):
 
         return p_objs
 
+    def get_live_or_deleted_object(self, djangoClass, id):
+        """ Given an id, retrieve the object regardless of whether the object is live or deleted. """
+        obj = None
+        # First, check to see if the object has been deleted. Maybe the caller is
+        # trying to update the policed timestamp of a deleted object.
+        if hasattr(djangoClass, "deleted_objects"):
+            deleted_objects = djangoClass.deleted_objects.filter(id=id)
+            if deleted_objects:
+                obj = deleted_objects[0]
+        # No deleted object was found, so check for a live object.
+        if not obj:
+            obj = djangoClass.objects.get(id=id)
+        return obj
+
     def get(self, djangoClass, id):
-        obj = djangoClass.objects.get(id=id)
+        obj = self.get_live_or_deleted_object(djangoClass, id)
         return self.objToProto(obj)
 
     def create(self, djangoClass, user, request):
@@ -258,7 +272,7 @@ class XOSAPIHelperMixin(object):
         return self.objToProto(new_obj)
 
     def update(self, djangoClass, user, id, message, context):
-        obj = djangoClass.objects.get(id=id)
+        obj = self.get_live_or_deleted_object(djangoClass, id)
         obj.caller = user
         if (not user) or (not obj.can_update(user)):
             raise XOSPermissionDenied()
