@@ -7,7 +7,6 @@ from .site import Site
 from .dashboardview import DashboardView
 from .user import User
 from .user import UserDashboardView
-from .header import ControllerManager, ControllerDeletionManager, ControllerLinkManager,ControllerLinkDeletionManager
 from .journal import JournalEntry, journal_object
 
 {% for m in proto.messages -%}

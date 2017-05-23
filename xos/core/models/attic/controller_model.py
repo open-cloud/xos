@@ -1,6 +1,3 @@
-objects = ControllerManager()
-deleted_objects = ControllerDeletionManager()
-
 def __init__(self, *args, **kwargs):
     super(Controller, self).__init__(*args, **kwargs)
     self.no_sync=True

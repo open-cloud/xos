@@ -1,6 +1,3 @@
-objects = ControllerLinkManager()
-deleted_objects = ControllerLinkDeletionManager()
-
 class Meta:
     unique_together = ('controller', 'site_privilege', 'role_id')
 

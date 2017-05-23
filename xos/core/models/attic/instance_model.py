@@ -1,6 +1,3 @@
-objects = InstanceManager()
-deleted_objects = InstanceDeletionManager()
-
 def get_controller (self):
     return self.node.site_deployment.controller
 
@@ -103,18 +100,6 @@ def select_by_user(user):
         slices = Slice.select_by_user(user)
         qs = Instance.objects.filter(slice__in=slices)
     return qs
-
-def get_cpu_stats(self):
-    filter = 'instance_id=%s'%self.instance_id
-    return monitor.get_meter('cpu',filter,None)
-
-def get_bw_stats(self):
-    filter = 'instance_id=%s'%self.instance_id
-    return monitor.get_meter('network.outgoing.bytes',filter,None)
-
-def get_node_stats(self):
-    # Note sure what should go back here
-    return 1
 
 def get_ssh_command(self):
     if (not self.instance_id) or (not self.node) or (not self.instance_name):
