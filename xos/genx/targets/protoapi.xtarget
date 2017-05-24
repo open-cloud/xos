@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package xos;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "common.proto";
+import "xosoptions.proto";
+
+// Note: all fields are wrapped in a "oneof". This causes proto3 to always send
+// fields that are set by the caller, regardless if they are set to a default
+// value. XOS uses this to know when to apply a default value.
+
+{% for object in proto.messages|sort(attribute='name') %}
+{% if object.name != 'XOSBase' -%}
+message {{ object.name }} {
+    {%- if object.name=='CordSubscriberRoot' %}
+    option (contentTypeId) = "rcord.{{ object.name | lower }}";
+    {%- else %}
+    option (contentTypeId) = "{{ xproto_unquote(xproto_first_non_empty([object.options.name, object.options.app_label, options.name, context.app_label])) }}.{{ object.name | lower }}";
+    {%- endif %}
+    {%- set id_field = {'type':'int32', 'name':'id', 'options':{}} -%}
+  {%- for field in (xproto_base_fields(object, proto.message_table) + object.fields + [id_field]) | sort(attribute='name')%}
+    oneof {{ field.name }}_present {
+      {{ xproto_api_type(field) }} {{ field.name }}{% if field.link -%}_id{% endif %} = {{ loop.index }}{{ xproto_api_opts(field) }};
+    }
+  {%- endfor -%}
+
+  {%- for ref in xproto_base_rlinks(object, proto.message_table) + object.rlinks | sort(attribute='src_port') %}
+  {%- if '+' not in ref.src_port and '+' not in ref.dst_port %}
+    repeated int32 {{ ref.src_port }}_ids  = {{ loop.index + 100 }} [(reverseForeignKey).modelName = "{{ ref.peer.name }}"];
+  {%- endif -%}
+  {%- endfor %}
+  string class_names = 201;
+  string self_content_type_id = 202;
+}
+
+message {{ xproto_pluralize(object) }} {
+    repeated {{ object.name }} items = 1;
+}
+
+{%- endif %}
+{% endfor %}
+
+service xos {
+{% for object in proto.messages | sort(attribute='name')%}
+{% if object.name != 'XOSBase' -%}
+  rpc List{{ object.name }}(google.protobuf.Empty) returns ({{ xproto_pluralize(object) }}) {
+        option (google.api.http) = {
+        {%- if object.name=='CordSubscriberRoot' %}
+            get: "/xosapi/v1/rcord/{{ xproto_pluralize(object) | lower }}"
+        {%- else %}
+            get: "/xosapi/v1/{{ xproto_unquote(xproto_first_non_empty([object.options.name, object.options.app_label, options.name, context.app_label])) }}/{{ xproto_pluralize(object) | lower }}"
+        {%- endif %}
+        };
+  }
+  rpc Filter{{ object.name }}(Query) returns ({{ xproto_pluralize(object) }}) {
+  }
+  rpc Get{{ object.name }}(ID) returns ({{ object.name }}) {
+        option (google.api.http) = {
+        {%- if object.name=='CordSubscriberRoot' %}
+            get: "/xosapi/v1/rcord/{{ xproto_pluralize(object) | lower }}/{id}"
+        {%- else %}
+            get: "/xosapi/v1/{{ xproto_unquote(xproto_first_non_empty([object.options.name, object.options.app_label, options.name, context.app_label])) }}/{{ xproto_pluralize(object) | lower }}/{id}"
+        {%- endif %}
+        };
+  }
+  rpc Create{{ object.name }}({{ object.name }}) returns ({{ object.name }}) {
+        option (google.api.http) = {
+            post: "/xosapi/v1/{{ xproto_unquote(xproto_first_non_empty([object.options.name, object.options.app_label, options.name, context.app_label])) }}/{{ xproto_pluralize(object) | lower }}"
+            body: "*"
+        };
+  }
+  rpc Update{{ object.name }}({{ object.name }}) returns ({{ object.name }}) {
+        option (google.api.http) = {
+            put: "/xosapi/v1/{{ xproto_unquote(xproto_first_non_empty([object.options.name, object.options.app_label, options.name, context.app_label])) }}/{{ xproto_pluralize(object) | lower }}/{id}"
+            body: "*"
+        };
+  }
+  rpc Delete{{ object.name }}(ID) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/xosapi/v1/{{ xproto_unquote(xproto_first_non_empty([object.options.name, object.options.app_label, options.name, context.app_label])) }}/{{ xproto_pluralize(object) | lower }}/{id}"
+        };
+  }
+{%- endif %}
+{% endfor %}
+}
+

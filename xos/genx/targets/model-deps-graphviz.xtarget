@@ -1,4 +1,4 @@
-digraph {{ context.app_name }} {
+digraph {{ context.app_label }} {
 {%- for model in proto.messages %}
     {%- for l in model.links %}
         "{{ model.name }}" -> "{{ l.peer }}" [label="{{ l.src_port }}"];

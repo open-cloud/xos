@@ -37,7 +37,7 @@ def count_fields(body):
             count+=1
     return count
 
-def compute_rlinks(messages):
+def compute_rlinks(messages, message_dict):
     rev_links = {}
 
     link_opposite = {
@@ -69,6 +69,7 @@ def compute_rlinks(messages):
     for m in messages:
         try:
             m['rlinks'] = rev_links[m['name']]
+            message_dict[m['name']]['rlinks'] = m['rlinks']
         except KeyError:
             pass
 
@@ -283,15 +284,16 @@ class XOS2Jinja(m.Visitor):
         else:
             model_name = obj.name.value.pval
 
-        model_def = {'name':obj.name.value.pval,'fields':fields,'links':links, 'bases':obj.bases, 'options':self.message_options, 'package':self.package, 'fqn': model_name}
+        model_def = {'name':obj.name.value.pval,'fields':fields,'links':links, 'bases':obj.bases, 'options':self.message_options, 'package':self.package, 'fqn': model_name, 'rlinks': []}
         self.stack.push(model_def)
+        
         self.models[model_name] = model_def
 
         # Set message options
         for k,v in self.options.iteritems():
             try:
-                if k not in self.message_options.setdefault(self.current_message_name,{}):
-                    self.message_options[self.current_message_name][k] = v
+                if k not in self.message_options:
+                    self.message_options[k] = v
             except KeyError:
                 pass
 
@@ -335,7 +337,8 @@ class XOS2Jinja(m.Visitor):
 
             messages.insert(0,m)
 
-        compute_rlinks(messages)
+        compute_rlinks(messages, self.models)
+
         self.messages = messages
         return True
 

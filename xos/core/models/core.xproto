@@ -1,15 +1,16 @@
-option app_name = "core";
+option app_label = "core";
 
 message XOSBase {
      option skip_init = True;
+
      required string created = 1 [content_type = "date", auto_now_add = True];
      required string updated = 2 [default = "now()", content_type = "date"];
      optional string enacted = 3 [null = True, content_type = "date", blank = True, default = None];
      optional string policed = 4 [null = True, content_type = "date", blank = True, default = None];
-     optional string backend_register = 5 [default = "{}", max_length = 1024, null = True];
+     optional string backend_register = 5 [default = "{}", max_length = 1024];
      required bool backend_need_delete = 6 [default = False];
      required bool backend_need_reap = 7 [default = False];
-     required string backend_status = 8 [default = "0 - Provisioning in progress", max_length = 1024];
+     required string backend_status = 8 [default = "0 - Provisioning in progress", max_length = 1024, null = True];
      required bool deleted = 9 [default = False];
      required bool write_protect = 10 [default = False];
      required bool lazy_blocked = 11 [default = False];
@@ -20,36 +21,38 @@ message XOSBase {
 
 message User (AbstractBaseUser,PlModelMixIn) {
      option skip_django = True;
+
      required string email = 1 [db_index = True, max_length = 255, null = False, blank = False];
      required string username = 2 [default = "Something", max_length = 255, content_type = "stripped", blank = False, null = False, db_index = False];
-     required string firstname = 3 [max_length = 200, content_type = "stripped", blank = False, help_text = "person's given name", null = False, db_index = False];
-     required string lastname = 4 [max_length = 200, content_type = "stripped", blank = False, help_text = "person's surname", null = False, db_index = False];
-     optional string phone = 5 [max_length = 100, content_type = "stripped", blank = True, help_text = "phone number contact", null = True, db_index = False];
-     optional string user_url = 6 [db_index = False, max_length = 200, null = True, content_type = "url", blank = True];
-     required manytoone site->Site:users = 7 [help_text = "Site this user will be homed too", null = False, db_index = True, blank = False];
-     optional string public_key = 8 [help_text = "Public key string", max_length = 1024, null = True, db_index = False, blank = True, varchar = True];
-     required bool is_active = 9 [default = True, null = False, db_index = False, blank = True];
-     required bool is_admin = 10 [default = False, null = False, db_index = False, blank = True];
-     required bool is_staff = 11 [default = True, null = False, db_index = False, blank = True];
-     required bool is_readonly = 12 [default = False, null = False, db_index = False, blank = True];
-     required bool is_registering = 13 [default = False, null = False, db_index = False, blank = True];
-     required bool is_appuser = 14 [default = False, null = False, db_index = False, blank = True];
-     optional string login_page = 15 [max_length = 200, content_type = "stripped", blank = True, help_text = "send this user to a specific page on login", null = True, db_index = False];
-     required string created = 16 [db_index = False, null = False, content_type = "date", blank = True];
-     required string updated = 17 [db_index = False, null = False, content_type = "date", blank = True];
-     optional string enacted = 18 [db_index = False, null = True, content_type = "date", blank = False];
-     optional string policed = 19 [db_index = False, null = True, content_type = "date", blank = False];
-     required string backend_status = 20 [default = "Provisioning in progress", max_length = 1024, content_type = "stripped", blank = False, null = False, db_index = False];
-     required bool backend_need_delete = 21 [default = False, null = False, db_index = False, blank = True];
-     required bool backend_need_reap = 22 [default = False, null = False, db_index = False, blank = True];
-     required bool deleted = 23 [default = False, null = False, db_index = False, blank = True];
-     required bool write_protect = 24 [default = False, null = False, db_index = False, blank = True];
-     required bool lazy_blocked = 25 [default = False, null = False, db_index = False, blank = True];
-     required bool no_sync = 26 [default = False, null = False, db_index = False, blank = True];
-     required bool no_policy = 27 [default = False, null = False, db_index = False, blank = True];
-     required string timezone = 28 [default = "America/New_York", max_length = 100, blank = False, null = False, db_index = False];
-     required manytomany dashboards->DashboardView/UserDashboardView:user = 29 [db_index = False, null = False, blank = True];
-}
+     required string password = 3 [default = "Something", max_length = 255, blank = False, null = False, db_index = False];
+     required string firstname = 4 [max_length = 200, content_type = "stripped", blank = False, help_text = "person's given name", null = False, db_index = False];
+     required string lastname = 5 [max_length = 200, content_type = "stripped", blank = False, help_text = "person's surname", null = False, db_index = False];
+     optional string phone = 6 [max_length = 100, content_type = "stripped", blank = True, help_text = "phone number contact", null = True, db_index = False];
+     optional string user_url = 7 [db_index = False, max_length = 200, null = True, content_type = "url", blank = True];
+     required manytoone site->Site:users = 8 [help_text = "Site this user will be homed too", null = False, db_index = True, blank = False];
+     optional string public_key = 9 [help_text = "Public key string", max_length = 1024, null = True, db_index = False, blank = True, varchar = True];
+     required bool is_active = 10 [default = True, null = False, db_index = False, blank = True];
+     required bool is_admin = 11 [default = False, null = False, db_index = False, blank = True];
+     required bool is_staff = 12 [default = True, null = False, db_index = False, blank = True];
+     required bool is_readonly = 13 [default = False, null = False, db_index = False, blank = True];
+     required bool is_registering = 14 [default = False, null = False, db_index = False, blank = True];
+     required bool is_appuser = 15 [default = False, null = False, db_index = False, blank = True];
+     optional string login_page = 16 [max_length = 200, content_type = "stripped", blank = True, help_text = "send this user to a specific page on login", null = True, db_index = False];
+     required string created = 17 [db_index = False, null = False, content_type = "date", blank = True];
+     required string updated = 18 [db_index = False, null = False, content_type = "date", blank = True];
+     optional string enacted = 19 [db_index = False, null = True, content_type = "date", blank = False];
+     optional string policed = 20 [db_index = False, null = True, content_type = "date", blank = False];
+     required string backend_status = 21 [default = "Provisioning in progress", max_length = 1024, content_type = "stripped", blank = False, null = False, db_index = False];
+     required bool backend_need_delete = 22 [default = False, null = False, db_index = False, blank = True];
+     required bool backend_need_reap = 23 [default = False, null = False, db_index = False, blank = True];
+     required bool deleted = 24 [default = False, null = False, db_index = False, blank = True];
+     required bool write_protect = 25 [default = False, null = False, db_index = False, blank = True];
+     required bool lazy_blocked = 26 [default = False, null = False, db_index = False, blank = True];
+     required bool no_sync = 27 [default = False, null = False, db_index = False, blank = True];
+     required bool no_policy = 28 [default = False, null = False, db_index = False, blank = True];
+     required string timezone = 29 [default = "America/New_York", max_length = 100, blank = False, null = False, db_index = False];
+     required manytomany dashboards->DashboardView/UserDashboardView:user = 30 [db_index = False, null = False, blank = True];
+} 
 
 message AddressPool (XOSBase) {
      required string name = 1 [db_index = False, max_length = 32, null = False, blank = False];
@@ -81,7 +84,7 @@ message Controller (XOSBase) {
 message ControllerDashboardView (XOSBase) {
      required manytoone controller->Controller:controllerdashboardviews = 1 [db_index = True, null = False, blank = False];
      required manytoone dashboardView->DashboardView:controllerdashboardviews = 2 [db_index = True, null = False, blank = False];
-     required bool enabled = 3 [default = True, null = False, db_index = False, blank = True];
+     required bool enabled = 3 [default = True, db_index = False, blank = True];
      required string url = 4 [max_length = 1024, content_type = "stripped", blank = False, help_text = "URL of Dashboard", null = False, db_index = False];
 }
 
@@ -150,7 +153,7 @@ message ControllerUser (XOSBase) {
 message DashboardView (XOSBase) {
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the View", null = False, db_index = False];
      required string url = 2 [max_length = 1024, content_type = "stripped", blank = False, help_text = "URL of Dashboard", null = False, db_index = False];
-     required bool enabled = 3 [default = True, null = False, db_index = False, blank = True];
+     required bool enabled = 3 [default = True, db_index = False, blank = True];
      required string icon = 4 [default = "default-icon.png", max_length = 200, blank = False, help_text = "Icon for Dashboard", null = False, db_index = False];
      required string icon_active = 5 [default = "default-icon-active.png", max_length = 200, blank = False, help_text = "Icon for active Dashboard", null = False, db_index = False];
      required manytomany controllers->Controller/ControllerDashboardView:dashboardviews = 6 [db_index = False, null = False, blank = True];
@@ -375,7 +378,9 @@ message SitePrivilege (XOSBase) {
 message SiteRole (XOSBase) {
      required string role = 1 [choices = "(('admin', 'Admin'), ('pi', 'PI'), ('tech', 'Tech'), ('billing', 'Billing'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
 }
+
 message Slice (XOSBase) {
+     option plural = "Slices";
      required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", null = False, db_index = False];
      required bool enabled = 2 [help_text = "Status for this Slice", default = True, null = False, db_index = False, blank = True];
      required string description = 4 [help_text = "High level description of the slice and expected activities", max_length = 1024, null = False, db_index = False, blank = True, varchar = True];
@@ -414,7 +419,6 @@ message Tag (XOSBase) {
      required uint32 object_id = 5 [db_index = False, null = False, blank = False, help_text = "Object linked to this tag"];
 }
 
-
 message Tenant (XOSBase,AttributeMixin) {
      optional string name = 1 [db_index = False, max_length = 200, null = True, content_type = "stripped", blank = True];
      required string kind = 2 [default = "generic", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
@@ -429,13 +433,11 @@ message Tenant (XOSBase,AttributeMixin) {
      required string connect_method = 11 [default = "na", choices = "(('public', 'Public'), ('private', 'Private'), ('private-unidirectional', 'Private Unidirectional'), ('na', 'Not Applicable'))", max_length = 30, blank = False, null = False, db_index = False];
 }
 
-
 message TenantAttribute (XOSBase) {
      required string name = 1 [help_text = "Attribute Name", max_length = 128, null = False, db_index = False, blank = False];
      required string value = 2 [help_text = "Attribute Value", null = False, db_index = False, blank = False];
      required manytoone tenant->Tenant:tenantattributes = 3 [help_text = "The Tenant this attribute is associated with", null = False, db_index = True, blank = False];
 }
-
 
 message TenantPrivilege (XOSBase) {
      required manytoone user->User:tenantprivileges = 1 [db_index = True, null = False, blank = False];
@@ -443,11 +445,9 @@ message TenantPrivilege (XOSBase) {
      required manytoone role->TenantRole:tenantprivileges = 3 [db_index = True, null = False, blank = False];
 }
 
-
 message TenantRole (XOSBase) {
      required string role = 1 [choices = "(('admin', 'Admin'), ('access', 'Access'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
 }
-
 
 message TenantRoot (XOSBase,AttributeMixin) {
      required string kind = 1 [default = "generic", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
@@ -456,18 +456,15 @@ message TenantRoot (XOSBase,AttributeMixin) {
      optional string service_specific_id = 4 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
 }
 
-
 message TenantRootPrivilege (XOSBase) {
      required manytoone user->User:tenant_root_privileges = 1 [db_index = True, null = False, blank = False, unique_with = "tenant_root"];
      required manytoone tenant_root->TenantRoot:tenant_root_privileges = 2 [db_index = True, null = False, blank = False, unique_with = "role"];
      required manytoone role->TenantRootRole:tenant_root_privileges = 3 [db_index = True, null = False, blank = False];
 }
 
-
 message TenantRootRole (XOSBase) {
      required string role = 1 [choices = "(('admin', 'Admin'), ('access', 'Access'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
 }
-
 
 message TenantWithContainer (Tenant) {
      optional manytoone instance->Instance:+ = 1 [help_text = "Instance used by this Tenant", null = True, db_index = True, blank = True];
@@ -476,8 +473,9 @@ message TenantWithContainer (Tenant) {
      optional string external_container = 4 [max_length = 30, content_type = "stripped", blank = True, help_text = "External host name", null = True, db_index = False];
 }
 
-
 message XOS (XOSBase) {
+     option singular="XOS";
+     option plural="XOSes";
      required string name = 1 [default = "XOS", max_length = 200, content_type = "stripped", blank = False, help_text = "Name of XOS", null = False, db_index = False];
 }
 

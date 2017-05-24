@@ -89,6 +89,7 @@ class XOSGenerator:
             rendered = template.render({"proto": {'message_table':v.models, 'messages':v.messages, 'message_names':[m['name'] for m in v.messages]},"context":context,"options":v.options})
 
             lines = rendered.splitlines()
+
             current_buffer = []
             for l in lines:
                 if (l.startswith('+++')):

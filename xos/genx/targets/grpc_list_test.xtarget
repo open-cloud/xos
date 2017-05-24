@@ -1,0 +1,49 @@
+import grpc_client
+from grpc_client import Empty
+from testconfig import *
+
+c=grpc_client.InsecureClient("xos-core.cord.lab")
+
+{% for object in proto.messages %}
+{%- if object.name!='XOSBase' %}
+print "testing insecure List{{ object.name }}...",
+c.stub.List{{ object.name }}(Empty())
+print "Okay"
+{%- endif %}
+{%- endfor %}
+
+c=grpc_client.SecureClient("xos-core.cord.lab", username=USERNAME, password=PASSWORD)
+
+{% for object in proto.messages %}
+{%- if object.name!='XOSBase' %}
+print "testing basic secure List{{ object.name }}...",
+c.stub.List{{ object.name }}(Empty())
+print "Okay"
+{%- endif %}
+{%- endfor %}
+
+# now try to login
+c=grpc_client.InsecureClient("xos-core.cord.lab")
+lr=grpc_client.LoginRequest()
+lr.username=USERNAME
+lr.password=PASSWORD
+session=c.utility.Login(lr)
+
+c=grpc_client.SecureClient("xos-core.cord.lab", sessionid=session.sessionid)
+{% for object in proto.messages %}
+{%- if object.name!='XOSBase' %}
+print "testing session secure List{{ object.name }}...",
+c.stub.List{{ object.name }}(Empty())
+print "Okay"
+{%- endif %}
+{%- endfor %}
+
+c=grpc_client.SecureClient("xos-core.cord.lab", sessionid=session.sessionid)
+{% for object in proto.messages %}
+{%- if object.name!='XOSBase' %}
+print "testing session secure xos_orm.{{ object.name }}.objects.all() ...",
+c.xos_orm.{{ object.name }}.objects.all()
+print "Okay"
+{%- endif %}
+{%- endfor %}
+

@@ -1,0 +1,19 @@
+source /opt/xos/coreapi/tests/testconfig-chameleon.sh
+
+# test modeldefs
+curl -f --silent http://$HOSTNAME:8080/xosapi/v1/modeldefs > /dev/null
+if [[ $? -ne 0 ]]; then
+    echo fail modeldefs
+fi
+
+{% for object in proto.messages %}
+{%- if object.name!='XOSBase' -%}
+curl -f --silent http://$HOSTNAME:8080/xosapi/v1/{{ xproto_unquote(options.app_label) }}/{{ xproto_pluralize(object) | lower }} > /dev/null
+if [[ $? -ne 0 ]]; then
+    echo fail {{ object.name }}
+fi
+{%endif-%}
+{%- endfor %}
+
+echo "okay"
+

@@ -23,6 +23,16 @@ def xproto_singularize(field):
 
     return singular
 
+def xproto_singularize_pluralize(field):
+    try:
+        # The user has set a plural, as an exception that cannot be handled automatically
+        plural = field['options']['plural']
+        plural = unquote(plural)
+    except KeyError:
+        plural = en.pluralize(en.singularize(field['name']))
+
+    return plural
+
 def xproto_pluralize(field):
     try:
         # The user has set a plural, as an exception that cannot be handled automatically
@@ -255,6 +265,20 @@ def xproto_base_fields(m, table):
 
     return fields
 
+def xproto_base_rlinks(m, table):
+    links = []
+
+    for base in m['bases']:
+        b = base['name']
+        if b in table:
+            base_rlinks = xproto_base_rlinks(table[b], table)
+
+            model_rlinks = table[b]['rlinks']
+            links.extend(base_rlinks)
+            links.extend(model_rlinks)
+
+    return links
+
 def xproto_base_links(m, table):
     links = []
 
@@ -278,7 +302,7 @@ def xproto_validators(f):
 
     for v0, v1 in bound_validators:
         try:
-            validators.append({'name':v1, 'int_value':f['options'][v0]})
+            validators.append({'name':v1, 'int_value':int(f['options'][v0])})
         except KeyError:
             pass
 
@@ -385,6 +409,23 @@ def xproto_field_graph_components(fields, tag='unique_with'):
     return components
 
 
+def xproto_api_opts(field):
+    options = []
+    if 'max_length' in field['options'] and field['type']=='string':
+        options.append('(val).maxLength = %s'%field['options']['max_length'])
 
+    try:
+        if field['options']['null'] == 'False':
+            options.append('(val).nonNull = true')
+    except KeyError:
+        pass
 
+    if 'link' in field and 'model' in field['options']:
+        options.append('(foreignKey).modelName = "%s"'%field['options']['model'])
 
+    if options:
+        options_str = '[' + ', '.join(options) + ']'
+    else:
+        options_str = ''
+
+    return options_str
