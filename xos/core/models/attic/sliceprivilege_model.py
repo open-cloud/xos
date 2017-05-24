@@ -1,9 +1,6 @@
 class Meta:
     unique_together = ('user', 'slice', 'role')
 
-def save(self, *args, **kwds):
-    super(SlicePrivilege, self).save(*args, **kwds)
-
 def can_update(self, user):
     return user.can_update_slice(self.slice)
 

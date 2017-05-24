@@ -12,7 +12,6 @@ class XOSNode(XOSResource):
         siteName = self.get_requirement("tosca.relationships.MemberOfSite", throw_exception=False)
         if siteName:
             site = self.get_xos_object(Site, login_base=siteName)
-            args["site"] = site
 
         deploymentName = self.get_requirement("tosca.relationships.MemberOfDeployment", throw_exception=False)
         if deploymentName:
@@ -36,8 +35,6 @@ class XOSNode(XOSResource):
     def create(self):
         xos_args = self.get_xos_args()
 
-        if not xos_args.get("site", None):
-            raise Exception("Site is a required field of Node")
         if not xos_args.get("site_deployment", None):
             raise Exception("Deployment is a required field of Node")
 
@@ -47,7 +44,7 @@ class XOSNode(XOSResource):
 
         self.postprocess(node)
 
-        self.info("Created Node '%s' on Site '%s' Deployment '%s'" % (str(node), str(node.site), str(node.site_deployment.deployment)))
+        self.info("Created Node '%s' on Site '%s' Deployment '%s'" % (str(node), str(node.site_deployment.site), str(node.site_deployment.deployment)))
 
     def delete(self, obj):
         super(XOSNode, self).delete(obj)

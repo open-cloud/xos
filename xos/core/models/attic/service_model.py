@@ -6,18 +6,6 @@ def __init__(self, *args, **kwargs):
     super(Service, self).__init__(*args, **kwargs)
 
 @classmethod
-def get_service_objects(cls):
-    return cls.objects.filter(kind=cls.KIND)
-
-@classmethod
-def get_deleted_service_objects(cls):
-    return cls.deleted_objects.filter(kind=cls.KIND)
-
-@classmethod
-def get_service_objects_by_user(cls, user):
-    return cls.select_by_user(user).filter(kind=cls.KIND)
-
-@classmethod
 def select_by_user(cls, user):
     if user.is_admin:
         return cls.objects.all()

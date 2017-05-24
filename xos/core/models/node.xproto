@@ -1,5 +1,4 @@
 message Node (XOSBase){
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the Node", null = False, db_index = False];
      required manytoone site_deployment->SiteDeployment:nodes = 2 [db_index = True, null = False, blank = False];
-     optional manytoone site->Site:nodes = 3 [db_index = True, null = True, blank = True];
 }

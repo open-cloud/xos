@@ -61,7 +61,7 @@ def pick_least_loaded_instance_in_slice(self, slices, image):
 # not permit any new attributes to be defined. Find if any better solutions
 def count_of_tenants_of_an_instance(self, instance):
     tenant_count = 0
-    for tenant in self.get_tenant_objects().all():
+    for tenant in self.__class__.objects.all():
         if tenant.get_attribute("instance_id", None) == instance.id:
             tenant_count += 1
     return tenant_count

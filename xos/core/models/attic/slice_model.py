@@ -61,19 +61,4 @@ def select_by_user(user):
         qs = Slice.objects.filter(id__in=slice_ids)
     return qs
 
-"""
-def delete(self, *args, **kwds):
-    # delete networks associated with this slice
-    from core.models.network import Network
-    nets = Network.objects.filter(slices=self)
-    nets.delete() 
-    # delete slice controllers
-    slice_controllers = ControllerSlice.objects.filter(slice=self)
-    slice_controllers.delete()
-    # delete slice privilege
-    slice_privileges = SlicePrivilege.objects.filter(slice=self)
-    slice_privileges.delete() 
-    # continue with normal delete
-    super(Slice, self).delete(*args, **kwds) 
-"""
 

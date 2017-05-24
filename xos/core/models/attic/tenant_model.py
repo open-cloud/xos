@@ -5,18 +5,6 @@ def __init__(self, *args, **kwargs):
     self._meta.get_field("kind").default = self.KIND
     super(Tenant, self).__init__(*args, **kwargs)
 
-@classmethod
-def get_tenant_objects(cls):
-    return cls.objects.filter(kind=cls.KIND)
-
-@classmethod
-def get_tenant_objects_by_user(cls, user):
-    return cls.select_by_user(user).filter(kind=cls.KIND)
-
-@classmethod
-def get_deleted_tenant_objects(cls):
-    return cls.deleted_objects.filter(kind=cls.KIND)
-
 @property
 def tenantattribute_dict(self):
     attrs = {}
@@ -32,7 +20,7 @@ def validate_unique_service_specific_id(self):
             raise XOSMissingField("subscriber_specific_id is None, and it's a required field", fields={
                                   "service_specific_id": "cannot be none"})
 
-        conflicts = self.get_tenant_objects().filter(
+        conflicts = self.__class__.objects.filter(
             service_specific_id=self.service_specific_id)
         if conflicts:
             raise XOSDuplicateKey("service_specific_id %s already exists" % self.service_specific_id, fields={

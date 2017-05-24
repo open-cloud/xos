@@ -32,11 +32,3 @@ def select_by_user(user):
         qs = Port.objects.filter(Q(instance__in=instance_ids) | Q(network__in=network_ids))
     return qs
 
-def get_parameters(self):
-    # returns parameters from the network, updated by self.
-    p={}
-    if self.network:
-        p = self.network.get_parameters()
-    p.update(ParameterMixin.get_parameters(self))
-    return p
-

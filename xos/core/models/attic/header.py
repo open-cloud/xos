@@ -21,10 +21,6 @@ from xos.config import Config
 
 config = Config()
 
-# If true, then IP addresses will be allocated by the model. If false, then
-# we will assume the observer handles it.
-NO_OBSERVER=False
-
 def ParseNatList(ports):
     """ Support a list of ports in the format "protocol:port, protocol:port, ..."
         examples:
@@ -76,24 +72,3 @@ def ValidateNatList(ports):
     except Exception,e:
         raise ValidationError(str(e))
 
-
-
-def get_default_flavor(controller = None):
-    # Find a default flavor that can be used for a instance. This is particularly
-    # useful in evolution. It's also intended this helper function can be used
-    # for admin.py when users
-
-    if controller:
-        flavors = controller.flavors.all()
-    else:
-        from core.models.flavor import Flavor
-        flavors = Flavor.objects.all()
-
-    if not flavors:
-        return None
-
-    for flavor in flavors:
-        if flavor.default:
-            return flavor
-
-    return flavors[0]

@@ -1,8 +1,3 @@
-def save(self, *args, **kwds):
-    if not self.user.is_active:
-        raise PermissionDenied, "Cannot modify role(s) of a disabled user"
-    super(TenantPrivilege, self).save(*args, **kwds)
-
 def can_update(self, user):
     return user.can_update_tenant_privilege(self)
 

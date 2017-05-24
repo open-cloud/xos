@@ -494,8 +494,8 @@ class InstanceInline(XOSTabularInline):
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'deployment':
-            kwargs['queryset'] = Deployment.select_by_acl(request.user).filter(
-                sitedeployments__nodes__isnull=False).distinct()
+#            kwargs['queryset'] = Deployment.select_by_acl(request.user).filter(
+#                sitedeployments__nodes__isnull=False).distinct()
             kwargs['widget'] = forms.Select(
                 attrs={'onChange': "instance_deployment_changed(this);"})
         if db_field.name == 'flavor':
@@ -523,8 +523,8 @@ class CordInstanceInline(XOSTabularInline):
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'deployment':
 
-            kwargs['queryset'] = Deployment.select_by_acl(request.user).filter(
-                sitedeployments__nodes__isnull=False).distinct()
+#            kwargs['queryset'] = Deployment.select_by_acl(request.user).filter(
+#                sitedeployments__nodes__isnull=False).distinct()
             kwargs['widget'] = forms.Select(
                 attrs={'onChange': "instance_deployment_changed(this);"})
         if db_field.name == 'flavor':
@@ -1460,10 +1460,6 @@ class NodeForm(forms.ModelForm):
 
     class Meta:
         model = Node
-        widgets = {
-            'site': LinkedSelect,
-            'deployment': LinkedSelect
-        }
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
@@ -1507,16 +1503,6 @@ class NodeAdmin(XOSBaseAdmin):
 
     suit_form_tabs = (('details', 'Node Details'), ('instances',
                                                     'Instances'), ('labels', 'Labels'))
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'site':
-            kwargs['queryset'] = Site.select_by_user(
-                request.user).filter(hosts_nodes=True)
-
-        field = super(NodeAdmin, self).formfield_for_foreignkey(
-            db_field, request, **kwargs)
-
-        return field
 
 
 class InstanceForm(forms.ModelForm):
@@ -1639,8 +1625,8 @@ class InstanceAdmin(XOSBaseAdmin):
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'deployment':
-            kwargs['queryset'] = Deployment.select_by_acl(request.user).filter(
-                sitedeployments__nodes__isnull=False).distinct()
+#            kwargs['queryset'] = Deployment.select_by_acl(request.user).filter(
+#                sitedeployments__nodes__isnull=False).distinct()
             kwargs['widget'] = forms.Select(
                 attrs={'onChange': "instance_deployment_changed(this);"})
         if db_field.name == 'flavor':

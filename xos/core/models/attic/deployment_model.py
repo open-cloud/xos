@@ -1,7 +1,3 @@
-def __init__(self, *args, **kwargs):
-    super(Deployment, self).__init__(*args, **kwargs)
-    self.no_sync=True
-
 def get_acl(self):
     return AccessControlList(self.accessControl)
 

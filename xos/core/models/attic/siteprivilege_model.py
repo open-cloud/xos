@@ -10,7 +10,3 @@ def select_by_user(user):
         qs = SitePrivilege.objects.filter(id__in=sp_ids)
     return qs
 
-def save(self, *args, **kwds):
-    if not self.user.is_active:
-        raise PermissionDenied, "Cannot modify role(s) of a disabled user"
-    super(SitePrivilege, self).save(*args, **kwds)

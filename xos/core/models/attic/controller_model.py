@@ -1,14 +1,3 @@
-def __init__(self, *args, **kwargs):
-    super(Controller, self).__init__(*args, **kwargs)
-    self.no_sync=True
-
-@property
-def auth_url_v3(self):
-    if self.auth_url and self.auth_url[-1] == '/':
-        return '{}/v3/'.format('/'.join(self.auth_url.split('/')[:-2]))
-    else:
-        return '{}/v3/'.format('/'.join(self.auth_url.split('/')[:-1]))
-
 @staticmethod
 def select_by_user(user):
 
