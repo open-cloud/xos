@@ -6,6 +6,7 @@ import traceback
 import sys
 import jinja2
 import os
+import copy
 
 def count_messages(body):
     count = 0
@@ -20,6 +21,36 @@ def count_fields(body):
         if (type(e) in [m.LinkDefinition,m.FieldDefinition,m.LinkSpec]):
             count+=1
     return count
+
+def compute_rlinks(messages):
+    rev_links = {}
+
+    link_opposite = {
+            'manytomany': 'manytomany',
+            'manytoone' : 'onetomany',
+            'onetoone'  : 'onetoone',
+            'onetomany' : 'manytoone'
+    }
+
+    for m in messages:
+        for l in m['links']:
+            rlink = copy.deepcopy(l)
+            rlink['_type'] = 'rlink' # An implicit link, not declared in the model
+            rlink['src_port'] = l['dst_port']
+            rlink['dst_port'] = l['src_port']
+            rlink['peer'] = m['name']
+            rlink['link_type'] = link_opposite[l['link_type']]
+
+            try:
+                rev_links[l['peer']].append(rlink)
+            except KeyError:
+                rev_links[l['peer']] = [rlink]
+
+    for m in messages:
+        try:
+            m['rlinks'] = rev_links[m['name']]
+        except KeyError:
+            pass
 
 class Stack(list):
     def push(self,x):
@@ -243,6 +274,7 @@ class XOS2Jinja(m.Visitor):
 
             messages.insert(0,m)
 
+        compute_rlinks(messages)
         self.messages = messages
         return True
 

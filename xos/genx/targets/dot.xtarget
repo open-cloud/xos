@@ -1,6 +1,7 @@
+digraph {
 {% for m in proto.messages %}
   {%- for l in m.links %}
-  {{ l.src_port }} -> {{ l.dst_port }};
+  {{ m.name }} -> {{ l.peer }};
   {%- endfor %}
-}
 {% endfor %}
+}
