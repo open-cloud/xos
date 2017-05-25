@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='XosConfig',
       version='1.0',
@@ -8,7 +8,5 @@ setup(name='XosConfig',
       author='Matteo Scandolo',
       author_email='teo@onlab.us',
       packages=['xosconfig'],
-      data_files=[
-            ('.', ['xosconfig/config-schema.yaml'])
-      ]
+      include_package_data=True
      )
