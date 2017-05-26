@@ -20,12 +20,6 @@ from django.http import HttpResponseRedirect
 
 # from core.xoslib import XOSLibDataView
 
-# Django settings for XOS.
-from config import Config
-from config import set_override
-config = Config()
-
-
 def load_class(full_class_string):
     """
     dynamically load a class from a string
@@ -38,13 +32,6 @@ def load_class(full_class_string):
     module = importlib.import_module(module_path)
     # Finally, we retrieve the Class
     return getattr(module, class_str)
-
-servicePage = getattr(config, "gui_service_view_class", ServiceGridView)
-
-if(isinstance(servicePage, basestring)):
-    serviceClass = getattr(load_class(servicePage), "as_view")
-else:
-    serviceClass = getattr(servicePage, "as_view")
 
 # from api import import_api_methods
 
@@ -62,7 +49,7 @@ urlpatterns = patterns(
 
     url(r'^mcord', MCordView.as_view(), name='mcord'),
 
-    url(r'^serviceGrid', serviceClass(), name='serviceGrid'),
+    url(r'^serviceGrid', ServiceGridView.as_view(), name='serviceGrid'),
 
     # url(r'^docs/', include('rest_framework_swagger.urls')),
 
