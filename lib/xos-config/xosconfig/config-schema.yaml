@@ -2,13 +2,20 @@ map:
   name:
     type: str
     required: True
+  xos_dir:
+    type: str
   database:
     type: map
     map:
+      name:
+        type: str
+        required: True
       username:
         type: str
+        required: True
       password:
         type: str
+        required: True
   logging:
     type: map
     map:

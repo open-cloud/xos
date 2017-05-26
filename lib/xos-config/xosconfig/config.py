@@ -5,7 +5,7 @@ import requests
 import default
 from pykwalify.core import Core as PyKwalify
 
-DEFAULT_CONFIG_FILE = "/opt/xos/config.yaml"
+DEFAULT_CONFIG_FILE = "/opt/xos/xos_config.yaml"
 INITIALIZED = False
 CONFIG = {}
 

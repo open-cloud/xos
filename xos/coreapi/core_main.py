@@ -12,6 +12,7 @@ from grpc_server import XOSGrpcServer, restart_chameleon
 from xos.logger import Logger, logging
 logger = Logger(level=logging.DEBUG)
 
+
 if __name__ == '__main__':
     django.setup()
 

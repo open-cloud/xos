@@ -5,12 +5,12 @@ import os
 import warnings
 from urlparse import urlparse
 
-# Django settings for XOS.
-from config import Config
-config = Config()
+# Initializing xosconfig module
+from xosconfig import Config
+Config.init()
 
 GEOIP_PATH = "/usr/share/GeoIP"
-XOS_DIR = "/opt/xos"
+XOS_DIR = Config.get('xos_dir')
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -27,15 +27,17 @@ LOGIN_REDIRECT_URL = '/admin/loggedin/'
 
 MANAGERS = ADMINS
 
+db_service = Config.get_service_info('xos-db')
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': config.db_name,                      # Or path to database file if using sqlite3.
+        'NAME': Config.get('database.name'),                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': config.db_user,
-        'PASSWORD': config.db_password,
-        'HOST': config.db_host,                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': config.db_port,                      # Set to empty string for default.
+        'USER': Config.get('database.username'),
+        'PASSWORD': Config.get('database.password'),
+        'HOST': db_service['url'],                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': db_service['port'],                      # Set to empty string for default.
     }
 }
 
@@ -229,22 +231,17 @@ LOGGING = {
     }
 }
 
-RESTAPI_HOSTNAME = getattr(config, "server_restapi_hostname", getattr(config, "server_hostname", socket.gethostname()))
-RESTAPI_PORT = int(getattr(config, "server_restapi_port", getattr(config, "server_port", "8000")))
+XOS_BRANDING_NAME = "OpenCloud"
+XOS_BRANDING_CSS = None
+XOS_BRANDING_ICON = "/static/logo.png"
+XOS_BRANDING_FAVICON = "/static/favicon.png"
+XOS_BRANDING_BG = "/static/bg.png"
 
-BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
-
-XOS_BRANDING_NAME = getattr(config, "gui_branding_name", "OpenCloud")
-XOS_BRANDING_CSS = getattr(config, "gui_branding_css", None)
-XOS_BRANDING_ICON = getattr(config, "gui_branding_icon", "/static/logo.png")
-XOS_BRANDING_FAVICON = getattr(config, "gui_branding_favicon", "/static/favicon.png")
-XOS_BRANDING_BG = getattr(config, "gui_branding_bg", "/static/bg.png")
-
-DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)
+DISABLE_MINIDASHBOARD = False
 ENCRYPTED_FIELDS_KEYDIR = XOS_DIR + '/private_keys'
 ENCRYPTED_FIELD_MODE = 'ENCRYPT'
 
-STATISTICS_DRIVER = getattr(config, "statistics_driver", "ceilometer")
+STATISTICS_DRIVER = "statistics_driver"
 
 # prevents warnings on django 1.7
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'

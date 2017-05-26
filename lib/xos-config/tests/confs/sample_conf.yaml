@@ -1,5 +1,6 @@
 name: xos-core
 database:
+  name: xos
   username: test
   password: safe
 logging:

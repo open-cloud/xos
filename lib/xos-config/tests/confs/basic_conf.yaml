@@ -1,4 +1,5 @@
 name: test
 database:
+  name: xos
   username: test
   password: safe

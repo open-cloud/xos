@@ -126,6 +126,7 @@ class XOSConfigTest(unittest.TestCase):
         # not only from the one that has been used to initialize it
         res = Config2.get("database")
         self.assertEqual(res, {
+            "name": "xos",
             "username": "test",
             "password": "safe"
         })
