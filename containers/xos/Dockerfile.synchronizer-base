@@ -1,12 +1,12 @@
 # xosproject/xos-synchronizer-base
 FROM xosproject/xos-client:candidate
 
-ADD xos/synchronizers/new_base /opt/xos/synchronizers/new_base
-ADD xos/xos/config.py /opt/xos/xos/config.py
-ADD xos/xos/logger.py /opt/xos/xos/logger.py
-ADD xos/xos/xml_util.py /opt/xos/xos/xml_util.py
-ADD xos/xos/__init__.py /opt/xos/xos/__init__.py
-ADD xos/synchronizers/__init__.py /opt/xos/synchronizers/__init__.py
+COPY xos/synchronizers/new_base /opt/xos/synchronizers/new_base
+COPY xos/xos/config.py /opt/xos/xos/config.py
+COPY xos/xos/logger.py /opt/xos/xos/logger.py
+COPY xos/xos/xml_util.py /opt/xos/xos/xml_util.py
+COPY xos/xos/__init__.py /opt/xos/xos/__init__.py
+COPY xos/synchronizers/__init__.py /opt/xos/synchronizers/__init__.py
 
 # Label image
 ARG org_label_schema_schema_version=1.0
@@ -16,6 +16,9 @@ ARG org_label_schema_vcs_url=unknown
 ARG org_label_schema_vcs_ref=unknown
 ARG org_label_schema_build_date=unknown
 ARG org_opencord_vcs_commit_date=unknown
+ARG org_opencord_component_chameleon_version=unknown
+ARG org_opencord_component_chameleon_vcs_url=unknown
+ARG org_opencord_component_chameleon_vcs_ref=unknown
 
 LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.label-schema.name=$org_label_schema_name \
@@ -23,7 +26,10 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.label-schema.vcs-url=$org_label_schema_vcs_url \
       org.label-schema.vcs-ref=$org_label_schema_vcs_ref \
       org.label-schema.build-date=$org_label_schema_build_date \
-      org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date
+      org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date \
+      org.opencord.component.chameleon.version=$org_opencord_component_chameleon_version \
+      org.opencord.component.chameleon.vcs-url=$org_opencord_component_chameleon_vcs_url \
+      org.opencord.component.chameleon.vcs-ref=$org_opencord_component_chameleon_vcs_ref
 
 ENTRYPOINT ["bash"]
 
