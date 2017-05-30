@@ -9,7 +9,6 @@ import json
 from distutils.version import LooseVersion
 from django.core.validators import URLValidator
 from xos.exceptions import *
-from xos.config import Config
 
 
 COARSE_KIND = "coarse"

@@ -2,7 +2,6 @@
 Makefile
 !contenttype.py
 !header.py
-!journal.py
 !network_header.py
 !plcorebase.py
 !service_header.py

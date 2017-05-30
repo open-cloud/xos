@@ -19,7 +19,6 @@ from django.db.models import F, Q
 from django.forms.models import model_to_dict
 from django.utils import timezone
 from timezones.fields import TimeZoneField
-from journal import journal_object
 from django.contrib.contenttypes.models import ContentType
 
 import redis
@@ -252,14 +251,12 @@ class User(AbstractBaseUser, PlModelMixIn):
             pass
 
         if (purge):
-            journal_object(self, "delete.purge")
             super(User, self).delete(*args, **kwds)
         else:
             if (not self.write_protect ):
                 self.deleted = True
                 self.enacted=None
                 self.policed=None
-                journal_object(self, "delete.mark_deleted")
                 self.save(update_fields=['enacted','deleted','policed'], silent=silent)
 
                 collector = XOSCollector(using=router.db_for_write(self.__class__, instance=self))
@@ -273,11 +270,9 @@ class User(AbstractBaseUser, PlModelMixIn):
                             model.deleted = True
                             model.enacted=None
                             model.policed=None
-                            journal_object(model, "delete.cascade.mark_deleted", msg="root = %r" % self)
                             model.save(update_fields=['enacted','deleted','policed'], silent=silent)
 
     def save(self, *args, **kwargs):
-        journal_object(self, "xosbase.save")
 
         if not self.id:
             self.set_password(self.password)
@@ -317,11 +312,7 @@ class User(AbstractBaseUser, PlModelMixIn):
 
         self.username = self.email
 
-        journal_object(self, "xosbase.save.super_save")
-
         super(User, self).save(*args, **kwargs)
-
-        journal_object(self, "xosbase.save.super_save_returned")
 
         self.push_redis_event()
 

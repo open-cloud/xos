@@ -32,14 +32,12 @@ def delete(self, *args, **kwds):
         pass
 
     if (purge):
-        journal_object(self, "delete.purge")
         super(XOSBase, self).delete(*args, **kwds)
     else:
         if (not self.write_protect ):
             self.deleted = True
             self.enacted=None
             self.policed=None
-            journal_object(self, "delete.mark_deleted")
             self.save(update_fields=['enacted','deleted','policed'], silent=silent)
 
             collector = XOSCollector(using=router.db_for_write(self.__class__, instance=self))
@@ -53,11 +51,9 @@ def delete(self, *args, **kwds):
                         model.deleted = True
                         model.enacted=None
                         model.policed=None
-                        journal_object(model, "delete.cascade.mark_deleted", msg="root = %r" % self)
                         model.save(update_fields=['enacted','deleted','policed'], silent=silent)
 
 def save(self, *args, **kwargs):
-    journal_object(self, "xosbase.save")
 
     # let the user specify silence as either a kwarg or an instance varible
     silent = self.silent
@@ -89,11 +85,9 @@ def save(self, *args, **kwargs):
     if (caller_kind!="synchronizer") or always_update_timestamp:
         self.updated = timezone.now()
 
-    journal_object(self, "xosbase.save.super_save")
 
     super(XOSBase, self).save(*args, **kwargs)
 
-    journal_object(self, "xosbase.save.super_save_returned")
 
     self.push_redis_event()
 

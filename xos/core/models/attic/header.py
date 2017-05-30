@@ -17,9 +17,6 @@ from django.db.models import *
 from django.core.validators import URLValidator
 from xos.exceptions import *
 import urlparse
-from xos.config import Config
-
-config = Config()
 
 def ParseNatList(ports):
     """ Support a list of ports in the format "protocol:port, protocol:port, ..."
