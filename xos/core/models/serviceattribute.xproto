@@ -1,7 +1,0 @@
-
-
-message ServiceAttribute (XOSBase){
-     required string name = 1 [help_text = "Attribute Name", max_length = 128, null = False, db_index = False, blank = False];
-     required string value = 2 [help_text = "Attribute Value", null = False, db_index = False, blank = False];
-     required manytoone service->Service:serviceattributes = 3 [help_text = "The Service this attribute is associated with", null = False, db_index = True, blank = False];
-}

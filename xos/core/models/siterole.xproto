@@ -1,5 +1,0 @@
-
-
-message SiteRole (XOSBase){
-     required string role = 1 [choices = "(('admin', 'Admin'), ('pi', 'PI'), ('tech', 'Tech'), ('billing', 'Billing'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
-}

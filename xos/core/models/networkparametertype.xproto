@@ -1,6 +1,0 @@
-
-
-message NetworkParameterType (XOSBase){
-     required string name = 1 [help_text = "The name of this parameter", max_length = 128, null = False, db_index = True, blank = False];
-     required string description = 2 [db_index = False, max_length = 1024, null = False, blank = False];
-}

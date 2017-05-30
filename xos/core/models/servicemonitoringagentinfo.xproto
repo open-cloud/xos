@@ -1,7 +1,0 @@
-
-
-message ServiceMonitoringAgentInfo (XOSBase){
-     required string name = 1 [help_text = "Monitoring Agent Name", max_length = 128, null = False, db_index = False, blank = False];
-     optional manytoone service->Service:servicemonitoringagents = 2 [help_text = "The Service this attribute is associated with", null = True, db_index = True, blank = True];
-     required string target_uri = 3 [help_text = "Monitoring collector URI to be used by agents to publish the data", null = False, db_index = False, blank = False];
-}

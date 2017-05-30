@@ -1,5 +1,0 @@
-
-
-message TenantRootRole (XOSBase){
-     required string role = 1 [choices = "(('admin', 'Admin'), ('access', 'Access'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
-}
