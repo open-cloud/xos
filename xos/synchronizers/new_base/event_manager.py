@@ -1,8 +1,7 @@
+# FIXME Appear that a lot of unused code sits in here
+
 import threading
-import requests, json
-
-from xos.config import Config, XOS_DIR
-
+from xosconfig import Config
 import uuid
 import os
 import imp
@@ -11,7 +10,11 @@ import base64
 import json
 import traceback
 
-if getattr(Config(),"observer_fofum_disabled", False) != True:
+# NOTE can we use a path relative to this file?
+XOS_DIR = "/opt/xos"
+
+# NOTE I believe fofum is not used anymore, can we remove this?
+if Config.get("fofum_disabled") is None:
     from fofum import Fofum
     fofum_enabled = True
 else:
@@ -67,13 +70,11 @@ class EventHandler:
 
 class EventSender:
     def __init__(self,user=None,clientid=None):
-        try:
-            user = Config().feefie_client_user
-        except:
-            user = 'pl'
+
+        user = Config.get("feefie.client_user")
 
         try:
-            clid = Config().feefie_client_id
+            clid = Config.get("feefie.client_id")
         except:
             clid = get_random_client_id()
             print "EventSender: no feefie_client_id configured. Using random id %s" % clid
@@ -102,13 +103,10 @@ class EventListener:
         # This is our unique client id, to be used when firing and receiving events
         # It needs to be generated once and placed in the config file
 
-        try:
-            user = Config().feefie_client_user
-        except:
-            user = 'pl'
+        user = Config.get("feefie.client_user")
 
         try:
-            clid = Config().feefie_client_id
+            clid = Config.get("feefie.client_id")
         except:
             clid = get_random_client_id()
             print "EventListener: no feefie_client_id configured. Using random id %s" % clid

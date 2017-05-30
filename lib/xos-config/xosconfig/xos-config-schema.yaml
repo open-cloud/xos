@@ -23,8 +23,11 @@ map:
         type: str
       level:
         type: str
+        # TODO add validation [info, debug, warning, error, critical]
       channels:
         type: seq
         sequence:
           - type: str
             enum: ['file', 'console', 'elkstack']
+  xos_dir:
+    type: str

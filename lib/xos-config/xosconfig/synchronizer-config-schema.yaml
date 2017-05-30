@@ -1,0 +1,80 @@
+map:
+  name:
+    type: str
+    required: True
+  xos_dir:
+    type: str
+  logging:
+    type: map
+    map:
+      level:
+        type: str
+      channels:
+        type: seq
+        sequence:
+          - type: str
+            enum: ['file', 'console', 'elkstack']
+  dependency_graph:
+    type: str
+  steps_dir:
+    type: str
+  sys_dir:
+    type: str
+  accessor:
+    type: map
+    required: True
+    map:
+      username:
+        type: str
+        required: True
+      password:
+        type: str
+        required: True
+  required_models:
+    type: seq
+    sequence:
+      - type: str
+  keep_temp_files:
+    type: bool
+  proxy_ssh:
+    type: map
+    map:
+      enabled:
+        type: bool
+        required: True
+      key:
+        type: str
+      user:
+        type: str
+  enable_watchers:
+    type: bool
+  model_policies_dir:
+    type: str
+  error_map_path:
+    type: str
+  feefie:
+    type: map
+    map:
+      client_id:
+        type: str
+      user_id:
+        type: str
+  node_key:
+    type: str
+  config_dir:
+    type: str
+  backoff_disabled:
+    type: bool
+  images_directory:
+    type: str
+  nova:
+    type: map
+    map:
+      enabled:
+        type: bool
+      ca_ssl_cert:
+        type: str
+      default_flavor:
+        type: str
+      default_security_group:
+        type: str

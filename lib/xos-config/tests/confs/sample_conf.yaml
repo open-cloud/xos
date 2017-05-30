@@ -8,3 +8,4 @@ logging:
   channels:
     - file
     - console
+xos_dir: /opt/xos

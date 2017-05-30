@@ -1,6 +1,4 @@
-import os
-import base64
-from xos.config import Config
+# NOTE this appear not to be used, can we delete it?
 
 class Deleter:
 	model=None # Must be overridden

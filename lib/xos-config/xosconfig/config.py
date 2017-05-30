@@ -6,6 +6,7 @@ import default
 from pykwalify.core import Core as PyKwalify
 
 DEFAULT_CONFIG_FILE = "/opt/xos/xos_config.yaml"
+DEFAULT_CONFIG_SCHEMA = 'xos-config-schema.yaml'
 INITIALIZED = False
 CONFIG = {}
 
@@ -15,7 +16,12 @@ class Config:
     """
 
     @staticmethod
-    def init(config_file=DEFAULT_CONFIG_FILE):
+    def init(config_file=DEFAULT_CONFIG_FILE, config_schema=DEFAULT_CONFIG_SCHEMA):
+
+        # make schema relative to this directory
+        # TODO give the possibility to specify an absolute path
+        config_schema = Config.get_abs_path(config_schema)
+
         global INITIALIZED
         global CONFIG
         # the config module can be initialized only one
@@ -23,16 +29,22 @@ class Config:
             raise Exception('[XOS-Config] Module already initialized')
         INITIALIZED = True
 
-        # if XOS-CONFIG is defined override the config_file
-        if os.environ.get('XOS-CONFIG'):
-            config_file = os.environ['XOS-CONFIG']
+        # if XOS_CONFIG_FILE is defined override the config_file
+        # FIXME shouldn't this stay in whatever module call this one? and then just pass the file to the init method
+        if os.environ.get('XOS_CONFIG_FILE'):
+            config_file = os.environ['XOS_CONFIG_FILE']
+
+        # if XOS_CONFIG_SCHEMA is defined override the config_schema
+        # FIXME shouldn't this stay in whatever module call this one? and then just pass the file to the init method
+        if os.environ.get('XOS_CONFIG_SCHEMA'):
+            config_schema = Config.get_abs_path(os.environ['XOS_CONFIG_SCHEMA'])
 
         # if a -C parameter is set in the cli override the config_file
         # FIXME shouldn't this stay in whatever module call this one? and then just pass the file to the init method
         if Config.get_cli_param(sys.argv):
-            config_file = Config.get_cli_param(sys.argv)
+            config_schema = Config.get_cli_param(sys.argv)
 
-        CONFIG = Config.read_config(config_file)
+        CONFIG = Config.read_config(config_file, config_schema)
 
     @staticmethod
     def clear():
@@ -40,8 +52,14 @@ class Config:
         INITIALIZED = False
 
     @staticmethod
-    def validate_config_format(config_file):
-        schema = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/config-schema.yaml')
+    def get_abs_path(path):
+        if os.path.isabs(path):
+            return path
+        return os.path.dirname(os.path.realpath(__file__)) + '/' + path
+
+    @staticmethod
+    def validate_config_format(config_file, config_schema):
+        schema = os.path.abspath(config_schema)
         c = PyKwalify(source_file=config_file, schema_files=[schema])
         c.validate(raise_exception=True)
 
@@ -54,7 +72,7 @@ class Config:
             last = arg
 
     @staticmethod
-    def read_config(config_file):
+    def read_config(config_file, config_schema):
         """
         Read the configuration file and return a dictionary
         :param config_file: string
@@ -63,8 +81,11 @@ class Config:
         if not os.path.exists(config_file):
             raise Exception('[XOS-Config] Config file not found at: %s' % config_file)
 
+        if not os.path.exists(config_schema):
+            raise Exception('[XOS-Config] Config schema not found at: %s' % config_schema)
+
         try:
-            Config.validate_config_format(config_file)
+            Config.validate_config_format(config_file, config_schema)
         except Exception, e:
             raise Exception('[XOS-Config] The config format is wrong: %s' % e.msg)
 
@@ -88,7 +109,9 @@ class Config:
         if not val:
             val = Config.get_param(query, default.DEFAULT_VALUES)
         if not val:
-            raise Exception('[XOS-Config] Config does not have a value (or a default) parameter %s' % query)
+            # TODO if no val return none
+            # raise Exception('[XOS-Config] Config does not have a value (or a default) parameter %s' % query)
+            return None
         return val
 
     @staticmethod
@@ -166,7 +189,5 @@ class Config:
         service = Config.get_service_info(service_name)
         return 'http://%s:%s' % (service['url'], service['port'])
 
-# NOTE is this needed if this package is not meant to be execute from the CLI?
 if __name__ == '__main__':
-    config = Config()
-    config.init()
+    Config.init()

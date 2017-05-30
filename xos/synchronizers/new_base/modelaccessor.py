@@ -11,13 +11,15 @@
 import functools
 import os
 import signal
-from xos.config import Config
+from xosconfig import Config
 from diag import update_diag
 
 from xos.logger import Logger, logging
+
 logger = Logger(level=logging.INFO)
 
 orig_sigint = None
+
 
 class ModelAccessor(object):
     def __init__(self):
@@ -73,7 +75,8 @@ class ModelAccessor(object):
 
     def update_diag(self, loop_end=None, loop_start=None, syncrecord_start=None, sync_start=None, backend_status=None):
         if self.has_model_class("Diag"):
-            return update_diag(self.get_model_class("Diag"), loop_end, loop_start, syncrecord_start, sync_start, backend_status)
+            return update_diag(self.get_model_class("Diag"), loop_end, loop_start, syncrecord_start, sync_start,
+                               backend_status)
 
     def is_type(self, obj, name):
         """ returns True is obj is of model type "name" """
@@ -92,6 +95,7 @@ class ModelAccessor(object):
     def create_obj(self, cls, **kwargs):
         raise Exception("Not Implemented")
 
+
 def import_models_to_globals():
     # add all models to globals
     for (k, v) in model_accessor.all_model_classes.items():
@@ -101,11 +105,13 @@ def import_models_to_globals():
     # ModelLink.
     if "ModelLink" not in globals():
         class ModelLink:
-            def __init__(self,dest,via,into=None):
-                self.dest=dest
-                self.via=via
-                self.into=into
+            def __init__(self, dest, via, into=None):
+                self.dest = dest
+                self.via = via
+                self.into = into
+
         globals()["ModelLink"] = ModelLink
+
 
 def keep_trying(client, reactor):
     # Keep checking the connection to wait for it to become unavailable.
@@ -128,6 +134,7 @@ def keep_trying(client, reactor):
 
     reactor.callLater(1, functools.partial(keep_trying, client, reactor))
 
+
 def grpcapi_reconnect(client, reactor):
     global model_accessor
 
@@ -135,15 +142,14 @@ def grpcapi_reconnect(client, reactor):
     client.xos_orm.caller_kind = "synchronizer"
 
     from apiaccessor import CoreApiModelAccessor
-    model_accessor = CoreApiModelAccessor(orm = client.xos_orm)
+    model_accessor = CoreApiModelAccessor(orm=client.xos_orm)
 
     # If required_models is set, then check to make sure the required_models
     # are present. If not, then the synchronizer needs to go to sleep until
     # the models show up.
 
-    required_models = getattr(Config(), "observer_required_models", None)
+    required_models = Config.get("required_models")
     if required_models:
-        required_models = required_models.split(",")
         required_models = [x.strip() for x in required_models]
 
         missing = []
@@ -171,43 +177,40 @@ def grpcapi_reconnect(client, reactor):
     # Restore the sigint handler
     signal.signal(signal.SIGINT, orig_sigint)
 
+
 def config_accessor():
     global model_accessor
     global orig_sigint
 
-    accessor_kind = getattr(Config(), "observer_accessor_kind", "django")
+    grpcapi_endpoint = Config.get("accessor.endpoint")
+    grpcapi_username = Config.get("accessor.username")
+    grpcapi_password = Config.get("accessor.password")
 
-    if (accessor_kind == "django"):
-       from djangoaccessor import DjangoModelAccessor
-       model_accessor = DjangoModelAccessor()
-       import_models_to_globals()
-    else:
-       grpcapi_endpoint = getattr(Config(), "observer_accessor_endpoint", "xos-core.cord.lab:50051")
-       grpcapi_username = getattr(Config(), "observer_accessor_username", "xosadmin@opencord.org")
-       grpcapi_password = getattr(Config(), "observer_accessor_password")
+    # if password starts with "@", then retreive the password from a file
+    if grpcapi_password.startswith("@"):
+        fn = grpcapi_password[1:]
+        if not os.path.exists(fn):
+            raise Exception("%s does not exist" % fn)
+        grpcapi_password = open(fn).readline().strip()
 
-       # if password starts with "@", then retreive the password from a file
-       if grpcapi_password.startswith("@"):
-           fn = grpcapi_password[1:]
-           if not os.path.exists(fn):
-               raise Exception("%s does not exist" % fn)
-           grpcapi_password = open(fn).readline().strip()
+    from xosapi.xos_grpc_client import SecureClient
+    from twisted.internet import reactor
 
-       from xosapi.xos_grpc_client import SecureClient
-       from twisted.internet import reactor
+    grpcapi_client = SecureClient(endpoint=grpcapi_endpoint, username=grpcapi_username, password=grpcapi_password)
+    grpcapi_client.set_reconnect_callback(functools.partial(grpcapi_reconnect, grpcapi_client, reactor))
+    grpcapi_client.start()
 
-       grpcapi_client = SecureClient(endpoint = grpcapi_endpoint, username = grpcapi_username, password=grpcapi_password)
-       grpcapi_client.set_reconnect_callback(functools.partial(grpcapi_reconnect, grpcapi_client, reactor))
-       grpcapi_client.start()
+    # Start reactor. This will cause the client to connect and then execute
+    # grpcapi_callback().
 
-       # Reactor will take over SIGINT during reactor.run(), but does not return it when reactor.stop() is called.
+    # Reactor will take over SIGINT during reactor.run(), but does not return it when reactor.stop() is called.
 
-       orig_sigint = signal.getsignal(signal.SIGINT)
+    orig_sigint = signal.getsignal(signal.SIGINT)
 
-       # Start reactor. This will cause the client to connect and then execute
-       # grpcapi_callback().
+    # Start reactor. This will cause the client to connect and then execute
+    # grpcapi_callback().
 
-       reactor.run()
+    reactor.run()
+
 
 config_accessor()
-

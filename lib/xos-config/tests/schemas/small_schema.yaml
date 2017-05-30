@@ -1,0 +1,4 @@
+map:
+  name:
+    type: str
+    required: True

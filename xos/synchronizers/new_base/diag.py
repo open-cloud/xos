@@ -1,16 +1,15 @@
-import os
-import time
-import sys
 import traceback
 import json
 
-from xos.config import Config, XOS_DIR
+from xosconfig import Config
 from xos.logger import Logger, logging, logger
 
 logger = Logger(level=logging.INFO)
 
-def update_diag(diag_class, loop_end=None, loop_start=None, syncrecord_start=None, sync_start=None, backend_status=None):
-    observer_name = Config().observer_name
+
+def update_diag(diag_class, loop_end=None, loop_start=None, syncrecord_start=None, sync_start=None,
+                backend_status=None):
+    observer_name = Config.get("name")
 
     try:
         diag = diag_class.objects.filter(name=observer_name).first()
@@ -41,4 +40,3 @@ def update_diag(diag_class, loop_end=None, loop_start=None, syncrecord_start=Non
     except:
         logger.log_exc("Exception in update_diag")
         traceback.print_exc()
-

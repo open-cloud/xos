@@ -7,10 +7,11 @@ import time
 from syncstep import SyncStep
 from synchronizers.new_base.event_loop import XOSObserver
 from xos.logger import Logger, logging
-from xos.config import Config
+from xosconfig import Config
 
-watchers_enabled = getattr(Config(), "observer_enable_watchers", None)
+watchers_enabled = Config.get("enable_watchers")
 
+# NOTE is this used or can be removed?
 if (watchers_enabled):
     from synchronizers.new_base.watchers import XOSWatcher
 
@@ -19,7 +20,7 @@ logger = Logger(level=logging.INFO)
 class Backend:
     def run(self):
         # start model policies thread
-        policies_dir = getattr(Config(), "observer_model_policies_dir", None)
+        policies_dir = Config("model_policies_dir")
         if policies_dir:
             from synchronizers.model_policy import run_policy
             model_policy_thread = threading.Thread(target=run_policy)

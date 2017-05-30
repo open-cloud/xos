@@ -10,11 +10,9 @@ import json
 import pdb
 import pprint
 import traceback
-
-
 from datetime import datetime
 from xos.logger import Logger, logging, logger
-from xos.config import Config, XOS_DIR
+from xosconfig import Config
 from synchronizers.new_base.steps import *
 from syncstep import SyncStep, NullSyncStep
 from toposort import toposort
@@ -23,6 +21,7 @@ from synchronizers.new_base.steps.sync_object import SyncObject
 from synchronizers.new_base.modelaccessor import *
 
 debug_mode = False
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -34,6 +33,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+
 logger = Logger(level=logging.INFO)
 
 
@@ -42,10 +42,10 @@ class StepNotReady(Exception):
 
 
 class NoOpDriver:
-
     def __init__(self):
         self.enabled = True
         self.dependency_graph = None
+
 
 # Everyone gets NoOpDriver by default. To use a different driver, call
 # set_driver() below.
@@ -56,6 +56,7 @@ DRIVER = NoOpDriver()
 def set_driver(x):
     global DRIVER
     DRIVER = x
+
 
 STEP_STATUS_WORKING = 1
 STEP_STATUS_OK = 2
@@ -84,7 +85,7 @@ class XOSObserver:
         self.event_cond = threading.Condition()
 
         self.driver = DRIVER
-        self.observer_name = getattr(Config(), "observer_name", "")
+        self.observer_name = Config.get("name")
 
     def wait_for_event(self, timeout):
         self.event_cond.acquire()
@@ -98,7 +99,7 @@ class XOSObserver:
         self.event_cond.release()
 
     def load_sync_steps(self):
-        dep_path = Config().observer_dependency_graph
+        dep_path = Config.get("dependency_graph")
         logger.info('Loading model dependency graph from %s' % dep_path)
         try:
             # This contains dependencies between records, not sync steps
@@ -118,7 +119,9 @@ class XOSObserver:
             raise e
 
         try:
-            backend_path = Config().observer_pl_dependency_graph
+            # FIXME `pl_dependency_graph` is never defined, this will always fail
+            # NOTE can we remove it?
+            backend_path = Config.get("pl_dependency_graph")
             logger.info(
                 'Loading backend dependency graph from %s' %
                 backend_path)
@@ -345,7 +348,7 @@ class XOSObserver:
                 my_status = STEP_STATUS_KO
             else:
                 sync_step = self.lookup_step(S)
-                sync_step. __name__ = step.__name__
+                sync_step.__name__ = step.__name__
                 sync_step.dependencies = []
                 try:
                     mlist = sync_step.provides
@@ -452,16 +455,12 @@ class XOSObserver:
             model_accessor.check_db_connection_okay()
 
             loop_start = time.time()
-            error_map_file = getattr(
-                Config(),
-                "error_map_path",
-                XOS_DIR +
-                "/error_map.txt")
+            error_map_file = Config.get('error_map_path')
             self.error_mapper = ErrorMapper(error_map_file)
 
             # Two passes. One for sync, the other for deletion.
             for deletion in [False, True]:
-                    # Set of individual objects within steps that failed
+                # Set of individual objects within steps that failed
                 self.failed_step_objects = set()
 
                 # Set up conditions and step status

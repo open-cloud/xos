@@ -7,6 +7,11 @@ COPY xos/xos/logger.py /opt/xos/xos/logger.py
 COPY xos/xos/xml_util.py /opt/xos/xos/xml_util.py
 COPY xos/xos/__init__.py /opt/xos/xos/__init__.py
 COPY xos/synchronizers/__init__.py /opt/xos/synchronizers/__init__.py
+COPY lib/xos-config /opt/xos/lib/xos-config
+
+# Install the config module
+RUN cd /opt/xos/lib/xos-config/; \
+	python setup.py install
 
 # Label image
 ARG org_label_schema_schema_version=1.0

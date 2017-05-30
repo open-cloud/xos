@@ -12,13 +12,13 @@ import re
 import traceback
 import subprocess
 import threading
-from xos.config import Config, XOS_DIR
+from xosconfig import Config
 from xos.logger import observer_logger as logger
 from multiprocessing import Process, Queue
 
 
-step_dir = Config().observer_steps_dir
-sys_dir = Config().observer_sys_dir
+step_dir = Config.get("steps_dir")
+sys_dir = Config.get("sys_dir")
 
 os_template_loader = jinja2.FileSystemLoader( searchpath=[step_dir, "/opt/xos/synchronizers/shared_templates"])
 os_template_env = jinja2.Environment(loader=os_template_loader)
@@ -56,7 +56,7 @@ def run_playbook(ansible_hosts, ansible_config, fqp, opts):
             "fqp": fqp,
             "opts": opts}
 
-    keep_temp_files = getattr(Config(), "observer_keep_temp_files", False)
+    keep_temp_files = Config.get("keep_temp_files")
 
     dir = tempfile.mkdtemp()
     args_fn = None
@@ -198,10 +198,7 @@ def run_template_ssh(name, opts, path='', expected_num=None, object=None):
     else:
         instance_id = opts["instance_id"]
         ssh_ip = opts["ssh_ip"]
-        try:
-            proxy_ssh = Config().observer_proxy_ssh
-        except:
-            proxy_ssh = True
+        proxy_ssh = Config.get("proxy_ssh.enabled")
 
         if (not ssh_ip):
             raise Exception('IP of ssh proxy not available. Synchronization deferred')
@@ -218,8 +215,8 @@ def run_template_ssh(name, opts, path='', expected_num=None, object=None):
     f = open(config_pathname, "w")
     f.write("[ssh_connection]\n")
     if proxy_ssh:
-        proxy_ssh_key = getattr(Config(), "observer_proxy_ssh_key", None)
-        proxy_ssh_user = getattr(Config(), "observer_proxy_ssh_user", "root")
+        proxy_ssh_key = Config.get("proxy_ssh.key")
+        proxy_ssh_user = Config.get("proxy_ssh.user")
         if proxy_ssh_key:
             # If proxy_ssh_key is known, then we can proxy into the compute
             # node without needing to have the OpenCloud sshd machinery in

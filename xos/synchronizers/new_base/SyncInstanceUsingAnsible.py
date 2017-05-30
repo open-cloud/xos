@@ -4,13 +4,14 @@ import socket
 import sys
 import base64
 import time
-from xos.config import Config
+from xosconfig import Config
 from synchronizers.new_base.syncstep import SyncStep
 from synchronizers.new_base.ansible_helper import run_template_ssh
 from synchronizers.new_base.modelaccessor import *
 from xos.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
+
 
 class SyncInstanceUsingAnsible(SyncStep):
     # All of the following should be defined for classes derived from this
@@ -33,7 +34,7 @@ class SyncInstanceUsingAnsible(SyncStep):
     def defer_sync(self, o, reason):
         # zdw, 2017-02-18 - is raising the exception here necessary? - seems like
         # it's just logging the same thing twice
-        logger.info("defer object %s due to %s" % (str(o), reason),extra=o.tologdict())
+        logger.info("defer object %s due to %s" % (str(o), reason), extra=o.tologdict())
         raise Exception("defer object %s due to %s" % (str(o), reason))
 
     def get_extra_attributes(self, o):
@@ -63,7 +64,7 @@ class SyncInstanceUsingAnsible(SyncStep):
             template_name = self.template_name
         tStart = time.time()
         run_template_ssh(template_name, fields, object=o)
-        logger.info("playbook execution time %d" % int(time.time()-tStart),extra=o.tologdict())
+        logger.info("playbook execution time %d" % int(time.time() - tStart), extra=o.tologdict())
 
     def pre_sync_hook(self, o, fields):
         pass
@@ -77,19 +78,20 @@ class SyncInstanceUsingAnsible(SyncStep):
     def prepare_record(self, o):
         pass
 
-    def get_node(self,o):
+    def get_node(self, o):
         return o.node
 
     def get_node_key(self, node):
-        return getattr(Config(), "observer_node_key", "/opt/cord_profile/node_key")
+        # NOTE `node_key` is never defined, does it differ from `proxy_ssh_key`? the value looks to be the same
+        return Config.get("node_key")
 
     def get_key_name(self, instance):
-        if instance.isolation=="vm":
-            if (instance.slice) and (instance.slice.service) and (instance.slice.service.private_key_fn):
+        if instance.isolation == "vm":
+            if instance.slice and instance.slice.service and instance.slice.service.private_key_fn:
                 key_name = instance.slice.service.private_key_fn
             else:
                 raise Exception("Make sure to set private_key_fn in the service")
-        elif instance.isolation=="container":
+        elif instance.isolation == "container":
             node = self.get_node(instance)
             key_name = self.get_node_key(node)
         else:
@@ -105,24 +107,24 @@ class SyncInstanceUsingAnsible(SyncStep):
         if (instance.isolation == "vm"):
             # legacy where container was configured by sync_vcpetenant.py
 
-            fields = { "instance_name": instance.name,
-                       "hostname": instance.node.name,
-                       "instance_id": instance.instance_id,
-                       "username": "ubuntu",
-                       "ssh_ip": instance.get_ssh_ip(),
-                     }
+            fields = {"instance_name": instance.name,
+                      "hostname": instance.node.name,
+                      "instance_id": instance.instance_id,
+                      "username": "ubuntu",
+                      "ssh_ip": instance.get_ssh_ip(),
+                      }
 
         elif (instance.isolation == "container"):
             # container on bare metal
             node = self.get_node(instance)
             hostname = node.name
-            fields = { "hostname": hostname,
-                       "baremetal_ssh": True,
-                       "instance_name": "rootcontext",
-                       "username": "root",
-                       "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
-                       # ssh_ip is not used for container-on-metal
-                     }
+            fields = {"hostname": hostname,
+                      "baremetal_ssh": True,
+                      "instance_name": "rootcontext",
+                      "username": "root",
+                      "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
+                      # ssh_ip is not used for container-on-metal
+                      }
         else:
             # container in a VM
             if not instance.parent:
@@ -133,13 +135,13 @@ class SyncInstanceUsingAnsible(SyncStep):
                 raise Exception("Container-in-VM parent has no service")
             if not instance.parent.slice.service.private_key_fn:
                 raise Exception("Container-in-VM parent service has no private_key_fn")
-            fields = { "hostname": instance.parent.node.name,
-                       "instance_name": instance.parent.name,
-                       "instance_id": instance.parent.instance_id,
-                       "username": "ubuntu",
-                       "ssh_ip": instance.parent.get_ssh_ip(),
-                       "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
-                         }
+            fields = {"hostname": instance.parent.node.name,
+                      "instance_name": instance.parent.name,
+                      "instance_id": instance.parent.instance_id,
+                      "username": "ubuntu",
+                      "ssh_ip": instance.parent.get_ssh_ip(),
+                      "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
+                      }
 
         key_name = self.get_key_name(instance)
         if not os.path.exists(key_name):
@@ -162,14 +164,14 @@ class SyncInstanceUsingAnsible(SyncStep):
 
             fields.update({"keystone_tenant_id": cslice.tenant_id,
                            "keystone_user_id": cuser.kuser_id,
-                           "rabbit_user": getattr(instance.controller,"rabbit_user", None),
+                           "rabbit_user": getattr(instance.controller, "rabbit_user", None),
                            "rabbit_password": getattr(instance.controller, "rabbit_password", None),
                            "rabbit_host": getattr(instance.controller, "rabbit_host", None)})
 
         return fields
 
     def sync_record(self, o):
-        logger.info("sync'ing object %s" % str(o),extra=o.tologdict())
+        logger.info("sync'ing object %s" % str(o), extra=o.tologdict())
 
         self.prepare_record(o)
 
@@ -182,12 +184,12 @@ class SyncInstanceUsingAnsible(SyncStep):
                 # UNTESTED
 
                 (hostname, container_name) = self.get_external_sync(o)
-                fields = { "hostname": hostname,
-                           "baremetal_ssh": True,
-                           "instance_name": "rootcontext",
-                           "username": "root",
-                           "container_name": container_name
-                         }
+                fields = {"hostname": hostname,
+                          "baremetal_ssh": True,
+                          "instance_name": "rootcontext",
+                          "username": "root",
+                          "container_name": container_name
+                          }
                 key_name = self.get_node_key(node)
                 if not os.path.exists(key_name):
                     raise Exception("Node key %s does not exist" % key_name)
@@ -228,8 +230,8 @@ class SyncInstanceUsingAnsible(SyncStep):
             controller = o.get_controller()
             controller_register = json.loads(o.node.site_deployment.controller.backend_register)
 
-            if (controller_register.get('disabled',False)):
-                raise InnocuousException('Controller %s is disabled'%o.node.site_deployment.controller.name)
+            if (controller_register.get('disabled', False)):
+                raise InnocuousException('Controller %s is disabled' % o.node.site_deployment.controller.name)
         except AttributeError:
             pass
 
@@ -248,10 +250,10 @@ class SyncInstanceUsingAnsible(SyncStep):
 
             # XXX - this probably needs more work...
 
-            fields = { "hostname": instance,
-                       "instance_id": "ubuntu",     # this is the username to log into
-                       "private_key": service.key,
-                     }
+            fields = {"hostname": instance,
+                      "instance_id": "ubuntu",  # this is the username to log into
+                      "private_key": service.key,
+                      }
         else:
             # sync to an XOS instance
             fields = self.get_ansible_fields(instance)
@@ -267,24 +269,24 @@ class SyncInstanceUsingAnsible(SyncStep):
         if hasattr(self, "map_delete_inputs"):
             fields.update(self.map_delete_inputs(o))
 
-        fields['delete']=True
-        res = self.run_playbook(o,fields)
+        fields['delete'] = True
+        res = self.run_playbook(o, fields)
 
         if hasattr(self, "map_delete_outputs"):
-            self.map_delete_outputs(o,res)
+            self.map_delete_outputs(o, res)
 
-    #In order to enable the XOS watcher functionality for a synchronizer, define the 'watches' attribute
-    #in the derived class: eg. watches = [ModelLink(ServiceDependency,via='servicedependency')]
-    #This base class implements the notification handler for handling ServiceDependency model notifications
-    #If a synchronizer need to watch on multiple objects, the additional handlers need to be implemented
-    #in the derived class and override the below handle_watched_object() method to route the notifications
-    #accordingly
+    # In order to enable the XOS watcher functionality for a synchronizer, define the 'watches' attribute
+    # in the derived class: eg. watches = [ModelLink(ServiceDependency,via='servicedependency')]
+    # This base class implements the notification handler for handling ServiceDependency model notifications
+    # If a synchronizer need to watch on multiple objects, the additional handlers need to be implemented
+    # in the derived class and override the below handle_watched_object() method to route the notifications
+    # accordingly
     def handle_watched_object(self, o):
-        logger.info("handle_watched_object is invoked for object %s" % (str(o)),extra=o.tologdict())
+        logger.info("handle_watched_object is invoked for object %s" % (str(o)), extra=o.tologdict())
         if (model_accessor.is_type(o, "ServiceDependency")):
-           self.handle_service_composition_watch_notification(o)
+            self.handle_service_composition_watch_notification(o)
         elif (model_accessor.is_type(o, "ServiceMonitoringAgentInfo")):
-           self.handle_service_monitoringagentinfo_watch_notification(o)
+            self.handle_service_monitoringagentinfo_watch_notification(o)
         pass
 
     def handle_service_composition_watch_notification(self, coarse_tenant):
@@ -303,14 +305,14 @@ class SyncInstanceUsingAnsible(SyncStep):
 
     def handle_service_composition_for_object(self, obj, coarse_tenant):
         try:
-           instance = self.get_instance(obj)
-           valid_instance = True
+            instance = self.get_instance(obj)
+            valid_instance = True
         except:
-           valid_instance = False
+            valid_instance = False
 
         if not valid_instance:
-           logger.warn("handle_watched_object: No valid instance found for object %s" % (str(obj)))
-           return
+            logger.warn("handle_watched_object: No valid instance found for object %s" % (str(obj)))
+            return
 
         provider_service = coarse_tenant.provider_service
         subscriber_service = coarse_tenant.subscriber_service
@@ -323,7 +325,8 @@ class SyncInstanceUsingAnsible(SyncStep):
                 matched_service = subscriber_service
                 other_service = provider_service
             else:
-                logger.info("handle_watched_object: Service object %s does not match with any of composed services" % (str(obj)))
+                logger.info("handle_watched_object: Service object %s does not match with any of composed services" % (
+                str(obj)))
                 return
         elif model_accessor.is_instance(obj, "Tenant"):
             if obj.provider_service.id == provider_service.id:
@@ -333,27 +336,32 @@ class SyncInstanceUsingAnsible(SyncStep):
                 matched_service = subscriber_service
                 other_service = provider_service
             else:
-                logger.info("handle_watched_object: Tenant object %s does not match with any of composed services" % (str(obj)))
+                logger.info(
+                    "handle_watched_object: Tenant object %s does not match with any of composed services" % (str(obj)))
                 return
         else:
-           logger.warn("handle_watched_object: Model object %s is of neither Service nor Tenant type" % (str(obj)))
+            logger.warn("handle_watched_object: Model object %s is of neither Service nor Tenant type" % (str(obj)))
 
         src_networks = matched_service.get_composable_networks()
         target_networks = other_service.get_composable_networks()
         if src_networks and target_networks:
-            src_network = src_networks[0] #Only one composable network should present per service
+            src_network = src_networks[0]  # Only one composable network should present per service
             target_network = target_networks[0]
             src_ip = instance.get_network_ip(src_network.name)
             target_subnet = target_network.controllernetworks.all()[0].subnet
 
-            #Run ansible playbook to update the routing table entries in the instance
+            # Run ansible playbook to update the routing table entries in the instance
             fields = self.get_ansible_fields(instance)
-            fields["ansible_tag"] = getattr(obj, "ansible_tag", obj.__class__.__name__ + "_" + str(obj.id)) + "_service_composition"
+            fields["ansible_tag"] = getattr(obj, "ansible_tag",
+                                            obj.__class__.__name__ + "_" + str(obj.id)) + "_service_composition"
             fields["src_intf_ip"] = src_ip
             fields["target_subnet"] = target_subnet
-            #Template file is available under .../synchronizers/shared_templates
+            # Template file is available under .../synchronizers/shared_templates
             service_composition_template_name = "sync_service_composition.yaml"
-            logger.info("handle_watched_object: Updating routing tables in the instance associated with object %s: target_subnet:%s src_ip:%s" % (str(obj), target_subnet, src_ip))
+            logger.info(
+                "handle_watched_object: Updating routing tables in the instance associated with object %s: target_subnet:%s src_ip:%s" % (
+                str(obj), target_subnet, src_ip))
             SyncInstanceUsingAnsible.run_playbook(self, obj, fields, service_composition_template_name)
         else:
-           logger.info("handle_watched_object: No intersection of composable networks between composed services %s" % (str(coarse_tenant)))
+            logger.info("handle_watched_object: No intersection of composable networks between composed services %s" % (
+            str(coarse_tenant)))

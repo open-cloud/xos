@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+# NOTE is this used or replaced by `new_base/dependency_walker_new.py`?
+
 import os
 import imp
-from xos.config import Config, XOS_DIR
+from xosconfig import Config
 import inspect
 import time
 import traceback
@@ -11,16 +13,15 @@ import threading
 import json
 import pdb
 from core.models import *
-
 from xos.logger import Logger, logging
 logger = Logger(level=logging.INFO)
 
 missing_links={}
 
 try:
-	dep_data = open(Config().dependency_graph).read()
+	dep_data = open(Config.get('dependency_graph')).read()
 except:
-	dep_data = open(XOS_DIR + '/model-deps').read()
+	raise Exception('[XOS-Dependency-Walker] File %s not found' % Config.get('dependency_graph'))
 
 dependencies = json.loads(dep_data)
 

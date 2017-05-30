@@ -9,9 +9,9 @@ from synchronizers.new_base.event_loop import XOSObserver
 from synchronizers.new_base.model_policy_loop import XOSPolicyEngine
 from synchronizers.new_base.modelaccessor import *
 from xos.logger import Logger, logging
-from xos.config import Config
+from xosconfig import Config
 
-watchers_enabled = getattr(Config(), "observer_enable_watchers", None)
+watchers_enabled = Config.get("enable_watchers")
 
 if (watchers_enabled):
     from synchronizers.new_base.watchers import XOSWatcher
@@ -56,7 +56,7 @@ class Backend:
 
         model_accessor.update_diag(sync_start=time.time(), backend_status="0 - Synchronizer Start")
 
-        steps_dir = Config().observer_steps_dir
+        steps_dir = Config.get("steps_dir")
         if steps_dir:
             sync_steps = self.load_sync_step_modules(steps_dir)
             if sync_steps:
@@ -74,7 +74,7 @@ class Backend:
             logger.info("Skipping observer and watcher threads due to no steps dir.")
 
         # start model policies thread
-        policies_dir = getattr(Config(), "observer_model_policies_dir", None)
+        policies_dir = Config.get("model_policies_dir")
         if policies_dir:
             policy_engine = XOSPolicyEngine(policies_dir=policies_dir)
             model_policy_thread = threading.Thread(target=policy_engine.run, name="policy_engine")
