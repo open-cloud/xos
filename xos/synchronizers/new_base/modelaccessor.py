@@ -10,11 +10,14 @@
 
 import functools
 import os
+import signal
 from xos.config import Config
 from diag import update_diag
 
 from xos.logger import Logger, logging
 logger = Logger(level=logging.INFO)
+
+orig_sigint = None
 
 class ModelAccessor(object):
     def __init__(self):
@@ -165,8 +168,12 @@ def grpcapi_reconnect(client, reactor):
     # Synchronizer framework isn't ready to embrace reactor yet...
     reactor.stop()
 
+    # Restore the sigint handler
+    signal.signal(signal.SIGINT, orig_sigint)
+
 def config_accessor():
     global model_accessor
+    global orig_sigint
 
     accessor_kind = getattr(Config(), "observer_accessor_kind", "django")
 
@@ -192,6 +199,10 @@ def config_accessor():
        grpcapi_client = SecureClient(endpoint = grpcapi_endpoint, username = grpcapi_username, password=grpcapi_password)
        grpcapi_client.set_reconnect_callback(functools.partial(grpcapi_reconnect, grpcapi_client, reactor))
        grpcapi_client.start()
+
+       # Reactor will take over SIGINT during reactor.run(), but does not return it when reactor.stop() is called.
+
+       orig_sigint = signal.getsignal(signal.SIGINT)
 
        # Start reactor. This will cause the client to connect and then execute
        # grpcapi_callback().

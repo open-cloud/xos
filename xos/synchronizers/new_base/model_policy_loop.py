@@ -1,146 +1,156 @@
 from synchronizers.new_base.modelaccessor import *
 from synchronizers.new_base.dependency_walker_new import *
+from synchronizers.new_base.policy import Policy
 from xos.logger import Logger, logging
 
+import imp
 import pdb
 import time
 import traceback
 
-modelPolicyEnabled = True
-bad_instances=[]
-
-model_policies = {}
-
 logger = Logger(level=logging.DEBUG)
 
-def EnableModelPolicy(x):
-    global modelPolicyEnabled
-    modelPolicyEnabled = x
+class XOSPolicyEngine(object):
+    def __init__(self, policies_dir):
+        self.model_policies = self.load_model_policies(policies_dir)
+        self.policies_by_name = {}
+        self.policies_by_class = {}
 
-def update_wp(d, o):
-    try:
-        save_fields = []
-        if (d.write_protect != o.write_protect):
-            d.write_protect = o.write_protect
-            save_fields.append('write_protect')
-        if (save_fields):
-            d.save(update_fields=save_fields)
-    except AttributeError,e:
-        raise e
+        for policy in self.model_policies:
+            if not policy.model_name in self.policies_by_name:
+                self.policies_by_name[policy.model_name] = []
+            self.policies_by_name[policy.model_name].append(policy)
 
-def update_dep(d, o):
-    try:
-        print 'Trying to update %s'%d
-        save_fields = []
-        if (d.updated < o.updated):
-            save_fields = ['updated']
+            if not policy.model in self.policies_by_class:
+                self.policies_by_class[policy.model] = []
+            self.policies_by_class[policy.model].append(policy)
 
-        if (save_fields):
-            d.save(update_fields=save_fields)
-    except AttributeError,e:
-        logger.log_exc("AttributeError in update_dep")
-        raise e
-    except Exception,e:
-        logger.log_exc("Exception in update_dep")
+    def update_wp(self, d, o):
+        try:
+            save_fields = []
+            if (d.write_protect != o.write_protect):
+                d.write_protect = o.write_protect
+                save_fields.append('write_protect')
+            if (save_fields):
+                d.save(update_fields=save_fields)
+        except AttributeError,e:
+            raise e
 
-def delete_if_inactive(d, o):
-    try:
-        d.delete()
-        print "Deleted %s (%s)"%(d,d.__class__.__name__)
-    except:
-        pass
-    return
+    def update_dep(self, d, o):
+        try:
+            print 'Trying to update %s'%d
+            save_fields = []
+            if (d.updated < o.updated):
+                save_fields = ['updated']
 
-def load_model_policies(policies_dir=None):
-    global model_policies
+            if (save_fields):
+                d.save(update_fields=save_fields)
+        except AttributeError,e:
+            logger.log_exc("AttributeError in update_dep")
+            raise e
+        except Exception,e:
+            logger.log_exc("Exception in update_dep")
 
-    if policies_dir is None:
-            policies_dir = Config().observer_model_policies_dir
-
-    for fn in os.listdir(policies_dir):
-            pathname = os.path.join(policies_dir,fn)
-            if os.path.isfile(pathname) and fn.startswith("model_policy_") and fn.endswith(".py") and (fn!="__init__.py"):
-                model_policies[fn[:-3]] = imp.load_source(fn[:-3],pathname)
-
-    logger.debug("Loaded model polices %s from %s" % (",".join(model_policies.keys()), policies_dir))
-
-def execute_model_policy(instance, deleted):
-    # Automatic dirtying
-    if (instance in bad_instances):
+    def delete_if_inactive(self, d, o):
+        try:
+            d.delete()
+            print "Deleted %s (%s)"%(d,d.__class__.__name__)
+        except:
+            pass
         return
 
-    # These are the models whose children get deleted when they are
-    delete_policy_models = ['Slice','Instance','Network']
-    sender_name = getattr(instance, "model_name", instance.__class__.__name__)
-    policy_name = 'model_policy_%s'%sender_name
-    noargs = False
+    def load_model_policies(self, policies_dir):
+        policies=[]
+        for fn in os.listdir(policies_dir):
+                pathname = os.path.join(policies_dir,fn)
+                if os.path.isfile(pathname) and fn.endswith(".py") and (fn!="__init__.py"):
+                    module = imp.load_source(fn[:-3], pathname)
+                    for classname in dir(module):
+                        c = getattr(module, classname, None)
 
-    if (not deleted):
-        walk_inv_deps(update_dep, instance)
-        walk_deps(update_wp, instance)
-    elif (sender_name in delete_policy_models):
-        walk_inv_deps(delete_if_inactive, instance)
+                        # make sure 'c' is a descendent of Policy and has a
+                        # provides field (this eliminates the abstract base classes
+                        # since they don't have a provides)
 
-    try:
-        policy_handler = model_policies.get(policy_name, None)
-        logger.debug("MODEL POLICY: handler %s %s" % (policy_name, policy_handler))
-        if policy_handler is not None:
-            if (deleted):
+                        if inspect.isclass(c) and issubclass(c, Policy) and hasattr(c, "model_name") and (
+                            c not in policies):
+                            if not model_accessor.has_model_class(c.model_name):
+                                logger.error("load_model_policies: unable to find model policy %s" % c.model_name)
+                            c.model = model_accessor.get_model_class(c.model_name)
+                            policies.append(c)
+
+        logger.info("Loaded %s model policies" % len(policies))
+        return policies
+
+    def execute_model_policy(self, instance, action):
+        # These are the models whose children get deleted when they are
+        delete_policy_models = ['Slice','Instance','Network']
+        sender_name = getattr(instance, "model_name", instance.__class__.__name__)
+
+        #if (action != "deleted"):
+        #    walk_inv_deps(self.update_dep, instance)
+        #    walk_deps(self.update_wp, instance)
+        #elif (sender_name in delete_policy_models):
+        #    walk_inv_deps(self.delete_if_inactive, instance)
+
+        for policy in self.policies_by_name.get(sender_name, None):
+            method_name= "handle_%s" % action
+            if hasattr(policy, method_name):
                 try:
-                    policy_handler.handle_delete(instance)
-                except AttributeError:
-                    pass
-            else:
-                policy_handler.handle(instance)
-        logger.debug("MODEL POLICY: completed handler %s %s" % (policy_name, policy_handler))
-    except:
-        logger.log_exc("MODEL POLICY: Exception when running handler")
-
-    try:
-        instance.policed=model_accessor.now()
-        instance.save(update_fields=['policed'])
-    except:
-        logger.log_exc('MODEL POLICY: Object %r is defective'%instance)
-        bad_instances.append(instance)
-
-def noop(o,p):
-        pass
-
-def run_policy():
-    load_model_policies()
-
-    while (True):
-        start = time.time()
-        try:
-            run_policy_once()
-        except:
-            logger.log_exc("MODEL_POLICY: Exception in run_policy()")
-        if (time.time()-start<1):
-            time.sleep(1)
-
-def run_policy_once():
-        # TODO: Core-specific model list is hardcoded here. These models should
-        # be learned from the model_policy files, not hardcoded.
-
-        models = [Controller, Site, SitePrivilege, Image, ControllerSlice, ControllerSite, ControllerUser, User, Slice, Network, Instance, SlicePrivilege]
-
-        logger.debug("MODEL POLICY: run_policy_once()")
-
-        model_accessor.check_db_connection_okay()
-
-        objects = model_accessor.fetch_policies(models, False)
-        deleted_objects = model_accessor.fetch_policies(models, True)
-
-        for o in objects:
-            execute_model_policy(o, o.deleted)
-
-        for o in deleted_objects:
-            execute_model_policy(o, True)
+                    logger.debug("MODEL POLICY: calling handler %s %s %s %s" % (sender_name, instance, policy.__name__, method_name))
+                    getattr(policy(), method_name)(instance)
+                    logger.debug("MODEL POLICY: completed handler %s %s %s %s" % (sender_name, instance, policy.__name__, method_name))
+                except:
+                    logger.log_exc("MODEL POLICY: Exception when running handler")
 
         try:
-            model_accessor.reset_queries()
+            instance.policed=model_accessor.now()
+            instance.save(update_fields=['policed'])
         except:
-            # this shouldn't happen, but in case it does, catch it...
-            logger.log_exc("MODEL POLICY: exception in reset_queries")
+            logger.log_exc('MODEL POLICY: Object %r failed to update policed timestamp' % instance)
 
-        logger.debug("MODEL POLICY: finished run_policy_once()")
+    def noop(self, o,p):
+            pass
+
+    def run(self):
+        while (True):
+            start = time.time()
+            try:
+                self.run_policy_once()
+            except:
+                logger.log_exc("MODEL_POLICY: Exception in run()")
+            if (time.time() - start < 5):
+                time.sleep(5)
+
+    # TODO: This loop is different from the synchronizer event_loop, but they both do mostly the same thing. Look for
+    # ways to combine them.
+
+    def run_policy_once(self):
+            models = self.policies_by_class.keys()
+
+            logger.debug("MODEL POLICY: run_policy_once()")
+
+            model_accessor.check_db_connection_okay()
+
+            objects = model_accessor.fetch_policies(models, False)
+            deleted_objects = model_accessor.fetch_policies(models, True)
+
+            for o in objects:
+                if o.deleted:
+                    # This shouldn't happen, but previous code was examining o.deleted. Verify.
+                    continue
+                if not o.policed:
+                    self.execute_model_policy(o, "create")
+                else:
+                    self.execute_model_policy(o, "update")
+
+            for o in deleted_objects:
+                self.execute_model_policy(o, "delete")
+
+            try:
+                model_accessor.reset_queries()
+            except:
+                # this shouldn't happen, but in case it does, catch it...
+                logger.log_exc("MODEL POLICY: exception in reset_queries")
+
+            logger.debug("MODEL POLICY: finished run_policy_once()")

@@ -6,6 +6,7 @@ import threading
 import time
 from synchronizers.new_base.syncstep import SyncStep
 from synchronizers.new_base.event_loop import XOSObserver
+from synchronizers.new_base.model_policy_loop import XOSPolicyEngine
 from synchronizers.new_base.modelaccessor import *
 from xos.logger import Logger, logging
 from xos.config import Config
@@ -75,8 +76,8 @@ class Backend:
         # start model policies thread
         policies_dir = getattr(Config(), "observer_model_policies_dir", None)
         if policies_dir:
-            from synchronizers.new_base.model_policy_loop import run_policy
-            model_policy_thread = threading.Thread(target=run_policy)
+            policy_engine = XOSPolicyEngine(policies_dir=policies_dir)
+            model_policy_thread = threading.Thread(target=policy_engine.run, name="policy_engine")
             model_policy_thread.start()
         else:
             model_policy_thread = None
