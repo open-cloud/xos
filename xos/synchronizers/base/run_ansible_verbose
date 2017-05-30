@@ -1,4 +1,0 @@
-#!/bin/bash
-
-export REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/local_certs.crt
-ansible-playbook -vvv "$@"
