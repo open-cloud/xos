@@ -30,7 +30,7 @@ import time
 import logging
 import logging.handlers
 import logstash
-from xos.config import Config
+from xosconfig import Config
 
 CRITICAL = logging.CRITICAL
 ERROR = logging.ERROR
@@ -45,32 +45,23 @@ class Logger:
 
     def __init__(self, logfile=None, loggername=None, level=logging.INFO):
 
-        # Logstash config - try as specified explicitly in config
+        # Logstash config
         try:
-            logstash_host, logstash_port = Config().observer_logstash_hostport.split(':')
+            logstash_host, logstash_port = Config.get("logging.logstash_hostport").split(':')
             logstash_handler = logstash.LogstashHandler(
                 logstash_host, int(logstash_port), version=1)
             # always log at DEBUG level to logstash
             logstash_handler.setLevel(logging.DEBUG)
         except:
+            # if connection fails (eg: logstash is not there) just move on
             logstash_handler = None
-
-        # try using the default cordloghost:5617
-        if not logstash_handler:
-            try:
-                logstash_handler = logstash.LogstashHandler(
-                    "cordloghost", 5617, version=1)
-                # always log at DEBUG level to logstash
-                logstash_handler.setLevel(logging.DEBUG)
-            except:
-                logstash_handler = None
 
         # default is to locate loggername from the logfile if avail.
         if not logfile:
-            logfile = getattr(Config(), "log_file", "/var/log/xos.log")
+            logfile = Config.get("logging.file")
 
         # allow config-file override of console/logfile level
-        level_str = getattr(Config(), "log_level", None)
+        level_str = Config.get("logging.level")
         if level_str:
             level_str = level_str.lower()
 
@@ -158,7 +149,7 @@ class Logger:
 
     def extract_context(self, cur):
         try:
-            observer_name = Config().observer_name
+            observer_name = Config.get("name")
             cur['synchronizer_name'] = observer_name
         except:
             pass

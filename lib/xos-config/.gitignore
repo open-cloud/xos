@@ -1,2 +1,4 @@
 .noseids
 build
+XosConfig.egg-info
+dist

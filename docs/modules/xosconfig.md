@@ -21,6 +21,9 @@ from xosconfig import Config
 Config.init("/path/to/my/config.yaml")
 ```
 
+### Configuration defaults
+Note that defaults are defined for some of the configuration items. Defaults are defined in `lib/xos-config/xosconfig/default.py`.
+
 ### Reading data from the configuration file
 
 To access static information defined in the `config.yaml` file you can use this api:

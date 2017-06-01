@@ -19,6 +19,8 @@ map:
   logging:
     type: map
     map:
+      logstash_hostport:
+        type: str
       level:
         type: str
       channels:
