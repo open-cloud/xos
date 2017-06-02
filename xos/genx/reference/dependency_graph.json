@@ -1,0 +1,157 @@
+{
+    "AddressPool": [
+        "Service"
+    ],
+    "Controller": [
+        "Deployment"
+    ],
+    "ControllerDashboardView": [
+        "Controller",
+		"DashboardView"
+    ],
+    "ControllerImages": [
+        "Image",
+		"Controller"
+    ],
+    "ControllerNetwork": [
+        "Network",
+		"Controller"
+    ],
+    "ControllerSite": [
+        "Site",
+		"Controller"
+    ],
+    "ControllerSitePrivilege": [
+        "Controller",
+		"SitePrivilege"
+    ],
+    "ControllerSlice": [
+        "Controller",
+		"Slice"
+    ],
+    "ControllerSlicePrivilege": [
+        "Controller",
+		"SlicePrivilege"
+    ],
+    "ControllerUser": [
+        "User",
+		"Controller"
+    ],
+    "DashboardView": [
+        "Controller",
+		"Deployment"
+    ],
+    "DeploymentPrivilege": [
+        "User",
+		"Deployment",
+		"DeploymentRole"
+    ],
+    "Flavor": [
+        "Deployment"
+    ],
+    "Image": [
+        "Deployment"
+    ],
+    "ImageDeployments": [
+        "Image",
+		"Deployment"
+    ],
+    "Instance": [
+        "Image",
+		"User",
+		"Slice",
+		"Deployment",
+		"Node",
+		"Flavor",
+		"Instance"
+    ],
+    "Network": [
+        "NetworkTemplate",
+		"Slice",
+		"Slice",
+		"Slice",
+		"Instance"
+    ],
+    "NetworkParameter": [
+        "NetworkParameterType"
+    ],
+    "NetworkSlice": [
+        "Network",
+		"Slice"
+    ],
+    "Node": [
+        "SiteDeployment"
+    ],
+    "NodeLabel": [
+        "Node"
+    ],
+    "Port": [
+        "Network",
+		"Instance"
+    ],
+    "ServiceAttribute": [
+        "Service"
+    ],
+    "ServiceMonitoringAgentInfo": [
+        "Service"
+    ],
+    "ServicePrivilege": [
+        "User",
+		"Service",
+		"ServiceRole"
+    ],
+    "Site": [
+        "Deployment"
+    ],
+    "SiteDeployment": [
+        "Site",
+		"Deployment",
+		"Controller"
+    ],
+    "SitePrivilege": [
+        "User",
+		"Site",
+		"SiteRole"
+    ],
+    "Slice": [
+        "Site",
+		"Service",
+		"User",
+		"Flavor",
+		"Image",
+		"Node"
+    ],
+    "SlicePrivilege": [
+        "User",
+		"Slice",
+		"SliceRole"
+    ],
+    "Tag": [
+        "Service"
+    ],
+    "Tenant": [
+        "Service",
+		"Service",
+		"Tenant",
+		"User",
+		"TenantRoot",
+		"Network"
+    ],
+    "TenantAttribute": [
+        "Tenant"
+    ],
+    "TenantPrivilege": [
+        "User",
+		"Tenant",
+		"TenantRole"
+    ],
+    "TenantRootPrivilege": [
+        "User",
+		"TenantRoot",
+		"TenantRootRole"
+    ],
+    "TenantWithContainer": [
+        "Instance",
+		"User"
+    ],
+}

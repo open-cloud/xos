@@ -1,0 +1,14 @@
+{
+{%- for model in proto.messages %}
+{%- if model.links %}
+    "{{ model.name }}": [
+        {% for l in model.links -%}
+            ["{{ l.peer }}", "{{ l.src_port }}", "{{ l.dst_port }}"]{% if not loop.last %},{% endif %}
+        {%- endfor %}
+        {%- if model.rlinks %},{% endif %}        
+        {% for l in model.rlinks -%}
+            ["{{ l.peer }}", "{{ l.src_port }}", "{{ l.dst_port }}"]{% if not loop.last %},{% endif %}
+        {%- endfor %}
+    ],{% endif -%}
+{% endfor %}
+}

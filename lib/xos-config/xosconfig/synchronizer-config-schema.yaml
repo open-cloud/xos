@@ -16,6 +16,8 @@ map:
             enum: ['file', 'console', 'elkstack']
   dependency_graph:
     type: str
+  link_graph:
+    type: str
   steps_dir:
     type: str
   sys_dir:

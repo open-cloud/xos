@@ -17,6 +17,7 @@ env = jinja2.Environment(loader=loader)
 class XOSGenerator:
     def __init__(self, args):
         self.args = args
+	self.input = None
 
     def file_exists(self):
         def file_exists2(name):
@@ -35,8 +36,15 @@ class XOSGenerator:
                 path = name
             return open(path).read()
         return include_file2
+
         # FIXME: Support templates in the future
         #return jinja2.Markup(loader.get_source(env, name)[0])
+
+    def format_list(self):
+	def format_list2(input_list, format_string, arguments=[]):
+    	    return [format_string % tuple(arguments + [s]) for s in input_list]
+	return format_list2
+
 
     def generate(self):
         try:
@@ -61,7 +69,8 @@ class XOSGenerator:
             os_template_env.globals['include_file'] = self.include_file() # Generates a function
             os_template_env.globals['file_exists'] = self.file_exists() # Generates a function
             os_template_env.filters['yaml'] = yaml.dump
-
+            os_template_env.globals['zip'] = zip
+            os_template_env.filters['format_list'] = self.format_list() # Generates a function
 
             for f in dir(lib):
                 if f.startswith('xproto'):

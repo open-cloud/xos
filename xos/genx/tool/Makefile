@@ -3,6 +3,9 @@ PREFIX=../
 XOSGEN=python $(PREFIX)/tool/xosgen
 
 DJANGO_TARGET=$(PREFIX)/targets/django-split.xtarget
+DOT_TARGET=$(PREFIX)/targets/model-deps-graphviz.xtarget
+DEP_TARGET=$(PREFIX)/targets/model-deps.xtarget
+
 INIT_TARGET=$(PREFIX)/targets/init.xtarget
 XPROTOS_TMP := $(shell mktemp)
 
@@ -11,6 +14,18 @@ XPROTOS_TMP := $(shell mktemp)
 	$(XOSGEN) --attic attic --target $(DJANGO_TARGET) --output $@ $<
 
 # Rule to produce test results
+%.ok: %.py
+	PYTHONPATH=$(PYTHONPATH):$(PREFIX)/tool python -m $(subst /,.,$(subst .py,,$<))
+
+# Rule to produce graphviz dot
+%.dot: %.xproto
+	$(XOSGEN) --target $(DOT_TARGET) $< > $@
+
+# Rule to produce model dependencies
+%.json: %.xproto
+	$(XOSGEN) --target $(DEP_TARGET) $< > $@
+
+# Rule to produce json dependencies
 %.ok: %.py
 	PYTHONPATH=$(PYTHONPATH):$(PREFIX)/tool python -m $(subst /,.,$(subst .py,,$<))
 

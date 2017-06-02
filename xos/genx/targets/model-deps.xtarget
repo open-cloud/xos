@@ -1,0 +1,8 @@
+{
+{%- for model in proto.messages %}
+{%- if model.links %}
+    "{{ model.name }}": [
+        {{ model.links | map(attribute='peer') | format_list("\"%s\"") |join(',\n\t\t') }}
+    ],{% endif -%}
+{% endfor %}
+}
