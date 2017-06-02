@@ -93,6 +93,7 @@ class XOSPolicyEngine(object):
         #elif (sender_name in delete_policy_models):
         #    walk_inv_deps(self.delete_if_inactive, instance)
 
+        policies_failed = False
         for policy in self.policies_by_name.get(sender_name, None):
             method_name= "handle_%s" % action
             if hasattr(policy, method_name):
@@ -102,12 +103,14 @@ class XOSPolicyEngine(object):
                     logger.debug("MODEL POLICY: completed handler %s %s %s %s" % (sender_name, instance, policy.__name__, method_name))
                 except:
                     logger.log_exc("MODEL POLICY: Exception when running handler")
+                    policies_failed = True
 
-        try:
-            instance.policed=model_accessor.now()
-            instance.save(update_fields=['policed'])
-        except:
-            logger.log_exc('MODEL POLICY: Object %r failed to update policed timestamp' % instance)
+        if not policies_failed:
+            try:
+                instance.policed=model_accessor.now()
+                instance.save(update_fields=['policed'])
+            except:
+                logger.log_exc('MODEL POLICY: Object %r failed to update policed timestamp' % instance)
 
     def noop(self, o,p):
             pass

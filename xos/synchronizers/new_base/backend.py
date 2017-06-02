@@ -23,13 +23,8 @@ class Backend:
     def __init__(self):
         pass
 
-    def load_sync_step_modules(self, step_dir=None):
+    def load_sync_step_modules(self, step_dir):
         sync_steps = []
-        if step_dir is None:
-            try:
-                step_dir = Config().observer_steps_dir
-            except:
-                step_dir = '/opt/xos/synchronizers/openstack/steps'
 
         logger.info("Loading sync steps from %s" % step_dir)
 
@@ -55,23 +50,28 @@ class Backend:
         return sync_steps
 
     def run(self):
+        observer_thread = None
         watcher_thread = None
         model_policy_thread = None
 
         model_accessor.update_diag(sync_start=time.time(), backend_status="0 - Synchronizer Start")
 
-        sync_steps = self.load_sync_step_modules()
+        steps_dir = Config().observer_steps_dir
+        if steps_dir:
+            sync_steps = self.load_sync_step_modules(steps_dir)
+            if sync_steps:
+                # start the observer
+                observer = XOSObserver(sync_steps)
+                observer_thread = threading.Thread(target=observer.run,name='synchronizer')
+                observer_thread.start()
 
-        # start the observer
-        observer = XOSObserver(sync_steps)
-        observer_thread = threading.Thread(target=observer.run,name='synchronizer')
-        observer_thread.start()
-
-        # start the watcher thread
-        if (watchers_enabled):
-            watcher = XOSWatcher(sync_steps)
-            watcher_thread = threading.Thread(target=watcher.run,name='watcher')
-            watcher_thread.start()
+                # start the watcher thread
+                if (watchers_enabled):
+                    watcher = XOSWatcher(sync_steps)
+                    watcher_thread = threading.Thread(target=watcher.run,name='watcher')
+                    watcher_thread.start()
+        else:
+            logger.info("Skipping observer and watcher threads due to no steps dir.")
 
         # start model policies thread
         policies_dir = getattr(Config(), "observer_model_policies_dir", None)
@@ -80,7 +80,6 @@ class Backend:
             model_policy_thread = threading.Thread(target=policy_engine.run, name="policy_engine")
             model_policy_thread.start()
         else:
-            model_policy_thread = None
             logger.info("Skipping model policies thread due to no model_policies dir.")
 
         while True:
@@ -89,7 +88,8 @@ class Backend:
             except KeyboardInterrupt:
                 print "exiting due to keyboard interrupt"
                 # TODO: See about setting the threads as daemons
-                observer_thread._Thread__stop()
+                if observer_thread:
+                    observer_thread._Thread__stop()
                 if watcher_thread:
                     watcher_thread._Thread__stop()
                 if model_policy_thread:
