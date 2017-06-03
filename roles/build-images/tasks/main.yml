@@ -56,4 +56,4 @@
     pull: False
     force: True
   with_items: "{{ xos_services }}"
-  when: not frontend_only and item.synchronizer is defined and item.synchronizer
+  when: not frontend_only and (item.synchronizer is not defined or item.synchronizer)
