@@ -30,7 +30,8 @@ import time
 import logging
 import logging.handlers
 import logstash
-from xosconfig import Config
+# from xosconfig import Config
+from xos.config import Config
 
 CRITICAL = logging.CRITICAL
 ERROR = logging.ERROR
@@ -47,7 +48,7 @@ class Logger:
 
         # Logstash config
         try:
-            logstash_host, logstash_port = Config.get("logging.logstash_hostport").split(':')
+            logstash_host, logstash_port = 'cordloghost:5617'.split(':') #Config.get("logging.logstash_hostport").split(':')
             logstash_handler = logstash.LogstashHandler(
                 logstash_host, int(logstash_port), version=1)
             # always log at DEBUG level to logstash
@@ -58,10 +59,10 @@ class Logger:
 
         # default is to locate loggername from the logfile if avail.
         if not logfile:
-            logfile = Config.get("logging.file")
+            logfile = '/var/log/xos.log' #Config.get("logging.file")
 
         # allow config-file override of console/logfile level
-        level_str = Config.get("logging.level")
+        level_str = 'info' #Config.get("logging.level")
         if level_str:
             level_str = level_str.lower()
 
@@ -149,7 +150,7 @@ class Logger:
 
     def extract_context(self, cur):
         try:
-            observer_name = Config.get("name")
+            observer_name = Config().observer_name #Config.get("name")
             cur['synchronizer_name'] = observer_name
         except:
             pass
