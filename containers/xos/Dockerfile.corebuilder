@@ -6,7 +6,7 @@ ADD xos/tools/corebuilder /opt/xos/tools/corebuilder
 ADD xos/tosca/custom_types /opt/xos/tools/corebuilder/custom_types
 
 # Temporary fix. This should go away when we update xos-core to a more recent image.
-RUN pip install git+https://github.com/sb98052/plyprotobuf
+RUN pip install git+https://github.com/sb98052/plyprotobuf@v1.2.0
 
 ENV HOME /root
 WORKDIR /opt/xos/tools/corebuilder
@@ -29,4 +29,5 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date
 
 ENTRYPOINT ["/usr/bin/python", "corebuilder.py"]
+
 

@@ -155,4 +155,4 @@ wrapt==1.10.8
 wsgiref==0.1.2
 zope.interface==4.3.3
 redis==2.10.5
-git+https://github.com/sb98052/plyprotobuf
+git+https://github.com/sb98052/plyprotobuf@v1.2.0
