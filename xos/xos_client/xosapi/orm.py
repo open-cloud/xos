@@ -123,7 +123,10 @@ class ORMWrapper(object):
     def fk_set(self, name, model):
         fk_entry = self._fkmap[name]
         fk_kind = fk_entry["kind"]
-        id = model.id
+        if model:
+            id = model.id
+        else:
+            id = 0
         setattr(self._wrapped_class, fk_entry["src_fieldName"], id)
 
         if fk_kind=="generic_fk":
@@ -277,6 +280,9 @@ class ORMLocalObjectManager(object):
 
     def exists(self):
         return len(self._idList)>0
+
+    def count(self):
+        return len(self._idList)
 
     def first(self):
         if self._idList:

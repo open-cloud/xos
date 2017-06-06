@@ -126,6 +126,39 @@ class TestORM(unittest.TestCase):
         self.assertNotEqual(slice.site, None)
         self.assertEqual(slice.site.id, site.id)
 
+    def test_foreign_key_create_null(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        slice = orm.Slice(name="mysite_foo", site = site, service=None)
+        slice.save()
+        slice.invalidate_cache()
+        self.assertTrue(slice.id > 0)
+        self.assertEqual(slice.service, None)
+
+    def test_foreign_key_set_null(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        service = orm.Service(name="myservice")
+        service.save()
+        self.assertTrue(service.id > 0)
+        # start out slice.service is non-None
+        slice = orm.Slice(name="mysite_foo", site = site, service=service)
+        slice.save()
+        slice.invalidate_cache()
+        self.assertTrue(slice.id > 0)
+        self.assertNotEqual(slice.service, None)
+        self.assertEqual(slice.service.id, service.id)
+        # now set it to None
+        slice.service = None
+        slice.save()
+        slice.invalidate_cache()
+        self.assertEqual(slice.service, None)
+
+
     def test_generic_foreign_key_get(self):
         orm = self.make_coreapi()
         service = orm.Service(name="myservice")

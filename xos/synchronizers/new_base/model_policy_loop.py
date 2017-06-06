@@ -74,8 +74,11 @@ class XOSPolicyEngine(object):
 
                         if inspect.isclass(c) and issubclass(c, Policy) and hasattr(c, "model_name") and (
                             c not in policies):
+                            if not c.model_name:
+                                logger.info("load_model_policies: skipping model policy %s" % classname)
+                                continue
                             if not model_accessor.has_model_class(c.model_name):
-                                logger.error("load_model_policies: unable to find model policy %s" % c.model_name)
+                                logger.error("load_model_policies: unable to find policy %s model %s" % (classname, c.model_name))
                             c.model = model_accessor.get_model_class(c.model_name)
                             policies.append(c)
 

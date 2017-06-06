@@ -222,7 +222,10 @@ class XOSAPIHelperMixin(object):
                 elif (ftype == "IntegerField") or (ftype == "PositiveIntegerField") or (ftype == "BigIntegerField"):
                     args[name] = val
                 elif (ftype == "ForeignKey"):
-                    args[name] = val # field name already has "_id" at the end
+                    if val==0: # assume object id 0 means None
+                        args[name] = None
+                    else:
+                        args[name] = val # field name already has "_id" at the end
                 elif (ftype == "DateTimeField"):
                     utc = pytz.utc
                     args[name] = datetime.datetime.fromtimestamp(val,tz=utc)
