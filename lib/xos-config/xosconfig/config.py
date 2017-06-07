@@ -8,6 +8,7 @@ from pykwalify.core import Core as PyKwalify
 DEFAULT_CONFIG_FILE = "/opt/xos/xos_config.yaml"
 DEFAULT_CONFIG_SCHEMA = 'xos-config-schema.yaml'
 INITIALIZED = False
+CONFIG_FILE = None
 CONFIG = {}
 
 class Config:
@@ -24,6 +25,7 @@ class Config:
 
         global INITIALIZED
         global CONFIG
+        global CONFIG_FILE
         # the config module can be initialized only one
         if INITIALIZED:
             raise Exception('[XOS-Config] Module already initialized')
@@ -44,7 +46,13 @@ class Config:
         if Config.get_cli_param(sys.argv):
             config_schema = Config.get_cli_param(sys.argv)
 
+
+        CONFIG_FILE = config_file
         CONFIG = Config.read_config(config_file, config_schema)
+
+    @staticmethod
+    def get_config_file():
+        return CONFIG_FILE
 
     @staticmethod
     def clear():

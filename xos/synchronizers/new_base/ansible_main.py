@@ -3,6 +3,7 @@ import pickle
 import sys
 #import json
 import traceback
+from xosconfig import Config
 
 sys.path.append("/opt/xos")
 
@@ -44,6 +45,9 @@ def main():
     result_fn = sys.argv[2]
 
     args = pickle.loads(open(input_fn).read())
+
+    Config.init(args['config_file'], 'synchronizer-config-schema.yaml')
+
     ansible_hosts = args["ansible_hosts"]
     ansible_config = args["ansible_config"]
     fqp = args["fqp"]

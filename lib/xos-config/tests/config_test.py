@@ -133,7 +133,15 @@ class XOSConfigTest(unittest.TestCase):
             "file":  "/var/log/xos.log",
         })
 
-    def _test_get_missing_param(self):
+    def test_get_config_file(self):
+        """
+        [XOS-Config] Should return the config file in use
+        """
+        Config.init(sample_conf)
+        res = Config.get_config_file()
+        self.assertEqual(res, sample_conf)
+
+    def test_get_missing_param(self):
         """
         [XOS-Config] Should raise reading a missing param
         """

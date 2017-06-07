@@ -15,6 +15,7 @@ import threading
 from xosconfig import Config
 from xos.logger import observer_logger as logger
 from multiprocessing import Process, Queue
+from xosconfig import Config
 
 
 step_dir = Config.get("steps_dir")
@@ -54,7 +55,8 @@ def run_playbook(ansible_hosts, ansible_config, fqp, opts):
     args = {"ansible_hosts": ansible_hosts,
             "ansible_config": ansible_config,
             "fqp": fqp,
-            "opts": opts}
+            "opts": opts,
+            "config_file": Config.get_config_file()}
 
     keep_temp_files = Config.get("keep_temp_files")
 

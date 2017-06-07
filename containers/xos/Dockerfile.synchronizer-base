@@ -2,7 +2,6 @@
 FROM xosproject/xos-client:candidate
 
 COPY xos/synchronizers/new_base /opt/xos/synchronizers/new_base
-COPY xos/xos/config.py /opt/xos/xos/config.py
 COPY xos/xos/logger.py /opt/xos/xos/logger.py
 COPY xos/xos/xml_util.py /opt/xos/xos/xml_util.py
 COPY xos/xos/__init__.py /opt/xos/xos/__init__.py

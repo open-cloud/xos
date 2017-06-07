@@ -48,8 +48,10 @@ class DashboardDynamicView(TemplateView):
             return self.singleDashboardView(request, name, context)
 
     def readTemplate(self, fn):
-        TEMPLATE_DIRS = [XOS_DIR + "/templates/admin/dashboard/",
-                         XOS_DIR + "/core/xoslib/dashboards/"]
+        dashboards_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
+        xoslib_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../xoslib/dashboards/')
+        TEMPLATE_DIRS = [dashboards_dir,
+                         xoslib_dir]
 
         for template_dir in TEMPLATE_DIRS:
             pathname = os.path.join(template_dir, fn) + ".html"
