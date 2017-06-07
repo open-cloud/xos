@@ -9,7 +9,7 @@ from .user import User
 from .user import UserDashboardView
 
 {% for m in proto.messages -%}
-{% if not m.options.skip -%}
+{% if not m.options.skip_init -%}
 from .{{ m.name | lower }} import {{ m.name }} 
 {% endif -%}
 {% endfor -%}

@@ -1,5 +1,7 @@
+option app_name = "core";
+
 message XOSBase {
-     option skip = True;
+     option skip_init = True;
      required string created = 1 [content_type = "date", auto_now_add = True];
      required string updated = 2 [default = "now()", content_type = "date"];
      optional string enacted = 3 [null = True, content_type = "date", blank = True, default = None];
@@ -15,13 +17,46 @@ message XOSBase {
      required bool no_policy = 13 [default = False];
 }
 
+message User (AbstractBaseUser,PlModelMixIn) {
+     option skip_django = True;
+     required string email = 1 [db_index = True, max_length = 255, null = False, blank = False];
+     required string username = 2 [default = "Something", max_length = 255, content_type = "stripped", blank = False, null = False, db_index = False];
+     required string firstname = 3 [max_length = 200, content_type = "stripped", blank = False, help_text = "person's given name", null = False, db_index = False];
+     required string lastname = 4 [max_length = 200, content_type = "stripped", blank = False, help_text = "person's surname", null = False, db_index = False];
+     optional string phone = 5 [max_length = 100, content_type = "stripped", blank = True, help_text = "phone number contact", null = True, db_index = False];
+     optional string user_url = 6 [db_index = False, max_length = 200, null = True, content_type = "url", blank = True];
+     required manytoone site->Site:users = 7 [help_text = "Site this user will be homed too", null = False, db_index = True, blank = False];
+     optional string public_key = 8 [help_text = "Public key string", max_length = 1024, null = True, db_index = False, blank = True, varchar = True];
+     required bool is_active = 9 [default = True, null = False, db_index = False, blank = True];
+     required bool is_admin = 10 [default = False, null = False, db_index = False, blank = True];
+     required bool is_staff = 11 [default = True, null = False, db_index = False, blank = True];
+     required bool is_readonly = 12 [default = False, null = False, db_index = False, blank = True];
+     required bool is_registering = 13 [default = False, null = False, db_index = False, blank = True];
+     required bool is_appuser = 14 [default = False, null = False, db_index = False, blank = True];
+     optional string login_page = 15 [max_length = 200, content_type = "stripped", blank = True, help_text = "send this user to a specific page on login", null = True, db_index = False];
+     required string created = 16 [db_index = False, null = False, content_type = "date", blank = True];
+     required string updated = 17 [db_index = False, null = False, content_type = "date", blank = True];
+     optional string enacted = 18 [db_index = False, null = True, content_type = "date", blank = False];
+     optional string policed = 19 [db_index = False, null = True, content_type = "date", blank = False];
+     required string backend_status = 20 [default = "Provisioning in progress", max_length = 1024, content_type = "stripped", blank = False, null = False, db_index = False];
+     required bool backend_need_delete = 21 [default = False, null = False, db_index = False, blank = True];
+     required bool backend_need_reap = 22 [default = False, null = False, db_index = False, blank = True];
+     required bool deleted = 23 [default = False, null = False, db_index = False, blank = True];
+     required bool write_protect = 24 [default = False, null = False, db_index = False, blank = True];
+     required bool lazy_blocked = 25 [default = False, null = False, db_index = False, blank = True];
+     required bool no_sync = 26 [default = False, null = False, db_index = False, blank = True];
+     required bool no_policy = 27 [default = False, null = False, db_index = False, blank = True];
+     required string timezone = 28 [default = "America/New_York", max_length = 100, blank = False, null = False, db_index = False];
+     required manytomany dashboards->DashboardView/UserDashboardView:user = 29 [db_index = False, null = False, blank = True];
+}
+
 message AddressPool (XOSBase) {
      required string name = 1 [db_index = False, max_length = 32, null = False, blank = False];
-     optional string addresses = 2 [db_index = False, null = True, blank = True];
+     optional string addresses = 2 [db_index = False, null = True, blank = True, varchar = True];
      optional string gateway_ip = 3 [db_index = False, max_length = 32, null = True, blank = False];
      optional string gateway_mac = 4 [db_index = False, max_length = 32, null = True, blank = False];
      optional string cidr = 5 [db_index = False, max_length = 32, null = True, blank = False];
-     optional string inuse = 6 [db_index = False, null = True, blank = True];
+     optional string inuse = 6 [db_index = False, null = True, blank = True, varchar = True];
      optional manytoone service->Service:addresspools = 7 [db_index = True, null = True, blank = True];
 }
 
@@ -124,7 +159,7 @@ message DashboardView (XOSBase) {
 
 message Deployment (XOSBase) {
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the Deployment", null = False, db_index = False];
-     required string accessControl = 2 [default = "allow all", max_length = 200, blank = False, help_text = "Access control list that specifies which sites/users may use nodes in this deployment", null = False, db_index = False];
+     required string accessControl = 2 [default = "allow all", max_length = 200, blank = False, help_text = "Access control list that specifies which sites/users may use nodes in this deployment", null = False, db_index = False, varchar = True];
 }
 
 
@@ -183,7 +218,7 @@ message Instance (XOSBase) {
      required manytoone node->Node:instances = 10 [db_index = True, null = False, blank = False];
      required int32 numberCores = 11 [help_text = "Number of cores for instance", default = 0, null = False, db_index = False, blank = False];
      required manytoone flavor->Flavor:instance = 12 [help_text = "Flavor of this instance", null = False, db_index = True, blank = False];
-     optional string userData = 13 [help_text = "user_data passed to instance during creation", null = True, db_index = False, blank = True];
+     optional string userData = 13 [help_text = "user_data passed to instance during creation", null = True, db_index = False, blank = True, varchar = True];
      required string isolation = 14 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))", max_length = 30, blank = False, null = False, db_index = False];
      optional string volumes = 15 [help_text = "Comma-separated list of directories to expose to parent context", null = True, db_index = False, blank = True];
      optional manytoone parent->Instance:instance = 16 [help_text = "Parent Instance for containers nested inside of VMs", null = True, db_index = True, blank = True];
@@ -261,7 +296,7 @@ message Role (XOSBase) {
 
 
 message Service (XOSBase,AttributeMixin) {
-     optional string description = 1 [help_text = "Description of Service", max_length = 254, null = True, db_index = False, blank = True];
+     optional string description = 1 [help_text = "Description of Service", max_length = 254, null = True, db_index = False, blank = True, varchar = True];
      required bool enabled = 2 [default = True, null = False, db_index = False, blank = True];
      required string kind = 3 [default = "generic", max_length = 30, content_type = "stripped", blank = False, help_text = "Kind of service", null = False, db_index = False];
      required string name = 4 [max_length = 30, content_type = "stripped", blank = False, help_text = "Service Name", null = False, db_index = False];
@@ -269,16 +304,16 @@ message Service (XOSBase,AttributeMixin) {
      required bool published = 6 [default = True, null = False, db_index = False, blank = True];
      optional string view_url = 7 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
      optional string icon_url = 8 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
-     optional string public_key = 9 [help_text = "Public key string", max_length = 4096, null = True, db_index = False, blank = True];
+     optional string public_key = 9 [help_text = "Public key string", max_length = 4096, null = True, db_index = False, blank = True, varchar = True];
      optional string private_key_fn = 10 [db_index = False, max_length = 4096, null = True, content_type = "stripped", blank = True];
      optional string service_specific_id = 11 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
-     optional string service_specific_attribute = 12 [db_index = False, null = True, blank = True];
+     optional string service_specific_attribute = 12 [db_index = False, null = True, blank = True, varchar = True];
 }
 
 
 message ServiceAttribute (XOSBase) {
      required string name = 1 [help_text = "Attribute Name", max_length = 128, null = False, db_index = False, blank = False];
-     required string value = 2 [help_text = "Attribute Value", null = False, db_index = False, blank = False];
+     required string value = 2 [help_text = "Attribute Value", null = False, db_index = False, blank = False, varchar = True];
      required manytoone service->Service:serviceattributes = 3 [help_text = "The Service this attribute is associated with", null = False, db_index = True, blank = False];
 }
 
@@ -290,7 +325,7 @@ message ServiceDependency (Tenant) {
 message ServiceMonitoringAgentInfo (XOSBase) {
      required string name = 1 [help_text = "Monitoring Agent Name", max_length = 128, null = False, db_index = False, blank = False];
      optional manytoone service->Service:servicemonitoringagents = 2 [help_text = "The Service this attribute is associated with", null = True, db_index = True, blank = True];
-     required string target_uri = 3 [help_text = "Monitoring collector URI to be used by agents to publish the data", null = False, db_index = False, blank = False];
+     required string target_uri = 3 [help_text = "Monitoring collector URI to be used by agents to publish the data", null = False, db_index = False, blank = False, varchar = True];
 }
 
 
@@ -342,7 +377,7 @@ message SiteRole (XOSBase) {
 message Slice (XOSBase) {
      required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", null = False, db_index = False];
      required bool enabled = 2 [help_text = "Status for this Slice", default = True, null = False, db_index = False, blank = True];
-     required string description = 4 [help_text = "High level description of the slice and expected activities", max_length = 1024, null = False, db_index = False, blank = True];
+     required string description = 4 [help_text = "High level description of the slice and expected activities", max_length = 1024, null = False, db_index = False, blank = True, varchar = True];
      required string slice_url = 5 [db_index = False, max_length = 512, null = False, content_type = "url", blank = True];
      required manytoone site->Site:slices = 6 [help_text = "The Site this Slice belongs to", null = False, db_index = True, blank = False];
      required int32 max_instances = 7 [default = 10, null = False, db_index = False, blank = False];
@@ -389,7 +424,7 @@ message Tenant (XOSBase,AttributeMixin) {
      optional manytoone subscriber_root->TenantRoot:subscribed_tenants = 7 [db_index = True, null = True, blank = True];
      optional manytoone subscriber_network->Network:subscribed_tenants = 8 [db_index = True, null = True, blank = True];
      optional string service_specific_id = 9 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
-     optional string service_specific_attribute = 10 [db_index = False, null = True, blank = True];
+     optional string service_specific_attribute = 10 [db_index = False, null = True, blank = True, varchar = True];
      required string connect_method = 11 [default = "na", choices = "(('public', 'Public'), ('private', 'Private'), ('private-unidirectional', 'Private Unidirectional'), ('na', 'Not Applicable'))", max_length = 30, blank = False, null = False, db_index = False];
 }
 
@@ -416,7 +451,7 @@ message TenantRole (XOSBase) {
 message TenantRoot (XOSBase,AttributeMixin) {
      required string kind = 1 [default = "generic", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
      optional string name = 2 [max_length = 255, content_type = "stripped", blank = True, help_text = "name", null = True, db_index = False];
-     optional string service_specific_attribute = 3 [db_index = False, null = True, blank = True];
+     optional string service_specific_attribute = 3 [db_index = False, null = True, blank = True, varchar = True];
      optional string service_specific_id = 4 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
 }
 

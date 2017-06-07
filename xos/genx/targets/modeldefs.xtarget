@@ -1,0 +1,37 @@
+items:
+{%- for m in proto.messages | sort(attribute='name') %}
+{%- if m.name != 'XOSBase' %}
+- app: {{ xproto_unquote(xproto_first_non_empty([m.options.app_name, context.app_name, options.app_name])) }}
+  fields: 
+  {%- set id_field = {'type':'int32', 'name':'id', 'options':{}} %}
+  {% for f in (xproto_base_fields(m, proto.message_table) + m.fields + [id_field]) | sort(attribute='name') -%}
+  {% if not f.link or f.options.link_type != 'manytomany' -%}
+  - hint: {% if f.options.help_text %}{{ xproto_unquote(f.options.help_text) }}{% else %}''{% endif %}
+    {% if not f.link -%}
+    name: {{ f.name }}
+    {%- else -%}
+    name: {{ f.name }}_id
+    relation: {model: {{ f.options.model }}, type: {{ f.options.link_type }}}
+    {% endif %}
+    type: {{ xproto_type_to_ui_type(f) }}
+    {% set validators = xproto_validators(f) -%}
+    {% if validators -%}
+    validators:
+    {% for v in validators | sort(attribute='name',reverse=True) -%}
+    - {{ v | yaml }}
+    {% endfor %}
+    {% else -%}
+    validators: []
+    {% endif %}
+  {% endif -%}
+  {% endfor %}
+  name: {{ m.name }}  
+  {%- set goodlinks = xproto_links_to_modeldef_relations( xproto_base_links(m, proto.message_table) + m.links ) %}
+  {% if goodlinks %}
+  relations:
+  {{ goodlinks | join('\n') | indent(width=2)}}
+  {%- else %}
+  relations: []
+  {%- endif %}
+{%- endif %}
+{% endfor -%} 

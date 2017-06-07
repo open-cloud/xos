@@ -1,5 +1,5 @@
 
-{% for m in proto.messages %}
+{% for m in proto.messages %}{% if not m.options.skip_django -%}
 {% if file_exists(xproto_base_name(m.name)|lower+'_header.py') -%}from {{xproto_base_name(m.name)|lower }}_header import *{%- else -%}from header import *{% endif %}
 {% if file_exists(xproto_base_name(m.name)|lower+'_top.py') -%}{{ include_file(xproto_base_name(m.name)|lower+'_top.py') }} {% endif %}
 
@@ -35,4 +35,4 @@ class {{ m.name }}{{ xproto_base_def(m.name, m.bases) }}:
 
 {% if file_exists(xproto_base_name(m.name)|lower+'_bottom.py') -%}{{ include_file(xproto_base_name(m.name)|lower+'_bottom.py') }}{% endif %}
 +++ {{m.name|lower}}.py
-{% endfor %}
+{% endif %}{% endfor %}

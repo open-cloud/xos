@@ -34,6 +34,21 @@ def xproto_unquote(s):
         s = s[1:-1]
     return s
 
+def xproto_links_to_modeldef_relations(llst):
+    outlist = []
+    seen = []
+    for l in llst:
+        try:
+            t = l['link_type']
+        except KeyError, e:
+            raise e
+
+        if l['peer'] not in seen and t!='manytomany':
+            outlist.append('- {model: %s, type: %s}\n'%(l['peer'], l['link_type']))
+        seen.append(l['peer'])
+    
+    return outlist
+
 def django_content_type_string(xptags):
     # Check possibility of KeyError in caller
     content_type = xptags['content_type']
@@ -144,7 +159,7 @@ def format_options_string(d):
         return ', '.join(lst)
 
 def map_xproto_to_django(f):
-    allowed_keys=['help_text','default','max_length','modifier','blank','choices','db_index','null','editable','on_delete','verbose_name', 'auto_now_add'] 
+    allowed_keys=['help_text','default','max_length','modifier','blank','choices','db_index','null','editable','on_delete','verbose_name', 'auto_now_add']
 
     m = {'modifier':{'optional':True, 'required':False, '_target':'null'}}
     out = {}
@@ -211,3 +226,83 @@ def xproto_base_fields(m, table):
             fields.extend(model_fields)
 
     return fields
+
+def xproto_base_links(m, table):
+    links = []
+
+    for b in m['bases']:
+        if b in table:
+            base_links = xproto_base_links(table[b], table)
+
+            model_links = table[b]['links']
+            links.extend(base_links)
+            links.extend(model_links)
+    return links
+
+
+def xproto_validators(f):
+    # To be cleaned up when we formalize validation in xproto
+    validators = []
+
+    # bound-based validators
+    bound_validators = [('max_length','maxlength'), ('min', 'min'), ('max', 'max')]
+
+    for v0, v1 in bound_validators:
+        try:
+            validators.append({'name':v1, 'int_value':f['options'][v0]})
+        except KeyError:
+            pass
+
+    # validators based on content_type
+    content_type_validators = ['ip', 'url', 'email']
+
+    for v in content_type_validators:
+        #if f['name']=='ip': pdb.set_trace()
+        try:
+            val = unquote(f['options']['content_type'])==v
+            if not val:
+                raise KeyError
+
+            validators.append({'name':v, 'bool_value': True})
+        except KeyError:
+            pass
+
+    # required validator
+    try:
+        required = f['options']['blank']=='False' and f['options']['null']=='False'
+        if required:
+            validators.append({'name':'required', 'bool_value':required})
+    except KeyError:
+        pass
+
+    return validators
+
+def xproto_string_type(xptags):
+    try:
+        max_length = eval(xptags['max_length'])
+    except:
+        max_length = 1024
+
+    if ('varchar' not in xptags):
+        return 'string'
+    else:
+        return 'text'
+
+def xproto_type_to_ui_type(f):
+    try:
+        content_type = f['options']['content_type']
+        content_type = eval(content_type)
+    except:
+        content_type = None
+        pass
+
+    if content_type == 'date':
+        return 'date'
+    elif f['type'] == 'bool':
+        return 'boolean'
+    elif f['type'] == 'string':
+        return xproto_string_type(f['options'])
+    elif f['type'] in ['int','uint32','int32'] or 'link' in f:
+        return 'number'
+    elif f['type'] in ['double','float']:
+        return 'string'

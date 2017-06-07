@@ -142,7 +142,6 @@ class XOS2Jinja(m.Visitor):
         except AttributeError:
             s['dst_port'] = obj.dst_port
 
-
         try:
             s['through'] = obj.through.pval
         except AttributeError:
@@ -231,8 +230,9 @@ class XOS2Jinja(m.Visitor):
         for i in range(0,stack_num):
             f = self.stack.pop()
             if (f['_type']=='link'):
-                f['options']={i:d[i] for d in [f['options'],last_field['options']] for i in d}
-
+                f['options']={i:d[i] for d in [f['options'], last_field['options']] for i in d}
+                assert(last_field == fields[0])
+                fields[0].setdefault('options', {})['link_type'] = f['link_type']
                 links.insert(0,f)
             else:
                 fields.insert(0,f)

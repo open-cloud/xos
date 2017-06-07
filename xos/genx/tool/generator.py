@@ -9,8 +9,7 @@ from xos2jinja import XOS2Jinja
 from proto2xproto import Proto2XProto
 
 import lib
-
-
+import yaml
 
 loader = jinja2.PackageLoader(__name__, 'templates')
 env = jinja2.Environment(loader=loader)
@@ -61,6 +60,8 @@ class XOSGenerator:
             os_template_env = jinja2.Environment(loader=os_template_loader)
             os_template_env.globals['include_file'] = self.include_file() # Generates a function
             os_template_env.globals['file_exists'] = self.file_exists() # Generates a function
+            os_template_env.filters['yaml'] = yaml.dump
+
 
             for f in dir(lib):
                 if f.startswith('xproto'):
