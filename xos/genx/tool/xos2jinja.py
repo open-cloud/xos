@@ -1,12 +1,27 @@
-import plyproto.model as m
+import plyxproto.model as m
 import pdb
 import argparse
-import plyproto.parser as plyproto
+import plyxproto.parser as plyxproto
 import traceback
 import sys
 import jinja2
 import os
 import copy
+
+def dotname_to_fqn(dotname):
+    b_names = [part.pval for part in dotname]
+    package = '.'.join(b_names[:-1])
+    name = b_names[-1]
+    if package:
+        fqn = package + '.' + name
+    else:
+        fqn = name
+    return {'name':name, 'fqn':fqn, 'package':package}
+
+def dotname_to_name(dotname):
+    b_names = [part.pval for part in dotname]
+    return '.'.join(b_names)
+
 
 def count_messages(body):
     count = 0
@@ -35,22 +50,38 @@ def compute_rlinks(messages):
     for m in messages:
         for l in m['links']:
             rlink = copy.deepcopy(l)
+
             rlink['_type'] = 'rlink' # An implicit link, not declared in the model
             rlink['src_port'] = l['dst_port']
             rlink['dst_port'] = l['src_port']
-            rlink['peer'] = m['name']
+            rlink['peer'] = {'name':m['name'], 'package': m['package'], 'fqn': m['fqn']}
             rlink['link_type'] = link_opposite[l['link_type']]
 
             try:
-                rev_links[l['peer']].append(rlink)
+                try:
+                    rev_links[l['peer']['fqn']].append(rlink)
+                except TypeError:
+                    pdb.set_trace()
+                    pass
             except KeyError:
-                rev_links[l['peer']] = [rlink]
+                rev_links[l['peer']['fqn']] = [rlink]
 
     for m in messages:
         try:
             m['rlinks'] = rev_links[m['name']]
         except KeyError:
             pass
+
+def name_to_value(obj):
+    try:
+        value = obj.value.value.pval
+    except AttributeError:
+        try:
+            value = obj.value.value
+        except AttributeError:
+            value = obj.value.pval
+
+    return value
 
 class Stack(list):
     def push(self,x):
@@ -62,6 +93,7 @@ class XOS2Jinja(m.Visitor):
     stack = Stack()
     models = {}
     options = {}
+    package = None
     message_options = {}
     count_stack = Stack()
     content=""
@@ -79,7 +111,10 @@ class XOS2Jinja(m.Visitor):
         self.first_method = True
 
     def visit_PackageStatement(self, obj):
-        '''Ignore'''
+        dotlist = obj.name.value
+        dotlist2 = [f.pval for f in dotlist]
+        dotstr = '.'.join(dotlist2)
+        self.package = dotstr
         return True
 
     def visit_ImportStatement(self, obj):
@@ -111,13 +146,10 @@ class XOS2Jinja(m.Visitor):
         except AttributeError:
             name = obj.name.value
 
-        try:
-            value = obj.value.value.pval
-        except AttributeError:
-            try:
-                value = obj.value.value
-            except AttributeError:
-                value = obj.value.pval
+        if type(obj.value)==list:
+            value = dotname_to_name(obj.value)
+        else:
+            value = name_to_value(obj)
 
         self.stack.push([name,value])
         return True
@@ -142,15 +174,21 @@ class XOS2Jinja(m.Visitor):
         except AttributeError:
             s['dst_port'] = obj.dst_port
 
-        try:
-            s['through'] = obj.through.pval
-        except AttributeError:
-            s['through'] = obj.through
+        if type(obj.through)==list:
+            s['through'] = dotname_to_fqn(obj.through)
+        else:
+            try:
+                s['through'] = obj.through.pval
+            except AttributeError:
+                s['through'] = obj.through
 
-        try:
-            s['peer'] = obj.name.pval
-        except AttributeError:
-            s['peer'] = obj.name
+        if type(obj.name)==list:
+            s['peer'] = dotname_to_fqn(obj.name)
+        else:
+            try:
+                s['peer'] = obj.name.pval
+            except AttributeError:
+                s['peer'] = obj.name
 
         s['_type'] = 'link'
         s['options'] = {'modifier':'optional'}
@@ -169,6 +207,7 @@ class XOS2Jinja(m.Visitor):
             s['type'] = obj.ftype.value
         else:
             s['type'] = obj.ftype.name.pval
+
         s['name'] = obj.name.value.pval
         s['modifier'] = obj.field_modifier.pval
         s['id'] = obj.fieldId.pval
@@ -223,10 +262,11 @@ class XOS2Jinja(m.Visitor):
         links = []
         last_field = None
         try:
-            obj.bases = map(lambda x:x.pval, obj.bases)
+            obj.bases = map(dotname_to_fqn, obj.bases)
         except AttributeError:
             pass
 
+        last_field = {}
         for i in range(0,stack_num):
             f = self.stack.pop()
             if (f['_type']=='link'):
@@ -238,9 +278,23 @@ class XOS2Jinja(m.Visitor):
                 fields.insert(0,f)
                 last_field = f
 
-        model_def = {'name':obj.name.value.pval,'fields':fields,'links':links, 'bases':obj.bases, 'options':self.message_options}
+        if self.package:
+            model_name = '.'.join([self.package, obj.name.value.pval])
+        else:
+            model_name = obj.name.value.pval
+
+        model_def = {'name':obj.name.value.pval,'fields':fields,'links':links, 'bases':obj.bases, 'options':self.message_options, 'package':self.package, 'fqn': model_name}
         self.stack.push(model_def)
-        self.models[obj.name.value.pval] = model_def
+        self.models[model_name] = model_def
+
+        # Set message options
+        for k,v in self.options.iteritems():
+            try:
+                if k not in self.message_options.setdefault(self.current_message_name,{}):
+                    self.message_options[self.current_message_name][k] = v
+            except KeyError:
+                pass
+
         self.current_message_name = None
         return True
 

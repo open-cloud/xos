@@ -43,8 +43,8 @@ def xproto_links_to_modeldef_relations(llst):
         except KeyError, e:
             raise e
 
-        if l['peer'] not in seen and t!='manytomany':
-            outlist.append('- {model: %s, type: %s}\n'%(l['peer'], l['link_type']))
+        if l['peer']['fqn'] not in seen and t!='manytomany':
+            outlist.append('- {model: %s, type: %s}\n'%(l['peer']['name'], l['link_type']))
         seen.append(l['peer'])
     
     return outlist
@@ -88,6 +88,7 @@ def xproto_base_def(model_name, base):
     elif (not base):
         return ''
     else:
+        base = map(lambda s:s['name'], base)
         return '(' + ','.join(base) + ')'
 
 def xproto_first_non_empty(lst):
@@ -182,8 +183,21 @@ def xproto_django_link_options_str(field, dport=None):
 
     try:
         if field['through']:
-            if not field['through'].endswith('_'+field['name']):
-                output_dict['through'] = '%r'%field['through']
+            d = {}
+            if isinstance(field['through'], str):
+                split = field['through'].rsplit('.',1)
+                d['name'] = split[-1]
+                if len(split)==2:
+                    d['package'] = split[0]
+                    d['fqn'] = 'package' + '.' + d['name']
+                else:
+                    d['fqn'] = d['name']
+                    d['package'] = ''
+            else:
+                d = field['through']
+
+            if not d['name'].endswith('_'+field['name']):
+                output_dict['through'] = '%r'%d['fqn']
     except KeyError:
         pass
 
@@ -218,10 +232,20 @@ def xproto_base_fields(m, table):
     fields = []
 
     for b in m['bases']:
-        if b in table:
-            base_fields = xproto_base_fields(table[b], table)
+        option1 = b['fqn']
+        try:
+            option2 = m['package'] + '.' + b['name']
+        except TypeError:
+            option2 = option1
 
-            model_fields = table[b]['fields']
+        accessor = None
+        if option1 in table: accessor = option1
+        elif option2 in table: accessor = option2
+
+        if accessor:
+            base_fields = xproto_base_fields(table[accessor], table)
+
+            model_fields = table[accessor]['fields']
             fields.extend(base_fields)
             fields.extend(model_fields)
 
@@ -230,7 +254,8 @@ def xproto_base_fields(m, table):
 def xproto_base_links(m, table):
     links = []
 
-    for b in m['bases']:
+    for base in m['bases']:
+        b = base['name']
         if b in table:
             base_links = xproto_base_links(table[b], table)
 

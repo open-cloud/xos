@@ -1,6 +1,6 @@
-import plyproto.model as m
+import plyxproto.model as m
 import pdb
-import plyproto.parser as plyproto
+import plyxproto.parser as plyxproto
 import traceback
 import sys
 import jinja2
@@ -40,7 +40,7 @@ class XOSGenerator:
 
     def generate(self):
         try:
-            parser = plyproto.ProtobufAnalyzer()
+            parser = plyxproto.ProtobufAnalyzer()
             input = self.input
             ast = parser.parse_string(input,debug=0)
 

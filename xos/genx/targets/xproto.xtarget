@@ -10,9 +10,9 @@ message {{ m.name }} ({{ m.bases | join(",") }}){
   {% endif %}
   {%- endfor %}
   
-  {%- for l in m.links %}
+  {%- for l in m.links %}{% set peer_name=l.peer.name %}
   {{ l }}
-  {{ l.modifier }} {{ l.link_type }} {{ l.name }} -> {{ l.peer }}:{{ l.dst_port }} = 1 {% if l.options %} [{% for k,v in l.options.iteritems() %} {{ k }} = {{ v }}{% if not loop.last %},{% endif %} {% endfor %}]{% endif %};
+  {{ l.modifier }} {{ l.link_type }} {{ l.name }} -> {{ l.peer.name }}:{{ l.dst_port }} = 1 {% if l.options %} [{% for k,v in l.options.iteritems() %} {{ k }} = {{ v }}{% if not loop.last %},{% endif %} {% endfor %}]{% endif %};
   {%- endfor -%}
 }
 {% endfor %}

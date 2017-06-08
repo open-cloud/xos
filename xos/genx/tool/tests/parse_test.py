@@ -82,7 +82,7 @@ message links {
     required manytomany vrouter_service->VRouterService/ServiceProxy:device_ports = 4 [db_index = True, null = False, blank = False];
 }
 """
-        self.generate(xproto = xproto, target = "{{ proto.messages.0.links.0.through }}")
+        self.generate(xproto = xproto, target = "{{ proto }}{{ proto.messages.0.links.0.through }}")
         self.assertIn("ServiceProxy", self.get_output())
 	
 	pass

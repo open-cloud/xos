@@ -1,4 +1,5 @@
 from xproto_test_base import *
+import pdb
 
 # Generate from xproto, then generate from equivalent proto
 class XPureProtobufGenerator(XProtoTest):
@@ -32,19 +33,19 @@ from header import *
 
 {%- for l in m.links %}
 
-{% if l.peer != m.name %}
-from core.models.{{ l.peer | lower }} import {{ l.peer }}
+{% if l.peer.name != m.name %}
+from core.models.{{ l.peer.name | lower }} import {{ l.peer.name }}
 {% endif %}
 
 {%- endfor %}
 {% for b in m.bases %}
 {% if b!='XOSBase' and 'Mixin' not in b%}
-from core.models.{{b | lower}} import {{ b }}
+from core.models.{{b.name | lower}} import {{ b.name }}
 {% endif %}
 {% endfor %}
 
 
-class {{ m.name }}{{ xproto_base_def(m.bases) }}:
+class {{ m.name }}{{ xproto_base_def(m, m.bases) }}:
   # Primitive Fields (Not Relations)
   {% for f in m.fields %}
   {%- if not f.link -%}
@@ -54,7 +55,7 @@ class {{ m.name }}{{ xproto_base_def(m.bases) }}:
 
   # Relations
   {% for l in m.links %}
-  {{ l.src_port }} = {{ xproto_django_link_type(l) }}( {%- if l.peer==m.name -%}'self'{%- else -%}{{ l.peer }} {%- endif -%}, {{ xproto_django_link_options_str(l, l.dst_port ) }} )
+  {{ l.src_port }} = {{ xproto_django_link_type(l) }}( {%- if l.peer.name==m.name -%}'self'{%- else -%}{{ l.peer.name }} {%- endif -%}, {{ xproto_django_link_options_str(l, l.dst_port ) }} )
   {%- endfor %}
 
   {% if file_exists(m.name|lower + '_model.py') -%}{{ include_file(m.name|lower + '_model.py') | indent(width=2)}}{%- endif %}

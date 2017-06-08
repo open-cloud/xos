@@ -1,7 +1,7 @@
 digraph {
 {% for m in proto.messages %}
   {%- for l in m.links %}
-  {{ m.name }} -> {{ l.peer }};
+  {{ m.fqn }} -> {{ l.peer.name }};
   {%- endfor %}
 {% endfor %}
 }

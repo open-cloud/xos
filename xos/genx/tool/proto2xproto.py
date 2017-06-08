@@ -1,7 +1,7 @@
-import plyproto.model as m
+import plyxproto.model as m
 import pdb
 import argparse
-import plyproto.parser as plyproto
+import plyxproto.parser as plyxproto
 import traceback
 import sys
 import jinja2
@@ -10,6 +10,17 @@ import os
 class Stack(list):
     def push(self,x):
         self.append(x)
+
+def str_to_dict(s):
+    lst = s.rsplit('.',1)
+    name = lst[-1]
+
+    if len(lst)==2:
+        package = lst[0]
+    else:
+        package = ''
+
+    return {'name': name, 'package': package, 'fqn': s}
 
 def replace_link(obj):
         try:
@@ -24,7 +35,14 @@ def replace_link(obj):
             except TypeError:
                 through_str = None
 
-            ls = m.LinkSpec(obj, m.LinkDefinition(link['link'][1:-1],obj.name,link['model'][1:-1],link['port'][1:-1],through_str))
+            if through_str:
+                through_dict = str_to_dict(through_str)
+            else:
+                through_dict = {}
+
+            model_dict = str_to_dict(link['model'][1:-1])
+
+            ls = m.LinkSpec(obj, m.LinkDefinition(link['link'][1:-1],obj.name,model_dict,link['port'][1:-1],through_dict))
             return ls
         except:
             return obj
@@ -60,7 +78,7 @@ class Proto2XProto(m.Visitor):
     def proto_to_xproto_message(self, obj):
         try:
             bases = self.message_options['bases'].split(',')
-            bases = map(lambda x:x[1:-1], bases)
+            bases = map(lambda x:str_to_dict(x[1:-1]), bases)
             obj.bases = bases
         except KeyError:
             raise

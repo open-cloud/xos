@@ -4,15 +4,14 @@ from header import *
 {% if file_exists(m.name|lower+'_header.py') -%}from {{m.name|lower }}_header import *{% endif %}
 {% if file_exists(m.name|lower+'_top.py') -%}{{ include_file(m.name|lower+'_top.py') }} {% endif %}
 
-{%- for l in m.links -%}
-{% if l.peer not in proto.message_names -%}
-from core.models import {{ l.peer }} 
+{%- for l in m.links -%}{% set peer_name=l.peer.name %}
+{% if peer_name not in proto.message_names -%}
+from core.models import {{ peer_name }} 
 {%- endif -%}
 {%- endfor -%}
 {%- for b in m.bases -%}
-{%- if b!='XOSBase' and 'Mixin' not in b -%}
-#from core.models.{{b | lower}} import {{ b }}
-from core.models import {{ b }}
+{%- if b.name!='XOSBase' and 'Mixin' not in b.name %}
+from core.models import {{ b.name }}
 {%- endif -%}
 {% endfor %}
 
@@ -37,8 +36,8 @@ class {{ m.name }}{{ xproto_base_def(m.name, m.bases) }}:
   {%- endfor %}
 
   # Relations
-  {% for l in m.links %}
-  {{ l.src_port }} = {{ xproto_django_link_type(l) }}( {%- if l.peer==m.name -%}'self'{%- else -%}{{ l.peer }} {%- endif -%}, {{ xproto_django_options_str(l, l.dst_port ) }} )
+  {% for l in m.links %}{% set peer_name=l.peer.name %}
+  {{ l.src_port }} = {{ xproto_django_link_type(l) }}( {%- if peer_name==m.name -%}'self'{%- else -%}{{ peer_name }} {%- endif -%}, {{ xproto_django_options_str(l, l.dst_port ) }} )
   {%- endfor %}
 
   {% if file_exists(m.name|lower + '_model.py') -%}{{ include_file(m.name|lower + '_model.py') | indent(width=2)}}{%- endif %}

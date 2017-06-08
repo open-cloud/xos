@@ -17,7 +17,7 @@ message VRouterPort (XOSBase){
 """
 {% for m in proto.messages %}
 message {{ m.name }} {
-  option bases = "{{ m.bases | join(",") }}";
+  option bases = "{{ m.bases | map(attribute='name') | join(",") }}";
   {%- for f in m.fields %}
   {{ f.modifier }} {{f.type}} {{f.name}} = {{ f.id }}{% if f.options %} [{% for k,v in f.options.iteritems() %} {{ k }} = "{{ xproto_unquote(v)}}"{% if not loop.last %},{% endif %} {% endfor %}]{% endif %};
   {%- endfor %}
