@@ -1,0 +1,18 @@
+option app_name = "core";
+
+message XOSBase {
+     option skip_init = True;
+     required string created = 1 [content_type = "date", auto_now_add = True];
+     required string updated = 2 [default = "now()", content_type = "date"];
+     optional string enacted = 3 [null = True, content_type = "date", blank = True, default = None];
+     optional string policed = 4 [null = True, content_type = "date", blank = True, default = None];
+     optional string backend_register = 5 [default = "{}", max_length = 1024, null = True];
+     required bool backend_need_delete = 6 [default = False];
+     required bool backend_need_reap = 7 [default = False];
+     required string backend_status = 8 [default = "0 - Provisioning in progress", max_length = 1024];
+     required bool deleted = 9 [default = False];
+     required bool write_protect = 10 [default = False];
+     required bool lazy_blocked = 11 [default = False];
+     required bool no_sync = 12 [default = False];
+     required bool no_policy = 13 [default = False];
+}

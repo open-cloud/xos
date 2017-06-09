@@ -20,6 +20,10 @@ WORKDIR /opt/xos
 RUN cd /opt/xos/lib/xos-config/; \
 	python setup.py install
 
+# Install the xosgenx library
+RUN cd /opt/xos/lib/xos-genx/; \
+	python setup.py install
+
 # Label image
 ARG org_label_schema_schema_version=1.0
 ARG org_label_schema_name=xos

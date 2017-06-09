@@ -51,6 +51,7 @@ import sys
 import tempfile
 import traceback
 import urlparse
+from xosgenx.generator import XOSGenerator
 
 from toscaparser.tosca_template import ToscaTemplate
 
@@ -253,6 +254,7 @@ class XOSCoreBuilder(object):
                 # directory.
                 # NOTE: omitting core, out of concern it could interfere with
                 #       core's __init__.py file.
+
                 if ((k in ["admin", "models", "rest_service", "rest_tenant", "xproto"]) and (service_name!="core")):
                     if dest_dir not in self.inits:
                         self.inits.append(dest_dir)
@@ -272,31 +274,61 @@ class XOSCoreBuilder(object):
 
         # Copy all of the resources into the build directory
         for (kind, src_fn, dest_fn, service_name) in self.resources:
+
             build_dest_fn = os.path.join(BUILD_DIR, dest_fn)
             makedirs_if_noexist(os.path.dirname(build_dest_fn))
+
             if (os.path.isdir(src_fn)):
                 if (not os.path.isdir(build_dest_fn)):
                     shutil.copytree(src_fn, build_dest_fn, symlinks=True)
                 else:
-                    os.system('cp -R %(src_fn)s/*.xproto %(src_fn)s/attic %(src_fn)s/models.py %(src_fn)s/*header.py %(build_dst_fn)s 2> /dev/null || :'%{'src_fn':src_fn, 'build_dst_fn':build_dest_fn})
+                    os.system(
+                        'cp -R %(src_fn)s/*.xproto %(src_fn)s/attic %(src_fn)s/models.py %(src_fn)s/*header.py %(build_dst_fn)s 2> /dev/null || :' % {
+                            'src_fn': src_fn, 'build_dst_fn': build_dest_fn})
             else:
                 shutil.copyfile(src_fn, build_dest_fn)
 
-            if (kind=='xproto'):
-                # Invoke xproto toolchain in the destination directory
-                xosgen_path = '/opt/cord/orchestration/xos/xos/genx'
-                is_service = service_name!='core'
+            if (kind == 'xproto'):
+                xprotos =  [f for f in os.listdir(src_fn) if f.endswith('xproto')]
 
-                if (is_service):
-                    makefile_name = 'Makefile.service'
-                else:
-                    makefile_name = 'Makefile'
+                file_list = []
+                for x in xprotos:
+                    file_list.append(os.path.join(src_fn, x))
 
-                xproto_makefile = '%s/tool/%s'%(xosgen_path,makefile_name)
-                xproto_makefile_dst = '/'.join([build_dest_fn, makefile_name])
-                shutil.copyfile(xproto_makefile, xproto_makefile_dst)
+                try:
+                    class Args:
+                        pass
+                    # Generate models
+                    is_service = service_name != 'core'
 
-                if (os.system('make -C %s -f %s PREFIX=%s'%(build_dest_fn, makefile_name, xosgen_path))):
+
+                    args = Args()
+                    args.output = build_dest_fn
+                    args.attic = src_fn + '/attic'
+                    args.files = file_list
+
+                    if is_service:
+                        args.target = 'service.xtarget'
+                        args.write_to_file = 'target'
+                    else:
+                        args.target = 'django.xtarget'
+                        args.dest_extension = 'py'
+                        args.write_to_file = 'model'
+
+                    XOSGenerator.generate(args)
+
+                    # Generate __init__.py
+                    if service_name == "core":
+                        class InitArgs:
+                            output = build_dest_fn
+                            target = 'init.xtarget'
+                            dest_file = '__init__.py'
+                            write_to_file = 'single'
+                            files = file_list
+                        XOSGenerator.generate(InitArgs())
+
+                except Exception, e:
+                    print e
                     raise Exception('xproto build failed!')
 
 

@@ -1,0 +1,10 @@
+{% for m in proto.messages %}
+    name: {{ m.name }}
+    fields:
+            {%- for f in m.fields %}
+            {{ f.name }}:
+                type: {{ f.type }}
+                description: {{ f.options.help_text }}
+            {%- endfor %}
++++ {{ m.name }}.txt
+{% endfor %}

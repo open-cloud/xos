@@ -1,16 +1,6 @@
 # xosproject/xos-corebuilder
 FROM xosproject/xos-base:candidate
 
-# Install the corebuilder tools and the tosca custom_types that it needs
-ADD xos/tools/corebuilder /opt/xos/tools/corebuilder
-ADD xos/tosca/custom_types /opt/xos/tools/corebuilder/custom_types
-
-# Temporary fix. This should go away when we update xos-core to a more recent image.
-RUN pip install git+https://github.com/sb98052/plyprotobuf
-
-ENV HOME /root
-WORKDIR /opt/xos/tools/corebuilder
-
 # Label image
 ARG org_label_schema_schema_version=1.0
 ARG org_label_schema_name=xos-corebuilder
@@ -28,5 +18,27 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.label-schema.build-date=$org_label_schema_build_date \
       org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date
 
+# Temporary fix. This should go away when we update xos-core to a more recent image.
+RUN pip install git+https://github.com/sb98052/plyprotobuf
+
+ENV HOME /root
+WORKDIR /opt/xos/tools/corebuilder
+
+# Add libraries
+ADD lib /opt/xos/lib
+
+# Install the config module
+RUN cd /opt/xos/lib/xos-config/; \
+	python setup.py install
+
+# Install the xosgenx library
+RUN cd /opt/xos/lib/xos-genx/; \
+	python setup.py install
+
+# Install the corebuilder tools and the tosca custom_types that it needs
+ADD xos/tools/corebuilder /opt/xos/tools/corebuilder
+ADD xos/tosca/custom_types /opt/xos/tools/corebuilder/custom_types
+
 ENTRYPOINT ["/usr/bin/python", "corebuilder.py"]
+# CMD sleep 86400
 

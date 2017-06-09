@@ -1,0 +1,4 @@
+message User (AbstractBaseUser,PlModelMixIn) {
+     option skip_django = True;
+     required string email = 1 [db_index = True, max_length = 255, null = False, blank = False];
+}

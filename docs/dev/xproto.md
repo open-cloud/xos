@@ -9,7 +9,9 @@ In this chapter, we explain how to write xproto specs and how to use the xproto 
 
 ## Generating code from an existing xproto file
 
-Drop an xproto file in your working directory. You can copy and paste the following content into a file named slice.xproto.
+> NOTE: To work with `xproto` please setup the python virtual environment as describred [here](local_env.md)
+
+Drop an xproto file in your working directory. You can copy and paste the following content into a file named `slice.xproto`.
 
 ```protobuf
 message Slice (PlCoreBase){
@@ -33,19 +35,40 @@ message Slice (PlCoreBase){
      required manytomany tags->Tag = 18 [db_index = False, null = False, blank = True];
 }
 ```
+To generate a Django model starting from this file you can use:
+`xosgenx --target="django.xtarget" --output=. --write-to-file="model" --dest-extension="py" slice.xproto`
+This should generate a file called `slice.py` in your current directory. 
+If there were multiple files, then it would generate python Django models for each of them.
 
-Now copy the file `Makefile` from the directory `orchestration/xos/genx/tool` in the CORD source code to the current directory, and run `make PREFIX=&lt;location of genx directory&gt;` This should generate a file called `slice.py` in your current directory. If there were multiple files, then it would generate python Django models for each of them.
+The tool that processes xproto files and generates code is called `xosgenx`. You can print its syntax by running `xosgenx --help`.
 
-The tool that processes xproto files and generates code is called xosgen. You can print its syntax by running `xosgen --help`.
+```
+usage: xosgenx [-h] [--rev] --target TARGET [--output OUTPUT] [--attic ATTIC]
+               [--kvpairs KV] [--write-to-file {single,model,target}]
+               [--dest-file DEST_FILE | --dest-extension DEST_EXTENSION]
+               <input file> [<input file> ...]
 
-```usage: xosgen [-h] [--rev] --target TARGET [--output OUTPUT] 
-              [--kvpairs KV]
-              <input file> [<input file> ...]```
+XOS Generative Toolchain
 
-xosgen takes as input a set of xproto files and a target. The target is a jinja2 template that specifies the format of the code to be generated. xosgen converts xproto into an intermediate representation (IR) and feeds it into the target. For example, to generate Django templates from a set of xproto files, you can run the following command:
+positional arguments:
+  <input file>          xproto files to compile
 
-```xosgen --target targets/django-split.xtarget *.xproto```
-
+optional arguments:
+  -h, --help            show this help message and exit
+  --rev                 Convert proto to xproto
+  --target TARGET       Output format, corresponding to <output>.yaml file
+  --output OUTPUT       Destination dir
+  --attic ATTIC         The location at which static files are stored
+  --kvpairs KV          Key value pairs to make available to the target
+  --write-to-file {single,model,target}
+                        Single output file (single) or output file per model
+                        (model) or let target decide (target)
+  --dest-file DEST_FILE
+                        Output file name (if write-to-file is set to single)
+  --dest-extension DEST_EXTENSION
+                        Output file extension (if write-to-file is set to
+                        single)
+```
 
 
 ## Writing an xproto file 
@@ -181,7 +204,7 @@ Whether the field is an index field. Used by database targets.
 
 The figure below illustrates the processing of an xproto file. The xosgen tool converts the xproto file into an intermediate representation and passes it to a target, which in turn generates the output code. The target has access to a library of auxiliary functions implemented in Python. The target itself is written as a jinja2 template.
 
-![xproto toolchain](toolchain.png)
+![xproto toolchain](./toolchain.png)
 
 ## The IR 
 

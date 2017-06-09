@@ -1,0 +1,31 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+node_types:
+{% for m in proto.messages %}
+    tosca.nodes.{{ m.name }}:
+        derived_from: tosca.nodes.Root
+        description: {{ m.name }}
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+            replaces:
+                type: string
+                required: false
+                descrption: Replaces/renames this object
+            {%- for f in m.fields %}
+            {{ f.name }}:
+                type: {{ f.type }}
+                required: {{ xproto_tosca_required(f.options.blank) }}
+                description: {{ f.options.help_text }}
+            {%- endfor %}
+{%- endfor %}
