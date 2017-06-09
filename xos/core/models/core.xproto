@@ -15,6 +15,7 @@ message XOSBase {
      required bool lazy_blocked = 11 [default = False];
      required bool no_sync = 12 [default = False];
      required bool no_policy = 13 [default = False];
+     optional string policy_status = 14 [default = "0 - Policy in process", max_length = 1024];
 }
 
 message User (AbstractBaseUser,PlModelMixIn) {

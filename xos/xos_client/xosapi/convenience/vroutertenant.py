@@ -30,6 +30,7 @@ class ORMWrapperVRouterTenant(ORMWrapper):
         return None
 
     # Use for tenant_for_instance_id
+    # TODO: These should be reimplemented using real database models
 
     def get_attribute(self, name, default=None):
         if self.service_specific_attribute:
@@ -37,6 +38,14 @@ class ORMWrapperVRouterTenant(ORMWrapper):
         else:
             attributes = {}
         return attributes.get(name, default)
+
+    def set_attribute(self, name, value):
+        if self.service_specific_attribute:
+            attributes = json.loads(self.service_specific_attribute)
+        else:
+            attributes = {}
+        attributes[name] = value
+        self.service_specific_attribute = json.dumps(attributes)
 
 
 register_convenience_wrapper("VRouterTenant", ORMWrapperVRouterTenant)

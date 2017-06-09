@@ -1,5 +1,6 @@
 from synchronizers.new_base.modelaccessor import *
 from synchronizers.new_base.policy import Policy
+from synchronizers.new_base.exceptions import *
 
 class Scheduler(object):
     # XOS Scheduler Abstract Base Class
@@ -70,17 +71,63 @@ class TenantWithContainerPolicy(Policy):
         # such as creating ports for containers.
         instance.save()
 
+    def ip_to_mac(self, ip):
+        (a, b, c, d) = ip.split('.')
+        return "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
+
+    def allocate_public_service_instance(self, **kwargs):
+        """ Get a ServiceInstance that provides public connectivity. Currently this means to use AddressPool and
+            VRouterTenant.
+
+            Expect this to be refactored when we break hard-coded service dependencies.
+        """
+        address_pool_name = kwargs.pop("address_pool_name")
+
+        vrouter_service = VRouterService.objects.all()  # TODO: Hardcoded dependency
+        if not vrouter_service:
+            raise Exception("no vrouter services")
+        vrouter_service = vrouter_service[0]
+
+        ap = AddressPool.objects.filter(name=address_pool_name, service_id=vrouter_service.id)
+        if not ap:
+            raise Exception("vRouter unable to find addresspool %s" % name)
+        ap = ap[0]
+
+        ip = ap.get_address()
+        if not ip:
+            raise Exception("AddressPool '%s' has run out of addresses." % ap.name)
+
+        ap.save()  # save the AddressPool to account for address being removed from it
+
+        # TODO: potential partial failure -- AddressPool address is allocated and saved before vrouter tenant
+
+        t = None
+        try:
+            t = VRouterTenant(provider_service=vrouter_service, **kwargs)    # TODO: Hardcoded dependency
+            t.public_ip = ip
+            t.public_mac = self.ip_to_mac(ip)
+            t.address_pool_id = ap.id
+            t.save()
+        except:
+            # cleanup if anything went wrong
+            ap.put_address(ip)
+            if (t and t.id):
+                t.delete()
+            raise
+
+        return t
+
     def get_image(self, tenant):
         slice = tenant.provider_service.slices.all()
         if not slice:
-            raise XOSProgrammingError("provider service has no slice")
+            raise SynchronizerProgrammingError("provider service has no slice")
         slice = slice[0]
 
         # If slice has default_image set then use it
         if slice.default_image:
             return slice.default_image
 
-        raise XOSProgrammingError("Please set a default image for %s" % self.slice.name)
+        raise SynchronizerProgrammingError("Please set a default image for %s" % self.slice.name)
 
     """ get_legacy_tenant_attribute
         pick_least_loaded_instance_in_slice
@@ -130,7 +177,7 @@ class TenantWithContainerPolicy(Policy):
 
         if tenant.instance is None:
             if not tenant.provider_service.slices.count():
-                raise XOSConfigurationError("The service has no slices")
+                raise SynchronizerConfigurationError("The service has no slices")
 
             new_instance_created = False
             instance = None
@@ -146,7 +193,7 @@ class TenantWithContainerPolicy(Policy):
                 if not flavor:
                     flavors = Flavor.objects.filter(name="m1.small")
                     if not flavors:
-                        raise XOSConfigurationError("No m1.small flavor")
+                        raise SynchronizerConfigurationError("No m1.small flavor")
                     flavor = flavors[0]
 
                 if slice.default_isolation == "container_vm":

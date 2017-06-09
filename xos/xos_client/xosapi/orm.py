@@ -502,6 +502,7 @@ def make_ORMWrapper(wrapped_class, *args, **kwargs):
 
     return cls(wrapped_class, *args, **kwargs)
 
+import convenience.addresspool
 import convenience.instance
 import convenience.cordsubscriberroot
 import convenience.volttenant

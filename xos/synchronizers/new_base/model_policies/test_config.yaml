@@ -1,0 +1,4 @@
+name: test-model-policies
+accessor:
+  username: xosadmin@opencord.org
+  password: "sample"

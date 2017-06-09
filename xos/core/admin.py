@@ -72,7 +72,7 @@ def backend_text(obj):
     (icon, tooltip) = obj.get_backend_icon()
     icon_url = ICON_URLS.get(icon, "unknown")
 
-    return '<img src="%s"> %s' % (icon_url, tooltip)
+    return '<img src="%s"> POLICY=%s SYNC=%s' % (icon_url, obj.policy_status, tooltip)
 
 
 class UploadTextareaWidget(AdminTextareaWidget):
