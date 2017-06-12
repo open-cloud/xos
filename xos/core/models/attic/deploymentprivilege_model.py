@@ -1,6 +1,3 @@
-class Meta:
-    unique_together = ('user', 'deployment', 'role')
-
 def can_update(self, user):
     return user.can_update_deployment(self)
 

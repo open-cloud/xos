@@ -1,6 +1,3 @@
-class Meta:
-    unique_together = ('network', 'slice')
-
 def save(self, *args, **kwds):
     slice = self.slice
     if (slice not in self.network.permitted_slices.all()) and (slice != self.network.owner) and (not self.network.permit_all_slices):

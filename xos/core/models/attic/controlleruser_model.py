@@ -1,6 +1,3 @@
-class Meta:
-    unique_together = ('user', 'controller')
-
 @staticmethod
 def select_by_user(user):
     if user.is_admin:

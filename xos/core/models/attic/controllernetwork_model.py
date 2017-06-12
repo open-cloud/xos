@@ -1,6 +1,3 @@
-class Meta:
-    unique_together = ('network', 'controller')
-
 def tologdict(self):
     d=super(ControllerNetwork,self).tologdict()
     try:

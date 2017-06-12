@@ -1,6 +1,3 @@
-class Meta:
-    unique_together = ('controller', 'slice_privilege')
-
 def can_update(self, user):
     if user.is_readonly:
         return False

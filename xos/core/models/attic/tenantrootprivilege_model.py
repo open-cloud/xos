@@ -1,6 +1,3 @@
-class Meta:
-    unique_together = ('user', 'tenant_root', 'role')
-
 def can_update(self, user):
     return user.can_update_tenant_root_privilege(self)
 

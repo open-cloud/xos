@@ -1,6 +1,3 @@
-class Meta:
-    unique_together = ('controller', 'site_privilege', 'role_id')
-
 def can_update(self, user):
     if user.is_readonly:
         return False

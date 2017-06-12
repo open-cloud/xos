@@ -2,6 +2,10 @@ import pdb
 import re
 from pattern import en
 
+class FieldNotFound(Exception):
+    def __init__(self, message):
+        super(FieldNotFound, self).__init__(message)
+
 def xproto_unquote(s):
     return unquote(s)
 
@@ -331,3 +335,56 @@ def xproto_type_to_ui_type(f):
         return 'number'
     elif f['type'] in ['double','float']:
         return 'string'
+
+def xproto_tuplify(nested_list_or_set):
+    if not isinstance(nested_list_or_set, list) and not isinstance(nested_list_or_set, set):
+        return nested_list_or_set
+    else:
+        return tuple([xproto_tuplify(i) for i in nested_list_or_set])
+
+def xproto_field_graph_components(fields, tag='unique_with'):
+    def find_components(graph):
+        pending = set(graph.keys())
+        components = []
+
+        while pending:
+            front = { pending.pop() }
+            component = set()
+
+            while front:
+                node = front.pop()
+                neighbours = graph[node]
+                neighbours-=component # These we have already visited
+                front |= neighbours
+
+                pending-=neighbours
+                component |= neighbours
+            
+            components.append(component)
+
+        return components
+
+    field_graph = {}
+    field_names = {f['name'] for f in fields}
+
+    for f in fields:
+        try:
+            tagged_str = unquote(f['options'][tag])
+            tagged_fields = tagged_str.split(',')
+
+            for uf in tagged_fields:
+                if uf not in field_names:
+                    raise FieldNotFound('Field %s not found'%uf)
+
+                field_graph.setdefault(f['name'],set()).add(uf)
+                field_graph.setdefault(uf,set()).add(f['name'])
+        except KeyError:
+            pass
+
+    components = find_components(field_graph)
+    return components
+
+
+
+
+

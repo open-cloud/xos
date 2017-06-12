@@ -139,7 +139,7 @@ class XOSGenerator:
             print '-'*60
             traceback.print_exc(file=sys.stdout)
             print '-'*60
-            exit(1)
+            raise e
     
 def main():
     generator = XOSGenerator(args)

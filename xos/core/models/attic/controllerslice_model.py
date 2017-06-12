@@ -1,6 +1,3 @@
-class Meta:
-    unique_together = ('controller', 'slice')
- 
 def tologdict(self):
     d=super(ControllerSlice,self).tologdict()
     try:

@@ -1,6 +1,3 @@
-class Meta:
-    unique_together = ('network', 'instance')
-
 def save(self, *args, **kwds):
     if self.instance:
         slice = self.instance.slice
