@@ -1904,9 +1904,7 @@ class NetworkAdmin(XOSBaseAdmin):
                            'permitted_slices',
                            'subnet', 'autoconnect'],
                 'classes':['suit-tab suit-tab-general']}),
-        (None, {'fields': ['topology_parameters', 'controller_url', 'controller_parameters'],
-                'classes':['suit-tab suit-tab-sdn']}),
-    ]
+            ]
 
     readonly_fields = ('backend_status_text', )
     user_readonly_fields = ['name', 'template', 'ports', 'labels', 'owner',
@@ -1916,7 +1914,6 @@ class NetworkAdmin(XOSBaseAdmin):
     @property
     def suit_form_tabs(self):
         tabs = [('general', 'Network Details'),
-                ('sdn', 'SDN Configuration'),
                 ('netparams', 'Parameters'),
                 ('ports', 'Ports'),
                 ('networkslices', 'Slices'),
