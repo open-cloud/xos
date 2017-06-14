@@ -25,18 +25,6 @@ def date_handler(obj):
         return str(obj)
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
 
-try:
-    # This is a no-op if observer_disabled is set to 1 in the config file
-    from synchronizers.base import *
-except:
-    print >> sys.stderr, "import of observer failed! printing traceback and disabling observer:"
-    import traceback
-    traceback.print_exc()
-
-    # guard against something failing
-    def notify_observer(*args, **kwargs):
-        pass
-
 class StrippedCharField(models.CharField):
     """ CharField that strips trailing and leading spaces."""
     def clean(self, value, *args, **kwds):

@@ -24,20 +24,6 @@ from django.contrib.contenttypes.models import ContentType
 import redis
 from redis import ConnectionError
 
-# ------ from xosbase.py ------
-try:
-    # This is a no-op if observer_disabled is set to 1 in the config file
-    from synchronizers.base import *
-except:
-    print >> sys.stderr, "import of observer failed! printing traceback and disabling observer:"
-    import traceback
-    traceback.print_exc()
-
-    # guard against something failing
-    def notify_observer(*args, **kwargs):
-        pass
-# ------ ------
-
 # Create your models here.
 
 
@@ -315,10 +301,6 @@ class User(AbstractBaseUser, PlModelMixIn):
         super(User, self).save(*args, **kwargs)
 
         self.push_redis_event()
-
-        # This is a no-op if observer_disabled is set
-        # if not silent:
-        #    notify_observer()
 
         self._initial = self._dict
 

@@ -91,10 +91,6 @@ def save(self, *args, **kwargs):
 
     self.push_redis_event()
 
-    # This is a no-op if observer_disabled is set
-    # if not silent:
-    #    notify_observer()
-
     self._initial = self._dict
 
 def save_by_user(self, user, *args, **kwds):
