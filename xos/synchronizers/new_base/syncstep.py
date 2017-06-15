@@ -166,6 +166,10 @@ class SyncStep(object):
         #        except AttributeError:
         #            pass
 
+        # If there is no map_delete_inputs, then assume deleting a record is a no-op.
+        if not hasattr(self, "map_delete_inputs"):
+            return
+
         tenant_fields = self.map_delete_inputs(o)
 
         main_objs = self.observes
