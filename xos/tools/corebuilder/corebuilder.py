@@ -276,7 +276,7 @@ class XOSCoreBuilder(object):
                 if (not os.path.isdir(build_dest_fn)):
                     shutil.copytree(src_fn, build_dest_fn, symlinks=True)
                 else:
-                    os.system('cp -R %s/*.xproto %s/attic %s/*header.py %s'%(src_fn, src_fn, src_fn, build_dest_fn))
+                    os.system('cp -R %(src_fn)s/*.xproto %(src_fn)s/attic %(src_fn)s/models.py %(src_fn)s/*header.py %(build_dst_fn)s 2> /dev/null || :'%{'src_fn':src_fn, 'build_dst_fn':build_dest_fn})
             else:
                 shutil.copyfile(src_fn, build_dest_fn)
 
