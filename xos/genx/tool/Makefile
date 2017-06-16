@@ -27,7 +27,7 @@ XPROTOS_TMP := $(shell mktemp)
 
 # Rule to produce json dependencies
 %.ok: %.py
-	PYTHONPATH=$(PYTHONPATH):$(PREFIX)/tool python -m $(subst /,.,$(subst .py,,$<))
+	PYTHONPATH=$(PYTHONPATH):$(PREFIX)/tool python -m $(subst /,.,$(subst .py,,$<)) && touch $@
 
 # List of xprotos 
 xprotos = $(wildcard *.xproto)

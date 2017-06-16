@@ -232,8 +232,13 @@ class Generator(dict):
                                         pass
 				else:
                                         f.type = f.__class__.__name__
+
                                         if (type(f)==ForeignKey):
-                                            f.related.model.class_name = f.related.model.__name__
+                                            if isinstance(f.related.model, str):
+                                                f.related.model = {'class_name':f.related.model}
+                                            else:
+                                                f.related.model.class_name = f.related.model.__name__
+
                                         if (f.name not in base_props):
                                             obj.fields.append(f)
                                         obj.all_fields.append(f)
