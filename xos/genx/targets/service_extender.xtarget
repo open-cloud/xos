@@ -1,0 +1,20 @@
+from core.models.xosbase import *
+{% for m in proto.messages %}
+from models_decl import {{ m.name }}_decl
+{%- endfor %}
+
+{% for m in proto.messages %}
+{% for l in m.links %}{% set peer_name=l.peer.name -%}
+{% if peer_name not in proto.message_names -%}
+from core.models import {{ peer_name }} 
+{% endif -%}
+{% endfor -%}
+{% endfor -%}
+
+{% for m in proto.messages %}
+class {{ m.name }}({{ m.name }}_decl):
+   class Meta:
+        proxy = True 
+
+{% endfor %}
++++ models.py

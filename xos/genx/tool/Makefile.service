@@ -3,6 +3,8 @@ PREFIX=.
 XOSGEN=$(PREFIX)/tool/xosgen
 
 DJANGO_TARGET=$(PREFIX)/targets/service.xtarget
+EXTENSION_TARGET=$(PREFIX)/targets/service_extender.xtarget
+
 XPROTOS_TMP := $(shell mktemp)
 
 xprotos = $(wildcard *.xproto)
@@ -10,7 +12,10 @@ xprotos = $(wildcard *.xproto)
 all: $(xprotos)
 	$(XOSGEN) --attic attic --input $< --target $(DJANGO_TARGET) --output $@
 
-.PHONY: all
+service_extender: $(xprotos)
+	$(XOSGEN) --attic attic --input $< --target $(EXTENSION_TARGET) --output $@ 
+
+.PHONY: all service_extender
 	
 clean:
-	rm -f models.py
+	rm -f models.py models_decl.py

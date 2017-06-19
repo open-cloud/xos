@@ -1,7 +1,8 @@
 {% if options.legacy =='"True"' -%}
 {% set legacy_tag = '_decl' %}
 {% set legacy = True %}
-from core.models.xosbase import *
+from core.models.plcorebase import *
+from django.db.models import *
 {% else %}
 {% set legacy = False %}
 {% set legacy_tag = '' %}
