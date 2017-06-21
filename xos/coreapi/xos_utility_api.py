@@ -38,6 +38,13 @@ def is_internal_model(model):
         return True
     return False
 
+def get_xproto(folder):
+    matches = []
+    for root, dirnames, filenames in os.walk(folder):
+        for filename in fnmatch.filter(filenames, '*.xproto'):
+            matches.append(os.path.join(root, filename))
+    return matches
+
 class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
     def __init__(self, thread_pool):
         self.thread_pool = thread_pool
@@ -182,4 +189,26 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
                     item.info = str(e)
 
         return dirty_models
+
+    @translate_exceptions
+    def GetXproto(self, request, context):
+        res = utility_pb2.XProtos()
+
+        core_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/../core/models/')
+        core_xprotos = get_xproto(core_dir)
+
+        service_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/../services')
+        services_xprotos = get_xproto(service_dir)
+
+        xprotos = core_xprotos + services_xprotos
+
+        xproto = ""
+
+        for f in xprotos:
+            content = open(f).read()
+            xproto += "\n"
+            xproto += content
+
+        res.xproto = xproto
+        return res
 

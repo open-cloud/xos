@@ -42,6 +42,10 @@ message ModelList {
     repeated ModelListEntry items = 1;
 };
 
+message XProtos {
+    string xproto = 1;
+};
+
 service utility {
 
   rpc Login(LoginRequest) returns (LoginResponse) {
@@ -96,6 +100,12 @@ service utility {
   rpc ListDirtyModels(ModelFilter) returns (ModelList) {
         option (google.api.http) = {
             get: "/xosapi/v1/utility/dirty_models"
+        };
+  }
+
+  rpc GetXproto(google.protobuf.Empty) returns (XProtos) {
+        option (google.api.http) = {
+            get: "/xosapi/v1/xproto"
         };
   }
 };
