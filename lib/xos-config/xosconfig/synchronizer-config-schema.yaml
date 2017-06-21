@@ -32,6 +32,9 @@ map:
       password:
         type: str
         required: True
+      kind:
+        type: str
+        required: False
   required_models:
     type: seq
     sequence:

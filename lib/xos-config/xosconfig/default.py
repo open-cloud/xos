@@ -8,6 +8,7 @@ DEFAULT_VALUES = {
     },
     'accessor': {
         'endpoint': 'xos-core.cord.lab:50051',
+        'kind': 'grpcapi',
     },
     'keep_temp_files': False,
     'enable_watchers': False,

@@ -19,6 +19,7 @@ from xos.logger import Logger, logging
 logger = Logger(level=logging.INFO)
 
 orig_sigint = None
+model_accessor = None
 
 
 class ModelAccessor(object):
@@ -178,8 +179,7 @@ def grpcapi_reconnect(client, reactor):
     signal.signal(signal.SIGINT, orig_sigint)
 
 
-def config_accessor():
-    global model_accessor
+def config_accessor_grpcapi():
     global orig_sigint
 
     grpcapi_endpoint = Config.get("accessor.endpoint")
@@ -212,5 +212,14 @@ def config_accessor():
 
     reactor.run()
 
+def config_accessor():
+    accessor_kind = Config.get("accessor.kind")
+
+    if accessor_kind == "testframework":
+        pass
+    elif accessor_kind == "grpcapi":
+        config_accessor_grpcapi()
+    else:
+        raise Exception("Unknown accessor kind %s" % accessor_kind)
 
 config_accessor()
