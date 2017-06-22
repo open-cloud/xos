@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import os
+import sys
 import site
 from distutils.core import setup
 
@@ -32,14 +33,16 @@ setup(name='xosapi',
       scripts = ['xossh'],
      )
 
-# Chameleon needs the following files set as executable
-for dir in site.getsitepackages():
-   fn = os.path.join(dir, "xosapi/chameleon/protoc_plugins/gw_gen.py")
-   if os.path.exists(fn):
-       os.chmod(fn, 0777)
-   fn = os.path.join(dir, "xosapi/chameleon/protoc_plugins/swagger_gen.py")
-   if os.path.exists(fn):
-       os.chmod(fn, 0777)
+# If we're not running a Virtual Env
+if not hasattr(sys, 'real_prefix'):
+    # Chameleon needs the following files set as executable
+    for dir in site.getsitepackages():
+       fn = os.path.join(dir, "xosapi/chameleon/protoc_plugins/gw_gen.py")
+       if os.path.exists(fn):
+           os.chmod(fn, 0777)
+       fn = os.path.join(dir, "xosapi/chameleon/protoc_plugins/swagger_gen.py")
+       if os.path.exists(fn):
+           os.chmod(fn, 0777)
 
 
 """

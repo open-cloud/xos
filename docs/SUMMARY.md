@@ -5,5 +5,6 @@
 * Modules
 	- [Xos Config](modules/xosconfig.md)
 * Developer How Tos
-    - [xproto](xproto.md)
+	- [Local Dev Environmet](dev/local_env.md)
+    - [xproto](dev/xproto.md)
 
