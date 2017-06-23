@@ -413,6 +413,9 @@ node_types:
             An ONOS Application.
         properties:
             xos_base_tenant_props
+            install_dependencies:
+                type: string
+                required: false
             dependencies:
                 type: string
                 required: false
