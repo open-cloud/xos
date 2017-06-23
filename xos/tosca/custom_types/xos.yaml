@@ -688,6 +688,9 @@ node_types:
                 type: string
                 required: false
                 description: Service specific ID opaque to XOS but meaningful to service
+            install_dependencies:
+                type: string
+                required: false
             dependencies:
                 type: string
                 required: false
