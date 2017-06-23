@@ -301,7 +301,6 @@ class XOSCoreBuilder(object):
                     # Generate models
                     is_service = service_name != 'core'
 
-
                     args = Args()
                     args.output = build_dest_fn
                     args.attic = src_fn + '/attic'
@@ -328,8 +327,8 @@ class XOSCoreBuilder(object):
                         XOSGenerator.generate(InitArgs())
 
                 except Exception, e:
-                    print e
-                    raise Exception('xproto build failed!')
+                    print 'xproto build failed.'
+                    raise e
 
 
         # Create the __init__.py files
@@ -385,11 +384,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
 

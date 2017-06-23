@@ -191,11 +191,13 @@ class XOSGenerator:
                 models = {}
                 models[model] = v.models[model]
                 messages = [XOSGenerator._find_message_by_model_name(v.messages, model)]
+
                 rendered[model] = template.render(
                     {"proto":
                         {
                             'message_table': models,
                             'messages': messages,
+                            'policies': v.policies,
                             'message_names': [m['name'] for m in messages]
                         },
                         "context": context,
@@ -209,6 +211,7 @@ class XOSGenerator:
                     {
                         'message_table': v.models,
                         'messages': v.messages,
+                        'policies': v.policies,
                         'message_names': [m['name'] for m in v.messages]
                     },
                     "context": context,
