@@ -1,8 +1,15 @@
+{% for k,v in options.items() %}
+option {{ k }} = {{ v}};
+{%- endfor %}
 {% for m in proto.messages %}
 message {{ m.name }} {
-  option bases = "{{ m.bases | map(attribute='name') | join(",") }}";
-  {%- for f in m.fields %}
-  {{ f.modifier }} {{f.type}} {{f.name}} = {{ f.id }}{% if f.options %} [{% for k,v in f.options.iteritems() %} {{ k }} = "{{ v}}"{% if not loop.last %},{% endif %} {% endfor %}]{% endif %};
-  {%- endfor %}
+    option bases = "{{ m.bases | map(attribute='name') | join(",") }}";
+    {% for k,v in m.options.items() %}
+    option {{ k }} = {{ v}};
+    {%- endfor %}
+    {%- for f in m.fields %}
+    {{ f.modifier }} {{f.type}} {{f.name}} = {{ f.id }}{% if f.options %} [{% for k,v in f.options.iteritems() %} {{ k }} = "{{ v}}"{% if not loop.last %},{% endif %} {% endfor %}]{% endif %};
+    {%- endfor %}
 }
 {% endfor %}
+
