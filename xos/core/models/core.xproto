@@ -21,6 +21,7 @@ message XOSBase {
 
 message User (AbstractBaseUser,PlModelMixIn) {
      option skip_django = True;
+     option tosca_description = "An XOS User";
 
      required string email = 1 [db_index = True, max_length = 255, null = False, blank = False];
      required string username = 2 [default = "Something", max_length = 255, content_type = "stripped", blank = False, null = False, db_index = False];

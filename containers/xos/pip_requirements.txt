@@ -152,7 +152,7 @@ stevedore==1.17.1
 structlog==16.1.0
 supervisor==3.0b2
 texttable==0.8.7
-tosca-parser==0.7.0
+tosca-parser==0.8.1
 twisted==16.6.0
 unicodecsv==0.14.1
 uritemplate==0.6
