@@ -26,6 +26,8 @@ map:
     type: map
     required: True
     map:
+      endpoint:
+        type: str
       username:
         type: str
         required: True
