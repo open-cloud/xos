@@ -1,4 +1,4 @@
-from core.models import Slice, SlicePrivilege, SliceRole, Instance, Site, Node, User
+from core.models import Slice, Privilege, SliceRole, Instance, Site, Node, User
 from plus import PlusObjectMixin
 from operator import itemgetter, attrgetter
 from rest_framework.exceptions import APIException
@@ -38,10 +38,11 @@ class SlicePlus(Slice, PlusObjectMixin):
                     ready_sites[site.name] = ready_sites.get(site.name, 0) + 1
 
             users = {}
-            for priv in SlicePrivilege.objects.filter(slice=self):
-                if not (priv.user.id in users.keys()):
-                    users[priv.user.id] = {"name": priv.user.email, "id": priv.user.id, "roles": []}
-                users[priv.user.id]["roles"].append(priv.role.role)
+            for priv in Privilege.objects.filter(object_id=self.id, object_type='Slice', accessor_type='User'):
+                if not (priv.accessor_id in users.keys()):
+                    user = User.objects.get(pk=priv.accessor_id)
+                    users[priv.accessor_id] = {"name": user.email, "id": user.id, "roles": []}
+                users[priv.accessor_id]["roles"].append(priv.permission)
 
             # XXX this assumes there is only one network that can have ports bound
             # to it for a given slice. This is intended for the tenant view, which
@@ -118,7 +119,7 @@ class SlicePlus(Slice, PlusObjectMixin):
         if user.is_admin:
             qs = SlicePlus.objects.all()
         else:
-            slice_ids = [sp.slice.id for sp in SlicePrivilege.objects.filter(user=user)]
+            slice_ids = [sp.slice.id for sp in Privilege.objects.filter(accessor_type='User',accessor_id=user.id, object_type='Slice')]
             qs = SlicePlus.objects.filter(id__in=slice_ids)
         return qs
 
@@ -231,12 +232,12 @@ class SlicePlus(Slice, PlusObjectMixin):
         except:
             default_role = SliceRole.objects.get(role="default")
 
-        slice_privs = self.sliceprivileges.all()
-        slice_user_ids = [priv.user.id for priv in slice_privs]
+        slice_privs = Privilege.objects.filter(object_id=self.id, object_type='Slice', accessor_type='User')
+        slice_user_ids = [priv.accessor_id for priv in slice_privs]
 
         for user_id in new_users:
             if (user_id not in slice_user_ids):
-                priv = SlicePrivilege(slice=self, user=User.objects.get(id=user_id), role=default_role)
+                priv = Privilege(object_id=self.id, accessor_id=user_id, permission='role:'+default_role, accessor_type='User', object_type='Slice')
                 priv.caller = self.caller
                 if (not noAct):
                     priv.save()

@@ -27,14 +27,14 @@ class XOSUser(XOSResource):
                 dest = self.engine.name_to_xos_model(self.user, obj_name)
                 if dest.__class__.__name__ == "Slice":
                     role_obj = self.get_xos_object(SliceRole, role=role)
-                    if not SlicePrivilege.objects.filter(user=user, role=role_obj, slice=dest):
-                        sp = SlicePrivilege(user=obj, role=role_obj, slice=dest)
+                    if not Privilege.objects.filter(accessor_id=obj.id, permission='role:'+role_obj.role, object_id=dest.id, accessor_type='User', object_type='Slice'):
+                        sp = Privilege(accessor_id=obj.id, permission='role:'+role_obj.role, object_id=dest.id, accessor_type='User', object_type='Slice')
                         sp.save()
                         self.info("Added slice privilege on %s role %s for %s" % (str(dest), str(role), str(obj)))
                 elif dest.__class__.__name__ == "Site":
                     role_obj = self.get_xos_object(SiteRole, role=role)
-                    if not SitePrivilege.objects.filter(user=obj, role=role_obj, site=dest):
-                        sp = SitePrivilege(user=obj, role=role_obj, site=dest)
+                    if not Privilege.objects.filter(accessor_id=obj.id, permission='role:'+role_obj.role, object_id=dest.id, accessor_type='User', object_type='Site'):
+                        sp = SitePrivilege(accessor_id=obj.id, permission='role:'+role_obj.role, object_id=dest.id, accessor_type='User', object_type='Site')
                         sp.save()
                         self.info("Added site privilege on %s role %s for %s" % (str(dest), str(role), str(obj)))
 

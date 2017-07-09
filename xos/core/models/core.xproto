@@ -57,6 +57,16 @@ message User (AbstractBaseUser,PlModelMixIn) {
      optional string policy_status = 32 [default = "0 - Policy in process", max_length = 1024];
 }
 
+message Privilege (XOSBase) {
+     required int32 accessor_id = 1 [null = False];
+     required string accessor_type = 2 [null = False, max_length=1024];
+     required int32 object_id = 3 [null = False];  
+     required string object_type = 4 [null = False, max_length=1024];
+     required string permission = 5 [null = False, default = "all", max_length=1024];
+     required string granted = 6 [content_type = "date", auto_now_add = True, max_length=1024];
+     required string expires = 7 [content_type = "date", null = True, max_length=1024];
+}
+
 message AddressPool (XOSBase) {
      required string name = 1 [db_index = False, max_length = 32, null = False, blank = False];
      optional string addresses = 2 [db_index = False, null = True, blank = True, varchar = True];
@@ -124,6 +134,11 @@ message ControllerSite (XOSBase) {
      optional string tenant_id = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "Keystone tenant id", null = True, db_index = True];
 }
 
+message ControllerPrivilege (XOSBase) {
+     required manytoone controller->Controller:controllerprivileges = 1 [db_index = True, null = False, blank = False];
+     required manytoone privilege->Privilege:controllerprivileges = 2 [db_index = True, null = False, blank = False];
+     optional string role_id = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "Keystone id", null = True, db_index = True];
+}
 
 message ControllerSitePrivilege (XOSBase) {
      required manytoone controller->Controller:controllersiteprivileges = 1 [db_index = True, null = False, blank = False, unique_with = "site_privilege"];

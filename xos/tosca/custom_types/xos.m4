@@ -1004,6 +1004,44 @@ node_types:
                 required: false
                 description: gateway mac address
 
+    tosca.nodes.Privilege:
+        derived_from: tosca.nodes.Root
+        description: >
+            A permission granted to an accessor (a user, slice etc.) towards some type of access
+        capabilities:
+            privilege:
+                type: tosca.capabilities.xos.privilege
+        properties:
+            xos_base_props
+            accessor_id:
+                type: integer
+                required: true
+                description: id of the object representing the accessor
+            accessor_type:
+                type: string
+                required: true
+                description: name of the model representing the accessor
+            object_id:
+                type: integer
+                required: true
+                description: id of the object being accessed
+            object_type:
+                type: string
+                required: true
+                description: name of the model representing the object being accessed
+            permission:
+                type: string
+                required: true
+                description: a custom name that defines the type of access
+            granted:
+                type: string
+                required: false
+                description: time at which the permission was granted
+            expires:
+                type: string
+                required: false
+                description: time at which the permission is set to expire
+
     tosca.nodes.Image:
         derived_from: tosca.nodes.Root
         description: >
@@ -1348,6 +1386,14 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Image ]
 
+    tosca.relationships.HasPrivilege:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Privilege ]
+
+    tosca.relationships.SupportsPrivilege:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Privilege ]
+
     tosca.relationships.ConnectsToSlice:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Slice ]
@@ -1516,3 +1562,7 @@ node_types:
     tosca.capabilities.xos.AddressPool:
         derived_from: tosca.capabilities.Root
         description: An XOS AddressPool
+
+    tosca.capabilities.xos.Privilege:
+        derived_from: tosca.capabilities.Root
+        description: An XOS Privilege

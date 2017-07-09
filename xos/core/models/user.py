@@ -322,17 +322,18 @@ class User(AbstractBaseUser, PlModelMixIn):
         msg.send()
 
     def can_update(self, user):
-        from core.models.siteprivilege import SitePrivilege
+        from core.models.privilege import Privilege
         _cant_update_fieldName = None
         if user.can_update_root():
             return True
 
         # site pis can update
-        site_privs = SitePrivilege.objects.filter(user=user, site=self.site)
+        site_privs = Privilege.objects.filter(accessor_id=user.id, object_id=self.site.id, object_type='Site', accessor_type='User')
         for site_priv in site_privs:
-            if site_priv.role.role == 'admin':
+            if site_priv.permission == 'role:admin':
                 return True
-            if site_priv.role.role == 'pi':
+
+            if site_priv.permission == 'role:pi':
                 for fieldName in self.diff.keys():
                     if fieldName in self.PI_FORBIDDEN_FIELDS:
                         _cant_update_fieldName = fieldName
@@ -359,28 +360,28 @@ class User(AbstractBaseUser, PlModelMixIn):
         return False
 
     def can_update_deployment(self, deployment):
-        from core.models.deploymentprivilege import DeploymentPrivilege
+        from core.models.privilege import Privilege
         if self.can_update_root():
             return True
 
-        if DeploymentPrivilege.objects.filter(
-                deployment=deployment,
-                user=self,
-                role__role__in=['admin', 'Admin']):
+        if Privilege.objects.filter(
+                object_id=deployment.id,
+                accessor_id=self.id,
+                permission__in=['role:admin', 'role:Admin']):
             return True
         return False
 
     def can_update_site(self, site, allow=[]):
-        from core.models.siteprivilege import SitePrivilege
+        from core.models.privilege import Privilege
         if self.can_update_root():
             return True
-        if SitePrivilege.objects.filter(
-                site=site, user=self, role__role__in=['admin', 'Admin'] + allow):
+        if Privilege.objects.filter(
+                object_id=site.id, accessor_id=self.id, accessor_type='User', permission__in=['role:admin', 'role:Admin'] + ['role:'+opt for opt in allow]):
             return True
         return False
 
     def can_update_slice(self, slice):
-        from core.models.sliceprivilege import SlicePrivilege
+        from core.models.privilege import Privilege
         if self.can_update_root():
             return True
         if self == slice.creator:
@@ -388,37 +389,37 @@ class User(AbstractBaseUser, PlModelMixIn):
         if self.can_update_site(slice.site, allow=['pi']):
             return True
 
-        if SlicePrivilege.objects.filter(
-                slice=slice, user=self, role__role__in=['admin', 'Admin']):
+        if Privilege.objects.filter(
+                object_id=slice.id, accessor_id=self.id, permission__in=['role:admin', 'role:Admin'], accessor_type='User', object_type='Slice'):
             return True
         return False
 
     def can_update_service(self, service, allow=[]):
-        from core.models.serviceprivilege import ServicePrivilege
+        from core.models.privilege import Privilege
         if self.can_update_root():
             return True
-        if ServicePrivilege.objects.filter(
-                service=service, user=self, role__role__in=['admin', 'Admin'] + allow):
+        if Privilege.objects.filter(
+                object_id=service.id, accessor_id=self.id, accessor_type='User', permission__in=['role:admin', 'role:Admin'] + ['role:'+opt for opt in allow]):
             return True
         return False
 
     def can_update_tenant_root(self, tenant_root, allow=[]):
         from core.models.tenantroot import TenantRoot
-        from core.models.tenantrootprivilege import TenantRootPrivilege
+        from core.models.privilege import Privilege
         if self.can_update_root():
             return True
-        if TenantRootPrivilege.objects.filter(
-                tenant_root=tenant_root, user=self, role__role__in=['admin', 'Admin'] + allow):
+        if Privilege.objects.filter(
+                object_id=tenant_root.id, accessor_type='User',accessor_id=self.id, permission__in=['role:admin', 'role:Admin'] + ['role:'+opt for opt in allow]):
             return True
         return False
 
     def can_update_tenant(self, tenant, allow=[]):
         from core.models.tenant import Tenant
-        from core.models.tenantprivilege import TenantPrivilege
+        from core.models.privilege import Privilege
         if self.can_update_root():
             return True
-        if TenantPrivilege.objects.filter(
-                tenant=tenant, user=self, role__role__in=['admin', 'Admin'] + allow):
+        if Privilege.objects.filter(
+                object_id=tenant.id, accessor_type='User',accessor_id=self.id, permission__in=['role:admin', 'role:Admin'] + ['role:'+opt for opt in allow]):
             return True
         return False
 
@@ -428,132 +429,22 @@ class User(AbstractBaseUser, PlModelMixIn):
     def can_update_tenant_privilege(self, tenant_privilege, allow=[]):
         return self.can_update_tenant(tenant_privilege.tenant, allow)
 
-    def get_readable_objects(self, filter_by=None):
-        """ Returns a list of objects that the user is allowed to read. """
-        from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Instance, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege
-        models = []
-        if filter_by and isinstance(filter_by, list):
-            models = [m for m in filter_by if issubclass(m, PlModelMixIn)]
-        if not models:
-            models = [Deployment, Network, Site,
-                      Slice, SliceTag, Instance, Tag, User]
-        readable_objects = []
-        for model in models:
-            readable_objects.extend(model.select_by_user(self))
-        return readable_objects
-
-    def get_permissions(self, filter_by=None):
-        """ Return a list of objects for which the user has read or read/write
-        access. The object will be an instance of a django model object.
-        Permissions will be either 'r' or 'rw'.
-
-        e.g.
-        [{'object': django_object_instance, 'permissions': 'rw'}, ...]
-
-        Returns:
-          list of dicts
-
-        """
-        from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Instance, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege
-        READ = 'r'
-        READWRITE = 'rw'
-        models = []
-        if filter_by and isinstance(filter_by, list):
-            models = [m for m in filter_by if issubclass(m, PlModelMixIn)]
-
-        deployment_priv_objs = [Image, NetworkTemplate, Flavor]
-        site_priv_objs = [Node, Slice, User]
-        slice_priv_objs = [Instance, Network]
-
-        # maps the set of objects a paticular role has write access
-        write_map = {
-            DeploymentPrivilege: {
-                'admin': deployment_priv_objects,
-            },
-            SitePrivilege: {
-                'admin': site_priv_objs,
-                'pi': [Slice, User],
-                'tech': [Node],
-            },
-            SlicePrivilege: {
-                'admin': slice_priv_objs,
-            },
-        }
-
-        privilege_map = {
-            DeploymentPrivilege: (Deployment, deployment_priv_objs),
-            SitePrivilege: (Site, site_priv_objs),
-            SlicePrivilege: (Slice, slice_priv_objs)
-        }
-        permissions = []
-        permission_dict = lambda x, y: {'object': x, 'permission': y}
-        for privilege_model, (model, affected_models) in privileg_map.items():
-            if models and model not in models:
-                continue
-
-            # get the objects affected by this privilege model
-            affected_objects = []
-            for affected_model in affected_models:
-                affected_objects.extend(affected_model.select_by_user(self))
-
-            if self.is_admin:
-                # assume admin users have read/write access to all objects
-                for affected_object in affected_objects:
-                    permissions.append(permission_dict(
-                        affected_object, READWRITE))
-            else:
-                # create a dict of the user's per object privileges
-                # ex:  {princeton_tmack : ['admin']
-                privileges = privilege_model.objects.filter(user=self)
-                for privilege in privileges:
-                    object_roles = defaultdict(list)
-                    obj = None
-                    roles = []
-                    for field in dir(privilege):
-                        if field == model.__name__.lower():
-                            obj = getattr(privilege, field)
-                    if obj:
-                        object_roles[obj].append(privilege.role.role)
-
-                # loop through all objects the user has access to and determine
-                # if they also have write access
-                for affected_object in affected_objects:
-                    if affected_object not in objects_roles:
-                        permissions.append(
-                            permission_dict(affected_object, READ))
-                    else:
-                        has_write_permission = False
-                        for write_role, models in write_dict.items():
-                            if affected_object._meta.model in models and \
-                                    write_role in object_roles[affected_object]:
-                                has_write_permission = True
-                                break
-                        if has_write_permission:
-                            permissions.append(
-                                permission_dict(affected_object, WRITE))
-                        else:
-                            permissions.append(
-                                permission_dict(affected_object, READ))
-
-        return permissions
-
-    def get_tenant_permissions(self):
-        from core.models import Site, Slice
-        return self.get_object_permissions(filter_by=[Site, Slice])
-
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
             qs = User.objects.all()
         else:
             # can see all users at any site where this user has pi role
-            from core.models.siteprivilege import SitePrivilege
-            site_privs = SitePrivilege.objects.filter(user=user)
-            sites = [sp.site for sp in site_privs if sp.role.role in [
-                'Admin', 'admin', 'pi']]
+            from core.models.privilege import Privilege
+            site_privs = Privilege.objects.filter(accessor_type='User', accessor_id=user.id, object_type='Site')
+            site_ids = [sp.object_id for sp in site_privs if sp.permission in [
+                'role:Admin', 'role:admin', 'role:pi']]
+            sites = [Site.objects.get(pk=sid) for sid in site_ids]
+
             # get site privs of users at these sites
-            site_privs = SitePrivilege.objects.filter(site__in=sites)
-            user_ids = [sp.user.id for sp in site_privs] + [user.id]
+            site_privs = Privilege.objects.filter(object_id__in=site_ids, object_type='Site', accessor_type='User')
+
+            user_ids = [sp.accessor_id for sp in site_privs] + [user.id]
             qs = User.objects.filter(Q(site__in=sites) | Q(id__in=user_ids))
         return qs
 

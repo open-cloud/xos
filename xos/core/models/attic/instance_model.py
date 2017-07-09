@@ -32,10 +32,10 @@ def save(self, *args, **kwds):
         raise ValidationError("Parent field can only be set on Container-vm instances")
 
     if (self.slice.creator != self.creator):
-        from core.models.sliceprivilege import SlicePrivilege
+        from core.models.privilege import Privilege
         # Check to make sure there's a slice_privilege for the user. If there
         # isn't, then keystone will throw an exception inside the observer.
-        slice_privs = SlicePrivilege.objects.filter(slice=self.slice, user=self.creator)
+        slice_privs = Privilege.objects.filter(object_id=self.slice.id, accessor_id=self.creator.id, object_type='Slice')
         if not slice_privs:
             raise ValidationError('instance creator has no privileges on slice')
 
@@ -108,9 +108,10 @@ def get_ssh_command(self):
         return 'ssh -o "ProxyCommand ssh -q %s@%s" ubuntu@%s' % (self.instance_id, self.node.name, self.instance_name)
 
 def get_public_keys(self):
-    from core.models.sliceprivilege import SlicePrivilege
-    slice_memberships = SlicePrivilege.objects.filter(slice=self.slice)
-    pubkeys = set([sm.user.public_key for sm in slice_memberships if sm.user.public_key])
+    from core.models.sliceprivilege import Privilege
+    slice_privileges = Privilege.objects.filter(object_id=self.slice.id, object_type='Slice', accessor_type='User')
+    slice_users = [User.objects.get(pk = priv.accessor_id) for priv in slice_privileges]
+    pubkeys = set([u.public_key for u in slice_users if u.public_key])
 
     if self.creator.public_key:
         pubkeys.add(self.creator.public_key)

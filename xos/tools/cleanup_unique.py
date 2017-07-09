@@ -71,6 +71,15 @@ for obj in DeploymentPrivilege.objects.all():
              conflict.delete(purge=True)
 
 seen=[]
+for obj in Privilege.objects.all():
+     seen.append(obj.id)
+     conflicts = Privilege.objects.filter(accessor_id=obj.accessor_id, object_id=obj.object_id, permission=obj.permission, accessor_type=obj.accessor_type, object_type=obj.object_type)
+     for conflict in conflicts:
+         if conflict.id not in seen:
+             print "Purging", conflict, conflict.id, "due to duplicate of", obj.id
+             conflict.delete(purge=True)
+
+seen=[]
 for obj in SiteDeployment.objects.all():
      seen.append(obj.id)
      conflicts = SiteDeployment.objects.filter(site=obj.site, deployment=obj.deployment, controller=obj.controller)

@@ -45,7 +45,7 @@ class XOSSlice(XOSResource):
 
         rolemap = ( ("tosca.relationships.AdminPrivilege", "admin"), ("tosca.relationships.AccessPrivilege", "access"),
                     ("tosca.relationships.PIPrivilege", "pi"), ("tosca.relationships.TechPrivilege", "tech") )
-        self.postprocess_privileges(SliceRole, SlicePrivilege, rolemap, obj, "slice")
+        self.postprocess_privileges(SliceRole, 'Slice', rolemap, obj)
 
     def delete(self, obj):
         if obj.instances.exists():

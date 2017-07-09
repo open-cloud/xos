@@ -3,17 +3,18 @@ def can_update(self, user):
         return False
     if user.is_admin:
         return True
-    cprivs = ControllerSitePrivilege.objects.filter(site_privilege__user=user)
-    for cpriv in dprivs:
-        if cpriv.site_privilege.role.role == ['admin', 'Admin']:
+
+    cprivs = ControllerPrivilege.objects.filter(privilege__accessor_id=user.id, privilege__object_type='Site')
+    for cpriv in cprivs:
+        if cpriv.privilege.permission in ['role:admin', 'role:Admin']:
             return True
     return False
 
 @staticmethod
 def select_by_user(user):
     if user.is_admin:
-        qs = ControllerSitePrivilege.objects.all()
+        qs = ControllerPrivilege.objects.filter(privilege__object_type='Site')
     else:
-        cpriv_ids = [cp.id for cp in ControllerSitePrivilege.objects.filter(site_privilege__user=user)]
-        qs = ControllerSitePrivilege.objects.filter(id__in=cpriv_ids)
+        cpriv_ids = [cp.id for cp in ControllerPrivilege.objects.filter(privilege__accessor_id=user.id, privilege__object_type='Site')]
+        qs = ControllerPrivilege.objects.filter(id__in=cpriv_ids, privilege__object_type='Site')
     return qs

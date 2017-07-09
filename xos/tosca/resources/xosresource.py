@@ -3,7 +3,7 @@ import json
 import subprocess
 import sys
 
-from core.models import User
+from core.models import User, Privilege
 
 class XOSResource(object):
     xos_base_class = "XOSResource"
@@ -148,7 +148,7 @@ class XOSResource(object):
             return False
         return True
 
-    def postprocess_privileges(self, roleclass, privclass, rolemap, obj, toFieldName):
+    def postprocess_privileges(self, roleclass, modelname, rolemap, obj):
         for (rel, role) in rolemap:
             for email in self.get_requirements(rel):
                 role_obj = self.get_xos_object(roleclass, throw_exception=False, role=role)
@@ -159,8 +159,8 @@ class XOSResource(object):
                     role_obj.save()
 
                 user = self.get_xos_object(User, email=email)
-                if not privclass.objects.filter(user=user, role=role_obj, **{toFieldName: obj}):
-                    sp = privclass(user=user, role=role_obj, **{toFieldName: obj})
+                if not Privilege.objects.filter(accessor_id=user.id, accessor_type='User', object_type=modelname, permission='role:'+role_obj.role, object_id=obj.id):
+                    sp = Privilege(accessor_id=user.id, accessor_type='User', object_type=modelname, permission='role:'+role_obj.role, object_id=obj.id)
                     sp.save()
                     self.info("Added privilege on %s role %s for %s" % (str(obj), str(role), str(user)))
 

@@ -23,9 +23,9 @@ def select_by_user(cls, user):
     if user.is_admin:
         return cls.objects.all()
     else:
-        from core.models.tenantrootprivilege import TenantRootPrivilege
+        from core.models.privilege import Privilege
         tr_ids = [
-            trp.tenant_root.id for trp in TenantRootPrivilege.objects.filter(user=user)]
+            trp.object_id for trp in Privilege.objects.filter(accessor_id=user.id, accessor_type='User', object_type='TenantRoot')]
         return cls.objects.filter(id__in=tr_ids)
 
 # helper function to be used in subclasses that want to ensure

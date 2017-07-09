@@ -51,13 +51,14 @@ def select_by_user(user):
     if user.is_admin:
         qs = Slice.objects.all()
     else:
-        from core.models.sliceprivilege import SlicePrivilege 
-        from core.models.siteprivilege import SitePrivilege
+        from core.models.privilege import Privilege 
         # users can see slices they belong to 
-        slice_ids = [sp.slice.id for sp in SlicePrivilege.objects.filter(user=user)]
+        slice_ids = [sp.object_id for sp in Privilege.objects.filter(accessor_id=user.id, accessor_type='User', object_type='Slice')]
         # pis and admins can see slices at their sites
-        sites = [sp.site for sp in SitePrivilege.objects.filter(user=user)\
-                    if (sp.role.role == 'pi') or (sp.role.role == 'admin')]
+        site_ids = [sp.object_id for sp in Privilege.objects.filter(accessor_id=user.id, accessor_type='User', object_type='Site')\
+                    if (sp.permission in ['role:pi', 'role:admin'])]
+        sites = [Site.objects.get(pk = site_id) for site_id in site_ids]
+
         slice_ids.extend([s.id for s in Slice.objects.filter(site__in=sites)])
         qs = Slice.objects.filter(id__in=slice_ids)
     return qs

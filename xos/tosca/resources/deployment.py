@@ -15,7 +15,7 @@ class XOSDeployment(XOSResource):
         # Note: support for Flavors and Images is dropped
 
         rolemap = ( ("tosca.relationships.AdminPrivilege", "admin"), )
-        self.postprocess_privileges(DeploymentRole, DeploymentPrivilege, rolemap, obj, "deployment")
+        self.postprocess_privileges(DeploymentRole, 'Deployment', rolemap, obj)
 
     def delete(self, obj):
         if obj.sites.exists():
