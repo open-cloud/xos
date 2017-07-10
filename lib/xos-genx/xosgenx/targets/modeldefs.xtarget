@@ -1,7 +1,7 @@
 items:
 {%- for m in proto.messages | sort(attribute='name') %}
 {%- if m.name != 'XOSBase' %}
-- app: {{ xproto_unquote(xproto_first_non_empty([m.options.app_label, context.app_label, options.app_label])) }}
+- app: {{ xproto_unquote(xproto_first_non_empty([m.options.name, m.options.app_label, options.name, context.app_label])) }}
   fields: 
   {%- set id_field = {'type':'int32', 'name':'id', 'options':{}} %}
   {% for f in (xproto_base_fields(m, proto.message_table) + m.fields + [id_field]) | sort(attribute='name') -%}
