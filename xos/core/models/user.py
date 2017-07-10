@@ -89,6 +89,7 @@ class DeletedUserManager(UserManager):
 
 
 class User(AbstractBaseUser, PlModelMixIn):
+    plural_name = "Users"
 
     @property
     def remote_password(self):

@@ -16,6 +16,8 @@ from core.models.{{b.name | lower}} import {{ b.name }}
 
 
 class {{ m.name }}{{ xproto_base_def(m.name, m.bases) }}:
+  plural_name = "{{ xproto_pluralize(m) }}"
+
   # Primitive Fields (Not Relations)
   {% for f in m.fields %}
   {%- if not f.link -%}

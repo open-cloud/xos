@@ -112,7 +112,7 @@ class XOSAPIHelperMixin(object):
         return pClass
 
     def getPluralProtoClass(self, djangoClass):
-        pClass = getattr(xos_pb2, djangoClass.__name__ + "s")
+        pClass = getattr(xos_pb2, djangoClass.plural_name)
         return pClass
 
     def convertFloat(self, x):
