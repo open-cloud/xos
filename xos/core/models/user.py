@@ -150,6 +150,8 @@ class User(AbstractBaseUser, PlModelMixIn):
     dashboards = models.ManyToManyField(
         'DashboardView', through='UserDashboardView', blank=True)
 
+    policy_status = models.CharField( default = "0 - Policy in process", max_length = 1024, null = True )
+
     objects = UserManager()
     deleted_objects = DeletedUserManager()
 

@@ -54,7 +54,8 @@ message User (AbstractBaseUser,PlModelMixIn) {
      required bool no_policy = 29 [default = False, null = False, db_index = False, blank = True];
      required string timezone = 30 [default = "America/New_York", max_length = 100, blank = False, null = False, db_index = False];
      required manytomany dashboards->DashboardView/UserDashboardView:user = 31 [db_index = False, null = False, blank = True];
-} 
+     optional string policy_status = 32 [default = "0 - Policy in process", max_length = 1024];
+}
 
 message AddressPool (XOSBase) {
      required string name = 1 [db_index = False, max_length = 32, null = False, blank = False];
