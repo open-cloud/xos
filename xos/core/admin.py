@@ -1050,7 +1050,7 @@ class ServiceAttrAsTabInline(XOSTabularInline):
 
 class ServiceMonitoringAgentInfoInline(XOSTabularInline):
     model = ServiceMonitoringAgentInfo
-    fields = ['id', 'name', 'target_uri']
+    fields = ['name', 'target_uri']
     extra = 0
     suit_classes = 'suit-tab suit-tab-servicemonitoringagents'
     verbose_name = 'Monitoring agent info for this service'
@@ -1060,7 +1060,7 @@ class ServiceMonitoringAgentInfoInline(XOSTabularInline):
 class ServiceAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", "kind", "enabled", "published")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldList = ["backend_status_text", "name", "kind", "description", "controller", "enabled", "published",
+    fieldList = ["backend_status_text", "name", "kind", "description", "enabled", "published",
                  "view_url", "icon_url", "public_key", "private_key_fn", "service_specific_attribute", "service_specific_id"]
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
