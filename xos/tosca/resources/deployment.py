@@ -12,37 +12,7 @@ class XOSDeployment(XOSResource):
         return args
 
     def postprocess(self, obj):
-        for imageName in self.get_requirements("tosca.relationships.SupportsImage"):
-            image = self.get_xos_object(Image, name=imageName)
-            imageDeps = ImageDeployments.objects.filter(deployment=obj, image=image)
-            if not imageDeps:
-                self.info("Attached Image %s to Deployment %s" % (image, obj))
-                imageDep = ImageDeployments(deployment=obj, image=image)
-                imageDep.save()
-
-        # DEPRECATED - should switch to using a requirement, so tosca can do
-        # the topsort properly
-
-        flavors = self.get_property("flavors")
-        if flavors:
-            flavors = flavors.split(",")
-            flavors = [x.strip() for x in flavors]
-
-            for flavor in flavors:
-                flavor = self.get_xos_object(Flavor, name=flavor)
-                if not flavor.deployments.filter(id=obj.id).exists():
-                    self.info("Attached flavor %s to deployment %s" % (flavor, obj))
-                    flavor.deployments.add(obj)
-                    flavor.save()
-
-        # The new, right way
-        for flavor in self.get_requirements("tosca.relationships.SupportsFlavor"):
-            flavor = self.get_xos_object(Flavor, name=flavor)
-            if not flavor.deployments.filter(id=obj.id).exists():
-                self.info("Attached flavor %s to deployment %s" % (flavor, obj))
-                flavor.deployments.add(obj)
-                flavor.save()
-
+        # Note: support for Flavors and Images is dropped
 
         rolemap = ( ("tosca.relationships.AdminPrivilege", "admin"), )
         self.postprocess_privileges(DeploymentRole, DeploymentPrivilege, rolemap, obj, "deployment")

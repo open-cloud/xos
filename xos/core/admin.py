@@ -730,26 +730,8 @@ class SiteRoleAdmin(XOSBaseAdmin):
 
 
 class DeploymentAdminForm(forms.ModelForm):
-    images = forms.ModelMultipleChoiceField(
-        queryset=Image.objects.all(),
-        required=False,
-        help_text="Select which images should be deployed on this deployment",
-        widget=FilteredSelectMultiple(
-            verbose_name=('Images'), is_stacked=False
-        )
-    )
-    flavors = forms.ModelMultipleChoiceField(
-        queryset=Flavor.objects.all(),
-        required=False,
-        help_text="Select which flavors should be usable on this deployment",
-        widget=FilteredSelectMultiple(
-            verbose_name=('Flavors'), is_stacked=False
-        )
-    )
-
     class Meta:
         model = Deployment
-        many_to_many = ["flavors", ]
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
@@ -758,76 +740,6 @@ class DeploymentAdminForm(forms.ModelForm):
 
         self.fields['accessControl'].initial = "allow site " + \
             request.user.site.name
-
-        if self.instance and self.instance.pk:
-            self.fields['images'].initial = [
-                x.image for x in self.instance.imagedeployments.all()]
-            self.fields['flavors'].initial = self.instance.flavors.all()
-
-    def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
-        """ helper function for handling m2m relations from the MultipleChoiceField
-
-            this_obj: the source object we want to link from
-
-            selected_objs: a list of destination objects we want to link to
-
-            all_relations: the full set of relations involving this_obj, including ones we don't want
-
-            relation_class: the class that implements the relation from source to dest
-
-            local_attrname: field name representing this_obj in relation_class
-
-            foreign_attrname: field name representing selected_objs in relation_class
-
-            This function will remove all newobjclass relations from this_obj
-            that are not contained in selected_objs, and add any relations that
-            are in selected_objs but don't exist in the data model yet.
-        """
-
-        existing_dest_objs = []
-        for relation in list(all_relations):
-            if getattr(relation, foreign_attrname) not in selected_objs:
-                # print "deleting site", sdp.site
-                relation.delete()
-            else:
-                existing_dest_objs.append(getattr(relation, foreign_attrname))
-
-        for dest_obj in selected_objs:
-            if dest_obj not in existing_dest_objs:
-                # print "adding site", site
-                kwargs = {foreign_attrname: dest_obj, local_attrname: this_obj}
-                relation = relation_class(**kwargs)
-                relation.save()
-
-    def save(self, commit=True):
-        deployment = super(DeploymentAdminForm, self).save(commit=False)
-
-        if commit:
-            deployment.save()
-            # this has to be done after save() if/when a deployment is first
-            # created
-            deployment.flavors = self.cleaned_data['flavors']
-
-        if deployment.pk:
-            # save_m2m() doesn't seem to work with 'through' relations. So we
-            #    create/destroy the through models ourselves. There has to be
-            #    a better way...
-
-            self.manipulate_m2m_objs(deployment, self.cleaned_data[
-                                     'images'], deployment.imagedeployments.all(), ImageDeployments, "deployment", "image")
-            # manipulate_m2m_objs doesn't work for Flavor/Deployment relationship
-            # so well handle that manually here
-            for flavor in deployment.flavors.all():
-                if getattr(flavor, 'name') not in self.cleaned_data['flavors']:
-                    deployment.flavors.remove(flavor)
-            for flavor in self.cleaned_data['flavors']:
-                if flavor not in deployment.flavors.all():
-                    flavor.deployments.add(deployment)
-
-        self.save_m2m()
-
-        return deployment
-
 
 class DeploymentAdminROForm(DeploymentAdminForm):
 
@@ -843,8 +755,7 @@ class SiteAssocInline(XOSTabularInline):
 
 class DeploymentAdmin(XOSBaseAdmin):
     model = Deployment
-    fieldList = ['backend_status_text', 'name',
-                 'images', 'flavors', 'accessControl']
+    fieldList = ['backend_status_text', 'name', 'accessControl']
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
     # node no longer directly connected to deployment
@@ -1320,17 +1231,17 @@ class SliceAdmin(XOSBaseAdmin):
             deployment_nodes.append(
                 (node.site_deployment.deployment.id, node.id, node.name))
 
+        # Limiting flavors/images by deployment is no longer supported, so assume every deployment supports
+        # everything.
         deployment_flavors = []
-        for flavor in Flavor.objects.all():
-            for deployment in flavor.deployments.all():
+        deployment_images = []
+        for deployment in Deployment.objects.all():
+            for flavor in Flavor.objects.all():
                 deployment_flavors.append(
                     (deployment.id, flavor.id, flavor.name))
-
-        deployment_images = []
-        for image in Image.objects.all():
-            for deployment_image in image.imagedeployments.all():
+            for image in Image.objects.all():
                 deployment_images.append(
-                    (deployment_image.deployment.id, image.id, image.name))
+                    (deployment.id, image.id, image.name))
 
         site_login_bases = []
         for site in Site.objects.all():
@@ -1596,22 +1507,21 @@ class InstanceAdmin(XOSBaseAdmin):
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         deployment_nodes = []
-#        for node in Node.objects.all():
         for node in Node.objects.order_by("name"):
             deployment_nodes.append(
                 (node.site_deployment.deployment.id, node.id, node.name))
 
+        # Limiting flavors/images by deployment is no longer supported, so assume every deployment supports
+        # everything.
         deployment_flavors = []
-        for flavor in Flavor.objects.all():
-            for deployment in flavor.deployments.all():
+        deployment_images = []
+        for deployment in Deployment.objects.all():
+            for flavor in Flavor.objects.all():
                 deployment_flavors.append(
                     (deployment.id, flavor.id, flavor.name))
-
-        deployment_images = []
-        for image in Image.objects.all():
-            for deployment_image in image.imagedeployments.all():
+            for image in Image.objects.all():
                 deployment_images.append(
-                    (deployment_image.deployment.id, image.id, image.name))
+                    (deployment.id, image.id, image.name))
 
         site_login_bases = []
         for site in Site.objects.all():
