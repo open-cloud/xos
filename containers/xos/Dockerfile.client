@@ -1,5 +1,5 @@
 # xosproject/xos-client
-FROM xosproject/xos-base:candidate
+FROM xosproject/xos-libraries:candidate
 
 # Install XOS client
 ADD xos/xos_client /tmp/xos_client

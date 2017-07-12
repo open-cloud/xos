@@ -1,5 +1,5 @@
 # xosproject/xos-corebuilder
-FROM xosproject/xos-base:candidate
+FROM xosproject/xos-libraries:candidate
 
 # Label image
 ARG org_label_schema_schema_version=1.0
@@ -23,17 +23,6 @@ RUN pip install git+https://github.com/sb98052/plyprotobuf
 
 ENV HOME /root
 WORKDIR /opt/xos/tools/corebuilder
-
-# Add libraries
-ADD lib /opt/xos/lib
-
-# Install the config module
-RUN cd /opt/xos/lib/xos-config/; \
-	python setup.py install
-
-# Install the xosgenx library
-RUN cd /opt/xos/lib/xos-genx/; \
-	python setup.py install
 
 # Install the corebuilder tools and the tosca custom_types that it needs
 ADD xos/tools/corebuilder /opt/xos/tools/corebuilder

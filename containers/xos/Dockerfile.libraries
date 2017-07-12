@@ -1,24 +1,18 @@
-# xosproject/xos
-FROM xosproject/xos-libraries:candidate
+FROM xosproject/xos-base:candidate
 
-# Install XOS
-ADD xos /opt/xos
-ADD lib /opt/xos/lib
+# Add libraries
+COPY lib /opt/xos/lib
 
-RUN chmod +x /opt/xos/tools/xos-manage \
- && mkdir -p /opt/cord_profile /opt/xos_services /opt/xos_libraries \
- && sync \
- && /opt/xos/tools/xos-manage genkeys
-
-# Set environment variables
-ENV HOME /root
-
-# Define working directory
-WORKDIR /opt/xos
+# Install the config module
+# and the xosgenx library
+RUN cd /opt/xos/lib/xos-config/; \
+	python setup.py install; \
+	cd /opt/xos/lib/xos-genx/; \
+	python setup.py install
 
 # Label image
 ARG org_label_schema_schema_version=1.0
-ARG org_label_schema_name=xos
+ARG org_label_schema_name=xos-libraries
 ARG org_label_schema_version=unknown
 ARG org_label_schema_vcs_url=unknown
 ARG org_label_schema_vcs_ref=unknown
@@ -32,4 +26,3 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.label-schema.vcs-ref=$org_label_schema_vcs_ref \
       org.label-schema.build-date=$org_label_schema_build_date \
       org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date
-

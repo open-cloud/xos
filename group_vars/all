@@ -23,6 +23,11 @@ docker_images:
     dockerfile: "Dockerfile"
     pull: True
     publish: True
+  - name: "xosproject/xos-libraries"
+    path: "{{ build_cord_dir }}/orchestration/xos"
+    dockerfile: "containers/xos/Dockerfile.libraries"
+    pull: False
+    publish: True
   - name: "xosproject/xos"
     path: "{{ build_cord_dir }}/orchestration/xos"
     dockerfile: "containers/xos/Dockerfile.xos"
@@ -78,6 +83,11 @@ docker_images:
     dockerfile: ""
     pull: True
     publish: False
+  - name: "xosproject/xos-tosca"
+    path: "{{ build_cord_dir }}/orchestration/xos-tosca"
+    dockerfile: "Dockerfile"
+    pull: False
+    publish: True
 
 build_optional_images: False
 
