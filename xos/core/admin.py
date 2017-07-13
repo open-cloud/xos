@@ -940,8 +940,8 @@ class ProviderDependencyInline(XOSTabularInline):
     extra = 0
     suit_classes = 'suit-tab suit-tab-servicetenants'
     fk_name = 'provider_service'
-    verbose_name = 'provided tenant'
-    verbose_name_plural = 'provided tenants'
+    verbose_name = 'provided dependency'
+    verbose_name_plural = 'provided dependencies'
 
 
 class SubscriberDependencyInline(XOSTabularInline):
@@ -950,8 +950,8 @@ class SubscriberDependencyInline(XOSTabularInline):
     extra = 0
     suit_classes = 'suit-tab suit-tab-servicetenants'
     fk_name = 'subscriber_service'
-    verbose_name = 'subscribed tenant'
-    verbose_name_plural = 'subscribed tenants'
+    verbose_name = 'subscribed dependency'
+    verbose_name_plural = 'subscribed dependencies'
 
 class ServiceAttrAsTabInline(XOSTabularInline):
     model = ServiceAttribute
@@ -984,7 +984,7 @@ class ServiceAdmin(XOSBaseAdmin):
     suit_form_tabs = (('general', 'Service Details'),
                       ('slices', 'Slices'),
                       ('serviceattrs', 'Additional Attributes'),
-                      ('servicetenants', 'Tenancy'),
+                      ('servicetenants', 'Dependencies'),
                       ('serviceprivileges', 'Privileges'),
                       ('servicemonitoringagents', 'Monitoring Agents')
                       )
