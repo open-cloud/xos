@@ -1,1 +1,2 @@
 include xosgenx/targets/*
+include xosgenx/jinja2_extensions/*
