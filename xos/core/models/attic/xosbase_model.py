@@ -53,6 +53,44 @@ def delete(self, *args, **kwds):
                         model.policed=None
                         model.save(update_fields=['enacted','deleted','policed'], silent=silent)
 
+def verify_live_keys(self, update_fields):
+    """ Check the fields to be updated, if they contain foreign keys, that the foreign keys only point
+        to live objects in the database.
+
+        This is to catch races between model policies where an object is being deleted while a model policy is
+        still operating on it.
+    """
+
+    if getattr(self, "deleted", False):
+        # If this model is already deleted, then no need to check anything. We only need to check for live
+        # models that point to dead models. If a dead model points to other dead models, then we could
+        # be updating something else in the dead model (backend_status, etc)
+        return
+
+    for field in self._meta.fields:
+        try:
+            f = getattr(self, field.name)
+        except Exception, e:
+            # Exception django.db.models.fields.related.RelatedObjectDoesNotExist
+            # is thrown by django when you're creating an object that has a base and the base doesn't exist yet
+            continue
+
+        if f is None:
+            # If field hold a null value, we don't care
+            continue
+
+        ftype = field.get_internal_type()
+        if (ftype != "ForeignKey"):
+            # If field isn't a foreign key, we don't care
+            continue
+
+        if (update_fields) and (field.name not in update_fields):
+            # If update_fields is nonempty, and field is not to be updated, we don't care.
+            continue
+
+        if getattr(f, "deleted", False):
+            raise Exception("Attempt to save object with deleted foreign key reference")
+
 def save(self, *args, **kwargs):
 
     # let the user specify silence as either a kwarg or an instance varible
@@ -85,9 +123,9 @@ def save(self, *args, **kwargs):
     if (caller_kind!="synchronizer") or always_update_timestamp:
         self.updated = timezone.now()
 
-
-    super(XOSBase, self).save(*args, **kwargs)
-
+    with transaction.atomic():
+        self.verify_live_keys(update_fields = kwargs.get("update_fields"))
+        super(XOSBase, self).save(*args, **kwargs)
 
     self.push_redis_event()
 
