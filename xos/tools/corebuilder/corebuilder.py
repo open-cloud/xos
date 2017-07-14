@@ -251,7 +251,7 @@ class XOSCoreBuilder(object):
 
                 # add __init__.py files anywhere that we created a new
                 # directory.
-                if k in ["admin", "models", "rest_service", "rest_tenant"]:
+                if k in ["admin", "models", "rest_service", "rest_tenant", "xproto"]:
                     if dest_dir not in self.inits:
                         self.inits.append(dest_dir)
 
