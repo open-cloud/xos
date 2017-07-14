@@ -24,9 +24,9 @@ class XOSGenerator:
         if hasattr(args, 'rev') and args.rev:
             v = Proto2XProto()
             ast.accept(v)
-        else:
-            v = XOS2Jinja()
-            ast.accept(v)
+
+        v = XOS2Jinja()
+        ast.accept(v)
         return v
 
     @staticmethod

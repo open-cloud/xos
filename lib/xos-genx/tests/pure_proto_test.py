@@ -5,8 +5,7 @@ from helpers import FakeArgs, XProtoTestHelpers
 
 # Generate from xproto, then generate from equivalent proto
 class XPureProtobufGenerator(unittest.TestCase):
-	#FIXME this test is failinf
-    def _test_pure_proto(self):
+    def test_pure_proto(self):
 		xproto = \
 """
 message VRouterPort (XOSBase){
