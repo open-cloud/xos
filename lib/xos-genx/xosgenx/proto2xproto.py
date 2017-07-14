@@ -3,10 +3,13 @@ from plyxproto.helpers import Visitor
 import pdb
 import argparse
 import plyxproto.parser as plyxproto
+from plyxproto.logicparser import FOLParser, FOLLexer
 import traceback
 import sys
 import jinja2
 import os
+import ply.lex as lex
+import ply.yacc as yacc
 
 class Stack(list):
     def push(self,x):
@@ -22,6 +25,7 @@ def str_to_dict(s):
         package = ''
 
     return {'name': name, 'package': package, 'fqn': s}
+
 
 def replace_link(obj):
         try:
@@ -49,6 +53,9 @@ def replace_link(obj):
             return obj
 
 class Proto2XProto(Visitor):
+    fol_lexer = lex.lex(module=FOLLexer())
+    fol_parser = yacc.yacc(module=FOLParser(), start='goal')
+
     def __init__(self):
         super(Proto2XProto, self).__init__()
 
@@ -67,6 +74,20 @@ class Proto2XProto(Visitor):
         self.first_field = True
         self.first_method = True
     
+    def replace_policy(self, obj):
+        if isinstance(obj, m.OptionStatement):
+            rhs = obj.value.value.pval
+            if rhs.startswith('"') and rhs.endswith('"'):
+                rhs = rhs[1:-1]
+
+            if rhs.startswith('policy:'):
+                str = rhs.split(':')[1]
+                val = self.fol_parser.parse(str, lexer = self.fol_lexer)
+
+                return m.PolicyDefinition(obj.name, val)
+
+        return obj
+
     def proto_to_xproto_field(self, obj):
         try:
             opts = {}
@@ -83,7 +104,11 @@ class Proto2XProto(Visitor):
 
     def proto_to_xproto_message(self, obj):
         try:
-            bases = self.message_options['bases'].split(',')
+            try:
+                bases = self.message_options['bases'].split(',')
+            except KeyError:
+                bases = []
+
             bases = map(lambda x:str_to_dict(x[1:-1]), bases)
             obj.bases = bases
         except KeyError:
@@ -191,6 +216,8 @@ class Proto2XProto(Visitor):
         return True
     
     def visit_Proto_post(self, obj):
+
+        obj.body = [self.replace_policy(o) for o in obj.body]
         return True
 
     def visit_LinkSpec(self, obj):

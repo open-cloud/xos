@@ -83,6 +83,34 @@ class {{ m.name }}{{ xproto_base_def(m, m.bases) }}:
 
 		self.assertEqual(count1, count2)
 
+    def test_pure_policies(self):
+		xproto = \
+"""
+policy my_policy < exists x:a=b >
+"""
+
+		proto = \
+"""
+option my_policy = "policy:< exists x:a=b >";
+"""
+		target = XProtoTestHelpers.write_tmp_target(
+"""
+{{ policies }}
+""")
+
+		args_xproto = FakeArgs()
+		args_xproto.inputs = xproto
+		args_xproto.target = target
+		xproto_gen = XOSGenerator.generate(args_xproto)
+
+		args_proto = FakeArgs()
+		args_proto.inputs = proto
+		args_proto.target = target
+		args_proto.rev = True
+		proto_gen = XOSGenerator.generate(args_proto)
+
+		self.assertEqual(proto_gen, xproto_gen)
+
 if __name__ == '__main__':
     unittest.main()
 
