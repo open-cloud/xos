@@ -1,7 +1,6 @@
 import unittest
 from xosgenx.generator import XOSGenerator
 from helpers import FakeArgs, XProtoTestHelpers
-import pdb
 
 """
 The tests below convert the policy logic expression
@@ -9,6 +8,25 @@ into Python, set up an appropriate environment and execute the Python.
 """
 
 class XProtoPolicyTest(unittest.TestCase):
+    def test_annotation(self):
+        xproto = \
+"""
+    policy true_policy < True >
+
+    message always::true_policy {
+        required int still = 9;
+    }
+"""
+
+        target = XProtoTestHelpers.write_tmp_target("{{ proto.messages.0 }}")
+
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = target
+
+        output = XOSGenerator.generate(args)
+        self.assertIn("true_policy", output)
+
     def test_constant(self):
         xproto = \
 """
@@ -23,6 +41,66 @@ class XProtoPolicyTest(unittest.TestCase):
 
         output = XOSGenerator.generate(args).replace('t','T')
         self.assertTrue(eval(output)) 
+
+    def test_term(self):
+        xproto = \
+"""
+    policy slice_user < slice.user.is_admin >
+"""
+
+        target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.slice_user }}")
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = target
+
+        output = XOSGenerator.generate(args)
+       
+        slice = FakeArgs()
+        slice.user = FakeArgs()
+        slice.user.is_admin = True
+
+        expr = eval(output)
+        self.assertTrue(expr)
+
+    def test_num_constant(self):
+        xproto = \
+"""
+    policy slice_user < slice.user.age = 57 >
+"""
+
+        target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.slice_user }}")
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = target
+
+        output = XOSGenerator.generate(args)
+       
+        slice = FakeArgs()
+        slice.user = FakeArgs()
+        slice.user.is_admin = True
+
+        expr = eval(output)
+        self.assertTrue(expr)
+
+    def test_string_constant(self):
+        xproto = \
+"""
+    policy slice_user < slice.user.email = "admin@opencord.org" >
+"""
+
+        target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.slice_user }}")
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = target
+
+        output = XOSGenerator.generate(args)
+       
+        slice = FakeArgs()
+        slice.user = FakeArgs()
+        slice.user.is_admin = True
+
+        expr = eval(output)
+        self.assertTrue(expr)
 
     def test_equal(self):
         xproto = \

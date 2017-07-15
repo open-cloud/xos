@@ -124,6 +124,16 @@ class XOS2Jinja(Visitor):
 
         return True
 
+    def visit_PolicyDefinition(self, obj):
+        if self.package:
+            pname = '.'.join([self.package, obj.name.value.pval])
+        else:
+            pname = obj.name.value.pval
+
+        self.policies[pname] = obj.body
+
+        return True
+
     def visit_PackageStatement(self, obj):
         dotlist = obj.name.value
         dotlist2 = [f.pval for f in dotlist]
