@@ -334,7 +334,7 @@ message Role (XOSBase) {
 message Service (XOSBase,AttributeMixin) {
      optional string description = 1 [help_text = "Description of Service", max_length = 254, null = True, db_index = False, blank = True, varchar = True];
      required bool enabled = 2 [default = True, null = False, db_index = False, blank = True];
-     required string kind = 3 [default = "generic", max_length = 30, content_type = "stripped", blank = False, help_text = "Kind of service", null = False, db_index = False];
+     required string kind = 3 [default = "generic", max_length = 30, content_type = "stripped", blank = False, help_text = "Kind of service", null = False, db_index = False, choices="(('generic', 'Generic'), ('data', 'Data Plane'), ('control', 'Control Plane'))"];
      required string name = 4 [max_length = 30, content_type = "stripped", blank = False, help_text = "Service Name", null = False, db_index = False];
      optional string versionNumber = 5 [max_length = 30, content_type = "stripped", blank = True, help_text = "Version of Service Definition", null = True, db_index = False];
      required bool published = 6 [default = True, null = False, db_index = False, blank = True];
@@ -355,8 +355,8 @@ message ServiceAttribute (XOSBase) {
 
 
 message ServiceDependency (XOSBase) {
-     required manytoone provider_service->Service:providedDependencies = 1 [help_text = "The service that provides this dependency", null=False, db_index = True, blank=False];
-     required manytoone subscriber_service->Service:subscribedDependencies = 2 [help_text = "The services that subscribes to this dependency", null=False, db_index=True, blank=False];
+     required manytoone provider_service->Service:provided_dependencies = 1 [help_text = "The service that provides this dependency", null=False, db_index = True, blank=False];
+     required manytoone subscriber_service->Service:subscribed_dependencies = 2 [help_text = "The services that subscribes to this dependency", null=False, db_index=True, blank=False];
      required string connect_method = 3 [max_length = 30, help_text = "method to connect the two services", null=False, blank=False, default="none", choices = "(('none', 'None'), ('private', 'Private'), ('public', 'Public'))"];
 }
 
@@ -460,54 +460,38 @@ message Tag (XOSBase) {
      required uint32 object_id = 5 [db_index = False, null = False, blank = False, help_text = "Object linked to this tag"];
 }
 
-message Tenant (XOSBase,AttributeMixin) {
-     optional string name = 1 [db_index = False, max_length = 200, null = True, content_type = "stripped", blank = True];
-     required string kind = 2 [default = "generic", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
-     required manytoone provider_service->Service:provided_tenants = 3 [db_index = True, null = False, blank = False];
-     optional manytoone subscriber_service->Service:subscribed_tenants = 4 [db_index = True, null = True, blank = True];
-     optional manytoone subscriber_tenant->Tenant:subscribed_tenants = 5 [db_index = True, null = True, blank = True];
-     optional manytoone subscriber_user->User:subscribed_tenants = 6 [db_index = True, null = True, blank = True];
-     optional manytoone subscriber_root->TenantRoot:subscribed_tenants = 7 [db_index = True, null = True, blank = True];
-     optional manytoone subscriber_network->Network:subscribed_tenants = 8 [db_index = True, null = True, blank = True];
-     optional string service_specific_id = 9 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
-     optional string service_specific_attribute = 10 [db_index = False, null = True, blank = True, varchar = True];
-     required string connect_method = 11 [default = "na", choices = "(('public', 'Public'), ('private', 'Private'), ('private-unidirectional', 'Private Unidirectional'), ('na', 'Not Applicable'))", max_length = 30, blank = False, null = False, db_index = False];
+message InterfaceType (XOSBase) {
+     required string name = 1 [db_index = False, max_length = 200, null = False, content_type = "stripped", blank = False];
+     required string direction = 2 [db_index = False, max_length = 30, null = False, content_type = "stripped", blank = False, choices = "(('in', 'In'), ('out', 'Out'))"];
 }
 
-message TenantAttribute (XOSBase) {
+message ServiceInterface (XOSBase) {
+     required manytoone service->Service:service_interfaces = 1 [db_index = True, null = False, blank = False];
+     required manytoone interface_type->InterfaceType:service_interfaces = 2 [db_index = True, null = False, blank = False];
+}
+
+message ServiceInstance (XOSBase, AttributeMixin) {
+     optional string name = 1 [db_index = False, max_length = 200, null = True, content_type = "stripped", blank = True];
+     required manytoone owner->Service:service_instances = 2 [db_index = True, null = False, blank = False];
+     optional string service_specific_id = 3 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
+     optional string service_specific_attribute = 10 [db_index = False, null = True, blank = True, varchar = True];
+}
+
+message ServiceInstanceLink (XOSBase) {
+     required manytoone provider_service_instance->ServiceInstance:provided_links = 1 [db_index = True, null = False, blank = False];
+     optional manytoone provider_service_interface->ServiceInterface:provided_links = 2 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_service_instance->ServiceInstance:subscribed_links = 3 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_service->Service:subscribed_links = 4 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_network->Network:subscribed_links = 5 [db_index = True, null = True, blank = True];
+}
+
+message ServiceInstanceAttribute (XOSBase) {
      required string name = 1 [help_text = "Attribute Name", max_length = 128, null = False, db_index = False, blank = False];
      required string value = 2 [help_text = "Attribute Value", null = False, db_index = False, blank = False];
-     required manytoone tenant->Tenant:tenantattributes = 3 [help_text = "The Tenant this attribute is associated with", null = False, db_index = True, blank = False];
+     required manytoone service_instance->ServiceInstance:service_instance_attributes = 3 [help_text = "The Tenant this attribute is associated with", null = False, db_index = True, blank = False];
 }
 
-message TenantPrivilege (XOSBase) {
-     required manytoone user->User:tenantprivileges = 1 [db_index = True, null = False, blank = False];
-     required manytoone tenant->Tenant:tenantprivileges = 2 [db_index = True, null = False, blank = False];
-     required manytoone role->TenantRole:tenantprivileges = 3 [db_index = True, null = False, blank = False];
-}
-
-message TenantRole (XOSBase) {
-     required string role = 1 [choices = "(('admin', 'Admin'), ('access', 'Access'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
-}
-
-message TenantRoot (XOSBase,AttributeMixin) {
-     required string kind = 1 [default = "generic", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
-     optional string name = 2 [max_length = 255, content_type = "stripped", blank = True, help_text = "name", null = True, db_index = False];
-     optional string service_specific_attribute = 3 [db_index = False, null = True, blank = True, varchar = True];
-     optional string service_specific_id = 4 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
-}
-
-message TenantRootPrivilege (XOSBase) {
-     required manytoone user->User:tenant_root_privileges = 1 [db_index = True, null = False, blank = False, unique_with = "tenant_root"];
-     required manytoone tenant_root->TenantRoot:tenant_root_privileges = 2 [db_index = True, null = False, blank = False, unique_with = "role"];
-     required manytoone role->TenantRootRole:tenant_root_privileges = 3 [db_index = True, null = False, blank = False];
-}
-
-message TenantRootRole (XOSBase) {
-     required string role = 1 [choices = "(('admin', 'Admin'), ('access', 'Access'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
-}
-
-message TenantWithContainer (Tenant) {
+message TenantWithContainer (ServiceInstance) {
      optional manytoone instance->Instance:+ = 1 [help_text = "Instance used by this Tenant", null = True, db_index = True, blank = True];
      optional manytoone creator->User:+ = 2 [help_text = "Creator of this Tenant", null = True, db_index = True, blank = True];
      optional string external_hostname = 3 [max_length = 30, content_type = "stripped", blank = True, help_text = "External host name", null = True, db_index = False];

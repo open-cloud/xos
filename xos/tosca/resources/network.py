@@ -1,5 +1,5 @@
 from xosresource import XOSResource
-from core.models import Slice,User,Network,NetworkTemplate,NetworkSlice,Service,Tenant
+from core.models import Slice,User,Network,NetworkTemplate,NetworkSlice,Service,ServiceInstanceLink
 
 class XOSNetwork(XOSResource):
     provides = ["tosca.nodes.network.Network", "tosca.nodes.network.Network.XOS"]
@@ -59,27 +59,26 @@ class XOSNetwork(XOSResource):
         for provider_service_name in self.get_requirements("tosca.relationships.TenantOfService"):
             provider_service = self.get_xos_object(Service, name=provider_service_name)
 
-            existing_tenancy = Tenant.objects.filter(provider_service = provider_service, subscriber_network = obj)
-            if existing_tenancy:
+            existing_links = ServiceInstanceLink.objects.filter(subscriber_network = obj, provider_service_instance__owner=provider_service)
+
+            if existing_links:
                 self.info("Tenancy relationship from %s to %s already exists" % (str(obj), str(provider_service)))
             else:
+                # TODO: Break hardcoded dependencies
+                # TODO: Rethink relationship between networks and vrouter tenants
                 if provider_service.kind == "vROUTER":
                     from services.vrouter.models import VRouterService
-                    tenancy = VRouterService.objects.get(id=provider_service.id).get_tenant(address_pool_name="addresses_"+obj.name, subscriber_network=obj)
-                    tenancy.save()
-                    obj.subnet = tenancy.cidr
+                    si = VRouterService.objects.get(id=provider_service.id).get_tenant(address_pool_name="addresses_"+obj.name)
+                    si.save()
+                    link = ServiceInstanceLink(provider_service_instance=si, subscriber_network=obj)
+                    link.save()
+
+                    obj.subnet = si.cidr
                 else:
                     raise Exception("The only network tenancy relationships that are allowed are to vRouter services")
 
                 self.info("Created Tenancy relationship from %s to %s" % (str(obj), str(provider_service)))
 
-#        v = self.get_property("permitted_slices")
-#        if v:
-#            for slicename in v.split(","):
-#                slice = self.get_xos_object(Slice, name = slicename.strip())
-#
-#                if not obj.permitted_slices.filter(id = slice.id).exists():
-#                    obj.permitted_slices.add(slice)
 
     def create(self):
         nodetemplate = self.nodetemplate

@@ -1,12 +1,19 @@
 import json
 from xosapi.orm import ORMWrapper, register_convenience_wrapper
 
-class ORMWrapperTenant(ORMWrapper):
+class ORMWrapperServiceInstance(ORMWrapper):
     @property
-    def tenantattribute_dict(self):
+    def serviceinstanceattribute_dict(self):
         attrs = {}
-        for attr in self.tenantattributes.all():
+        for attr in self.service_instance_attributes.all():
             attrs[attr.name] = attr.value
         return attrs
 
-register_convenience_wrapper("Tenant", ORMWrapperTenant)
+    @property
+    def tenantattribute_dict(self):
+        return self.serviceinstanceattribute_dict
+
+class ORMWrapperTenant(ORMWrapperServiceInstance):
+    pass
+
+register_convenience_wrapper("ServiceInstance", ORMWrapperServiceInstance)

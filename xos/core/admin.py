@@ -850,8 +850,8 @@ class ControllerAdmin(XOSBaseAdmin):
         return tabs
 
 
-class TenantAttributeAdmin(XOSBaseAdmin):
-    model = TenantAttribute
+class ServiceInstanceAttributeAdmin(XOSBaseAdmin):
+    model = ServiceInstanceAttribute
     list_display = ('backend_status_icon', 'tenant', 'name', 'value')
     list_display_links = ('backend_status_icon', 'name')
     fieldList = ('backend_status_text', 'tenant', 'name', 'value', )
@@ -861,78 +861,30 @@ class TenantAttributeAdmin(XOSBaseAdmin):
 
     suit_form_tabs = (('general', 'Tenant Root Details'),
                       )
+class ProviderLinkInline(XOSTabularInline):
+    model = ServiceInstanceLink
+    fields = ['provider_service_instance', 'subscriber_service_instance', 'subscriber_service']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-servicelinks'
+    fk_name = 'provider_service_instance'
+    verbose_name = 'provided links'
+    verbose_name_plural = 'provided links'
+
+class SubscriberLinkInline(XOSTabularInline):
+    model = ServiceInstanceLink
+    fields = ['provider_service_instance', 'subscriber_service_instance', 'subscriber_service']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-servicelinks'
+    fk_name = 'subscriber_service_instance'
+    verbose_name = 'subscribed links'
+    verbose_name_plural = 'subscribed links'
 
 
-class TenantAttrAsTabInline(XOSTabularInline):
-    model = TenantAttribute
+class ServiceInstanceAttrAsTabInline(XOSTabularInline):
+    model = ServiceInstanceAttribute
     fields = ['name', 'value']
     extra = 0
-    suit_classes = 'suit-tab suit-tab-tenantattrs'
-
-
-class TenantRootRoleAdmin(XOSBaseAdmin):
-    model = TenantRootRole
-    fields = ('role',)
-
-
-class TenantRootTenantInline(XOSTabularInline):
-    model = Tenant
-    fields = ['provider_service', 'subscriber_root']
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-tenantroots'
-    fk_name = 'subscriber_root'
-    verbose_name = 'subscribed tenant'
-    verbose_name_plural = 'subscribed tenants'
-
-    # def queryset(self, request):
-    #    qs = super(TenantRootTenantInline, self).queryset(request)
-    #    return qs.filter(kind="coarse")
-
-
-class TenantRootPrivilegeInline(XOSTabularInline):
-    model = TenantRootPrivilege
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-tenantrootprivileges'
-    fields = ['backend_status_icon', 'user', 'role', 'tenant_root']
-    readonly_fields = ('backend_status_icon', )
-
-    def queryset(self, request):
-        return TenantRootPrivilege.select_by_user(request.user)
-
-
-class TenantRootAdmin(XOSBaseAdmin):
-    model = TenantRoot
-    list_display = ('backend_status_icon', 'name', 'kind')
-    list_display_links = ('backend_status_icon', 'name')
-    fieldList = ('backend_status_text', 'name', 'kind', )
-    fieldsets = [
-        (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
-    inlines = (TenantRootTenantInline, TenantRootPrivilegeInline)
-    readonly_fields = ('backend_status_text', )
-
-    suit_form_tabs = (('general', 'Tenant Root Details'),
-                      ('tenantroots', 'Tenancy'),
-                      ('tenantrootprivileges', 'Privileges')
-                      )
-
-
-class TenantRoleAdmin(XOSBaseAdmin):
-    """Admin for TenantRoles."""
-    model = TenantRole
-    fields = ('role',)
-
-
-class TenantPrivilegeInline(XOSTabularInline):
-    """Inline for adding a TenantPrivilege to a Tenant."""
-    model = TenantPrivilege
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-tenantprivileges'
-    fields = ['backend_status_icon', 'user', 'role', 'tenant']
-    readonly_fields = ('backend_status_icon', )
-
-    def queryset(self, request):
-        return TenantPrivilege.select_by_user(request.user)
-
+    suit_classes = 'suit-tab suit-tab-serviceinstanceattrs'
 
 class ProviderDependencyInline(XOSTabularInline):
     model = ServiceDependency
@@ -959,6 +911,12 @@ class ServiceAttrAsTabInline(XOSTabularInline):
     extra = 0
     suit_classes = 'suit-tab suit-tab-serviceattrs'
 
+class ServiceInterfaceAsTabInline(XOSTabularInline):
+    model = ServiceInterface
+    fields = ['interface_type']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-serviceinterfaces'
+
 class ServiceMonitoringAgentInfoInline(XOSTabularInline):
     model = ServiceMonitoringAgentInfo
     fields = ['name', 'target_uri']
@@ -976,7 +934,7 @@ class ServiceAdmin(XOSBaseAdmin):
     fieldsets = [
         (None, {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
     inlines = [ServiceAttrAsTabInline, SliceInline, ProviderDependencyInline,
-               SubscriberDependencyInline, ServicePrivilegeInline, ServiceMonitoringAgentInfoInline]
+               SubscriberDependencyInline, ServicePrivilegeInline, ServiceMonitoringAgentInfoInline, ServiceInterfaceAsTabInline]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = fieldList
@@ -986,6 +944,7 @@ class ServiceAdmin(XOSBaseAdmin):
                       ('serviceattrs', 'Additional Attributes'),
                       ('servicetenants', 'Dependencies'),
                       ('serviceprivileges', 'Privileges'),
+                      ('serviceinterfaces', 'Interfaces'),
                       ('servicemonitoringagents', 'Monitoring Agents')
                       )
 
@@ -1963,10 +1922,7 @@ if True:
     admin.site.register(Image, ImageAdmin)
     admin.site.register(DashboardView, DashboardViewAdmin)
     admin.site.register(Flavor, FlavorAdmin)
-    admin.site.register(TenantRoot, TenantRootAdmin)
-    admin.site.register(TenantRootRole, TenantRootRoleAdmin)
-    admin.site.register(TenantRole, TenantRoleAdmin)
-    admin.site.register(TenantAttribute, TenantAttributeAdmin)
+    admin.site.register(ServiceInstanceAttribute, ServiceInstanceAttributeAdmin)
     admin.site.register(AddressPool, AddressPoolAdmin)
     admin.site.register(Diag, DiagAdmin)
 

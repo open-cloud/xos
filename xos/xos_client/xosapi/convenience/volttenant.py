@@ -3,19 +3,21 @@ from xosapi.orm import ORMWrapper, register_convenience_wrapper
 class ORMWrapperVOLTTenant(ORMWrapper):
     @property
     def vcpe(self):
-        vcpe_tenants = self.stub.VSGTenant.objects.filter(subscriber_tenant_id = self.id)
-        if vcpe_tenants:
-            return vcpe_tenants[0]
+        links = self.stub.ServiceInstanceLink.objects.filter(subscriber_service_instance_id = self.id)
+        for link in links:
+            # cast from ServiceInstance to VSGTenant
+            vsgs = self.stub.VSGTenant.objects.filter(id = link.provider_service_instance.id)
+            if vsgs:
+                return vsgs[0]
         return None
 
     @property
     def subscriber(self):
-        if not self.subscriber_root:
-            return None
-        subs = self.stub.CordSubscriberRoot.objects.filter(id=self.subscriber_root.id)
-        if not subs:
-            return None
-        return subs[0]
-
+        links = self.stub.ServiceInstanceLink.objects.filter(provider_service_instance_id = self.id)
+        for link in links:
+            subs = self.stub.CordSubscriberRoot.objects.filter(id=link.subscriber_service_instance_id)
+            if subs:
+                return subs[0]
+        return None
 
 register_convenience_wrapper("VOLTTenant", ORMWrapperVOLTTenant)

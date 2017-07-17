@@ -7,19 +7,22 @@ class ORMWrapperVSGTenant(ORMWrapper):
 
     @property
     def volt(self):
-        if not self.subscriber_tenant:
-            return None
-        # make sure subscriber_tenant is properly subclassed to a volt object
-        volts = self.stub.VOLTTenant.objects.filter(id = self.subscriber_tenant.id)
-        if not volts:
-            return None
-        return volts[0]
+        links = self.provided_links.all()
+        for link in links:
+            # cast from ServiceInstance to VoltTenant
+            volts = self.stub.VOLTTenant.objects.filter(id = link.subscriber_service_instance.id)
+            if volts:
+                return volts[0]
+        return None
 
     @property
     def vrouter(self):
-        vrouter_tenants = self.stub.VRouterTenant.objects.filter(subscriber_tenant_id = self.id)
-        if vrouter_tenants:
-            return vrouter_tenants[0]
+        links = self.subscribed_links.all()
+        for link in links:
+            # cast from ServiceInstance to VRouterTenant
+            vrouters = self.stub.VRouterTenant.objects.filter(id = link.provider_service_instance.id)
+            if vrouters:
+                return vrouters[0]
         return None
 
     def get_vrouter_field(self, name, default=None):
