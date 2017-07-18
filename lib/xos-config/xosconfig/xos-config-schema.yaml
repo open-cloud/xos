@@ -1,7 +1,6 @@
 map:
   name:
     type: str
-    required: True
   xos_dir:
     type: str
   database:
@@ -19,6 +18,8 @@ map:
   logging:
     type: map
     map:
+      file:
+        type: str
       logstash_hostport:
         type: str
       level:

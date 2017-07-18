@@ -11,6 +11,10 @@ INITIALIZED = False
 CONFIG_FILE = None
 CONFIG = {}
 
+GLOBAL_CONFIG_FILE = DEFAULT_CONFIG_FILE
+GLOBAL_CONFIG_SCHEMA = DEFAULT_CONFIG_SCHEMA
+GLOBAL_CONFIG = {}
+
 class Config:
     """
     XOS Configuration APIs
@@ -26,6 +30,14 @@ class Config:
         global INITIALIZED
         global CONFIG
         global CONFIG_FILE
+
+        global GLOBAL_CONFIG
+        global GLOBAL_CONFIG_FILE
+        global GLOBAL_CONFIG_SCHEMA
+
+        # Use same schema for both provided and global config by default
+        GLOBAL_CONFIG_SCHEMA = config_schema
+
         # the config module can be initialized only one
         if INITIALIZED:
             raise Exception('[XOS-Config] Module already initialized')
@@ -41,6 +53,12 @@ class Config:
         if os.environ.get('XOS_CONFIG_SCHEMA'):
             config_schema = Config.get_abs_path(os.environ['XOS_CONFIG_SCHEMA'])
 
+        # allow GLOBAL_CONFIG_* to be overridden  by env vars
+        if os.environ.get('XOS_GLOBAL_CONFIG_FILE'):
+            GLOBAL_CONFIG_FILE = os.environ['XOS_GLOBAL_CONFIG_FILE']
+        if os.environ.get('XOS_GLOBAL_CONFIG_SCHEMA'):
+            GLOBAL_CONFIG_SCHEMA = Config.get_abs_path(os.environ['XOS_GLOBAL_CONFIG_SCHEMA'])
+
         # if a -C parameter is set in the cli override the config_file
         # FIXME shouldn't this stay in whatever module call this one? and then just pass the file to the init method
         if Config.get_cli_param(sys.argv):
@@ -49,6 +67,9 @@ class Config:
 
         CONFIG_FILE = config_file
         CONFIG = Config.read_config(config_file, config_schema)
+
+        # Load global schema
+        GLOBAL_CONFIG = Config.read_config(GLOBAL_CONFIG_FILE, GLOBAL_CONFIG_SCHEMA, True)
 
     @staticmethod
     def get_config_file():
@@ -80,12 +101,16 @@ class Config:
             last = arg
 
     @staticmethod
-    def read_config(config_file, config_schema):
+    def read_config(config_file, config_schema, ignore_if_not_found=False):
         """
         Read the configuration file and return a dictionary
         :param config_file: string
         :return: dict
         """
+
+        if(not os.path.exists(config_file) and ignore_if_not_found):
+            return {}
+
         if not os.path.exists(config_file):
             raise Exception('[XOS-Config] Config file not found at: %s' % config_file)
 
@@ -109,11 +134,14 @@ class Config:
         """
         global INITIALIZED
         global CONFIG
+        global GLOBAL_CONFIG
 
         if not INITIALIZED:
             raise Exception('[XOS-Config] Module has not been initialized')
 
         val = Config.get_param(query, CONFIG)
+        if not val:
+            val = Config.get_param(query, GLOBAL_CONFIG)
         if not val:
             val = Config.get_param(query, default.DEFAULT_VALUES)
         if not val:
@@ -142,7 +170,7 @@ class Config:
     @staticmethod
     def get_nested_param(keys, config):
         """
-        
+
         :param keys: a list of descending selector
         :param config: the config source to read from (can be the config file or the defaults)
         :return: the requested parameter in any format the parameter is specified
@@ -159,7 +187,7 @@ class Config:
         """
         Query registrator to get the list of services
         NOTE: we assume that consul is a valid URL
-        :return: a list of service names 
+        :return: a list of service names
         """
         service_dict = requests.get('http://consul:8500/v1/catalog/services').json()
         service_list = []
