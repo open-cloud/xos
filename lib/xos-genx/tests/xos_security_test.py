@@ -1,12 +1,11 @@
 import unittest
 from xosgenx.generator import XOSGenerator
 from helpers import FakeArgs, XProtoTestHelpers
-import pdb
 
-"""The function below is for eliminating warnings arising due to the missing policy_output_0,
+"""The function below is for eliminating warnings arising due to the missing policy_output_enforcer,
 which is generated and loaded dynamically.
 """
-def policy_output_0(x, y):
+def policy_output_enforcer(x, y):
     raise Exception("Security enforcer not generated. Test failed.")
     return False
 
@@ -16,7 +15,7 @@ Python security policies, set up an appropriate environment and execute the Pyth
 """
 class XProtoXOSSecurityTest(unittest.TestCase):
     def setUp(self):
-        self.target = XProtoTestHelpers.write_tmp_target("{{ xproto_fol_to_python_test(proto.policies.test_policy, None, '0') }}")
+        self.target = XProtoTestHelpers.write_tmp_target("{{ xproto_fol_to_python_test('output',proto.policies.test_policy, None, '0') }}")
 
     """
     This is the security policy for controllers
@@ -35,7 +34,7 @@ class XProtoXOSSecurityTest(unittest.TestCase):
         exec(output) # This loads the generated function, which should look like this:
 
         """
-        def policy_output_0(obj, ctx):
+        def policy_output_enforcer(obj, ctx):
             i2 = ctx.user.is_admin
             i3 = Privilege.objects.filter(Q(user_id=ctx.user.id), Q(object_type='Deployment'))[0]
             i1 = (i2 or i3)
@@ -43,7 +42,7 @@ class XProtoXOSSecurityTest(unittest.TestCase):
         """
 
         # FIXME: Test this policy by executing it
-        self.assertTrue(policy_output_0 is not None)
+        self.assertTrue(policy_output_enforcer is not None)
 
     """
     This is the security policy for controllers
@@ -62,7 +61,7 @@ class XProtoXOSSecurityTest(unittest.TestCase):
         exec(output) # This loads the generated function, which should look like this:
 
         """
-        def policy_output_0(obj, ctx):
+        def policy_output_enforcer(obj, ctx):
             i2 = ctx.user.is_admin
             i3 = Privilege.objects.filter(Q(user_id=ctx.user.id), Q(object_type='Deployment'))[0]
             i1 = (i2 or i3)
@@ -70,7 +69,7 @@ class XProtoXOSSecurityTest(unittest.TestCase):
         """
 
         # FIXME: Test this policy by executing it
-        self.assertTrue(policy_output_0 is not None)
+        self.assertTrue(policy_output_enforcer is not None)
 
 
 if __name__ == '__main__':

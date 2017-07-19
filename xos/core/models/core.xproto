@@ -12,7 +12,7 @@ message XOSBase {
      required bool backend_need_reap = 7 [default = False];
      required string backend_status = 8 [default = "0 - Provisioning in progress", max_length = 1024, null = True];
      required bool deleted = 9 [default = False];
-     required bool write_protect = 10 [default = False];
+     required bool write_protect = 11 [default = False];
      required bool lazy_blocked = 11 [default = False];
      required bool no_sync = 12 [default = False];
      required bool no_policy = 13 [default = False];
@@ -224,8 +224,17 @@ message ImageDeployments (XOSBase) {
      required manytoone deployment->Deployment:imagedeployments = 2 [db_index = True, null = False, blank = False];
 }
 
+policy instance_name < obj.name = obj.slice.name >
+policy instance_creator < obj.creator >
+policy instance_isolation < (obj.isolation = "container" | self.isolation = "container_vm" ) -> (obj.image.kind = "container") >
+policy instance_isolation_parent < obj.isolation -> obj.parent >
+policy instance_isolation_vm < (obj.isolation = "vm") -> (obj.image.kind = "vm") >
+policy instance_isolation_container_vm < (obj.isolation = "container_vm") -> (obj.image.kind = "vm") >
+policy instance_creator_privilege < not (obj.slice.creator = obj.creator) -> exists Privilege:Privilege.object_id = obj.slice.id & Privilege.accessor_id = obj.creator.id & Privilege.object_type = "Slice" >
 
 message Instance (XOSBase) {
+     option validators = "instance_name:Instance name set improperly, instance_creator:Instance has no creator, instance_isolation: Container instance must use container image, instance_isolation_parent:Container-vm instance must have a parent, instance_isolation_vm: VM Instance must use VM image, instance_isolation_container_vm:Parent field can only be set on Container-vm instances, instance_creator_privilege: instance creator has no privileges on slice";
+    
      optional string instance_id = 1 [max_length = 200, content_type = "stripped", blank = True, help_text = "Nova instance id", null = True, db_index = False];
      optional string instance_uuid = 2 [max_length = 200, content_type = "stripped", blank = True, help_text = "Nova instance uuid", null = True, db_index = False];
      required string name = 3 [max_length = 200, content_type = "stripped", blank = False, help_text = "Instance name", null = False, db_index = False];
@@ -273,11 +282,14 @@ message NetworkParameterType (XOSBase) {
      required string description = 2 [db_index = False, max_length = 1024, null = False, blank = False];
 }
 
+policy network_slice_policy < (obj.slice in obj.network.permitted_slices.all()) | (obj.slice = obj.network.owner) | (not obj.network.permit_all_slices) >
 
 message NetworkSlice (XOSBase) {
+     option validators = "network_slice_policy:Slice is not allowed to connect to networks";
      required manytoone network->Network:networkslices = 1 [db_index = True, null = False, blank = False, unique_with = "slice"];
      required manytoone slice->Slice:networkslices = 2 [db_index = True, null = False, blank = False];
 }
+
 message NetworkTemplate (XOSBase) {
      required string name = 1 [db_index = False, max_length = 32, null = False, blank = False];
      optional string description = 2 [db_index = False, max_length = 1024, null = True, blank = True];
@@ -298,7 +310,11 @@ message NodeLabel (XOSBase) {
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "label name", null = False, db_index = False];
      required manytomany node->Node/NodeLabel_node:nodelabels = 2 [db_index = False, null = False, blank = True];
 }
+
+policy port_policy < (obj.instance.slice in obj.network.permitted_slices.all()) | (obj.instance.slice = obj.network.owner) | (not obj.network.permit_all_slices) >
+
 message Port (XOSBase) {
+     option validators = "port_policy:Slice is not allowed to connect to network";
      required manytoone network->Network:links = 1 [db_index = True, null = False, blank = False, unique_with = "instance"];
      optional manytoone instance->Instance:ports = 2 [db_index = True, null = True, blank = True];
      optional string ip = 3 [max_length = 39, content_type = "ip", blank = True, help_text = "Instance ip address", null = True, db_index = False];
@@ -398,8 +414,14 @@ message SiteRole (XOSBase) {
      required string role = 1 [choices = "(('admin', 'Admin'), ('pi', 'PI'), ('tech', 'Tech'), ('billing', 'Billing'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
 }
 
+policy slice_name < not obj.id -> {{ obj.name.startswith(obj.site.login_base) }} >
+policy slice_name_length_and_no_spaces < {{ len(obj.site.login_base) + 1 < len(obj.name) and ' ' not in obj.name }} >
+policy slice_has_creator < obj.creator >
+
 message Slice (XOSBase) {
+     option validators = "slice_name:Slice name must begin with site login_base, slice_name_length_and_no_spaces:Slice name too short or contains spaces, slice_has_creator:Slice has no creator";
      option plural = "Slices";
+
      required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", null = False, db_index = False];
      required bool enabled = 2 [help_text = "Status for this Slice", default = True, null = False, db_index = False, blank = True];
      required string description = 4 [help_text = "High level description of the slice and expected activities", max_length = 1024, null = False, db_index = False, blank = True, varchar = True];
@@ -502,3 +524,4 @@ message XOSGuiExtension (XOSBase) {
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the GUI Extensions", null = False, db_index = False];
      required string files = 2 [max_length = 1024, content_type = "stripped", blank = False, help_text = "List of comma separated file composing the view", null = False, db_index = False];
 }
+

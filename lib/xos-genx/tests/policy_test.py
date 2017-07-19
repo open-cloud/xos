@@ -1,6 +1,7 @@
 import unittest
 from xosgenx.generator import XOSGenerator
 from helpers import FakeArgs, XProtoTestHelpers
+import pdb
 
 """
 The tests below convert the policy logic expression
@@ -41,6 +42,26 @@ class XProtoPolicyTest(unittest.TestCase):
 
         output = XOSGenerator.generate(args).replace('t','T')
         self.assertTrue(eval(output)) 
+
+    def test_function_term(self):
+        xproto = \
+"""
+    policy slice_user < slice.user.compute_is_admin() >
+"""
+
+        target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.slice_user }}")
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = target
+
+        output = XOSGenerator.generate(args)
+       
+        slice = FakeArgs()
+        slice.user = FakeArgs()
+        slice.user.compute_is_admin = lambda: True
+
+        expr = eval(output)
+        self.assertTrue(expr)
 
     def test_term(self):
         xproto = \
@@ -147,7 +168,29 @@ class XProtoPolicyTest(unittest.TestCase):
 
         self.assertFalse(eval(expr))
 
-        
+    def test_implies(self):
+        xproto = \
+"""
+    policy implies < obj.name -> obj.creator >
+"""
+        target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.implies }}")
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = target
+
+        output = XOSGenerator.generate(args)
+
+        slice = FakeArgs()
+        slice.is_admin = False
+        obj = FakeArgs()
+        obj.name = 'Thing 1'
+        obj.creator = None
+
+        (op, operands), = eval(output).items()
+        expr = 'not ' + op.join(operands).replace('->',' or ')
+
+        self.assertFalse(eval(expr))
+   
     def test_exists(self):
         xproto = \
 """

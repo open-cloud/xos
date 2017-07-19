@@ -2,10 +2,11 @@ import astunparse
 import ast
 import random
 import string
+import jinja2
 from plyxproto.parser import *
 import pdb
 
-BINOPS = ['|', '&', '=>']
+BINOPS = ['|', '&', '->']
 QUANTS = ['exists', 'forall']
 
 
@@ -89,13 +90,14 @@ class FOL2Python:
                 or_expr = ' or '
                 and_expr = ' and '
 
-        if k == '=':
+        if k in ['=','in']:
             v = [self.format_term_for_query(
                 model, term, django=django) for term in v]
             if django:
-                operator = ' = '
+                operator_map = {'=':' = ','in':'__in'}
             else:
-                operator = ' == '
+                operator_map = {'=':' == ','in':'in'}
+            operator = operator_map[k]
             return [q_bracket % operator.join(v)]
         elif k == '|':
             components = [self.fol_to_python_filter(
@@ -105,7 +107,7 @@ class FOL2Python:
             components = [self.fol_to_python_filter(
                 model, x, django=django).pop() for x in v]
             return [and_expr.join(components)]
-        elif k == '=>':
+        elif k == '->':
             components = [self.fol_to_python_filter(
                 model, x, django=django).pop() for x in v]
             return ['~%s | %s' % (components[0], components[1])]
@@ -137,10 +139,10 @@ class FOL2Python:
                     return {'hoist': ['const', fol], 'result': 'True'}
                 else:
                     return {'hoist': [], 'result': fol}
-            elif k == '=':
+            elif k in ['=', 'in']:
                 lhs, rhs = v
                 if not lhs.startswith(var) and not rhs.startswith(var):
-                    return {'hoist': ['=', fol], 'result': 'True'}  # XXX
+                    return {'hoist': [k, fol], 'result': 'True'}  # XXX
                 else:
                     return {'hoist': [], 'result': fol}
             elif k in BINOPS:
@@ -148,7 +150,7 @@ class FOL2Python:
                 rlhs = self.hoist_constants(lhs, var)
                 rrhs = self.hoist_constants(rhs, var)
 
-                if rlhs['hoist'] and rrhs['hoist']:
+                if rlhs['hoist'] and rrhs['hoist'] and rlhs['result']=='True' and llhs['result']=='True':
                     return {'hoist': ['=', fol], 'result': 'True'}
                 elif rlhs['hoist']:
                     return {'hoist': [k, lhs], 'result': rhs}
@@ -196,6 +198,26 @@ class FOL2Python:
             else:
                 return fol
 
+    def gen_validation_function(self, fol, policy_name, message, tag):
+        if not tag:
+            tag = gen_random_string()
+
+        policy_function_name = 'policy_%(policy_name)s_%(random_string)s' % {
+            'policy_name': policy_name, 'random_string': tag}
+        self.verdict_next()
+        function_str = """
+def %(fn_name)s(obj, ctx):
+    if not %(vvar)s: raise ValidationError("%(message)s")
+        """ % {'fn_name': policy_function_name, 'vvar': self.verdict_variable, 'message': message}
+
+        function_ast = self.str_to_ast(function_str)
+        policy_code = self.gen_test(fol, self.verdict_variable)
+
+
+        function_ast.body = [policy_code] + function_ast.body
+
+        return function_ast
+
     def gen_test_function(self, fol, policy_name, tag):
         if not tag:
             tag = gen_random_string()
@@ -213,7 +235,7 @@ def %(fn_name)s(obj, ctx):
 
         function_ast.body = [policy_code] + function_ast.body
 
-        return astunparse.unparse(function_ast)
+        return function_ast
 
     def gen_test(self, fol, verdict_var, bindings=None):
         if isinstance(fol, str):
@@ -221,7 +243,35 @@ def %(fn_name)s(obj, ctx):
 
         (k, v), = fol.items()
 
-        if k == '=':
+        if k == 'python':
+            try:
+                expr_ast = self.str_to_ast(v)
+            except SyntaxError:
+                raise PolicyException('Syntax error in %s' % v)
+
+            if not isinstance(expr_ast, ast.Expr):
+                raise PolicyException(
+                    '%s is not an expression' % expr_ast)
+
+            assignment_str = """
+%(verdict_var)s = (%(escape_expr)s)
+            """ % {'verdict_var': self.verdict_variable, 'escape_expr': v}
+
+            assignment_ast = self.str_to_ast(assignment_str)
+            return assignment_ast
+        elif k == 'not':
+            top_vvar = self.verdict_variable
+            self.verdict_next()
+            sub_vvar = self.verdict_variable
+            block = self.gen_test(v, sub_vvar)
+            assignment_str = """
+%(verdict_var)s = not (%(subvar)s)
+                    """ % {'verdict_var': top_vvar, 'subvar': sub_vvar}
+
+            assignment_ast = self.str_to_ast(assignment_str)
+
+            return ast.Module(body=[block, assignment_ast])
+        elif k in ['=','in']:
             # This is the simplest case, we don't recurse further
             # To use terms that are not simple variables, use
             # the Python escape, e.g. {{ slice.creator is not None }}
@@ -259,18 +309,23 @@ def %(fn_name)s(obj, ctx):
             except TypeError:
                 pass
 
+            if k=='=':
+                operator='=='
+            elif k=='in':
+                operator='in'
+
             comparison_str = """
-%(verdict_var)s = (%(lhs)s == %(rhs)s)
-            """ % {'verdict_var': verdict_var, 'lhs': lhs, 'rhs': rhs}
+%(verdict_var)s = (%(lhs)s %(operator)s %(rhs)s)
+            """ % {'verdict_var': verdict_var, 'lhs': lhs, 'rhs': rhs, 'operator':operator}
 
             comparison_ast = self.str_to_ast(comparison_str)
-
             combined_ast = ast.Module(body=assignments + [comparison_ast])
+
             return combined_ast
         elif k in BINOPS:
             lhs, rhs = v
 
-            top_vvar = self.verdict_variable
+            top_vvar = verdict_var
 
             self.verdict_next()
             lvar = self.verdict_variable
@@ -286,7 +341,7 @@ def %(fn_name)s(obj, ctx):
                 binop = 'and'
             elif k == '|':
                 binop = 'or'
-            elif k == '=>':
+            elif k == '->':
                 binop = 'or'
                 invert = 'not'
 
@@ -360,12 +415,24 @@ def %(fn_name)s(obj, ctx):
 
             return ast.Module(body=[python_ast, negate_ast])
 
-def xproto_fol_to_python_test(fol, model, tag=None):
+def xproto_fol_to_python_test(policy, fol, model, tag=None):
+    if isinstance(fol, jinja2.Undefined):
+        raise Exception('Could not find policy:', policy)
+
     f2p = FOL2Python()
     fol = f2p.hoist_constants(fol)
-    a = f2p.gen_test_function(fol, 'output', tag)
-    return a
+    a = f2p.gen_test_function(fol, policy, tag='enforcer')
+    return astunparse.unparse(a)
 
+def xproto_fol_to_python_validator(policy, fol, model, message, tag=None):
+    if isinstance(fol, jinja2.Undefined):
+        raise Exception('Could not find policy:', policy)
+
+    f2p = FOL2Python()
+    fol = f2p.hoist_constants(fol)
+    a = f2p.gen_validation_function(fol, policy, message, tag='validator')
+    
+    return astunparse.unparse(a)
 
 def main():
     while True:
@@ -374,7 +441,7 @@ def main():
         fol_parser = yacc.yacc(module=FOLParser(), start='goal')
 
         val = fol_parser.parse(inp, lexer=fol_lexer)
-        a = xproto_fol_to_python_test(val, 'output')
+        a = xproto_fol_to_python_test('pol', val, 'output', 'Test')
         print a
 
 
