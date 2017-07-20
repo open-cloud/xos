@@ -21,7 +21,9 @@ from core.models import {{ l.peer }}
 {%- for b in m.bases -%}
 {%- if b!='PlCoreBase' and 'Mixin' not in b -%}
 #from core.models.{{b | lower}} import {{ b }}
+{% if b not in proto.message_names %}
 from core.models import {{ b }}
+{% endif %}
 {%- endif -%}
 {% endfor %}
 
