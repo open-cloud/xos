@@ -6,6 +6,10 @@ class FieldNotFound(Exception):
     def __init__(self, message):
         super(FieldNotFound, self).__init__(message)
 
+def xproto_debug(**kwargs):
+    print kwargs
+    pdb.set_trace()
+
 def xproto_unquote(s):
     return unquote(s)
 
