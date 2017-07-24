@@ -168,4 +168,4 @@ wsgiref==0.1.2
 zope.interface==4.3.3
 redis==2.10.5
 astunparse==1.5.0
-git+https://github.com/sb98052/plyprotobuf@cee0402b1d8e3c261be789de43aaa8d56b78e743
+plyxproto==2.1.0
