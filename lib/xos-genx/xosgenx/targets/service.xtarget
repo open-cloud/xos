@@ -61,6 +61,9 @@ class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases) }}:
 
   # Generated methods
   def save(self, *args, **kwds):
+      if not self.leaf_model_name:
+          self.leaf_model_name = "{{ m.name }}"
+
       try:
           self.__xos_save_base(*args, **kwds)
       except AttributeError:

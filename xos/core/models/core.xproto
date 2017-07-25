@@ -17,6 +17,7 @@ message XOSBase {
      required bool no_sync = 12 [default = False];
      required bool no_policy = 13 [default = False];
      optional string policy_status = 14 [default = "0 - Policy in process", max_length = 1024];
+     required string leaf_model_name = 15 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
 }
 
 message User (AbstractBaseUser,PlModelMixIn) {
