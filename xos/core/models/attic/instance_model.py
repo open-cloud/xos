@@ -10,40 +10,11 @@ def tologdict(self):
         pass
     return d
 
-def save(self, *args, **kwds):
+def __xos_save_base(self, *args, **kwds):
     if not self.name:
         self.name = self.slice.name
     if not self.creator and hasattr(self, 'caller'):
         self.creator = self.caller
-    if not self.creator:
-        raise ValidationError('instance has no creator')
-
-    if (self.isolation == "container") or (self.isolation == "container_vm"):
-        if (self.image.kind != "container"):
-           raise ValidationError("Container instance must use container image")
-    elif (self.isolation == "vm"):
-        if (self.image.kind != "vm"):
-           raise ValidationError("VM instance must use VM image")
-
-    if (self.isolation == "container_vm") and (not self.parent):
-        raise ValidationError("Container-vm instance must have a parent")
-
-    if (self.parent) and (self.isolation != "container_vm"):
-        raise ValidationError("Parent field can only be set on Container-vm instances")
-
-    if (self.slice.creator != self.creator):
-        from core.models.privilege import Privilege
-        # Check to make sure there's a slice_privilege for the user. If there
-        # isn't, then keystone will throw an exception inside the observer.
-        slice_privs = Privilege.objects.filter(object_id=self.slice.id, accessor_id=self.creator.id, object_type='Slice')
-        if not slice_privs:
-            raise ValidationError('instance creator has no privileges on slice')
-
-# XXX smbaker - disabled for now, was causing fault in tenant view create slice
-#        if not self.controllerNetwork.test_acl(slice=self.slice):
-#            raise exceptions.ValidationError("Deployment %s's ACL does not allow any of this slice %s's users" % (self.controllerNetwork.name, self.slice.name))
-
-    super(Instance, self).save(*args, **kwds)
 
 def can_update(self, user):
     return user.can_update_slice(self.slice)

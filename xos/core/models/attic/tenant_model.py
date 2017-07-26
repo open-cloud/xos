@@ -26,14 +26,13 @@ def validate_unique_service_specific_id(self):
             raise XOSDuplicateKey("service_specific_id %s already exists" % self.service_specific_id, fields={
                                   "service_specific_id": "duplicate key"})
 
-def save(self, *args, **kwargs):
+def __xos_save_base(self, *args, **kwargs):
     subCount = sum([1 for e in [self.subscriber_service, self.subscriber_tenant,
                                 self.subscriber_user, self.subscriber_root] if e is not None])
     if (subCount > 1):
         raise XOSConflictingField(
             "Only one of subscriber_service, subscriber_tenant, subscriber_user, subscriber_root should be set")
 
-    super(Tenant, self).save(*args, **kwargs)
 
 def get_subscribed_tenants(self, tenant_class):
     ids = self.subscribed_tenants.filter(kind=tenant_class.KIND)

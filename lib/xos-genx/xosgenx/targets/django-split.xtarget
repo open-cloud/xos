@@ -14,6 +14,9 @@ from core.models.{{b.name | lower}} import {{ b.name }}
 {% endif %}
 {% endfor %}
 
+{% for policy,error in xproto_validations(m.options) %}
+{{ xproto_fol_to_python_validator(policy, proto.policies[policy], m, error) }}
+{% endfor %}
 
 class {{ m.name }}{{ xproto_base_def(m.name, m.bases) }}:
   plural_name = "{{ xproto_pluralize(m) }}"
@@ -37,8 +40,22 @@ class {{ m.name }}{{ xproto_base_def(m.name, m.bases) }}:
       unique_together = {{ xproto_tuplify(uniques) }}
   {%- endif %}
   {% if file_exists(m.name|lower + '_model.py') -%}{{ include_file(m.name|lower + '_model.py') | indent(width=2)}}{%- endif %}
-  pass
 
+  {% if m.name!='XOSBase' and 'Mixin' not in m.name %}
+
+  # Generated methods
+  def save(self, *args, **kwds):
+      try:
+          self.__xos_save_base(*args, **kwds)
+      except AttributeError:
+          pass
+
+      {% for policy,error in xproto_validations(m.options) %}
+      policy_{{policy}}_validator(self, None)
+      {% endfor %}
+      super({{ m.name }}, self).save(*args, **kwds)
+
+  {% endif %}
 {% if file_exists(xproto_base_name(m.name)|lower+'_bottom.py') -%}{{ include_file(xproto_base_name(m.name)|lower+'_bottom.py') }}{% endif %}
 +++ {{m.name|lower}}.py
 {% endif %}{% endfor %}

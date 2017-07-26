@@ -207,7 +207,7 @@ class FOL2Python:
         self.verdict_next()
         function_str = """
 def %(fn_name)s(obj, ctx):
-    if not %(vvar)s: raise ValidationError("%(message)s")
+    if not %(vvar)s: raise ValidationError("%(message)s".format(obj=obj, ctx=ctx))
         """ % {'fn_name': policy_function_name, 'vvar': self.verdict_variable, 'message': message}
 
         function_ast = self.str_to_ast(function_str)
@@ -367,7 +367,7 @@ def %(fn_name)s(obj, ctx):
                 entry = f.pop()
 
                 python_str = """
-%(verdict_var)s = %(model)s.objects.filter(%(query)s)[0]
+%(verdict_var)s = not not %(model)s.objects.filter(%(query)s)
                 """ % {'verdict_var': verdict_var, 'model': var, 'query': entry}
 
                 python_ast = ast.parse(python_str)
@@ -393,7 +393,7 @@ def %(fn_name)s(obj, ctx):
                 vvar = self.verdict_variable
 
                 python_str = """
-%(verdict_var)s = %(model)s.objects.filter(%(query)s)[0]
+%(verdict_var)s = not not %(model)s.objects.filter(%(query)s)
                 """ % {'verdict_var': vvar, 'model': var, 'query': entry}
 
                 python_ast = ast.parse(python_str)

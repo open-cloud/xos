@@ -134,8 +134,7 @@ def cleanup_container(self):
             self.instance.delete()
         self.instance = None
 
-def save(self, *args, **kwargs):
+def __xos_save_base(self, *args, **kwargs):
     if (not self.creator) and (hasattr(self, "caller")) and (self.caller):
         self.creator = self.caller
-    super(TenantWithContainer, self).save(*args, **kwargs)
 

@@ -1,14 +1,3 @@
-def save(self, *args, **kwds):
-    slice = self.slice
-    if (slice not in self.network.permitted_slices.all()) and (slice != self.network.owner) and (not self.network.permit_all_slices):
-        # to add a instance to the network, then one of the following must be true:
-        #   1) instance's slice is in network's permittedSlices list,
-        #   2) instance's slice is network's owner, or
-        #   3) network's permitAllSlices is true
-        raise ValueError("Slice %s is not allowed to connect to network %s" % (str(slice), str(self.network)))
-
-    super(NetworkSlice, self).save(*args, **kwds)
-
 def can_update(self, user):
     return user.can_update_slice(self.slice)
 

@@ -26,6 +26,10 @@ from core.models import {{ b.name }}
 {%- endif -%}
 {% endfor %}
 
+{% for policy,error in xproto_validations(m.options) %}
+{{ xproto_fol_to_python_validator(policy, proto.policies[policy], m, error) }}
+{% endfor %}
+
 {% endfor %}
 
 {% for m in proto.messages %}
@@ -54,6 +58,18 @@ class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases) }}:
 
   {% if file_exists(m.name|lower + '_model.py') -%}{{ include_file(m.name|lower + '_model.py') | indent(width=2)}}{%- endif %}
   pass
+
+  # Generated methods
+  def save(self, *args, **kwds):
+      try:
+          self.__xos_save_base(*args, **kwds)
+      except AttributeError:
+          pass
+
+      {% for policy,error in xproto_validations(m.options) %}
+      policy_{{policy}}_validator(self, None)
+      {% endfor %}
+      super({{ m.name }}{{ legacy_tag }}, self).save(*args, **kwds)
 
 {% if file_exists(m.name|lower+'_bottom.py') -%}{{ include_file(m.name|lower+'_bottom.py') }}{% endif %} 
 {% endfor %}
