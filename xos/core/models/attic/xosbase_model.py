@@ -126,7 +126,10 @@ def __unicode__(self):
     if hasattr(self, "name") and self.name:
         return u'%s' % self.name
     elif hasattr(self, "id") and self.id:
-        return u'%s-%s' % (self.__class__.__name__, self.id)
+        if hasattr(self, "leaf_model_name") and self.leaf_model_name:
+            return u'%s-%s' % (self.leaf_model_name, self.id)
+        else:
+            return u'%s-%s' % (self.__class__.__name__, self.id)
     else:
         return u'%s-unsaved' % self.__class__.__name__
 
