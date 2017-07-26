@@ -111,6 +111,48 @@ message Slice (PlCoreBase){
         yaml_ir = yaml.load(output)
         self.assertEqual(len(yaml_ir['items']), 4)
 
+    def test_gui_hidden_models(self):
+        xproto = \
+"""
+option app_label = "test";
+
+message Foo {
+    option gui_hidden = "True";
+    required string name = 1 [ null = "False", blank="False"];
+}
+
+message Bar {
+    option gui_hidden = "False";
+    required string name = 1 [ null = "False", blank="False"];
+}
+"""
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = 'modeldefs.xtarget'
+        output = XOSGenerator.generate(args)
+        yaml_ir = yaml.load(output)
+        self.assertEqual(len(yaml_ir['items']), 1)
+        self.assertIn('Bar', output)
+        self.assertNotIn('Foo', output)
+
+    def test_gui_hidden_model_fields(self):
+        xproto = \
+"""
+option app_label = "test";
+
+message Foo {
+    required string name = 1 [ null = "False", blank="False"];
+    required string secret = 1 [ null = "False", blank="False", gui_hidden = "True"];
+}
+"""
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = 'modeldefs.xtarget'
+        output = XOSGenerator.generate(args)
+        yaml_ir = yaml.load(output)
+        self.assertEqual(len(yaml_ir['items']), 1)
+        self.assertIn('name', output)
+        self.assertNotIn('secret', output)
 if __name__ == '__main__':
     unittest.main()
 
