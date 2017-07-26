@@ -215,6 +215,41 @@ class XProtoPolicyTest(unittest.TestCase):
 
         self.assertTrue(eval(expr))
 
+    def test_policy_function(self):
+        xproto = \
+"""
+    policy slice_policy < exists Privilege: Privilege.object_id = obj.id >
+    policy network_slice_policy < *slice_policy(slice) >
+"""
+
+        target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.network_slice_policy }} ")
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = target
+
+        output = XOSGenerator.generate(args)
+        
+        (op, operands), = eval(output).items()
+
+        self.assertIn('slice_policy', operands)
+        self.assertIn('slice', operands)
+
+    def test_policy_missing_function(self):
+        xproto = \
+"""
+    policy slice_policy < exists Privilege: Privilege.object_id = obj.id >
+    policy network_slice_policy < *slice_policyX(slice) >
+"""
+
+        target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.network_slice_policy }} ")
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = target
+
+        with self.assertRaises(Exception):
+            output = XOSGenerator.generate(args)
+        
+
     def test_forall(self):
         # This one we only parse
         xproto = \

@@ -7,7 +7,23 @@ import sys
 import jinja2
 import os
 import copy
+import pdb
 
+class MissingPolicyException(Exception):
+    pass
+
+def find_missing_policy_calls(name, policies, policy):
+    if isinstance(policy, dict):
+        (k, lst), = policy.items()
+        if k=='policy':
+            policy_name = lst[0]
+            if policy_name not in policies: raise MissingPolicyException("Policy %s invoked missing policy %s"%(name, policy_name))
+        else:
+            for p in lst:
+                find_missing_policy_calls(name, policies, p)
+    elif isinstance(policy, list):
+        for p in lst:
+            find_missing_policy_calls(name, policies, p)
 
 def dotname_to_fqn(dotname):
     b_names = [part.pval for part in dotname]
@@ -121,16 +137,7 @@ class XOS2Jinja(Visitor):
             pname = obj.name.value.pval
 
         self.policies[pname] = obj.body
-
-        return True
-
-    def visit_PolicyDefinition(self, obj):
-        if self.package:
-            pname = '.'.join([self.package, obj.name.value.pval])
-        else:
-            pname = obj.name.value.pval
-
-        self.policies[pname] = obj.body
+        find_missing_policy_calls(pname, self.policies, obj.body)
 
         return True
 

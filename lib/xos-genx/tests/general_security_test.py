@@ -15,12 +15,16 @@ Python security policies, set up an appropriate environment and execute the Pyth
 """
 class XProtoSecurityTest(unittest.TestCase):
     def setUp(self):
-        self.target = XProtoTestHelpers.write_tmp_target("{{ xproto_fol_to_python_test('output', proto.policies.test_policy, None, '0') }}")
+        self.target = XProtoTestHelpers.write_tmp_target("""
+{% for name, policy in proto.policies.items() %}
+{{ xproto_fol_to_python_test(name, policy, None, '0') }}
+{% endfor %}
+""")
 
     def test_constant(self):
         xproto = \
 """
-    policy test_policy < True >
+    policy output < True >
 """
         args = FakeArgs()
         args.inputs = xproto
@@ -42,7 +46,7 @@ class XProtoSecurityTest(unittest.TestCase):
     def test_equal(self):
         xproto = \
 """
-    policy test_policy < ctx.user = obj.user >
+    policy output < ctx.user = obj.user >
 """
 
         args = FakeArgs()
@@ -66,10 +70,46 @@ class XProtoSecurityTest(unittest.TestCase):
 
         verdict = policy_output_enforcer(obj, ctx)
 
+    def test_call_policy(self):
+        xproto = \
+"""
+    policy sub_policy < ctx.user = obj.user >
+    policy output < *sub_policy(child) >
+"""
+
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = self.target
+
+        output = XOSGenerator.generate(args)
+
+        exec(output,globals()) # This loads the generated function, which should look like this:
+
+        """
+        def policy_sub_policy_enforcer(obj, ctx):
+            i1 = (ctx.user == obj.user)
+    	    return i1
+
+	def policy_output_enforcer(obj, ctx):
+	    i1 = policy_sub_policy_enforcer(obj.child, ctx)
+	    return i1
+        """
+
+        obj = FakeArgs()
+        obj.child = FakeArgs()
+	obj.child.user = 1
+
+        ctx = FakeArgs()
+	ctx.user = 1
+
+        verdict = policy_output_enforcer(obj, ctx)
+        self.assertTrue(verdict)
+
+
     def test_bin(self):
         xproto = \
 """
-    policy test_policy < ctx.is_admin = True | obj.empty = True>
+    policy output < ctx.is_admin = True | obj.empty = True>
 """
 
         args = FakeArgs()
@@ -101,7 +141,7 @@ class XProtoSecurityTest(unittest.TestCase):
     def test_exists(self):
         xproto = \
 """
-    policy test_policy < exists Privilege: Privilege.object_id = obj.id >
+    policy output < exists Privilege: Privilege.object_id = obj.id >
 """
 	args = FakeArgs()
         args.inputs = xproto
@@ -121,7 +161,7 @@ class XProtoSecurityTest(unittest.TestCase):
     def test_python(self):
         xproto = \
 """
-    policy test_policy < {{ "jack" in ["the", "box"] }} = False >
+    policy output < {{ "jack" in ["the", "box"] }} = False >
 """
 	args = FakeArgs()
         args.inputs = xproto
@@ -142,7 +182,7 @@ class XProtoSecurityTest(unittest.TestCase):
         # This one we only parse
         xproto = \
 """
-    policy test_policy < forall Credential: Credential.obj_id = obj_id >
+    policy output < forall Credential: Credential.obj_id = obj_id >
 """
 
         args = FakeArgs()

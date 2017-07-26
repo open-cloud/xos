@@ -16,12 +16,16 @@ Python validation policies, set up an appropriate environment and execute the Py
 """
 class XProtoGeneralValidationTest(unittest.TestCase):
     def setUp(self):
-        self.target = XProtoTestHelpers.write_tmp_target("{{ xproto_fol_to_python_validator('output', proto.policies.test_policy, None, 'Necessary Failure') }}")
+        self.target = XProtoTestHelpers.write_tmp_target("""
+{% for name, policy in proto.policies.items() %}
+{{ xproto_fol_to_python_validator(name, policy, None, 'Necessary Failure') }}
+{% endfor %}
+""")
 
     def test_constant(self):
         xproto = \
 """
-    policy test_policy < False >
+    policy output < False >
 """
         args = FakeArgs()
         args.inputs = xproto
@@ -44,7 +48,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
     def test_equal(self):
         xproto = \
 """
-    policy test_policy < not (ctx.user = obj.user) >
+    policy output < not (ctx.user = obj.user) >
 """
 
         args = FakeArgs()
@@ -74,7 +78,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
     def test_equal(self):
         xproto = \
 """
-    policy test_policy < not (ctx.user = obj.user) >
+    policy output < not (ctx.user = obj.user) >
 """
 
         args = FakeArgs()
@@ -104,7 +108,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
     def test_bin(self):
         xproto = \
 """
-    policy test_policy < (ctx.is_admin = True | obj.empty = True) & False>
+    policy output < (ctx.is_admin = True | obj.empty = True) & False>
 """
 
         args = FakeArgs()
@@ -136,7 +140,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
     def test_exists(self):
         xproto = \
 """
-    policy test_policy < exists Privilege: Privilege.object_id = obj.id >
+    policy output < exists Privilege: Privilege.object_id = obj.id >
 """
 	args = FakeArgs()
         args.inputs = xproto
@@ -157,7 +161,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
     def test_python(self):
         xproto = \
 """
-    policy test_policy < {{ "jack" in ["the", "box"] }} = True >
+    policy output < {{ "jack" in ["the", "box"] }} = True >
 """
 	args = FakeArgs()
         args.inputs = xproto
@@ -176,11 +180,48 @@ class XProtoGeneralValidationTest(unittest.TestCase):
         with self.assertRaises(Exception):
             self.assertTrue(policy_output_validator({}, {}) is True)
 
+    def test_call_policy(self):
+        xproto = \
+"""
+    policy sub_policy < ctx.user = obj.user >
+    policy output < *sub_policy(child) >
+"""
+
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = self.target
+
+        output = XOSGenerator.generate(args)
+
+        exec(output,globals()) # This loads the generated function, which should look like this:
+
+        """
+        def policy_sub_policy_validator(obj, ctx):
+            i1 = (ctx.user == obj.user)
+            if (not i1):
+                raise ValidationError('Necessary Failure')
+
+        def policy_output_validator(obj, ctx):
+            i1 = policy_sub_policy_validator(obj.child, ctx)
+            if (not i1):
+                raise ValidationError('Necessary Failure')
+        """
+
+        obj = FakeArgs()
+        obj.child = FakeArgs()
+	obj.child.user = 1
+
+        ctx = FakeArgs()
+	ctx.user = 1
+
+        with self.assertRaises(Exception):
+            verdict = policy_output_enforcer(obj, ctx)
+
     def test_forall(self):
         # This one we only parse
         xproto = \
 """
-    policy test_policy < forall Credential: Credential.obj_id = obj_id >
+    policy output < forall Credential: Credential.obj_id = obj_id >
 """
 
         args = FakeArgs()

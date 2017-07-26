@@ -126,7 +126,7 @@ class FOL2Python:
             k = 'term'
             v = fol
 
-        if k == 'python':
+        if k in ['python', 'policy'] :
             # Tainted, don't optimize
             if var:
                 return {'hoist': []}
@@ -202,8 +202,8 @@ class FOL2Python:
         if not tag:
             tag = gen_random_string()
 
-        policy_function_name = 'policy_%(policy_name)s_%(random_string)s' % {
-            'policy_name': policy_name, 'random_string': tag}
+        policy_function_name_template = 'policy_%s_' + '%(random_string)s' % {'random_string': tag}
+        policy_function_name = policy_function_name_template % policy_name
         self.verdict_next()
         function_str = """
 def %(fn_name)s(obj, ctx):
@@ -211,7 +211,7 @@ def %(fn_name)s(obj, ctx):
         """ % {'fn_name': policy_function_name, 'vvar': self.verdict_variable, 'message': message}
 
         function_ast = self.str_to_ast(function_str)
-        policy_code = self.gen_test(fol, self.verdict_variable)
+        policy_code = self.gen_test(policy_function_name_template, fol, self.verdict_variable)
 
 
         function_ast.body = [policy_code] + function_ast.body
@@ -222,8 +222,9 @@ def %(fn_name)s(obj, ctx):
         if not tag:
             tag = gen_random_string()
 
-        policy_function_name = 'policy_%(policy_name)s_%(random_string)s' % {
-            'policy_name': policy_name, 'random_string': tag}
+        policy_function_name_template = 'policy_%s_' + '%(random_string)s' % {'random_string': tag}
+        policy_function_name = policy_function_name_template % policy_name
+
         self.verdict_next()
         function_str = """
 def %(fn_name)s(obj, ctx):
@@ -231,18 +232,28 @@ def %(fn_name)s(obj, ctx):
         """ % {'fn_name': policy_function_name, 'vvar': self.verdict_variable}
 
         function_ast = self.str_to_ast(function_str)
-        policy_code = self.gen_test(fol, self.verdict_variable)
+        policy_code = self.gen_test(policy_function_name_template, fol, self.verdict_variable)
 
         function_ast.body = [policy_code] + function_ast.body
 
         return function_ast
 
-    def gen_test(self, fol, verdict_var, bindings=None):
+    def gen_test(self, fn_template, fol, verdict_var, bindings=None):
         if isinstance(fol, str):
             return self.str_to_ast('%(verdict_var)s = %(constant)s' % {'verdict_var': verdict_var, 'constant': fol})
 
         (k, v), = fol.items()
 
+        if k == 'policy':
+            policy_name, object_name = v
+
+            policy_fn = fn_template % policy_name
+            call_str = """
+%(verdict_var)s = %(policy_fn)s(obj.%(object_name)s, ctx)
+            """ % {'verdict_var': self.verdict_variable, 'policy_fn': policy_fn, 'object_name': object_name}
+
+            call_ast = self.str_to_ast(call_str)
+            return call_ast
         if k == 'python':
             try:
                 expr_ast = self.str_to_ast(v)
@@ -263,7 +274,7 @@ def %(fn_name)s(obj, ctx):
             top_vvar = self.verdict_variable
             self.verdict_next()
             sub_vvar = self.verdict_variable
-            block = self.gen_test(v, sub_vvar)
+            block = self.gen_test(fn_template, v, sub_vvar)
             assignment_str = """
 %(verdict_var)s = not (%(subvar)s)
                     """ % {'verdict_var': top_vvar, 'subvar': sub_vvar}
@@ -333,8 +344,8 @@ def %(fn_name)s(obj, ctx):
             self.verdict_next()
             rvar = self.verdict_variable
 
-            lblock = self.gen_test(lhs, lvar)
-            rblock = self.gen_test(rhs, rvar)
+            lblock = self.gen_test(fn_template, lhs, lvar)
+            rblock = self.gen_test(fn_template, rhs, rvar)
 
             invert = ''
             if k == '&':
