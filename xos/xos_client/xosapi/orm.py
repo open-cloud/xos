@@ -224,7 +224,7 @@ class ORMWrapper(object):
 
     def tologdict(self):
         try:
-            d = {'model_name':self.__class__.__name__, 'pk': self.pk}
+            d = {'model_name':self._wrapped_class.__class__.__name__, 'pk': self.pk}
         except:
             d = {}
 
