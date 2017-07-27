@@ -1,65 +1,88 @@
-# Xos Config
+# Configuring XOS
 
-This module is responsible to read, validate and distribute the configuration for all
-the XOS based components.
+The `xosconfig` module is used to read, validate and distribute
+configuration information for all XOS-related components.
 
 _The code for this module can be found in lib/xos-config_
 
-The `xosconfig` module use a combination of parameters provided via a `.yaml` file and a service discovery mechanism.
+The `xosconfig` module uses a combination of parameters provided
+via a `.yaml` file and a service discovery mechanism.
 
-## How to use this module
+## How to Use This Module
 
-This module needs to be initialized once (and only once) when you application start, you can do it with:
+This module needs to be initialized once (and only once) when you
+start the application. You can do it with:
+
 ```python
 from xosconfig import Config
 Config.init()
 ```
 
-By default the `xosconfig` module will look for a configuration file in `/opt/xos/config.yaml`, if for any reason you need to pass a different config file it can be done with:
+By default, `xosconfig` looks for a configuration file
+in `/opt/xos/config.yaml`. Passing a
+different config file can be done with:
+
 ```python
 from xosconfig import Config
 Config.init("/path/to/my/config.yaml")
 ```
 
-### Configuration defaults
-Note that defaults are defined for some of the configuration items. Defaults are defined in `lib/xos-config/xosconfig/default.py`.
+### Configuration Defaults
 
-### Reading data from the configuration file
+Defaults are defined for some of the configuration items
+in `lib/xos-config/xosconfig/default.py`.
 
-To access static information defined in the `config.yaml` file you can use this api:
+### Reading Data from the Configuration File
+
+To access static information defined in the `config.yaml` file, use
+the following API:
+
 ```python
 from xosconfig import Config
 res = Config.get('database')
 ```
-this call will return something like:
+This call returns something like:
+
 ```python
 {
     'username': 'test',
     'password': 'safe'
 }
 ```
-Since the configuration support nested dictionary is possible to query directly nested values using a `dot` notation, for example:
+
+Since the configuration supports a nested dictionary, it is possible to
+query directly nested values using `dot` notation. For example:
+
 ```python
 from xosconfig import Config
 res = Config.get('database.username')
 ```
-will return:
+
+returns
+
 ```python
 "test"
 ```
+
 **The configuration schema is defined in `/lib/xos-config/config-schema.yaml`**
 
-### Reading service information
+### Reading Service Information
 
-XOS is composed by a plethora of services, to discover them and their address we are using
-a tool called [registrator](https://github.com/gliderlabs/registrator).
+XOS is composed of a set of services. To discover these services and
+their address, use the
+[registrator](https://github.com/gliderlabs/registrator) tool.
  
-#### Retrieve a list of services:
+#### Retrieving a List of Services
+
+Invoking
+
 ```python
 from xosconfig import Config
 Config.get_service_list()
 ```
-this call will return an array of available services, by default:
+
+returns an array of available services; by default:
+
 ```python
 [
   "xos-ws",
@@ -71,17 +94,23 @@ this call will return an array of available services, by default:
   "consul",
 ]
 ```
+
 >You can get the same information on the `head node` using:
 >```bash
 > curl consul:8500/v1/catalog/services
 >```
 
-#### Retrieve information for a single service:
+#### Retrieve Information for a Single Service
+
+Invoking
+
 ```python
 from xosconfig import Config
 Config.get_service_info('xos-db')
 ```
-that will return:
+
+returns
+
 ```python
 {
     'name': 'xos-db',
@@ -94,12 +123,17 @@ that will return:
 > curl consul:8500/v1/catalog/service/xos-db
 >```
 
-#### Retrieve endpoint for a single service:
+#### Retrieving Endpoint for a Single Service
+
+Invoking
+
 ```python
 from xosconfig import Config
 Config.get_service_endpoint('xos-db')
 ```
-that will return:
+
+returns
+
 ```python
 "http://172.18.0.4:5432"
 ```
