@@ -48,7 +48,7 @@ class MockImage(MockObject):
     name = None
 
 class MockTenant(MockObject):
-    provider_service = None
+    owner = None
     deleted = False
     instance = None
     creator = None
@@ -66,29 +66,29 @@ class TestModelPolicyTenantWithContainer(unittest.TestCase):
         model_policy_tenantwithcontainer.Instance = MockInstance
         model_policy_tenantwithcontainer.Flavor = MockFlavor
 
-    @patch.object(MockTenant, "provider_service")
-    def test_manage_container_no_slices(self, provider_service):
-        provider_service.slices.count.return_value = 0
+    @patch.object(MockTenant, "owner")
+    def test_manage_container_no_slices(self, owner):
+        owner.slices.count.return_value = 0
         with self.assertRaises(Exception) as e:
             self.policy.manage_container(self.tenant)
         self.assertEqual(e.exception.message, "The service has no slices")
 
-    @patch.object(MockTenant, "provider_service")
+    @patch.object(MockTenant, "owner")
     @patch.object(MockTenant, "save")
     @patch.object(TenantWithContainerPolicy, "get_image")
     @patch.object(LeastLoadedNodeScheduler, "pick")
     @patch.object(MockNode, "site_deployment")
     @patch.object(MockInstance, "save")
     @patch.object(MockInstance, "delete")
-    def test_manage_container(self, instance_delete, instance_save, site_deployment, pick, get_image, tenant_save, provider_service):
+    def test_manage_container(self, instance_delete, instance_save, site_deployment, pick, get_image, tenant_save, owner):
         # setup mocks
         node = MockNode(hostname="my.node.com")
         slice = MockSlice(name="mysite_test1", default_flavor=self.flavor, default_isolation="vm")
         image = MockImage(name="trusty-server-multi-nic")
         deployment = MockDeployment(name="testdeployment")
-        provider_service.slices.count.return_value = 1
-        provider_service.slices.all.return_value = [slice]
-        provider_service.slices.first.return_value = slice
+        owner.slices.count.return_value = 1
+        owner.slices.all.return_value = [slice]
+        owner.slices.first.return_value = slice
         get_image.return_value = image
         pick.return_value = (node, None)
         site_deployment.deployment = deployment
@@ -119,7 +119,7 @@ class TestModelPolicyTenantWithContainer(unittest.TestCase):
         # make sure manage_container did what it is supposed to do
         self.assertEqual(self.tenant.instance, None)
 
-    @patch.object(MockTenant, "provider_service")
+    @patch.object(MockTenant, "owner")
     @patch.object(MockTenant, "save")
     @patch.object(TenantWithContainerPolicy, "get_image")
     @patch.object(LeastLoadedNodeScheduler, "pick")
@@ -127,15 +127,15 @@ class TestModelPolicyTenantWithContainer(unittest.TestCase):
     @patch.object(MockInstance, "save")
     @patch.object(MockInstance, "delete")
     @patch.object(MockFlavor, "objects")
-    def test_manage_container_no_m1_small(self, flavor_objects, instance_delete, instance_save, site_deployment, pick, get_image, tenant_save, provider_service):
+    def test_manage_container_no_m1_small(self, flavor_objects, instance_delete, instance_save, site_deployment, pick, get_image, tenant_save, owner):
         # setup mocks
         node = MockNode(hostname="my.node.com")
         slice = MockSlice(name="mysite_test1", default_flavor=None, default_isolation="vm")
         image = MockImage(name="trusty-server-multi-nic")
         deployment = MockDeployment(name="testdeployment")
-        provider_service.slices.count.return_value = 1
-        provider_service.slices.all.return_value = [slice]
-        provider_service.slices.first.return_value = slice
+        owner.slices.count.return_value = 1
+        owner.slices.all.return_value = [slice]
+        owner.slices.first.return_value = slice
         get_image.return_value = image
         pick.return_value = (node, None)
         site_deployment.deployment = deployment
