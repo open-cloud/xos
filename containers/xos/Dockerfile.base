@@ -44,6 +44,7 @@ COPY pip_requirements.txt /tmp/pip_requirements.txt
 
 # Upgrade requests from apt installed version
 RUN pip install --no-deps -U -I requests==2.11.1 \
+ && pip install --no-deps -U -I pip==9.0.1 setuptools==36.0.1 \
  && pip install --no-deps -r /tmp/pip_requirements.txt \
  && pip freeze > /var/xos/pip_freeze_pip_up_`date -u +%Y%m%dT%H%M%S`
 
