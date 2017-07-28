@@ -138,7 +138,9 @@ function genkeys {
 }
 
 function makemigrations {
+    cp /opt/xos/core/migrations/0002_initial_data.py /opt/xos/0002_initial_data.py # HACK to save 0002_initial_data.py
     rm -rf /opt/xos/*/migrations /opt/xos/services/*/migrations
+    cp /opt/xos/0002_initial_data.py /opt/xos/core/migrations/0002_initial_data.py # HACK to restore 0002_initial_data.py
     python ./manage.py makemigrations core
     python ./manage.py makemigrations syndicate_storage
 
