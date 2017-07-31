@@ -76,35 +76,6 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
 
         with self.assertRaises(Exception):
            policy_output_validator(obj, {})
-    def test_equal(self):
-        xproto = \
-"""
-    policy test_policy < not (ctx.user = obj.user) >
-"""
-
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
-
-        output = XOSGenerator.generate(args)
-
-        exec(output) # This loads the generated function, which should look like this:
-
-        """
-        def policy_output_validator(obj, ctx):
-            i2 = (ctx.user == obj.user)
-            i1 = (not i2)
-            if (not i1):
-                raise Exception('Necessary Failure')
-        """
-
-        obj = FakeArgs()
-	obj.user = 1
-        ctx = FakeArgs()
-	ctx.user = 1
-
-        with self.assertRaises(Exception):
-           policy_output_validator(obj, ctx)
 
     def test_equal(self):
         xproto = \
@@ -139,7 +110,7 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
     def test_bin(self):
         xproto = \
 """
-    policy test_policy < (ctx.is_admin = True | obj.empty = True) & False>
+    policy test_policy < not (ctx.is_admin = True | obj.empty = True) | False>
 """
 
         args = FakeArgs()

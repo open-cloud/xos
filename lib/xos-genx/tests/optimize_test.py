@@ -1,70 +1,78 @@
 import unittest
 from xosgenx.jinja2_extensions.fol2 import FOL2Python
-import pdb
+import vimpdb
 
 class XProtoOptimizeTest(unittest.TestCase):
     def setUp(self):
         self.f2p = FOL2Python()
+        self.maxDiff=None
 
     def test_constant(self):
         input = 'True'
-        output = self.f2p.hoist_constants(input)
+        output = self.f2p.hoist_outer(input)
         self.assertEqual(output, input)
 
     def test_exists(self):
-        input = {'exists': ['x',{'|':['x','y']}]}
+        input = {'exists': ['X',{'|':['X.foo','y']}]}
 
-        output = self.f2p.hoist_constants(input)
-        expected = {'|': ['y', {'exists': ['x', 'x']}]}
+        output = self.f2p.hoist_outer(input)
+        expected = {'|': ['y', {'&': [{'not': 'y'}, {'exists': ['X', 'X.foo']}]}]}
         self.assertEqual(output, expected)
         
-    def test_forall(self):
-        input = {'forall': ['x',{'|':['x','y']}]}
+    def test_exists_implies(self):
+        input = {'exists': ['Foo', {'&': [{'=': ('Foo.a', '1')}, {'->': ['write_access', {'=': ('Foo.b', '1')}]}]}]}
 
-        output = self.f2p.hoist_constants(input)
-        expected = {'|': ['y', {'forall': ['x', 'x']}]}
+        output = self.f2p.hoist_outer(input)
+        expected = {'|': [{'&': ['write_access', {'exists': ['Foo', {'&': [{'=': ['Foo.a', '1']}, {'=': ['Foo.b', '1']}]}]}]}, {'&': [{'not': 'write_access'}, {'exists': ['Foo', {'=': ['Foo.a', '1']}]}]}]}
+        self.assertEqual(output, expected)
+
+    def test_forall(self):
+        input = {'forall': ['X',{'|':['X.foo','y']}]}
+
+        output = self.f2p.hoist_outer(input)
+        expected = {'|': ['y', {'&': [{'not': 'y'}, {'forall': ['X', 'X.foo']}]}]}
         self.assertEqual(output, expected)
 
     def test_exists_embedded(self):
-        input = {'|':['True',{'exists': ['x',{'|':['x','y']}]}]}
+        input = {'&':['True',{'exists': ['X',{'|':['X.foo','y']}]}]}
 
-        output = self.f2p.hoist_constants(input)
-        expected = {'|': ['True', {'|': ['y', {'exists': ['x', 'x']}]}]}
+        output = self.f2p.hoist_outer(input)
+        expected = {'|': ['y', {'&': [{'not': 'y'}, {'exists': ['X', 'X.foo']}]}]}
         self.assertEqual(output, expected)
     
     def test_exists_equals(self):
-        input = {'|':['True',{'exists': ['x',{'|':['x',{'=':['y','z']}]}]}]}
+        input = {'&':['True',{'exists': ['X',{'|':['X.foo',{'=':['y','z']}]}]}]}
 
-        output = self.f2p.hoist_constants(input)
-        expected = {'|': ['True', {'|': [{'=': ['y', 'z']}, {'exists': ['x', 'x']}]}]}
+        output = self.f2p.hoist_outer(input)
+        expected = {'|': [{'=': ['y', 'z']}, {'&': [{'not': {'=': ['y', 'z']}}, {'exists': ['X', 'X.foo']}]}]}
         self.assertEqual(output, expected)
 
     def test_exists_nested_constant(self):
-        input = {'|':['True',{'exists': ['x',{'|':['y',{'=':['y','x']}]}]}]}
+        input = {'&':['True',{'exists': ['X',{'|':['y',{'=':['y','X.foo']}]}]}]}
 
-        output = self.f2p.hoist_constants(input)
-        expected = {'|': ['True', {'|': ['y', {'exists': ['x', {'=': ['y', 'x']}]}]}]}
+        output = self.f2p.hoist_outer(input)
+        expected = {'|': ['y', {'&': [{'not': 'y'}, {'exists': ['X', {'=': ['False', 'X.foo']}]}]}]}
         self.assertEqual(output, expected)
 
     def test_exists_nested(self):
-        input = {'exists': ['x',{'exists':['y',{'=':['y','x']}]}]}
+        input = {'exists': ['X',{'exists':['Y',{'=':['Y.foo','X.foo']}]}]}
 
-        output = self.f2p.hoist_constants(input)
-        expected = {'exists': ['x', {'exists': ['y', {'=': ['y', 'x']}]}]}
-        self.assertEqual(output, expected)
+        output = self.f2p.hoist_outer(input)
+        expected = input
+        self.assertEqual(input, output)
 
     def test_exists_nested2(self):
-        input = {'exists': ['x',{'exists':['y',{'=':['z','y']}]}]}
+        input = {'exists': ['X',{'exists':['Y',{'=':['Z','Y']}]}]}
 
-        output = self.f2p.hoist_constants(input)
-        expected = {'exists': ['y', {'=': ['z', 'y']}]}
+        output = self.f2p.hoist_outer(input)
+        expected = {'exists': ['Y', {'=': ['Z', 'Y']}]}
         self.assertEqual(output, expected)
 
     def test_exists_nested3(self):
-        input = {'exists': ['x',{'exists':['y',{'=':['z','x']}]}]}
+        input = {'exists': ['X',{'exists':['Y',{'=':['Z','X']}]}]}
 
-        output = self.f2p.hoist_constants(input)
-        expected = {'exists': ['x', {'=': ['z', 'x']}]}
+        output = self.f2p.hoist_outer(input)
+        expected = {'exists': ['X', {'=': ['Z', 'X']}]}
         self.assertEqual(output, expected)
 
 

@@ -108,7 +108,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
     def test_bin(self):
         xproto = \
 """
-    policy output < (ctx.is_admin = True | obj.empty = True) & False>
+    policy output < (ctx.is_admin = True | obj.empty = True) | False>
 """
 
         args = FakeArgs()
@@ -128,10 +128,10 @@ class XProtoGeneralValidationTest(unittest.TestCase):
         """
 
         obj = FakeArgs()
-	obj.empty = True
+	obj.empty = False
 
 	ctx = FakeArgs()
-	ctx.is_admin = True
+	ctx.is_admin = False
 
         with self.assertRaises(Exception):
             verdict = policy_output_validator(obj, ctx)
