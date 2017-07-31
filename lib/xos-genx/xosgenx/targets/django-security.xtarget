@@ -1,0 +1,9 @@
+from privilege import Privilege
+from django.db.models import Q
+
+{% for m in proto.messages %}
+{% if m.policy %}
+{{ xproto_fol_to_python_test(m.policy, proto.policies[m.policy], m) }}
+{% endif %}
+
+{% endfor %}

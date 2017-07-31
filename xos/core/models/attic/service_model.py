@@ -5,25 +5,12 @@ def __init__(self, *args, **kwargs):
     self._meta.get_field("kind").default = self.KIND
     super(Service, self).__init__(*args, **kwargs)
 
-@classmethod
-def select_by_user(cls, user):
-    if user.is_admin:
-        return cls.objects.all()
-    else:
-        from core.models.privilege import Privilege
-        service_ids = [
-            sp.object_id for sp in Privilege.objects.filter(accessor_id=user.id, accessor_type='User', object_type='Service')]
-        return cls.objects.filter(id__in=service_ids)
-
 @property
 def serviceattribute_dict(self):
     attrs = {}
     for attr in self.serviceattributes.all():
         attrs[attr.name] = attr.value
     return attrs
-
-def can_update(self, user):
-    return user.can_update_service(self, allow=['admin'])
 
 def get_scalable_nodes(self, slice, max_per_node=None, exclusive_slices=[]):
     """

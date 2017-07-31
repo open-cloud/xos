@@ -316,6 +316,16 @@ class XOSCoreBuilder(object):
 
                     XOSGenerator.generate(args)
 
+                    # Generate security checks
+                    class SecurityArgs:
+                        output = build_dest_fn
+                        target = 'django-security.xtarget'
+                        dest_file = 'security.py'
+                        write_to_file = 'single'
+                        files = file_list
+
+                    XOSGenerator.generate(SecurityArgs())
+
                     # Generate __init__.py
                     if service_name == "core":
                         class InitArgs:
@@ -324,6 +334,7 @@ class XOSCoreBuilder(object):
                             dest_file = '__init__.py'
                             write_to_file = 'single'
                             files = file_list
+
                         XOSGenerator.generate(InitArgs())
 
                 except Exception, e:

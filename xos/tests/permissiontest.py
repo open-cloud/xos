@@ -112,7 +112,7 @@ class TestPermission(unittest.TestCase):
     def test_deployment(self):
         for user in [self.user_admin, self.user_deployment_admin]:
             self.assertEqual(
-                self.deployment.save_by_user(user), None)
+                self.deployment.save(), None)
         for user in [self.user_read_only, self.user_default, self.user_site_admin,
                      self.user_site_pi, self.user_site_tech, self.user_slice_admin,
                      self.user_slice_access]:

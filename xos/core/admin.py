@@ -144,16 +144,16 @@ class XOSAdminMixin(object):
 
         obj.caller = request.user
         # update openstack connection to use this site/tenant
-        obj.save_by_user(request.user)
+        obj.save()
 
     def delete_model(self, request, obj):
-        obj.delete_by_user(request.user)
+        obj.delete()
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
         for instance in instances:
             instance.caller = request.user
-            instance.save_by_user(request.user)
+            instance.save()
 
         # BUG in django 1.7? Objects are not deleted by formset.save if
         # commit is False. So let's delete them ourselves.
@@ -830,10 +830,10 @@ class ControllerAdmin(XOSBaseAdmin):
 
     def save_model(self, request, obj, form, change):
             # update openstack connection to use this site/tenant
-        obj.save_by_user(request.user)
+        obj.save()
 
     def delete_model(self, request, obj):
-        obj.delete_by_user(request.user)
+        obj.delete()
 
     def queryset(self, request):
         return Controller.select_by_user(request.user)
@@ -1047,10 +1047,10 @@ class SiteAdmin(XOSBaseAdmin):
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant
-        obj.save_by_user(request.user)
+        obj.save()
 
     def delete_model(self, request, obj):
-        obj.delete_by_user(request.user)
+        obj.delete()
 
 
 class SitePrivilegeAdmin(XOSBaseAdmin):

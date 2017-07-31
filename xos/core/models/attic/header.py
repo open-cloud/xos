@@ -5,7 +5,6 @@ import json
 import operator
 from operator import attrgetter
 from core.models.xosbase import *
-from core.models.privilege import *
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import now

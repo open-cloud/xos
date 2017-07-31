@@ -4,13 +4,19 @@
 {%- for l in m.links %}
 
 {% if l.peer.name != m.name %}
-from core.models.{{ l.peer.name | lower }} import {{ l.peer.name }} 
+from {{ l.peer.name | lower }} import {{ l.peer.name }} 
 {% endif %}
 
 {%- endfor %}
+{% if m.name!='XOSBase' and 'Mixin' not in m.name %}
+import security
+{% if m.name!='Privilege' %}
+from privilege import Privilege
+{% endif %}
+{% endif %}
 {% for b in m.bases %}
 {% if b.name!='XOSBase' and 'Mixin' not in b.name %}
-from core.models.{{b.name | lower}} import {{ b.name }}
+from {{b.name | lower}} import {{ b.name }}
 {% endif %}
 {% endfor %}
 
@@ -57,6 +63,16 @@ class {{ m.name }}{{ xproto_base_def(m.name, m.bases) }}:
       policy_{{policy}}_validator(self, None)
       {% endfor %}
       super({{ m.name }}, self).save(*args, **kwds)
+
+  def can_access(self, ctx):
+      {% if m.policy %}
+      verdict = security.{{m.policy}}_security_check(self, ctx)
+      return verdict,"{{ m.policy }}"
+      {% else %}
+      verdict = XOS_GLOBAL_DEFAULT_SECURITY_POLICY
+      return verdict,"xos_default_policy"
+      {% endif %}
+      
   {% endif %}
     
 {% if file_exists(xproto_base_name(m.name)|lower+'_bottom.py') -%}{{ include_file(xproto_base_name(m.name)|lower+'_bottom.py') }}{% endif %}

@@ -29,7 +29,3 @@ def select_by_acl(user):
             ids.append(deployment.id)
 
     return Deployment.objects.filter(id__in=ids)
-
-def can_update(self, user):
-    return user.can_update_deployment(self)
-

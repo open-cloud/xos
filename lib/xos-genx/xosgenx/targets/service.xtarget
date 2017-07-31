@@ -73,6 +73,15 @@ class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases, legacy_tag
       policy_{{policy}}_validator(self, None)
       {% endfor %}
       super({{ m.name }}{{ legacy_tag }}, self).save(*args, **kwds)
+  
+  def can_access(self, ctx):
+      {% if m.policy %}
+      verdict = security.{{m.policy}}_security_check(self, ctx)
+      return verdict,"{{ m.policy }}"
+      {% else %}
+      verdict = True
+      return verdict,"xos_default_policy"
+      {% endif %}
 
 {% if file_exists(m.name|lower+'_bottom.py') -%}{{ include_file(m.name|lower+'_bottom.py') }}{% endif %} 
 {% endfor %}

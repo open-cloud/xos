@@ -422,7 +422,7 @@ def %(fn_name)s(obj, ctx):
         if not tag:
             tag = gen_random_string()
 
-        policy_function_name_template = 'policy_%s_' + '%(random_string)s' % {'random_string': tag}
+        policy_function_name_template = '%s_' + '%(random_string)s' % {'random_string': tag}
         policy_function_name = policy_function_name_template % policy_name
 
         self.verdict_next()
@@ -636,7 +636,7 @@ def xproto_fol_to_python_test(policy, fol, model, tag=None):
     if fol_reduced in ['True','False'] and fol != fol_reduced:
         raise TrivialPolicy("Policy %(name)s trivially reduces to %(reduced)s. If this is what you want, replace its contents with %(reduced)s"%{'name':policy, 'reduced':fol_reduced})
 
-    a = f2p.gen_test_function(fol_reduced, policy, tag='enforcer')
+    a = f2p.gen_test_function(fol_reduced, policy, tag='security_check')
 
     return astunparse.unparse(a)
 

@@ -32,8 +32,6 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         for attr, value in serializer.validated_data.items():
             setattr(obj, attr, value)
         obj.caller = request.user
-        if not obj.can_update(request.user):
-            raise XOSPermissionDenied()
 
         self.perform_update(serializer)
 
@@ -42,11 +40,8 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
         obj.caller = request.user
-        if obj.can_update(request.user):
-            self.perform_destroy(obj)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        self.perform_destroy(obj)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def handle_exception(self, exc):
         # REST API drops the string attached to Django's PermissionDenied
@@ -70,9 +65,6 @@ class XOSListCreateAPIView(generics.ListCreateAPIView):
         # now do XOS can_update permission checking
         obj = serializer.Meta.model(**serializer.validated_data)
         obj.caller = request.user
-        if not obj.can_update(request.user):
-            raise XOSPermissionDenied()
-
         self.perform_create(serializer)
 
         headers = self.get_success_headers(serializer.data)

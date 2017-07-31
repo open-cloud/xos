@@ -6,13 +6,3 @@ def tologdict(self):
     except:
         pass
     return d
-
-@staticmethod
-def select_by_user(user):
-    if user.is_admin:
-        qs = ControllerSlice.objects.all()
-    else:
-        slices = Slice.select_by_user(user)
-        qs = ControllerSlice.objects.filter(slice__in=slices)
-    return qs    
-

@@ -15,9 +15,6 @@ def __init__(self, *args, **kwargs):
 def get_controller(self):
     return self.controller
 
-def can_update(self, user):
-    return user.can_update_root()
-
 def delete(self, *args, **kwds):
     # so we have something to give the observer
     purge = kwds.get('purge',False)
@@ -130,26 +127,6 @@ def save(self, *args, **kwargs):
     self.push_redis_event()
 
     self._initial = self._dict
-
-def save_by_user(self, user, *args, **kwds):
-    if not self.can_update(user):
-        if getattr(self, "_cant_update_fieldName", None) is not None:
-            raise PermissionDenied("You do not have permission to update field %s on object %s" % (self._cant_update_fieldName, self.__class__.__name__))
-        else:
-            raise PermissionDenied("You do not have permission to update %s objects" % self.__class__.__name__)
-
-    self.save(*args, **kwds)
-
-def delete_by_user(self, user, *args, **kwds):
-    if not self.can_update(user):
-        raise PermissionDenied("You do not have permission to delete %s objects" % self.__class__.__name__)
-    self.delete(*args, **kwds)
-
-@classmethod
-def select_by_user(cls, user):
-    # This should be overridden by descendant classes that want to perform
-    # filtering of visible objects by user.
-    return cls.objects.all()
 
 def tologdict(self):
     try:

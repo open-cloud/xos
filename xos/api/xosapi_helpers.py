@@ -65,8 +65,6 @@ class PlusModelSerializer(serializers.ModelSerializer):
             user = self.context['request'].user
             if user.__class__.__name__=="AnonymousUser":
                 raise XOSPermissionDenied()
-            if not instance.can_update(user):
-                raise XOSPermissionDenied()
 
         for k in validated_data:
             if k in property_fields:
@@ -141,8 +139,6 @@ class XOSViewSet(viewsets.ModelViewSet):
             if obj and hasattr(obj,"can_update"):
                 user = self.request.user
                 if user.__class__.__name__=="AnonymousUser":
-                    raise XOSPermissionDenied()
-                if not obj.can_update(user):
                     raise XOSPermissionDenied()
 
         return obj

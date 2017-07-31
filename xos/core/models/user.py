@@ -7,7 +7,8 @@ from collections import defaultdict
 from operator import attrgetter, itemgetter
 
 from core.middleware import get_request
-from core.models import DashboardView, XOSBase, PlModelMixIn, Site, ModelLink
+from xosbase import XOSBase,PlModelMixIn
+import dashboardview
 from core.models.xosbase import StrippedCharField, XOSCollector
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.exceptions import PermissionDenied
@@ -20,6 +21,10 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 from timezones.fields import TimeZoneField
 from django.contrib.contenttypes.models import ContentType
+
+# The following manual import is needed because we do not
+# currently generate the User models.
+import security
 
 import redis
 from redis import ConnectionError
@@ -114,7 +119,7 @@ class User(AbstractBaseUser, PlModelMixIn):
     phone = StrippedCharField(null=True, blank=True,
                               help_text="phone number contact", max_length=100)
     user_url = models.URLField(null=True, blank=True)
-    site = models.ForeignKey(Site, related_name='users',
+    site = models.ForeignKey('Site', related_name='users',
                              help_text="Site this user will be homed too")
     public_key = models.TextField(
         null=True, blank=True, max_length=1024, help_text="Public key string")
@@ -142,8 +147,6 @@ class User(AbstractBaseUser, PlModelMixIn):
     lazy_blocked = models.BooleanField(default=False)
     no_sync = models.BooleanField(default=False)     # prevent object sync
     no_policy = models.BooleanField(default=False)   # prevent model_policy run
-
-    #xos_links = [ModelLink(Site,via='site')]
 
     timezone = TimeZoneField()
 
@@ -207,7 +210,7 @@ class User(AbstractBaseUser, PlModelMixIn):
 
         if (not dashboards) and (not self.is_appuser):
             for dashboardName in DEFAULT_DASHBOARDS:
-                dbv = DashboardView.objects.filter(name=dashboardName)
+                dbv = dashboardview.DashboardView.objects.filter(name=dashboardName)
                 if dbv:
                     dashboards.append(dbv[0])
 
@@ -321,150 +324,6 @@ class User(AbstractBaseUser, PlModelMixIn):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
-    def can_update(self, user):
-        from core.models.privilege import Privilege
-        _cant_update_fieldName = None
-        if user.can_update_root():
-            return True
-
-        # site pis can update
-        site_privs = Privilege.objects.filter(accessor_id=user.id, object_id=self.site.id, object_type='Site', accessor_type='User')
-        for site_priv in site_privs:
-            if site_priv.permission == 'role:admin':
-                return True
-
-            if site_priv.permission == 'role:pi':
-                for fieldName in self.diff.keys():
-                    if fieldName in self.PI_FORBIDDEN_FIELDS:
-                        _cant_update_fieldName = fieldName
-                        return False
-                return True
-        if (user.id == self.id):
-            for fieldName in self.diff.keys():
-                if fieldName in self.USER_FORBIDDEN_FIELDS:
-                    _cant_update_fieldName = fieldName
-                    return False
-            return True
-
-        return False
-
-    def can_update_root(self):
-        """
-        Return True if user has root (global) write access.
-        """
-        if self.is_readonly:
-            return False
-        if self.is_admin:
-            return True
-
-        return False
-
-    def can_update_deployment(self, deployment):
-        from core.models.privilege import Privilege
-        if self.can_update_root():
-            return True
-
-        if Privilege.objects.filter(
-                object_id=deployment.id,
-                accessor_id=self.id,
-                permission__in=['role:admin', 'role:Admin']):
-            return True
-        return False
-
-    def can_update_site(self, site, allow=[]):
-        from core.models.privilege import Privilege
-        if self.can_update_root():
-            return True
-        if Privilege.objects.filter(
-                object_id=site.id, accessor_id=self.id, accessor_type='User', permission__in=['role:admin', 'role:Admin'] + ['role:'+opt for opt in allow]):
-            return True
-        return False
-
-    def can_update_slice(self, slice):
-        from core.models.privilege import Privilege
-        if self.can_update_root():
-            return True
-        if self == slice.creator:
-            return True
-        if self.can_update_site(slice.site, allow=['pi']):
-            return True
-
-        if Privilege.objects.filter(
-                object_id=slice.id, accessor_id=self.id, permission__in=['role:admin', 'role:Admin'], accessor_type='User', object_type='Slice'):
-            return True
-        return False
-
-    def can_update_service(self, service, allow=[]):
-        from core.models.privilege import Privilege
-        if self.can_update_root():
-            return True
-        if Privilege.objects.filter(
-                object_id=service.id, accessor_id=self.id, accessor_type='User', permission__in=['role:admin', 'role:Admin'] + ['role:'+opt for opt in allow]):
-            return True
-        return False
-
-    def can_update_tenant_root(self, tenant_root, allow=[]):
-        from core.models.tenantroot import TenantRoot
-        from core.models.privilege import Privilege
-        if self.can_update_root():
-            return True
-        if Privilege.objects.filter(
-                object_id=tenant_root.id, accessor_type='User',accessor_id=self.id, permission__in=['role:admin', 'role:Admin'] + ['role:'+opt for opt in allow]):
-            return True
-        return False
-
-    def can_update_tenant(self, tenant, allow=[]):
-        from core.models.tenant import Tenant
-        from core.models.privilege import Privilege
-        if self.can_update_root():
-            return True
-        if Privilege.objects.filter(
-                object_id=tenant.id, accessor_type='User',accessor_id=self.id, permission__in=['role:admin', 'role:Admin'] + ['role:'+opt for opt in allow]):
-            return True
-        return False
-
-    def can_update_tenant_root_privilege(self, tenant_root_privilege, allow=[]):
-        return self.can_update_tenant_root(tenant_root_privilege.tenant_root, allow)
-
-    def can_update_tenant_privilege(self, tenant_privilege, allow=[]):
-        return self.can_update_tenant(tenant_privilege.tenant, allow)
-
-    @staticmethod
-    def select_by_user(user):
-        if user.is_admin:
-            qs = User.objects.all()
-        else:
-            # can see all users at any site where this user has pi role
-            from core.models.privilege import Privilege
-            site_privs = Privilege.objects.filter(accessor_type='User', accessor_id=user.id, object_type='Site')
-            site_ids = [sp.object_id for sp in site_privs if sp.permission in [
-                'role:Admin', 'role:admin', 'role:pi']]
-            sites = [Site.objects.get(pk=sid) for sid in site_ids]
-
-            # get site privs of users at these sites
-            site_privs = Privilege.objects.filter(object_id__in=site_ids, object_type='Site', accessor_type='User')
-
-            user_ids = [sp.accessor_id for sp in site_privs] + [user.id]
-            qs = User.objects.filter(Q(site__in=sites) | Q(id__in=user_ids))
-        return qs
-
-    def save_by_user(self, user, *args, **kwds):
-        if not self.can_update(user):
-            if getattr(self, "_cant_update_fieldName", None) is not None:
-                raise PermissionDenied("You do not have permission to update field %s on object %s" % (
-                    self._cant_update_fieldName, self.__class__.__name__))
-            else:
-                raise PermissionDenied(
-                    "You do not have permission to update %s objects" % self.__class__.__name__)
-
-        self.save(*args, **kwds)
-
-    def delete_by_user(self, user, *args, **kwds):
-        if not self.can_update(user):
-            raise PermissionDenied(
-                "You do not have permission to delete %s objects" % self.__class__.__name__)
-        self.delete(*args, **kwds)
-
     def apply_profile(self, profile):
         if profile == "regular":
             self.is_appuser = False
@@ -491,11 +350,14 @@ class User(AbstractBaseUser, PlModelMixIn):
         cls = ct.model_class()
         return cls.objects.get(id=object_id)
 
+    ''' This function is hardcoded here because we do not yet
+    generate the User class'''
+    def can_access(self, ctx):
+        return security.user_policy_security_check(self, ctx), "user_policy"
 
 class UserDashboardView(XOSBase):
     user = models.ForeignKey(User, related_name='userdashboardviews')
     dashboardView = models.ForeignKey(
-        DashboardView, related_name='userdashboardviews')
+        dashboardview.DashboardView, related_name='userdashboardviews')
     order = models.IntegerField(default=0)
 
-    xos_links = [ModelLink(User, via='user'), ModelLink(DashboardView,via='userdashboardviews')]

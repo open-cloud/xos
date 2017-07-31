@@ -16,9 +16,6 @@ def __xos_save_base(self, *args, **kwds):
     if not self.creator and hasattr(self, 'caller'):
         self.creator = self.caller
 
-def can_update(self, user):
-    return user.can_update_slice(self.slice)
-
 def all_ips(self):
     ips={}
     for ns in self.ports.all():
@@ -62,15 +59,6 @@ def get_ssh_ip(self):
 
     # if all else fails, look for nat-net (for OpenCloud?)
     return self.get_network_ip("nat")
-
-@staticmethod
-def select_by_user(user):
-    if user.is_admin:
-        qs = Instance.objects.all()
-    else:
-        slices = Slice.select_by_user(user)
-        qs = Instance.objects.filter(slice__in=slices)
-    return qs
 
 def get_ssh_command(self):
     if (not self.instance_id) or (not self.node) or (not self.instance_name):
