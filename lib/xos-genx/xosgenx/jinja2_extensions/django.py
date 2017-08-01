@@ -53,6 +53,8 @@ def xproto_django_type(xptype, xptags):
 def xproto_django_link_type(f):
     if (f['link_type']=='manytoone'):
         return 'ForeignKey'
+    elif (f['link_type']=='onetoone'):
+        return 'OneToOneField'
     elif (f['link_type']=='manytomany'):
         if (f['dst_port']):
             return 'ManyToManyField'
