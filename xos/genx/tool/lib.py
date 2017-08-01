@@ -34,11 +34,13 @@ def django_string_type(xptags):
     else:
         return 'TextField'
 
-def xproto_base_def(base):
+def xproto_base_def(base, model_name, suffix='', suffix_list=[]):
     if (not base):
         return ''
     else:
-        return '(' + ','.join(base) + ')'
+        int_base = [i+suffix for i in base if i in suffix_list]
+        ext_base = [i for i in base if i not in suffix_list]
+        return '(' + ','.join(int_base + ext_base) + ')'
 
 def xproto_first_non_empty(lst):
     for l in lst:

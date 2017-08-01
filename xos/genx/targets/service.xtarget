@@ -30,8 +30,7 @@ from core.models import {{ b }}
 {% endfor %}
 
 {% for m in proto.messages %}
-
-class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.bases) }}:
+class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.bases, m.name,legacy_tag, proto.message_names) }}:
 
   KIND = {{ xproto_first_non_empty([m.options.kind, options.kind, options.name, "Set a kind in your xproto!"]) }}
 
