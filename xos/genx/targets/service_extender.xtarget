@@ -1,4 +1,4 @@
-from core.models.xosbase import *
+from core.models.plcorebase import *
 {% for m in proto.messages %}
 from models_decl import {{ m.name }}_decl
 {%- endfor %}
