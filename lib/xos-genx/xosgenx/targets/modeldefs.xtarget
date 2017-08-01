@@ -13,6 +13,15 @@ items:
     name: {{ f.name }}_id
     relation: {model: {{ f.options.model }}, type: {{ f.options.link_type }}}
     {% endif %}
+  {%- if f.options.default %}
+    default: "{{ xproto_unquote(xproto_default_to_gui(f.options.default)) }}"
+  {%- endif %}
+  {%- if f.options.choices %}
+    options:
+    {% for o in xproto_options_choices_to_dict(xproto_unquote(f.options.choices)) %}
+    - {{ o }}
+    {% endfor %}
+  {%- endif %}
     type: {{ xproto_type_to_ui_type(f) }}
     {% set validators = xproto_validators(f) -%}
     {% if validators -%}
@@ -25,7 +34,7 @@ items:
     {% endif %}
   {% endif -%}
   {% endfor %}
-  name: {{ m.name }}  
+  name: {{ m.name }}
   {%- set goodlinks = xproto_links_to_modeldef_relations( xproto_base_links(m, proto.message_table) + m.links ) %}
   {% if goodlinks %}
   relations:
