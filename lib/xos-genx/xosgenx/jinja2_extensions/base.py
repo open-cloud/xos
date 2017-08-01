@@ -63,14 +63,15 @@ def xproto_links_to_modeldef_relations(llst):
     return outlist
 
 
-def xproto_base_def(model_name, base):
+def xproto_base_def(model_name, base, suffix='', suffix_list=[]):
     if (model_name=='XOSBase'):
         return '(models.Model, PlModelMixIn)'
     elif (not base):
         return ''
     else:
-        base = map(lambda s:s['name'], base)
-        return '(' + ','.join(base) + ')'
+        int_base = [i['name']+suffix for i in base if i['name'] in suffix_list]
+        ext_base = [i['name'] for i in base if i['name'] not in suffix_list]
+        return '(' + ','.join(int_base + ext_base) + ')'
 
 def xproto_first_non_empty(lst):
     for l in lst:

@@ -33,7 +33,7 @@ from core.models import {{ b.name }}
 {% endfor %}
 
 {% for m in proto.messages %}
-class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases) }}:
+class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases, legacy_tag, proto.message_names) }}:
   plural_name = "{{ xproto_pluralize(m) }}"
 
   KIND = {{ xproto_first_non_empty([m.options.kind, options.kind, options.name, "Set a kind in your xproto!"]) }}
