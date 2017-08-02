@@ -25,6 +25,7 @@ message FieldOption {
 message FieldRelation {
     string model = 1;
     string type = 2;
+    string on_field = 3;
 };
 
 message ModelField {

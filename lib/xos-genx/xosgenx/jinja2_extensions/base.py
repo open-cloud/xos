@@ -49,22 +49,6 @@ def xproto_pluralize(field):
 
     return plural
 
-def xproto_links_to_modeldef_relations(llst):
-    outlist = []
-    seen = []
-    for l in llst:
-        try:
-            t = l['link_type']
-        except KeyError, e:
-            raise e
-
-        if l['peer']['fqn'] not in seen and t!='manytomany':
-            outlist.append('- {model: %s, type: %s}\n'%(l['peer']['name'], l['link_type']))
-        seen.append(l['peer'])
-    
-    return outlist
-
-
 def xproto_base_def(model_name, base, suffix='', suffix_list=[]):
     if (model_name=='XOSBase'):
         return '(models.Model, PlModelMixIn)'

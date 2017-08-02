@@ -228,6 +228,33 @@ message Foo {
         output = XOSGenerator.generate(args)
         self.assertNotIn('default:', output)
 
+    def test_one_to_many_in_modeldef(self):
+        xproto = \
+"""
+option app_label = "test";
+
+message ServiceDependency {
+    required manytoone provider_service->Service:provided_dependencies = 1;
+    required manytoone subscriber_service->Service:subscribed_dependencies = 2;
+}
+
+message Service {
+    required string name = 1;
+}
+"""
+
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = 'modeldefs.xtarget'
+        output = XOSGenerator.generate(args)
+        # Service deps model
+        self.assertIn('{model: Service, type: manytoone, on_field: provider_service}', output)
+        self.assertIn('{model: Service, type: manytoone, on_field: provider_service}', output)
+
+        # Service model
+        self.assertIn('{model: ServiceDependency, type: onetomany, on_field: provider_service}', output)
+        self.assertIn('{model: ServiceDependency, type: onetomany, on_field: provider_service}', output)
+
 if __name__ == '__main__':
     unittest.main()
 

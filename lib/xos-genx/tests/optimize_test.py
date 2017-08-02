@@ -1,6 +1,5 @@
 import unittest
 from xosgenx.jinja2_extensions.fol2 import FOL2Python
-import vimpdb
 
 class XProtoOptimizeTest(unittest.TestCase):
     def setUp(self):

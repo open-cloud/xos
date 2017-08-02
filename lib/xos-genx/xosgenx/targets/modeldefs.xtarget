@@ -35,7 +35,7 @@ items:
   {% endif -%}
   {% endfor %}
   name: {{ m.name }}
-  {%- set goodlinks = xproto_links_to_modeldef_relations( xproto_base_links(m, proto.message_table) + m.links ) %}
+  {%- set goodlinks = xproto_links_to_modeldef_relations( xproto_base_links(m, proto.message_table) + m.links ) + xproto_links_to_modeldef_relations( xproto_base_rlinks(m, proto.message_table) + m.rlinks )%}
   {% if goodlinks %}
   relations:
   {{ goodlinks | join('\n') | indent(width=2)}}
