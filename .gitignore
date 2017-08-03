@@ -25,6 +25,7 @@ xos/configurations/setup/
 migrations/
 onboarding-docker-compose/
 key_import/
+*.retry
 
 # tmp files
 containers/chameleon/tmp.chameleon/
