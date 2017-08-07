@@ -1,1 +1,19 @@
+
+/*
+ * Copyright 2017-present Open Networking Foundation
+
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+
+ * http://www.apache.org/licenses/LICENSE-2.0
+
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
 #xosDashboardManager .col-xs-10+.col-xs-2.text-right{padding-top:20px}#xosDashboardManager ul[dnd-list]{min-height:42px;border:1px dashed #337ab7;padding:20px;margin-bottom:0}#xosDashboardManager ul[dnd-list] li{list-style:none}#xosDashboardManager ul[dnd-list] li:not(:last-child){margin-bottom:20px}#xosDashboardManager ul[dnd-list] li:hover{cursor:pointer}#xosDashboardManager ul[dnd-list] li.dndDraggingSource{display:none}#xosDashboardManager ul[dnd-list]>li,#xosDashboardManager .dashboard-container{display:block;border:1px solid #337ab7;padding:20px}#xosDashboardManager ul[dnd-list]>li a,#xosDashboardManager .dashboard-container a{text-decoration:none!important}#xosDashboardManager ul[dnd-list]>li a img,#xosDashboardManager .dashboard-container a img{width:20px}#xosDashboardManager ul[dnd-list]>li i,#xosDashboardManager .dashboard-container i{float:right}
