@@ -24,6 +24,8 @@ import functools
 ContentTypeMap = {}
 
 class FakeObj(object):
+    BASES=[]
+
     def __init__(self, fields=[], **kwargs):
         super(FakeObj, self).__setattr__("is_set", {})
         super(FakeObj, self).__setattr__("fields", [])
@@ -114,10 +116,22 @@ class FakeDescriptor(object):
 
         return fbn
 
+class User(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "email", "default": ""},
+               {"name": "site_id", "default": 0, "fk_model": "Site"}, )
+
+    def __init__(self, **kwargs):
+        return super(User, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("User")
+
 class Slice(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
                {"name": "name", "default": ""},
-               {"name": "site_id", "default": 0, "fk_model": "Site"} )
+               {"name": "site_id", "default": 0, "fk_model": "Site"},
+               {"name": "creator_id", "default": 0, "fk_model": "User"},
+               {"name": "leaf_model_name", "default": "Slice"} )
 
     def __init__(self, **kwargs):
         return super(Slice, self).__init__(self.FIELDS, **kwargs)
@@ -127,7 +141,8 @@ class Slice(FakeObj):
 class Site(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
                {"name": "name", "default": ""},
-               {"name": "slice_ids", "default": 0, "fk_reverse": "Slice"} )
+               {"name": "slice_ids", "default": 0, "fk_reverse": "Slice"},
+               {"name": "leaf_model_name", "default": "Site"})
 
     def __init__(self, **kwargs):
         return super(Site, self).__init__(self.FIELDS, **kwargs)
@@ -136,12 +151,25 @@ class Site(FakeObj):
 
 class Service(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
-               {"name": "name", "default": ""}, )
+               {"name": "name", "default": ""},
+               {"name": "leaf_model_name", "default": "Service"})
 
     def __init__(self, **kwargs):
         return super(Service, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("Service")
+
+class ONOSService(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "name", "default": ""},
+               {"name": "leaf_model_name", "default": "ONOSService"})
+
+    BASES = ["Service"]
+
+    def __init__(self, **kwargs):
+        return super(ONOSService, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("ONOSService")
 
 class Tag(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
@@ -150,7 +178,8 @@ class Tag(FakeObj):
                {"name": "value", "default": ""},
                {"name": "content_type", "default": None},
                {"name": "object_id", "default": None},
-               {"name": "slice_ids", "default": 0, "fk_reverse": "Slice"} )
+               {"name": "slice_ids", "default": 0, "fk_reverse": "Slice"},
+               {"name": "leaf_model_name", "default": "Tag"})
 
     def __init__(self, **kwargs):
         return super(Tag, self).__init__(self.FIELDS, **kwargs)
@@ -168,7 +197,7 @@ class FakeStub(object):
     def __init__(self):
         self.id_counter = 1
         self.objs = {}
-        for name in ["Slice", "Site", "Tag", "Service"]:
+        for name in ["Slice", "Site", "Tag", "Service", "ONOSService", "User"]:
             setattr(self, "Get%s" % name, functools.partial(self.get, name))
             setattr(self, "List%s" % name, functools.partial(self.list, name))
             setattr(self, "Create%s" % name, functools.partial(self.create, name))
@@ -196,6 +225,13 @@ class FakeStub(object):
         self.id_counter = self.id_counter + 1
         k = self.make_key(classname, FakeObj(id=obj.id))
         self.objs[k] = obj
+
+        for base_classname in obj.BASES:
+            base_class = globals()[base_classname]
+            base_obj = base_class(id=obj.id, leaf_model_name = classname)
+            k = self.make_key(base_classname, base_obj)
+            self.objs[k] = base_obj
+
         return obj
 
     def update(self, classname, obj, metadata=None):
@@ -211,7 +247,7 @@ class FakeStub(object):
 class FakeSymDb(object):
     def __init__(self):
         self._classes = {}
-        for name in ["Slice", "Site", "ID", "Tag", "Service"]:
+        for name in ["Slice", "Site", "ID", "Tag", "Service", "ONOSService", "User"]:
             self._classes["xos.%s" % name] = globals()[name]
 
 

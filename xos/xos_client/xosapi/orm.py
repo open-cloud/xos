@@ -247,6 +247,15 @@ class ORMWrapper(object):
         return d
 
     @property
+    def leaf_model(self):
+        # Easy case - this model is already the leaf
+        if self.leaf_model_name == self._wrapped_class.__class__.__name__:
+            return self
+
+        # This model is not the leaf, so use the stub to fetch the leaf model
+        return getattr(self.stub, self.leaf_model_name).objects.get(id=self.id)
+
+    @property
     def model_name(self):
         return self._wrapped_class.__class__.__name__
 

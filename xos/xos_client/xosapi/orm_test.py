@@ -15,7 +15,9 @@
 
 
 import exceptions
+import random
 import shutil
+import string
 import sys
 import unittest
 
@@ -25,6 +27,7 @@ import unittest
 if "-R" in sys.argv:
     USE_FAKE_STUB = False
     sys.argv.remove("-R")
+    # Note: will leave lots of litter (users, sites, etc) behind in the database
 else:
     USE_FAKE_STUB = True
 
@@ -124,7 +127,10 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        slice = orm.Slice(name="mysite_foo", site_id = site.id)
+        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user.save()
+        self.assertTrue(user.id > 0)
+        slice = orm.Slice(name="mysite_foo", site_id = site.id, creator_id = user.id)
         slice.save()
         self.assertTrue(slice.id > 0)
         self.assertNotEqual(slice.site, None)
@@ -135,7 +141,10 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        slice = orm.Slice(name="mysite_foo", site = site)
+        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user.save()
+        self.assertTrue(user.id > 0)
+        slice = orm.Slice(name="mysite_foo", site = site, creator_id=user.id)
         slice.save()
         slice.invalidate_cache()
         self.assertTrue(slice.id > 0)
@@ -147,7 +156,10 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        slice = orm.Slice(name="mysite_foo", site = site, service=None)
+        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user.save()
+        self.assertTrue(user.id > 0)
+        slice = orm.Slice(name="mysite_foo", site = site, service=None, creator_id=user.id)
         slice.save()
         slice.invalidate_cache()
         self.assertTrue(slice.id > 0)
@@ -158,11 +170,14 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
+        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user.save()
+        self.assertTrue(user.id > 0)
         service = orm.Service(name="myservice")
         service.save()
         self.assertTrue(service.id > 0)
         # start out slice.service is non-None
-        slice = orm.Slice(name="mysite_foo", site = site, service=service)
+        slice = orm.Slice(name="mysite_foo", site = site, service=service, creator_id=user.id)
         slice.save()
         slice.invalidate_cache()
         self.assertTrue(slice.id > 0)
@@ -204,6 +219,31 @@ class TestORM(unittest.TestCase):
         self.assertTrue(tag.id > 0)
         self.assertNotEqual(tag.content_object, None)
         self.assertEqual(tag.content_object.id, site.id)
+
+    def test_leaf_model_trivial(self):
+        orm = self.make_coreapi()
+        service = orm.Service(name="myservice")
+        service.save()
+        self.assertEqual(service.leaf_model_name, "Service")
+
+    def test_leaf_model_descendant(self):
+        orm = self.make_coreapi()
+        onos_service = orm.ONOSService(name="myservice")
+        onos_service.save()
+        self.assertEqual(onos_service.model_name, "ONOSService")
+        self.assertEqual(onos_service.leaf_model_name, "ONOSService")
+
+        service = orm.Service.objects.get(id=onos_service.id)
+        self.assertEqual(service.id, onos_service.id)
+        self.assertEqual(service.model_name, "Service")
+        self.assertEqual(service.leaf_model_name, "ONOSService")
+
+        onos_service_cast = service.leaf_model
+        self.assertEqual(onos_service_cast.model_name, "ONOSService")
+        self.assertEqual(onos_service_cast.leaf_model_name, "ONOSService")
+        self.assertEqual(onos_service_cast.id, onos_service.id)
+
+
 
 if USE_FAKE_STUB:
     sys.path.append("..")
