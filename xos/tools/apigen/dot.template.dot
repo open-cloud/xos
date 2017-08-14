@@ -1,7 +1,0 @@
-digraph plstack {
-{% for o in generator.all() %}
-{% for f in o.refs %}
-  "{{ o.camel() }}"->"{{ f.camel() }}";
-{% endfor %}
-{% endfor %}
-}
