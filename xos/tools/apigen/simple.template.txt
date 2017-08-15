@@ -1,9 +1,0 @@
-{% for object in generator.all() %}
-Object {{ object }}:
-Refs:
-{% for ref in object.refs %}
-{{ ref }}{% endfor %}
-Props:
-{% for prop in object.props %}{{ prop }}
-{% endfor %}
-{% endfor %}
