@@ -133,7 +133,7 @@ message Slice (PlCoreBase){
 option app_label = "test";
 
 message Foo {
-    option gui_hidden = "True";
+    option gui_hidden = True;
     required string name = 1 [ null = "False", blank="False"];
 }
 
@@ -270,6 +270,50 @@ message Service {
         # Service model
         self.assertIn('{model: ServiceDependency, type: onetomany, on_field: provider_service}', output)
         self.assertIn('{model: ServiceDependency, type: onetomany, on_field: provider_service}', output)
+
+    def test_model_description(self):
+        xproto = \
+"""
+option app_label = "test";
+
+message Foo {
+    option description="This is the Foo model";
+    required string name = 1 [ null = "False", blank="False"];
+    required string isolation = 14 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))", max_length = 30, blank = False, null = False, db_index = False];
+}
+
+message Bar {
+    required string name = 1;
+}
+"""
+
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = 'modeldefs.xtarget'
+        output = XOSGenerator.generate(args)
+        self.assertIn('description: "This is the Foo model"', output)
+
+    def test_model_verbose_name(self):
+        xproto = \
+"""
+option app_label = "test";
+
+message Foo {
+    option verbose_name="Verbose Foo Name";
+    required string name = 1 [ null = "False", blank="False"];
+    required string isolation = 14 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))", max_length = 30, blank = False, null = False, db_index = False];
+}
+
+message Bar {
+    required string name = 1;
+}
+"""
+
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = 'modeldefs.xtarget'
+        output = XOSGenerator.generate(args)
+        self.assertIn('verbose_name: "Verbose Foo Name"', output)
 
 if __name__ == '__main__':
     unittest.main()

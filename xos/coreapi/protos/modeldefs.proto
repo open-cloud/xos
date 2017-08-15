@@ -43,6 +43,8 @@ message ModelDef {
     repeated ModelField fields = 2;
     repeated FieldRelation relations = 3;
     string app = 4;
+    string verbose_name = 5;
+    string description = 6;
 };
 
 message ModelDefs {

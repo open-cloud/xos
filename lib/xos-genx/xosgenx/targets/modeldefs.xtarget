@@ -2,6 +2,12 @@ items:
 {%- for m in proto.messages | sort(attribute='name') %}
 {%- if m.name != 'XOSBase'  and xproto_unquote(xproto_first_non_empty([m.options.gui_hidden, 'False'])) != 'True' %}
 - app: {{ xproto_unquote(xproto_first_non_empty([m.options.name, m.options.app_label, options.name, context.app_label])) }}
+  {%- if m.options.description %}
+  description: "{{ xproto_unquote(m.options.description) }}"
+  {%- endif %}
+  {%- if m.options.verbose_name %}
+  verbose_name: "{{ xproto_unquote(m.options.verbose_name) }}"
+  {%- endif %}
   fields: 
   {%- set id_field = {'type':'int32', 'name':'id', 'options':{}} %}
   {% for f in (xproto_base_fields(m, proto.message_table) + m.fields + [id_field]) | sort(attribute='name') -%}

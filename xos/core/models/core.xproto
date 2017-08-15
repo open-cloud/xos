@@ -33,7 +33,7 @@ policy user_policy <
 
 message User::user_policy (AbstractBaseUser,PlModelMixIn) {
      option skip_django = True;
-     option tosca_description = "An XOS User";
+     option description = "An XOS User";
 
      required string email = 1 [db_index = True, max_length = 255, null = False, blank = False];
      required string username = 2 [default = "Something", max_length = 255, content_type = "stripped", blank = False, null = False, db_index = False];
@@ -601,6 +601,8 @@ message XOS (XOSBase) {
 }
 
 message XOSGuiExtension (XOSBase) {
+     option verbose_name="XOS GUI Extension";
+     option description="This model holds the instruction to load an extension in the GUI";
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the GUI Extensions", null = False, db_index = False];
      required string files = 2 [max_length = 1024, content_type = "stripped", blank = False, help_text = "List of comma separated file composing the view", null = False, db_index = False];
 }

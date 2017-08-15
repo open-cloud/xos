@@ -51,7 +51,7 @@ The following Field-level optional attributes are currently in use.
 
 | Attribute          | Effect             |
 |--------------------|--------------------|
-| verbose_name="..." | Provides a label to be used in the GUI display for this field. Differs from the field name itself, which is used to create the column in the database table.|
+| verbose_name="..." | Provides a label to be used in the GUI display for this field. Differs from the field name itself, which is used to create the database table.|
 | verbose_name_plural="..." | Way to override the verbose name for this field.|
 | help_text="..." | Provides some context-based help for the field; will show up in the GUI display.|
 | default=... | Allows a predefined default value to be specified.|
@@ -60,6 +60,7 @@ The following Field-level optional attributes are currently in use.
 | blank=True | Allows the field to be present but empty.|
 | null=True | Allows the field to have a value of null if the field is blank.|
 | editable=False | If you would like to make this a readOnly field to the user.|
+| gui_hidden=True | Hide a particular field from the GUI. This can be specified for an entire model.|
 
 The following Field-level optional attributes should not be used (or use judiciously).
 
@@ -122,6 +123,8 @@ effects on data integrity and REST relationships:
 | app_label          | Necessary if models are defined in modules other than models.py  In our core application we split out the model definitions into their own modules for clarity -- each of the models not derived from the XOSBase needs to explicitly state the "core" as the application this object is associated to. For example, XOSBase and User.|
 | order_with_respect_to | |
 | ordering | Defines the default column to order lists of the object type by. For example, Users => email.|
+| description | Provide an explation of the model. It's rendered in the GUI to help the operator.|
+| gui_hidden=True | Hide a particular model from the GUI. This can be specified for a single field.|
 
 
 
