@@ -223,7 +223,7 @@ class ORMWrapper(object):
             self.reverse_cache.clear()
             self.poisoned.clear()
 
-    def save(self, update_fields=None):
+    def save(self, update_fields=None, always_update_timestamp=False):
         if self.is_new:
            new_class = self.stub.invoke("Create%s" % self._wrapped_class.__class__.__name__, self._wrapped_class)
            self._wrapped_class = new_class
@@ -232,6 +232,8 @@ class ORMWrapper(object):
            metadata = []
            if update_fields:
                metadata.append( ("update_fields", ",".join(update_fields)) )
+           if always_update_timestamp:
+               metadata.append( ("always_update_timestamp", "1") )
            self.stub.invoke("Update%s" % self._wrapped_class.__class__.__name__, self._wrapped_class, metadata=metadata)
 
     def delete(self):
