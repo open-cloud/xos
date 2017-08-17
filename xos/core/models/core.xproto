@@ -321,7 +321,7 @@ message Instance::instance_policy (XOSBase) {
      optional string instance_uuid = 2 [max_length = 200, content_type = "stripped", blank = True, help_text = "Nova instance uuid", null = True, db_index = False];
      required string name = 3 [max_length = 200, content_type = "stripped", blank = False, help_text = "Instance name", null = False, db_index = False];
      optional string instance_name = 4 [max_length = 200, content_type = "stripped", blank = True, help_text = "OpenStack generated name", null = True, db_index = False];
-     optional string ip = 5 [max_length = 39, content_type = "ip", blank = True, help_text = "Instance ip address", null = True, db_index = False];
+     optional string ip = 5 [max_length = 39, content_type = "ip", blank = True, help_text = "Instance ip address", null = True, db_index = False, gui_hidden = True];
      required manytoone image->Image:instances = 6 [db_index = True, null = False, blank = False];
      optional manytoone creator->User:instances = 7 [db_index = True, null = True, blank = True];
      required manytoone slice->Slice:instances = 8 [db_index = True, null = False, blank = False];
