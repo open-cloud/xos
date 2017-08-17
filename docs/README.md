@@ -1,7 +1,11 @@
 # Models for CORD
 
-CORD adopts a model-based architecture, where XOS implements its
-modeling support. This guide describes the how models are expressed in
-XOS, and documents the XOS toolchain used to auto-generate various
+XOS implements a model-based service control plane for CORD.
+This guide describes the how models are expressed in XOS and
+documents the toolchain used to auto-generate various
 elements of CORD from these models.
+
+It also describes the role of Synchronizers in bridging the CORD data
+model with the backend components (e.g., VNFs, micro-services,
+SDN control apps) that implement CORD's service data plane.
 
