@@ -1,4 +1,4 @@
-# Models for CORD
+# Defining Models for CORD
 
 XOS implements a model-based service control plane for CORD.
 This guide describes the how models are expressed in XOS and

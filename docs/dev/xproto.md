@@ -1,4 +1,4 @@
-# Defining Models in XOS
+# XOS Support for Models
 
 XOS defines a language for specifying data models (_xproto_) and a tool chain for generating code based on the set of models (_xosgen_).
 
