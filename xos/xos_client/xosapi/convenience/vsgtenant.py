@@ -71,8 +71,10 @@ class ORMWrapperVSGTenant(ORMWrapper):
     def wan_vm_ip(self):
         tags = self.stub.Tag.objects.filter(name="vm_vrouter_tenant", object_id=self.instance.id, content_type=self.instance.self_content_type_id)
         if tags:
-            tenant = self.stub.VRouterTenant.objects.get(id=int(tags[0].value))
-            return tenant.public_ip
+            tenants = self.stub.VRouterTenant.objects.filter(id=int(tags[0].value))
+            if not tenants:
+                raise Exception("VRouterTenent %d linked to vsg %s does not exist" % (int(tags[0].value), self))
+            return tenants[0].public_ip
         else:
             raise Exception("no vm_vrouter_tenant tag for instance %s" % self.instance)
 
@@ -80,8 +82,10 @@ class ORMWrapperVSGTenant(ORMWrapper):
     def wan_vm_mac(self):
         tags = self.stub.Tag.objects.filter(name="vm_vrouter_tenant", object_id=self.instance.id, content_type=self.instance.self_content_type_id)
         if tags:
-            tenant = self.stub.VRouterTenant.objects.get(id=int(tags[0].value))
-            return tenant.public_mac
+            tenants = self.stub.VRouterTenant.objects.filter(id=int(tags[0].value))
+            if not tenants:
+                raise Exception("VRouterTenent %d linked to vsg %s does not exist" % (int(tags[0].value), self))
+            return tenants[0].public_mac
         else:
             raise Exception("no vm_vrouter_tenant tag for instance %s" % self.instance)
 
