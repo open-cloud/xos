@@ -116,6 +116,27 @@ class FakeDescriptor(object):
 
         return fbn
 
+class Controller(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "name", "default": ""},
+               {"name": "deployment_id", "default": 0, "fk_model": "Deployment"}
+             )
+
+    def __init__(self, **kwargs):
+        return super(Controller, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("Controller")
+
+class Deployment(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "name", "default": ""},
+             )
+
+    def __init__(self, **kwargs):
+        return super(Deployment, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("Controller")
+
 class User(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
                {"name": "email", "default": ""},
@@ -130,7 +151,10 @@ class Slice(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
                {"name": "name", "default": ""},
                {"name": "site_id", "default": 0, "fk_model": "Site"},
+               {"name": "service_id", "default": 0, "fk_model": "Service"},
                {"name": "creator_id", "default": 0, "fk_model": "User"},
+               {"name": "networks_ids", "default": [], "fk_reverse": "Network"},
+               {"name": "network", "default": ""},
                {"name": "leaf_model_name", "default": "Slice"} )
 
     def __init__(self, **kwargs):
@@ -141,7 +165,7 @@ class Slice(FakeObj):
 class Site(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
                {"name": "name", "default": ""},
-               {"name": "slice_ids", "default": 0, "fk_reverse": "Slice"},
+               {"name": "slice_ids", "default": [], "fk_reverse": "Slice"},
                {"name": "leaf_model_name", "default": "Site"})
 
     def __init__(self, **kwargs):
@@ -152,6 +176,7 @@ class Site(FakeObj):
 class Service(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
                {"name": "name", "default": ""},
+               {"name": "slices_ids", "default": [], "fk_reverse": "Slice"},
                {"name": "leaf_model_name", "default": "Service"})
 
     def __init__(self, **kwargs):
@@ -171,6 +196,52 @@ class ONOSService(FakeObj):
 
     DESCRIPTOR = FakeDescriptor("ONOSService")
 
+class Network(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "name", "default": ""},
+               {"name": "owner_id", "default": 0, "fk_model": "Slice"},
+               {"name": "template_id", "default": 0, "fk_model": "NetworkTemplate"},
+               {"name": "controllernetworks_ids", "default": [], "fk_reverse": "ControllerNetwork"},
+               {"name": "leaf_model_name", "default": "Network"})
+
+    def __init__(self, **kwargs):
+        return super(Network, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("Network")
+
+class NetworkTemplate(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "name", "default": ""},
+               {"name": "vtn_kind", "default": ""},
+               {"name": "leaf_model_name", "default": "NetworkTemplate"})
+
+    def __init__(self, **kwargs):
+        return super(NetworkTemplate, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("NetworkTemplate")
+
+class ControllerNetwork(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "network_id", "default": 0, "fk_model": "Network"},
+               {"name": "controller_id", "default": 0, "fk_model": "Controller"},
+               {"name": "leaf_model_name", "default": "ControllerNetwork"})
+
+    def __init__(self, **kwargs):
+        return super(ControllerNetwork, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("ControllerNetwork")
+
+class NetworkSlice(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "network_id", "default": 0, "fk_model": "Network"},
+               {"name": "slice_id", "default": 0, "fk_model": "Slice"},
+               {"name": "leaf_model_name", "default": "ControllerNetwork"})
+
+    def __init__(self, **kwargs):
+        return super(NetworkSlice, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("NetworkSlice")
+
 class Tag(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
                {"name": "service_id", "default": None},
@@ -178,7 +249,6 @@ class Tag(FakeObj):
                {"name": "value", "default": ""},
                {"name": "content_type", "default": None},
                {"name": "object_id", "default": None},
-               {"name": "slice_ids", "default": 0, "fk_reverse": "Slice"},
                {"name": "leaf_model_name", "default": "Tag"})
 
     def __init__(self, **kwargs):
@@ -197,7 +267,7 @@ class FakeStub(object):
     def __init__(self):
         self.id_counter = 1
         self.objs = {}
-        for name in ["Slice", "Site", "Tag", "Service", "ONOSService", "User"]:
+        for name in ["Controller", "Deployment", "Slice", "Site", "Tag", "Service", "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice"]:
             setattr(self, "Get%s" % name, functools.partial(self.get, name))
             setattr(self, "List%s" % name, functools.partial(self.list, name))
             setattr(self, "Create%s" % name, functools.partial(self.create, name))
@@ -247,7 +317,7 @@ class FakeStub(object):
 class FakeSymDb(object):
     def __init__(self):
         self._classes = {}
-        for name in ["Slice", "Site", "ID", "Tag", "Service", "ONOSService", "User"]:
+        for name in ["Controller", "Deployment", "Slice", "Site", "ID", "Tag", "Service", "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice"]:
             self._classes["xos.%s" % name] = globals()[name]
 
 

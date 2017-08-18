@@ -31,7 +31,7 @@ class ORMWrapperService(ORMWrapper):
         nets = []
         for slice in self.slices.all():
             for net in slice.networks.all():
-                if (net.template.vtn_kind not in SUPPORTED_VTN_SERVCOMP_KINDS) or (net.owner != slice):
+                if (net.template.vtn_kind not in SUPPORTED_VTN_SERVCOMP_KINDS) or (net.owner.id != slice.id):
                     continue
 
                 if not net.controllernetworks.exists():
