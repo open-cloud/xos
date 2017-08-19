@@ -16,6 +16,7 @@
 
 from base import *
 import pdb
+import re
 
 def django_content_type_string(xptags):
     # Check possibility of KeyError in caller
@@ -158,6 +159,9 @@ def xproto_django_options_str(field, dport=None):
         output_dict['related_name'] = '%r'%dport
 
     return format_options_string(output_dict)
+
+def xproto_camel_to_underscore(name):
+    return re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
 
 def xproto_validations(options):
     try:

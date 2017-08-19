@@ -1,8 +1,9 @@
-{
-{%- for model in proto.messages %}
-{%- if model.links %}
-    "{{ model.name }}": [
-        {{ model.links | map(attribute='peer') | format_list("\"%s\"") |join(',\n\t\t') }}
-    ],{% endif -%}
-{% endfor %}
+{ {%- for model in proto.messages %} "{{ model.name }}": [
+        {% for l in xproto_base_links(model, proto.message_table) + model.links -%}
+        {% if "Controller" + l.peer.name in proto.message_names -%}
+        ["Controller{{ l.peer.name }}", "{{ l.src_port }}", "{{ xproto_camel_to_underscore(l.peer.name).lower() }}"],
+        {% endif %}
+        ["{{ l.peer.name }}", "{{ l.src_port }}", ""]{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]{{ "," if not loop.last }}{% endfor %}
 }
