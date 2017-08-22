@@ -88,6 +88,11 @@ docker_images:
     dockerfile: "Dockerfile"
     pull: False
     publish: True
+  - name: "node:7.9.0"
+    path: ""
+    dockerfile: ""
+    pull: True
+    publish: False
 
 build_optional_images: False
 
@@ -99,8 +104,7 @@ docker_optional_images:
 
 build_docker_tag: "candidate"
 
-misc_docker_images:
-  - "node:7.9.0"
+misc_docker_images: []
 
 enabled_gui_extensions: []
 
