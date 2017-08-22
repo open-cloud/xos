@@ -25,8 +25,10 @@ from django.db.models import F, Q
 from django import setup as django_setup # django 1.7
 from django.contrib.contenttypes.models import ContentType
 
-from xos.logger import Logger, logging
-logger = Logger(level=logging.INFO)
+from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 class DjangoModelAccessor(ModelAccessor):
     def __init__(self):
@@ -82,15 +84,15 @@ class DjangoModelAccessor(ModelAccessor):
         except Exception as e:
             from django import db
             if "connection already closed" in traceback.format_exc():
-                logger.error("XXX connection already closed")
+                log.error("XXX connection already closed")
                 try:
                     #                       if db.connection:
                     #                           db.connection.close()
                     db.close_old_connections()
-                except:
-                    logger.log_exc("XXX we failed to fix the failure")
+                except Exception, e:
+                    logger.exception("XXX we failed to fix the failure", e = e)
             else:
-                logger.log_exc("XXX some other error")
+                logger.exception("XXX some other error")
 
     def obj_exists(self, o):
         return (o.pk is not None)

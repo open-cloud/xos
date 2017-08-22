@@ -28,10 +28,13 @@ import re
 import traceback
 import subprocess
 import threading
-from xosconfig import Config
-from xos.logger import observer_logger as logger
+
 from multiprocessing import Process, Queue
 from xosconfig import Config
+
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 
 step_dir = Config.get("steps_dir")
@@ -80,7 +83,7 @@ def run_playbook(ansible_hosts, ansible_config, fqp, opts):
     args_fn = None
     result_fn = None
     try:
-        logger.info("creating args file in %s" % dir)
+        log.info("creating args file",dir = dir)
 
         args_fn = os.path.join(dir, "args")
         result_fn = os.path.join(dir, "result")
@@ -94,12 +97,12 @@ def run_playbook(ansible_hosts, ansible_config, fqp, opts):
         result = pickle.loads(open(result_fn).read())
 
         if hasattr(result, "exception"):
-            logger.log_error("Exception in playbook: %s" % result["exception"])
+            log.error("Exception in playbook",exception = result["exception"])
 
         stats = result.get("stats", None)
         aresults = result.get("aresults", None)
-    except:
-        logger.log_exc("Exception running ansible_main")
+    except Exception,e:
+        log.exception("Exception running ansible_main")
         stats = None
         aresults = None
     finally:
@@ -176,7 +179,7 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
                 else:
 		    oprops['ansible_status']='FAILED'
 
-                logger.info(x._task, extra=oprops)
+                log.info(x._task, **oprops)
 
 
         ofile.close()

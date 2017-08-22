@@ -30,9 +30,10 @@ import signal
 from xosconfig import Config
 from diag import update_diag
 
-from xos.logger import Logger, logging
+from xosconfig import Config
+from multistructlog import create_logger
 
-logger = Logger(level=logging.INFO)
+log = create_logger(Config().get('logging'))
 
 orig_sigint = None
 model_accessor = None
@@ -140,11 +141,11 @@ def keep_trying(client, reactor):
 
     try:
         client.utility.NoOp(Empty())
-    except:
+    except Exception,e:
         # If we caught an exception, then the API has become unavailable.
         # So reconnect.
 
-        logger.log_exc("exception in NoOp")
+        log.exception("exception in NoOp", e)
         client.connected = False
         client.connect()
         return
@@ -177,9 +178,9 @@ def grpcapi_reconnect(client, reactor):
             else:
                 missing.append(model)
 
-        logger.info("required_models: found %s" % ", ".join(found))
+        log.info("required_models, found:", models =  ", ".join(found))
         if missing:
-            logger.warning("required_models: missing %s" % ", ".join(missing))
+            log.warning("required_models: missing",models = ", ".join(missing))
             # We're missing a required model. Give up and wait for the connection
             # to reconnect, and hope our missing model has shown up.
             reactor.callLater(1, functools.partial(keep_trying, client, reactor))

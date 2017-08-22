@@ -14,10 +14,10 @@
 # limitations under the License.
 
 
-from xos.logger import Logger, logging, logger
+from xosconfig import Config
+from multistructlog import create_logger
 
-logger = Logger(level=logging.INFO)
-
+log = create_logger(Config().get('logging'))
 
 class ErrorMapper:
     def __init__(self, error_map_file):
@@ -30,7 +30,7 @@ class ErrorMapper:
                     k, v = map(lambda i: i.rstrip(), splits)
                     self.error_map[k] = v
         except:
-            logger.info('Could not read error map')
+            log.info('Could not read error map')
 
     def map(self, error):
         return self.error_map[error]

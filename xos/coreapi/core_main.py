@@ -26,9 +26,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from reaper import ReaperThread
 from grpc_server import XOSGrpcServer, restart_chameleon
 
-from xos.logger import Logger, logging
-logger = Logger(level=logging.DEBUG)
+from xosconfig import Config
+from multistructlog import create_logger
 
+log = create_logger(Config().get('logging'))
 
 if __name__ == '__main__':
 
@@ -41,13 +42,14 @@ if __name__ == '__main__':
 
     restart_chameleon()
 
-    logger.info("Core_main entering wait loop")
+    log.info("XOS core entering wait loop")
 
     _ONE_DAY_IN_SECONDS = 60 * 60 * 24
     try:
         while 1:
             time.sleep(_ONE_DAY_IN_SECONDS)
     except KeyboardInterrupt:
+        log.info("XOS core terminated by keyboard interrupt")
         server.stop()
         reaper.stop()
 

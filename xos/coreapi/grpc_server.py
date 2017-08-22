@@ -40,6 +40,12 @@ import grpc
 from concurrent import futures
 import zlib
 
+from xosconfig import Config
+
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
+
 if __name__ == "__main__":
     import django
     sys.path.append('/opt/xos')
@@ -51,8 +57,7 @@ from xos_modeldefs_api import ModelDefsService
 from xos_utility_api import UtilityService
 from google.protobuf.empty_pb2 import Empty
 
-from xos.logger import Logger, logging
-logger = Logger(level=logging.INFO)
+
 
 SERVER_KEY="/opt/cord_profile/core_api_key.pem"
 SERVER_CERT="/opt/cord_profile/core_api_cert.pem"
@@ -115,7 +120,7 @@ class XOSGrpcServer(object):
 
     def __init__(self, port=50055):
         self.port = port
-        logger.info('init-grpc-server port=%d' % self.port)
+        log.info('Initializing GRPC Server', port = port)
         self.thread_pool = futures.ThreadPoolExecutor(max_workers=10)
         self.server = grpc.server(self.thread_pool)
 
@@ -128,7 +133,7 @@ class XOSGrpcServer(object):
         self.services = []
 
     def start(self):
-        logger.debug('starting')
+        log.info('Starting GRPC Server')
 
         # add each service unit to the server and also to the list
         for activator_func, service_class in (
@@ -148,15 +153,15 @@ class XOSGrpcServer(object):
         # strat the server
         self.server.start()
 
-        logger.info('started')
+        log.info('GRPC Server Started')
         return self
 
     def stop(self, grace=0):
-        logger.debug('stopping')
+        log.info('Stopping GRPC Server')
         for service in self.services:
             service.stop()
         self.server.stop(grace)
-        logger.debug('stopped')
+        log.info('stopped')
 
     def register(self, activator_func, service):
         """

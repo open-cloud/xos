@@ -18,9 +18,9 @@ import traceback
 import json
 
 from xosconfig import Config
-from xos.logger import Logger, logging, logger
+from multistructlog import create_logger
 
-logger = Logger(level=logging.INFO)
+log = create_logger(Config().get('logging'))
 
 
 def update_diag(diag_class, loop_end=None, loop_start=None, syncrecord_start=None, sync_start=None,
@@ -54,5 +54,5 @@ def update_diag(diag_class, loop_end=None, loop_start=None, syncrecord_start=Non
         diag.backend_register = json.dumps(br)
         diag.save()
     except:
-        logger.log_exc("Exception in update_diag")
+        log.exception("Exception in update_diag")
         traceback.print_exc()

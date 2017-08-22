@@ -31,12 +31,15 @@ sys.path.append('/opt/xos')
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from xosconfig import Config
-from xos.logger import Logger, logging, logger
+
 import time
 from synchronizers.new_base.model_policy_loop import XOSPolicyEngine
 from synchronizers.new_base.modelaccessor import *
 
-logger = Logger(level=logging.INFO)
+from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 def main():
 
@@ -48,8 +51,8 @@ def main():
             _ = NetworkTemplate.objects.first()
             models_active = True
         except Exception,e:
-            logger.info(str(e))
-            logger.info('Waiting for data model to come up before starting...')
+            log.exception("Exception", e = e)
+            log.info('Waiting for data model to come up before starting...')
             time.sleep(10)
             wait = True
 

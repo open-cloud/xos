@@ -31,7 +31,12 @@ map:
       password:
         type: str
         required: True
-  logging: 
+  # The configuration below inherits from the standard config of the Python logging module
+  # See: https://docs.python.org/2/library/logging.config.html
+  # multistructlog supports this config in all of its generality
+  # So for instance, you can add new handlers. Note that all handlers will
+  # receive logs simultaneously.
+  logging:
     type: any
   xos_dir:
     type: str

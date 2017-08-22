@@ -27,8 +27,12 @@ import pdb
 import pprint
 import traceback
 from datetime import datetime
-from xos.logger import Logger, logging, logger
+
 from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
+
 from synchronizers.new_base.steps import *
 from syncstep import SyncStep, NullSyncStep
 from toposort import toposort
@@ -49,8 +53,6 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-
-logger = Logger(level=logging.INFO)
 
 
 class StepNotReady(Exception):
@@ -109,14 +111,14 @@ class XOSObserver:
         self.event_cond.release()
 
     def wake_up(self):
-        logger.info('Wake up routine called. Event cond %r' % self.event_cond)
+        log.info('Wake up routine called. Event cond %r' % self.event_cond)
         self.event_cond.acquire()
         self.event_cond.notify()
         self.event_cond.release()
 
     def load_sync_steps(self):
         dep_path = Config.get("dependency_graph")
-        logger.info('Loading model dependency graph from %s' % dep_path)
+        log.info('Loading model dependency graph from %s' % dep_path)
         try:
             # This contains dependencies between records, not sync steps
             self.model_dependency_graph = json.loads(open(dep_path).read())
@@ -138,7 +140,7 @@ class XOSObserver:
             # FIXME `pl_dependency_graph` is never defined, this will always fail
             # NOTE can we remove it?
             backend_path = Config.get("pl_dependency_graph")
-            logger.info(
+            log.info(
                 'Loading backend dependency graph from %s' %
                 backend_path)
             # This contains dependencies between backend records
@@ -151,7 +153,7 @@ class XOSObserver:
                     self.model_dependency_graphp[k] = v
 
         except Exception as e:
-            logger.info('Backend dependency graph not loaded')
+            log.info('Backend dependency graph not loaded')
             # We can work without a backend graph
             self.backend_dependency_graph = {}
 
@@ -199,22 +201,20 @@ class XOSObserver:
         self.deletion_dependency_graph = invert_graph(step_graph)
 
         pp = pprint.PrettyPrinter(indent=4)
-        logger.debug(pp.pformat(step_graph))
+        log.debug(pp.pformat(step_graph))
         self.ordered_steps = toposort(
             self.dependency_graph, phantom_steps + map(lambda s: s.__name__, self.sync_steps))
         self.ordered_steps = [
             i for i in self.ordered_steps if i != 'SyncObject']
-
-        logger.info("Order of steps=%s" % self.ordered_steps)
 
         self.load_run_times()
 
     def check_duration(self, step, duration):
         try:
             if (duration > step.deadline):
-                logger.info(
-                    'Sync step %s missed deadline, took %.2f seconds' %
-                    (step.name, duration))
+                log.info(
+                    'Sync step missed deadline',
+                    step_name = step.name, duration = duration)
         except AttributeError:
             # S doesn't have a deadline
             pass
@@ -233,9 +233,9 @@ class XOSObserver:
             if (time_since_last_run < step.requested_interval):
                 raise StepNotReady
         except AttributeError:
-            logger.info(
-                'Step %s does not have requested_interval set' %
-                step.__name__)
+            log.info(
+                'Step does not have requested_interval set',
+                step_name = step.__name__)
             raise StepNotReady
 
     def load_run_times(self):
@@ -306,9 +306,9 @@ class XOSObserver:
             step = self.lookup_step_class(S)
             start_time = time.time()
 
-            logger.debug(
-                "Starting to work on step %s, deletion=%s" %
-                (step.__name__, str(deletion)))
+            log.debug(
+                "Starting to work on steps",
+                step_name = step.__name__, deletion = str(deletion))
 
             dependency_graph = self.dependency_graph if not deletion else self.deletion_dependency_graph
             # if not deletion else self.deletion_step_conditions
@@ -328,28 +328,16 @@ class XOSObserver:
             if (has_deps):
                 for d in deps:
                     if d == step.__name__:
-                        logger.debug(
-                            "   step %s self-wait skipped" %
-                            step.__name__)
                         go = True
                         continue
 
                     cond = step_conditions[d]
                     cond.acquire()
                     if (step_status[d] is STEP_STATUS_WORKING):
-                        logger.debug(
-                            "  step %s wait on dep %s" %
-                            (step.__name__, d))
                         cond.wait()
-                        logger.debug(
-                            "  step %s wait on dep %s cond returned" %
-                            (step.__name__, d))
                     elif step_status[d] == STEP_STATUS_OK:
                         go = True
                     else:
-                        logger.debug(
-                            "  step %s has failed dep %s" %
-                            (step.__name__, d))
                         go = False
                         failed_dep = d
                     cond.release()
@@ -359,7 +347,6 @@ class XOSObserver:
                 go = True
 
             if (not go):
-                logger.debug("Step %s skipped" % step.__name__)
                 self.failed_steps.append(step)
                 my_status = STEP_STATUS_KO
             else:
@@ -392,24 +379,16 @@ class XOSObserver:
                     self.check_schedule(sync_step, deletion)
                     should_run = True
                 except StepNotReady:
-                    logger.info('Step not ready: %s' % sync_step.__name__)
                     self.failed_steps.append(sync_step)
                     my_status = STEP_STATUS_KO
                 except Exception as e:
-                    logger.error('%r' % e)
-                    logger.log_exc(
-                        "sync step failed: %r. Deletion: %r" %
-                        (sync_step, deletion))
+                    log.error('%r' % e)
                     self.failed_steps.append(sync_step)
                     my_status = STEP_STATUS_KO
 
                 if (should_run):
                     try:
                         duration = time.time() - start_time
-
-                        logger.debug(
-                            'Executing step %s, deletion=%s' %
-                            (sync_step.__name__, deletion))
 
                         failed_objects = sync_step(
                             failed=list(
@@ -421,20 +400,12 @@ class XOSObserver:
                         if failed_objects:
                             self.failed_step_objects.update(failed_objects)
 
-                        logger.debug(
-                            "Step %r succeeded, deletion=%s" %
-                            (sync_step.__name__, deletion))
                         my_status = STEP_STATUS_OK
                         self.update_run_time(sync_step, deletion)
                     except Exception as e:
-                        logger.error(
-                            'Model step %r failed. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' %
-                            (sync_step.__name__, e))
-                        logger.log_exc("Exception in sync step")
                         self.failed_steps.append(S)
                         my_status = STEP_STATUS_KO
                 else:
-                    logger.info("Step %r succeeded due to non-run" % step)
                     my_status = STEP_STATUS_OK
 
             try:
@@ -444,14 +415,13 @@ class XOSObserver:
                 my_cond.notify_all()
                 my_cond.release()
             except KeyError as e:
-                logger.debug('Step %r is a leaf' % step)
                 pass
         finally:
             try:
                 model_accessor.reset_queries()
             except:
                 # this shouldn't happen, but in case it does, catch it...
-                logger.log_exc("exception in reset_queries")
+                log.error("exception in reset_queries")
 
             model_accessor.connection_close()
 
@@ -460,9 +430,9 @@ class XOSObserver:
             return
 
         while True:
-            logger.debug('Waiting for event')
+            log.debug('Waiting for event')
             self.wait_for_event(timeout=5)
-            logger.debug('Observer woke up')
+            log.debug('Observer woke up')
 
             self.run_once()
 
@@ -501,7 +471,7 @@ class XOSObserver:
                 self.failed_steps = []
 
                 threads = []
-                logger.debug('Deletion=%r...' % deletion)
+                log.debug('Deletion', deletion =deletion)
                 schedule = self.ordered_steps if not deletion else reversed(
                     self.ordered_steps)
 
@@ -510,7 +480,7 @@ class XOSObserver:
                         target=self.sync, name='synchronizer', args=(
                             S, deletion))
 
-                    logger.debug('Deletion=%r...' % deletion)
+                    log.debug('Deletion', deletion =deletion)
                     threads.append(thread)
 
                 # Start threads
@@ -522,7 +492,7 @@ class XOSObserver:
                     model_accessor.reset_queries()
                 except:
                     # this shouldn't happen, but in case it does, catch it...
-                    logger.log_exc("exception in reset_queries")
+                    log.exception("exception in reset_queries")
 
                 # Wait for all threads to finish before continuing with the run
                 # loop
@@ -539,9 +509,5 @@ class XOSObserver:
                 backend_status="1 - Bottom Of Loop")
 
         except Exception as e:
-            logger.error(
-                'Core error. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' %
-                e)
-            logger.log_exc("Exception in observer run loop")
             traceback.print_exc()
             model_accessor.update_diag(backend_status="2 - Exception in Event Loop")

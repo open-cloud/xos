@@ -17,7 +17,6 @@
 import os
 import base64
 from xosconfig import Config
-from xos.logger import Logger, logging
 from synchronizers.new_base.modelaccessor import *
 from synchronizers.new_base.ansible_helper import run_template
 
@@ -25,7 +24,10 @@ import json
 import time
 import pdb
 
-logger = Logger(level=logging.DEBUG)
+from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 
 def f7(seq):
@@ -147,7 +149,7 @@ class SyncStep(object):
                 str(getattr(peer_object, "pk", "no_pk")), obj_class_name(failed), str(getattr(failed, "pk", "no_pk"))))
 
     def sync_record(self, o):
-        logger.debug("Sync_record called for %s %s" % (obj_class_name(o), str(o)))
+        log.debug("Sync_record called for", class_name = obj_class_name(o), object = str(o))
 
         #        try:
         #            controller = o.get_controller()
@@ -208,9 +210,9 @@ class SyncStep(object):
             # another spot to clean up debug state
             try:
                 model_accessor.reset_queries()
-            except:
+            except Exception,e:
                 # this shouldn't happen, but in case it does, catch it...
-                logger.log_exc("exception in reset_queries", extra=o.tologdict())
+                log.exception("exception in reset_queries", e = e,**o.tologdict())
 
             sync_failed = False
 
@@ -222,8 +224,8 @@ class SyncStep(object):
                     next_run = scratchpad['next_run']
                     if (not backoff_disabled and next_run > time.time()):
                         sync_failed = True
-            except:
-                logger.log_exc("Exception while loading scratchpad", extra=o.tologdict())
+            except Exception,e:
+                log.exception("Exception while loading scratchpad", e = e, **o.tologdict())
                 pass
 
             if (not sync_failed):
@@ -264,9 +266,9 @@ class SyncStep(object):
                         o.backend_status = "1 - OK"
                         model_accessor.journal_object(o, "syncstep.call.save_update")
                         o.save(update_fields=['enacted', 'backend_status', 'backend_register'])
-                        logger.info("save sync object, new enacted = %s" % str(new_enacted))
+                        log.info("save sync object, new enacted registered", enacted = str(new_enacted))
                 except (InnocuousException, Exception, DeferredException) as e:
-                    logger.log_exc("sync step failed!", extra=o.tologdict())
+                    log.exception("sync step failed!", **o.tologdict())
                     try:
                         if (o.backend_status.startswith('2 - ')):
                             str_e = '%s // %r' % (o.backend_status[4:], e)
@@ -289,8 +291,8 @@ class SyncStep(object):
                     try:
                         scratchpad = json.loads(o.backend_register)
                         scratchpad['exponent']
-                    except:
-                        logger.log_exc("Exception while updating scratchpad", extra=o.tologdict())
+                    except Exception,e:
+                        log.exception("Exception while updating scratchpad", e = e, **o.tologdict())
                         scratchpad = {'next_run': 0, 'exponent': 0, 'last_success': time.time(), 'failures': 0}
 
                     # Second failure

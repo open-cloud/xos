@@ -24,15 +24,17 @@ from synchronizers.new_base.syncstep import SyncStep
 from synchronizers.new_base.event_loop import XOSObserver
 from synchronizers.new_base.model_policy_loop import XOSPolicyEngine
 from synchronizers.new_base.modelaccessor import *
-from xos.logger import Logger, logging
+
 from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 watchers_enabled = Config.get("enable_watchers")
 
 if (watchers_enabled):
     from synchronizers.new_base.watchers import XOSWatcher
 
-logger = Logger(level=logging.INFO)
 
 class Backend:
 
@@ -42,7 +44,7 @@ class Backend:
     def load_sync_step_modules(self, step_dir):
         sync_steps = []
 
-        logger.info("Loading sync steps from %s" % step_dir)
+        log.info("Loading sync steps", strp_dir = step_dir)
 
         for fn in os.listdir(step_dir):
             pathname = os.path.join(step_dir,fn)
@@ -61,7 +63,7 @@ class Backend:
                     if inspect.isclass(c) and issubclass(c, SyncStep) and hasattr(c,"provides") and (c not in sync_steps):
                         sync_steps.append(c)
 
-        logger.info("Loaded %s sync steps" % len(sync_steps))
+        log.info("Loaded sync steps", count = len(sync_steps))
 
         return sync_steps
 
@@ -87,7 +89,7 @@ class Backend:
                     watcher_thread = threading.Thread(target=watcher.run,name='watcher')
                     watcher_thread.start()
         else:
-            logger.info("Skipping observer and watcher threads due to no steps dir.")
+            log.info("Skipping observer and watcher threads due to no steps dir.")
 
         # start model policies thread
         policies_dir = Config.get("model_policies_dir")
@@ -96,7 +98,7 @@ class Backend:
             model_policy_thread = threading.Thread(target=policy_engine.run, name="policy_engine")
             model_policy_thread.start()
         else:
-            logger.info("Skipping model policies thread due to no model_policies dir.")
+            log.info("Skipping model policies thread due to no model_policies dir.")
 
         while True:
             try:

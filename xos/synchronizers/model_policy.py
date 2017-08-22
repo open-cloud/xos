@@ -24,7 +24,6 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.db import models as django_models
 from generate.dependency_walker import *
-from xos.logger import Logger, logging
 
 import pdb
 import time
@@ -35,7 +34,11 @@ bad_instances=[]
 
 model_policies = {}
 
-logger = Logger(level=logging.DEBUG)
+from xosconfig import Config
+from multistructlog import create_logger
+
+Config.init()
+log = create_logger(Config().get('logging'))
 
 def EnableModelPolicy(x):
     global modelPolicyEnabled
@@ -62,10 +65,10 @@ def update_dep(d, o):
         if (save_fields):
             d.save(update_fields=save_fields)
     except AttributeError,e:
-        logger.log_exc("AttributeError in update_dep")
+        log.exception("AttributeError in update_dep", e = e)
         raise e
     except Exception,e:
-        logger.log_exc("Exception in update_dep")
+        log.exception("Exception in update_dep", e = e)
 
 def delete_if_inactive(d, o):
     try:
@@ -108,7 +111,7 @@ def execute_model_policy(instance, deleted):
 
     try:
         policy_handler = model_policies.get(policy_name, None) # getattr(model_policies, policy_name, None)
-        logger.debug("MODEL POLICY: handler %s %s" % (policy_name, policy_handler))
+        log.debug("MODEL POLICY: handler %s %s",policy_name = policy_name, policy_handler = policy_handler)
         if policy_handler is not None:
             if (deleted):
                 try:
@@ -117,15 +120,15 @@ def execute_model_policy(instance, deleted):
                     pass
             else:
                 policy_handler.handle(instance)
-        logger.debug("MODEL POLICY: completed handler %s %s" % (policy_name, policy_handler))
-    except:
-        logger.log_exc("MODEL POLICY: Exception when running handler")
+        log.debug("MODEL POLICY: completed handler", policy_name = policy_name, policy_handler = policy_handler)
+    except Exception, e:
+        log.exception("MODEL POLICY: Exception when running handler", e = e)
 
     try:
         instance.policed=timezone.now()
         instance.save(update_fields=['policed'])
     except:
-        logger.log_exc('MODEL POLICY: Object %r is defective'%instance)
+        log.exception('MODEL POLICY: Object is defective', object = instance)
         bad_instances.append(instance)
 
 def noop(o,p):
@@ -139,15 +142,15 @@ def check_db_connection_okay():
         #diag = Diag.objects.filter(name="foo").first()
     except Exception, e:
         if "connection already closed" in traceback.format_exc():
-           logger.error("XXX connection already closed")
+           log.error("XXX connection already closed")
            try:
 #               if db.connection:
 #                   db.connection.close()
                db.close_old_connections()
-           except:
-                logger.log_exc("XXX we failed to fix the failure")
+           except Exception,f:
+               log.exception("XXX we failed to fix the failure", e = f)
         else:
-           logger.log_exc("XXX some other error")
+           log.exception("XXX some other error", e = e)
 
 def run_policy():
     load_model_policies()
@@ -156,8 +159,9 @@ def run_policy():
         start = time.time()
         try:
             run_policy_once()
-        except:
-            logger.log_exc("MODEL_POLICY: Exception in run_policy()")
+        except Exception,e:
+            log.exception("MODEL_POLICY: Exception in run_policy()", e)
+
         if (time.time()-start<1):
             time.sleep(1)
 
@@ -167,7 +171,7 @@ def run_policy_once():
         objects = []
         deleted_objects = []
 
-        logger.debug("MODEL POLICY: run_policy_once()")
+        log.debug("MODEL POLICY: run_policy_once()")
 
         check_db_connection_okay()
 
@@ -185,8 +189,8 @@ def run_policy_once():
 
         try:
             reset_queries()
-        except:
+        except Exception,e:
             # this shouldn't happen, but in case it does, catch it...
-            logger.log_exc("MODEL POLICY: exception in reset_queries")
+            log.exception("MODEL POLICY: exception in reset_queries", e = e)
 
-        logger.debug("MODEL POLICY: finished run_policy_once()")
+        log.debug("MODEL POLICY: finished run_policy_once()")

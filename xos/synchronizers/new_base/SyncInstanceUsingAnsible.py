@@ -24,9 +24,10 @@ from xosconfig import Config
 from synchronizers.new_base.syncstep import SyncStep
 from synchronizers.new_base.ansible_helper import run_template_ssh
 from synchronizers.new_base.modelaccessor import *
-from xos.logger import Logger, logging
+from xosconfig import Config
+from multistructlog import create_logger
 
-logger = Logger(level=logging.INFO)
+log = create_logger(Config().get('logging'))
 
 
 class SyncInstanceUsingAnsible(SyncStep):
@@ -50,7 +51,7 @@ class SyncInstanceUsingAnsible(SyncStep):
     def defer_sync(self, o, reason):
         # zdw, 2017-02-18 - is raising the exception here necessary? - seems like
         # it's just logging the same thing twice
-        logger.info("defer object %s due to %s" % (str(o), reason), extra=o.tologdict())
+        log.info("defer object", object = str(o), reason = reason, **o.tologdict())
         raise Exception("defer object %s due to %s" % (str(o), reason))
 
     def get_extra_attributes(self, o):
@@ -80,7 +81,7 @@ class SyncInstanceUsingAnsible(SyncStep):
             template_name = self.template_name
         tStart = time.time()
         run_template_ssh(template_name, fields, object=o)
-        logger.info("playbook execution time %d" % int(time.time() - tStart), extra=o.tologdict())
+        log.info("playbook execution time", time = int(time.time() - tStart), **o.tologdict())
 
     def pre_sync_hook(self, o, fields):
         pass
@@ -187,7 +188,7 @@ class SyncInstanceUsingAnsible(SyncStep):
         return fields
 
     def sync_record(self, o):
-        logger.info("sync'ing object %s" % str(o), extra=o.tologdict())
+        log.info("sync'ing object", object = str(o), **o.tologdict())
 
         self.prepare_record(o)
 
@@ -298,7 +299,7 @@ class SyncInstanceUsingAnsible(SyncStep):
     # in the derived class and override the below handle_watched_object() method to route the notifications
     # accordingly
     def handle_watched_object(self, o):
-        logger.info("handle_watched_object is invoked for object %s" % (str(o)), extra=o.tologdict())
+        log.info("handle_watched_object is invoked for object",object = str(o), **o.tologdict())
         if (model_accessor.is_type(o, "ServiceDependency")):
             self.handle_service_composition_watch_notification(o)
         elif (model_accessor.is_type(o, "ServiceMonitoringAgentInfo")):
@@ -309,7 +310,7 @@ class SyncInstanceUsingAnsible(SyncStep):
         cls_obj = self.observes
         if (type(cls_obj) is list):
             cls_obj = cls_obj[0]
-        logger.info("handle_watched_object observed model %s" % (cls_obj))
+        log.info("handle_watched_object observed model", model = cls_obj)
 
         objs = cls_obj.objects.filter(kind=cls_obj.KIND)
 
@@ -327,7 +328,7 @@ class SyncInstanceUsingAnsible(SyncStep):
             valid_instance = False
 
         if not valid_instance:
-            logger.warn("handle_watched_object: No valid instance found for object %s" % (str(obj)))
+            log.warn("handle_watched_object: No valid instance found for object", object =str(obj))
             return
 
         provider_service = coarse_tenant.provider_service
@@ -341,8 +342,8 @@ class SyncInstanceUsingAnsible(SyncStep):
                 matched_service = subscriber_service
                 other_service = provider_service
             else:
-                logger.info("handle_watched_object: Service object %s does not match with any of composed services" % (
-                str(obj)))
+                log.info("handle_watched_object: Service object does not match with any of composed services", 
+                object = str(obj))
                 return
         elif model_accessor.is_instance(obj, "Tenant"):
             if obj.provider_service.id == provider_service.id:
@@ -352,11 +353,11 @@ class SyncInstanceUsingAnsible(SyncStep):
                 matched_service = subscriber_service
                 other_service = provider_service
             else:
-                logger.info(
-                    "handle_watched_object: Tenant object %s does not match with any of composed services" % (str(obj)))
+                log.info(
+                    "handle_watched_object: Tenant object does not match with any of composed services", object = str(obj))
                 return
         else:
-            logger.warn("handle_watched_object: Model object %s is of neither Service nor Tenant type" % (str(obj)))
+            log.warn("handle_watched_object: Model object is of neither Service nor Tenant type", object = str(obj))
 
         src_networks = matched_service.get_composable_networks()
         target_networks = other_service.get_composable_networks()
@@ -374,10 +375,9 @@ class SyncInstanceUsingAnsible(SyncStep):
             fields["target_subnet"] = target_subnet
             # Template file is available under .../synchronizers/shared_templates
             service_composition_template_name = "sync_service_composition.yaml"
-            logger.info(
-                "handle_watched_object: Updating routing tables in the instance associated with object %s: target_subnet:%s src_ip:%s" % (
-                str(obj), target_subnet, src_ip))
+            log.info(
+                "handle_watched_object: Updating routing tables in the instance associated with object. target_subnet:%s src_ip:%s",
+                object = str(obj), subnet = target_subnet, ip = src_ip)
             SyncInstanceUsingAnsible.run_playbook(self, obj, fields, service_composition_template_name)
         else:
-            logger.info("handle_watched_object: No intersection of composable networks between composed services %s" % (
-            str(coarse_tenant)))
+            log.info("handle_watched_object: No intersection of composable networks between composed services", object = str(coarse_tenant))

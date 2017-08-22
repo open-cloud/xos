@@ -32,7 +32,11 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.executor import playbook_executor
 from ansible.utils.display import Display
 from ansible.plugins.callback import CallbackBase
-from xos.logger import observer_logger as logger
+
+from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 
 class ResultCallback(CallbackBase):
@@ -56,7 +60,7 @@ class ResultCallback(CallbackBase):
             'ansible_status': "OK",
             'ansible_playbook': self.playbook
         }
-        logger.info("PLAYBOOK START [%s]" % self.playbook, extra=log_extra)
+        log.info("PLAYBOOK START", playbook = self.playbook, **log_extra)
 
     def v2_playbook_on_stats(self, stats):
         host_stats = {}
@@ -73,9 +77,9 @@ class ResultCallback(CallbackBase):
         }
 
         if self.playbook_status == 'OK':
-            logger.info("PLAYBOOK END [%s]" % self.playbook, extra=log_extra)
+            log.info("PLAYBOOK END", playbook = self.playbook, **log_extra)
         else:
-            logger.error("PLAYBOOK END [%s]" % self.playbook, extra=log_extra)
+            log.error("PLAYBOOK END", playbook = self.playbook, **log_extra)
 
     def v2_playbook_on_play_start(self, play):
         log_extra = {
@@ -85,7 +89,7 @@ class ResultCallback(CallbackBase):
             'ansible_status': self.playbook_status,
             'ansible_playbook': self.playbook
         }
-        logger.debug("PLAY START [%s]" % play.name, extra=log_extra)
+        log.debug("PLAY START",play_name = play.name, **log_extra)
 
     def v2_runner_on_ok(self, result, **kwargs):
         log_extra = {
@@ -98,7 +102,7 @@ class ResultCallback(CallbackBase):
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
         }
-        logger.debug("OK [%s]" % str(result._task), extra=log_extra)
+        log.debug("OK", task = str(result._task), **log_extra)
         self.results.append(result)
 
     def v2_runner_on_failed(self, result, **kwargs):
@@ -113,7 +117,7 @@ class ResultCallback(CallbackBase):
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
         }
-        logger.error("FAILED [%s]" % str(result._task), extra=log_extra)
+        log.error("FAILED", task = str(result._task), **log_extra)
         self.results.append(result)
 
     def v2_runner_on_async_failed(self, result, **kwargs):
@@ -128,7 +132,7 @@ class ResultCallback(CallbackBase):
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
         }
-        logger.error("ASYNC FAILED [%s]" % str(result._task), extra=log_extra)
+        log.error("ASYNC FAILED", task = str(result._task), **log_extra)
 
     def v2_runner_on_skipped(self, result, **kwargs):
         log_extra = {
@@ -141,7 +145,7 @@ class ResultCallback(CallbackBase):
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
         }
-        logger.debug("SKIPPED [%s]" % str(result._task), extra=log_extra)
+        log.debug("SKIPPED", task = str(result._task), **log_extra)
         self.results.append(result)
 
     def v2_runner_on_unreachable(self, result, **kwargs):
@@ -155,7 +159,7 @@ class ResultCallback(CallbackBase):
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
         }
-        logger.error("UNREACHABLE [%s]" % str(result._task), extra=log_extra)
+        log.error("UNREACHABLE", task = str(result._task), **log_extra)
         self.results.append(result)
 
     def v2_runner_retry(self, result, **kwargs):
@@ -169,7 +173,7 @@ class ResultCallback(CallbackBase):
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
         }
-        logger.warning("RETRYING [%s] - attempt %d" % (str(result._task), result._result['attempts']), extra=log_extra)
+        log.warning("RETRYING - attempt", task =str(result._task), attempt = result._result['attempts'], **log_extra)
         self.results.append(result)
 
     def v2_playbook_on_handler_task_start(self, task, **kwargs):
@@ -180,9 +184,9 @@ class ResultCallback(CallbackBase):
             'ansible_status': "HANDLER",
             'ansible_task': task.get_name().strip(),
             'ansible_playbook': self.playbook,
-            'ansible_host': result._host.get_name()
+            # 'ansible_host': result._host.get_name()
         }
-        logger.debug("HANDLER [%s]" % task.get_name().strip(), extra=log_extra)
+        log.debug("HANDLER", task = task.get_name().strip(), **log_extra)
 
     def v2_playbook_on_import_for_host(self, result, imported_file):
         log_extra = {
@@ -194,7 +198,7 @@ class ResultCallback(CallbackBase):
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
         }
-        logger.debug("IMPORT [%s]" % imported_file, extra=log_extra)
+        log.debug("IMPORT", imported_file =imported_file, **log_extra)
         self.results.append(result)
 
     def v2_playbook_on_not_import_for_host(self, result, missing_file):
@@ -207,7 +211,7 @@ class ResultCallback(CallbackBase):
             'ansible_playbook': self.playbook,
             'ansible_host': result._host.get_name()
         }
-        logger.debug("MISSING IMPORT [%s]" % missing_file, extra=log_extra)
+        log.debug("MISSING IMPORT", missing = missing_file, **log_extra)
         self.results.append(result)
 
 class Options(object):

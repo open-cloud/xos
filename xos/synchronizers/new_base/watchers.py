@@ -28,13 +28,15 @@ import traceback
 
 from datetime import datetime
 from collections import defaultdict
-from xos.logger import Logger, logging, logger
-from xosconfig import Config
+
 from syncstep import SyncStep
 from synchronizers.new_base.error_mapper import *
 import redis
 
-logger = Logger(level=logging.INFO)
+from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 
 class XOSWatcher:
@@ -77,7 +79,7 @@ class XOSWatcher:
         self.redis = r
         self.pubsub = self.redis.pubsub()
         self.pubsub.subscribe(channels)
-        logger.info("XOS watcher initialized")
+        log.info("XOS watcher initialized")
 
     def run(self):
         for item in self.pubsub.listen():
@@ -94,5 +96,5 @@ class XOSWatcher:
                             step = w.source()
                             step.handle_watched_object(o)
             except Exception as e:
-                logger.log_exc("XOS watcher: exception %s while processing object: %s" % (type(e), e))
+                log.exception("XOS watcher: exception while processing object", e = e)
                 pass

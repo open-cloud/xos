@@ -43,13 +43,15 @@ from django.utils import timezone
 from django.db import models as django_models
 from core.models.xosbase import XOSCollector
 from django.db import router
-from xos.logger import Logger, logging
 
 import pdb
 import time
 import traceback
 
-logger = Logger(level=logging.DEBUG)
+from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 class ReaperThread(threading.Thread):
     daemon = True
@@ -67,15 +69,15 @@ class ReaperThread(threading.Thread):
             #diag = Diag.objects.filter(name="foo").first()
         except Exception, e:
             if "connection already closed" in traceback.format_exc():
-               logger.error("XXX connection already closed")
+               log.exception("XXX connection already closed", e = e)
                try:
     #               if db.connection:
     #                   db.connection.close()
                    db.close_old_connections()
-               except:
-                    logger.log_exc("XXX we failed to fix the failure")
+               except Exception,e:
+                    log.exception("XXX we failed to fix the failure", e = e)
             else:
-               logger.log_exc("XXX some other error")
+               log.exception("XXX some other error", e = e)
 
     def journal_object(self, o, operation, msg=None, timestamp=None):
         # not implemented at this time
@@ -128,13 +130,13 @@ class ReaperThread(threading.Thread):
 
                     if (not getattr(d, "backend_need_reap", False)) and getattr(d, "backend_need_delete", False):
                         self.journal_object(d, "reaper.need_delete")
-                        logger.info("REAPER: skipping %r because it has need_delete set" % d)
+                        log.info("skipping because it has need_delete set", object = d)
                         continue
 
                     cascade_set = self.get_cascade_set(d)
                     if cascade_set:
                         self.journal_object(d, "reaper.cascade_set", msg=",".join([str(m) for m in cascade_set]))
-                        logger.info('REAPER: cannot purge object %r because its cascade_set is nonempty: %s' % (d, ",".join([str(m) for m in cascade_set])))
+                        log.info('REAPER: cannot purge object because its cascade_set is nonempty',object = d, cascade_set = ",".join([str(m) for m in cascade_set]))
                         continue
 
 #                    XXX I don't think we need dependency_walker here anymore,
@@ -145,18 +147,18 @@ class ReaperThread(threading.Thread):
 
                     if (True):
                         self.journal_object(d, "reaper.purge")
-                        logger.info('REAPER: purging object %r'%d)
+                        log.info('REAPER: purging object',object = d)
                         try:
                             d.delete(purge=True)
                         except:
                             self.journal_object(d, "reaper.purge.exception")
-                            logger.error('REAPER: exception purging object %r'%d)
+                            log.error('REAPER: exception purging object', object = d)
                             traceback.print_exc()
             try:
                 reset_queries()
             except:
                 # this shouldn't happen, but in case it does, catch it...
-                logger.log_exc("REAPER: exception in reset_queries")
+                log.exception("REAPER: exception in reset_queries")
 
             # logger.debug("REAPER: finished run_reaper_once()")
 
@@ -166,7 +168,7 @@ class ReaperThread(threading.Thread):
             try:
                 self.run_reaper_once()
             except:
-                logger.log_exc("REAPER: Exception in run loop")
+                log.exception("REAPER: Exception in run loop")
 
             telap = time.time()-start
             if telap<self.interval:

@@ -19,7 +19,10 @@
     Base Classes for Model Policies
 """
 
-from xos.logger import Logger, logging
+from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 class Policy(object):
     """ An XOS Model Policy
@@ -34,5 +37,5 @@ class Policy(object):
     """
 
     def __init__(self):
-        self.logger = Logger(level=logging.DEBUG)
+        self.logger = log
 

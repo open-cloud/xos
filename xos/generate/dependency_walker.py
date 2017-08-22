@@ -29,96 +29,108 @@ import threading
 import json
 import pdb
 from core.models import *
-from xos.logger import Logger, logging
-logger = Logger(level=logging.INFO)
 
-missing_links={}
+from xosconfig import Config
+from multistructlog import create_logger
+
+Config.init()
+log = create_logger(Config().get('logging'))
+
+missing_links = {}
 
 try:
-	dep_data = open(Config.get('dependency_graph')).read()
-except:
-	raise Exception('[XOS-Dependency-Walker] File %s not found' % Config.get('dependency_graph'))
+    dep_data = open(Config.get('dependency_graph')).read()
+except BaseException:
+    raise Exception(
+        '[XOS-Dependency-Walker] File %s not found' %
+        Config.get('dependency_graph'))
 
 dependencies = json.loads(dep_data)
 
 inv_dependencies = {}
 for k, lst in dependencies.items():
-	for v in lst:
-		try:
-			inv_dependencies[v].append(k)
-		except KeyError:
-			inv_dependencies[v]=[k]
-	
+    for v in lst:
+        try:
+            inv_dependencies[v].append(k)
+        except KeyError:
+            inv_dependencies[v] = [k]
+
 
 def plural(name):
-	if (name.endswith('s')):
-		return name+'es'
-	else:
-		return name+'s'
+    if (name.endswith('s')):
+        return name + 'es'
+    else:
+        return name + 's'
 
 
 def walk_deps(fn, object):
-	model = object.__class__.__name__
-	try:	
-		deps = dependencies[model]
-	except:
-		deps = []
-	return __walk_deps(fn, object, deps)
+    model = object.__class__.__name__
+    try:
+        deps = dependencies[model]
+    except BaseException:
+        deps = []
+    return __walk_deps(fn, object, deps)
+
 
 def walk_inv_deps(fn, object):
-	model = object.__class__.__name__
-	try:	
-		deps = inv_dependencies[model]
-	except:
-		deps = []
-	return __walk_deps(fn, object, deps)
+    model = object.__class__.__name__
+    try:
+        deps = inv_dependencies[model]
+    except BaseException:
+        deps = []
+    return __walk_deps(fn, object, deps)
+
 
 def __walk_deps(fn, object, deps):
-	model = object.__class__.__name__
-	ret = []
-	for dep in deps:
-		#print "Checking dep %s"%dep
-		peer=None
-		link = dep.lower()
-		try:
-			peer = getattr(object, link)
-		except AttributeError:
-			link = plural(link)
-			try:
-				peer = getattr(object, link)
-			except AttributeError:
-				if not missing_links.has_key(model+'.'+link):
-					print "Model %s missing link for dependency %s"%(model, link)
-                                        logger.log_exc("WARNING: Model %s missing link for dependency %s."%(model, link))
-					missing_links[model+'.'+link]=True
+    model = object.__class__.__name__
+    ret = []
+    for dep in deps:
+        # print "Checking dep %s"%dep
+        peer = None
+        link = dep.lower()
+        try:
+            peer = getattr(object, link)
+        except AttributeError:
+            link = plural(link)
+            try:
+                peer = getattr(object, link)
+            except AttributeError:
+                if model + '.' + link not in missing_links:
+                    log.exception(
+                        "Model missing link for dependency.",
+                        model=model,
+                        link=link)
+                    missing_links[model + '.' + link] = True
+
+        if (peer):
+            try:
+                peer_objects = peer.all()
+            except AttributeError:
+                peer_objects = [peer]
+            except BaseException:
+                peer_objects = []
+
+            for o in peer_objects:
+                # if (isinstance(o,XOSBase)):
+                if (hasattr(o, 'updated')):
+                    fn(o, object)
+                    ret.append(o)
+                # Uncomment the following line to enable recursion
+                # walk_inv_deps(fn, o)
+    return ret
 
 
-		if (peer):
-			try:
-				peer_objects = peer.all()
-			except AttributeError:
-				peer_objects = [peer]
-			except:
-				peer_objects = []
+def p(x, source):
+    print x, x.__class__.__name__
+    return
 
-			for o in peer_objects:
-				#if (isinstance(o,XOSBase)):
-				if (hasattr(o,'updated')):
-					fn(o, object)
-					ret.append(o)
-				# Uncomment the following line to enable recursion
-				# walk_inv_deps(fn, o)
-	return ret
-
-def p(x,source):
-	print x,x.__class__.__name__
-	return
 
 def main():
-	#pdb.set_trace()
-	s = Slice.objects.filter(name='princeton_sapan62')
-	#pdb.set_trace()
-	print walk_inv_deps(p,s[0])
-	
-if __name__=='__main__':
-	main()
+    # pdb.set_trace()
+    s = Slice.objects.filter(name='princeton_sapan62')
+    # pdb.set_trace()
+    print walk_inv_deps(p, s[0])
+
+
+if __name__ == '__main__':
+    main()
