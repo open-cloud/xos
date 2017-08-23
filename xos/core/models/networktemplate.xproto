@@ -11,5 +11,5 @@ message NetworkTemplate (PlCoreBase,ParameterMixin){
      optional string shared_network_id = 8 [help_text = "Quantum network", max_length = 256, null = True, db_index = False, blank = True];
      required string topology_kind = 9 [default = "bigswitch", choices = "(('bigswitch', 'BigSwitch'), ('physical', 'Physical'), ('custom', 'Custom'))", max_length = 30, blank = False, null = False, db_index = False];
      optional string controller_kind = 10 [blank = True, max_length = 30, null = True, db_index = False, choices = "((None, 'None'), ('onos', 'ONOS'), ('custom', 'Custom'))"];
-     optional string vtn_kind = 11 [default = "PRIVATE", choices = "(('PRIVATE', 'Private'), ('PUBLIC', 'Public'), ('MANAGEMENT_LOCAL', 'Management Local'), ('MANAGEMENT_HOST', 'Management Host'), ('VSG', 'VSG'), ('ACCESS_AGENT', 'Access Agent'))", max_length = 30, blank = True, null = True, db_index = False];
+     optional string vtn_kind = 11 [default = "PRIVATE", choices = "(('PRIVATE', 'Private'), ('PUBLIC', 'Public'), ('MANAGEMENT_LOCAL', 'Management Local'), ('MANAGEMENT_HOST', 'Management Host'), ('VSG', 'VSG'), ('ACCESS_AGENT', 'Access Agent'), ('FLAT', 'Flat'))", max_length = 30, blank = True, null = True, db_index = False];
 }
