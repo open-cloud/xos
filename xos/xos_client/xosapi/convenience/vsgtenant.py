@@ -30,51 +30,61 @@ class ORMWrapperVSGTenant(ORMWrapper):
             if volts:
                 return volts[0]
         return None
+    
+    def is_address_manager_service_instance(self, si):
+        # TODO: hardcoded dependency
+        # TODO: VRouterTenant is deprecated
+        return si.leaf_model_name in ["AddressManagerServiceInstance", "VRouterTenant"]
 
+    # DEPRECATED
     @property
     def vrouter(self):
+        return self.address_service_instance
+
+    @property
+    def address_service_instance(self):
         links = self.subscribed_links.all()
         for link in links:
-            # cast from ServiceInstance to VRouterTenant
-            vrouters = self.stub.VRouterTenant.objects.filter(id = link.provider_service_instance.id)
-            if vrouters:
-                return vrouters[0]
+            if not self.is_address_manager_service_instance(link.provider_service_instance):
+                continue
+            # cast from ServiceInstance to AddressManagerServiceInstance or similar
+            return link.provider_service_instance.leaf_model
         return None
 
-    def get_vrouter_field(self, name, default=None):
-        if self.vrouter:
-            return getattr(self.vrouter, name, default)
+    def get_address_service_instance_field(self, name, default=None):
+        if self.address_service_instance:
+            return getattr(self.address_service_instance, name, default)
         else:
             return default
 
     @property
     def wan_container_ip(self):
-        return self.get_vrouter_field("public_ip", None)
+        return self.get_address_service_instance_field("public_ip", None)
 
     @property
     def wan_container_mac(self):
-        return self.get_vrouter_field("public_mac", None)
+        return self.get_address_service_instance_field("public_mac", None)
 
     @property
     def wan_container_netbits(self):
-        return self.get_vrouter_field("netbits", None)
+        return self.get_address_service_instance_field("netbits", None)
 
     @property
     def wan_container_gateway_ip(self):
-        return self.get_vrouter_field("gateway_ip", None)
+        return self.get_address_service_instance_field("gateway_ip", None)
 
     @property
     def wan_container_gateway_mac(self):
-        return self.get_vrouter_field("gateway_mac", None)
+        return self.get_address_service_instance_field("gateway_mac", None)
 
     @property
     def wan_vm_ip(self):
         tags = self.stub.Tag.objects.filter(name="vm_vrouter_tenant", object_id=self.instance.id, content_type=self.instance.self_content_type_id)
         if tags:
-            tenants = self.stub.VRouterTenant.objects.filter(id=int(tags[0].value))
-            if not tenants:
-                raise Exception("VRouterTenent %d linked to vsg %s does not exist" % (int(tags[0].value), self))
-            return tenants[0].public_ip
+            service_instances = self.stub.ServiceInstance.objects.filter(id=int(tags[0].value))
+            if not service_instances:
+                raise Exception("ServiceInstance %d linked to vsg %s does not exist" % (int(tags[0].value), self))
+            return service_instances[0].leaf_model.public_ip
         else:
             raise Exception("no vm_vrouter_tenant tag for instance %s" % self.instance)
 
@@ -82,10 +92,10 @@ class ORMWrapperVSGTenant(ORMWrapper):
     def wan_vm_mac(self):
         tags = self.stub.Tag.objects.filter(name="vm_vrouter_tenant", object_id=self.instance.id, content_type=self.instance.self_content_type_id)
         if tags:
-            tenants = self.stub.VRouterTenant.objects.filter(id=int(tags[0].value))
-            if not tenants:
-                raise Exception("VRouterTenent %d linked to vsg %s does not exist" % (int(tags[0].value), self))
-            return tenants[0].public_mac
+            service_instances = self.stub.ServiceInstance.objects.filter(id=int(tags[0].value))
+            if not service_instances:
+                raise Exception("ServiceInstance %d linked to vsg %s does not exist" % (int(tags[0].value), self))
+            return service_instances[0].leaf_model.public_mac
         else:
             raise Exception("no vm_vrouter_tenant tag for instance %s" % self.instance)
 

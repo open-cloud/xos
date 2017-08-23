@@ -83,15 +83,22 @@ class XOSNetwork(XOSResource):
                 # TODO: Break hardcoded dependencies
                 # TODO: Rethink relationship between networks and vrouter tenants
                 if provider_service.kind == "vROUTER":
+                    # DEPRECATED
                     from services.vrouter.models import VRouterService
                     si = VRouterService.objects.get(id=provider_service.id).get_tenant(address_pool_name="addresses_"+obj.name)
-                    si.save()
-                    link = ServiceInstanceLink(provider_service_instance=si, subscriber_network=obj)
-                    link.save()
-
-                    obj.subnet = si.cidr
+                elif provider_service.kind == "addressmanager":
+                    from services.addressmanager.models import AddressManagerService
+                    si = AddressManagerService.objects.get(id=provider_service.id).get_service_instance(address_pool_name="addresses_"+obj.name)
                 else:
-                    raise Exception("The only network tenancy relationships that are allowed are to vRouter services")
+                    # Hardcoded dependency, will be obsoleted by new Tosca engine
+                    raise Exception(
+                        "The only network tenancy relationships that are allowed are to vRouter and AddressManager services")
+
+                si.save()
+                link = ServiceInstanceLink(provider_service_instance=si, subscriber_network=obj)
+                link.save()
+
+                obj.subnet = si.cidr
 
                 self.info("Created Tenancy relationship from %s to %s" % (str(obj), str(provider_service)))
 

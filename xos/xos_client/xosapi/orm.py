@@ -547,4 +547,6 @@ import convenience.slice
 import convenience.port
 import convenience.tag
 import convenience.vtrtenant
+import convenience.addressmanagerservice
+import convenience.addressmanagerserviceinstance
 
