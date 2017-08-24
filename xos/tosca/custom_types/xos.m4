@@ -1307,27 +1307,6 @@ node_types:
             deploymentrole:
                 type: tosca.capabilities.xos.DeploymentRole
 
-    tosca.nodes.DashboardView:
-        derived_from: tosca.nodes.Root
-        description: >
-            An XOS Dashboard View
-        capabilities:
-            dashboardview:
-                type: tosca.capabilities.xos.DashboardView
-        properties:
-            xos_base_props
-            enabled:
-                type: boolean
-                default: true
-            url:
-                type: string
-                required: false
-                description: URL to the dashboard
-            custom_icon:
-                type: boolean
-                default: false
-                description: Whether the dashboard has custom icons
-
     tosca.nodes.Tag:
         derived_from: tosca.nodes.Root
         description: >
@@ -1468,10 +1447,6 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Tenant ]
 
-    tosca.relationships.UsesDashboard:
-        derived_from: tosca.relationships.Root
-        valid_target_types: [ tosca.capabilities.xos.DashboardView ]
-
     tosca.relationships.HasLabel:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.NodeLabel ]
@@ -1587,10 +1562,6 @@ node_types:
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root
         description: An XOS Image
-
-    tosca.capabilities.xos.DashboardView:
-        derived_from: tosca.capabilities.Root
-        description: An XOS DashboardView
 
     tosca.capabilities.xos.NetworkParameterType:
         derived_from: tosca.capabilities.Root

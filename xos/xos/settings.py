@@ -135,7 +135,6 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -171,21 +170,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     # 'django.contrib.sites',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
-    # 'suit',
-    'xos.apps.MyDjangoSuitConfig',
-    'xos.admin_customize',
-    'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    'django.contrib.admindocs',
-    'rest_framework',
     'django_extensions',
     'core',
     'services.syndicate_storage',
     # 'geoposition',
     # 'rest_framework_swagger',
-    'corsheaders'
 )
 
 # add services that were configured by xosbuilder to INSTALLED_APPS
@@ -194,11 +183,6 @@ if os.path.exists("/opt/xos/xos/xosbuilder_app_list"):
         line = line.strip()
         if line:
             INSTALLED_APPS = list(INSTALLED_APPS) + [line]
-
-if DJANGO_VERSION[1] >= 7:
-    # if django >= 1.7, then change the admin module
-    INSTALLED_APPS = list(INSTALLED_APPS)
-    INSTALLED_APPS[INSTALLED_APPS.index('django.contrib.admin')] = 'django.contrib.admin.apps.SimpleAdminConfig'
 
 # Added for django-suit form
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (

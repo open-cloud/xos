@@ -23,8 +23,7 @@ from collections import defaultdict
 from operator import attrgetter, itemgetter
 
 from core.middleware import get_request
-from xosbase import XOSBase,PlModelMixIn
-import dashboardview
+from xosbase import XOSBase, PlModelMixIn
 from core.models.xosbase import StrippedCharField, XOSCollector
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.exceptions import PermissionDenied
@@ -166,9 +165,6 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     timezone = TimeZoneField()
 
-    dashboards = models.ManyToManyField(
-        'DashboardView', through='UserDashboardView', blank=True)
-
     policy_status = models.CharField( default = "0 - Policy in process", max_length = 1024, null = True )
 
     objects = UserManager()
@@ -216,21 +212,6 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     def is_superuser(self):
         return False
-
-    def get_dashboards(self):
-        DEFAULT_DASHBOARDS = ["Tenant"]
-
-        dashboards = sorted(
-            list(self.userdashboardviews.all()), key=attrgetter('order'))
-        dashboards = [x.dashboardView for x in dashboards]
-
-        if (not dashboards) and (not self.is_appuser):
-            for dashboardName in DEFAULT_DASHBOARDS:
-                dbv = dashboardview.DashboardView.objects.filter(name=dashboardName)
-                if dbv:
-                    dashboards.append(dbv[0])
-
-        return dashboards
 
 #    def get_roles(self):
 #        from core.models.site import SitePrivilege
@@ -348,8 +329,6 @@ class User(AbstractBaseUser, PlModelMixIn):
         elif profile == "cp":
             self.is_appuser = True
             self.is_admin = False
-            for db in self.userdashboardviews.all():
-                db.delete()
 
     def get_content_type_key(self):
         ct = ContentType.objects.get_for_model(self.__class__)
@@ -370,10 +349,4 @@ class User(AbstractBaseUser, PlModelMixIn):
     generate the User class'''
     def can_access(self, ctx):
         return security.user_policy_security_check(self, ctx), "user_policy"
-
-class UserDashboardView(XOSBase):
-    user = models.ForeignKey(User, related_name='userdashboardviews')
-    dashboardView = models.ForeignKey(
-        dashboardview.DashboardView, related_name='userdashboardviews')
-    order = models.IntegerField(default=0)
 

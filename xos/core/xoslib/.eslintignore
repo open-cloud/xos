@@ -1,5 +1,0 @@
-node_modules/**/*.js
-xos-builder/node_modules/**/*.js
-static/js/vendor/**/*.js
-spec/helpers/*.js
-coverage/**/*

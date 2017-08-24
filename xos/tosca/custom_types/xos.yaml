@@ -19,6 +19,22 @@ tosca_definitions_version: tosca_simple_yaml_1_0
 # compile this with "m4 xos.m4 > xos.yaml"
 
 # include macros
+
+# Copyright 2017-present Open Networking Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 # Note: Tosca derived_from isn't working the way I think it should, it's not
 #    inheriting from the parent template. Until we get that figured out, use
 #    m4 macros do our inheritance
@@ -2291,42 +2307,6 @@ node_types:
             deploymentrole:
                 type: tosca.capabilities.xos.DeploymentRole
 
-    tosca.nodes.DashboardView:
-        derived_from: tosca.nodes.Root
-        description: >
-            An XOS Dashboard View
-        capabilities:
-            dashboardview:
-                type: tosca.capabilities.xos.DashboardView
-        properties:
-            no-delete:
-                type: boolean
-                default: false
-                description: Do not allow Tosca to delete this object
-            no-create:
-                type: boolean
-                default: false
-                description: Do not allow Tosca to create this object
-            no-update:
-                type: boolean
-                default: false
-                description: Do not allow Tosca to update this object
-            replaces:
-                type: string
-                required: false
-                descrption: Replaces/renames this object
-            enabled:
-                type: boolean
-                default: true
-            url:
-                type: string
-                required: false
-                description: URL to the dashboard
-            custom_icon:
-                type: boolean
-                default: false
-                description: Whether the dashboard has custom icons
-
     tosca.nodes.Tag:
         derived_from: tosca.nodes.Root
         description: >
@@ -2482,10 +2462,6 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Tenant ]
 
-    tosca.relationships.UsesDashboard:
-        derived_from: tosca.relationships.Root
-        valid_target_types: [ tosca.capabilities.xos.DashboardView ]
-
     tosca.relationships.HasLabel:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.NodeLabel ]
@@ -2601,10 +2577,6 @@ node_types:
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root
         description: An XOS Image
-
-    tosca.capabilities.xos.DashboardView:
-        derived_from: tosca.capabilities.Root
-        description: An XOS DashboardView
 
     tosca.capabilities.xos.NetworkParameterType:
         derived_from: tosca.capabilities.Root

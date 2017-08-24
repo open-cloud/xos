@@ -47,10 +47,6 @@
     "UserCredential": [
         "User"
     ], 
-    "UserDashboardView": [
-        "User", 
-        "DashboardView"
-    ], 
     "Controller": [
         "Deployment"
     ], 
@@ -103,10 +99,6 @@
         "User", 
         "Deployment", 
         "Role"
-    ], 
-    "ControllerDashboardView": [
-        "Controller", 
-        "DashboardView"
     ], 
     "Invoice": [
         "Account"

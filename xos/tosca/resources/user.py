@@ -15,7 +15,7 @@
 
 
 from xosresource import XOSResource
-from core.models import User, Site, SiteRole, SliceRole, SlicePrivilege, SitePrivilege, DashboardView, UserDashboardView
+from core.models import User, Site, SiteRole, SliceRole, SlicePrivilege, SitePrivilege
 
 class XOSUser(XOSResource):
     provides = "tosca.nodes.User"
@@ -53,21 +53,6 @@ class XOSUser(XOSResource):
                         sp = SitePrivilege(accessor_id=obj.id, permission='role:'+role_obj.role, object_id=dest.id, accessor_type='User', object_type='Site')
                         sp.save()
                         self.info("Added site privilege on %s role %s for %s" % (str(dest), str(role), str(obj)))
-
-        dashboard_order = 10
-        for reqs in self.nodetemplate.requirements:
-            for (k,v) in reqs.items():
-                if (v["relationship"] == "tosca.relationships.UsesDashboard"):
-                    dashboard_name = v["node"]
-                    dashboard = self.get_xos_object(DashboardView, name=dashboard_name)
-
-                    udvs = UserDashboardView.objects.filter(user=obj, dashboardView=dashboard)
-                    if not udvs:
-                        self.info("Adding UserDashboardView from %s to %s" % (obj, dashboard))
-
-                        udv = UserDashboardView(user=obj, dashboardView=dashboard, order=dashboard_order)
-                        dashboard_order += 10
-                        udv.save()
 
     def create(self):
         xos_args = self.get_xos_args()

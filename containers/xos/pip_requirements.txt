@@ -31,14 +31,10 @@ cryptography==1.9
 debtcollector==1.8.0
 decorator==4.1.2
 django-bitfield==1.8.0
-django-cors-headers==1.2.0
-django-crispy-forms==1.6.0
 django-encrypted-fields==1.1.2
 django-extensions==1.7.3
 django-filter==0.14.0
 django-ipware==1.1.5
-django-rest-swagger==2.0.5
-django-suit==0.3a3
 django-timezones==0.2
 djangorestframework==3.3.3
 dnslib==0.9.6

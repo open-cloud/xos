@@ -4,9 +4,7 @@
 from .xosbase import XOSBase,XOSBaseManager,XOSBaseDeletionManager,PlModelMixIn,ModelLink
 from .contenttype import ContentType
 from .site import Site
-from .dashboardview import DashboardView
 from .user import User
-from .user import UserDashboardView
 
 {% for m in proto.messages -%}
 {% if not m.options.skip_init -%}
