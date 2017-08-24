@@ -24,7 +24,7 @@ logger = Logger(level=logging.INFO)
 
 
 def update_diag(diag_class, loop_end=None, loop_start=None, syncrecord_start=None, sync_start=None,
-                backend_status=None):
+                backend_status=None, backend_code=0):
     observer_name = Config.get("name")
 
     try:

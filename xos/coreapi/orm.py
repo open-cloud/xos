@@ -48,6 +48,7 @@ class ORMWrapper(object):
         super(ORMWrapper, self).__setattr__("_wrapped_class", wrapped_class)
         super(ORMWrapper, self).__setattr__("stub", stub)
         super(ORMWrapper, self).__setattr__("cache", {})
+        super(ORMWrapper, self).__setattr__("synchronizer_step", None)
         super(ORMWrapper, self).__setattr__("reverse_cache", {})
         super(ORMWrapper, self).__setattr__("is_new", is_new)
         fkmap=self.gen_fkmap()
