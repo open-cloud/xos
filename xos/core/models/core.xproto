@@ -68,7 +68,6 @@ message User::user_policy (AbstractBaseUser,PlModelMixIn) {
      required bool no_sync = 28 [default = False, null = False, db_index = False, blank = True];
      required bool no_policy = 29 [default = False, null = False, db_index = False, blank = True];
      required string timezone = 30 [default = "America/New_York", max_length = 100, blank = False, null = False, db_index = False];
-     required manytomany dashboards->DashboardView/UserDashboardView:user = 31 [db_index = False, null = False, blank = True];
      optional string policy_status = 32 [default = "0 - Policy in process", max_length = 1024];
      required string leaf_model_name = 33 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
 }
@@ -125,15 +124,6 @@ message Controller::controller_policy (XOSBase) {
      optional string rabbit_password = 11 [max_length = 200, content_type = "stripped", blank = True, help_text = "Password of rabbitmq server at this controller", null = True, db_index = False];
      required manytoone deployment->Deployment:controllerdeployments = 12 [db_index = True, null = False, blank = False];
 }
-
-
-message ControllerDashboardView (XOSBase) {
-     required manytoone controller->Controller:controllerdashboardviews = 1 [db_index = True, null = False, blank = False];
-     required manytoone dashboardView->DashboardView:controllerdashboardviews = 2 [db_index = True, null = False, blank = False];
-     required bool enabled = 3 [default = True, db_index = False, blank = True];
-     required string url = 4 [max_length = 1024, content_type = "stripped", blank = False, help_text = "URL of Dashboard", null = False, db_index = False];
-}
-
 
 message ControllerImages (XOSBase) {
      required manytoone image->Image:controllerimages = 1 [db_index = True, null = False, blank = False, unique_with = "controller"];
@@ -243,17 +233,6 @@ message ControllerUser::controller_user_policy (XOSBase) {
      required manytoone user->User:controllerusers = 1 [db_index = True, null = False, blank = False];
      required manytoone controller->Controller:controllersusers = 2 [db_index = True, null = False, blank = False, unique_with = "user"];
      optional string kuser_id = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "Keystone user id", null = True, db_index = False];
-}
-
-
-message DashboardView (XOSBase) {
-     required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the View", null = False, db_index = False];
-     required string url = 2 [max_length = 1024, content_type = "stripped", blank = False, help_text = "URL of Dashboard", null = False, db_index = False];
-     required bool enabled = 3 [default = True, db_index = False, blank = True];
-     required string icon = 4 [default = "default-icon.png", max_length = 200, blank = False, help_text = "Icon for Dashboard", null = False, db_index = False];
-     required string icon_active = 5 [default = "default-icon-active.png", max_length = 200, blank = False, help_text = "Icon for active Dashboard", null = False, db_index = False];
-     required manytomany controllers->Controller/ControllerDashboardView:dashboardviews = 6 [db_index = False, null = False, blank = True];
-     required manytomany deployments->Deployment/DashboardView_deployments:dashboardviews = 7 [help_text = "Deployments that should be included in this view", null = False, db_index = False, blank = True];
 }
 
 // Everyone has read access
