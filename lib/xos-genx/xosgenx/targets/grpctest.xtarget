@@ -1,0 +1,279 @@
+import sys
+sys.path.append("/opt/xos/coreapi/")
+
+import grpc_client
+from grpc_client import Empty
+from testconfig import *
+from protos.common_pb2 import *
+import random, string
+import unittest
+import pytz
+from itertools import combinations
+
+permutations = False
+{% autoescape false %}
+{% endautoescape %}
+{%- for m in proto.messages -%}
+{%- if m.name != 'XOSBase' -%}
+{{ m.name | lower }} = None
+{{ m.name | lower }}_dependent_list = []
+{% endif %}
+{% endfor %}
+c=grpc_client.SecureClient("xos-core.cord.lab", username=USERNAME, password=PASSWORD)
+
+def to_dict_func(dlist):
+    return dict(dlist)
+
+def generate_random_value(value):
+        if value == 'string':
+                return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
+        if value == 'bool':
+                return random.choice([True, False])
+        if value == 'int32' or value == 'uint32':
+                return random.randint(1,10000)
+	if value == 'float':
+		return random.uniform(1,10)
+        else:
+                return None
+
+def generate_random_slice_name():
+    random_name = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
+    return 'testloginbase' + random_name
+
+def generate_random_timezone():
+    return random.choice(pytz.all_timezones)
+
+def delete_dependent_objects(dlist):
+	for index, item in enumerate(dlist):
+		try:
+                        fn = getattr(c.stub, 'Delete' + item.__class__.__name__)
+                        deleted = fn(grpc_client.ID(id=item.id))
+                except Exception, e:
+			print 'Failed to deleted: ' + str(item.__class__.__name__)
+                        print e
+
+{% for m in proto.messages %}
+{%- if m.name != 'XOSBase' -%}
+def create_{{ m.name | lower }}():
+    # create {{ m.name | lower }}
+    {{ m.name | lower }}=grpc_client.{{ m.name }}()
+    # set required fields for {{ m.name | lower }} object
+    {% for f in m.fields -%}
+    {% if f.link -%}
+    {% if f.modifier == "required" -%}
+    {% if f.options.blank == "False" -%}
+    # create dependent {{ f.model }}
+    {{ f.options.model }}=create_{{ f.options.model | lower }}()
+    {{ m.name | lower }}.{{ f.name }}_id = {{ f.options.model }}.id
+    {{ m.name | lower }}_dependent_list.append({{ f.options.model }})
+    {% endif -%}
+    {% endif -%}
+    {% else %}
+    {% if f.modifier == "required" -%}
+    {% if f.options.blank == "False" -%}
+    {% if not f.options.default -%}
+    {{ m.name | lower }}.{{ f.name }} = generate_random_value("{{ f.type }}")
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% if  m.name  == "Slice" -%}
+    {{ m.name | lower }}.name = str(Site.login_base) + str({{ m.name | lower }}.name)
+    {% endif %}
+    {% if  m.name  == "Site" -%}
+    {{ m.name | lower }}.login_base = "testloginbase"
+    {% endif %}
+    {% if  m.name  == "Network" -%}
+    {{ m.name | lower }}.permit_all_slices = True
+    {% endif %}
+    {{ m.name | lower }}_2=c.stub.Create{{ m.name }}({{ m.name | lower }})
+    return {{ m.name | lower }}_2
+{% endif %}
+{% endfor %}
+
+class TestSequenceMeta(type):
+    def __new__(mcs, name, bases, dict):
+
+        def gen_test(xos_model, params_req=[], fields_req=[], dependents=[], dependent_functions=[], params=[], fields=[]):
+            def test(self):
+                dependent_objects = []
+                str = "grpc_client." + xos_model + "()"
+                model = eval(str)
+                try:
+                    params.remove("deployments")
+                except:
+                    pass
+
+                ## set required fields
+                for i in params_req:
+                    if not ((xos_model == "Slice") and (i == "name")):
+                        test_value = generate_random_value(fields_req[i])
+                        setattr(model, i, test_value)
+                    else:
+                        test_value = generate_random_slice_name()
+                        setattr(model, i, test_value)
+
+                ## set optional fields
+                for i in params:
+                    if not ((xos_model == "User") and (i == "timezone")):
+                        test_value = generate_random_value(fields[i])
+                        setattr(model, i, test_value)
+                    else:
+                        test_value = generate_random_timezone()
+                        setattr(model, i, test_value)
+
+                ## create dependent objects
+                for i, j in zip(dependents,dependent_functions):
+                    str = "create_" + j.lower() + "()"
+                    dep_i = eval(str)
+                    dep_id = i + "_id"
+                    setattr(model, dep_id.lower(), dep_i.id)
+                    dependent_objects.append(dep_i)
+
+                str = "c.stub.Create" + xos_model + "(model)"
+                model_2 = eval(str)
+
+                for i in params_req:
+                    val = getattr(model, i)
+                    val2 = getattr(model_2, i)
+                    if fields_req[i] == 'float':
+                        assert abs(val - val2) < 0.5000
+                    else:
+                        assert (val == val2)
+
+                for i in params:
+                    val = getattr(model, i)
+                    val2 = getattr(model_2, i)
+                    if fields[i] == 'float':
+                        assert abs(val - val2) < 0.5000
+                    elif i == 'password':
+                        pass
+                    else:
+                        assert (val == val2)
+
+                ## test list call
+                str = "c.stub.List" + xos_model + "(grpc_client.Empty()).items"
+                model_list = eval(str)
+                for i in params_req:
+                    val = getattr(model, i)
+                    model_item = [x for x in model_list if getattr(x, i) == val]
+                    if fields_req[i] == 'bool':
+                        assert (len(model_item) >= 1)
+                    elif fields_req[i] == 'float':
+                        # assert(len(model_item)==1)
+                        pass
+                    else:
+                        assert (len(model_item) == 1)
+                for i in params:
+                    val = getattr(model, i)
+                    model_item = [x for x in model_list if getattr(x, i) == val]
+                    if fields[i] == 'bool':
+                        assert (len(model_item) >= 1)
+                    elif fields[i] == 'float':
+                        # assert(len(model_item)==1)
+                        pass
+                    elif i == 'password':
+                        pass
+                    else:
+                        assert (len(model_item) == 1)
+
+                ## test delete method
+                str = "c.stub.Delete" + xos_model + "(grpc_client.ID(id=model_2.id))"
+                eval(str)
+                # validate deletion
+                str = "c.stub.List" + xos_model + "(grpc_client.Empty()).items"
+                all_items = eval(str)
+                for i in params_req:
+                    val = getattr(model, i)
+                    all_models = [x for x in all_items if getattr(x, i) == val]
+                    if fields_req[i] == 'bool':
+                        continue
+                    else:
+                        assert (len(all_models) == 0)
+                for i in params:
+                    val = getattr(model, i)
+                    all_models = [x for x in all_items if getattr(x, i) == val]
+                    if fields[i] == 'bool':
+                        continue
+                    else:
+                        assert (len(all_models) == 0)
+                delete_dependent_objects(dependent_objects)
+            return test
+
+
+        {% for m in proto.messages %}
+        {%- if m.name != 'XOSBase' -%}
+        # create {{ m.name }}
+        module = "{{ m.name }}"
+        {{ m.name | lower }}_fields_req = []
+        {{ m.name | lower }}_fields_types_req = ()
+        {{ m.name | lower }}_fields = []
+        {{ m.name | lower }}_fields_type = ()
+        {{ m.name | lower }}_dependent_list = []
+        {{ m.name | lower }}_dependent_list_functions = []
+
+        {% for f in m.fields -%}
+        {% if f.modifier == "required" -%}
+        {% if f.options.blank == "False" -%}
+        {% if not f.options.default -%}
+        {% if not f.link -%}
+        # set required fields for {{ m.name | lower }} object
+        {{ m.name | lower }}_fields_types_req = {{ m.name | lower }}_fields_type + ('{{ f.name }}', '{{ f.type }}')
+        {{ m.name | lower }}_fields_req.append({{ m.name | lower }}_fields_types_req)
+        {% endif -%}
+        {% endif -%}
+        {% endif -%}
+        {% endif -%}
+        {% if f.link -%}
+        {% if f.modifier == "required" -%}
+        {% if f.options.blank == "False" -%}
+
+        ## get dependent objects
+        # add dependent {{ f.name | lower }} to list
+        {{ m.name | lower }}_dependent_list.append('{{ f.name }}')
+        {{ m.name | lower }}_dependent_list_functions.append('{{ f.options.model }}')
+        {% endif -%}
+        {% endif -%}
+        {% endif -%}
+        {% endfor %}
+
+        {% for f in m.fields -%}
+        ## get optional fields
+        {% if f.options.default -%}
+        {{ m.name | lower }}_fields_types = {{ m.name | lower }}_fields_type + ('{{ f.name }}', '{{ f.type}}')
+        {{ m.name | lower }}_fields.append({{ m.name | lower }}_fields_types)
+        {% endif -%}
+        {% endfor %}
+        if permutations:
+            #Loop through param options, create permutations, and test with each
+            index = 1
+            field_names_req = [x[0] for x in {{ m.name | lower }}_fields_req]
+            field_types_req = [x[1] for x in {{ m.name | lower }}_fields_req]
+            field_names = [x[0] for x in {{ m.name | lower }}_fields]
+            field_types = [x[1] for x in {{ m.name | lower }}_fields]
+            {{ m.name | lower }}_fields_req = to_dict_func({{ m.name | lower }}_fields_req)
+            {{ m.name | lower }}_fields = to_dict_func({{ m.name | lower }}_fields)
+            for i in xrange(1, len(field_names) + 1):
+                perm = list(combinations(field_names, i))
+                for j in perm:
+                    test_name = "test_{}_{}".format(module.lower(), str(index))
+                    dict[test_name] = gen_test(module, list(field_names_req), {{ m.name | lower }}_fields_req, {{ m.name | lower }}_dependent_list,{{ m.name | lower }}_dependent_list_functions,list(j), {{ m.name | lower }}_fields)
+                    index += 1
+        else:
+            #Loop through required parameters
+            index = 1
+            field_names_req = [x[0] for x in {{ m.name | lower }}_fields_req]
+            field_types_req = [x[1] for x in {{ m.name | lower }}_fields_req]
+            {{ m.name | lower }}_fields_req = to_dict_func({{ m.name | lower }}_fields_req)
+            test_name = "test_{}_{}".format(module.lower(), str(index))
+            dict[test_name] = gen_test(module, list(field_names_req), {{ m.name | lower }}_fields_req, {{ m.name | lower }}_dependent_list, {{ m.name | lower }}_dependent_list_functions)
+        {% endif %}
+        {% endfor %}
+        return type.__new__(mcs, name, bases, dict)
+
+class TestSequence(unittest.TestCase):
+    __metaclass__ = TestSequenceMeta
+
+if __name__ == '__main__':
+    unittest.main()
