@@ -93,20 +93,20 @@ class TenantWithContainerPolicy(Policy):
 
     def allocate_public_service_instance(self, **kwargs):
         """ Get a ServiceInstance that provides public connectivity. Currently this means to use AddressPool and
-            VRouterTenant.
+            the AddressManager Service.
 
             Expect this to be refactored when we break hard-coded service dependencies.
         """
         address_pool_name = kwargs.pop("address_pool_name")
 
-        vrouter_service = VRouterService.objects.all()  # TODO: Hardcoded dependency
-        if not vrouter_service:
-            raise Exception("no vrouter services")
-        vrouter_service = vrouter_service[0]
+        am_service = AddressManagerService.objects.all()  # TODO: Hardcoded dependency
+        if not am_service:
+            raise Exception("no addressing services")
+        am_service = am_service[0]
 
-        ap = AddressPool.objects.filter(name=address_pool_name, service_id=vrouter_service.id)
+        ap = AddressPool.objects.filter(name=address_pool_name, service_id=am_service.id)
         if not ap:
-            raise Exception("vRouter unable to find addresspool %s" % name)
+            raise Exception("Addressing service unable to find addresspool %s" % name)
         ap = ap[0]
 
         ip = ap.get_address()
@@ -125,11 +125,11 @@ class TenantWithContainerPolicy(Policy):
         elif "subscriber_service_instance" in kwargs:
             subscriber_service_instance = kwargs.pop("subscriber_service_instance")
 
-        # TODO: potential partial failure -- AddressPool address is allocated and saved before vrouter tenant
+        # TODO: potential partial failure -- AddressPool address is allocated and saved before addressing tenant
 
         t = None
         try:
-            t = VRouterTenant(owner=vrouter_service, **kwargs)    # TODO: Hardcoded dependency
+            t = AddressManagerServiceInstance(owner=am_service, **kwargs)    # TODO: Hardcoded dependency
             t.public_ip = ip
             t.public_mac = self.ip_to_mac(ip)
             t.address_pool_id = ap.id
@@ -145,6 +145,7 @@ class TenantWithContainerPolicy(Policy):
         except:
             # cleanup if anything went wrong
             ap.put_address(ip)
+            ap.save()  # save the AddressPool to account for address being added to it
             if (t and t.id):
                 t.delete()
             raise
