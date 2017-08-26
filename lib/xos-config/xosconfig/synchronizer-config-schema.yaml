@@ -19,20 +19,8 @@ map:
     type: str
   xos_dir:
     type: str
-  logging:
-    type: map
-    map:
-      file:
-        type: str
-      logstash_hostport:
-        type: str
-      level:
-        type: str
-      channels:
-        type: seq
-        sequence:
-          - type: str
-            enum: ['file', 'console', 'elkstack']
+  logging: 
+    type: any
   dependency_graph:
     type: str
   link_graph:

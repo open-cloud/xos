@@ -63,7 +63,7 @@ class Logger:
 
         # Logstash config
         try:
-            logstash_host, logstash_port = Config.get("logging.logstash_hostport").split(':')
+            logstash_host, logstash_port = 'cordloghost', '5617'
             logstash_handler = logstash.LogstashHandler(
                 logstash_host, int(logstash_port), version=1)
             # always log at DEBUG level to logstash
@@ -74,10 +74,10 @@ class Logger:
 
         # default is to locate loggername from the logfile if avail.
         if not logfile:
-            logfile = Config.get("logging.file")
+            logfile = '/var/log/xos_legacy.log'
 
         # allow config-file override of console/logfile level
-        level_str = Config.get("logging.level")
+        level_str = 'info'
         if level_str:
             level_str = level_str.lower()
 

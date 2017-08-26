@@ -17,10 +17,24 @@
 DEFAULT_VALUES = {
     'xos_dir': '/opt/xos',
     'logging': {
-        'file': '/var/log/xos.log', # TODO remove me, the new logger will be able to decide on which file to log
-        'level': 'info',
-        'channels': ['file', 'console'],
-        'logstash_hostport': 'cordloghost:5617'
+        'version': 1,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+            'file': {
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': '/var/log/xos.log',
+                'maxBytes': 10485760,
+                'backupCount': 5
+            }
+        },
+        'loggers': {
+            '': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG'
+            }
+        }
     },
     'accessor': {
         'endpoint': 'xos-core.cord.lab:50051',
@@ -34,9 +48,9 @@ DEFAULT_VALUES = {
         'client_user': 'pl'
     },
     'proxy_ssh': {
-      'enabled': True,
-      'key': '/opt/cord_profile/node_key',
-      'user': 'root'
+        'enabled': True,
+        'key': '/opt/cord_profile/node_key',
+        'user': 'root'
     },
     'node_key': '/opt/cord_profile/node_key',
     'config_dir': '/etc/xos/sync',

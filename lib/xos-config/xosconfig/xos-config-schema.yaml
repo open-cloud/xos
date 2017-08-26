@@ -31,20 +31,7 @@ map:
       password:
         type: str
         required: True
-  logging:
-    type: map
-    map:
-      file:
-        type: str
-      logstash_hostport:
-        type: str
-      level:
-        type: str
-        # TODO add validation [info, debug, warning, error, critical]
-      channels:
-        type: seq
-        sequence:
-          - type: str
-            enum: ['file', 'console', 'elkstack']
+  logging: 
+    type: any
   xos_dir:
     type: str
