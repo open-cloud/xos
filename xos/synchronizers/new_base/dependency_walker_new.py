@@ -40,6 +40,7 @@ missing_links = {}
 dep_data = open(Config.get("dependency_graph")).read()
 
 dependencies = json.loads(dep_data)
+dependencies = {k:[item[0] for item in items] for k,items in dependencies.items()}
 
 inv_dependencies = {}
 for k, lst in dependencies.items():

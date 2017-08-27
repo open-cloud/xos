@@ -10,14 +10,16 @@ message XOSBase {
      optional string backend_register = 5 [default = "{}", max_length = 1024];
      required bool backend_need_delete = 6 [default = False];
      required bool backend_need_reap = 7 [default = False];
-     required string backend_status = 8 [default = "0 - Provisioning in progress", max_length = 1024, null = True];
-     required bool deleted = 9 [default = False];
-     required bool write_protect = 11 [default = False];
-     required bool lazy_blocked = 11 [default = False];
-     required bool no_sync = 12 [default = False];
-     required bool no_policy = 13 [default = False];
-     optional string policy_status = 14 [default = "0 - Policy in process", max_length = 1024];
-     required string leaf_model_name = 15 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
+     required string backend_status = 8 [default = "Provisioning in progress", max_length = 1024, null = True];
+     required int32 backend_code = 9 [default = 0];
+     required bool deleted = 10 [default = False];
+     required bool write_protect = 12 [default = False];
+     required bool lazy_blocked = 13 [default = False];
+     required bool no_sync = 14 [default = False];
+     required bool no_policy = 15 [default = False];
+     optional string policy_status = 16 [default = "Policy in process", max_length = 1024];
+     optional int32 policy_code = 16 [default = 0];
+     required string leaf_model_name = 17 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
 }
 
 // The calling user represents the user being accessed, or is a site admin.

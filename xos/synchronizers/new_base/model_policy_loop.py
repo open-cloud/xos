@@ -29,10 +29,11 @@ from multistructlog import create_logger
 log = create_logger(Config().get('logging'))
 
 class XOSPolicyEngine(object):
-    def __init__(self, policies_dir):
+    def __init__(self, policies_dir, log = log):
         self.model_policies = self.load_model_policies(policies_dir)
         self.policies_by_name = {}
         self.policies_by_class = {}
+        self.log = log
 
         for policy in self.model_policies:
             if not policy.model_name in self.policies_by_name:
@@ -103,7 +104,7 @@ class XOSPolicyEngine(object):
                             c.model = model_accessor.get_model_class(c.model_name)
                             policies.append(c)
 
-        log.info("Loaded model policies", count = len(policies))
+        log.info("Loaded model policies", policies = policies)
         return policies
 
     def execute_model_policy(self, instance, action):

@@ -16,19 +16,17 @@
 
 import os
 import base64
+
 from xosconfig import Config
 from synchronizers.new_base.modelaccessor import *
 from synchronizers.new_base.ansible_helper import run_template
+#from tests.steps.mock_modelaccessor import model_accessor
 
 import json
 import time
 import pdb
 
 from xosconfig import Config
-from multistructlog import create_logger
-
-log = create_logger(Config().get('logging'))
-
 
 def f7(seq):
     seen = set()
@@ -107,58 +105,8 @@ class SyncStep(object):
 
         return model_accessor.fetch_pending(self.observes, deletion)
 
-    def check_dependencies(self, obj, failed):
-        for dep in self.dependencies:
-            peer_name = dep[0].lower() + dep[1:]  # django names are camelCased with the first letter lower
-
-            peer_objects = []
-            try:
-                peer_names = plural(peer_name)
-                peer_object_list = []
-
-                try:
-                    peer_object_list.append(deepgetattr(obj, peer_name))
-                except:
-                    pass
-
-                try:
-                    peer_object_list.append(deepgetattr(obj, peer_names))
-                except:
-                    pass
-
-                for peer_object in peer_object_list:
-                    try:
-                        peer_objects.extend(peer_object.all())
-                    except AttributeError:
-                        peer_objects.append(peer_object)
-            except:
-                peer_objects = []
-
-            #            if (hasattr(obj,'controller')):
-            #                try:
-            #                    peer_objects = filter(lambda o:o.controller==obj.controller, peer_objects)
-            #                except AttributeError:
-            #                    pass
-
-            if (model_accessor.obj_in_list(failed, peer_objects)):
-                if (obj.backend_status != failed.backend_status):
-                    obj.backend_status = failed.backend_status
-                    obj.save(update_fields=['backend_status'])
-                raise FailedDependency("Failed dependency for %s:%s peer %s:%s failed  %s:%s" % (
-                obj_class_name(obj), str(getattr(obj, "pk", "no_pk")), obj_class_name(peer_object),
-                str(getattr(peer_object, "pk", "no_pk")), obj_class_name(failed), str(getattr(failed, "pk", "no_pk"))))
-
     def sync_record(self, o):
-        log.debug("Sync_record called for", class_name = obj_class_name(o), object = str(o))
-
-        #        try:
-        #            controller = o.get_controller()
-        #            controller_register = json.loads(controller.backend_register)
-        #
-        #            if (controller_register.get('disabled',False)):
-        #                raise InnocuousException('Controller %s is disabled'%controller.name)
-        #        except AttributeError:
-        #            pass
+        self.log.debug("In default sync record", **o.tologdict())
 
         tenant_fields = self.map_sync_inputs(o)
         if tenant_fields == SyncStep.SYNC_WITHOUT_RUNNING:
@@ -174,15 +122,10 @@ class SyncStep(object):
         if hasattr(self, "map_sync_outputs"):
             self.map_sync_outputs(o, res)
 
+        self.log.debug("Finished default sync record", **o.tologdict())
+
     def delete_record(self, o):
-        #        try:
-        #            controller = o.get_controller()
-        #            controller_register = json.loads(o.node.site_deployment.controller.backend_register)
-        #
-        #            if (controller_register.get('disabled',False)):
-        #                raise InnocuousException('Controller %s is disabled'%sliver.node.site_deployment.controller.name)
-        #        except AttributeError:
-        #            pass
+        self.log.debug("In default delete record", **o.tologdict())
 
         # If there is no map_delete_inputs, then assume deleting a record is a no-op.
         if not hasattr(self, "map_delete_inputs"):
@@ -203,149 +146,4 @@ class SyncStep(object):
         except AttributeError:
             pass
 
-    def call(self, failed=[], deletion=False):
-        pending = self.fetch_pending(deletion)
-
-        for o in pending:
-            # another spot to clean up debug state
-            try:
-                model_accessor.reset_queries()
-            except Exception,e:
-                # this shouldn't happen, but in case it does, catch it...
-                log.exception("exception in reset_queries", e = e,**o.tologdict())
-
-            sync_failed = False
-
-            backoff_disabled = Config.get("backoff_disabled")
-
-            try:
-                scratchpad = json.loads(o.backend_register)
-                if (scratchpad):
-                    next_run = scratchpad['next_run']
-                    if (not backoff_disabled and next_run > time.time()):
-                        sync_failed = True
-            except Exception,e:
-                log.exception("Exception while loading scratchpad", e = e, **o.tologdict())
-                pass
-
-            if (not sync_failed):
-                try:
-                    for f in failed:
-                        self.check_dependencies(o, f)  # Raises exception if failed
-                    if (deletion):
-                        if getattr(o, "backend_need_reap", False):
-                            # the object has already been deleted and marked for reaping
-                            model_accessor.journal_object(o, "syncstep.call.already_marked_reap")
-                        else:
-                            model_accessor.journal_object(o, "syncstep.call.delete_record")
-                            self.delete_record(o)
-                            model_accessor.journal_object(o, "syncstep.call.delete_set_reap")
-                            o.backend_need_reap = True
-                            o.save(update_fields=['backend_need_reap'])
-                            # o.delete(purge=True)
-                    else:
-                        new_enacted = model_accessor.now()
-                        try:
-                            run_always = self.run_always
-                        except AttributeError:
-                            run_always = False
-
-                        # Mark this as an object that will require delete. Do
-                        # this now rather than after the syncstep,
-                        if not (o.backend_need_delete):
-                            o.backend_need_delete = True
-                            o.save(update_fields=['backend_need_delete'])
-
-                        model_accessor.journal_object(o, "syncstep.call.sync_record")
-                        self.sync_record(o)
-
-                        model_accessor.update_diag(syncrecord_start=time.time(), backend_status="1 - Synced Record")
-                        o.enacted = new_enacted
-                        scratchpad = {'next_run': 0, 'exponent': 0, 'last_success': time.time()}
-                        o.backend_register = json.dumps(scratchpad)
-                        o.backend_status = "1 - OK"
-                        model_accessor.journal_object(o, "syncstep.call.save_update")
-                        o.save(update_fields=['enacted', 'backend_status', 'backend_register'])
-                        log.info("save sync object, new enacted registered", enacted = str(new_enacted))
-                except (InnocuousException, Exception, DeferredException) as e:
-                    log.exception("sync step failed!", **o.tologdict())
-                    try:
-                        if (o.backend_status.startswith('2 - ')):
-                            str_e = '%s // %r' % (o.backend_status[4:], e)
-                            str_e = elim_dups(str_e)
-                        else:
-                            str_e = '%r' % e
-                    except:
-                        str_e = '%r' % e
-
-                    try:
-                        error = self.error_map.map(str_e)
-                    except:
-                        error = '%s' % str_e
-
-                    if isinstance(e, InnocuousException):
-                        o.backend_status = '1 - %s' % error
-                    else:
-                        o.backend_status = '2 - %s' % error
-
-                    try:
-                        scratchpad = json.loads(o.backend_register)
-                        scratchpad['exponent']
-                    except Exception,e:
-                        log.exception("Exception while updating scratchpad", e = e, **o.tologdict())
-                        scratchpad = {'next_run': 0, 'exponent': 0, 'last_success': time.time(), 'failures': 0}
-
-                    # Second failure
-                    if (scratchpad['exponent']):
-                        if isinstance(e, DeferredException):
-                            delay = scratchpad['exponent'] * 60  # 1 minute
-                        else:
-                            delay = scratchpad['exponent'] * 600  # 10 minutes
-                        # cap delays at 8 hours
-                        if (delay > 8 * 60 * 60):
-                            delay = 8 * 60 * 60
-                        scratchpad['next_run'] = time.time() + delay
-
-                    try:
-                        scratchpad['exponent'] += 1
-                    except:
-                        scratchpad['exponent'] = 1
-
-                    try:
-                        scratchpad['failures'] += 1
-                    except KeyError:
-                        scratchpad['failures'] = 1
-
-                    scratchpad['last_failure'] = time.time()
-
-                    o.backend_register = json.dumps(scratchpad)
-
-                    # TOFIX:
-                    # DatabaseError: value too long for type character varying(140)
-                    if (model_accessor.obj_exists(o)):
-                        try:
-                            o.backend_status = o.backend_status[:1024]
-                            o.save(update_fields=['backend_status', 'backend_register', 'updated'])
-                        except:
-                            print "Could not update backend status field!"
-                            pass
-                    sync_failed = True
-
-            if (sync_failed):
-                failed.append(o)
-
-        return failed
-
-    def __call__(self, **args):
-        return self.call(**args)
-
-
-# TODO: What does this do? It seems like it's just going to toss exceptions.
-
-class NullSyncStep(SyncStep):  # was SyncObject
-    provides = []  # Caller fills this in
-    requested_interval = 0
-    observes = []  # Caller fills this in
-
-    def sync_record(self, r):
-        raise DeferredException('Waiting for Service dependency: %r' % r)
+        self.log.debug("Finished default delete record", **o.tologdict())

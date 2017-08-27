@@ -58,7 +58,6 @@ DEBUG = logging.DEBUG
 
 
 class Logger:
-
     def __init__(self, logfile=None, loggername=None, level=logging.INFO):
 
         # Logstash config
@@ -68,6 +67,7 @@ class Logger:
                 logstash_host, int(logstash_port), version=1)
             # always log at DEBUG level to logstash
             logstash_handler.setLevel(logging.DEBUG)
+            raise Exception("Disabled")
         except:
             # if connection fails (eg: logstash is not there) just move on
             logstash_handler = None

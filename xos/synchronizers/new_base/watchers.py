@@ -38,7 +38,6 @@ from multistructlog import create_logger
 
 log = create_logger(Config().get('logging'))
 
-
 class XOSWatcher:
     def load_sync_step_modules(self, step_dir=None):
         if step_dir is None:

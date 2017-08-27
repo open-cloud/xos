@@ -38,32 +38,36 @@ if (watchers_enabled):
 
 class Backend:
 
-    def __init__(self):
+    def __init__(self, log = log):
+        self.log = log
         pass
 
     def load_sync_step_modules(self, step_dir):
         sync_steps = []
 
-        log.info("Loading sync steps", strp_dir = step_dir)
+        self.log.info("Loading sync steps", step_dir = step_dir)
 
         for fn in os.listdir(step_dir):
             pathname = os.path.join(step_dir,fn)
             if os.path.isfile(pathname) and fn.endswith(".py") and (fn!="__init__.py"):
                 module = imp.load_source(fn[:-3],pathname)
+
                 for classname in dir(module):
                     c = getattr(module, classname, None)
 
-                    if classname.startswith("Sync"):
-                        print classname, c, inspect.isclass(c), issubclass(c, SyncStep), hasattr(c,"provides")
+                    #if classname.startswith("Sync"):
+                    #    print classname, c, inspect.isclass(c), issubclass(c, SyncStep), hasattr(c,"provides")
 
                     # make sure 'c' is a descendent of SyncStep and has a
                     # provides field (this eliminates the abstract base classes
                     # since they don't have a provides)
+                    
+                    if inspect.isclass(c):
+                        base_names = [b.__name__ for b in c.__bases__]
+                        if ('SyncStep' in base_names or 'OpenStackSyncStep' in base_names or 'SyncInstanceUsingAnsible' in base_names) and hasattr(c,"provides") and (c not in sync_steps):
+                            sync_steps.append(c)
 
-                    if inspect.isclass(c) and issubclass(c, SyncStep) and hasattr(c,"provides") and (c not in sync_steps):
-                        sync_steps.append(c)
-
-        log.info("Loaded sync steps", count = len(sync_steps))
+        self.log.info("Loaded sync steps", steps = sync_steps)
 
         return sync_steps
 
@@ -72,14 +76,14 @@ class Backend:
         watcher_thread = None
         model_policy_thread = None
 
-        model_accessor.update_diag(sync_start=time.time(), backend_status="0 - Synchronizer Start")
+        model_accessor.update_diag(sync_start=time.time(), backend_status="Synchronizer Start")
 
         steps_dir = Config.get("steps_dir")
         if steps_dir:
             sync_steps = self.load_sync_step_modules(steps_dir)
             if sync_steps:
                 # start the observer
-                observer = XOSObserver(sync_steps)
+                observer = XOSObserver(sync_steps, log = self.log)
                 observer_thread = threading.Thread(target=observer.run,name='synchronizer')
                 observer_thread.start()
 
@@ -89,16 +93,16 @@ class Backend:
                     watcher_thread = threading.Thread(target=watcher.run,name='watcher')
                     watcher_thread.start()
         else:
-            log.info("Skipping observer and watcher threads due to no steps dir.")
+            self.log.info("Skipping observer and watcher threads due to no steps dir.")
 
         # start model policies thread
         policies_dir = Config.get("model_policies_dir")
         if policies_dir:
-            policy_engine = XOSPolicyEngine(policies_dir=policies_dir)
+            policy_engine = XOSPolicyEngine(policies_dir=policies_dir, log = self.log)
             model_policy_thread = threading.Thread(target=policy_engine.run, name="policy_engine")
             model_policy_thread.start()
         else:
-            log.info("Skipping model policies thread due to no model_policies dir.")
+            self.log.info("Skipping model policies thread due to no model_policies dir.")
 
         while True:
             try:

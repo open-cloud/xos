@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,50 +12,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import imp
-import inspect
 import time
 import sys
-import traceback
-import commands
 import threading
 import json
 import pdb
 import pprint
 import traceback
+from collections import defaultdict
+from networkx import DiGraph, dfs_edges, weakly_connected_component_subgraphs, all_shortest_paths, NetworkXNoPath
+from networkx.algorithms.dag import topological_sort
+
 from datetime import datetime
+#from multistructlog import create_logger
+from xosconfig import Config
+from synchronizers.new_base.steps import *
+from syncstep import InnocuousException, DeferredException, SyncStep
+from synchronizers.new_base.modelaccessor import *
 
 from xosconfig import Config
 from multistructlog import create_logger
 
 log = create_logger(Config().get('logging'))
 
-from synchronizers.new_base.steps import *
-from syncstep import SyncStep, NullSyncStep
-from toposort import toposort
-from synchronizers.new_base.error_mapper import *
-from synchronizers.new_base.steps.sync_object import SyncObject
-from synchronizers.new_base.modelaccessor import *
-
-debug_mode = False
-
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-
-
 class StepNotReady(Exception):
     pass
+
+class ExternalDependencyFailed(Exception):
+    pass
+
+# FIXME: Move drivers into a context shared across sync steps.
 
 
 class NoOpDriver:
@@ -67,8 +52,8 @@ class NoOpDriver:
 
 # Everyone gets NoOpDriver by default. To use a different driver, call
 # set_driver() below.
-
 DRIVER = NoOpDriver()
+
 
 
 def set_driver(x):
@@ -76,30 +61,16 @@ def set_driver(x):
     DRIVER = x
 
 
-STEP_STATUS_WORKING = 1
-STEP_STATUS_OK = 2
-STEP_STATUS_KO = 3
-
-
-def invert_graph(g):
-    ig = {}
-    for k, v in g.items():
-        for v0 in v:
-            try:
-                ig[v0].append(k)
-            except:
-                ig[v0] = [k]
-    return ig
-
-
 class XOSObserver:
     sync_steps = []
 
-    def __init__(self, sync_steps):
-        # The Condition object that gets signalled by Feefie events
+    def __init__(self, sync_steps, log = log):
+        # The Condition object via which events are received
+        self.log = log
         self.step_lookup = {}
         self.sync_steps = sync_steps
         self.load_sync_steps()
+        self.load_dependency_graph()
         self.event_cond = threading.Condition()
 
         self.driver = DRIVER
@@ -111,403 +82,469 @@ class XOSObserver:
         self.event_cond.release()
 
     def wake_up(self):
-        log.info('Wake up routine called. Event cond %r' % self.event_cond)
+        self.log.debug('Wake up routine called')
         self.event_cond.acquire()
         self.event_cond.notify()
         self.event_cond.release()
 
-    def load_sync_steps(self):
+    def load_dependency_graph(self):
         dep_path = Config.get("dependency_graph")
-        log.info('Loading model dependency graph from %s' % dep_path)
-        try:
-            # This contains dependencies between records, not sync steps
-            self.model_dependency_graph = json.loads(open(dep_path).read())
-            for left, lst in self.model_dependency_graph.items():
-                new_lst = []
-                for k in lst:
-                    try:
-                        tup = (k, k.lower())
-                        new_lst.append(tup)
-                        deps = self.model_dependency_graph[k]
-                    except:
-                        self.model_dependency_graph[k] = []
+        self.log.info('Loading model dependency graph', path = dep_path)
 
-                self.model_dependency_graph[left] = new_lst
+        try:
+            dep_graph_str = open(dep_path).read()
+
+            # joint_dependencies is of the form { Model1 -> [(Model2, src_port, dst_port), ...] }
+            # src_port is the field that accesses Model2 from Model1
+            # dst_port is the field that accesses Model1 from Model2
+            joint_dependencies = json.loads(dep_graph_str)
+
+            model_dependency_graph = DiGraph()
+            for src_model, deps in joint_dependencies.items():
+                for dep in deps:
+                    dst_model, src_accessor, dst_accessor = dep
+                    if src_model != dst_model:
+                        edge_label = {'src_accessor': src_accessor,
+                                      'dst_accessor': dst_accessor}
+                        model_dependency_graph.add_edge(
+                            src_model, dst_model, edge_label)
+
+            model_dependency_graph_rev = model_dependency_graph.reverse(
+                copy=True)
+            self.model_dependency_graph = {
+                # deletion
+                True: model_dependency_graph_rev,
+                False: model_dependency_graph
+            }
+            self.log.info("Loaded dependencies", edges = model_dependency_graph.edges())
         except Exception as e:
+            self.log.exception("Error loading dependency graph", e = e)
             raise e
 
-        try:
-            # FIXME `pl_dependency_graph` is never defined, this will always fail
-            # NOTE can we remove it?
-            backend_path = Config.get("pl_dependency_graph")
-            log.info(
-                'Loading backend dependency graph from %s' %
-                backend_path)
-            # This contains dependencies between backend records
-            self.backend_dependency_graph = json.loads(
-                open(backend_path).read())
-            for k, v in self.backend_dependency_graph.items():
-                try:
-                    self.model_dependency_graph[k].extend(v)
-                except KeyError:
-                    self.model_dependency_graphp[k] = v
+    def load_sync_steps(self):
+        model_to_step = defaultdict(list)
+        external_dependencies = [] 
 
-        except Exception as e:
-            log.info('Backend dependency graph not loaded')
-            # We can work without a backend graph
-            self.backend_dependency_graph = {}
-
-        provides_dict = {}
         for s in self.sync_steps:
-            self.step_lookup[s.__name__] = s
-            for m in s.provides:
-                try:
-                    provides_dict[m.__name__].append(s.__name__)
-                except KeyError:
-                    provides_dict[m.__name__] = [s.__name__]
+            if not isinstance(s.observes, list):
+                observes = [s.observes]
+            else:
+                observes = s.observes
 
-        step_graph = {}
-        phantom_steps = []
-        for k, v in self.model_dependency_graph.items():
+            for m in observes:
+                model_to_step[m.__name__].append(s.__name__)
+
             try:
-                for source in provides_dict[k]:
-                    if (not v):
-                        step_graph[source] = []
-
-                    for m, _ in v:
-                        try:
-                            for dest in provides_dict[m]:
-                                # no deps, pass
-                                try:
-                                    if (dest not in step_graph[source]):
-                                        step_graph[source].append(dest)
-                                except:
-                                    step_graph[source] = [dest]
-                        except KeyError:
-                            if (m not in provides_dict):
-                                try:
-                                    step_graph[source] += ['#%s' % m]
-                                except:
-                                    step_graph[source] = ['#%s' % m]
-
-                                phantom_steps += ['#%s' % m]
-                            pass
-
-            except KeyError:
+                external_dependencies.extend(s.external_dependencies)
+            except AttributeError:
                 pass
-                # no dependencies, pass
 
-        self.dependency_graph = step_graph
-        self.deletion_dependency_graph = invert_graph(step_graph)
+            self.step_lookup[s.__name__] = s
 
-        pp = pprint.PrettyPrinter(indent=4)
-        log.debug(pp.pformat(step_graph))
-        self.ordered_steps = toposort(
-            self.dependency_graph, phantom_steps + map(lambda s: s.__name__, self.sync_steps))
-        self.ordered_steps = [
-            i for i in self.ordered_steps if i != 'SyncObject']
+        self.model_to_step = model_to_step
+        self.external_dependencies = list(set(external_dependencies))
+        self.log.info('Loaded external dependencies', external_dependencies = external_dependencies)
+        self.log.info('Loaded model_map', **model_to_step)
 
-        self.load_run_times()
-
-    def check_duration(self, step, duration):
+    def reset_model_accessor(self, o=None):
         try:
-            if (duration > step.deadline):
-                log.info(
-                    'Sync step missed deadline',
-                    step_name = step.name, duration = duration)
+            model_accessor.reset_queries()
+        except BaseException:
+            # this shouldn't happen, but in case it does, catch it...
+            if (o):
+                logdict = o.tologdict()
+            else:
+                logdict = {}
+
+            log.error("exception in reset_queries", **logdict)
+
+    def delete_record(self, o, log):
+        if getattr(o, "backend_need_reap", False):
+            # the object has already been deleted and marked for reaping
+            model_accessor.journal_object(
+                o, "syncstep.call.already_marked_reap")
+        else:
+            step = getattr(o, 'synchronizer_step', None)
+            if not step:
+                raise ExternalDependencyFailed
+
+            model_accessor.journal_object(o, "syncstep.call.delete_record")
+            log.debug("Deleting object", **o.tologdict())
+
+            step.log = log.bind(step = step)
+            step.delete_record(o)
+            step.log = self.log
+
+            log.debug("Deleted object", **o.tologdict())
+
+            model_accessor.journal_object(o, "syncstep.call.delete_set_reap")
+            o.backend_need_reap = True
+            o.save(update_fields=['backend_need_reap'])
+        
+
+    def sync_record(self, o, log):
+        try:
+            step = o.synchronizer_step
         except AttributeError:
-            # S doesn't have a deadline
-            pass
+            raise ExternalDependencyFailed
 
-    def update_run_time(self, step, deletion):
-        if (not deletion):
-            self.last_run_times[step.__name__] = time.time()
+        new_enacted = model_accessor.now()
+
+        # Mark this as an object that will require delete. Do
+        # this now rather than after the syncstep,
+        if not (o.backend_need_delete):
+            o.backend_need_delete = True
+            o.save(update_fields=['backend_need_delete'])
+
+        model_accessor.journal_object(o, "syncstep.call.sync_record")
+
+        log.debug("Syncing object", **o.tologdict())
+
+        step.log = log.bind(step = step)
+        step.sync_record(o)
+        step.log = self.log
+
+        log.debug("Synced object", **o.tologdict())
+
+        model_accessor.update_diag(
+            syncrecord_start=time.time(), backend_status="Synced Record", backend_code=1)
+        o.enacted = new_enacted
+        scratchpad = {'next_run': 0, 'exponent': 0,
+                      'last_success': time.time()}
+        o.backend_register = json.dumps(scratchpad)
+        o.backend_status = "OK"
+        o.backend_code = 1
+        model_accessor.journal_object(o, "syncstep.call.save_update")
+        o.save(update_fields=['enacted', 'backend_status', 'backend_register'])
+        log.info("Saved sync object, new enacted", enacted = new_enacted)
+
+    """ This function needs a cleanup. FIXME: Rethink backend_status, backend_register """
+    def handle_sync_exception(self, o, e):
+        self.log.exception("sync step failed!", e = e, **o.tologdict())
+        current_code = o.backend_code
+
+        if hasattr(e, 'message'):
+            status = e.message
         else:
-            self.last_deletion_run_times[step.__name__] = time.time()
+            status = str(e)
 
-    def check_schedule(self, step, deletion):
-        last_run_times = self.last_run_times if not deletion else self.last_deletion_run_times
-
-        time_since_last_run = time.time() - last_run_times.get(step.__name__, 0)
-        try:
-            if (time_since_last_run < step.requested_interval):
-                raise StepNotReady
-        except AttributeError:
-            log.info(
-                'Step does not have requested_interval set',
-                step_name = step.__name__)
-            raise StepNotReady
-
-    def load_run_times(self):
-        try:
-            jrun_times = open(
-                '/tmp/%sobserver_run_times' %
-                self.observer_name).read()
-            self.last_run_times = json.loads(jrun_times)
-        except:
-            self.last_run_times = {}
-            for e in self.ordered_steps:
-                self.last_run_times[e] = 0
-        try:
-            jrun_times = open(
-                '/tmp/%sobserver_deletion_run_times' %
-                self.observer_name).read()
-            self.last_deletion_run_times = json.loads(jrun_times)
-        except:
-            self.last_deletion_run_times = {}
-            for e in self.ordered_steps:
-                self.last_deletion_run_times[e] = 0
-
-    def lookup_step_class(self, s):
-        if ('#' in s):
-            return NullSyncStep
+        if isinstance(e, InnocuousException) or isinstance(e, DeferredException):
+            code = 1
         else:
-            step = self.step_lookup[s]
-        return step
+            code = 2
 
-    def lookup_step(self, s):
-        if ('#' in s):
-            objname = s[1:]
-            so = NullSyncStep()
+        self.set_object_error(o, status, code)
 
-            obj = model_accessor.get_model_class(objname)
+        dependency_error = 'Failed due to error in model %s id %d: %s' % (
+            o.leaf_model_name, o.id, status)
+        return dependency_error, code
 
-            so.provides = [obj]
-            so.observes = [obj]
-            step = so
+    def set_object_error(self, o, status, code):
+        if o.backend_status:
+            error_list = o.backend_status.split(' // ')
         else:
-            step_class = self.step_lookup[s]
-            step = step_class(driver=self.driver, error_map=self.error_mapper)
-        return step
+            error_list = []
 
-    def save_run_times(self):
-        run_times = json.dumps(self.last_run_times)
-        open(
-            '/tmp/%sobserver_run_times' %
-            self.observer_name,
-            'w').write(run_times)
+        if status not in error_list:
+            error_list.append(status)
 
-        deletion_run_times = json.dumps(self.last_deletion_run_times)
-        open('/tmp/%sobserver_deletion_run_times' %
-             self.observer_name, 'w').write(deletion_run_times)
+        # Keep last two errors
+        error_list = error_list[-2:]
 
-    def check_class_dependency(self, step, failed_steps):
-        step.dependenices = []
-        for obj in step.provides:
-            lst = self.model_dependency_graph.get(obj, [])
-            nlst = map(lambda a_b1: a_b1[1], lst)
-            step.dependenices.extend(nlst)
-        for failed_step in failed_steps:
-            if (failed_step in step.dependencies):
-                raise StepNotReady
+        o.backend_code = code
+        o.backend_status = ' // '.join(error_list)
 
-    def sync(self, S, deletion):
         try:
-            step = self.lookup_step_class(S)
-            start_time = time.time()
+            scratchpad = json.loads(o.backend_register)
+            scratchpad['exponent']
+        except BaseException:
+            scratchpad = {'next_run': 0, 'exponent': 0,
+                          'last_success': time.time(), 'failures': 0}
 
-            log.debug(
-                "Starting to work on steps",
-                step_name = step.__name__, deletion = str(deletion))
+        # Second failure
+        if (scratchpad['exponent']):
+            if code == 1:
+                delay = scratchpad['exponent'] * 60  # 1 minute
+            else:
+                delay = scratchpad['exponent'] * 600  # 10 minutes
 
-            dependency_graph = self.dependency_graph if not deletion else self.deletion_dependency_graph
-            # if not deletion else self.deletion_step_conditions
-            step_conditions = self.step_conditions
-            step_status = self.step_status  # if not deletion else self.deletion_step_status
+            # cap delays at 8 hours
+            if (delay > 8 * 60 * 60):
+                delay = 8 * 60 * 60
+            scratchpad['next_run'] = time.time() + delay
 
-            # Wait for step dependencies to be met
+        scratchpad['exponent'] += 1
+
+        try:
+            scratchpad['failures'] += 1
+        except KeyError:
+            scratchpad['failures'] = 1
+
+        scratchpad['last_failure'] = time.time()
+
+        o.backend_register = json.dumps(scratchpad)
+
+        # TOFIX:
+        # DatabaseError: value too long for type character varying(140)
+        if (model_accessor.obj_exists(o)):
             try:
-                deps = dependency_graph[S]
-                has_deps = True
-            except KeyError:
-                has_deps = False
+                o.backend_status = o.backend_status[:1024]
+                o.save(update_fields=['backend_status',
+                                      'backend_register', 'updated'])
+            except BaseException,e:
+                self.log.exception("Could not update backend status field!", e = e)
+                pass
 
-            go = True
+    def sync_cohort(self, cohort, deletion):
+        log = self.log.bind(thread_id = threading.current_thread().ident)
+        try:
+            start_time = time.time()
+            log.debug("Starting to work on cohort", cohort = cohort, deletion = deletion)
 
-            failed_dep = None
-            if (has_deps):
-                for d in deps:
-                    if d == step.__name__:
-                        go = True
+            cohort_emptied = False
+            dependency_error = None
+            dependency_error_code = None
+
+            itty = iter(cohort)
+
+            while not cohort_emptied:
+                try:
+                    self.reset_model_accessor()
+                    o = next(itty)
+
+                    if dependency_error:
+                        self.set_object_error(
+                            o, dependency_error, dependency_error_code)
                         continue
 
-                    cond = step_conditions[d]
-                    cond.acquire()
-                    if (step_status[d] is STEP_STATUS_WORKING):
-                        cond.wait()
-                    elif step_status[d] == STEP_STATUS_OK:
-                        go = True
-                    else:
-                        go = False
-                        failed_dep = d
-                    cond.release()
-                    if (not go):
-                        break
-            else:
-                go = True
-
-            if (not go):
-                self.failed_steps.append(step)
-                my_status = STEP_STATUS_KO
-            else:
-                sync_step = self.lookup_step(S)
-                sync_step.__name__ = step.__name__
-                sync_step.dependencies = []
-                try:
-                    mlist = sync_step.provides
-
                     try:
-                        for m in mlist:
-                            lst = self.model_dependency_graph[m.__name__]
-                            nlst = map(lambda a_b: a_b[1], lst)
-                            sync_step.dependencies.extend(nlst)
-                    except Exception as e:
-                        raise e
+                        if (deletion):
+                            self.delete_record(o, log)
+                        else:
+                            self.sync_record(o, log)
+                    except ExternalDependencyFailed:
+                        dependency_error = 'External dependency on object %s id %d not met'%(o.__class__.__name__, o.id)
+                        dependency_error_code = 1
+                    except (DeferredException, InnocuousException, Exception) as e:
+                        dependency_error, dependency_error_code = self.handle_sync_exception(
+                            o, e)
 
-                except KeyError:
-                    pass
-                sync_step.debug_mode = debug_mode
-
-                should_run = False
-                try:
-                    # Various checks that decide whether
-                    # this step runs or not
-                    self.check_class_dependency(
-                        sync_step, self.failed_steps)  # dont run Slices if Sites failed
-                    # dont run sync_network_routes if time since last run < 1
-                    # hour
-                    self.check_schedule(sync_step, deletion)
-                    should_run = True
-                except StepNotReady:
-                    self.failed_steps.append(sync_step)
-                    my_status = STEP_STATUS_KO
-                except Exception as e:
-                    log.error('%r' % e)
-                    self.failed_steps.append(sync_step)
-                    my_status = STEP_STATUS_KO
-
-                if (should_run):
-                    try:
-                        duration = time.time() - start_time
-
-                        failed_objects = sync_step(
-                            failed=list(
-                                self.failed_step_objects),
-                            deletion=deletion)
-
-                        self.check_duration(sync_step, duration)
-
-                        if failed_objects:
-                            self.failed_step_objects.update(failed_objects)
-
-                        my_status = STEP_STATUS_OK
-                        self.update_run_time(sync_step, deletion)
-                    except Exception as e:
-                        self.failed_steps.append(S)
-                        my_status = STEP_STATUS_KO
-                else:
-                    my_status = STEP_STATUS_OK
-
-            try:
-                my_cond = step_conditions[S]
-                my_cond.acquire()
-                step_status[S] = my_status
-                my_cond.notify_all()
-                my_cond.release()
-            except KeyError as e:
-                pass
+                except StopIteration:
+                    log.debug("Cohort completed", cohort = cohort, deletion = deletion)
+                    cohort_emptied = True
         finally:
-            try:
-                model_accessor.reset_queries()
-            except:
-                # this shouldn't happen, but in case it does, catch it...
-                log.error("exception in reset_queries")
-
+            self.reset_model_accessor()
             model_accessor.connection_close()
 
     def run(self):
+        # Cleanup: Move self.driver into a synchronizer context
+        # made available to every sync step.
         if not self.driver.enabled:
             return
 
         while True:
-            log.debug('Waiting for event')
+            self.log.debug('Waiting for event or timeout')
             self.wait_for_event(timeout=5)
-            log.debug('Observer woke up')
+            self.log.debug('Synchronizer awake')
 
             self.run_once()
 
+    def fetch_pending(self, deletion=False):
+        unique_model_list = list(set(self.model_to_step.keys()))
+        pending_objects = []
+        pending_steps = []
+        step_list = self.step_lookup.values()
+
+        for e in self.external_dependencies:
+            s = SyncStep
+            s.observes = e
+            step_list.append(s)
+
+        for step_class in step_list:
+            step = step_class(driver=self.driver)
+            step.log = self.log.bind(step = step)
+
+            if not hasattr(step, 'call'):
+                pending = step.fetch_pending(deletion)
+                for obj in pending:
+                    obj.synchronizer_step = step
+                pending_objects.extend(pending)
+            else:
+                # Support old and broken legacy synchronizers
+                # This needs to be dropped soon.
+                pending_steps.append(step)
+
+	self.log.debug('Fetched pending data', pending_objects = pending_objects, legacy_steps = pending_steps)
+        return pending_objects, pending_steps
+
+    """ Automatically test if a real dependency path exists between two objects. e.g.
+        given an Instance, and a ControllerSite, the test amounts to:
+            instance.slice.site == controller.site
+
+        Then the two objects are related, and should be put in the same cohort.
+        If the models of the two objects are not dependent, then the check trivially
+        returns False.
+    """
+
+    def concrete_path_exists(self, o1, o2):
+        try:
+            m1 = o1.leaf_model_name
+            m2 = o2.leaf_model_name
+        except AttributeError:
+            # One of the nodes is not in the dependency graph
+            # No dependency
+            return False
+
+        # FIXME: Dynamic dependency check
+        G = self.model_dependency_graph[False]
+        paths = all_shortest_paths(G, m1, m2)
+
+        try:
+            any(paths)
+            paths = all_shortest_paths(G, m1, m2)
+        except NetworkXNoPath:
+            # Easy. The two models are unrelated.
+            return False
+
+        for p in paths:
+            path_verdict = True
+            src_object = o1
+            da = None
+
+            for i in range(len(p) - 1):
+                src = p[i]
+                dst = p[i + 1]
+                edge_label = G[src][dst]
+                sa = edge_label['src_accessor']
+                da = edge_label['dst_accessor']
+                try:
+                    dst_object = getattr(src_object, sa)
+                    if dst_object and dst_object.leaf_model_name != dst and i != len(
+                            p) - 2:
+                        raise AttributeError
+                except AttributeError as e:
+                    self.log.debug(
+                        'Could not check object dependencies, making conservative choice', src_object = src_object, sa = sa, o1 = o1, o2 = o2)
+                    return True
+                src_object = dst_object
+
+            if src_object and ((not da and src_object == o2) or (
+                    da and src_object == getattr(o2, da))):
+                return True
+
+            # Otherwise try other paths
+
+        return False
+
+    """
+
+    This function implements the main scheduling logic
+    of the Synchronizer. It divides incoming work (dirty objects)
+    into cohorts of dependent objects, and runs each such cohort
+    in its own thread.
+
+    Future work:
+
+    * Run event thread in parallel to the scheduling thread, and
+      add incoming objects to existing cohorts. Doing so should
+      greatly improve synchronizer performance.
+    * A single object might need to be added to multiple cohorts.
+      In this case, the last cohort handles such an object.
+    * This algorithm is horizontal-scale-ready. Multiple synchronizers
+      could run off a shared runqueue of cohorts.
+
+    """
+
+    def compute_dependent_cohorts(self, objects, deletion):
+        model_map = defaultdict(list)
+        n = len(objects)
+        r = range(n)
+        indexed_objects = zip(r, objects)
+
+        mG = self.model_dependency_graph[deletion]
+
+        oG = DiGraph()
+
+        for i in r:
+            oG.add_node(i)
+
+        for v0, v1 in mG.edges():
+            try:
+                for i0 in range(n):
+                   for i1 in range(n):
+                       if i0 != i1:
+                            if not deletion and self.concrete_path_exists(
+                                    objects[i0], objects[i1]):
+                                oG.add_edge(i0, i1)
+                            elif deletion and self.concrete_path_exists(objects[i1], objects[i0]):
+                                oG.add_edge(i0, i1)
+            except KeyError:
+                pass
+
+        components = weakly_connected_component_subgraphs(oG)
+        cohort_indexes = [reversed(topological_sort(g)) for g in components]
+        cohorts = [[objects[i] for i in cohort_index]
+                   for cohort_index in cohort_indexes]
+
+        return cohorts
+
     def run_once(self):
         try:
+            # Why are we checking the DB connection here?
             model_accessor.check_db_connection_okay()
 
             loop_start = time.time()
-            error_map_file = Config.get('error_map_path')
-            self.error_mapper = ErrorMapper(error_map_file)
 
             # Two passes. One for sync, the other for deletion.
-            for deletion in [False, True]:
-                # Set of individual objects within steps that failed
-                self.failed_step_objects = set()
+            for deletion in (False, True):
+                objects_to_process = []
 
-                # Set up conditions and step status
-                # This is needed for steps to run in parallel
-                # while obeying dependencies.
-
-                providers = set()
-                dependency_graph = self.dependency_graph if not deletion else self.deletion_dependency_graph
-
-                for v in dependency_graph.values():
-                    if (v):
-                        providers.update(v)
-
-                self.step_conditions = {}
-                self.step_status = {}
-
-                for p in list(providers):
-                    self.step_conditions[p] = threading.Condition()
-
-                    self.step_status[p] = STEP_STATUS_WORKING
-
-                self.failed_steps = []
+                objects_to_process, steps_to_process = self.fetch_pending(deletion)
+                dependent_cohorts = self.compute_dependent_cohorts(
+                    objects_to_process, deletion)
 
                 threads = []
-                log.debug('Deletion', deletion =deletion)
-                schedule = self.ordered_steps if not deletion else reversed(
-                    self.ordered_steps)
+                self.log.debug('In run once inner loop', deletion = deletion)
 
-                for S in schedule:
+                for cohort in dependent_cohorts:
                     thread = threading.Thread(
-                        target=self.sync, name='synchronizer', args=(
-                            S, deletion))
+                        target=self.sync_cohort, name='synchronizer', args=(
+                            cohort, deletion))
 
-                    log.debug('Deletion', deletion =deletion)
                     threads.append(thread)
 
                 # Start threads
                 for t in threads:
                     t.start()
 
-                # another spot to clean up debug state
-                try:
-                    model_accessor.reset_queries()
-                except:
-                    # this shouldn't happen, but in case it does, catch it...
-                    log.exception("exception in reset_queries")
+                self.reset_model_accessor()
 
                 # Wait for all threads to finish before continuing with the run
                 # loop
                 for t in threads:
                     t.join()
 
-            self.save_run_times()
+                # Run legacy synchronizers, which do everything in call()
+                for step in steps_to_process:
+                    try:
+                        step.call()
+                    except Exception,e:
+                        self.log.exception("Legacy step failed", step = step, e = e)
 
             loop_end = time.time()
 
             model_accessor.update_diag(
                 loop_end=loop_end,
                 loop_start=loop_start,
-                backend_status="1 - Bottom Of Loop")
+                backend_code=1,
+                backend_status="Bottom Of Loop")
 
         except Exception as e:
-            traceback.print_exc()
-            model_accessor.update_diag(backend_status="2 - Exception in Event Loop")
+            self.log.exception(
+                'Core error. This seems like a misconfiguration or bug. This error will not be relayed to the user!',
+                e = e)
+            self.log.error("Exception in observer run loop")
+
+            model_accessor.update_diag(
+                backend_code=2,
+                backend_status="Exception in Event Loop")

@@ -90,9 +90,9 @@ class DjangoModelAccessor(ModelAccessor):
                     #                           db.connection.close()
                     db.close_old_connections()
                 except Exception, e:
-                    logger.exception("XXX we failed to fix the failure", e = e)
+                    log.exception("XXX we failed to fix the failure", e = e)
             else:
-                logger.exception("XXX some other error")
+                log.exception("XXX some other error")
 
     def obj_exists(self, o):
         return (o.pk is not None)
