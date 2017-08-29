@@ -16,6 +16,8 @@ the service as a whole (i.e., to all tenants of the service).
 
 * `tenant_message`: A string that is displayed for a specific Tenant.
 
+Tenant and ServiceInstance are two closely related terms. "Tenant" refers to the user or the consumer of a service. Often we partition a service into several pieces, each for use by a tenant, thus making it a multi-tenant service. Each one of these tenant-specific pieces is referred to as a ServiceInstance.  
+
 ## Summary
 
 The result of preparing *ExampleService* for on-boarding is the
@@ -90,10 +92,10 @@ of two parts:
 
 * The Service model, which manages the service as a whole.
 
-* The Tenant model, which manages tenant-specific
+* The ServiceInstance model, which manages tenant-specific
   (per-service-instance) state.
 
-### Service Model
+### Service Model (per-Service state)
 
 A Service model extends (inherits from) the XOS base *Service* model.
 At its head is a set of option declarations: the name of the service as a
@@ -108,15 +110,15 @@ message ExampleService (Service){
 }
 ```
 
-###Tenant Model
+###ServiceInstance Model (per-Tenant state)
 
-Your tenant model will extend the core `TenantWithContainer` class,
+Your ServiceInstance model will extend the core `TenantWithContainer` class,
 which is a Tenant that creates a VM instance:
 
 ```
-message ExampleTenant (TenantWithContainer){
-     option name = "exampletenant";
-     option verbose_name = "Example Tenant";
+message ExampleServiceInstance (TenantWithContainer){
+     option name = "exampleserviceinstance";
+     option verbose_name = "Example Service Instance";
      required string tenant_message = 1 [help_text = "Tenant Message to Display", max_length = 254, null = False, db_index = False, blank = False];
 }
 ```
@@ -136,7 +138,7 @@ The second step is to define a synchronizer for the service.
 Synchronizers are processes that run continuously, checking for
 changes to service's model(s). When a synchronizer detects a change,
 it applies that change to the underlying system. For *ExampleService*,
-the Tenant model is the model we will want to synchronize, and the
+the ServiceInstance model is the model we will want to synchronize, and the
 underlying system is a compute instance. In this case, we’re using
 `TenantWithContainer` to create this instance for us.
 
@@ -162,7 +164,11 @@ First, create a file named `exampleservice-synchronizer.py`:
 import importlib
 import os
 import sys
- 
+from xosconfig import Config
+
+config_file = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/exampleservice_config.yaml')
+Config.init(config_file, 'synchronizer-config-schema.yaml')
+
 synchronizer_path = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), "../../synchronizers/new_base")
 sys.path.append(synchronizer_path)
@@ -173,35 +179,30 @@ mod.main()
 The above is boilerplate. It loads and runs the default
 `xos-synchronizer` module in it’s own Docker container.
 To configure this module, create a file named
-`exampleservice_from_api_config`, which specifies various
+`exampleservice_config.yaml`, which specifies various
 configuration and logging options:
 
 ```
-# Sets options for the synchronizer
-[observer]
-name=exampleservice
-dependency_graph=/opt/xos/synchronizers/exampleservice/model-deps
-steps_dir=/opt/xos/synchronizers/exampleservice/steps
-sys_dir=/opt/xos/synchronizers/exampleservice/sys
-log_file=console
-log_level=debug
-pretend=False
-backoff_disabled=True
-save_ansible_output=True
-proxy_ssh=True
-proxy_ssh_key=/opt/cord_profile/node_key
-proxy_ssh_user=root
-enable_watchers=True
-accessor_kind=api
-accessor_password=@/opt/xos/services/exampleservice/credentials/xosadmin@opencord.org
-required_models=ExampleService, ExampleTenant, ServiceDependency
+name: exampleservice-synchronizer
+accessor:
+  username: xosadmin@opencord.org
+  password: "@/opt/xos/services/exampleservice/credentials/xosadmin@opencord.org"
+required_models:
+  - ExampleService
+  - ExampleServiceInstance
+  - ServiceDependency
+  - ServiceMonitoringAgentInfo
+dependency_graph: "/opt/xos/synchronizers/exampleservice/model-deps"
+steps_dir: "/opt/xos/synchronizers/exampleservice/steps"
+sys_dir: "/opt/xos/synchronizers/exampleservice/sys"
+model_policies_dir: "/opt/xos/synchronizers/exampleservice/model_policies"
 ```
 >NOTE: Historically, synchronizers were named “observers”, so
 >`s/observer/synchronizer/` when you come upon this term in the XOS
 >code and documentation.
 
 Second, create a directory within your synchronizer directory named `steps`. In
-steps, create a file named `sync_exampletenant.py`:
+steps, create a file named `sync_exampleserviceinstance.py`:
 
 ```
 import os
@@ -209,44 +210,44 @@ import sys
 from synchronizers.new_base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from synchronizers.new_base.modelaccessor import *
 from xos.logger import Logger, logging
- 
+
 parentdir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, parentdir)
- 
+
 logger = Logger(level=logging.INFO)
- ```
+```
 
 Bring in some basic prerequities. Also include the models created
 earlier, and `SyncInstanceUsingAnsible` which will run the Ansible
 playbook in the Instance VM.
 
 ```
-class SyncExampleTenant(SyncInstanceUsingAnsible):
+class SyncExampleServiceInstance(SyncInstanceUsingAnsible):
 
-provides = [ExampleTenant]
- 
-    observes = ExampleTenant
- 
+    provides = [ExampleServiceInstance]
+
+    observes = ExampleServiceInstance
+
     requested_interval = 0
- 
-    template_name = "exampletenant_playbook.yaml"
- 
+
+    template_name = "exampleserviceinstance_playbook.yaml"
+
     service_key_name = "/opt/xos/synchronizers/exampleservice/exampleservice_private_key"
- 
+
     def __init__(self, *args, **kwargs):
-        super(SyncExampleTenant, self).__init__(*args, **kwargs)
- 
+        super(SyncExampleServiceInstance, self).__init__(*args, **kwargs)
+
     def get_exampleservice(self, o):
-        if not o.provider_service:
+        if not o.owner:
             return None
- 
-        exampleservice = ExampleService.objects.filter(id=o.provider_service.id)
- 
+
+        exampleservice = ExampleService.objects.filter(id=o.owner.id)
+
         if not exampleservice:
             return None
- 
+
         return exampleservice[0]
- 
+
     # Gets the attributes that are used by the Ansible template but are not
     # part of the set of default attributes.
     def get_extra_attributes(self, o):
@@ -255,7 +256,7 @@ provides = [ExampleTenant]
         exampleservice = self.get_exampleservice(o)
         fields['service_message'] = exampleservice.service_message
         return fields
- 
+
     def delete_record(self, port):
         # Nothing needs to be done to delete an exampleservice; it goes away
         # when the instance holding the exampleservice is deleted.
@@ -265,8 +266,7 @@ provides = [ExampleTenant]
 Third, create a `run-from-api.sh` file for your synchronizer.
 
 ```
-export XOS_DIR=/opt/xos
-python exampleservice-synchronizer.py  -C $XOS_DIR/synchronizers/exampleservice/exampleservice_from_api_config
+python exampleservice-synchronizer.py
 ```
 
 Finally, create a Dockerfile for your synchronizer, name it
@@ -274,14 +274,15 @@ Finally, create a Dockerfile for your synchronizer, name it
 with the other synchronizer files:
 
 ```
+
 FROM xosproject/xos-synchronizer-base:candidate
- 
+
 COPY . /opt/xos/synchronizers/exampleservice
- 
+
 ENTRYPOINT []
- 
+
 WORKDIR "/opt/xos/synchronizers/exampleservice"
- 
+
 # Label image
 ARG org_label_schema_schema_version=1.0
 ARG org_label_schema_name=exampleservice-synchronizer
@@ -290,22 +291,34 @@ ARG org_label_schema_vcs_url=unknown
 ARG org_label_schema_vcs_ref=unknown
 ARG org_label_schema_build_date=unknown
 ARG org_opencord_vcs_commit_date=unknown
- 
+ARG org_opencord_component_chameleon_version=unknown
+ARG org_opencord_component_chameleon_vcs_url=unknown
+ARG org_opencord_component_chameleon_vcs_ref=unknown
+ARG org_opencord_component_xos_version=unknown
+ARG org_opencord_component_xos_vcs_url=unknown
+ARG org_opencord_component_xos_vcs_ref=unknown
+
 LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.label-schema.name=$org_label_schema_name \
       org.label-schema.version=$org_label_schema_version \
       org.label-schema.vcs-url=$org_label_schema_vcs_url \
       org.label-schema.vcs-ref=$org_label_schema_vcs_ref \
       org.label-schema.build-date=$org_label_schema_build_date \
-      org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date
- 
+      org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date \
+      org.opencord.component.chameleon.version=$org_opencord_component_chameleon_version \
+      org.opencord.component.chameleon.vcs-url=$org_opencord_component_chameleon_vcs_url \
+      org.opencord.component.chameleon.vcs-ref=$org_opencord_component_chameleon_vcs_ref \
+      org.opencord.component.xos.version=$org_opencord_component_xos_version \
+      org.opencord.component.xos.vcs-url=$org_opencord_component_xos_vcs_url \
+      org.opencord.component.xos.vcs-ref=$org_opencord_component_xos_vcs_ref
+
 CMD bash -c "cd /opt/xos/synchronizers/exampleservice; ./run-from-api.sh"
 ```
 
 ###Synchronizer Playbooks
 
 In the same `steps` directory, create an Ansible playbook named
-`exampletenant_playbook.yml` which is the “master playbook” for this set
+`exampleserviceinstance_playbook.yml` which is the “master playbook” for this set
 of plays:
 
 ```
@@ -396,12 +409,12 @@ on-boarding recipe for *ExampleService*:
 
 ```
 tosca_definitions_version: tosca_simple_yaml_1_0
- 
+
 description: Onboard the exampleservice
- 
+
 imports:
    - custom_types/xos.yaml
- 
+
 topology_template:
   node_templates:
     exampleservice:
@@ -411,11 +424,8 @@ topology_template:
           # The following will concatenate with base_url automatically, if
           # base_url is non-null.
           xproto: ./
-          admin: admin.py
           tosca_custom_types: exampleservice.yaml
-          tosca_resource: tosca/resources/exampleservice.py, tosca/resources/exampletenant.py
-          rest_service: api/service/exampleservice.py
-          rest_tenant: api/tenant/exampletenant.py
+          tosca_resource: tosca/resources/exampleservice.py, tosca/resources/exampleserviceinstance.py
           private_key: file:///opt/xos/key_import/exampleservice_rsa
           public_key: file:///opt/xos/key_import/exampleservice_rsa.pub
 ```
