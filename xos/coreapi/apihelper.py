@@ -18,6 +18,7 @@ import base64
 import datetime
 import inspect
 import pytz
+import threading
 import time
 from protos import xos_pb2
 from google.protobuf.empty_pb2 import Empty
@@ -90,6 +91,7 @@ class CachedAuthenticator(object):
     def __init__(self):
         self.cached_creds = {}
         self.timeout = 10          # keep cache entries around for 10s
+        self.lock = threading.Lock()   # lock to keep multiple callers from trimming at the same time
 
     def authenticate(self, username, password):
         self.trim()
@@ -112,9 +114,11 @@ class CachedAuthenticator(object):
 
     def trim(self):
         """ Delete all cache entries that have expired """
+        self.lock.acquire()
         for (k, v) in list(self.cached_creds.items()):
             if time.time() > v["timeout"]:
                 del self.cached_creds[k]
+        self.lock.release()
 
 cached_authenticator = CachedAuthenticator()
 
