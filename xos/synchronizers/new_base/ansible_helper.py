@@ -179,7 +179,7 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
                 else:
 		    oprops['ansible_status']='FAILED'
 
-                log.info(x._task, **oprops)
+                log.info('Ran Ansible task',task = x._task, **oprops)
 
 
         ofile.close()
