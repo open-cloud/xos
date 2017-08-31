@@ -32,8 +32,8 @@ from stat import *
     Example:
         # for testing, run from inside a UI container
         python ./corebuilder.py \
-            /opt/xos_services/olt/xos/volt-onboard.yaml \
-            /opt/xos_services/vtn/xos/vtn-onboard.yaml \
+            /opt/xos_services/olt-service/xos/volt-onboard.yaml \
+            /opt/xos_services/vtn-service/xos/vtn-onboard.yaml \
             /opt/xos_services/openstack/xos/openstack-onboard.yaml \
             /opt/xos_services/onos-service/xos/onos-onboard.yaml \
             /opt/xos_services/vrouter/xos/vrouter-onboard.yaml \
@@ -46,8 +46,8 @@ from stat import *
 
         # (hypothetical) run from build container
         python ./corebuilder.py \
-            /opt/cord/onos-apps/apps/olt/xos/volt-onboard.yaml \
-            /opt/cord/onos-apps/apps/vtn/xos/vtn-onboard.yaml \
+            /opt/cord/orchestration/xos_services/olt-service/xos/volt-onboard.yaml \
+            /opt/cord/orchestration/xos_services/vtn-service/xos/vtn-onboard.yaml \
             /opt/cord/orchestration/xos_services/openstack/xos/openstack-onboard.yaml \
             /opt/cord/orchestration/xos_services/onos-service/xos/onos-onboard.yaml \
             /opt/cord/orchestration/xos_services/vrouter/xos/vrouter-onboard.yaml \
@@ -158,9 +158,7 @@ class XOSCoreBuilder(object):
 #        if fn.startswith("/opt/xos/key_import"):
 #            fn = "/opt/cord_profile/key_import" + fn[19:]
 
-        fixups = ( ("/opt/xos_services/olt/", "/opt/cord/onos-apps/apps/olt/"),
-                   ("/opt/xos_services/vtn/", "/opt/cord/onos-apps/apps/vtn/"),
-                   ("/opt/xos_services/", "/opt/cord/orchestration/xos_services/"),
+        fixups = ( ("/opt/xos_services/", "/opt/cord/orchestration/xos_services/"),
                    ("/opt/xos/core/", "/opt/cord/orchestration/xos/xos/core/"),
                    ("/opt/xos_libraries/", "/opt/cord/orchestration/xos_libraries/") )
 
