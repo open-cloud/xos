@@ -121,7 +121,7 @@ class XOSGrpcServer(object):
     def __init__(self, port=50055):
         self.port = port
         log.info('Initializing GRPC Server', port = port)
-        self.thread_pool = futures.ThreadPoolExecutor(max_workers=10)
+        self.thread_pool = futures.ThreadPoolExecutor(max_workers=1)
         self.server = grpc.server(self.thread_pool)
 
         server_key = open(SERVER_KEY,"r").read()
