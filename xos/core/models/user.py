@@ -299,7 +299,8 @@ class User(AbstractBaseUser, PlModelMixIn):
         if (caller_kind!="synchronizer") or always_update_timestamp:
             self.updated = timezone.now()
 
-        self.username = self.email
+        if not self.username:
+            self.username = self.email
 
         super(User, self).save(*args, **kwargs)
 
