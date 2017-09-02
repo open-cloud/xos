@@ -21,4 +21,3 @@ CORD POD," as described
 version is configured with a service graph that includes
 `ExampleService`, which is a good platform for understanding how to
 build and use XOS.
-
