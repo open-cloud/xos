@@ -152,7 +152,7 @@ policy site_policy <
 policy slice_policy <
          ctx.user.is_admin
          | (*site_policy(site)
-         & (ctx.user.id = obj.creator.id  
+         & (ctx.user = obj.creator  
                | (exists Privilege:
                      Privilege.accessor_id = ctx.user.id
                      & Privilege.accessor_type = "User"
