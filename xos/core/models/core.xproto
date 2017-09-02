@@ -507,7 +507,7 @@ message Slice::slice_policy (XOSBase) {
      optional manytoone service->Service:slices = 8 [db_index = True, null = True, blank = True];
      optional string network = 9 [blank = True, max_length = 256, null = True, db_index = False, choices = "((None, 'Default'), ('host', 'Host'), ('bridged', 'Bridged'), ('noauto', 'No Automatic Networks'))"];
      optional string exposed_ports = 10 [db_index = False, max_length = 256, null = True, blank = True];
-     optional manytoone creator->User:slices = 12 [db_index = True, null = True, blank = True];
+     optional manytoone creator->User:slices = 12 [db_index = True, null = False, blank = False];
      optional manytoone default_flavor->Flavor:slices = 13 [db_index = True, null = True, blank = True];
      optional manytoone default_image->Image:slices = 14 [db_index = True, null = True, blank = True];
      optional manytoone default_node->Node:slices = 15 [db_index = True, null = True, blank = True];
