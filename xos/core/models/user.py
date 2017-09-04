@@ -168,6 +168,7 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     dashboards = models.ManyToManyField(
         'DashboardView', through='UserDashboardView', blank=True)
+    leaf_model_name = models.CharField( help_text = "The most specialized model in this chain of inheritance, often defined by a service developer", max_length = 1024, null = False )
 
     policy_status = models.CharField( default = "0 - Policy in process", max_length = 1024, null = True )
 
@@ -281,6 +282,8 @@ class User(AbstractBaseUser, PlModelMixIn):
                             model.save(update_fields=['enacted','deleted','policed'], silent=silent)
 
     def save(self, *args, **kwargs):
+        if not self.leaf_model_name:
+            self.leaf_model_name = "User"
 
         if not self.id:
             self.set_password(self.password)
