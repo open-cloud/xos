@@ -68,6 +68,7 @@ message User::user_policy (AbstractBaseUser,PlModelMixIn) {
      required bool no_policy = 29 [default = False, null = False, db_index = False, blank = True];
      required string timezone = 30 [default = "America/New_York", max_length = 100, blank = False, null = False, db_index = False];
      optional string policy_status = 32 [default = "0 - Policy in process", max_length = 1024];
+     required string leaf_model_name = 33 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
 }
 
 // A user may give a permission that he has to another user
