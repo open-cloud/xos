@@ -42,14 +42,20 @@ class TestServices(unittest.TestCase):
         self.synchronizer = event_loop.XOSObserver(self.steps)
 
     def test_service_models(self):
-        o = ONOSApp()
-        t = ONOSService()
+        a = ONOSApp()
+        s = ONOSService()
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([o,t], False)
-        self.assertIn([t,o], cohorts)
+        cohorts = self.synchronizer.compute_dependent_cohorts([a,s], False)
+        self.assertIn([s,a], cohorts)
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([t,o], False)
-        self.assertIn([t,o], cohorts)
+        cohorts = self.synchronizer.compute_dependent_cohorts([s,a], False)
+        self.assertIn([s,a], cohorts)
+
+        cohorts = self.synchronizer.compute_dependent_cohorts([a,s], True)
+        self.assertIn([a,s], cohorts)
+
+        cohorts = self.synchronizer.compute_dependent_cohorts([s,a], True)
+        self.assertIn([a,s], cohorts)
 
 if __name__ == '__main__':
     unittest.main()

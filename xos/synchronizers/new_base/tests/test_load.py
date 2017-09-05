@@ -56,14 +56,14 @@ class TestScheduling(unittest.TestCase):
         graph = self.synchronizer.model_dependency_graph
         self.assertTrue(graph[False].has_edge('Instance','Slice'))
         self.assertTrue(graph[True].has_edge('Slice','Instance'))
-        self.assertTrue(graph[False].has_edge('Instance','ControllerSlice'))
-        self.assertTrue(graph[True].has_edge('ControllerSlice','Instance'))
+        self.assertTrue(graph[False].has_edge('Slice','ControllerSlice'))
+        self.assertTrue(graph[True].has_edge('ControllerSlice','Slice'))
 
     def test_load_dep_accessors(self):
         self.synchronizer.load_dependency_graph()
         graph = self.synchronizer.model_dependency_graph
-        self.assertDictContainsSubset({'src_accessor': 'slice'}, graph[False]['Instance']['ControllerSlice'])
-        self.assertDictContainsSubset({'src_accessor': 'slice', 'dst_accessor': 'slice'}, graph[True]['ControllerSlice']['Instance'])
+        self.assertDictContainsSubset({'src_accessor': 'controllerslices'}, graph[False]['Slice']['ControllerSlice'])
+        self.assertDictContainsSubset({'src_accessor': 'slice', 'dst_accessor': 'controllerslices'}, graph[True]['Slice']['ControllerSlice'])
 
     def test_load_sync_steps(self):
         self.synchronizer.load_sync_steps()

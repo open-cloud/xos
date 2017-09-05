@@ -20,5 +20,5 @@ accessor:
   kind: testframework
 logging:
   version: 1
-dependency_graph: "tests/model-deps-onos.yaml"
+dependency_graph: "tests/model-deps-onos"
 steps_dir: "tests/steps"

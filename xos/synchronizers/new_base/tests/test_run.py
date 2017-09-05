@@ -54,8 +54,14 @@ class TestRun(unittest.TestCase):
         steps_dir = Config.get("steps_dir")
         self.steps = b.load_sync_step_modules(steps_dir)
         self.synchronizer = event_loop.XOSObserver(self.steps)
-        os.remove('/tmp/sync_ports')
-        os.remove('/tmp/delete_ports')
+        try:
+            os.remove('/tmp/sync_ports')
+        except OSError:
+            pass
+        try:
+            os.remove('/tmp/delete_ports')
+        except OSError:
+            pass
 
     @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template)
     @mock.patch("event_loop.model_accessor")
