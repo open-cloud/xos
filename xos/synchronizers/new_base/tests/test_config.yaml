@@ -20,5 +20,13 @@ accessor:
   kind: testframework
 logging:
   version: 1
-dependency_graph: "model-deps.yaml"
+  handlers:
+    console:
+      class: logging.StreamHandler
+  loggers:
+    '':
+      handlers:
+          - console
+      level: DEBUG 
+dependency_graph: "tests/model-deps"
 steps_dir: "tests/steps"

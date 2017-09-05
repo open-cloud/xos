@@ -55,17 +55,7 @@ class SyncControllerNetworks(SyncStep):
         pass
 
     def map_delete_inputs(self, controller_network):
-	network_name = controller_network.network.name
-        subnet_name = '%s-%d'%(network_name,controller_network.pk)
-	cidr = controller_network.subnet
-	network_fields = {'endpoint':controller_network.controller.auth_url,
-                    'admin_user':slice.creator.email, # XXX: FIXME
-                    'admin_project':slice.name, # XXX: FIXME
-                    'admin_password':slice.creator.remote_password,
-                    'name':network_name,
-                    'subnet_name':subnet_name,
-                    'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
-                    'cidr':cidr,
+	network_fields = {'endpoint':None,
 		    'delete':True	
                     }
 

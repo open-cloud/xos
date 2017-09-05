@@ -1,9 +1,22 @@
-{ {%- for model in proto.messages %} "{{ model.name }}": [
-        {% for l in xproto_base_links(model, proto.message_table) + model.links -%}
-        {% if "Controller" + l.peer.name in proto.message_names -%}
-        ["Controller{{ l.peer.name }}", "{{ l.src_port }}", "{{ xproto_camel_to_underscore(l.peer.name).lower() }}"],
-        {% endif %}
-        ["{{ l.peer.name }}", "{{ l.src_port }}", ""]{% if not loop.last %},{% endif %}
+{ {%- for model in proto.messages %} 
+    {% if model.name not in ["Controller", "XOSBase"] %}
+    "{{ model.name }}": [
+        {% set controller_model_name = "Controller" + model.name %}
+        {% set controller_model_name_plural = "Controller" + xproto_pluralize(model) %}
+        {% set controller_models = (proto.message_table[controller_model_name], proto.message_table[controller_model_name_plural]) %}
+        {% set controller_model = xproto_first_non_empty(controller_models) %}
+        {% if controller_model %}
+        {% set controller_links = xproto_base_links(controller_model, proto.message_table) + controller_model.links  %} 
+        {% for cl in controller_links %}
+        {% set _=cl.__setitem__("model_name", cl.options.model) %}
         {% endfor %}
-    ]{{ "," if not loop.last }}{% endfor %}
+        {% set controller_backlinks = controller_links | selectattr("model_name", "equalto", model.name) %}
+        {% for backlink in controller_backlinks %}
+        ["{{ controller_model.name }}", "{{ backlink.dst_port }}", "{{ backlink.src_port }}"],
+        {% endfor %}
+        {% endif %}
+        {% for l in xproto_base_links(model, proto.message_table) + model.links -%}
+        ["{{ l.peer.name }}", "{{ l.src_port }}", "{{ l.dst_port }}"]{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]{{ "," if not loop.last }}{% endif %}{% endfor %}
 }

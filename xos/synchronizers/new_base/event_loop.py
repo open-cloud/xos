@@ -16,7 +16,6 @@ import time
 import sys
 import threading
 import json
-import pdb
 import pprint
 import traceback
 from collections import defaultdict
@@ -24,7 +23,6 @@ from networkx import DiGraph, dfs_edges, weakly_connected_component_subgraphs, a
 from networkx.algorithms.dag import topological_sort
 
 from datetime import datetime
-#from multistructlog import create_logger
 from xosconfig import Config
 from synchronizers.new_base.steps import *
 from syncstep import InnocuousException, DeferredException, SyncStep
@@ -56,6 +54,8 @@ class NoOpDriver:
 # set_driver() below.
 DRIVER = NoOpDriver()
 
+DIRECT_EDGE = 1
+PROXY_EDGE = 2
 
 def set_driver(x):
     global DRIVER
@@ -403,6 +403,28 @@ class XOSObserver:
         returns False.
     """
 
+    def same_object(self, o1, o2):
+        if not o1 or not o2:
+            return False, None
+
+        try:
+            o1_lst = (o for o in o1.all())
+            edge_type = PROXY_EDGE
+        except (AttributeError, TypeError):
+            o1_lst = [o1]
+            edge_type = DIRECT_EDGE
+
+        try:
+            found = next(obj for obj in o1_lst if obj.leaf_model_name ==
+                         o2.leaf_model_name and obj.pk == o2.pk)
+        except AttributeError as e:
+            self.log.exception('Compared objects could not be identified', e=e)
+            raise e
+        except StopIteration:
+            found = False
+
+        return found, edge_type
+
     def concrete_path_exists(self, o1, o2):
         try:
             m1 = o1.leaf_model_name
@@ -410,7 +432,7 @@ class XOSObserver:
         except AttributeError:
             # One of the nodes is not in the dependency graph
             # No dependency
-            return False
+            return False, None
 
         # FIXME: Dynamic dependency check
         G = self.model_dependency_graph[False]
