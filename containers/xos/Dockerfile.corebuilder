@@ -34,9 +34,6 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.label-schema.build-date=$org_label_schema_build_date \
       org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date
 
-# Temporary fix. This should go away when we update xos-core to a more recent image.
-RUN pip install git+https://github.com/sb98052/plyprotobuf
-
 ENV HOME /root
 WORKDIR /opt/xos/tools/corebuilder
 
