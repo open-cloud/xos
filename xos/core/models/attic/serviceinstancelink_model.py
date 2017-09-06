@@ -22,3 +22,12 @@ def save(self, *args, **kwargs):
 
     super(ServiceInstanceLink, self).save(*args, **kwargs)
 
+def delete(self, *args, **kwargs):
+    provider_service_instance = self.provider_service_instance
+    super(ServiceInstanceLink, self).delete(*args, **kwargs)
+
+    # This should be handled by a model_policy, but we don't currently have a
+    # model policy for core objects, so handle it during the save method.
+    if provider_service_instance and (not provider_service_instance.deleted):
+        provider_service_instance.link_deleted_count += 1
+        provider_service_instance.save(always_update_timestamp=True, update_fields=["updated", "link_deleted_count"])

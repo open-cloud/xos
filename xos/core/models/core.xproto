@@ -20,6 +20,7 @@ message XOSBase {
      optional string policy_status = 16 [default = "Policy in process", max_length = 1024];
      optional int32 policy_code = 16 [default = 0];
      required string leaf_model_name = 17 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
+     required bool backend_need_delete_policy = 18 [default = False, help_text = "True if delete model_policy must be run before object can be reaped"];
 }
 
 // The calling user represents the user being accessed, or is a site admin.
@@ -574,6 +575,7 @@ message ServiceInstance (XOSBase, AttributeMixin) {
      required manytoone owner->Service:service_instances = 2 [db_index = True, null = False, blank = False];
      optional string service_specific_id = 3 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
      optional string service_specific_attribute = 10 [db_index = False, null = True, blank = True, varchar = True];
+     optional uint32 link_deleted_count = 11 [default = 0, help_text = "Incremented each time a provided_link is deleted from this ServiceInstance"];
 }
 
 message ServiceInstanceLink (XOSBase) {
