@@ -133,6 +133,10 @@ class ReaperThread(threading.Thread):
                         log.info("skipping because it has need_delete set", object = d)
                         continue
 
+                    if (not getattr(d, "backend_need_reap", False)) and getattr(d, "backend_need_delete_policy", False):
+                        log.info("skipping because it has need_delete_policy set", object = d)
+                        continue
+
                     cascade_set = self.get_cascade_set(d)
                     if cascade_set:
                         self.journal_object(d, "reaper.cascade_set", msg=",".join([str(m) for m in cascade_set]))
