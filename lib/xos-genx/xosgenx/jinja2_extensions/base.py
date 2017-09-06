@@ -247,3 +247,35 @@ def xproto_tosca_field_type(type):
         return "boolean"
     else:
         return type
+
+def xproto_type_to_swagger_type(f):
+    try:
+        content_type = f['options']['content_type']
+        content_type = eval(content_type)
+    except:
+        content_type = None
+        pass
+
+    if 'choices' in f['options']:
+        return 'string'
+    elif content_type == 'date':
+        return 'string'
+    elif f['type'] == 'bool':
+        return 'boolean'
+    elif f['type'] == 'string':
+        return 'string'
+    elif f['type'] in ['int','uint32','int32'] or 'link' in f:
+        return 'integer'
+    elif f['type'] in ['double','float']:
+        return 'string'
+
+def xproto_field_to_swagger_enum(f):
+    if 'choices' in f['options']:
+        list = []
+
+        for c in eval(xproto_unquote(f['options']['choices'])):
+            list.append(c[0])
+
+        return list
+    else:
+        return False
