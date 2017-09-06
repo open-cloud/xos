@@ -161,6 +161,42 @@ class XProtoSecurityTest(unittest.TestCase):
         verdict = output_security_check(obj, ctx)
         self.assertTrue(verdict)
 
+    def test_call_policy_child_none(self):
+        xproto = \
+"""
+    policy sub_policy < ctx.user = obj.user >
+    policy output < *sub_policy(child) >
+"""
+
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = self.target
+
+        output = XOSGenerator.generate(args)
+
+        exec(output,globals()) # This loads the generated function, which should look like this:
+
+        """
+        def sub_policy_security_check(obj, ctx):
+            i1 = (ctx.user == obj.user)
+            return i1
+
+        def output_security_check(obj, ctx):
+            if obj.child:
+		i1 = sub_policy_security_check(obj.child, ctx)
+	    else:
+		i1 = True
+	    return i1
+        """
+
+        obj = FakeArgs()
+        obj.child = None
+
+        ctx = FakeArgs()
+	ctx.user = 1
+
+        verdict = output_security_check(obj, ctx)
+        self.assertTrue(verdict)
 
     def test_bin(self):
         xproto = \

@@ -465,7 +465,11 @@ def %(fn_name)s(obj, ctx):
 
             policy_fn = fn_template % policy_name
             call_str = """
-%(verdict_var)s = %(policy_fn)s(obj.%(object_name)s, ctx)
+if obj.%(object_name)s:
+    %(verdict_var)s = %(policy_fn)s(obj.%(object_name)s, ctx)
+else:
+    # Everybody has access to null objects
+    %(verdict_var)s = True
             """ % {'verdict_var': verdict_var, 'policy_fn': policy_fn, 'object_name': object_name}
 
             call_ast = self.str_to_ast(call_str)
