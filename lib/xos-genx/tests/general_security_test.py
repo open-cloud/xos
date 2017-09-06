@@ -18,10 +18,10 @@ import unittest
 from xosgenx.generator import XOSGenerator
 from helpers import FakeArgs, XProtoTestHelpers
 
-"""The function below is for eliminating warnings arising due to the missing policy_output_enforcer,
+"""The function below is for eliminating warnings arising due to the missing output_security_check,
 which is generated and loaded dynamically.
 """
-def policy_output_enforcer(x, y):
+def output_security_check(x, y):
     raise Exception("Security enforcer not generated. Test failed.")
     return False
 
@@ -51,12 +51,12 @@ class XProtoSecurityTest(unittest.TestCase):
         exec(output) # This loads the generated function, which should look like this:
 
         """
-        def policy_output_enforcer(obj, ctx):
+        def output_security_check(obj, ctx):
             i1 = True
             return i1
         """
 
-        verdict = policy_output_enforcer({}, {})
+        verdict = output_security_check({}, {})
         self.assertTrue(verdict)
 
     def test_equal(self):
@@ -74,7 +74,7 @@ class XProtoSecurityTest(unittest.TestCase):
         exec(output) # This loads the generated function, which should look like this:
 
         """
-        def policy_output_enforcer(obj, ctx):
+        def output_security_check(obj, ctx):
             i1 = (ctx.user == obj.user)
             return i1
         """
@@ -84,7 +84,7 @@ class XProtoSecurityTest(unittest.TestCase):
         ctx = FakeArgs()
 	ctx.user = 1
 
-        verdict = policy_output_enforcer(obj, ctx)
+        verdict = output_security_check(obj, ctx)
 
     def test_call_policy(self):
         xproto = \
@@ -102,12 +102,15 @@ class XProtoSecurityTest(unittest.TestCase):
         exec(output,globals()) # This loads the generated function, which should look like this:
 
         """
-        def policy_sub_policy_enforcer(obj, ctx):
+        def sub_policy_security_check(obj, ctx):
             i1 = (ctx.user == obj.user)
-    	    return i1
+            return i1
 
-	def policy_output_enforcer(obj, ctx):
-	    i1 = policy_sub_policy_enforcer(obj.child, ctx)
+        def output_security_check(obj, ctx):
+            if obj.child:
+		i1 = sub_policy_security_check(obj.child, ctx)
+	    else:
+		i1 = True
 	    return i1
         """
 
@@ -118,7 +121,44 @@ class XProtoSecurityTest(unittest.TestCase):
         ctx = FakeArgs()
 	ctx.user = 1
 
-        verdict = policy_output_enforcer(obj, ctx)
+        verdict = output_security_check(obj, ctx)
+        self.assertTrue(verdict)
+
+    def test_call_policy_child_none(self):
+        xproto = \
+"""
+    policy sub_policy < ctx.user = obj.user >
+    policy output < *sub_policy(child) >
+"""
+
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = self.target
+
+        output = XOSGenerator.generate(args)
+
+        exec(output,globals()) # This loads the generated function, which should look like this:
+
+        """
+        def sub_policy_security_check(obj, ctx):
+            i1 = (ctx.user == obj.user)
+            return i1
+
+        def output_security_check(obj, ctx):
+            if obj.child:
+		i1 = sub_policy_security_check(obj.child, ctx)
+	    else:
+		i1 = True
+	    return i1
+        """
+
+        obj = FakeArgs()
+        obj.child = None
+
+        ctx = FakeArgs()
+	ctx.user = 1
+
+        verdict = output_security_check(obj, ctx)
         self.assertTrue(verdict)
 
 
@@ -136,7 +176,7 @@ class XProtoSecurityTest(unittest.TestCase):
         exec(output) # This loads the generated function, which should look like this:
 
         """
-	def policy_output_enforcer(obj, ctx):
+	def output_security_check(obj, ctx):
 	    i2 = (ctx.is_admin == True)
 	    i3 = (obj.empty == True)
 	    i1 = (i2 or i3)
@@ -149,7 +189,7 @@ class XProtoSecurityTest(unittest.TestCase):
 	ctx = FakeArgs()
 	ctx.is_admin = True
 
-        verdict = policy_output_enforcer(obj, ctx)
+        verdict = output_security_check(obj, ctx)
 
         self.assertTrue(verdict)
 
@@ -167,12 +207,12 @@ class XProtoSecurityTest(unittest.TestCase):
         exec(output) # This loads the generated function, which should look like this:
 
         """
-	def policy_output_enforcer(obj, ctx):
+	def output_security_check(obj, ctx):
 	    i1 = Privilege.objects.filter(object_id=obj.id)
     	    return i1
         """
 
-        self.assertTrue(policy_output_enforcer is not None)
+        self.assertTrue(output_security_check is not None)
 	
     def test_python(self):
         xproto = \
@@ -186,13 +226,13 @@ class XProtoSecurityTest(unittest.TestCase):
         exec(output) # This loads the generated function, which should look like this:
 
         """
-        def policy_output_enforcer(obj, ctx):
+        def output_security_check(obj, ctx):
             i2 = ('jack' in ['the', 'box'])
             i1 = (i2 == False)
             return i1
         """
 
-        self.assertTrue(policy_output_enforcer({}, {}) is True)
+        self.assertTrue(output_security_check({}, {}) is True)
 
     def test_forall(self):
         # This one we only parse
@@ -207,7 +247,7 @@ class XProtoSecurityTest(unittest.TestCase):
 
         output = XOSGenerator.generate(args)
         """
-        def policy_output_enforcer(obj, ctx):
+        def output_security_check(obj, ctx):
             i2 = Credential.objects.filter((~ Q(obj_id=obj_id)))[0]
             i1 = (not i2)
             return i1
