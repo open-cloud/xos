@@ -296,7 +296,8 @@ class XOSObserver:
             try:
                 o.backend_status = o.backend_status[:1024]
                 o.save(update_fields=['backend_status',
-                                      'backend_register', 'updated'])
+                                      'backend_register'],
+                       always_update_timestamp=True)
             except BaseException as e:
                 self.log.exception(
                     "Could not update backend status field!", e=e)
