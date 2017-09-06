@@ -35,6 +35,11 @@ from django.contrib.contenttypes.models import ContentType
 import redis
 from redis import ConnectionError
 
+from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
+
 XOS_GLOBAL_DEFAULT_SECURITY_POLICY = True
 
 def date_handler(obj):

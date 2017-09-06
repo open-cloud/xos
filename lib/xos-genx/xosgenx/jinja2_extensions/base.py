@@ -82,7 +82,7 @@ def xproto_first_non_empty(lst):
 def xproto_api_type(field):
     try:
         if (unquote(field['options']['content_type'])=='date'):
-            return 'float'
+            return 'double'
     except KeyError:
         pass
 
