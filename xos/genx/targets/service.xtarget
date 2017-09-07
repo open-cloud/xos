@@ -16,7 +16,7 @@ from header import *
 {%- for l in m.links -%}
 {% if l.peer not in proto.message_names -%}
 from core.models import {{ l.peer }} 
-{%- endif -%}
+{% endif -%}
 {%- endfor -%}
 {%- for b in m.bases -%}
 {%- if b!='PlCoreBase' and 'Mixin' not in b -%}
