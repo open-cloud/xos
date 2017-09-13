@@ -38,7 +38,7 @@ through the service graph, based on their customer profile, but the
 end result is a collection of interconnected ServiceInstance objects,
 forming the CORD-equivalent of a service chain. (This "chain" is often
 linear, but because the model allows for a many-to-many relationship
-among service instances, this "chain" can from an arbitrary graph.)
+among service instances, it can form an arbitrary graph.)
 
 Each node in this service chain (graph of ServiceInstance objects)
 represents some combination of virtualized compute and network
