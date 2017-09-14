@@ -123,7 +123,7 @@ class TestPayload(unittest.TestCase):
         cs.synchronizer_step = steps.sync_controller_slices.SyncControllerSlices()
 
         self.synchronizer.sync_cohort(cohort, False)
-        o.save.assert_called_with(update_fields=['backend_status', 'backend_register','updated'])
+        o.save.assert_called_with(always_update_timestamp=True, update_fields=['backend_status', 'backend_register'])
         self.assertEqual(cs.backend_code, 1)
 
         self.assertIn('Force', cs.backend_status)
@@ -146,7 +146,7 @@ class TestPayload(unittest.TestCase):
         cs.synchronizer_step = steps.sync_controller_slices.SyncControllerSlices()
 
         self.synchronizer.sync_cohort(cohort, False)
-        o.save.assert_called_with(update_fields=['backend_status', 'backend_register','updated'])
+        o.save.assert_called_with(always_update_timestamp=True, update_fields=['backend_status', 'backend_register'])
         self.assertIn('Force', cs.backend_status)
         self.assertIn('Failed due to', o.backend_status)
 
