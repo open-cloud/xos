@@ -16,6 +16,8 @@ the service as a whole (i.e., to all tenants of the service).
 
 * `tenant_message`: A string that is displayed for a specific Tenant.
 
+These two fields are a simple illustration of a common pattern. A service model typically includes fields used to *configure* the service as a whole (`service_message` in this example) and fields used to *control* individual instances of the the service (`tenant_message` in this example). It would be common for the operator to set configuration-related fields when the service first starts up, and then set/adjust control-related fields on behalf of individual tenants as the service runs.
+
 Tenant and ServiceInstance are two closely related terms. "Tenant" refers to the user or the consumer of a service. Often we partition a service into several pieces, each for use by a tenant, thus making it a multi-tenant service. Each one of these tenant-specific pieces is referred to as a ServiceInstance.  
 
 ## Summary
@@ -52,32 +54,45 @@ should familiarize yourself with the CiaB environment.
 Once you’ve prepared your CiaB, the development loop for
 changing/building/testing service code involves these stages:
 
-1. Make changes to your service code and propagate them to your CiaB
-   host. There are a number of ways to propagate changes to the host
-   depending on developer preference, including using gerrit draft
-   reviews, git branches, rsync, scp, etc.
-2. Build XOS container images on the build machine (corddev VM) and
-   publish them to the head node (prod VM).  For this step, run the
-   following commands in the corddev VM:
-```
-cd /cord/build
-./gradlew -PdeployConfig=config/cord_in_a_box.yml PIprepPlatform
-./gradlew :platform-install:buildImages
-./gradlew -PdeployConfig=config/cord_in_a_box.yml :platform-install:publish
-./gradlew -PdeployConfig=config/cord_in_a_box.yml :orchestration:xos:publish
-```
-3. Launch the new XOS containers on the head node (prod VM).  For this
-   step, run the following commands in the prod VM (after the aliases
-   have been defined for the first time, it's only necessary to run
-   line 4):
-```
-alias xos-teardown="pushd /opt/cord/build/platform-install; ansible-playbook -i inventory/head-localhost --extra-vars  @/opt/cord/build/genconfig/config.yml teardown-playbook.yml; popd"
-alias xos-launch="pushd /opt/cord/build/platform-install; ansible-playbook -i inventory/head-localhost --extra-vars @/opt/cord/build/genconfig/config.yml launch-xos-playbook.yml; popd"
-alias compute-node-refresh="pushd /opt/cord/build/platform-install; ansible-playbook -i /etc/maas/ansible/pod-inventory --extra-vars=@/opt/cord/build/genconfig/config.yml compute-node-refresh-playbook.yml; popd"
-xos-teardown; xos-launch; compute-node-refresh
-```
-4. Test and verify your changes
-5. Go back to step #1
+1. Make changes to your service code and propagate them to your CiaB host. There are a number of ways to propagate changes to the host depending on developer preference, including using gerrit draft reviews, git branches, rsync, scp, etc. 
+
+2. First, tear down the existing XOS installation
+
+    ```
+    cd ~/cord/build
+    make xos-teardown
+    ```
+
+3. Now, go to the head node (head1 VM in cord-in-a-box) and clean up OpenStack state:
+
+    ```
+    source /opt/cord_profile/admin-openrc.sh
+    /opt/cord/build/platform-install/scripts/cleanup.sh
+    ```
+
+4. Optional: Reinstall ONOS-cord. Sometimes we find it helpful to reinstall ONOS-cord, to ensure that all state is wiped clean from ONOS. This is done on the head node (head1 VM):
+
+    ```
+    cd /opt/onos_cord
+    docker stop onoscord_xos-onos_1
+    docker rm onoscord_xos-onos_1
+    docker-compose up -d
+    ```
+
+5. Now, build the new container images and deploy to the pod
+
+    ```
+    cd ~/cord/build
+    make -j4 build
+    make compute-node-refresh
+    make pod-test
+    ```
+
+6. Test and verify your changes
+
+7. Go back to step #1
+
+
 
 ## Define a Model
 
