@@ -444,37 +444,35 @@ class XOSObserver:
             paths = all_shortest_paths(G, m1, m2)
         except NetworkXNoPath:
             # Easy. The two models are unrelated.
-            return False
+            return False, None
 
         for p in paths:
-            path_verdict = True
             src_object = o1
-            da = None
 
             for i in range(len(p) - 1):
                 src = p[i]
                 dst = p[i + 1]
                 edge_label = G[src][dst]
                 sa = edge_label['src_accessor']
-                da = edge_label['dst_accessor']
                 try:
                     dst_object = getattr(src_object, sa)
-                    if dst_object and dst_object.leaf_model_name != dst and i != len(
-                            p) - 2:
-                        raise AttributeError
                 except AttributeError as e:
                     self.log.debug(
                         'Could not check object dependencies, making conservative choice', src_object=src_object, sa=sa, o1=o1, o2=o2)
-                    return True
+                    return True, DIRECT_EDGE
+
                 src_object = dst_object
 
-            if src_object and ((not da and src_object == o2) or (
-                    da and src_object == getattr(o2, da))):
-                return True
+                if not src_object:
+                    break
+
+            verdict, edge_type = self.same_object(src_object, o2)
+            if verdict:
+                return verdict, edge_type
 
             # Otherwise try other paths
 
-        return False
+        return False, None
 
     """
 
@@ -501,8 +499,6 @@ class XOSObserver:
         r = range(n)
         indexed_objects = zip(r, objects)
 
-        mG = self.model_dependency_graph[deletion]
-
         oG = DiGraph()
 
         for i in r:
@@ -512,11 +508,21 @@ class XOSObserver:
             for i0 in range(n):
                 for i1 in range(n):
                     if i0 != i1:
-                        if not deletion and self.concrete_path_exists(
-                                objects[i0], objects[i1]):
-                            oG.add_edge(i0, i1)
-                        elif deletion and self.concrete_path_exists(objects[i1], objects[i0]):
-                            oG.add_edge(i0, i1)
+                        if deletion:
+                            path_args = (objects[i1], objects[i0])
+                        else:
+                            path_args = (objects[i0], objects[i1])
+
+                        is_connected, edge_type = self.concrete_path_exists(
+                            *path_args)
+                        if is_connected:
+                            try:
+                                edge_type = oG[i1][i0]['type']
+                                if edge_type == PROXY_EDGE:
+                                    oG.remove_edge(i1, i0)
+                                    oG.add_edge(i0, i1, {'type': edge_type})
+                            except KeyError:
+                                oG.add_edge(i0, i1, {'type': edge_type})
         except KeyError:
             pass
 
