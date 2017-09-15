@@ -116,7 +116,7 @@ class TestControllerDependencies(unittest.TestCase):
         self.assertFalse(verdict)
         self.assertEqual(edge_type, None)
 
-    def test_controller_path_simple(self):
+    def test_controller_path_simple_negative(self):
         p = Instance()
         s = Slice()
         t = Site()
@@ -129,7 +129,7 @@ class TestControllerDependencies(unittest.TestCase):
         self.assertIn([ct], cohorts)
         self.assertIn([p], cohorts)
 
-    def test_controller_deletion_path(self):
+    def test_controller_deletion_path_negative(self):
         p = Instance()
         s = Slice()
         t = Site()
@@ -148,7 +148,23 @@ class TestControllerDependencies(unittest.TestCase):
         self.assertIn([ct], cohorts)
 
 
-    def test_multi_controller_schedule(self):
+    def test_multi_controller_deletion_schedule(self):
+        csl = ControllerSlice()
+        cn = ControllerNetwork()
+        site = Site()
+        slice = Slice()
+        slice.site = site
+        slice.controllerslices = mock_enumerator([])
+        site.controllersite = mock_enumerator([])
+        i = Instance()
+        i.slice = slice
+
+        cohorts = self.synchronizer.compute_dependent_cohorts([i, slice, site, csl, csi], False)
+        self.assertIn([site, slice, i], cohorts)
+        self.assertIn([csl], cohorts)
+        self.assertIn([csi], cohorts)
+
+    def test_multi_controller_schedule_negative(self):
         csl = ControllerSlice()
         csi = ControllerSite()
         site = Site()
@@ -164,8 +180,5 @@ class TestControllerDependencies(unittest.TestCase):
         self.assertIn([csl], cohorts)
         self.assertIn([csi], cohorts)
 
-
 if __name__ == '__main__':
     unittest.main()
-
-# ControllerNetworks, ControllerSlice, ControllerSite, instance, slice, site

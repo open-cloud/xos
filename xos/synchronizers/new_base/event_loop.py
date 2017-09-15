@@ -12,12 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# TODO:
+# Add unit tests:
+# - 2 sets of Instance, ControllerSlice, ControllerNetworks - delete and create case
+
 import time
 import sys
 import threading
 import json
 import pprint
 import traceback
+ 
 from collections import defaultdict
 from networkx import DiGraph, dfs_edges, weakly_connected_component_subgraphs, all_shortest_paths, NetworkXNoPath
 from networkx.algorithms.dag import topological_sort
@@ -395,6 +400,17 @@ class XOSObserver:
             legacy_steps=pending_steps)
         return pending_objects, pending_steps
 
+    def linked_objects(self, o):
+        if o is None: 
+            return [], None
+	try:
+            o_lst = [o for o in o.all()]
+            edge_type = PROXY_EDGE
+        except (AttributeError, TypeError):
+            o_lst = [o]
+            edge_type = DIRECT_EDGE
+        return o_lst, edge_type
+
     """ Automatically test if a real dependency path exists between two objects. e.g.
         given an Instance, and a ControllerSite, the test amounts to:
             instance.slice.site == controller.site
@@ -407,13 +423,8 @@ class XOSObserver:
     def same_object(self, o1, o2):
         if not o1 or not o2:
             return False, None
-
-        try:
-            o1_lst = (o for o in o1.all())
-            edge_type = PROXY_EDGE
-        except (AttributeError, TypeError):
-            o1_lst = [o1]
-            edge_type = DIRECT_EDGE
+         
+        o1_lst,edge_type = self.linked_objects(o1)
 
         try:
             found = next(obj for obj in o1_lst if obj.leaf_model_name ==
@@ -422,7 +433,13 @@ class XOSObserver:
             self.log.exception('Compared objects could not be identified', e=e)
             raise e
         except StopIteration:
-            found = False
+            # This is a temporary workaround to establish dependencies between
+            # deleted proxy objects. A better solution would be for the ORM to
+            # return the set of deleted objects via foreign keys. At that point,
+            # the following line would change back to found = False 
+            # - Sapan
+
+            found = getattr(o2, 'deleted', False)
 
         return found, edge_type
 
@@ -448,6 +465,7 @@ class XOSObserver:
 
         for p in paths:
             src_object = o1
+            edge_type = DIRECT_EDGE
 
             for i in range(len(p) - 1):
                 src = p[i]
@@ -455,11 +473,35 @@ class XOSObserver:
                 edge_label = G[src][dst]
                 sa = edge_label['src_accessor']
                 try:
-                    dst_object = getattr(src_object, sa)
+                    dst_accessor = getattr(src_object, sa)
+                    dst_objects,link_edge_type = self.linked_objects(dst_accessor) 
+                    if link_edge_type == PROXY_EDGE:
+                        edge_type = link_edge_type
+
+                    """
+
+                    True       			If no linked objects and deletion
+                    False      			If no linked objects
+                    True       			If multiple linked objects
+                    <continue traversal> 	If single linked object
+
+                    """
+
+                    if dst_objects==[]:
+                        if o2.deleted:
+                            return True, edge_type
+                        else:
+                            dst_object = None
+                    elif len(dst_objects)>1:
+                         # Multiple linked objects. Assume anything could be among those multiple objects.
+                         raise AttributeError
+                    else:
+                         dst_object = dst_objects[0]
                 except AttributeError as e:
-                    self.log.debug(
-                        'Could not check object dependencies, making conservative choice', src_object=src_object, sa=sa, o1=o1, o2=o2)
-                    return True, DIRECT_EDGE
+                    if sa!='fake_accessor':
+                        self.log.debug(
+                            'Could not check object dependencies, making conservative choice', src_object=src_object, sa=sa, o1=o1, o2=o2)
+                    return True, edge_type
 
                 src_object = dst_object
 
@@ -531,6 +573,7 @@ class XOSObserver:
         cohorts = [[objects[i] for i in cohort_index]
                    for cohort_index in cohort_indexes]
 
+ 
         return cohorts
 
     def run_once(self):
