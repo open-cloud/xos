@@ -56,30 +56,22 @@ changing/building/testing service code involves these stages:
 
 1. Make changes to your service code and propagate them to your CiaB host. There are a number of ways to propagate changes to the host depending on developer preference, including using gerrit draft reviews, git branches, rsync, scp, etc. 
 
-2. First, tear down the existing XOS installation
+2. First, tear down the existing XOS installation and clean up OpenStack to remove any leftover instances or networks:
 
     ```
     cd ~/cord/build
     make xos-teardown
+    make clean-openstack
     ```
 
-3. Now, go to the head node (head1 VM in cord-in-a-box) and clean up OpenStack state:
+3. Optional: Teardown ONOS. Sometimes we find it helpful to reinstall the onos-cord and onos-fabric containers, to ensure that all state is wiped clean from ONOS.
 
     ```
-    source /opt/cord_profile/admin-openrc.sh
-    /opt/cord/build/platform-install/scripts/cleanup.sh
+    cd ~/cord/build
+    make clean-onos
     ```
 
-4. Optional: Reinstall ONOS-cord. Sometimes we find it helpful to reinstall ONOS-cord, to ensure that all state is wiped clean from ONOS. This is done on the head node (head1 VM):
-
-    ```
-    cd /opt/onos_cord
-    docker stop onoscord_xos-onos_1
-    docker rm onoscord_xos-onos_1
-    docker-compose up -d
-    ```
-
-5. Now, build the new container images and deploy to the pod
+4. Now, build the new container images and deploy to the pod
 
     ```
     cd ~/cord/build
@@ -88,9 +80,9 @@ changing/building/testing service code involves these stages:
     make pod-test
     ```
 
-6. Test and verify your changes
+5. Test and verify your changes
 
-7. Go back to step #1
+6. Go back to step #1
 
 
 
