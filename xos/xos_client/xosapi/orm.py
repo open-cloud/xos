@@ -535,7 +535,7 @@ import convenience.privilege
 import convenience.instance
 import convenience.cordsubscriberroot
 import convenience.volttenant
-import convenience.vsgtenant
+import convenience.vsgserviceinstance
 import convenience.vrouterservice
 import convenience.vroutertenant
 import convenience.vrouterapp

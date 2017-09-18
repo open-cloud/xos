@@ -18,14 +18,19 @@ from xosapi.orm import ORMWrapper, register_convenience_wrapper
 
 class ORMWrapperVOLTTenant(ORMWrapper):
     @property
-    def vcpe(self):
+    def vsg(self):
         links = self.stub.ServiceInstanceLink.objects.filter(subscriber_service_instance_id = self.id)
         for link in links:
             # cast from ServiceInstance to VSGTenant
-            vsgs = self.stub.VSGTenant.objects.filter(id = link.provider_service_instance.id)
+            vsgs = self.stub.VSGServiceInstance.objects.filter(id = link.provider_service_instance.id)
             if vsgs:
                 return vsgs[0]
         return None
+
+    # DEPRECATED
+    @property
+    def vcpe(self):
+        return self.vsg
 
     @property
     def subscriber(self):
