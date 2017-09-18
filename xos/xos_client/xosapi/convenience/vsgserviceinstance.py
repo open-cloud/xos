@@ -16,7 +16,7 @@
 
 from xosapi.orm import ORMWrapper, register_convenience_wrapper
 
-class ORMWrapperVSGTenant(ORMWrapper):
+class ORMWrapperVSGServiceInstance(ORMWrapper):
     sync_attributes = ("wan_container_ip", "wan_container_mac", "wan_container_netbits",
                        "wan_container_gateway_ip", "wan_container_gateway_mac",
                        "wan_vm_ip", "wan_vm_mac")
@@ -100,4 +100,5 @@ class ORMWrapperVSGTenant(ORMWrapper):
             raise Exception("no vm_vrouter_tenant tag for instance %s" % self.instance)
 
 
-register_convenience_wrapper("VSGTenant", ORMWrapperVSGTenant)
+register_convenience_wrapper("VSGTenant", ORMWrapperVSGServiceInstance)   # DEPRECATED
+register_convenience_wrapper("VSGServiceInstance", ORMWrapperVSGServiceInstance)
