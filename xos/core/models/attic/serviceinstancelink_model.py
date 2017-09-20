@@ -14,13 +14,12 @@
 # limitations under the License.
 
 
-def save(self, *args, **kwargs):
+def __xos_save_base(self, *args, **kwargs):
     subCount = sum([1 for e in [self.subscriber_service, self.subscriber_service_instance, self.subscriber_network] if e is not None])
     if (subCount > 1):
         raise XOSConflictingField(
             "Only one of subscriber_service, subscriber_service_instance, subscriber_network should be set")
 
-    super(ServiceInstanceLink, self).save(*args, **kwargs)
 
 def delete(self, *args, **kwargs):
     provider_service_instance = self.provider_service_instance
