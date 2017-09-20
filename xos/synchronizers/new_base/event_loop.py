@@ -224,10 +224,10 @@ class XOSObserver:
         o.backend_status = "OK"
         o.backend_code = 1
         model_accessor.journal_object(o, "syncstep.call.save_update")
-        o.save(update_fields=['enacted', 'backend_status', 'backend_register'])
+        o.save(update_fields=['enacted', 'backend_status', 'backend_register', 'backend_code'])
         log.info("Saved sync object, new enacted", enacted=new_enacted)
 
-    """ This function needs a cleanup. FIXME: Rethink backend_status, backend_register """
+    """ This function needs a cleanup. FIXME: Rethink backend_status, backend_register - Sapan """
 
     def handle_sync_exception(self, o, e):
         self.log.exception("sync step failed!", e=e, **o.tologdict())
@@ -301,6 +301,7 @@ class XOSObserver:
             try:
                 o.backend_status = o.backend_status[:1024]
                 o.save(update_fields=['backend_status',
+                                      'backend_code',
                                       'backend_register'],
                        always_update_timestamp=True)
             except BaseException as e:
