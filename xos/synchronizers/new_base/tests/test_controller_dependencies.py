@@ -101,6 +101,38 @@ class TestControllerDependencies(unittest.TestCase):
         cohorts = self.synchronizer.compute_dependent_cohorts([i, slice, site, csl, csi], False)
         self.assertEqual([site, csi, slice, csl, i], cohorts[0])
 
+    def test_instance_fake_dependency_path(self):
+        i = Instance()
+        id = ImageDeployments()
+        id.deleted = False
+        verdict, edge_type = self.synchronizer.concrete_path_exists(i, id)
+
+        self.assertTrue(verdict)
+
+    def test_instance_fake_deletion_dependency_path_delete(self):
+        i = Instance()
+        cn = ControllerNetwork()
+        cn.deleted = True
+        verdict, edge_type = self.synchronizer.concrete_path_exists(i, cn)
+
+        self.assertTrue(verdict)
+
+    def test_instance_fake_deletion_dependency_path(self):
+        i = Instance()
+        cn = ControllerNetwork()
+        cn.deleted = False
+        verdict, edge_type = self.synchronizer.concrete_path_exists(i, cn)
+
+        self.assertFalse(verdict)
+
+    def test_instance_fake_dependency_path_delete(self):
+        i = Instance()
+        cn = ControllerNetwork()
+        cn.deleted = True
+        verdict, edge_type = self.synchronizer.concrete_path_exists(i, cn)
+
+        self.assertTrue(verdict)
+
     def test_multi_controller_path_negative(self):
         csl = ControllerSlice()
         csi = ControllerSite()
@@ -152,6 +184,7 @@ class TestControllerDependencies(unittest.TestCase):
         csl = ControllerSlice()
         cn = ControllerNetwork()
         site = Site()
+        csi = ControllerSite()
         slice = Slice()
         slice.site = site
         slice.controllerslices = mock_enumerator([])
@@ -179,6 +212,124 @@ class TestControllerDependencies(unittest.TestCase):
         self.assertIn([site, slice, i], cohorts)
         self.assertIn([csl], cohorts)
         self.assertIn([csi], cohorts)
+    
+    def test_multiple_service_cohorts(self):
+        csl0 = ControllerSlice()
+        csl0.tag = 0
+        csi0 = ControllerSite()
+        csi0.tag = 0
+        site0 = Site()
+        site0.tag = 0
+        slice0 = Slice()
+        slice0.tag = 0
+        slice0.site = site0
+        slice0.controllerslices = mock_enumerator([csl0])
+        site0.controllersite = mock_enumerator([csi0])
+        site0.tag = 0
+        i0 = Instance()
+        i0.tag = 0
+        i0.slice = slice0
+
+        csl1 = ControllerSlice()
+        csi1 = ControllerSite()
+        site1 = Site()
+        slice1 = Slice()
+        slice1.site = site1
+        slice1.controllerslices = mock_enumerator([csl1])
+        site1.controllersite = mock_enumerator([csi1])
+        i1 = Instance()
+        i1.slice = slice1
+
+        cohorts = self.synchronizer.compute_dependent_cohorts([i0, slice0, site0, csl0, csi0, i1, slice1, site1, csl1, csi1], False)
+
+        self.assertEqual(len(cohorts), 2)
+        self.assertEqual(len(cohorts[0]), len(cohorts[1]))
+
+    def test_multiple_service_cohorts_with_fake_dependency(self):
+        csl0 = ControllerSlice()
+        csl0.tag = 0
+        csi0 = ControllerSite()
+        csi0.tag = 0
+        site0 = Site()
+        site0.tag = 0
+        slice0 = Slice()
+        slice0.tag = 0
+        slice0.site = site0
+        slice0.controllerslices = mock_enumerator([csl0])
+        site0.controllersite = mock_enumerator([csi0])
+        site0.tag = 0
+        i0 = Instance()
+        i0.tag = 0
+        i0.slice = slice0
+        csn0 = ControllerNetwork()
+        csn0.tag = 0
+        n0 = Network()
+        n0.tag = 0
+        n0.controllernetworks = mock_enumerator([csn0])
+        n0.owner = slice0
+
+        csl1 = ControllerSlice()
+        csi1 = ControllerSite()
+        site1 = Site()
+        slice1 = Slice()
+        slice1.site = site1
+        slice1.controllerslices = mock_enumerator([csl1])
+        site1.controllersite = mock_enumerator([csi1])
+        i1 = Instance()
+        i1.slice = slice1
+        csn1 = ControllerNetwork()
+        n1 = Network()
+        n1.controllernetworks = mock_enumerator([csn1])
+        n1.owner = slice1
+
+        cohorts = self.synchronizer.compute_dependent_cohorts([i0, slice0, site0, csl0, csi0, csn0, i1, slice1, site1, csl1, csi1, csn1], False)
+
+        self.assertEqual(len(cohorts), 4)
+        self.assertEqual(len(cohorts[1]), len(cohorts[3]))
+
+
+    def test_multiple_service_cohorts_with_fake_dependency_deletion(self):
+        csl0 = ControllerSlice()
+        csl0.tag = 0
+        csi0 = ControllerSite()
+        csi0.tag = 0
+        site0 = Site()
+        site0.tag = 0
+        slice0 = Slice()
+        slice0.tag = 0
+        slice0.site = site0
+        slice0.controllerslices = mock_enumerator([csl0])
+        site0.controllersite = mock_enumerator([csi0])
+        site0.tag = 0
+        i0 = Instance()
+        i0.tag = 0
+        i0.slice = slice0
+        csn0 = ControllerNetwork()
+        csn0.tag = 0
+        n0 = Network()
+        n0.tag = 0
+        n0.controllernetworks = mock_enumerator([csn0])
+        n0.owner = slice0
+        csn0.deleted = True
+
+        csl1 = ControllerSlice()
+        csi1 = ControllerSite()
+        site1 = Site()
+        slice1 = Slice()
+        slice1.site = site1
+        slice1.controllerslices = mock_enumerator([csl1])
+        site1.controllersite = mock_enumerator([csi1])
+        i1 = Instance()
+        i1.slice = slice1
+        csn1 = ControllerNetwork()
+        n1 = Network()
+        n1.controllernetworks = mock_enumerator([csn1])
+        n1.owner = slice1
+        csn1.deleted = True
+
+        cohorts = self.synchronizer.compute_dependent_cohorts([i0, slice0, site0, csl0, csi0, csn0, i1, slice1, site1, csl1, csi1, csn1], True)
+
+        self.assertEqual(len(cohorts), 1)
 
 if __name__ == '__main__':
     unittest.main()

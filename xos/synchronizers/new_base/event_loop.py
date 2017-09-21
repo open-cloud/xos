@@ -489,6 +489,8 @@ class XOSObserver:
                     """
 
                     if dst_objects==[]:
+                        # Workaround for ORM not returning linked deleted
+                        # objects
                         if o2.deleted:
                             return True, edge_type
                         else:
@@ -499,9 +501,22 @@ class XOSObserver:
                     else:
                          dst_object = dst_objects[0]
                 except AttributeError as e:
-                    if sa!='fake_accessor':
-                        self.log.debug(
-                            'Could not check object dependencies, making conservative choice', src_object=src_object, sa=sa, o1=o1, o2=o2)
+                    # Fake accessors are links between models that have a dependency
+                    # but that do not have a path in the data model, such as Instance and ControllerNetowrk.
+                    # They are implemented as a workaround until a true dependency path is created in
+                    # the data model.
+                    if sa.startswith('fake_accessor'):
+                        if sa.endswith('deletion'):
+                            if o2.deleted:
+                                return True, edge_type
+                            else:
+                                break
+                        else:
+                            return True, edge_type
+
+                    self.log.debug(
+                        'Could not check object dependencies, making conservative choice', src_object=src_object, sa=sa, o1=o1, o2=o2)
+
                     return True, edge_type
 
                 src_object = dst_object
@@ -509,9 +524,12 @@ class XOSObserver:
                 if not src_object:
                     break
 
-            verdict, edge_type = self.same_object(src_object, o2)
+            verdict, leaf_edge_type = self.same_object(src_object, o2)
             if verdict:
-                return verdict, edge_type
+                if edge_type == PROXY_EDGE:
+                    leaf_edge_type = PROXY_EDGE
+
+                return verdict, leaf_edge_type
 
             # Otherwise try other paths
 
