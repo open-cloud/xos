@@ -141,13 +141,8 @@ class XOSConfigTest(unittest.TestCase):
         [XOS-Config] Should get the default value if nothing is specified
         """
         Config.init(basic_conf)
-        log = Config.get("logging")
-        self.assertEqual(log, {
-            "level": "info",
-            "channels": ["file", "console"],
-            "logstash_hostport": "cordloghost:5617",
-            "file":  "/var/log/xos.log",
-        })
+        dir = Config.get("xos_dir")
+        self.assertEqual(dir, "/opt/xos")
 
     def test_get_config_file(self):
         """

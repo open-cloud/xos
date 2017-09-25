@@ -2,3 +2,6 @@
 build
 XosConfig.egg-info
 dist
+.coverage
+coverage.xml
+cover
