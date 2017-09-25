@@ -18,7 +18,7 @@ import unittest
 
 import yaml
 from xosgenx.generator import XOSGenerator
-from helpers import FakeArgs
+from helpers import FakeArgs, OUTPUT_DIR
 
 class Args:
     pass
@@ -29,6 +29,7 @@ class XOSGeneratorTest(unittest.TestCase):
         """
         [XOS-GenX] The swagger xtarget should generate the appropriate json
         """
+
         # xosgenx --output . --target xosgenx/targets/swagger.xtarget --write-to-file single  --dest-file swagger.yaml ../../xos/core/models/core.xproto
         # http-server --cors Users/teone/Sites/opencord/orchestration/xos/lib/xos-genx/
         xproto = \
@@ -58,12 +59,14 @@ class XOSGeneratorTest(unittest.TestCase):
         args = FakeArgs()
         args.inputs = xproto
         args.target = 'swagger.xtarget'
-        args.output = "/Users/teone/Sites/opencord/orchestration/xos/lib/xos-genx"
+        args.output = OUTPUT_DIR
         args.write_to_file = "single"
         args.dest_file = "swagger.yaml"
         args.quiet = False
         output = XOSGenerator.generate(args)
-        self.assertEqual(True, False);
+        self.assertIn("/xosapi/v1/core/instances/:", output)
+        self.assertIn("/xosapi/v1/core/instances/{id}:", output)
+        self.assertIn("Instance:", output)
 
 if __name__ == '__main__':
     unittest.main()
