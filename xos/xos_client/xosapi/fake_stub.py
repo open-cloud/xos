@@ -184,6 +184,16 @@ class Service(FakeObj):
 
     DESCRIPTOR = FakeDescriptor("Service")
 
+class ServiceInstance(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "owher", "default": 0, "fk_model": "Service"},
+               {"name": "leaf_model_name", "default": "ServiceInstance"})
+
+    def __init__(self, **kwargs):
+        return super(ServiceInstance, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("ServiceInstance")
+
 class ONOSService(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
                {"name": "name", "default": ""},
@@ -267,7 +277,7 @@ class FakeStub(object):
     def __init__(self):
         self.id_counter = 1
         self.objs = {}
-        for name in ["Controller", "Deployment", "Slice", "Site", "Tag", "Service", "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice"]:
+        for name in ["Controller", "Deployment", "Slice", "Site", "Tag", "Service", "ServiceInstance", "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice"]:
             setattr(self, "Get%s" % name, functools.partial(self.get, name))
             setattr(self, "List%s" % name, functools.partial(self.list, name))
             setattr(self, "Create%s" % name, functools.partial(self.create, name))
@@ -317,7 +327,7 @@ class FakeStub(object):
 class FakeSymDb(object):
     def __init__(self):
         self._classes = {}
-        for name in ["Controller", "Deployment", "Slice", "Site", "ID", "Tag", "Service", "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice"]:
+        for name in ["Controller", "Deployment", "Slice", "Site", "ID", "Tag", "Service", "ServiceInstance", "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice"]:
             self._classes["xos.%s" % name] = globals()[name]
 
 

@@ -46,7 +46,7 @@ class ORMWrapperService(ORMWrapper):
         return self.leaf_model_name + "Instance"
 
     def get_service_instance_class(self):
-        return getattr(self.stub, self.get_service_instance_class_name)
+        return getattr(self.stub, self.get_service_instance_class_name())
 
 
 register_convenience_wrapper("Service", ORMWrapperService)

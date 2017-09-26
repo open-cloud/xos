@@ -78,6 +78,42 @@ class TestWrappers(unittest.TestCase):
         self.assertEqual(len(cns), 1)
         self.assertEqual(cns[0].id, network_one.id)
 
+    def test_service_get_service_instance_class_name(self):
+        orm = self.make_coreapi()
+        deployment = orm.Deployment(name="test_deployment")
+        deployment.save()
+        controller = orm.Controller(name="test_controller", deployment_id = deployment.id)
+        controller.save()
+        site = orm.Site(name="testsite")
+        site.save()
+        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user.save()
+        vsg_access_template = orm.NetworkTemplate(name="vsg_access", vtn_kind="VSG")
+        vsg_access_template.save()
+        service_one = orm.Service(name="service_one")
+        service_one.save()
+
+        self.assertEqual(service_one.get_service_instance_class_name(), "ServiceInstance")
+
+    def test_service_get_service_instance_class(self):
+        orm = self.make_coreapi()
+        deployment = orm.Deployment(name="test_deployment")
+        deployment.save()
+        controller = orm.Controller(name="test_controller", deployment_id=deployment.id)
+        controller.save()
+        site = orm.Site(name="testsite")
+        site.save()
+        user = orm.User(
+            email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)),
+            site_id=site.id)
+        user.save()
+        vsg_access_template = orm.NetworkTemplate(name="vsg_access", vtn_kind="VSG")
+        vsg_access_template.save()
+        service_one = orm.Service(name="service_one")
+        service_one.save()
+
+        self.assertEqual(service_one.get_service_instance_class().model_name, "ServiceInstance")
+
 if USE_FAKE_STUB:
     sys.path.append("..")
 
