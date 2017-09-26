@@ -1,31 +1,38 @@
 # Example Service Tutorial
 
-This tutorial uses
-[ExampleService](https://github.com/opencord/exampleservice)
-to illustrate how to write and on-board a service in CORD.
-ExampleService is a multi-tenant service that instantiates a VM
-instance on behalf of each tenant, and runs an Apache web server in
-that VM. This web server is then configured to serve a
-tenant-specified message (a string), where the tenant is able to set
-this message using CORD's control interface. From a service
-modeling perspective, *ExampleService* extends the base *Service*
-model with two fields:
+This tutorial uses [ExampleService](https://github.com/opencord/exampleservice)
+to illustrate how to write and on-board a service in CORD.  ExampleService is a
+multi-tenant service that instantiates a VM instance on behalf of each tenant,
+and runs an Apache web server in that VM. This web server is then configured to
+serve a tenant-specified message (a string), where the tenant is able to set
+this message using CORD's control interface. From a service modeling
+perspective, *ExampleService* extends the base *Service* model with two fields:
 
-* `service_message`: A string that contains a message to display for
-the service as a whole (i.e., to all tenants of the service).
-
+* `service_message`: A string that contains a message to display for the
+  service as a whole (i.e., to all tenants of the service).
 * `tenant_message`: A string that is displayed for a specific Tenant.
 
-These two fields are a simple illustration of a common pattern. A service model typically includes fields used to *configure* the service as a whole (`service_message` in this example) and fields used to *control* individual instances of the the service (`tenant_message` in this example). It would be common for the operator to set configuration-related fields when the service first starts up, and then set/adjust control-related fields on behalf of individual tenants as the service runs.
+These two fields are a simple illustration of a common pattern. A service model
+typically includes fields used to *configure* the service as a whole
+(`service_message` in this example) and fields used to *control* individual
+instances of the the service (`tenant_message` in this example). It would be
+common for the operator to set configuration-related fields when the service
+first starts up, and then set/adjust control-related fields on behalf of
+individual tenants as the service runs.
 
-Tenant and ServiceInstance are two closely related terms. "Tenant" refers to the user or the consumer of a service. Often we partition a service into several pieces, each for use by a tenant, thus making it a multi-tenant service. Each one of these tenant-specific pieces is referred to as a ServiceInstance.  
+Tenant and ServiceInstance are two closely related terms. "Tenant" refers to
+the user or the consumer of a service. Often we partition a service into
+several pieces, each for use by a tenant, thus making it a multi-tenant
+service. Each one of these tenant-specific pieces is referred to as a
+ServiceInstance.
 
 ## Summary
 
-The result of preparing *ExampleService* for on-boarding is the
-following set of files, all located in the `xos` directory of the
-`exampleservice` repository. (There are other helper files, as described
-throughout this tutorial.)
+The result of preparing *ExampleService* for on-boarding is the following set
+of files, all located in the `xos` directory of the `exampleservice`
+repository. (There are other helper files, as described throughout this
+tutorial.)
+
 
 | Component | Source Code (https://github.com/opencord/exampleservice/) |
 |----------|-----------------------------------------------------|
@@ -33,69 +40,33 @@ throughout this tutorial.)
 | Synchronizer | `xos/synchronizer/steps/sync_exampletenant.py` `xos/synchronizer/steps/exampletenant_playbook.yaml` `xos/synchronizer/Dockerfile.synchronizer` |
 | On-Boarding Spec	| `xos/exampleservice-onboard.yaml`
 
-Earlier releases (3.0 and before) required additional
-files (mostly Python code) to on-board a service, including a
-REST API, a TOSCA API, and an Admin GUI. These components are now
-auto-generated from the models rather than coded by hand, although it
-is still possible to [extend the GUI](../xos-gui/developer/README.md).
+Earlier releases (3.0 and before) required additional files (mostly Python
+code) to on-board a service, including a REST API, a TOSCA API, and an Admin
+GUI. These components are now auto-generated from the models rather than coded
+by hand, although it is still possible to [extend the
+GUI](../xos-gui/developer/README.md).
 
 ## Development Environment
 
-For this tutorial we recommend using
-[CORD-in-a-Box (CiaB)](../quickstart.md) as your development
-environment. By default CiaB brings up OpenStack, ONOS, and
-XOS running the R-CORD collection of services.  This tutorial
-demonstrates how to add a new customer-facing service to R-CORD.
+For this tutorial we recommend using a [Virtual Pod (CiaB)](/install_virtual.md)
+as your development environment. By default CiaB brings up OpenStack, ONOS, and
+XOS running the R-CORD collection of services.  This tutorial demonstrates how
+to add a new customer-facing service to R-CORD.
 
-CiaB includes a build machine, a head node, switches, and a compute
-node all running as VMs on a single host.  Before proceeding you
-should familiarize yourself with the CiaB environment.
-
-Once you’ve prepared your CiaB, the development loop for
-changing/building/testing service code involves these stages:
-
-1. Make changes to your service code and propagate them to your CiaB host. There are a number of ways to propagate changes to the host depending on developer preference, including using gerrit draft reviews, git branches, rsync, scp, etc. 
-
-2. First, tear down the existing XOS installation and clean up OpenStack to remove any leftover instances or networks:
-
-    ```
-    cd ~/cord/build
-    make xos-teardown
-    make clean-openstack
-    ```
-
-3. Optional: Teardown ONOS. Sometimes we find it helpful to reinstall the onos-cord and onos-fabric containers, to ensure that all state is wiped clean from ONOS.
-
-    ```
-    cd ~/cord/build
-    make clean-onos
-    ```
-
-4. Now, build the new container images and deploy to the pod
-
-    ```
-    cd ~/cord/build
-    make -j4 build
-    make compute-node-refresh
-    make pod-test
-    ```
-
-5. Test and verify your changes
-
-6. Go back to step #1
-
-
+A Virtual Pod includes a build machine, a head node, switches, and a compute
+node all running as VMs on a single host.  Before proceeding you should
+familiarize yourself with the CiaB environment and the [POD Development
+Loop](dev/workflow_pod.md#development-loop).
 
 ## Define a Model
 
-The first step is to create a set of models for the service. To do
-this, create a file named `exampleservice.xproto` in your service's `xos`
-directory. This file encodes the models in the service in a format
-called [xproto](../xos/dev/xproto.md) which is a combination of Google
-Protocol Buffers and some XOS-specific annotations to facilitate the
-generation of service components, such as the GRPC and REST APIs,
-security policies, and database models among other things. It consists
-of two parts:
+The first step is to create a set of models for the service. To do this, create
+a file named `exampleservice.xproto` in your service's `xos` directory. This
+file encodes the models in the service in a format called
+[xproto](../xos/dev/xproto.md) which is a combination of Google Protocol
+Buffers and some XOS-specific annotations to facilitate the generation of
+service components, such as the GRPC and REST APIs, security policies, and
+database models among other things. It consists of two parts:
 
 * The Service model, which manages the service as a whole.
 
@@ -104,10 +75,10 @@ of two parts:
 
 ### Service Model (per-Service state)
 
-A Service model extends (inherits from) the XOS base *Service* model.
-At its head is a set of option declarations: the name of the service as a
-configuration string, and as a human readable one. Then follows a set
-of field definitions.
+A Service model extends (inherits from) the XOS base *Service* model.  At its
+head is a set of option declarations: the name of the service as a
+configuration string, and as a human readable one. Then follows a set of field
+definitions.
 
 ```
 message ExampleService (Service){
@@ -141,24 +112,22 @@ Think of this as a tenant-specific (per service instance) parameter.
 
 ## Define a Synchronizer
 
-The second step is to define a synchronizer for the service.
-Synchronizers are processes that run continuously, checking for
-changes to service's model(s). When a synchronizer detects a change,
-it applies that change to the underlying system. For *ExampleService*,
-the ServiceInstance model is the model we will want to synchronize, and the
-underlying system is a compute instance. In this case, we’re using
-`TenantWithContainer` to create this instance for us.
+The second step is to define a synchronizer for the service. Synchronizers are
+processes that run continuously, checking for changes to service's model(s).
+When a synchronizer detects a change, it applies that change to the underlying
+system. For *ExampleService*, the `ServiceInstance` model is the model we will
+want to synchronize, and the underlying system is a compute instance. In this
+case, we’re using `TenantWithContainer` to create this instance for us.
 
-XOS Synchronizers are typically located in the `xos/synchronizer`
-directory of your service.
+XOS Synchronizers are typically located in the `xos/synchronizer` directory of
+your service.
 
->Note: Earlier versions included a tool to track model dependencies,
->but today it is sufficient to create a file named `model-deps` with
->the contents:` {}`.
+> Note: Earlier versions included a tool to track model dependencies, but today
+> it is sufficient to create a file named `model-deps` with the contents:` {}`.
 
-The Synchronizer has two parts: A container that runs the
-synchronizer process, and an Ansible playbook that configures the
-underlying system. The following describes how to construct both.
+The Synchronizer has two parts: A container that runs the synchronizer process,
+and an Ansible playbook that configures the underlying system. The following
+describes how to construct both.
 
 ###Synchronizer Container
 
@@ -167,7 +136,7 @@ First, create a file named `exampleservice-synchronizer.py`:
 ```
 #!/usr/bin/env python
 # Runs the standard XOS synchronizer
- 
+
 import importlib
 import os
 import sys
@@ -183,11 +152,10 @@ mod = importlib.import_module("xos-synchronizer")
 mod.main()
 ```
 
-The above is boilerplate. It loads and runs the default
-`xos-synchronizer` module in it’s own Docker container.
-To configure this module, create a file named
-`exampleservice_config.yaml`, which specifies various
-configuration and logging options:
+The above is boilerplate. It loads and runs the default `xos-synchronizer`
+module in it’s own Docker container.  To configure this module, create a file
+named `exampleservice_config.yaml`, which specifies various configuration and
+logging options:
 
 ```
 name: exampleservice-synchronizer
@@ -204,9 +172,9 @@ steps_dir: "/opt/xos/synchronizers/exampleservice/steps"
 sys_dir: "/opt/xos/synchronizers/exampleservice/sys"
 model_policies_dir: "/opt/xos/synchronizers/exampleservice/model_policies"
 ```
->NOTE: Historically, synchronizers were named “observers”, so
->`s/observer/synchronizer/` when you come upon this term in the XOS
->code and documentation.
+> NOTE: Historically, synchronizers were named “observers”, so
+> `s/observer/synchronizer/` when you come upon this term in the XOS code and
+> documentation.
 
 Second, create a directory within your synchronizer directory named `steps`. In
 steps, create a file named `sync_exampleserviceinstance.py`:
@@ -224,9 +192,9 @@ sys.path.insert(0, parentdir)
 logger = Logger(level=logging.INFO)
 ```
 
-Bring in some basic prerequities. Also include the models created
-earlier, and `SyncInstanceUsingAnsible` which will run the Ansible
-playbook in the Instance VM.
+Bring in some basic prerequities. Also include the models created earlier, and
+`SyncInstanceUsingAnsible` which will run the Ansible playbook in the Instance
+VM.
 
 ```
 class SyncExampleServiceInstance(SyncInstanceUsingAnsible):
@@ -277,8 +245,8 @@ python exampleservice-synchronizer.py
 ```
 
 Finally, create a Dockerfile for your synchronizer, name it
-`Dockerfile.synchronizer` and place it in the `synchronizer` directory
-with the other synchronizer files:
+`Dockerfile.synchronizer` and place it in the `synchronizer` directory with the
+other synchronizer files:
 
 ```
 
@@ -325,12 +293,12 @@ CMD bash -c "cd /opt/xos/synchronizers/exampleservice; ./run-from-api.sh"
 ###Synchronizer Playbooks
 
 In the same `steps` directory, create an Ansible playbook named
-`exampleserviceinstance_playbook.yml` which is the “master playbook” for this set
-of plays:
+`exampleserviceinstance_playbook.yml` which is the “master playbook” for this
+set of plays:
 
 ```
 # exampletenant_playbook
- 
+
 - hosts: "{{ instance_name }}"
   connection: ssh
   user: ubuntu
@@ -340,29 +308,29 @@ of plays:
     - tenant_message: "{{ tenant_message }}"
     - service_message: "{{ service_message }}"
 ```
-	
-This sets some basic configuration, specifies the host this Instance
-will run on, and the two variables that we’re passing to the playbook.
+
+This sets some basic configuration, specifies the host this Instance will run
+on, and the two variables that we’re passing to the playbook.
 
 ```
 roles:
   - install_apache
   - create_index
 ```
-  
-This example uses Ansible’s Playbook Roles to organize steps, provide
-default variables, organize files and templates, and allow for code
-reuse. Roles are created by using a set directory structure.
 
-In this case, there are two roles, one that installs Apache, and one
-that creates the `index.html` file from a Jinja2 template.
+This example uses Ansible’s Playbook Roles to organize steps, provide default
+variables, organize files and templates, and allow for code reuse. Roles are
+created by using a set directory structure.
 
-Create a directory named `roles` inside `steps`, then create two
-directories named for your roles: `install_apache` and `create_index`.
+In this case, there are two roles, one that installs Apache, and one that
+creates the `index.html` file from a Jinja2 template.
 
-Within `install_apache`, create a directory named `tasks`, then within
-that directory, a file named `main.yml`. This will contain the set of
-plays for the `install_apache` role. To that file add the following:
+Create a directory named `roles` inside `steps`, then create two directories
+named for your roles: `install_apache` and `create_index`.
+
+Within `install_apache`, create a directory named `tasks`, then within that
+directory, a file named `main.yml`. This will contain the set of plays for the
+`install_apache` role. To that file add the following:
 
 ```
 - name: Install apache using apt
@@ -370,21 +338,20 @@ plays for the `install_apache` role. To that file add the following:
     name=apache2
     update_cache=yes
 ```
-	
+
 This will use the Ansible apt module to install Apache.
-	
-Next, within `create_index`, create two directories, `tasks` and
-`templates`. In `templates`, create a file named `index.html.j2`, with the
-contents:
+
+Next, within `create_index`, create two directories, `tasks` and `templates`.
+In `templates`, create a file named `index.html.j2`, with the contents:
 
 ```
 ExampleService
  Service Message: "{{ service_message }}"
  Tenant Message: "{{ tenant_message }}"
 ```
- 
-These Jinja2 Expressions will be replaced with the values of the
-variables set in the master playbook.
+
+These Jinja2 Expressions will be replaced with the values of the variables set
+in the master playbook.
 
 In the `tasks` directory, create a file named `main.yml`, with the contents:
 
@@ -395,24 +362,24 @@ In the `tasks` directory, create a file named `main.yml`, with the contents:
     dest=/var/www/html/index.html
 ```
 
-This uses the Ansible template module to load and process the Jinja2
-template then put it in the `dest` location. Note that there is no path
-given for the src parameter: Ansible knows to look in the templates
-directory for templates used within a role.
+This uses the Ansible template module to load and process the Jinja2 template
+then put it in the `dest` location. Note that there is no path given for the
+src parameter: Ansible knows to look in the templates directory for templates
+used within a role.
 
 As a final step, you can check your playbooks for best practices with
 `ansible-lint` if you have it available.
 
 ## Define an On-boarding Spec
 
-The final step is to define an on-boarding recipe for the service.
-By convention, we use `<servicename>-onboard.yaml`, and place it in
-the `xos` directory of the service.
+The final step is to define an on-boarding recipe for the service.  By
+convention, we use `<servicename>-onboard.yaml`, and place it in the `xos`
+directory of the service.
 
-The on-boarding recipe is a TOSCA specification that lists all of the
-resources for your synchronizer. It's basically a collection of
-everything that has been created above. For example, here is the
-on-boarding recipe for *ExampleService*:
+The on-boarding recipe is a TOSCA specification that lists all of the resources
+for your synchronizer. It's basically a collection of everything that has been
+  created above. For example, here is the on-boarding recipe for
+  *ExampleService*:
 
 ```
 tosca_definitions_version: tosca_simple_yaml_1_0
@@ -436,9 +403,9 @@ topology_template:
           private_key: file:///opt/xos/key_import/exampleservice_rsa
           public_key: file:///opt/xos/key_import/exampleservice_rsa.pub
 ```
-		  
-You will also need to modify the `profile-manifest` in `platform-install`
-to on-board your service. To do this, modify the `xos_services` and
+
+You will also need to modify the `profile-manifest` in `platform-install` to
+on-board your service. To do this, modify the `xos_services` and
 `xos_service_sshkeys` sections as shown below:
 
 ```
@@ -448,13 +415,14 @@ xos_services:
     path: orchestration/xos_services/exampleservice
     keypair: exampleservice_rsa
     synchronizer: true
- 
+
 xos_service_sshkeys:
   ... (lines omitted)
   - name: exampleservice_rsa
     source_path: "~/.ssh/id_rsa"
 ```
-	
-The above modifications to the profile manifest will cause
-the build procedure to automatically install an ssh key for your service,
-and to onboard the service at build time.
+
+The above modifications to the profile manifest will cause the build procedure
+to automatically install an ssh key for your service, and to onboard the
+service at build time.
+
