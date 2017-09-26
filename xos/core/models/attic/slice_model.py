@@ -21,7 +21,6 @@ def slicename(self):
     return "%s_%s" % (self.site.login_base, self.name)
 
 def __xos_save_base(self, *args, **kwds):
-    site = Site.objects.get(id=self.site.id)
     # set creator on first save
     if not self.creator and hasattr(self, 'caller'):
         self.creator = self.caller
