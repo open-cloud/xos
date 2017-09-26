@@ -2,7 +2,7 @@
 
 XOS defines a language for specifying data models (_xproto_) and a tool chain for generating code based on the set of models (_xosgen_).
 
-The xproto language is based on Google’s protocol buffers (protobufs), borrowing their syntax, but extending their semantics to express additional behavior. Although these extensions can be written in syntactically valid protobufs (using the protobuf option feature), the resulting model definitions are cumbersome and the semantics are under-specified. 
+The xproto language is based on [Google’s protocol buffers](https://developers.google.com/protocol-buffers/) (protobufs), borrowing their syntax, but extending their semantics to express additional behavior. Although these extensions can be written in syntactically valid protobufs (using the protobuf option feature), the resulting model definitions are cumbersome and the semantics are under-specified.
 
 Whereas protobufs primarily facilitate one operation on models, namely, data serialization, xproto goes beyond protobufs to provide a framework for implementing custom operators. 
 
