@@ -34,3 +34,11 @@ containers/xos/BUILD/
 venv-xos/
 _book/
 .noseids
+
+lib/xos-config/cover/
+lib/xos-config/.coverage
+lib/xos-config/coverage.xml
+
+lib/xos-genx/cover/
+lib/xos-genx/.coverage
+lib/xos-genx/coverage.xml
