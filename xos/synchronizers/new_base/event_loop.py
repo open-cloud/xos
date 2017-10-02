@@ -234,7 +234,7 @@ class XOSObserver:
         current_code = o.backend_code
 
         if hasattr(e, 'message'):
-            status = e.message
+            status = str(e.message)
         else:
             status = str(e)
 
