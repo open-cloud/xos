@@ -1,0 +1,264 @@
+{%- set app_label = xproto_unquote(options.app_label) -%}
+# Copyright 2017-present Open Networking Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+#!/usr/bin/env python
+
+# This imports and runs ../../xos-observer.py
+
+import importlib
+import os
+import sys
+from xosconfig import Config
+
+config_file = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/{{ app_label }}_config.yaml')
+
+Config.init(config_file, 'synchronizer-config-schema.yaml')
+
+observer_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"../../synchronizers/new_base")
+sys.path.append(observer_path)
+mod = importlib.import_module("xos-synchronizer")
+mod.main()
++++ {{ app_label }}-synchronizer.py
+{% for m in proto.messages -%}
+{% set base_names = m.bases | map(attribute="name") -%}
+{% if 'TenantWithContainer' in base_names | list -%}
+# Copyright 2017-present Open Networking Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from synchronizers.new_base.modelaccessor import *
+from synchronizers.new_base.model_policies.model_policy_tenantwithcontainer import TenantWithContainerPolicy, LeastLoadedNodeScheduler
+from synchronizers.new_base.exceptions import *
+
+class {{ m.name }}Policy(TenantWithContainerPolicy):
+    model_name = "{{ m.name }}"
+
+    def handle_delete(self, service_instance):
+        if service_instance.instance and (not service_instance.instance.deleted):
+            all_service_instances_this_instance = {{ m.name }}.objects.filter(instance_id=service_instance.instance.id)
+            other_service_instances_this_instance = [x for x in all_service_instances_this_instance if x.id != service_instance.id]
+            if (not other_service_instances_this_instance):
+                self.logger.info("{{ m.name }} Instance %s is now unused -- deleting" % service_instance.instance)
+                self.delete_instance(service_instance, service_instance.instance)
+            else:
+                self.logger.info("{{ m.name }} Instance %s has %d other service instances attached" % (service_instance.instance, len(other_service_instances_this_instance)))
+
+    def get_service(self, service_instance):
+        service_name = service_instance.owner.leaf_model_name
+        service_class = globals()[service_name]
+        return service_class.objects.get(id=service_instance.owner.id)
+
+    def find_instance_for_instance_tag(self, instance_tag):
+        tags = Tag.objects.filter(name="instance_tag", value=instance_tag)
+        if tags:
+            return tags[0].content_object
+        return None
+
+    def find_or_make_instance_for_instance_tag(self, service_instance):
+        instance_tag = self.get_instance_tag(service_instance)
+        instance = self.find_instance_for_instance_tag(instance_tag)
+        if instance:
+            if instance.no_sync:
+                # if no_sync is still set, then perhaps we failed while saving it and need to retry.
+                self.save_instance(service_instance, instance)
+            return instance
+
+        desired_image = self.get_image(service_instance)
+        desired_flavor = self.get_flavor(service_instance)
+
+        slice = service_instance.owner.slices.first()
+
+        (node, parent) = LeastLoadedNodeScheduler(slice, label=None).pick()
+
+        assert (slice is not None)
+        assert (node is not None)
+        assert (desired_image is not None)
+        assert (service_instance.creator is not None)
+        assert (node.site_deployment.deployment is not None)
+        assert (desired_image is not None)
+
+        instance = Instance(slice=slice,
+                            node=node,
+                            image=desired_image,
+                            creator=service_instance.creator,
+                            deployment=node.site_deployment.deployment,
+                            flavor=flavors[0],
+                            isolation=slice.default_isolation,
+                            parent=parent)
+
+        self.save_instance(service_instance, instance)
+
+        return instance
+
+    def manage_container(self, service_instance):
+        if service_instance.deleted:
+            return
+
+        if service_instance.instance:
+            # We're good.
+            return
+
+        instance = self.find_or_make_instance_for_instance_tag(service_instance)
+        service_instance.instance = instance
+        # TODO: possible for partial failure here?
+        service_instance.save()
+
+    def delete_instance(self, service_instance, instance):
+        # delete the `instance_tag` tags
+        tags = Tag.objects.filter(service_id=service_instance.owner.id, content_type=instance.self_content_type_id,
+                                  object_id=instance.id, name="instance_tag")
+        for tag in tags:
+            tag.delete()
+
+        instance.delete()
+
+    def save_instance(self, service_instance, instance):
+        instance.no_sync = True   # prevent instance from being synced until we're done with it
+        super({{ m.name }}Policy, self).save_instance(instance)
+
+        try:
+            if instance.isolation in ["container", "container_vm"]:
+                raise Exception("Not supported")
+
+            instance_tag = self.get_instance_tag(service_instance)
+            if instance_tag:
+                tags = Tag.objects.filter(name="instance_tag", value=instance_tag)
+                if not tags:
+                    tag = Tag(service=service_instance.owner, content_type=instance.self_content_type_id, object_id=instance.id, name="instance_tag", value=str(instance_tag))
+                    tag.save()
+
+            instance.no_sync = False   # allow the synchronizer to run now
+            super({{ m.name }}Policy, self).save_instance(instance)
+        except:
+            # need to clean up any failures here
+            raise
+    
+    def get_instance_tag(self, service_instance):
+        # TODO: Return a unique tag associated with your service instancek
+        # e.g. return '%d'%service_instance.id
+        
+        raise Exception("Not implemented")
+    
+    def get_image(self, service_instance):
+        # TODO: Return the desired image
+        
+        raise Exception("Not implemented")
+
+    def get_flavor(self, service_instance):
+        # TODO: Return the desired flavor
+        
+        raise Exception("Not implemented")
+
++++ model_policies/model_policy_{{ m.name | lower }}.py
+{% endif %}
+{% endfor %}
+{% for m in proto.messages -%}
+# Copyright 2017-present Open Networking Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+import hashlib
+import os
+import socket
+import sys
+import base64
+import time
+from urlparse import urlparse
+from synchronizers.new_base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
+from synchronizers.new_base.modelaccessor import *
+from synchronizers.new_base.ansible_helper import run_template_ssh
+from multistructlog import create_logger
+
+parentdir = os.path.join(os.path.dirname(__file__),"..")
+sys.path.insert(0,parentdir)
+
+log = create_logger(Config().logging)
+
+class Sync{{ m.name }}(SyncInstanceUsingAnsible):
+    observes={{ m.name }}
+
+    template_name = "sync_{{ m.name | lower }}.yaml"
+
+    def __init__(self, *args, **kwargs):
+        super(Sync{{ m.name }}, self).__init__(*args, **kwargs)
+   
+    def get_service(self, service_instance):
+        service_name = service_instance.owner.leaf_model_name
+        service_class = globals()[service_name]
+        return service_class.objects.get(id=service_instance.owner.id)
+
+    def get_extra_attributes(self, o):
+        service = self.get_service(o)
+
+        fields = {
+             {% for f in m.fields %}
+             "{{ f.name }}": o.{{ f.name }}
+             {%- if not loop.last %},{% endif %}
+             {% endfor %} 
+        }
+        
+        # TODO: Change the above map to map data model fields into parameters in the Ansible playbook
+        # Once you have done that, drop the line below
+
+        raise Exception("Not implemented")
+
+        return fields
++++ steps/sync_{{ m.name | lower }}.py
+# Copyright 2017-present Open Networking Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: {{ app_label | lower }}-synchronizer
+accessor:
+  username: xosadmin@opencord.org
+  password: "@/opt/xos/services/{{ app_label | lower }}/credentials/xosadmin@opencord.org"
+dependency_graph: "/opt/xos/synchronizers/{{ app_label | lower }}/model-deps"
+steps_dir: "/opt/xos/synchronizers/{{ app_label | lower }}/steps"
+sys_dir: "/opt/xos/synchronizers/{{ app_label | lower }}/sys"
+model_policies_dir: "/opt/xos/synchronizers/{{ app_label | lower }}/model_policies"
++++ {{ app_label | lower }}_config.yaml
+{% endfor %}
