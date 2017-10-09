@@ -74,8 +74,17 @@ class TenantWithContainerPolicy(Policy):
     def handle_create(self, tenant):
         return self.handle_update(tenant)
 
-    def handle_update(self, tenant):
-        self.manage_container(tenant)
+    def handle_update(self, service_instance):
+        if (service_instance.link_deleted_count>0) and (not service_instance.provided_links.exists()):
+            model = globals()[self.model_name]
+            self.log.info("The last provided link has been deleted -- self-destructing.")
+            self.handle_delete(service_instance)
+            if model.objects.filter(id=service_instance.id).exists():
+                service_instance.delete()
+            else:
+                self.log.info("Tenant %s is already deleted" % service_instance)
+            return
+        self.manage_container(service_instance)
 
 #    def handle_delete(self, tenant):
 #        if tenant.vcpe:
