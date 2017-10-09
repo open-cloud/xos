@@ -2,10 +2,14 @@
 {% set legacy_tag = '_decl' %}
 {% set legacy = True %}
 from core.models.xosbase import *
+from core.models import ServiceInstance
+from django.db import models
+from django.db.models import *
+from core.models.xosbase import StrippedCharField
 {% else %}
 {% set legacy = False %}
 {% set legacy_tag = '' %}
-from header import *
+{% if file_exists('header.py') -%}from header import *{% endif %}
 {% endif %}
 
 {% for m in proto.messages %}
