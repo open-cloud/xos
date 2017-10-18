@@ -178,8 +178,19 @@ Whether an assignment to a field is permitted, where the option setting is a nam
 ```protobuf
 option validators = “port_validator:Slice is not allowed to connect to network”;
 ```
-
 How policies (e.g., `port_validator`) are specified is described below.
+
+Whether a field should be shown in the GUI:
+
+```protobuf
+option gui_hidden = True;
+```
+
+Identify a field that is used as key by the TOSCA engine. A model can have multiple keys in case we need a composite key:
+
+```protobuf
+option tosca_key = True;
+```
 
 ### Naming Conventions
 

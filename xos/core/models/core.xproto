@@ -38,7 +38,7 @@ message User::user_policy (AbstractBaseUser,PlModelMixIn) {
      option skip_django = True;
      option description = "An XOS User";
 
-     required string email = 1 [db_index = True, max_length = 255, null = False, blank = False];
+     required string email = 1 [db_index = True, max_length = 255, null = False, blank = False, tosca_key=True];
      required string username = 2 [default = "Something", max_length = 255, content_type = "stripped", blank = False, null = False, db_index = False];
      required string password = 3 [default = "Something", max_length = 255, blank = False, null = False, db_index = False];
      optional string last_login = 4 [db_index = False, null = True, content_type = "date", blank = True];
@@ -86,7 +86,7 @@ message Privilege::grant_policy (XOSBase) {
      required int32 controller_id = 3 [null = True];
      required int32 object_id = 4 [null = False];  
      required string object_type = 5 [null = False, max_length=1024];
-     required string permission = 6 [null = False, default = "all", max_length=1024];
+     required string permission = 6 [null = False, default = "all", max_length=1024, tosca_key=True];
      required string granted = 7 [content_type = "date", auto_now_add = True, max_length=1024];
      required string expires = 8 [content_type = "date", null = True, max_length=1024];
 }
@@ -356,8 +356,8 @@ policy network_slice_policy < *slice_policy(slice) & *network_policy(network) >
 
 message NetworkSlice::network_slice_policy (XOSBase) {
      option validators = "network_slice_validator:Slice { obj.slice.name } is not allowed to connect to networks { obj.network }";
-     required manytoone network->Network:networkslices = 1 [db_index = True, null = False, blank = False, unique_with = "slice"];
-     required manytoone slice->Slice:networkslices = 2 [db_index = True, null = False, blank = False];
+     required manytoone network->Network:networkslices = 1 [db_index = True, null = False, blank = False, unique_with = "slice", tosca_key=True];
+     required manytoone slice->Slice:networkslices = 2 [db_index = True, null = False, blank = False, tosca_key=True];
 }
 
 message NetworkTemplate (XOSBase) {
@@ -430,7 +430,7 @@ message ServiceAttribute (XOSBase) {
 
 
 message ServiceDependency (XOSBase) {
-     required manytoone provider_service->Service:provided_dependencies = 1 [help_text = "The service that provides this dependency", null=False, db_index = True, blank=False];
+     required manytoone provider_service->Service:provided_dependencies = 1 [help_text = "The service that provides this dependency", null=False, db_index = True, blank=False, tosca_key=True];
      required manytoone subscriber_service->Service:subscribed_dependencies = 2 [help_text = "The services that subscribes to this dependency", null=False, db_index=True, blank=False];
      required string connect_method = 3 [max_length = 30, help_text = "method to connect the two services", null=False, blank=False, default="none", choices = "(('none', 'None'), ('private', 'Private'), ('public', 'Public'))"];
 }
@@ -472,8 +472,8 @@ message Site::site_policy (XOSBase) {
 
 
 message SiteDeployment (XOSBase) {
-     required manytoone site->Site:sitedeployments = 1 [db_index = True, null = False, blank = False, unique_with = "deployment"];
-     required manytoone deployment->Deployment:sitedeployments = 2 [db_index = True, null = False, blank = False, unique_with = "controller"];
+     required manytoone site->Site:sitedeployments = 1 [db_index = True, null = False, blank = False, unique_with = "deployment", tosca_key=True];
+     required manytoone deployment->Deployment:sitedeployments = 2 [db_index = True, null = False, blank = False, unique_with = "controller", tosca_key=True];
      optional manytoone controller->Controller:sitedeployments = 3 [db_index = True, null = True, blank = True];
      optional string availability_zone = 4 [max_length = 200, content_type = "stripped", blank = True, help_text = "OpenStack availability zone", null = True, db_index = False];
 }
@@ -481,8 +481,8 @@ message SiteDeployment (XOSBase) {
 
 message SitePrivilege (XOSBase) {
      required manytoone user->User:siteprivileges = 1 [db_index = True, null = False, blank = False];
-     required manytoone site->Site:siteprivileges = 2 [db_index = True, null = False, blank = False];
-     required manytoone role->SiteRole:siteprivileges = 3 [db_index = True, null = False, blank = False];
+     required manytoone site->Site:siteprivileges = 2 [db_index = True, null = False, blank = False, tosca_key=True];
+     required manytoone role->SiteRole:siteprivileges = 3 [db_index = True, null = False, blank = False, tosca_key=True];
 }
 
 
@@ -545,8 +545,8 @@ message InterfaceType (XOSBase) {
 }
 
 message ServiceInterface (XOSBase) {
-     required manytoone service->Service:service_interfaces = 1 [db_index = True, null = False, blank = False];
-     required manytoone interface_type->InterfaceType:service_interfaces = 2 [db_index = True, null = False, blank = False];
+     required manytoone service->Service:service_interfaces = 1 [db_index = True, null = False, blank = False, tosca_key=True];
+     required manytoone interface_type->InterfaceType:service_interfaces = 2 [db_index = True, null = False, blank = False, tosca_key=True];
 }
 
 message ServiceInstance (XOSBase, AttributeMixin) {
@@ -558,7 +558,7 @@ message ServiceInstance (XOSBase, AttributeMixin) {
 }
 
 message ServiceInstanceLink (XOSBase) {
-     required manytoone provider_service_instance->ServiceInstance:provided_links = 1 [db_index = True, null = False, blank = False];
+     required manytoone provider_service_instance->ServiceInstance:provided_links = 1 [db_index = True, null = False, blank = False, tosca_key=True];
      optional manytoone provider_service_interface->ServiceInterface:provided_links = 2 [db_index = True, null = True, blank = True];
      optional manytoone subscriber_service_instance->ServiceInstance:subscribed_links = 3 [db_index = True, null = True, blank = True];
      optional manytoone subscriber_service->Service:subscribed_links = 4 [db_index = True, null = True, blank = True];
