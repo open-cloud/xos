@@ -355,7 +355,7 @@ policy network_slice_validator < (obj.slice in obj.network.permitted_slices.all(
 policy network_slice_policy < *slice_policy(slice) & *network_policy(network) >
 
 message NetworkSlice::network_slice_policy (XOSBase) {
-     option validators = "network_slice_validator:Slice { obj.slice.name } is not allowed to connect to networks { obj.network }";
+     option validators = "network_slice_validator:Slice {obj.slice.name} is not allowed to connect to networks {obj.network}";
      required manytoone network->Network:networkslices = 1 [db_index = True, null = False, blank = False, unique_with = "slice", tosca_key=True];
      required manytoone slice->Slice:networkslices = 2 [db_index = True, null = False, blank = False, tosca_key=True];
 }
@@ -497,7 +497,7 @@ policy slice_has_creator < obj.creator >
 
             
 message Slice::slice_policy (XOSBase) {
-     option validators = "slice_name:Slice name ({obj.name}) must begin with site login_base ({ obj.site.login_base}), slice_name_length_and_no_spaces:Slice name too short or contains spaces, slice_has_creator:Slice has no creator";
+     option validators = "slice_name:Slice name ({obj.name}) must begin with site login_base ({obj.site.login_base}), slice_name_length_and_no_spaces:Slice name too short or contains spaces, slice_has_creator:Slice has no creator";
      option plural = "Slices";
 
      required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", null = False, db_index = False];
