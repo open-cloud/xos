@@ -453,6 +453,9 @@ node_types:
             dependencies:
                 type: string
                 required: false
+            component_config:
+                type: string
+                required: false
 
     tosca.nodes.ONOSvBNGApp:
         derived_from: tosca.nodes.Root
