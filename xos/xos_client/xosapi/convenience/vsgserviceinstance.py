@@ -22,15 +22,19 @@ class ORMWrapperVSGServiceInstance(ORMWrapper):
                        "wan_vm_ip", "wan_vm_mac")
 
     @property
-    def volt(self):
+    def ingress_service_instance(self):
         links = self.provided_links.all()
         for link in links:
-            # cast from ServiceInstance to VoltTenant
-            volts = self.stub.VOLTTenant.objects.filter(id = link.subscriber_service_instance.id)
-            if volts:
-                return volts[0]
+            subscriber_service_instance = link.subscriber_service_instance.leaf_model
+            # Look for something that has an s_tag attribute
+            if (hasattr(subscriber_service_instance, "s_tag")):
+                return subscriber_service_instance
         return None
-    
+
+    @property
+    def volt(self):
+        return self.ingress_service_instance
+
     def is_address_manager_service_instance(self, si):
         # TODO: hardcoded dependency
         # TODO: VRouterTenant is deprecated
