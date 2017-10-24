@@ -76,7 +76,7 @@ meld3==0.6.10
 mock==2.0.0
 monotonic==1.2
 msgpack-python==0.4.8
-multistructlog==0.9
+multistructlog==1.1
 networkx==1.11
 numpy==1.13.1
 munch==2.0.4
