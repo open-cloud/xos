@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# TEST_FRAMEWORK: IGNORE
 
 """
 This file demonstrates writing tests using the unittest module. These will pass

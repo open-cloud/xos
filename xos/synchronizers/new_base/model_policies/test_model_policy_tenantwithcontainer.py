@@ -20,16 +20,11 @@ import mock
 import pdb
 
 import os, sys
-sys.path.append("../../..")
-sys.path.append("../../new_base/model_policies")
-config = basic_conf = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/test_config.yaml")
 from xosconfig import Config
-Config.init(config, 'synchronizer-config-schema.yaml')
 
-import synchronizers.new_base.modelaccessor
-
-import model_policy_tenantwithcontainer
-from model_policy_tenantwithcontainer import TenantWithContainerPolicy, LeastLoadedNodeScheduler
+TEST_PATH=os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+sys.path.append(os.path.join(TEST_PATH, "../../.."))
+sys.path.append(os.path.join(TEST_PATH, "../../new_base/model_policies"))
 
 class MockObject:
     objects = None
@@ -75,12 +70,24 @@ class MockTenant(MockObject):
 
 class TestModelPolicyTenantWithContainer(unittest.TestCase):
     def setUp(self):
+        global TenantWithContainerPolicy, LeastLoadedNodeScheduler
+
+        config = basic_conf = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/test_config.yaml")
+        Config.clear() # in case left unclean by a previous test case
+        Config.init(config, 'synchronizer-config-schema.yaml')
+        import synchronizers.new_base.modelaccessor
+        import model_policy_tenantwithcontainer
+        from model_policy_tenantwithcontainer import TenantWithContainerPolicy, LeastLoadedNodeScheduler
+
         self.policy = TenantWithContainerPolicy()
         self.user = MockUser(email="testadmin@test.org")
         self.tenant = MockTenant(creator=self.user)
         self.flavor = MockFlavor(name="m1.small")
         model_policy_tenantwithcontainer.Instance = MockInstance
         model_policy_tenantwithcontainer.Flavor = MockFlavor
+
+    def tearDown(self):
+        Config.clear()
 
     @patch.object(MockTenant, "owner")
     def test_manage_container_no_slices(self, owner):
@@ -91,12 +98,14 @@ class TestModelPolicyTenantWithContainer(unittest.TestCase):
 
     @patch.object(MockTenant, "owner")
     @patch.object(MockTenant, "save")
-    @patch.object(TenantWithContainerPolicy, "get_image")
-    @patch.object(LeastLoadedNodeScheduler, "pick")
+    #@patch.object(TenantWithContainerPolicy, "get_image")
+    #@patch.object(LeastLoadedNodeScheduler, "pick")
     @patch.object(MockNode, "site_deployment")
     @patch.object(MockInstance, "save")
     @patch.object(MockInstance, "delete")
-    def test_manage_container(self, instance_delete, instance_save, site_deployment, pick, get_image, tenant_save, owner):
+    def test_manage_container(self, instance_delete, instance_save, site_deployment, tenant_save, owner):
+      with patch.object(TenantWithContainerPolicy, "get_image") as get_image, \
+           patch.object(LeastLoadedNodeScheduler, "pick") as pick:
         # setup mocks
         node = MockNode(hostname="my.node.com")
         slice = MockSlice(name="mysite_test1", default_flavor=self.flavor, default_isolation="vm")
@@ -137,13 +146,15 @@ class TestModelPolicyTenantWithContainer(unittest.TestCase):
 
     @patch.object(MockTenant, "owner")
     @patch.object(MockTenant, "save")
-    @patch.object(TenantWithContainerPolicy, "get_image")
-    @patch.object(LeastLoadedNodeScheduler, "pick")
+    #@patch.object(TenantWithContainerPolicy, "get_image")
+    #@patch.object(LeastLoadedNodeScheduler, "pick")
     @patch.object(MockNode, "site_deployment")
     @patch.object(MockInstance, "save")
     @patch.object(MockInstance, "delete")
     @patch.object(MockFlavor, "objects")
-    def test_manage_container_no_m1_small(self, flavor_objects, instance_delete, instance_save, site_deployment, pick, get_image, tenant_save, owner):
+    def test_manage_container_no_m1_small(self, flavor_objects, instance_delete, instance_save, site_deployment, tenant_save, owner):
+      with patch.object(TenantWithContainerPolicy, "get_image") as get_image, \
+                patch.object(LeastLoadedNodeScheduler, "pick") as pick:
         # setup mocks
         node = MockNode(hostname="my.node.com")
         slice = MockSlice(name="mysite_test1", default_flavor=None, default_isolation="vm")

@@ -15,6 +15,7 @@
 
 
 import exceptions
+import os
 import random
 import shutil
 import string
@@ -26,16 +27,25 @@ import unittest
 
 # TODO: Investigate writing wrapper unit tests using mocks rather than using the ORM test framework
 
-if "-R" in sys.argv:
-    USE_FAKE_STUB = False
-    sys.argv.remove("-R")
-    # Note: will leave lots of litter (users, sites, etc) behind in the database
-else:
-    USE_FAKE_STUB = True
+# by default, use fake stub rather than real core
+USE_FAKE_STUB=True
+
+PARENT_DIR=os.path.join(os.path.dirname(__file__), "..")
 
 class TestWrappers(unittest.TestCase):
+    def setUp(self):
+        if (USE_FAKE_STUB):
+            sys.path.append(PARENT_DIR)
+
+    def tearDown(self):
+        if (USE_FAKE_STUB):
+            sys.path.remove(PARENT_DIR)
+
     def make_coreapi(self):
         if USE_FAKE_STUB:
+            import xosapi.orm
+            from fake_stub import FakeStub, FakeSymDb, FakeObj
+
             stub = FakeStub()
             api = xosapi.orm.ORMStub(stub=stub, package_name = "xos", sym_db = FakeSymDb(), empty = FakeObj, enable_backoff = False)
             return api
@@ -114,33 +124,40 @@ class TestWrappers(unittest.TestCase):
 
         self.assertEqual(service_one.get_service_instance_class().model_name, "ServiceInstance")
 
-if USE_FAKE_STUB:
-    sys.path.append("..")
+def main():
+    global USE_FAKE_STUB
+    global xos_grpc_client
 
-    import xosapi.orm
-    from fake_stub import FakeStub, FakeSymDb, FakeObj
+    # Command-line argument of -R will cause this test to use a real grpc server
+    # rather than the fake stub.
 
-    print "Using Fake Stub"
+    if "-R" in sys.argv:
+        USE_FAKE_STUB = False
+        sys.argv.remove("-R")
+        # Note: will leave lots of litter (users, sites, etc) behind in the database
 
-    unittest.main()
-else:
-    # This assumes xos-client python library is installed, and a gRPC server
-    # is available.
+    if USE_FAKE_STUB:
+        unittest.main()
+    else:
+        # This assumes xos-client python library is installed, and a gRPC server
+        # is available.
 
-    from twisted.internet import reactor
-    from xosapi import xos_grpc_client
+        from twisted.internet import reactor
+        from xosapi import xos_grpc_client
 
-    print "Using xos-client library and core server"
+        print "Using xos-client library and core server"
 
-    def test_callback():
-        try:
-            sys.argv = sys.argv[:1] # unittest does not like xos_grpc_client's command line arguments (TODO: find a cooperative approach)
-            unittest.main()
-        except exceptions.SystemExit, e:
-            global exitStatus
-            exitStatus = e.code
+        def test_callback():
+            try:
+                sys.argv = sys.argv[:1] # unittest does not like xos_grpc_client's command line arguments (TODO: find a cooperative approach)
+                unittest.main()
+            except exceptions.SystemExit, e:
+                global exitStatus
+                exitStatus = e.code
 
-    xos_grpc_client.start_api_parseargs(test_callback)
+        xos_grpc_client.start_api_parseargs(test_callback)
 
-    sys.exit(exitStatus)
+        sys.exit(exitStatus)
 
+if __name__ == "__main__":
+    main()

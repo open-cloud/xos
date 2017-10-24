@@ -52,6 +52,10 @@ class XOSConfigTest(unittest.TestCase):
     Testing the XOS Config Module
     """
 
+    def setUp(self):
+        # In case some other testcase in nose has left config in an unclean state
+        Config.clear()
+
     def tearDown(self):
         # NOTE clear the config after each test
         Config.clear()
