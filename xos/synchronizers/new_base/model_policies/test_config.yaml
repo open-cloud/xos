@@ -19,3 +19,12 @@ accessor:
   username: xosadmin@opencord.org
   password: "sample"
   kind: testframework
+logging:
+  version: 1
+  handlers:
+    console:
+      class: logging.StreamHandler
+  loggers:
+    'multistructlog':
+      handlers:
+          - console

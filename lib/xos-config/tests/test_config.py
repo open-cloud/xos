@@ -52,6 +52,10 @@ class XOSConfigTest(unittest.TestCase):
     Testing the XOS Config Module
     """
 
+    def setUp(self):
+        # In case some other testcase in nose has left config in an unclean state
+        Config.clear()
+
     def tearDown(self):
         # NOTE clear the config after each test
         Config.clear()
@@ -143,10 +147,24 @@ class XOSConfigTest(unittest.TestCase):
         Config.init(basic_conf)
         log = Config.get("logging")
         self.assertEqual(log, {
-            "level": "info",
-            "channels": ["file", "console"],
-            "logstash_hostport": "cordloghost:5617",
-            "file":  "/var/log/xos.log",
+            'version': 1,
+            'handlers': {
+                'console': {
+                    'class': 'logging.StreamHandler',
+                },
+                'file': {
+                    'class': 'logging.handlers.RotatingFileHandler',
+                    'filename': '/var/log/xos.log',
+                    'maxBytes': 10485760,
+                    'backupCount': 5
+                }
+            },
+            'loggers': {
+                '': {
+                    'handlers': ['console', 'file'],
+                    'level': 'DEBUG'
+                }
+            }
         })
 
     def test_get_config_file(self):

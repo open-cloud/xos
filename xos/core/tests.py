@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# TEST_FRAMEWORK: IGNORE
 
 # TEST
 # To execute these tests use `python manage.py test core`

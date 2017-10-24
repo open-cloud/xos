@@ -32,9 +32,9 @@ class XOSGeneratorTest(unittest.TestCase):
         [XOS-GenX] The CLI entry point should correctly parse params
         """
         args = Args()
-        args.files = ['tests/xproto/test.xproto']
-        args.target = 'tests/xtarget/test.xtarget'
-        args.output = 'tests/out/dir/'
+        args.files = ['lib/xos-genx/xos-genx-tests/xproto/test.xproto']
+        args.target = 'lib/xos-genx/xos-genx-tests/xtarget/test.xtarget'
+        args.output = 'lib/xos-genx/xos-genx-tests/out/dir/'
         args.write_to_file = "target"
         args.dest_file = None
         args.dest_extension = None

@@ -45,6 +45,7 @@ class XOSGeneratorTest(unittest.TestCase):
     """
 
     def setUp(self):
+        os.chdir(os.path.join(os.path.abspath(os.path.dirname(os.path.realpath(__file__))), "..")) 
         filesToRemove = [f for f in os.listdir(OUTPUT_DIR)]
         for f in filesToRemove:
             if not f.startswith('.'):
