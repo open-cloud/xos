@@ -561,6 +561,7 @@ message ServiceInstance (XOSBase, AttributeMixin) {
      optional string service_specific_id = 3 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
      optional string service_specific_attribute = 10 [db_index = False, null = True, blank = True, varchar = True];
      optional uint32 link_deleted_count = 11 [default = 0, help_text = "Incremented each time a provided_link is deleted from this ServiceInstance"];
+     optional manytoone master_serviceinstance->ServiceInstance:child_serviceinstances = 12 [help_text = "The master service instance that set this service instance up"];
 }
 
 message ServiceInstanceLink (XOSBase) {
