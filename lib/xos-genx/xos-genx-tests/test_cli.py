@@ -27,14 +27,17 @@ class XOSGeneratorTest(unittest.TestCase):
     Testing the CLI binding for the XOS Generative Toolchain
     """
 
+    def setUp(self):
+        os.chdir(os.path.join(os.path.abspath(os.path.dirname(os.path.realpath(__file__))), "..")) 
+
     def test_generator(self):
         """
         [XOS-GenX] The CLI entry point should correctly parse params
         """
         args = Args()
-        args.files = ['lib/xos-genx/xos-genx-tests/xproto/test.xproto']
-        args.target = 'lib/xos-genx/xos-genx-tests/xtarget/test.xtarget'
-        args.output = 'lib/xos-genx/xos-genx-tests/out/dir/'
+        args.files = ['xos-genx-tests/xproto/test.xproto']
+        args.target = 'xos-genx-tests/xtarget/test.xtarget'
+        args.output = 'xos-genx-tests/out/dir/'
         args.write_to_file = "target"
         args.dest_file = None
         args.dest_extension = None
