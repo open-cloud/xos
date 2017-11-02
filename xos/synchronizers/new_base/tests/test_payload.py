@@ -105,7 +105,7 @@ class TestPayload(unittest.TestCase):
 
             a = get_ansible_output()
             self.assertDictContainsSubset({'delete':False, 'name':o.name}, a)
-            o.save.assert_called_with(update_fields=['enacted', 'backend_status', 'backend_register'])
+            o.save.assert_called_with(update_fields=['enacted', 'backend_status', 'backend_register', 'backend_code'])
 
     @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template)
     @mock.patch("event_loop.model_accessor")
@@ -128,8 +128,8 @@ class TestPayload(unittest.TestCase):
 
             a = get_ansible_output()
             self.assertDictContainsSubset({'delete':False, 'name':o.name}, a)
-            o.save.assert_called_with(update_fields=['enacted', 'backend_status', 'backend_register'])
-            cs.save.assert_called_with(update_fields=['enacted', 'backend_status', 'backend_register'])
+            o.save.assert_called_with(update_fields=['enacted', 'backend_status', 'backend_register', 'backend_code'])
+            cs.save.assert_called_with(update_fields=['enacted', 'backend_status', 'backend_register', 'backend_code'])
 
     @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template)
     @mock.patch("event_loop.model_accessor")
