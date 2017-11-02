@@ -891,6 +891,7 @@ class ServiceAttribute(Object):
     service = None
     
     leaf_model_name = "ServiceAttribute"
+
 class ServiceDependency(Object):
     created = None
     updated = "now()"
