@@ -21,6 +21,17 @@ map:
     type: str
   logging: 
     type: any
+  blueprints:
+    type: seq
+    sequence:
+    - type: map
+      map:
+        name: 
+          type: str
+          required: True
+        graph:
+          type: any
+          required: True
   dependency_graph:
     type: str
   link_graph:
