@@ -23,6 +23,7 @@ DEFAULT_VALUES = {
     # So for instance, you can add new handlers. Note that all handlers will
     # receive logs simultaneously.
 
+    'blueprints': {},
     'logging': {
         'version': 1,
         'handlers': {
