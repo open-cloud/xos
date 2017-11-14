@@ -229,11 +229,28 @@ def config_accessor_grpcapi():
 
     reactor.run()
 
+def config_accessor_mock():
+    global model_accessor
+    from mock_modelaccessor import model_accessor as mock_model_accessor
+    model_accessor = mock_model_accessor
+
+    # mock_model_accessor doesn't have an all_model_classes field, so make one.
+    import mock_modelaccessor as mma
+    all_model_classes = {}
+    for k in dir(mma):
+        v = getattr(mma, k)
+        if hasattr(v, "leaf_model_name"):
+            all_model_classes[k] = v
+
+    model_accessor.all_model_classes = all_model_classes
+
+    import_models_to_globals()
+
 def config_accessor():
     accessor_kind = Config.get("accessor.kind")
 
     if accessor_kind == "testframework":
-        pass
+        config_accessor_mock()
     elif accessor_kind == "grpcapi":
         config_accessor_grpcapi()
     else:
