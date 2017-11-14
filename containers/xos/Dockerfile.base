@@ -42,6 +42,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     python-pip \
     rsync \
     software-properties-common \
+    sshpass \
     supervisor \
     unzip \
     wget \
