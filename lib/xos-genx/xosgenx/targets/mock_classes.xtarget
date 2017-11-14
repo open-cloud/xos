@@ -22,9 +22,9 @@ def mock_enumerator(items):
 
 class Object:
     objects = Mock()
+    save = Mock()
+    delete = Mock()
     def __init__(self, **kwargs):
-        setattr(self, 'save', Mock())
-        setattr(self, 'delete', Mock())
         setattr(self, 'backend_code', 0)
         setattr(self, 'id', 98052)
         setattr(self, 'pk', random.randint(0, 1<<30))
