@@ -255,11 +255,7 @@ def run_template_ssh(name, opts, path='', expected_num=None, object=None):
 
     f = open(hosts_pathname, "w")
     f.write("[%s]\n" % instance_name)
-    if proxy_ssh or baremetal_ssh:
-        f.write("%s ansible_ssh_private_key_file=%s\n" % (hostname, private_key_pathname))
-    else:
-        # acb: Login user is hardcoded, this is not great
-        f.write("%s ansible_ssh_private_key_file=%s ansible_ssh_user=ubuntu\n" % (ssh_ip, private_key_pathname))
+    f.write("%s ansible_ssh_private_key_file=%s\n" % (ssh_ip, private_key_pathname))
     f.close()
 
     # SSH will complain if private key is world or group readable
