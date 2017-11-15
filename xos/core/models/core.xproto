@@ -599,3 +599,9 @@ message XOSGuiExtension::admin_policy (XOSBase) {
      required string files = 2 [max_length = 1024, content_type = "stripped", blank = False, help_text = "List of comma separated file composing the view", null = False, db_index = False];
 }
 
+message ServiceGraphConstraint (XOSBase) {
+    option verbose_name="Graph Constraint";
+    option description="Define the position of the nodes in the service graph";
+    required string constraints = 1 [max_length = 1024, content_type = "stripped", blank = True, help_text = "A composite array defining positions, eg [volt, vsg, [address_manager, vrouter]]", null = False, tosca_key=True];
+}
+
