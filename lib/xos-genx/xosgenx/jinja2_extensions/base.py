@@ -124,6 +124,12 @@ def xproto_base_fields(m, table):
             fields.extend(base_fields)
             fields.extend(model_fields)
 
+    if 'no_sync' in m['options'] and m['options']['no_sync']:
+        fields = [f for f in fields if f['name'] != 'backend_status' and f['name'] != 'backend_code']
+
+    if 'no_policy' in m['options'] and m['options']['no_policy']:
+        fields = [f for f in fields if f['name'] != 'policy_status' and f['name'] != 'policy_code']
+
     return fields
 
 def xproto_base_rlinks(m, table):
