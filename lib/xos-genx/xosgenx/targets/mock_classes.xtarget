@@ -20,10 +20,65 @@ def mock_enumerator(items):
     e.all = lambda:items
     return e
 
-class Object:
-    objects = Mock()
-    save = Mock()
-    delete = Mock()
+# A list of all mock object stores that have been created
+AllMockObjectStores = []
+
+class MockObjectList:
+    item_list = None
+
+    def __init__(self, initial=None):
+        self.id_counter = 0
+        if initial:
+            self.item_list=initial
+        elif self.item_list is None:
+            self.item_list=[]
+
+    def get_items(self):
+        return self.item_list
+
+    def count(self):
+        return len(self.get_items())
+
+    def first(self):
+        return self.get_items()[0]
+
+    def all(self):
+        return self.get_items()
+
+    def filter(self, **kwargs):
+        items = self.get_items()
+        for (k,v) in kwargs.items():
+            items = [x for x in items if getattr(x,k) == v]
+        return items
+
+    def get(self, **kwargs):
+        objs = self.filter(**kwargs)
+        if not objs:
+            raise Exception("No objects matching %s" % str(kwargs))
+        return objs[0]
+
+class MockObjectStore(MockObjectList):
+    def save(self, o):
+        if (not hasattr(o,"id")) or (not o.id) or (o.id==98052):
+            for item in self.get_items():
+                if item.id >= self.id_counter:
+                    self.id_counter = item.id + 1
+
+            o.id = self.id_counter
+            self.id_counter = self.id_counter + 1
+
+        for item in self.get_items():
+            if item.id == o.id:
+                item = o
+                break
+        else:
+            self.get_items().append(o)
+
+class MockObject:
+    objects = None
+    id = None
+    deleted = False
+
     def __init__(self, **kwargs):
         setattr(self, 'backend_code', 0)
         setattr(self, 'id', 98052)
@@ -32,15 +87,29 @@ class Object:
         for (k,v) in kwargs.items():
             setattr(self,k,v)
 
+    @property
+    def self_content_type_id(self):
+        return self.__class__.__name__
+
+    @property
+    def leaf_model(self):
+        return self
+
+    def save(self):
+        if self.objects:
+            self.objects.save(self)
+
+    def delete(self):
+        pass
 
     def tologdict(self):
         return {}
 
-class ONOSService(Object):
-    leaf_model_name = 'ONOSService'
-
-class ONOSApp(Object):
-    leaf_model_name = 'ONOSApp'
+def get_MockObjectStore(x):
+    store = globals()["Mock%sObjects" % x]()
+    if not store in AllMockObjectStores:
+        AllMockObjectStores.append(store)
+    return store
 
 class ModelAccessor:
     def check_db_connection_ok(self):
@@ -65,6 +134,10 @@ class ModelAccessor:
         
         return object_list
 
+    def reset_all_object_stores(self):
+        for store in AllMockObjectStores:
+            store.items = []
+
 model_accessor = ModelAccessor()
 
 class ObjectSet(object):
@@ -79,9 +152,12 @@ class ObjectSet(object):
 # 
 
 {% for m in proto.messages -%}
-class {{ m.name }}(Object):
+class Mock{{ m.name }}Objects(MockObjectStore): pass
+class {{ m.name }}(MockObject):
+    objects = get_MockObjectStore("{{ m.name }}")
     {% for f in xproto_base_fields(m, proto.message_table) +  m.fields -%}
     {{ f.name }} = {{ xproto_first_non_empty([f.options.default, "None"]) }}
+    {% if f.link -%}{{ f.name }}_id = None{% endif %}
     {% endfor %}
     leaf_model_name = "{{ m.name }}"
 {% endfor %}
