@@ -32,12 +32,15 @@ class TestModelPolicyTenantWithContainer(unittest.TestCase):
         self.sys_path_save = sys.path
         self.cwd_save = os.getcwd()
         sys.path.append(xos_dir)
-        #sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
         sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base', 'model_policies'))
 
         config = basic_conf = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/test_config.yaml")
         Config.clear() # in case left unclean by a previous test case
         Config.init(config, 'synchronizer-config-schema.yaml')
+
+        from synchronizers.new_base.mock_modelaccessor_build import build_mock_modelaccessor
+        build_mock_modelaccessor(xos_dir, services_dir=None, service_xprotos=[])
+
         import model_policy_tenantwithcontainer
         from model_policy_tenantwithcontainer import TenantWithContainerPolicy, LeastLoadedNodeScheduler
 

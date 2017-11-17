@@ -41,6 +41,9 @@ class TestControllerDependencies(unittest.TestCase):
         Config.clear()
         Config.init(config, 'synchronizer-config-schema.yaml')
 
+        from synchronizers.new_base.mock_modelaccessor_build import build_mock_modelaccessor
+        build_mock_modelaccessor(xos_dir, services_dir=None, service_xprotos=[])
+
         os.chdir(os.path.join(test_path, '..'))  # config references tests/model-deps
 
         import event_loop
