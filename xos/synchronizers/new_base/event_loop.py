@@ -238,9 +238,11 @@ class XOSObserver:
         else:
             status = str(e)
 
-        if isinstance(e, InnocuousException) or isinstance(
-                e, DeferredException):
+        if isinstance(e, InnocuousException):
             code = 1
+        elif isinstance(e, DeferredException):
+            # NOTE if the synchronization is Deferred it means that synchronization is still in progress
+            code = 0
         else:
             code = 2
 
