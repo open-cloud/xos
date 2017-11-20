@@ -21,7 +21,7 @@ import sys
 import base64
 import time
 from xosconfig import Config
-from synchronizers.new_base.syncstep import SyncStep
+from synchronizers.new_base.syncstep import SyncStep, DeferredException
 from synchronizers.new_base.ansible_helper import run_template_ssh
 from synchronizers.new_base.modelaccessor import *
 from xosconfig import Config
@@ -52,7 +52,7 @@ class SyncInstanceUsingAnsible(SyncStep):
         # zdw, 2017-02-18 - is raising the exception here necessary? - seems like
         # it's just logging the same thing twice
         log.info("defer object", object = str(o), reason = reason, **o.tologdict())
-        raise Exception("defer object %s due to %s" % (str(o), reason))
+        raise DeferredException("defer object %s due to %s" % (str(o), reason))
 
     def get_extra_attributes(self, o):
         # This is a place to include extra attributes that aren't part of the
