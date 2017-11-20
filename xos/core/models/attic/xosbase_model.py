@@ -45,7 +45,9 @@ def delete(self, *args, **kwds):
         pass
 
     if (purge):
+        pk = self.pk
         super(XOSBase, self).delete(*args, **kwds)
+        self.push_redis_event(deleted=True, pk=pk)
     else:
         if (not self.write_protect ):
             self.deleted = True
