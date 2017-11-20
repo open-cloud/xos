@@ -1,7 +1,7 @@
 # Example Service Tutorial
 
 This tutorial uses [ExampleService](https://github.com/opencord/exampleservice)
-to illustrate how to write and on-board a service in CORD.  ExampleService is a
+to illustrate how to write and on-board a service in CORD. *ExampleService* is a
 multi-tenant service that instantiates a VM instance on behalf of each tenant,
 and runs an Apache web server in that VM. This web server is then configured to
 serve a tenant-specified message (a string), where the tenant is able to set
@@ -22,17 +22,17 @@ individual tenants as the service runs.
 
 Tenant and ServiceInstance are two closely related terms. "Tenant" refers to
 the user or the consumer of a service. Often we partition a service into
-several pieces, each for use by a tenant, thus making it a multi-tenant
-service. Each one of these tenant-specific pieces is referred to as a
+logical partitions, each for use by a tenant, thus making it a multi-tenant
+service. Each one of these tenant-specific partitions is referred to as a
 ServiceInstance.
 
 ## Summary
 
 The result of preparing *ExampleService* for on-boarding is the following set
 of files, all located in the `xos` directory of the `exampleservice`
-repository. (There are other helper files, as described throughout this
-tutorial.)
-
+repository. When checked out, these files live in the
+`CORD_ROOT/orchestration/xos_services/exampleservice` directory on
+your local development machine. 
 
 | Component | Source Code (https://github.com/opencord/exampleservice/) |
 |----------|-----------------------------------------------------|
@@ -45,6 +45,17 @@ code) to on-board a service, including a REST API, a TOSCA API, and an Admin
 GUI. These components are now auto-generated from the models rather than coded
 by hand, although it is still possible to [extend the
 GUI](../xos-gui/developer/README.md).
+
+In addition to implementing these service-specific files, the final
+step to on-boarding a service requires you to modify an existing
+(or write a new)
+[service profile](https://guide.opencord.org/service-profiles.html).
+This tutorial uses the existing R-CORD profile for illustrative
+purposes. These profile definitions currently live in the
+`profile_manifest` directory of
+(https://github.com/opencord/platform-install/), which corresponds to the
+`CORD_ROOT/build/platform-install/profile_manifests` directory
+in your downloaded copy of the CORD source tree.
 
 ## Development Environment
 
@@ -73,7 +84,7 @@ database models among other things. It consists of two parts:
 * The ServiceInstance model, which manages tenant-specific
   (per-service-instance) state.
 
-### Service Model (per-Service state)
+### Service Model (Service-wide state)
 
 A Service model extends (inherits from) the XOS base *Service* model.  At its
 head is a set of option declarations: the name of the service as a
@@ -88,7 +99,7 @@ message ExampleService (Service){
 }
 ```
 
-###ServiceInstance Model (per-Tenant state)
+### ServiceInstance Model (per-Tenant state)
 
 Your ServiceInstance model will extend the core `TenantWithContainer` class,
 which is a Tenant that creates a VM instance:
@@ -126,10 +137,10 @@ your service.
 > it is sufficient to create a file named `model-deps` with the contents:` {}`.
 
 The Synchronizer has two parts: A container that runs the synchronizer process,
-and an Ansible playbook that configures the underlying system. The following
+and a playbook (typically Ansible) that configures the underlying system. The following
 describes how to construct both.
 
-###Synchronizer Container
+### Synchronizer Container
 
 First, create a file named `exampleservice-synchronizer.py`:
 
@@ -249,7 +260,6 @@ Finally, create a Dockerfile for your synchronizer, name it
 other synchronizer files:
 
 ```
-
 FROM xosproject/xos-synchronizer-base:candidate
 
 COPY . /opt/xos/synchronizers/exampleservice
@@ -290,7 +300,7 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
 CMD bash -c "cd /opt/xos/synchronizers/exampleservice; ./run-from-api.sh"
 ```
 
-###Synchronizer Playbooks
+### Synchronizer Playbooks
 
 In the same `steps` directory, create an Ansible playbook named
 `exampleserviceinstance_playbook.yml` which is the “master playbook” for this
@@ -372,7 +382,7 @@ As a final step, you can check your playbooks for best practices with
 
 ## Define an On-boarding Spec
 
-The final step is to define an on-boarding recipe for the service.  By
+The next step is to define an on-boarding recipe for the service.  By
 convention, we use `<servicename>-onboard.yaml`, and place it in the `xos`
 directory of the service.
 
@@ -387,7 +397,7 @@ tosca_definitions_version: tosca_simple_yaml_1_0
 description: Onboard the exampleservice
 
 imports:
-   - custom_types/xos.yaml
+    - custom_types/xos.yaml
 
 topology_template:
   node_templates:
@@ -398,31 +408,272 @@ topology_template:
           # The following will concatenate with base_url automatically, if
           # base_url is non-null.
           xproto: ./
-          tosca_custom_types: exampleservice.yaml
-          tosca_resource: tosca/resources/exampleservice.py, tosca/resources/exampleserviceinstance.py
           private_key: file:///opt/xos/key_import/exampleservice_rsa
           public_key: file:///opt/xos/key_import/exampleservice_rsa.pub
 ```
 
-You will also need to modify the `profile-manifest` in `platform-install` to
-on-board your service. To do this, modify the `xos_services` and
-`xos_service_sshkeys` sections as shown below:
+Note that this recipe (when executed) on-boards *ExampleService* in the
+sense that it registers the service with the system (i.e., loads its
+model into XOS), but it does not provision the service or create
+instances of the service. These latter steps can be done
+through CORD's GUI or REST API, or by submitting yet other TOSCA
+workflows to a running CORD POD (all based on end-points that are
+auto-generated from these on-boarded models). Additional information
+on how to provision and use the service is given in the last section
+of this tutorial.
+
+## Include the Service in a Profile
+
+The final step to on-boarding a service is to include it in one or
+more service profiles that are to be built and installed. Service
+profiles are currently defined as part of the
+[CORD build system](https://guide.opencord.org/install.html),
+so this involves editing some build-related configuration files.
+These files can be found in the `CORD_ROOT/build/platform-install`
+directory of the checkout out source code.
+
+### Profile Manifests
+
+Inserting *ExampleService* in a service profile requires creating or
+modifying one of the `.yml` files in
+`build/platform-install/profile_manifests` of your local repo.
+In the following, we use `rcord.yml` as an illustrative example. There
+are potentially three sections of this file that need attention.
+
+First, modify the `xos_services` section to identify `exampleservice`
+as a service to include in the profile. Doing this effectively points
+the build system at the model and synchronizer specifications you've
+just defined.
 
 ```
 xos_services:
-  ... (lines omitted)
+  ... (lines omitted)...
   - name: exampleservice
     path: orchestration/xos_services/exampleservice
     keypair: exampleservice_rsa
     synchronizer: true
-
-xos_service_sshkeys:
-  ... (lines omitted)
-  - name: exampleservice_rsa
-    source_path: "~/.ssh/id_rsa"
 ```
 
-The above modifications to the profile manifest will cause the build procedure
-to automatically install an ssh key for your service, and to onboard the
-service at build time.
+Second, optionally tell the build system to download and install
+an image into CORD. In our particular case, *ExampleService*
+uses the `trusty-server-multi-nic` that is included in R-CORD
+for other purposes.
 
+```
+xos_images:
+  - name: "trusty-server-multi-nic".
+    url: "http://www.vicci.org/opencloud/trusty-server-cloudimg-amd64-disk1.img.20170201"
+    checksum:
+    "sha256:ebf007ba3ec1043b7cd011fc6668e2a1d1d4c69c41071e8513ab355df7a057cb"
+  ... (lines omitted)...
+```
+
+Third, optionally specify any GUI extensions associated with the
+service. This is done in the `enabled_gui_extensions` section of
+the profile manifest. ExampleService does not include a GUI extension.
+
+### Other Build-Related Configuration
+
+Today, a few other build-related configuration files require editing
+to produce a deployment that includes ExampleService. (These details
+will be hidden in future releases.)
+
+* Add the service's synchronizer image to `build/docker_images.yml`
+
+* Add the service's synchronizer image to `docker_image_whitelist` for
+the scenarios you want your service to run in. For example,
+*ExampleService* is included in these two files:
+  *  `build/scenarios/cord/config.yml`
+  *  `build/scenarios/single/config.yml`
+
+* Because the build system is integrated with the `git` and `repo`
+tools, if your service is not already checked into
+`gerrit.opencord.org`, you will also need to add the service to
+the manifest file `CORD_ROOT/.repo/manifest.xml`.
+Then run `git init` in the service’s source tree.
+
+## Provision, Control, and Use the Service
+
+Once *ExampleService*  is on-boarded into a running POD,
+it is available to be provisioned, controlled and used. This can be
+done via the CORD GUI or REST API, but the most common way is to
+input a TOSCA workflow into the running POD. Typically, each service
+contributes a TOSCA recipe to run as soon as the POD comes up
+(i.e., as the last stage of the build system), so as to verify that the
+installation was successful.
+
+This recipe is generated from a `Jinja2`
+template, which is customized at build-time with specific
+details for the target POD (e.g., the site that hosts the POD). This
+results in a `.yaml` TOSCA file that is passed to the deployed
+POD and executed.
+
+The *ExampleService*  template is defined by the following file:
+```
+build/platform-install/roles/exampleservice-config/templates/test-exampleservice.yaml.j2
+```
+It is an historical artifact that this template is in the 
+`build/platform-install/roles/exampleservice-config/templates`
+directory. Templates for new services are instead located in
+`build/platform-install/roles/cord-profile/templates`. For example,
+see `template-service.yaml.j2` in that directory for a template
+similar to the one used for *ExampleService*.
+
+The first part of `test-exampleservice.yaml.j2` includes some
+core object reference that *ExampleService* uses, for example, 
+the `trusty-server-multic-nic` image, the `small` flavor, and
+both the `management_network` and the `public_network`.
+
+```
+topology_template:
+  node_templates:
+
+# site, image, fully created in deployment.yaml
+    {{ site_name }}:
+      type: tosca.nodes.Site
+      properties:
+        must-exist: true
+        name: {{ site_humanname }}
+
+    m1.small:
+      type: tosca.nodes.Flavor
+      properties:
+        name: m1.small
+        must-exist: true
+
+    trusty-server-multi-nic:
+      type: tosca.nodes.Image
+      properties:
+        name: trusty-server-multi-nic
+        must-exist: true
+
+# private network template, fully created somewhere else
+    private:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+        must-exist: true
+        name: Private
+
+# management networks, fully created in management-net.yaml
+    management_network:
+      type: tosca.nodes.Network
+      properties:
+        must-exist: true
+        name: management
+
+# public network, fully created somewhere else
+    public_network:
+      type: tosca.nodes.Network
+      properties:
+        must-exist: true
+        name: public
+```
+
+This is followed by the specification of a `private` network used by
+*ExampleService* :
+```
+	exampleservice_network:
+      type: tosca.nodes.Network 
+      properties:
+          name: exampleservice_network 
+          labels: exampleservice_private_network 
+      requirements:
+          - template:
+              node: private 
+              relationship: tosca.relationships.BelongsToOne 
+          - owner:
+              node: {{ site_name }}_exampleservice 
+              relationship: tosca.relationships.BelongsToOne 
+```
+
+The next part of the workflow provisions the `Slice` (and related
+instances and networks) in which *ExampleService*  runs. These
+definitions reference the dependencies established above.
+
+```
+# CORD Slices
+    {{ site_name }}_exampleservice:
+      description: Example Service Slice
+      type: tosca.nodes.Slice
+      properties:
+          name: {{ site_name }}_exampleservice
+          default_isolation: vm
+          network: noauto
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.BelongsToOne
+          - service:
+              node: exampleservice
+              relationship: tosca.relationships.BelongsToOne
+          - default_image:
+              node: trusty-server-multi-nic
+              relationship: tosca.relationships.BelongsToOne
+          - default_flavor:
+              node: m1.small
+              relationship: tosca.relationships.BelongsToOne
+
+# CORD NetworkSlices
+    exampleservice_slice_management_network:
+      type: tosca.nodes.NetworkSlice
+      requirements:
+        - network:
+            node: management_network
+            relationship: tosca.relationships.BelongsToOne
+        - slice:
+            node: {{ site_name }}_exampleservice
+            relationship: tosca.relationships.BelongsToOne
+
+    exampleservice_slice_public_network:
+      type: tosca.nodes.NetworkSlice
+      requirements:
+        - network:
+            node: public_network
+            relationship: tosca.relationships.BelongsToOne
+        - slice:
+            node: {{ site_name }}_exampleservice
+            relationship: tosca.relationships.BelongsToOne
+
+    exampleservice_slice_exampleservice_network:
+      type: tosca.nodes.NetworkSlice
+      requirements:
+        - network:
+            node: exampleservice_network
+            relationship: tosca.relationships.BelongsToOne
+        - slice:
+            node: {{ site_name }}_exampleservice
+            relationship: tosca.relationships.BelongsToOne
+```
+
+Finally, the recipe instantiates the service object that represents
+*ExampleService* (`exampleservice`) and spins up a Service Instance
+on behalf of the first tenant (`exampletenant1`).
+
+```
+   exampleservice:
+      type: tosca.nodes.ExampleService
+      properties:
+        name: exampleservice
+        public_key: {{ lookup('file', config_cord_profile_dir + '/key_import/exampleservice_rsa.pub') }}
+        private_key_fn: /opt/xos/services/exampleservice/keys/exampleservice_rsa
+        service_message: hello
+      artifacts:
+        pubkey: /opt/cord_profile/key_import/exampleservice_rsa.pub
+
+    exampletenant1:
+      type: tosca.nodes.ExampleServiceInstance
+      properties:
+        name: exampletenant1
+        tenant_message: world
+      requirements:
+        - owner:
+            node: exampleservice
+            relationship: tosca.relationships.BelongsToOne
+```
+			
+Note that these definitions initialize the `service_message` and
+`tenant_message`, respectively. As a consequence, sending an
+HTTP GET request to *ExampleService* will result in the response:
+`hello world`. Subsequently, the user can interact with
+*ExampleService* via CORD's GUI or REST API to change those
+values.
