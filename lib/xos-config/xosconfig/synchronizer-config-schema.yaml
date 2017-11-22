@@ -21,6 +21,10 @@ map:
     type: str
   logging: 
     type: any
+  wrappers:
+    type: seq
+    sequence:
+    - type: str
   blueprints:
     type: seq
     sequence:
