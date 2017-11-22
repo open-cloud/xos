@@ -25,6 +25,7 @@
 """
 
 import functools
+import importlib
 import os
 import signal
 from xosconfig import Config
@@ -255,5 +256,10 @@ def config_accessor():
         config_accessor_grpcapi()
     else:
         raise Exception("Unknown accessor kind %s" % accessor_kind)
+
+    # now import any wrappers that the synchronizer needs to add to the ORM
+    if Config.get("wrappers"):
+        for wrapper_name in Config.get("wrappers"):
+            importlib.import_module(wrapper_name)
 
 config_accessor()

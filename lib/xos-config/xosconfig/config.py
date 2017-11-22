@@ -136,7 +136,11 @@ class Config:
         try:
             Config.validate_config_format(config_file, config_schema)
         except Exception, e:
-            raise Exception('[XOS-Config] The config format is wrong: %s' % e.msg)
+            try:
+                error_msg = e.msg
+            except AttributeError:
+                error_msg = str(e)
+            raise Exception('[XOS-Config] The config format is wrong: %s' % error_msg)
 
         with open(config_file, 'r') as stream:
             return yaml.safe_load(stream)
