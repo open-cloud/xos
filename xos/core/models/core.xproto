@@ -1,5 +1,8 @@
 option app_label = "core";
 
+// use thi policy to allow access to admins only
+policy admin_policy < ctx.user.is_admin >
+
 message XOSBase {
      option skip_init = True;
 
@@ -586,7 +589,7 @@ message XOS (XOSBase) {
      required string name = 1 [default = "XOS", max_length = 200, content_type = "stripped", blank = False, help_text = "Name of XOS", null = False, db_index = False];
 }
 
-message XOSGuiExtension (XOSBase) {
+message XOSGuiExtension::admin_policy (XOSBase) {
      option verbose_name="XOS GUI Extension";
      option description="This model holds the instruction to load an extension in the GUI";
      option no_sync = True;
