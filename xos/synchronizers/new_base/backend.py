@@ -64,7 +64,7 @@ class Backend:
                     
                     if inspect.isclass(c):
                         base_names = [b.__name__ for b in c.__bases__]
-                        if ('SyncStep' in base_names or 'OpenStackSyncStep' in base_names or 'SyncInstanceUsingAnsible' in base_names) and hasattr(c,"provides") and (c not in sync_steps):
+                        if ('SyncStep' in base_names or 'OpenStackSyncStep' in base_names or 'SyncInstanceUsingAnsible' in base_names) and (hasattr(c,"provides") or hasattr(c,"observes")) and (c not in sync_steps):
                             sync_steps.append(c)
 
         self.log.info("Loaded sync steps", steps = sync_steps)
