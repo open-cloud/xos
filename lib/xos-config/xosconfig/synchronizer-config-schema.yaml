@@ -32,6 +32,19 @@ map:
         graph:
           type: any
           required: True
+        networks:
+          type: seq
+          sequence:
+            - type: map
+              map:
+                name:
+                  type: str
+                permit_all_slices:
+                  type: bool
+                template:
+                  type: str
+                subnet:
+                  type: str
   dependency_graph:
     type: str
   link_graph:
