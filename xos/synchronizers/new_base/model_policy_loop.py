@@ -166,8 +166,6 @@ class XOSPolicyEngine(object):
     def run_policy_once(self):
             models = self.policies_by_class.keys()
 
-            log.debug("MODEL POLICY: run_policy_once()")
-
             model_accessor.check_db_connection_okay()
 
             objects = model_accessor.fetch_policies(models, False)
@@ -190,5 +188,3 @@ class XOSPolicyEngine(object):
             except Exception,e:
                 # this shouldn't happen, but in case it does, catch it...
                 log.exception("MODEL POLICY: exception in reset_queries", e)
-
-            log.debug("MODEL POLICY: finished run_policy_once()")
