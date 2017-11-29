@@ -15,6 +15,7 @@
 
 
 import datetime
+import time
 import json
 import pytz
 import inspect
@@ -46,7 +47,10 @@ def date_handler(obj):
     if isinstance(obj, pytz.tzfile.DstTzInfo):
         # json can't serialize DstTzInfo
         return str(obj)
-    return obj.isoformat() if hasattr(obj, 'isoformat') else obj
+    elif hasattr(obj, 'timetuple'):
+        return time.mktime(obj.timetuple())
+    else:
+        return obj
 
 class StrippedCharField(models.CharField):
     """ CharField that strips trailing and leading spaces."""
