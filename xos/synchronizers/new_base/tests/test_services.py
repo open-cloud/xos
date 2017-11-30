@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TEST_FRAMEWORK: IGNORE
-
 import unittest
 from mock import patch
 import mock
@@ -64,8 +62,8 @@ class TestServices(unittest.TestCase):
         os.chdir(self.cwd_save)
 
     def test_service_models(self):
-        a = ONOSApp()
-        s = ONOSService()
+        s = Service()
+        a = ServiceInstance(owner=s)
 
         cohorts = self.synchronizer.compute_dependent_cohorts([a,s], False)
         self.assertIn([s,a], cohorts)

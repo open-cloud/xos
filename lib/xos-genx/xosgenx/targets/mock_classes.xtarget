@@ -95,7 +95,7 @@ class MockObject:
     def leaf_model(self):
         return self
 
-    def save(self):
+    def save(self, update_fields=[]):
         if self.objects:
             self.objects.save(self)
 
