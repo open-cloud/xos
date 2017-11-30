@@ -18,7 +18,7 @@ CORD development environments.
 ## Requirements
 
 The following assumes you have cloned the source code as described in: [Getting
-the Source Code](/getting_the_code.md). 
+the Source Code](/getting_the_code.md).
 
 To deploy a `local` scenario on your machine, you'll also need to install
 [Docker](https://www.docker.com/community-edition).
@@ -33,12 +33,25 @@ You can setup a `local` POD config on your machine as follows.
 ```
 cd ~/cord/build
 make PODCONFIG=rcord-local.yml config
-make -j4 build
+make build
 ```
 
 After the build completes, the XOS web GUI will be available at
 `localhost:8080/xos`
 
+If you are using this on a remote node that uses Ubuntu as the base OS, you can
+deploy an Apache proxy and set `/etc/hosts` variables to allow it to proxy the
+connection remotely:
+
+```
+make local-ubuntu-dev-env
+```
+
+Example combining all of these using `cord-boostrap.sh`:
+
+```
+bash ./cord-bootstrap.sh -d -t "PODCONFIG=rcord-local.yml config" -t "local-ubuntu-dev-env" -t "build"
+```
 
 ### Destroy and Rebuild XOS
 
@@ -47,7 +60,9 @@ fresh XOS installation. Note that it wipes the out the XOS database.
 
 ```
 cd ~/cord/build
-make xos-teardown
-make -j4 build
+make local-xos-teardown
+make build
 ```
+
+To repeat all the build milestones, use `make clean-local`.
 
