@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TEST_FRAMEWORK: IGNORE
-
 import unittest
 from mock import patch
 import mock
@@ -58,6 +56,11 @@ class TestRun(unittest.TestCase):
         reload(event_loop)
         import backend
         reload(backend)
+        from modelaccessor import model_accessor
+
+        # import all class names to globals
+        for (k, v) in model_accessor.all_model_classes.items():
+            globals()[k] = v
 
         b = backend.Backend()
         steps_dir = Config.get("steps_dir")

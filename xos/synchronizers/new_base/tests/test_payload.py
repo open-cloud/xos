@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TEST_FRAMEWORK: IGNORE
-
 import json
 import unittest
 from mock import patch
@@ -39,7 +37,7 @@ def get_ansible_output():
 
 class TestPayload(unittest.TestCase):
     def setUp(self):
-        global log, steps
+        global log, steps, event_loop
 
         self.sys_path_save = sys.path
         self.cwd_save = os.getcwd()
@@ -84,94 +82,100 @@ class TestPayload(unittest.TestCase):
     @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template)
     @mock.patch("event_loop.model_accessor")
     def test_delete_record(self, mock_run_template, mock_modelaccessor):
-        o = Instance()
-        o.name = "Sisi Pascal"
+        with mock.patch.object(Instance, "save") as instance_save:
+            o = Instance()
+            o.name = "Sisi Pascal"
 
-        o.synchronizer_step = steps.sync_instances.SyncInstances()
-        self.synchronizer.delete_record(o, log)
+            o.synchronizer_step = steps.sync_instances.SyncInstances()
+            self.synchronizer.delete_record(o, log)
 
-        a = get_ansible_output()
-        self.assertDictContainsSubset({'delete':True, 'name':o.name}, a)
-        o.save.assert_called_with(update_fields=['backend_need_reap'])
+            a = get_ansible_output()
+            self.assertDictContainsSubset({'delete':True, 'name':o.name}, a)
+            o.save.assert_called_with(update_fields=['backend_need_reap'])
         
     @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template)
     @mock.patch("event_loop.model_accessor")
     def test_sync_record(self, mock_run_template, mock_modelaccessor):
-        o = Instance()
-        o.name = "Sisi Pascal"
+        with mock.patch.object(Instance, "save") as instance_save:
+            o = Instance()
+            o.name = "Sisi Pascal"
 
-        o.synchronizer_step = steps.sync_instances.SyncInstances()
-        self.synchronizer.sync_record(o, log)
+            o.synchronizer_step = steps.sync_instances.SyncInstances()
+            self.synchronizer.sync_record(o, log)
 
-        a = get_ansible_output()
-        self.assertDictContainsSubset({'delete':False, 'name':o.name}, a)
-        o.save.assert_called_with(update_fields=['enacted', 'backend_status', 'backend_register', 'backend_code'])
+            a = get_ansible_output()
+            self.assertDictContainsSubset({'delete':False, 'name':o.name}, a)
+            o.save.assert_called_with(update_fields=['enacted', 'backend_status', 'backend_register'])
 
     @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template)
     @mock.patch("event_loop.model_accessor")
     def test_sync_cohort(self, mock_run_template, mock_modelaccessor):
-        cs = ControllerSlice()
-        s = Slice(name = 'SP SP')
-        cs.slice = s
+        with mock.patch.object(Instance, "save") as instance_save, \
+             mock.patch.object(ControllerSlice, "save") as controllerslice_save:
+            cs = ControllerSlice()
+            s = Slice(name = 'SP SP')
+            cs.slice = s
 
-        o = Instance()
-        o.name = "Sisi Pascal"
-        o.slice = s
+            o = Instance()
+            o.name = "Sisi Pascal"
+            o.slice = s
 
-        cohort = [cs, o]
-        o.synchronizer_step = steps.sync_instances.SyncInstances()
-        cs.synchronizer_step = steps.sync_controller_slices.SyncControllerSlices()
+            cohort = [cs, o]
+            o.synchronizer_step = steps.sync_instances.SyncInstances()
+            cs.synchronizer_step = steps.sync_controller_slices.SyncControllerSlices()
 
-        self.synchronizer.sync_cohort(cohort, False)
+            self.synchronizer.sync_cohort(cohort, False)
 
-        a = get_ansible_output()
-        self.assertDictContainsSubset({'delete':False, 'name':o.name}, a)
-        o.save.assert_called_with(update_fields=['enacted', 'backend_status', 'backend_register', 'backend_code'])
-        cs.save.assert_called_with(update_fields=['enacted', 'backend_status', 'backend_register', 'backend_code'])
+            a = get_ansible_output()
+            self.assertDictContainsSubset({'delete':False, 'name':o.name}, a)
+            o.save.assert_called_with(update_fields=['enacted', 'backend_status', 'backend_register'])
+            cs.save.assert_called_with(update_fields=['enacted', 'backend_status', 'backend_register'])
 
     @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template)
     @mock.patch("event_loop.model_accessor")
     def test_deferred_exception(self, mock_run_template, mock_modelaccessor):
-        cs = ControllerSlice()
-        s = Slice(name = 'SP SP')
-        cs.slice = s
-        cs.force_defer = True
+        with mock.patch.object(Instance, "save") as instance_save:
+            cs = ControllerSlice()
+            s = Slice(name = 'SP SP')
+            cs.slice = s
+            cs.force_defer = True
 
-        o = Instance()
-        o.name = "Sisi Pascal"
-        o.slice = s
+            o = Instance()
+            o.name = "Sisi Pascal"
+            o.slice = s
 
-        cohort = [cs, o]
-        o.synchronizer_step = steps.sync_instances.SyncInstances()
-        cs.synchronizer_step = steps.sync_controller_slices.SyncControllerSlices()
+            cohort = [cs, o]
+            o.synchronizer_step = steps.sync_instances.SyncInstances()
+            cs.synchronizer_step = steps.sync_controller_slices.SyncControllerSlices()
 
-        self.synchronizer.sync_cohort(cohort, False)
-        o.save.assert_called_with(always_update_timestamp=True, update_fields=['backend_status', 'backend_code', 'backend_register'])
-        self.assertEqual(cs.backend_code, 1)
+            self.synchronizer.sync_cohort(cohort, False)
+            o.save.assert_called_with(always_update_timestamp=True, update_fields=['backend_status', 'backend_register'])
+            self.assertEqual(cs.backend_code, 0)
 
-        self.assertIn('Force', cs.backend_status)
-        self.assertIn('Failed due to', o.backend_status)
+            self.assertIn('Force', cs.backend_status)
+            self.assertIn('Failed due to', o.backend_status)
 
     @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template)
     @mock.patch("event_loop.model_accessor")
     def test_backend_status(self, mock_run_template, mock_modelaccessor):
-        cs = ControllerSlice()
-        s = Slice(name = 'SP SP')
-        cs.slice = s
-        cs.force_fail = True
+        with mock.patch.object(Instance, "save") as instance_save:
+            cs = ControllerSlice()
+            s = Slice(name = 'SP SP')
+            cs.slice = s
+            cs.force_fail = True
 
-        o = Instance()
-        o.name = "Sisi Pascal"
-        o.slice = s
+            o = Instance()
+            o.name = "Sisi Pascal"
+            o.slice = s
 
-        cohort = [cs, o]
-        o.synchronizer_step = steps.sync_instances.SyncInstances()
-        cs.synchronizer_step = steps.sync_controller_slices.SyncControllerSlices()
+            cohort = [cs, o]
+            o.synchronizer_step = steps.sync_instances.SyncInstances()
+            cs.synchronizer_step = steps.sync_controller_slices.SyncControllerSlices()
 
-        self.synchronizer.sync_cohort(cohort, False)
-        o.save.assert_called_with(always_update_timestamp=True, update_fields=['backend_status', 'backend_code', 'backend_register'])
-        self.assertIn('Force', cs.backend_status)
-        self.assertIn('Failed due to', o.backend_status)
+            self.synchronizer.sync_cohort(cohort, False)
+            o.save.assert_called_with(always_update_timestamp=True, update_fields=['backend_status', 'backend_register'])
+            self.assertIn('Force', cs.backend_status)
+            self.assertIn('Failed due to', o.backend_status)
 
     @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template)
     @mock.patch("event_loop.model_accessor")
