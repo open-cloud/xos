@@ -457,6 +457,8 @@ class XOSObserver:
             if not hasattr(step, 'call'):
                 pending = step.fetch_pending(deletion)
                 for obj in pending:
+                    step = step_class(driver=self.driver)
+                    step.log = self.log.bind(step=step)
                     obj.synchronizer_step = step
 
                 pending_service_dependencies = self.compute_service_instance_dependencies(
