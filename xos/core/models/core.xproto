@@ -587,6 +587,7 @@ message TenantWithContainer (ServiceInstance) {
      optional manytoone creator->User:+ = 2 [help_text = "Creator of this Tenant", null = True, db_index = True, blank = True];
      optional string external_hostname = 3 [max_length = 30, content_type = "stripped", blank = True, help_text = "External host name", null = True, db_index = False];
      optional string external_container = 4 [max_length = 30, content_type = "stripped", blank = True, help_text = "External host name", null = True, db_index = False];
+     optional string node_label = 5 [max_length = 30, content_type = "stripped", blank = True, help_text = "Node constraint", null = True, db_index = False];
 }
 
 message XOS (XOSBase) {
