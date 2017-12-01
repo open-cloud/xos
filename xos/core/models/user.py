@@ -155,6 +155,7 @@ class User(AbstractBaseUser, PlModelMixIn):
     policed = models.DateTimeField(null=True, default=None)
     backend_status = StrippedCharField(max_length=1024,
                                        default="Provisioning in progress")
+    backend_code = models.IntegerField( default = 0, null = False )
     backend_need_delete = models.BooleanField(default=False)
     backend_need_reap = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
@@ -168,6 +169,7 @@ class User(AbstractBaseUser, PlModelMixIn):
     leaf_model_name = models.CharField( help_text = "The most specialized model in this chain of inheritance, often defined by a service developer", max_length = 1024, null = False )
 
     policy_status = models.CharField( default = "0 - Policy in process", max_length = 1024, null = True )
+    policy_code = models.IntegerField( default = 0, null = True )
 
     objects = UserManager()
     deleted_objects = DeletedUserManager()
