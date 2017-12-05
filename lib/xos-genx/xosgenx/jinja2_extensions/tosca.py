@@ -12,6 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+def xproto_tosca_required(null, blank, default=None):
+
+    if null == 'True' or blank == 'True' or default != 'False':
+        return "false"
+    return "true"
+
+def xproto_tosca_field_type(type):
+    """
+    TOSCA requires fields of type 'bool' to be 'boolean'
+    TOSCA requires fields of type 'int32' to be 'integer'
+    """
+
+    if type == "bool":
+        return "boolean"
+    elif type == "int32":
+        return "integer"
+    else:
+        return type
+
 def xproto_fields_to_tosca_keys(fields):
 	keys = []
 	# look for explicit keys

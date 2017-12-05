@@ -239,21 +239,6 @@ def xproto_api_opts(field):
 
     return options_str
 
-def xproto_tosca_required(null, blank, default=None):
-
-    if null == 'True' or blank == 'True' or default != 'False':
-        return "false"
-    return "true"
-
-def xproto_tosca_field_type(type):
-    """
-    TOSCA requires fields of type 'bool' to be 'boolean'
-    """
-    if type == "bool":
-        return "boolean"
-    else:
-        return type
-
 def xproto_type_to_swagger_type(f):
     try:
         content_type = f['options']['content_type']

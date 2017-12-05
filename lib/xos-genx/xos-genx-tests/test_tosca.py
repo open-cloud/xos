@@ -17,15 +17,49 @@ from xosgenx.generator import XOSGenerator
 from helpers import FakeArgs, XProtoTestHelpers
 
 
-class XProtoToscaTest(unittest.TestCase):
+class XProtoToscaTypeTest(unittest.TestCase):
 
     def setUp(self):
-        self.target = XProtoTestHelpers.write_tmp_target(
-"""
-{%- for m in proto.messages %}
-    {{ xproto_fields_to_tosca_keys(m.fields) }}
-{% endfor -%}
-""")
+        self.target_tosca_type = XProtoTestHelpers.write_tmp_target(
+            """
+            {%- for m in proto.messages %}
+            {% for f in m.fields %}
+                {{ xproto_tosca_field_type(f.type) }}
+            {% endfor -%}
+            {% endfor -%}
+            """)
+    def test_tosca_fields(self):
+        """
+        [XOS-GenX] should convert xproto types to tosca know types
+        """
+        xproto = \
+        """
+        option app_label = "test";
+
+        message Foo {
+            required string name = 1 [ null = "False", blank="False"];
+            required bool active = 1 [ null = "False", blank="False"];
+            required int32 quantity = 1 [ null = "False", blank="False"];
+        }
+        """
+
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = self.target_tosca_type
+        output = XOSGenerator.generate(args)
+        self.assertIn('string', output)
+        self.assertIn('boolean', output)
+        self.assertIn('integer', output)
+
+class XProtoToscaKeyTest(unittest.TestCase):
+
+    def setUp(self):
+        self.target_tosca_keys = XProtoTestHelpers.write_tmp_target(
+            """
+            {%- for m in proto.messages %}
+                {{ xproto_fields_to_tosca_keys(m.fields) }}
+            {% endfor -%}
+            """)
 
     def test_xproto_fields_to_tosca_keys_default(self):
         """
@@ -42,7 +76,7 @@ message Foo {
 
         args = FakeArgs()
         args.inputs = xproto
-        args.target = self.target
+        args.target = self.target_tosca_keys
         output = XOSGenerator.generate(args)
         self.assertIn('name', output)
 
@@ -63,7 +97,7 @@ message Foo {
 
         args = FakeArgs()
         args.inputs = xproto
-        args.target = self.target
+        args.target = self.target_tosca_keys
         output = XOSGenerator.generate(args)
         self.assertNotIn('name', output)
         self.assertIn('key_1', output)
@@ -85,7 +119,7 @@ message Foo {
 
         args = FakeArgs()
         args.inputs = xproto
-        args.target = self.target
+        args.target = self.target_tosca_keys
         output = XOSGenerator.generate(args)
         self.assertNotIn('name', output)
         self.assertIn('provider_service_instance_id', output)
