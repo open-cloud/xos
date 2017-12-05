@@ -251,6 +251,26 @@ class XOSAPIHelperMixin(object):
                     continue
                 getattr(p_obj, related_name + "_ids").append(rel_obj.id)
 
+        # Go through any many-to-many relations. This is almost the same as the related_objects loop above, but slightly
+        # different due to how django handles m2m.
+
+        for m2m in obj._meta.many_to_many:
+            related_name = m2m.name
+            if not related_name:
+                continue
+            if "+" in related_name:   # duplicated logic from related_objects; not sure if necessary
+                continue
+
+            rel_objs = getattr(obj, related_name)
+
+            if not hasattr(rel_objs, "all"):
+                continue
+
+            for rel_obj in rel_objs.all():
+                if not hasattr(p_obj, related_name + "_ids"):
+                    continue
+                getattr(p_obj, related_name + "_ids").append(rel_obj.id)
+
         # Generate a list of class names for the object. This includes its
         # ancestors. Anything that is a descendant of XOSBase or User
         # counts.
@@ -308,6 +328,56 @@ class XOSAPIHelperMixin(object):
                 fset[name] = True
 
         return args
+
+    def handle_m2m(self, djangoClass, message, update_fields):
+        # fix for possible django bug?
+        # Unless we refresh the object, django will ignore every other m2m save
+
+        #djangoClass = djangoClass.__class__.objects.get(id=djangoClass.id)
+        djangoClass.refresh_from_db()
+
+        fmap={}
+        for m2m in djangoClass._meta.many_to_many:
+            related_name = m2m.name
+            if not related_name:
+                continue
+            if "+" in related_name:   # duplicated logic from related_objects; not sure if necessary
+                continue
+
+            fmap[m2m.name + "_ids"] = m2m
+
+        fields_changed = []
+        for (fieldDesc, val) in message.ListFields():
+            if fieldDesc.name in fmap:
+                m2m = getattr(djangoClass,fmap[fieldDesc.name].name)
+
+                # remove items that are in the django object, but not in the proto object
+                for item in list(m2m.all()):
+                    if (not item.id in val):
+                        m2m.remove(item.id)
+                        fields_changed.append(fieldDesc.name)
+
+                # add items are are in the proto object, but not in the django object
+                django_ids = [x.id for x in m2m.all()]
+
+                for item in val:
+                    if item not in django_ids:
+                        m2m.add(item)
+                        fields_changed.append(fieldDesc.name)
+
+        # gRPC doesn't give us a convenient way to differentiate between an empty list and an omitted list. So what
+        # we'll do is check and see if the user specified a fieldname in `update_fields`. If the user did, and that
+        # field is an m2m that we didn't encounter, then it must have been an empty list that the user wants
+        # to set.
+
+        for name in update_fields:
+            if (name in fmap) and (not name in fields_changed):
+                m2m = getattr(djangoClass, fmap[name].name)
+                m2m.clear()
+                fields_changed.append(name)
+
+        if fields_changed:
+            djangoClass.save()
 
     def querysetToProto(self, djangoClass, queryset):
         objs = queryset
@@ -393,6 +463,9 @@ class XOSAPIHelperMixin(object):
         self.xos_security_gate(new_obj, user, write_access=True)
 
         new_obj.save()
+
+        self.handle_m2m(new_obj, request, [])
+
         return self.objToProto(new_obj)
 
     def update(self, djangoClass, user, id, message, context):
@@ -405,16 +478,28 @@ class XOSAPIHelperMixin(object):
         for (k, v) in args.iteritems():
             setattr(obj, k, v)
 
+        m2m_field_names = [x.name+"_ids" for x in djangoClass._meta.many_to_many]
+
+        update_fields = []
+        m2m_update_fields = []
         save_kwargs = {}
         for (k, v) in context.invocation_metadata():
             if k == "update_fields":
-                save_kwargs["update_fields"] = v.split(",")
+                for field_name in v.split(","):
+                    if field_name in m2m_field_names:
+                        m2m_update_fields.append(field_name)
+                    else:
+                        update_fields.append(field_name)
+                save_kwargs["update_fields"] = update_fields
             elif k == "caller_kind":
                 save_kwargs["caller_kind"] = v
             elif k == "always_update_timestamp":
                 save_kwargs["always_update_timestamp"] = True
 
         obj.save(**save_kwargs)
+
+        self.handle_m2m(obj, message, m2m_update_fields)
+
         return self.objToProto(obj)
 
     def delete(self, djangoClass, user, id):

@@ -18,10 +18,15 @@ message ReverseForeignKeyRule {
   string modelName = 1;
 }
 
+message ManyToManyForeignKeyRule {
+  string modelName = 1;
+}
+
 extend google.protobuf.FieldOptions {
   ValRule val = 1001;
   ForeignKeyRule foreignKey = 1002;
   ReverseForeignKeyRule reverseForeignKey = 1003;
+  ManyToManyForeignKeyRule manyToManyForeignKey = 1004;
 }
 
 extend google.protobuf.MessageOptions {

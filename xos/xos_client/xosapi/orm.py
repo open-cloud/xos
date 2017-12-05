@@ -100,8 +100,14 @@ class ORMWrapper(object):
            if name.endswith("_ids"):
                reverseForeignKey = field.GetOptions().Extensions._FindExtensionByName("xos.reverseForeignKey")
                fk = field.GetOptions().Extensions[reverseForeignKey]
-               if fk:
-                   reverse_fkmap[name[:-4]] = {"src_fieldName": name, "modelName": fk.modelName}
+               if fk and fk.modelName:
+                   reverse_fkmap[name[:-4]] = {"src_fieldName": name, "modelName": fk.modelName, "writeable": False}
+               else:
+                   manyToManyForeignKey = field.GetOptions().Extensions._FindExtensionByName("xos.manyToManyForeignKey")
+                   fk = field.GetOptions().Extensions[manyToManyForeignKey]
+                   if fk and fk.modelName:
+                       reverse_fkmap[name[:-4]] = {"src_fieldName": name, "modelName": fk.modelName, "writeable": True}
+
 
         return reverse_fkmap
 
@@ -133,7 +139,7 @@ class ORMWrapper(object):
     def reverse_fk_resolve(self, name):
         if name not in self.reverse_cache:
             fk_entry = self._reverse_fkmap[name]
-            self.cache[name] = ORMLocalObjectManager(self.stub, fk_entry["modelName"], getattr(self, fk_entry["src_fieldName"]))
+            self.cache[name] = ORMLocalObjectManager(self.stub, fk_entry["modelName"], getattr(self, fk_entry["src_fieldName"]), fk_entry["writeable"])
 
         return self.cache[name]
 
@@ -284,10 +290,11 @@ class ORMQuerySet(list):
 class ORMLocalObjectManager(object):
     """ Manages a local list of objects """
 
-    def __init__(self, stub, modelName, idList):
+    def __init__(self, stub, modelName, idList, writeable):
         self._stub = stub
         self._modelName = modelName
         self._idList = idList
+        self._writeable = writeable
         self._cache = None
 
     def resolve_queryset(self):
@@ -318,6 +325,32 @@ class ORMLocalObjectManager(object):
             return model
         else:
             return None
+
+    def add(self, model):
+        if not self._writeable:
+            raise Exception("Only ManyToMany lists are writeable")
+
+        if isinstance(model, int):
+            id = model
+        else:
+            if not model.id:
+                raise Exception("Model %s has no id" % model)
+            id = model.id
+
+        self._idList.append(id)
+
+    def remove(self, model):
+        if not self._writeable:
+            raise Exception("Only ManyToMany lists are writeable")
+
+        if isinstance(model, int):
+            id = model
+        else:
+            if not model.id:
+                raise Exception("Model %s has no id" % model)
+            id = model.id
+
+        self._idList.remove(id)
 
 class ORMObjectManager(object):
     """ Manages a remote list of objects """
