@@ -196,8 +196,8 @@ message ControllerRole (XOSBase) {
 
 
 message ControllerSite (XOSBase) {
-     required manytoone site->Site:controllersite = 1 [db_index = True, null = False, blank = False, unique_with="controller"];
-     optional manytoone controller->Controller:controllersite = 2 [db_index = True, null = True, blank = True];
+     required manytoone site->Site:controllersite = 1 [db_index = True, null = False, blank = False, unique_with="controller", tosca_key = True];
+     optional manytoone controller->Controller:controllersite = 2 [db_index = True, null = True, blank = True, tosca_key = True];
      optional string tenant_id = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "Keystone tenant id", null = True, db_index = True];
 }
 
@@ -260,7 +260,7 @@ message DeploymentPrivilege (XOSBase) {
 
 
 message DeploymentRole (XOSBase) {
-     required string role = 1 [choices = "(('admin', 'Admin'),)", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
+     required string role = 1 [choices = "(('admin', 'Admin'),)", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False, tosca_key=True];
 }
 
 
@@ -497,7 +497,7 @@ message SitePrivilege (XOSBase) {
 
 
 message SiteRole (XOSBase) {
-     required string role = 1 [choices = "(('admin', 'Admin'), ('pi', 'PI'), ('tech', 'Tech'), ('billing', 'Billing'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
+     required string role = 1 [choices = "(('admin', 'Admin'), ('pi', 'PI'), ('tech', 'Tech'), ('billing', 'Billing'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False, tosca_key=True];
 }
 
 policy slice_name < obj.id | {{ obj.name.startswith(obj.site.login_base) }} >
@@ -536,7 +536,7 @@ message SlicePrivilege (XOSBase) {
 
 
 message SliceRole (XOSBase) {
-     required string role = 1 [choices = "(('admin', 'Admin'), ('default', 'Default'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
+     required string role = 1 [choices = "(('admin', 'Admin'), ('default', 'Default'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False, tosca_key=True];
 }
 
 policy tag_policy < ctx.user.is_admin >
@@ -572,8 +572,8 @@ message ServiceInstanceLink (XOSBase) {
      required manytoone provider_service_instance->ServiceInstance:provided_links = 1 [db_index = True, null = False, blank = False, tosca_key=True];
      optional manytoone provider_service_interface->ServiceInterface:provided_links = 2 [db_index = True, null = True, blank = True];
      optional manytoone subscriber_service_instance->ServiceInstance:subscribed_links = 3 [db_index = True, null = True, blank = True];
-     optional manytoone subscriber_service->Service:subscribed_links = 4 [db_index = True, null = True, blank = True];
-     optional manytoone subscriber_network->Network:subscribed_links = 5 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_service->Service:subscribed_links = 4 [db_index = True, null = True, blank = True, tosca_key_one_of=subscriber_service_instance];
+     optional manytoone subscriber_network->Network:subscribed_links = 5 [db_index = True, null = True, blank = True, tosca_key_one_of=subscriber_service_instance];
 }
 
 message ServiceInstanceAttribute (XOSBase) {
