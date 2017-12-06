@@ -123,3 +123,48 @@ message Foo {
         output = XOSGenerator.generate(args)
         self.assertNotIn('name', output)
         self.assertIn('provider_service_instance_id', output)
+
+    def test_xproto_model_to_oneof_key(self):
+        """
+        [XOS-GenX] in some models we need to have a combine key on variable fields, for example, keys can be subscriber_service_id + oneof(provider_service_id, provider_network_id)
+        """
+        xproto = \
+            """
+            option app_label = "test";
+
+            message Foo {
+            
+                option tosca_key = "key1, oneof(key_2, key_3)";
+            
+                required string name = 1 [ null = "False", blank="False"];
+                required string key_1 = 2 [ null = "False", blank="False", tosca_key_one_of = "key_2"];
+                required string key_2 = 3 [ null = "False", blank="False", tosca_key_one_of = "key_1"];
+                required string key_3 = 4 [ null = "False", blank="False", tosca_key_one_of = "key_4"];
+                required string key_4 = 5 [ null = "False", blank="False", tosca_key_one_of = "key_3"];
+            }
+            """
+
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = self.target_tosca_keys
+        output = XOSGenerator.generate(args)
+        self.assertIn("['name', ['key_4', 'key_3'], ['key_1', 'key_2']]", output)
+
+        xproto = \
+            """
+            option app_label = "test";
+
+            message Foo {
+
+                option tosca_key = "key1, oneof(key_2, key_3)";
+
+                required string name = 1 [ null = "False", blank="False"];
+                required manytoone key_1->Bar:key_1s = 2;
+                required manytoone key_2->Bar:key_2s = 3 [tosca_key_one_of = "key_1"];
+                required manytoone key_3->Bar:key_3s = 4 [tosca_key_one_of = "key_1"];
+            }
+            """
+
+        args.inputs = xproto
+        output = XOSGenerator.generate(args)
+        self.assertIn("['name', ['key_1_id', 'key_3_id', 'key_2_id']]", output)

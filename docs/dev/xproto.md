@@ -191,6 +191,21 @@ Identify a field that is used as key by the TOSCA engine. A model can have multi
 ```protobuf
 option tosca_key = True;
 ```
+Identify a field that is used as key by the TOSCA engine. This needs to be used in case a composite key can be composed by different combination of fields:
+```protobuf
+tosca_key_one_of = "<field_name>"
+```
+For example, in the `ServiceInstanceLink` model:
+```protobuf
+message ServiceInstanceLink (XOSBase) {
+     required manytoone provider_service_instance->ServiceInstance:provided_links = 1 [db_index = True, null = False, blank = False, tosca_key=True];
+     optional manytoone provider_service_interface->ServiceInterface:provided_links = 2 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_service_instance->ServiceInstance:subscribed_links = 3 [db_index = True, null = True, blank = True];
+     optional manytoone subscriber_service->Service:subscribed_links = 4 [db_index = True, null = True, blank = True, tosca_key_one_of=subscriber_service_instance];
+     optional manytoone subscriber_network->Network:subscribed_links = 5 [db_index = True, null = True, blank = True, tosca_key_one_of=subscriber_service_instance];
+}
+```
+the key is composed by `provider_service_instance` and one of `subscriber_service_instance`, `subscriber_service`, `subscriber_network`
 
 ### Naming Conventions
 
