@@ -60,6 +60,10 @@ def delete(self, *args, **kwds):
             with transaction.atomic():
                 for (k, models) in collector.data.items():
                     for model in models:
+                        if not hasattr(model, "deleted"):
+                            # Automatically generated through relations from ManyToMany fields do not have soft-delete
+                            # capability.
+                            continue
                         if model.deleted:
                             # in case it's already been deleted, don't delete again
                             continue

@@ -29,7 +29,7 @@ TEST_NODE_LABEL_1_NAME = "test_node_label_1"
 
 class TestORM(unittest.TestCase):
     def setUp(self):
-        self.test_node_label_1_name = TEST_NODE_LABEL_1_NAME + "_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+        self.test_node_label_1_name = TEST_NODE_LABEL_1_NAME
 
         nodes1 = orm.Node.objects.filter(name="test_node_1")
         if nodes1:
@@ -46,21 +46,17 @@ class TestORM(unittest.TestCase):
             self.node2.save()
 
     def tearDown(self):
-        # TODO: Deleting NodeLabel seems to be broken -- appears to be a cascade failure
-        # attaching a nodelabel to a node causes deleting the node to also be broken.
+        node_labels1 = orm.NodeLabel.objects.filter(name=self.test_node_label_1_name)
+        for node_label in node_labels1:
+            node_label.delete()
 
+        nodes1 = orm.Node.objects.filter(name="test_node_1")
+        for node in nodes1:
+            node.delete()
 
-        #node_labels1 = orm.NodeLabel.objects.filter(name=self.test_node_label_1_name)
-        #for node_label in node_labels1:
-        #    node_label.delete()
-
-        #nodes1 = orm.Node.objects.filter(name="test_node_1")
-        #for node in nodes1:
-        #    node.delete()
-
-        #nodes2 = orm.Node.objects.filter(name="test_node_2")
-        #for node in nodes2:
-        #    node.delete()
+        nodes2 = orm.Node.objects.filter(name="test_node_2")
+        for node in nodes2:
+            node.delete()
 
         pass
 
