@@ -158,10 +158,8 @@ class XProtoSecurityTest(unittest.TestCase):
         ctx = FakeArgs()
 	ctx.user = 1
 
-#       FIXME: This test is not passing
-#        verdict = output_security_check(obj, ctx)
-#        self.assertTrue(verdict)
-
+        verdict = output_security_check(obj, ctx)
+        self.assertTrue(verdict)
 
     def test_bin(self):
         xproto = \
