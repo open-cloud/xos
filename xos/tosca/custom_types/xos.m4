@@ -1242,6 +1242,22 @@ node_types:
             and/or containers.
         properties:
             xos_base_props
+            bridgeId:
+                type: string
+                required: false
+                description: Bridge ID
+            dataPlaneIntf:
+                type: string
+                required: false
+                description: data plane interface
+            dataPlaneIp:
+                type: string
+                required: false
+                description: data plane ip
+            hostManagementIface:
+                type: string
+                required: false
+                description: host management interface
         capabilities:
             node:
                 type: tosca.capabilities.xos.Node

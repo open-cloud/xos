@@ -384,6 +384,10 @@ policy node_policy < *site_policy(site_deployment.site) >
 message Node::node_policy (XOSBase) {
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the Node", null = False, db_index = False];
      required manytoone site_deployment->SiteDeployment:nodes = 2 [db_index = True, null = False, blank = False];
+     required string bridgeId = 3 [max_length = 200, content_type = "stripped", blank = False, help_text = "Bridge Id", null = False, db_index = False];
+     required string dataPlaneIntf = 4 [max_length = 200, content_type = "stripped", blank = False, help_text = "Dataplane Interface", null = False, db_index = False];
+     required string dataPlaneIp = 5 [max_length = 200, content_type = "stripped", blank = True, help_text = "Dataplane Ip", null = True, db_index = False];
+     required string hostManagementIface = 6 [max_length = 200, content_type = "stripped", blank = True, help_text = "Host Management Interface", null = True, db_index = False];
 }
 message NodeLabel (XOSBase) {
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "label name", null = False, db_index = False];

@@ -2152,6 +2152,22 @@ node_types:
                 type: string
                 required: false
                 descrption: Replaces/renames this object
+            bridgeId:
+                type: string
+                required: false
+                description: Bridge ID
+            dataPlaneIntf:
+                type: string
+                required: false
+                description: data plane interface
+            dataPlaneIp:
+                type: string
+                required: false
+                description: data plane ip
+            hostManagementIface:
+                type: string
+                required: false
+                description: host management interface
         capabilities:
             node:
                 type: tosca.capabilities.xos.Node
