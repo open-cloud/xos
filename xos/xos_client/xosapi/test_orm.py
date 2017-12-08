@@ -143,7 +143,7 @@ class TestORM(unittest.TestCase):
         self.assertNotEqual(slice.site, None)
         self.assertEqual(slice.site.id, site.id)
 
-    def test_foreign_key_set(self):
+    def test_foreign_key_set_with_invalidate(self):
         orm = self.make_coreapi()
         site = orm.Site(name="mysite")
         site.save()
@@ -157,6 +157,124 @@ class TestORM(unittest.TestCase):
         self.assertTrue(slice.id > 0)
         self.assertNotEqual(slice.site, None)
         self.assertEqual(slice.site.id, site.id)
+        if not USE_FAKE_STUB:
+            self.assertTrue(slice.id in slice.site.slices_ids)
+
+    def test_foreign_key_set_without_invalidate(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user.save()
+        self.assertTrue(user.id > 0)
+        slice = orm.Slice(name="mysite_foo", site = site, creator_id=user.id)
+        slice.save()
+        self.assertTrue(slice.id > 0)
+        self.assertNotEqual(slice.site, None)
+        self.assertEqual(slice.site.id, site.id)
+        if not USE_FAKE_STUB:
+            self.assertTrue(slice.id in slice.site.slices_ids)
+            ids_from_models = [x.id for x in slice.site.slices.all()]
+            self.assertTrue(slice.id in ids_from_models)
+
+    def test_foreign_key_reset(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user.save()
+        self.assertTrue(user.id > 0)
+        slice = orm.Slice(name="mysite_foo", site = site, creator_id=user.id)
+        slice.save()
+        self.assertTrue(slice.id > 0)
+        self.assertNotEqual(slice.site, None)
+        self.assertEqual(slice.site.id, site.id)
+        if not USE_FAKE_STUB:
+            self.assertTrue(slice.id in site.slices_ids)
+            self.assertTrue(slice.id in slice.site.slices_ids)
+
+        site2 = orm.Site(name="mysite2")
+        site2.save()
+        slice.name = "mysite2_foo"
+        slice.site = site2
+        slice.save()
+        self.assertNotEqual(slice.site, None)
+        self.assertEqual(slice.site.id, site2.id)
+        if not USE_FAKE_STUB:
+            self.assertTrue(slice.id not in site.slices_ids)
+            self.assertTrue(slice.id in site2.slices_ids)
+            self.assertTrue(slice.id in slice.site.slices_ids)
+            ids_from_models1 = [x.id for x in site.slices.all()]
+            self.assertTrue(slice.id not in ids_from_models1)
+            ids_from_models2 = [x.id for x in site2.slices.all()]
+            self.assertTrue(slice.id in ids_from_models2)
+
+    def test_foreign_key_back_and_forth_even(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user.save()
+        self.assertTrue(user.id > 0)
+        slice = orm.Slice(name="mysite_foo", site = site, creator_id=user.id)
+        slice.save()
+        self.assertTrue(slice.id > 0)
+        self.assertNotEqual(slice.site, None)
+        self.assertEqual(slice.site.id, site.id)
+        if not USE_FAKE_STUB:
+            self.assertTrue(slice.id in site.slices_ids)
+            self.assertTrue(slice.id in slice.site.slices_ids)
+
+        site2 = orm.Site(name="mysite2")
+        site2.save()
+        slice.name = "mysite2_foo"
+        slice.site = site2
+        slice.site = site
+        slice.site = site2
+        slice.site = site
+        slice.save()
+        self.assertNotEqual(slice.site, None)
+        self.assertEqual(slice.site.id, site.id)
+        if not USE_FAKE_STUB:
+            self.assertTrue(slice.id not in site2.slices_ids)
+            self.assertTrue(slice.id in site.slices_ids)
+            self.assertTrue(slice.id in slice.site.slices_ids)
+
+    def test_foreign_key_back_and_forth_odd(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user.save()
+        self.assertTrue(user.id > 0)
+        slice = orm.Slice(name="mysite_foo", site = site, creator_id=user.id)
+        slice.save()
+        self.assertTrue(slice.id > 0)
+        self.assertNotEqual(slice.site, None)
+        self.assertEqual(slice.site.id, site.id)
+        if not USE_FAKE_STUB:
+            self.assertTrue(slice.id in site.slices_ids)
+            self.assertTrue(slice.id in slice.site.slices_ids)
+
+        site2 = orm.Site(name="mysite2")
+        site2.save()
+        slice.name = "mysite2_foo"
+        slice.site = site2
+        slice.site = site
+        slice.site = site2
+        slice.site = site
+        slice.site = site2
+        slice.save()
+        self.assertNotEqual(slice.site, None)
+        self.assertEqual(slice.site.id, site2.id)
+        if not USE_FAKE_STUB:
+            self.assertTrue(slice.id not in site.slices_ids)
+            self.assertTrue(slice.id in site2.slices_ids)
+            self.assertTrue(slice.id in slice.site.slices_ids)
 
     def test_foreign_key_create_null(self):
         orm = self.make_coreapi()

@@ -71,8 +71,9 @@ class FakeExtensionManager(object):
         return default
 
 class FakeFieldOption(object):
-    def __init__(self, modelName=None):
+    def __init__(self, modelName=None, reverseFieldName=None):
         self.modelName = modelName
+        self.reverseFieldName = reverseFieldName
 
 class FakeField(object):
     def __init__(self, field):
@@ -80,7 +81,8 @@ class FakeField(object):
 
         fk_model = field.get("fk_model", None)
         if fk_model:
-            extensions["xos.foreignKey"] = FakeFieldOption(modelName=fk_model)
+            reverseFieldName = field.get("fk_reverseFieldName", None)
+            extensions["xos.foreignKey"] = FakeFieldOption(modelName=fk_model, reverseFieldName=reverseFieldName)
 
         fk_reverse = field.get("fk_reverse", None)
         if fk_reverse:
@@ -150,7 +152,7 @@ class User(FakeObj):
 class Slice(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
                {"name": "name", "default": ""},
-               {"name": "site_id", "default": 0, "fk_model": "Site"},
+               {"name": "site_id", "default": 0, "fk_model": "Site", "fk_reverseFieldName": "slices"},
                {"name": "service_id", "default": 0, "fk_model": "Service"},
                {"name": "creator_id", "default": 0, "fk_model": "User"},
                {"name": "networks_ids", "default": [], "fk_reverse": "Network"},
@@ -165,7 +167,7 @@ class Slice(FakeObj):
 class Site(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
                {"name": "name", "default": ""},
-               {"name": "slice_ids", "default": [], "fk_reverse": "Slice"},
+               {"name": "slices_ids", "default": [], "fk_reverse": "Slice"},
                {"name": "leaf_model_name", "default": "Site"})
 
     def __init__(self, **kwargs):

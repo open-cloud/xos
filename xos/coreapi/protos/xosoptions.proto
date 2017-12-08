@@ -12,6 +12,7 @@ message ValRule {
 
 message ForeignKeyRule {
   string modelName = 1;
+  string reverseFieldName = 2;
 }
 
 message ReverseForeignKeyRule {

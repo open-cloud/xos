@@ -231,6 +231,8 @@ def xproto_api_opts(field):
 
     if 'link' in field and 'model' in field['options']:
         options.append('(foreignKey).modelName = "%s"'%field['options']['model'])
+        if ("options" in field) and ("port" in field["options"]):
+            options.append('(foreignKey).reverseFieldName = "%s"' % field['options']['port'])
 
     if options:
         options_str = '[' + ', '.join(options) + ']'
