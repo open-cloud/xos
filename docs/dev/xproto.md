@@ -1,6 +1,6 @@
-# XOS Support for Models
+# XOS Modeling Framework
 
-XOS defines a language for specifying data models (_xproto_) and a tool chain for generating code based on the set of models (_xosgen_).
+XOS defines a modeling framework: a language for specifying data models (_xproto_) and a tool chain for generating code based on the set of models (_xosgenx_).
 
 The xproto language is based on [Google’s protocol buffers](https://developers.google.com/protocol-buffers/) (protobufs), borrowing their syntax, but extending their semantics to express additional behavior. Although these extensions can be written in syntactically valid protobufs (using the protobuf option feature), the resulting model definitions are cumbersome and the semantics are under-specified.
 
@@ -8,7 +8,7 @@ Whereas protobufs primarily facilitate one operation on models, namely, data ser
 
 Users are free to define models using standard protobufs instead of the xproto syntax, but doing so obscures the fact that packing new behavior into the options field renders protobuf’s semantics under-specified. Full details are given below, but as two examples: (1) xproto supports relationships (foreign keys) among objects defined by the models, and (2) xproto supports boolean predicates (policies) that can be applied to objects defined by the  models.
 
-The xosgen tool chain generates code based on a set of models loaded into the XOS Core. This tool chain can be used to produce multiple targets, including:
+The xosgenx tool chain generates code based on a set of models loaded into the XOS Core. This tool chain can be used to produce multiple targets, including:
 
 * Object Relation Mapping (ORM) – maps the data model onto a persistent database.
 * gRPC Interface – how all the other containers communicate with XOS Core.
@@ -17,7 +17,7 @@ The xosgen tool chain generates code based on a set of models loaded into the XO
 * Synchronizer Framework – execution environment in which Ansible playbooks run.
 * Unit Tests – auto-generate API unit tests.
 
-The next two sections describe xproto (first the models and then policies that can be applied to the models), and the following section describes xosgen and how it can be used to generate different targets.
+The next two sections describe xproto (first the models and then policies that can be applied to the models), and the following section describes xosgenx and how it can be used to generate different targets.
 
 ## Models
 
@@ -36,7 +36,7 @@ message Image {
 
 We use standard protobuf scalar types, for example: `int32`, `uint32`, `string`, `bool`, and `float`.
 
-xproto contains several extensions, encoded as Protobuf options, which the xosgen toolchain recognizes at the top level. The xproto extensions to Google Protobufs are as follows.
+xproto contains several extensions, encoded as Protobuf options, which the xosgenx toolchain recognizes at the top level. The xproto extensions to Google Protobufs are as follows.
 
 ### Inheritance
 
@@ -264,6 +264,20 @@ relates the `Controller` and `User` models should be called `ControllerUser`.
 Field names use lower-case with underscores separating names. Examples of
 valid field names are: name, `disk_format`, `controller_format`.
 
+### Declarative vs Feedback State 
+
+By convention, the fields that make up a model are classified as
+holding one of two kinds of state: *declarative* and *feedback*.
+
+Fields set by the operator to specify (declare) the expected state of
+CORD's underlying components are said to hold *declarative state*.
+In contrast, fields that record operational data reported from CORD's
+underlying (backend) components are said to hold *feedback state*.
+
+For more information about declarative and feedback state, and the
+role they play in synchornizing the data model with the backend
+components, read about the [Synchronizer Architecture](dev/sync_arch.md). 
+
 ## Policies
 
 Policies are boolean expressions that can be associated with models. Consider two examples. In the first, `grant_policy` is a predicate applied to instances of the `Privilege` model. It is used to generate and inject security checks into the API.
@@ -330,7 +344,7 @@ python escapes (`{{ python expression }}`).
 
 ## Tool Chain
 
-The xosgen tool converts a xproto file into an intermediate representation and passes it to a target, which in turn generates the output code. The target has access to a library of auxiliary functions implemented in Python. The target itself is written as a jinja2 template. The following figure depicts the processing pipeline.
+The xosgenx tool converts a xproto file into an intermediate representation and passes it to a target, which in turn generates the output code. The target has access to a library of auxiliary functions implemented in Python. The target itself is written as a jinja2 template. The following figure depicts the processing pipeline.
 
 <img src="toolchain.png" alt="Drawing" style="width: 500px;"/>
 
@@ -345,7 +359,7 @@ The IR is a representation of a parsed xproto file in the form of nested Python 
     ]
 },
 "context": {
-    "command line option 1": "value - see the --kv option of xosgen"
+    "command line option 1": "value - see the --kv option of xosgenx"
 },
 "options": {
     "top level option 1": "value of option 1"
@@ -395,9 +409,9 @@ This target simply prints the IR for an xproto definition.
 
 The example target outputs a Python function that enumerates the ids of the objects from which the current object is linked.
 
-### Running xosgen
+### Running xosgenx
 
-It is possible to run the xosgen tool chain directly. This is useful, for example, when developing a new target.
+It is possible to run the xosgenx tool chain directly. This is useful, for example, when developing a new target.
 
 To do do, first setup the python virtual environment as described [here](local_env.md). Then drop an xproto file in your working directory. For example, you can copy-and-paste the following content into a file named `slice.xproto`:
 
