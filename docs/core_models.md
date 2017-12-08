@@ -1,64 +1,134 @@
 # Core Models
 
 The XOS modeling framework provides a foundation for building CORD,
-but it is just a means to defining the set of core models that effectively
-specify CORD's architecture. 
+but it is just a tool to defining a set of core models. It is these core
+models that provide a coherent interface for configuring,
+controlling, and applying policy to a CORD POD. This gives operators a
+way to specify and reason about the behavior of CORD, while allowing
+for a wide range of implementation choices for the underlying software
+components.
 
-## Overview
+## Services, Slices, and ServiceInstances
 
-CORD's core starts with the **Service** model, which represents
-all functionality that can be on-boarded into CORD. The power of the
-Service model is that it is implementation-agnostic, supporting both
-*server-based* services (e.g., legacy VNF running in VMs and
-micro-services running in containers) and *switch-based* services
-(e.g., SDN control applications that installs flow rules into
-white-box switches).
+CORD's core starts with the **Service** model, which represents all
+functionality that can be on-boarded into CORD. This model is designed
+to meet two requirements. The first is to be implementation-agnostic,
+supporting both *server-based* implementations (e.g., legacy VNFs
+running in VMs and micro-services running in containers) and
+*switch-based* implementations (e.g., SDN control applications that
+install flow rules into white-box switches). The second is to be
+multi-tenant, supporting isolated and virtualized instances that can
+be created on behalf of both trusted and untrusted tenants.
 
-To realize this range of implementation choices, each service is bound
-a set of **Slice** models, each of which represents a
-combination of virtualized compute resources (both containers and VMs)
-and virtualized network resources (virtual networks).
+To realize these two requirements, the Service model builds upon two
+other models—**Slices** and **ServiceInstances**—as shown in the
+figure below. Specifically, a Service is bound to one or more
+Slices, each of which represents a distributed resource container in
+which the Service runs. This resource container, in turn, consists of
+a scalable set of **Instances** (VMs or containers) and a set of
+**Networks** that interconnect those VMs and containers. Similarly, a
+Service is bound to one or more ServiceInstances, each of which
+represents the virtualized partition of the service allocated to some
+tenant.
 
-Next, a **ServiceDependency** model represents a relationship betwee
-a pair of services: a *subscriber*  and a *provider*. This dependency is
-parameterized by a **connect_method** field that defines how the two
-services are interconnected in the underlying network data plane. The
-approach is general enough to interconnect two server-based services,
-two switch-based services, or a server-based and a switch-based
-service pair. This makes it possible to construct a service graph
-without regard to how the underlying services are implemented.
+<img src="Service.png" alt="Drawing" style="width: 300px;"/>
 
-For a service graph defined by a collection of Service and
-ServiceDependency models, every time a subscriber requests service
-(e.g., connects their cell phone or home router to CORD), a
-**ServiceInstance** object is created to represent the virtualized
-instance of each service traversed through the service graph on behalf
-of that subscriber. Different subscribers may traverse different paths
-through the service graph, based on their customer profile, but the
-end result is a collection of interconnected ServiceInstance objects,
-forming the CORD-equivalent of a service chain. (This "chain" is often
-linear, but because the model allows for a many-to-many relationship
-among service instances, it can form an arbitrary graph.)
+Slices model the compute and network resources used to implement a
+service. By creating and provisioning a Slice, the Service acquires
+the resources it needs to run the VNF image or the SDN control
+application that defines its behavior. Services are often bound to a
+single Slice, but multiple Slices are supported for Services
+implemented as a collection of micro-services that scales
+independently.
 
-Each node in this service chain (graph of ServiceInstance objects)
-represents some combination of virtualized compute and network
-resources; the service chain is not necessarily implemented by a
-sequence of containers or VMs. That would be one possible
-incarnation in the underlying service data plane, but how each
-individual service instance is realized in the underlying resources
-is an implementation detail. Moreover, because the data model
-provides a way to represent this end-to-end service chain, it is
-possible to access and control resources on a per-subscriber basis,
-in addition to controlling them on a per-service basis.
+ServiceInstances model the virtualized/isolated partition of the
+service allocated to a particular tenant. It defines the context in
+which a tenant accesses and controls its virtualized instantiation of
+the Service. In practice, this means the ServiceInstance maintains
+tenant-specific state, whereas the Service maintains Service-wide
+state.
 
-Finally, each model defines a set of fields that are used to either
-configure/control the underlying 
-component (these fields are said to hold *declarative state*) or to 
-record operational data about the underlying component (these 
-fields are said to hold *feedback state*). For more information 
-about declarative and feedback state, and the role they play in 
-synchornizing the data model with the backend components,
-read about the [Synchronizer Architecture](dev/sync_arch.md). 
+How ServiceInstances isolate tenants—and the extent of isolation
+(e.g., namespace isolation, failure isolation, performance
+isolation)—is an implementation choice. One option, as depicted by the
+dotted line in the figure shown above, is for each ServiceInstance to
+correspond to an underlying compute Instance. Because compute
+Instances provide isolation, the ServiceInstances are also
+isolated. But this is just one possible implementation. A second is
+that the ServiceInstance corresponds to a logically isolated partition
+of a horizontally scalable set of compute Instances. A third example
+is that each ServiceInstances corresponds to an isolated virtual
+network/channel implemented by some SDN control application. These
+three example implementations correspond to the vSG, vCDN, and vRouter
+Services in CORD, respectively.
+
+One important takeaway is that ServiceInstances and compute Instances
+are not necessarily one-to-one: the former represents a virtualized
+instance of a service and the latter represents a virtualized instance
+of a compute resource. Only in certain limited cases is the first
+implemented by the latter.
+
+M-CORD’s vSGW Service is a fourth example, one that is worth calling
+out because it does not fully utilize the degrees-of-freedom that the
+three models provide. vSGW is representative of many legacy VNFs in
+that it requires only one Slice that consists of a single VM (i.e., it
+does not necessarily leverage the Slice’s ability to scale across
+multiple compute Instances). And because the VNF was not designed to
+support multiple tenant contexts, there is no value in creating
+ServiceInstances (i.e., there is only Service-wide configuration).
+There is no harm in creating a ServiceInstance, representing the
+context in which all subscribers use the vSGW service, but doing so is
+not necessary since there is no need to control vSGW on a
+per-subscriber basis.
+
+## Service Graphs and Service Chains
+
+Given a set of Services (and their corresponding Slices and
+ServiceInstances), CORD also defines two core models for
+interconnecting them: **ServiceDependencies** and
+**ServiceInstanceLinks**. The first defines a dependency of one
+Service on another, thereby forming a CORD-wide *Service Graph*. The
+second defines a dependency between a pair of ServiceInstances,
+thereby forming a per-subscriber *Service Chain*.
+
+> Note: Service Graphs and Service Chains are not explicit models in CORD, but rather, they are defined by a set of vertices (Services, ServiceInstances) and edges (ServiceDependency, ServiceInstanceLink).
+
+The following figure illustrates an example service graph configured into CORD,
+along with an example collection of service chains. It does not show
+the related Slices.
+
+<img src="ServiceChain.png" alt="Drawing" style="width: 500px;"/>
+
+This example is overly simplistic in three
+ways. One, the Service Graph is not necessarily linear. It generally
+forms an arbitrary mesh. Two, the Service Chains are not necessarily
+isomorphic to the Service Graph nor equivalent to each other. Each
+generally corresponds to a subscriber-specific path through the
+Service Graph. The path corresponding to one subscriber may be
+different from the path corresponding to another subscriber. Three,
+Service Chains are also not necessarily linear. In general, a Service
+Chain may include “forks” and “joins” that subscriber traffic might
+follow based on runtime decisions made on a packet-by-packet for
+flow-by-flow basis.
+
+ServiceDependencies effectively define a template for how
+ServiceInterfaceLinks are implemented. For example, the
+ServiceDependency connecting some Service A (the
+**subscriber_service**) to some Service B (the **provider_service**)
+might indicate that they communicate in the data plane using one of
+the private networks associated with Service B. In general, this
+dependency is parameterized by a **connect_method** that defines
+how the two services are interconnected in the underlying network data
+plane. The design is general enough to interconnect two server-based
+services, two switch-based services, or a server-based and a
+switch-based service pair. This makes it possible to construct a
+service graph without regard to how the underlying services are
+implemented.
+
+The ServiceInterfaceLink associated with a ServiceInstance of A and a
+the corresponding ServiceInstance of B would then record specific
+state about that data plane connection (e.g., what address each is
+known by).
 
 ## Model Glossary 
 
@@ -66,8 +136,8 @@ CORD's core models are defined by a set of [xproto](dev/xproto.md)
 specifications. They are defined in their full detail in the source 
 code (see
 [core.xproto](https://github.com/opencord/xos/blob/master/xos/core/models/core.xproto)).
-The following summarizes these core models -- along with the 
-key relationships (bindings) among them -- in words. 
+The following summarizes these core models—along with the 
+key relationships (bindings) among them—in words. 
 
 * **Service:** Represents an elastically scalable, multi-tenant
 program, including the declarative state needed to instantiate,
@@ -76,6 +146,9 @@ control, and scale functionality.
    - Bound to a set of `Slices` that contains the collection of
       virtualized resources (e.g., compute, network) in which the
       `Service` runs.
+
+   - Bound to a set of `ServiceInstances` that record per-tenant
+      context for a virtualized partition of the `Service`. 
 
   In many CORD documents you will see mention of each service also
   having a "controller" which effectively corresponds to the
@@ -173,6 +246,3 @@ specifies a set of parameters, including `visibility` (set to `public` or
   allows for multi-site deployments.
 
   - Bound to a set of `Nodes` located at the `Site`.
-
-
-

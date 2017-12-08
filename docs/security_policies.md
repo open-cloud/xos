@@ -61,4 +61,4 @@ policy site_policy <
 ```
 
 For more information about security policy definitions, read about
-[xproto and xosgen](dev/xproto.md).
+[xproto and xosgenx](dev/xproto.md).

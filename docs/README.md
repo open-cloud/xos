@@ -11,8 +11,8 @@ three inter-related aspects, and this guide is organized accordingly.
 
 First, XOS defines a [modeling framework](dev/xproto.md), which
 includes both a modeling language (*xproto*) and a generative
-toolchain (*xosgen*). The core abstractions that define CORD's
-behavior are expressed in xproto, with xosgen then used to
+toolchain (*xosgenx*). The core abstractions that define CORD's
+behavior are expressed in xproto, with xosgenx then used to
 generate code for several elements required to control CORD
 (including an API that serves the set of models that have been
 loaded into XOS).
