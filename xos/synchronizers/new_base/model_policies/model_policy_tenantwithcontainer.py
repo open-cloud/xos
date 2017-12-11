@@ -18,12 +18,16 @@ from synchronizers.new_base.modelaccessor import *
 from synchronizers.new_base.policy import Policy
 from synchronizers.new_base.exceptions import *
 
+
 class Scheduler(object):
     # XOS Scheduler Abstract Base Class
     # Used to implement schedulers that pick which node to put instances on
 
-    def __init__(self, slice):
+    def __init__(self, slice, label=None, constrain_by_service_instance=False):
         self.slice = slice
+        self.label = label  # Only pick nodes with this label
+        # Apply service-instance-based constraints
+        self.constrain_by_service_instance = constrain_by_service_instance
 
     def pick(self):
         # this method should return a tuple (node, parent)
@@ -37,22 +41,20 @@ class Scheduler(object):
 class LeastLoadedNodeScheduler(Scheduler):
     # This scheduler always return the node with the fewest number of
     # instances.
-
-    def __init__(self, slice, label=None):
-        super(LeastLoadedNodeScheduler, self).__init__(slice)
-        self.label = label
-
     def pick(self):
-        # start with all nodes
-        nodes = Node.objects.all()
+        set_label = False
 
-        # if a label is set, then filter by label
+        nodes = []
         if self.label:
-            nodes = nodes.filter(nodelabels__name=self.label)
+            nodes = Node.objects.filter(nodelabels__name=self.label)
+            if not nodes:
+                set_label = self.constrain_by_service_instance
 
-        # if slice.default_node is set, then filter by default_node
-        if self.slice.default_node:
-            nodes = nodes.filter(name = self.slice.default_node)
+        if not nodes and self.slice.default_node:
+            # if slice.default_node is set, then filter by default_node
+            nodes = Node.objects.filter(name=self.slice.default_node)
+        else:
+            nodes = Node.objects.all()
 
         # convert to list
         nodes = list(nodes)
@@ -64,32 +66,42 @@ class LeastLoadedNodeScheduler(Scheduler):
             raise Exception(
                 "LeastLoadedNodeScheduler: No suitable nodes to pick from")
 
+        picked_node = nodes[0]
+
+        if set_label:
+            nl = NodeLabel(name=self.label)
+            nl.node.add(picked_node)
+            nl.save()
+
         # TODO: logic to filter nodes by which nodes are up, and which
         #   nodes the slice can instantiate on.
-        return [nodes[0], None]
+        return [picked_node, None]
+
 
 class TenantWithContainerPolicy(Policy):
-    model_name = None # This policy is abstract. Inherit this class into your own policy and override model_name
+    # This policy is abstract. Inherit this class into your own policy and override model_name
+    model_name = None
 
     def handle_create(self, tenant):
         return self.handle_update(tenant)
 
     def handle_update(self, service_instance):
-        if (service_instance.link_deleted_count>0) and (not service_instance.provided_links.exists()):
+        if (service_instance.link_deleted_count > 0) and (not service_instance.provided_links.exists()):
             model = globals()[self.model_name]
-            self.log.info("The last provided link has been deleted -- self-destructing.")
+            self.log.info(
+                "The last provided link has been deleted -- self-destructing.")
             self.handle_delete(service_instance)
             if model.objects.filter(id=service_instance.id).exists():
                 service_instance.delete()
             else:
-                self.log.info("Tenant %s is already deleted" % service_instance)
+                self.log.info("Tenant %s is already deleted" %
+                              service_instance)
             return
         self.manage_container(service_instance)
 
 #    def handle_delete(self, tenant):
 #        if tenant.vcpe:
 #            tenant.vcpe.delete()
-
 
     def save_instance(self, instance):
         # Override this function to do custom pre-save or post-save processing,
@@ -113,14 +125,17 @@ class TenantWithContainerPolicy(Policy):
             raise Exception("no addressing services")
         am_service = am_service[0]
 
-        ap = AddressPool.objects.filter(name=address_pool_name, service_id=am_service.id)
+        ap = AddressPool.objects.filter(
+            name=address_pool_name, service_id=am_service.id)
         if not ap:
-            raise Exception("Addressing service unable to find addresspool %s" % name)
+            raise Exception(
+                "Addressing service unable to find addresspool %s" % name)
         ap = ap[0]
 
         ip = ap.get_address()
         if not ip:
-            raise Exception("AddressPool '%s' has run out of addresses." % ap.name)
+            raise Exception(
+                "AddressPool '%s' has run out of addresses." % ap.name)
 
         ap.save()  # save the AddressPool to account for address being removed from it
 
@@ -132,24 +147,28 @@ class TenantWithContainerPolicy(Policy):
         if "subscriber_tenant" in kwargs:
             subscriber_service_instance = kwargs.pop("subscriber_tenant")
         elif "subscriber_service_instance" in kwargs:
-            subscriber_service_instance = kwargs.pop("subscriber_service_instance")
+            subscriber_service_instance = kwargs.pop(
+                "subscriber_service_instance")
 
         # TODO: potential partial failure -- AddressPool address is allocated and saved before addressing tenant
 
         t = None
         try:
-            t = AddressManagerServiceInstance(owner=am_service, **kwargs)    # TODO: Hardcoded dependency
+            t = AddressManagerServiceInstance(
+                owner=am_service, **kwargs)    # TODO: Hardcoded dependency
             t.public_ip = ip
             t.public_mac = self.ip_to_mac(ip)
             t.address_pool_id = ap.id
             t.save()
 
             if subscriber_service:
-                link = ServiceInstanceLink(subscriber_service = subscriber_service, provider_service_instance=t)
+                link = ServiceInstanceLink(
+                    subscriber_service=subscriber_service, provider_service_instance=t)
                 link.save()
 
             if subscriber_service_instance:
-                link = ServiceInstanceLink(subscriber_service_instance = subscriber_service_instance, provider_service_instance=t)
+                link = ServiceInstanceLink(
+                    subscriber_service_instance=subscriber_service_instance, provider_service_instance=t)
                 link.save()
         except:
             # cleanup if anything went wrong
@@ -171,7 +190,8 @@ class TenantWithContainerPolicy(Policy):
         if slice.default_image:
             return slice.default_image
 
-        raise SynchronizerProgrammingError("Please set a default image for %s" % self.slice.name)
+        raise SynchronizerProgrammingError(
+            "Please set a default image for %s" % self.slice.name)
 
     """ get_legacy_tenant_attribute
         pick_least_loaded_instance_in_slice
@@ -221,14 +241,16 @@ class TenantWithContainerPolicy(Policy):
 
         if tenant.instance is None:
             if not tenant.owner.slices.count():
-                raise SynchronizerConfigurationError("The service has no slices")
+                raise SynchronizerConfigurationError(
+                    "The service has no slices")
 
             new_instance_created = False
             instance = None
             if self.get_legacy_tenant_attribute(tenant, "use_same_instance_for_multiple_tenants", default=False):
                 # Find if any existing instances can be used for this tenant
                 slices = tenant.owner.slices.all()
-                instance = self.pick_least_loaded_instance_in_slice(slices, desired_image)
+                instance = self.pick_least_loaded_instance_in_slice(
+                    tenant, slices, desired_image)
 
             if not instance:
                 slice = tenant.owner.slices.first()
@@ -237,13 +259,20 @@ class TenantWithContainerPolicy(Policy):
                 if not flavor:
                     flavors = Flavor.objects.filter(name="m1.small")
                     if not flavors:
-                        raise SynchronizerConfigurationError("No m1.small flavor")
+                        raise SynchronizerConfigurationError(
+                            "No m1.small flavor")
                     flavor = flavors[0]
 
                 if slice.default_isolation == "container_vm":
                     raise Exception("Not implemented")
                 else:
-                    (node, parent) = LeastLoadedNodeScheduler(slice).pick()
+                    scheduler = getattr(self, "scheduler",
+                                        LeastLoadedNodeScheduler)
+                    constrain_by_service_instance = getattr(
+                        self, 'constrain_by_service_instance', False)
+                    tenant_node_label = getattr(tenant, "node_label", None)
+                    (node, parent) = scheduler(slice, label=tenant_node_label,
+                                               constrain_by_service_instance=constrain_by_service_instance).pick()
 
                 assert(slice is not None)
                 assert(node is not None)
