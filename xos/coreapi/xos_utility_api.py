@@ -216,7 +216,10 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
         service_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/../services')
         services_xprotos = get_xproto(service_dir)
 
-        xprotos = core_xprotos + services_xprotos
+        dynamic_service_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/../dynamic_services')
+        dynamic_services_xprotos = get_xproto(dynamic_service_dir)
+
+        xprotos = core_xprotos + services_xprotos + dynamic_services_xprotos
 
         xproto = ""
 

@@ -41,6 +41,7 @@ class Scheduler(object):
 class LeastLoadedNodeScheduler(Scheduler):
     # This scheduler always return the node with the fewest number of
     # instances.
+
     def pick(self):
         set_label = False
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 
 # Copyright 2017-present Open Networking Foundation
 #
@@ -14,7 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-while true; do
-    make
-    sleep 1
-done
+
+name: test-coreapi
+logging:
+  version: 1
+  handlers:
+    console:
+      class: logging.StreamHandler
+  loggers:
+    'multistructlog':
+      handlers:
+          - console

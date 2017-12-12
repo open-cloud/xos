@@ -39,7 +39,7 @@ PROTOC_TARBALL := protobuf-python-$(PROTOC_VERSION).tar.gz
 PROTOC_DOWNLOAD_URI := $(PROTOC_DOWNLOAD_PREFIX)/v$(PROTOC_VERSION)/$(PROTOC_TARBALL)
 PROTOC_BUILD_TMP_DIR := "/tmp/protobuf-build-$(shell uname -s | tr '[:upper:]' '[:lower:]')"
 
-XPROTO_FILES := $(wildcard $(XOS_DIR)/core/models/core.xproto $(XOS_DIR)/services/*/*.xproto)
+XPROTO_FILES := $(wildcard $(XOS_DIR)/core/models/core.xproto $(XOS_DIR)/services/*/*.xproto $(XOS_DIR)/dynamic_services/*/*.xproto)
 XOSGEN_PATH := $(XOS_DIR)/lib/xos-genx/xosgenx
 
 build: $(PROTOC) $(PROTO_PB2_FILES)

@@ -18,38 +18,41 @@ import os
 import sys
 import time
 
-import django
-xos_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/..')
-sys.path.append(xos_path)
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
-
-from reaper import ReaperThread
-from grpc_server import XOSGrpcServer, restart_chameleon
+from grpc_server import XOSGrpcServer, restart_related_containers
 
 from xosconfig import Config
 from multistructlog import create_logger
 
 log = create_logger(Config().get('logging'))
 
+def init_reaper():
+    reaper = None
+    try:
+        from reaper import ReaperThread
+        reaper = ReaperThread()
+        reaper.start()
+    except:
+        logger.log_exception("Failed to initialize reaper")
+
+    return reaper
+
 if __name__ == '__main__':
+    server = XOSGrpcServer()
+    server.init_django()
+    server.start()
 
-    django.setup()
+    reaper = init_reaper()
 
-    reaper = ReaperThread()
-    reaper.start()
-
-    server = XOSGrpcServer().start()
-
-    restart_chameleon()
+    restart_related_containers()
 
     log.info("XOS core entering wait loop")
-
     _ONE_DAY_IN_SECONDS = 60 * 60 * 24
     try:
-        while 1:
-            time.sleep(_ONE_DAY_IN_SECONDS)
+        while True:
+            if server.exit_event.wait(_ONE_DAY_IN_SECONDS):
+                break
     except KeyboardInterrupt:
         log.info("XOS core terminated by keyboard interrupt")
-        server.stop()
-        reaper.stop()
 
+    server.stop()
+    reaper.stop()

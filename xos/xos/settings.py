@@ -23,7 +23,11 @@ from urlparse import urlparse
 
 # Initializing xosconfig module
 from xosconfig import Config
-Config.init()
+from xosconfig.config import INITIALIZED as CONFIG_INITIALIZED
+
+# this really shouldn't be called from settings.py.
+if not CONFIG_INITIALIZED:
+    Config.init()
 
 GEOIP_PATH = "/usr/share/GeoIP"
 XOS_DIR = Config.get('xos_dir')

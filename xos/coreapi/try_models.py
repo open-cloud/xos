@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 
 # Copyright 2017-present Open Networking Foundation
 #
@@ -14,7 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-while true; do
-    make
-    sleep 1
-done
+import os
+import sys
+
+import django
+
+xos_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/..')
+sys.path.append(xos_path)
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
+django.setup()

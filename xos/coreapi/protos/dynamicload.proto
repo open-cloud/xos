@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package xos;
+
+// import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+// import "common.proto";
+
+message Xproto {
+    string filename = 1;
+    string contents = 2;
+}
+
+message DeclFile {
+    string filename = 1;
+    string contents = 2;
+};
+
+message AtticFile {
+    string filename = 1;
+    string contents = 2;
+};
+
+message LoadModelsRequest {
+    string name = 1;
+    string version = 2;
+    repeated Xproto xprotos = 3;
+    repeated DeclFile decls = 4;
+    repeated AtticFile attics = 5;
+};
+
+message LoadModelsReply {
+    enum LoadModelsStatus {
+        SUCCESS = 0;
+        ERROR = 1;
+    }
+    LoadModelsStatus status = 1;
+};
+
+service dynamicload {
+  rpc LoadModels(LoadModelsRequest) returns (LoadModelsReply) {
+        option (google.api.http) = {
+            post: "/xosapi/v1/dynamicload/load_models"
+            body: "*"
+        };
+  }
+};

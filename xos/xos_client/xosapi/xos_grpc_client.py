@@ -64,7 +64,7 @@ class XOSClient(chameleon_client.GrpcClient):
         return self
 
     def reconnected(self):
-        for api in ['modeldefs', 'utility', 'xos']:
+        for api in ['modeldefs', 'utility', 'xos', 'dynamicload']:
             pb2_file_name = os.path.join(self.work_dir, api + "_pb2.py")
             pb2_grpc_file_name = os.path.join(self.work_dir, api + "_pb2_grpc.py")
 

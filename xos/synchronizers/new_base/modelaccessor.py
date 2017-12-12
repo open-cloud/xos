@@ -28,8 +28,10 @@ import functools
 import importlib
 import os
 import signal
+import time
 from xosconfig import Config
 from diag import update_diag
+from loadmodels import ModelLoadClient
 
 from xosconfig import Config
 from multistructlog import create_logger
@@ -136,7 +138,7 @@ def keep_trying(client, reactor):
     # Keep checking the connection to wait for it to become unavailable.
     # Then reconnect.
 
-    # logger.info("keep_trying")   # message is unneccesarily verbose
+    # log.info("keep_trying")   # message is unneccesarily verbose
 
     from xosapi.xos_grpc_client import Empty
 
@@ -146,7 +148,7 @@ def keep_trying(client, reactor):
         # If we caught an exception, then the API has become unavailable.
         # So reconnect.
 
-        log.exception("exception in NoOp", e)
+        log.exception("exception in NoOp", e=e)
         client.connected = False
         client.connect()
         return
@@ -160,8 +162,18 @@ def grpcapi_reconnect(client, reactor):
     # this will prevent updated timestamps from being automatically updated
     client.xos_orm.caller_kind = "synchronizer"
 
+    client.xos_orm.restart_on_disconnect = True
+
     from apiaccessor import CoreApiModelAccessor
     model_accessor = CoreApiModelAccessor(orm=client.xos_orm)
+
+    if Config.get("models_dir"):
+        try:
+            ModelLoadClient(client).upload_models(Config.get("name"), Config.get("models_dir"))
+        except Exception, e:  # TODO: narrow exception scope
+            log.exception("failed to onboard models")
+            reactor.callLater(10, functools.partial(grpcapi_reconnect, client, reactor))
+            return
 
     # If required_models is set, then check to make sure the required_models
     # are present. If not, then the synchronizer needs to go to sleep until

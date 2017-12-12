@@ -59,6 +59,8 @@ map:
     type: str
   sys_dir:
     type: str
+  models_dir:
+    type: str
   accessor:
     type: map
     required: True

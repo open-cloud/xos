@@ -13,26 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-#
-# Copyright 2017 the original author or authors.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 """gRPC server endpoint"""
 import os
 import sys
+import threading
 import uuid
 from collections import OrderedDict
 from os.path import abspath, basename, dirname, join, walk
@@ -40,32 +24,26 @@ import grpc
 from concurrent import futures
 import zlib
 
+xos_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/..')
+sys.path.append(xos_path)
+
 from xosconfig import Config
 
 from multistructlog import create_logger
 
+Config.init()
 log = create_logger(Config().get('logging'))
 
-if __name__ == "__main__":
-    import django
-    sys.path.append('/opt/xos')
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
-
-from protos import xos_pb2, schema_pb2, modeldefs_pb2, utility_pb2
-from xos_grpc_api import XosService
-from xos_modeldefs_api import ModelDefsService
-from xos_utility_api import UtilityService
+from protos import schema_pb2, dynamicload_pb2
+#from xos_modeldefs_api import ModelDefsService
+#from xos_utility_api import UtilityService
+from xos_dynamicload_api import DynamicLoadService
+from dynamicbuild import DynamicBuilder
 from google.protobuf.empty_pb2 import Empty
-
-
 
 SERVER_KEY="/opt/cord_profile/core_api_key.pem"
 SERVER_CERT="/opt/cord_profile/core_api_cert.pem"
 SERVER_CA="/usr/local/share/ca-certificates/local_certs.crt"
-
-#SERVER_KEY="certs/server.key"
-#SERVER_CERT="certs/server.crt"
-#SERVER_CA="certs/ca.crt"
 
 class SchemaService(schema_pb2.SchemaServiceServicer):
 
@@ -130,20 +108,48 @@ class XOSGrpcServer(object):
 
         self.credentials = grpc.ssl_server_credentials([(server_key, server_cert)], server_ca, False)
 
+        self.delayed_shutdown_timer = None
+        self.exit_event = threading.Event()
+
         self.services = []
+
+    def init_django(self):
+        import django
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
+        django.setup()
+
+    def register_core(self):
+        from xos_grpc_api import XosService
+        from protos import xos_pb2
+
+        self.register("xos", xos_pb2.add_xosServicer_to_server, XosService(self.thread_pool))
+
+    def register_utility(self):
+        from xos_utility_api import UtilityService
+        from protos import utility_pb2
+
+        self.register("utility", utility_pb2.add_utilityServicer_to_server, UtilityService(self.thread_pool))
+
+    def register_modeldefs(self):
+        from xos_modeldefs_api import ModelDefsService
+        from protos import modeldefs_pb2
+
+        self.register("modeldefs", modeldefs_pb2.add_modeldefsServicer_to_server, ModelDefsService(self.thread_pool))
 
     def start(self):
         log.info('Starting GRPC Server')
 
-        # add each service unit to the server and also to the list
-        for activator_func, service_class in (
-            (schema_pb2.add_SchemaServiceServicer_to_server, SchemaService),
-            (xos_pb2.add_xosServicer_to_server, XosService),
-            (modeldefs_pb2.add_modeldefsServicer_to_server, ModelDefsService),
-            (utility_pb2.add_utilityServicer_to_server, UtilityService),
-        ):
-            service = service_class(self.thread_pool)
-            self.register(activator_func, service)
+        self.register("schema",
+                      schema_pb2.add_SchemaServiceServicer_to_server,
+                      SchemaService(self.thread_pool))
+
+        self.register("dynamicload",
+                      dynamicload_pb2.add_dynamicloadServicer_to_server,
+                      DynamicLoadService(self.thread_pool, self))
+
+        self.register_core()
+        self.register_utility()
+        self.register_modeldefs()
 
         # open port
         self.server.add_insecure_port('[::]:%s' % self.port)
@@ -163,7 +169,11 @@ class XOSGrpcServer(object):
         self.server.stop(grace)
         log.info('stopped')
 
-    def register(self, activator_func, service):
+    def stop_and_exit(self):
+        log.info("Stop and Exit")
+        self.exit_event.set()
+
+    def register(self, name, activator_func, service):
         """
         Allow late registration of gRPC servicers
         :param activator_func: The gRPC "add_XYZServicer_to_server method
@@ -174,8 +184,14 @@ class XOSGrpcServer(object):
         self.services.append(service)
         activator_func(service, self.server)
 
+    def delayed_shutdown(self, seconds):
+        log.info("Delayed shutdown", seconds=seconds)
+        if self.delayed_shutdown_timer:
+            self.delayed_shutdown_timer.cancel()
+        self.delayed_shutdown_timer = threading.Timer(seconds, self.stop_and_exit)
+        self.delayed_shutdown_timer.start()
 
-def restart_chameleon():
+def restart_docker_container(name):
     import docker
 
     def find_container(client, search_name):
@@ -186,31 +202,39 @@ def restart_chameleon():
         return None
 
     client=docker.from_env()
-    chameleon_container = find_container(client, "xos_chameleon_1")
-    if chameleon_container:
+    container = find_container(client, name)
+    if container:
         try:
             # the first attempt always fails with 404 error
             # docker-py bug?
-            client.restart(chameleon_container["Names"][0])
+            client.restart(container["Names"][0])
         except:
-            client.restart(chameleon_container["Names"][0])
+            client.restart(container["Names"][0])
+
+def restart_related_containers():
+    restart_docker_container("xos_chameleon_1")
+    # TODO: remove once Tosca container is able to react internally
+    restart_docker_container("xos_tosca_1")
 
 
 # This is to allow running the GRPC server in stand-alone mode
 
 if __name__ == '__main__':
-    django.setup()
+    server = XOSGrpcServer()
+    server.init_django()
+    server.start()
 
-    server = XOSGrpcServer().start()
+    restart_related_containers()
 
-    restart_chameleon()
-
-    import time
+    log.info("XOS core entering wait loop")
     _ONE_DAY_IN_SECONDS = 60 * 60 * 24
     try:
-        while 1:
-            time.sleep(_ONE_DAY_IN_SECONDS)
+        while True:
+            if server.exit_event.wait(_ONE_DAY_IN_SECONDS):
+                break
     except KeyboardInterrupt:
-        server.stop()
+        log.info("XOS core terminated by keyboard interrupt")
+
+    server.stop()
 
 

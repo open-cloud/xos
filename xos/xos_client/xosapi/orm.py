@@ -36,6 +36,8 @@ u=c.xos_orm.User.objects.get(id=1)
 """
 
 import functools
+import os
+import sys
 import time
 
 convenience_wrappers = {}
@@ -487,7 +489,8 @@ class ORMModelClass(object):
         return self.objects.new(*args, **kwargs)
 
 class ORMStub(object):
-    def __init__(self, stub, package_name, invoker=None, caller_kind="grpcapi", sym_db = None, empty = None, enable_backoff=True):
+    def __init__(self, stub, package_name, invoker=None, caller_kind="grpcapi", sym_db = None, empty = None,
+                 enable_backoff=True, restart_on_disconnect=False):
         self.grpc_stub = stub
         self.all_model_names = []
         self.all_grpc_classes = {}
@@ -496,6 +499,7 @@ class ORMStub(object):
         self.invoker = invoker
         self.caller_kind = caller_kind
         self.enable_backoff = enable_backoff
+        self.restart_on_disconnect = restart_on_disconnect
 
         if not sym_db:
             from google.protobuf import symbol_database as _symbol_database
@@ -552,14 +556,20 @@ class ORMStub(object):
             # Our own retry mechanism. This works fine if there is a temporary
             # failure in connectivity, but does not re-download gRPC schema.
             import grpc
+            backoff = [0.5, 1, 2, 4, 8]
             while True:
-                backoff = [0.5, 1, 2, 4, 8]
                 try:
                     method = getattr(self.grpc_stub, name)
                     return method(request, metadata=metadata)
                 except grpc._channel._Rendezvous, e:
                     code = e.code()
                     if code == grpc.StatusCode.UNAVAILABLE:
+                        if self.restart_on_disconnect:
+                            # This is a blunt technique... We lost connectivity to the core, and we don't know that
+                            # the core is still serving up the same models it was when we established connectivity,
+                            # so restart the synchronizer.
+                            # TODO: Hash check on the core models to tell if something changed would be better.
+                            os.execv(sys.executable, ['python'] + sys.argv)
                         if not backoff:
                             raise Exception("No more retries on %s" % name)
                         time.sleep(backoff.pop(0))
