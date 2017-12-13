@@ -276,7 +276,7 @@ underlying (backend) components are said to hold *feedback state*.
 
 For more information about declarative and feedback state, and the
 role they play in synchornizing the data model with the backend
-components, read about the [Synchronizer Architecture](dev/sync_arch.md). 
+components, read about the [Synchronizer Architecture](sync_arch.md). 
 
 ## Policies
 
