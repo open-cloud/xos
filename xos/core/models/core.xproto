@@ -82,14 +82,14 @@ policy grant_policy < ctx.user.is_admin
                       | exists Privilege:Privilege.object_type = obj.object_type
                         & Privilege.object_id = obj.object_id
                         & Privilege.accessor_type = "User"
-                        & Privilege.accessor_id = ctx.user.id 
+                        & Privilege.accessor_id = ctx.user.id
                         & Privilege.permission = "role:admin" >
-    
+
 message Privilege::grant_policy (XOSBase) {
-     required int32 accessor_id = 1 [null = False];
+     required int32 accessor_id = 1 [null = False, blank=False];
      required string accessor_type = 2 [null = False, max_length=1024];
      required int32 controller_id = 3 [null = True];
-     required int32 object_id = 4 [null = False];  
+     required int32 object_id = 4 [null = False, blank=False];
      required string object_type = 5 [null = False, max_length=1024];
      required string permission = 6 [null = False, default = "all", max_length=1024, tosca_key=True];
      required string granted = 7 [content_type = "date", auto_now_add = True, max_length=1024];
