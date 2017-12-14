@@ -1,5 +1,6 @@
 *.py
 Makefile
+!attic/*.py
 !contenttype.py
 !header.py
 !network_header.py

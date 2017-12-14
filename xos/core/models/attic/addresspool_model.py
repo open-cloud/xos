@@ -13,6 +13,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# imported in address_top.py
+# import socket
+# import struct
+
+def expand_cidr(self, cidr):
+    (network, bits) = cidr.split("/")
+    network = network.strip()
+    bits = int(bits.strip())
+
+    dest = []
+
+    netmask = (~(pow(2, 32 - bits) - 1) & 0xFFFFFFFF)
+
+    count = pow(2, 32 - bits)
+    for i in range(2, count - 1):
+        ip = struct.unpack("!L", socket.inet_aton(network))[0]
+        ip = ip & netmask | i
+        dest.append(socket.inet_ntoa(struct.pack("!L", ip)))
+
+    return (dest, bits)
+
+def __xos_save_base(self, *args, **kwds):
+    """
+    We need to convert subnets into lists of addresses before saving
+    """
+    if self.addresses and "/" in self.addresses:
+        original_addresses = self.addresses
+        (cidr_addrs, cidr_netbits) = self.expand_cidr(self.addresses)
+        self.addresses = " ".join(cidr_addrs)
+        if not self.cidr:
+            self.cidr = original_addresses
 
 def get_address(self):
     with transaction.atomic():
