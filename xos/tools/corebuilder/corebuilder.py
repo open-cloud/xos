@@ -68,7 +68,6 @@ import tempfile
 import traceback
 import urlparse
 from xosgenx.generator import XOSGenerator
-
 from toscaparser.tosca_template import ToscaTemplate
 
 BUILD_DIR = "/opt/xos_corebuilder/BUILD"
@@ -219,6 +218,11 @@ class XOSCoreBuilder(object):
 
             # Public keys should be volume mounted in /opt/cord_profile
             if (k=="public_key"):
+                continue
+
+            # TOSCA custom types and custom resources have been deprecated by the new engine
+            if (k == "tosca_custom_types" or k == "tosca_resource"):
+                print 'Custom TOSCA definition are not allowed anymore, please remove them from service %s on resource %s and filename %s' % (service_name, k, v)
                 continue
 
             # If the ServiceController has models, then add it to the list of
