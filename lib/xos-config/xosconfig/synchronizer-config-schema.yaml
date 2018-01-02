@@ -19,7 +19,7 @@ map:
     type: str
   xos_dir:
     type: str
-  logging: 
+  logging:
     type: any
   wrappers:
     type: seq
@@ -30,7 +30,7 @@ map:
     sequence:
     - type: map
       map:
-        name: 
+        name:
           type: str
           required: True
         graph:
@@ -48,6 +48,8 @@ map:
                 template:
                   type: str
                 subnet:
+                  type: str
+                owner:
                   type: str
   dependency_graph:
     type: str
