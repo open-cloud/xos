@@ -51,11 +51,12 @@ class LeastLoadedNodeScheduler(Scheduler):
             if not nodes:
                 set_label = self.constrain_by_service_instance
 
-        if not nodes and self.slice.default_node:
-            # if slice.default_node is set, then filter by default_node
-            nodes = Node.objects.filter(name=self.slice.default_node)
-        else:
-            nodes = Node.objects.all()
+        if not nodes:
+            if self.slice.default_node:
+                # if slice.default_node is set, then filter by default_node
+                nodes = Node.objects.filter(name=self.slice.default_node)
+            else:
+                nodes = Node.objects.all()
 
         # convert to list
         nodes = list(nodes)

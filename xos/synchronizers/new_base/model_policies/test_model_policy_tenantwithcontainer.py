@@ -27,11 +27,12 @@ xos_dir = os.path.join(test_path, '..', '..', '..')
 
 class TestModelPolicyTenantWithContainer(unittest.TestCase):
     def setUp(self):
-        global TenantWithContainerPolicy, LeastLoadedNodeScheduler
+        global TenantWithContainerPolicy, LeastLoadedNodeScheduler, MockObjectList
 
         self.sys_path_save = sys.path
         self.cwd_save = os.getcwd()
         sys.path.append(xos_dir)
+        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
         sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base', 'model_policies'))
 
         config = basic_conf = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/test_config.yaml")
@@ -43,6 +44,8 @@ class TestModelPolicyTenantWithContainer(unittest.TestCase):
 
         import model_policy_tenantwithcontainer
         from model_policy_tenantwithcontainer import TenantWithContainerPolicy, LeastLoadedNodeScheduler
+
+        from mock_modelaccessor import MockObjectList
 
         # import all class names to globals
         for (k, v) in model_policy_tenantwithcontainer.model_accessor.all_model_classes.items():
@@ -139,6 +142,114 @@ class TestModelPolicyTenantWithContainer(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             self.policy.manage_container(self.tenant)
         self.assertEqual(e.exception.message, "No m1.small flavor")
+
+    def test_least_loaded_node_scheduler(self):
+        with patch.object(Node.objects, "get_items") as node_objects:
+            slice = Slice(name="mysite_test1", default_flavor=None, default_isolation="vm")
+            node = Node(hostname="my.node.com", id=4567)
+            node.instances = MockObjectList(initial=[])
+            node_objects.return_value = [node]
+
+            sched = LeastLoadedNodeScheduler(slice)
+            (picked_node, parent) = sched.pick()
+
+            self.assertNotEqual(picked_node, None)
+            self.assertEqual(picked_node.id, node.id)
+
+    def test_least_loaded_node_scheduler_two_nodes(self):
+        with patch.object(Node.objects, "get_items") as node_objects:
+            slice = Slice(name="mysite_test1", default_flavor=None, default_isolation="vm")
+            instance1 = Instance(id=1)
+            node1 = Node(hostname="my.node.com", id=4567)
+            node1.instances = MockObjectList(initial=[])
+            node2 = Node(hostname="my.node.com", id=8910)
+            node2.instances = MockObjectList(initial=[instance1])
+            node_objects.return_value = [node1, node2]
+
+            # should pick the node with the fewest instance (node1)
+
+            sched = LeastLoadedNodeScheduler(slice)
+            (picked_node, parent) = sched.pick()
+
+            self.assertNotEqual(picked_node, None)
+            self.assertEqual(picked_node.id, node1.id)
+
+    def test_least_loaded_node_scheduler_two_nodes_multi(self):
+        with patch.object(Node.objects, "get_items") as node_objects:
+            slice = Slice(name="mysite_test1", default_flavor=None, default_isolation="vm")
+            instance1 = Instance(id=1)
+            instance2 = Instance(id=2)
+            instance3 = Instance(id=3)
+            node1 = Node(hostname="my.node.com", id=4567)
+            node1.instances = MockObjectList(initial=[instance2, instance3])
+            node2 = Node(hostname="my.node.com", id=8910)
+            node2.instances = MockObjectList(initial=[instance1])
+            node_objects.return_value = [node1, node2]
+
+            # should pick the node with the fewest instance (node2)
+
+            sched = LeastLoadedNodeScheduler(slice)
+            (picked_node, parent) = sched.pick()
+
+            self.assertNotEqual(picked_node, None)
+            self.assertEqual(picked_node.id, node2.id)
+
+    def test_least_loaded_node_scheduler_with_label(self):
+        with patch.object(Node.objects, "get_items") as node_objects:
+            slice = Slice(name="mysite_test1", default_flavor=None, default_isolation="vm")
+            instance1 = Instance(id=1)
+            node1 = Node(hostname="my.node.com", id=4567)
+            node1.instances = MockObjectList(initial=[])
+            node2 = Node(hostname="my.node.com", id=8910)
+            node2.instances = MockObjectList(initial=[instance1])
+            # Fake out the existence of a NodeLabel object. TODO: Extend the mock framework to support the model__field
+            # syntax.
+            node1.nodelabels__name = None
+            node2.nodelabels__name = "foo"
+            node_objects.return_value = [node1, node2]
+
+            # should pick the node with the label, even if it has a greater number of instances
+
+            sched = LeastLoadedNodeScheduler(slice, label="foo")
+            (picked_node, parent) = sched.pick()
+
+            self.assertNotEqual(picked_node, None)
+            self.assertEqual(picked_node.id, node2.id)
+
+    def test_least_loaded_node_scheduler_create_label(self):
+        with patch.object(Node.objects, "get_items") as node_objects, \
+             patch.object(NodeLabel, "save", autospec=True) as nodelabel_save, \
+             patch.object(NodeLabel, "node") as nodelabel_node_add:
+            slice = Slice(name="mysite_test1", default_flavor=None, default_isolation="vm")
+            instance1 = Instance(id=1)
+            node1 = Node(hostname="my.node.com", id=4567)
+            node1.instances = MockObjectList(initial=[])
+            node2 = Node(hostname="my.node.com", id=8910)
+            node2.instances = MockObjectList(initial=[instance1])
+            # Fake out the existence of a NodeLabel object. TODO: Extend the mock framework to support the model__field
+            # syntax.
+            node1.nodelabels__name = None
+            node2.nodelabels__name = None
+            node_objects.return_value = [node1, node2]
+
+            # should pick the node with the least number of instances
+
+            sched = LeastLoadedNodeScheduler(slice, label="foo", constrain_by_service_instance = True)
+            (picked_node, parent) = sched.pick()
+
+            self.assertNotEqual(picked_node, None)
+            self.assertEqual(picked_node.id, node1.id)
+
+            # NodeLabel should have been created and saved
+
+            self.assertEqual(nodelabel_save.call_count, 1)
+            self.assertEqual(nodelabel_save.call_args[0][0].name, "foo")
+
+            # The NodeLabel's node field should have been added to
+
+            NodeLabel.node.add.assert_called_with(node1)
+
+
 
 if __name__ == '__main__':
     unittest.main()
