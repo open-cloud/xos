@@ -210,3 +210,11 @@ class DynamicBuilder(object):
             src_fn = os.path.join(manifest["dir"], item["filename"])
             dest_fn = os.path.join(manifest["dest_dir"], item["filename"])
             shutil.copyfile(src_fn, dest_fn)
+
+        # If the attic has a header.py, make sure it is copied to the right place
+        attic_header_py_src = os.path.join(manifest["dir"], "attic", "header.py")
+        service_header_py_dest = os.path.join(manifest["dest_dir"], "header.py")
+        if os.path.exists(attic_header_py_src):
+            shutil.copyfile(attic_header_py_src, service_header_py_dest)
+        elif os.path.exists(service_header_py_dest):
+            os.remove(service_header_py_dest)
