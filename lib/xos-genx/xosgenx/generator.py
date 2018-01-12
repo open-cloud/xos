@@ -21,6 +21,7 @@ from xos2jinja import XOS2Jinja
 from proto2xproto import Proto2XProto
 import jinja2_extensions
 import yaml
+from colorama import Fore
 
 loader = jinja2.PackageLoader(__name__, 'templates')
 env = jinja2.Environment(loader=loader)
@@ -155,6 +156,18 @@ class XOSGenerator:
         return next((x for x in messages if x['name'] == model), None)
 
     @staticmethod
+    def _find_last_nonempty_line(text, pointer):
+        ne_pointer = pointer
+        found = False
+        while ne_pointer!=0 and not found:
+            ne_pointer = text[:(ne_pointer-1)].rfind('\n')
+            if ne_pointer<0: ne_pointer = 0
+            if text[ne_pointer-1]!='\n':
+                found = True
+
+        return ne_pointer
+
+    @staticmethod
     def generate(args):
 
         # Setting defaults
@@ -198,7 +211,31 @@ class XOSGenerator:
         context = XOSGenerator._add_context(args)
 
         parser = plyxproto.ProtobufAnalyzer()
-        ast = parser.parse_string(inputs, debug=0)
+        try:
+            ast = parser.parse_string(inputs, debug=0)
+        except plyxproto.ParsingError, e:
+            line, start, end = e.error_range
+
+            ptr = XOSGenerator._find_last_nonempty_line(inputs, start)
+
+            if start == 0:
+                beginning = ''
+            else:
+                beginning = inputs[ptr:start-1] 
+
+            line_end_char = inputs[start+end:].find('\n')
+            line_end = inputs[line_end_char]
+
+            if e.message:
+                error = e.message
+            else:
+                error = "xproto parsing error"
+
+            print error + "\n" + Fore.YELLOW + "Line %d:"%line + Fore.WHITE
+            print beginning + Fore.YELLOW + inputs[start-1:start+end] + Fore.WHITE + line_end
+            exit(1)
+
+
         v = XOSGenerator._attach_parser(ast, args)
 
         if args.output is not None and args.write_to_file == "model":
