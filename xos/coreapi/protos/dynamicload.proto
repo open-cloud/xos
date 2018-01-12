@@ -37,10 +37,21 @@ message LoadModelsReply {
     LoadModelsStatus status = 1;
 };
 
+message UnloadModelsRequest {
+    string name = 1;
+    string version = 2;
+};
+
 service dynamicload {
   rpc LoadModels(LoadModelsRequest) returns (LoadModelsReply) {
         option (google.api.http) = {
             post: "/xosapi/v1/dynamicload/load_models"
+            body: "*"
+        };
+  }
+  rpc UnloadModels(UnloadModelsRequest) returns (LoadModelsReply) {
+        option (google.api.http) = {
+            post: "/xosapi/v1/dynamicload/unload_models"
             body: "*"
         };
   }

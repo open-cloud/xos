@@ -53,7 +53,7 @@ class DynamicBuilder(object):
         for item in request.attics:
             self.pre_validate_file(item)
 
-    def handle_loadmodels_request(self, request):
+    def load_manifest_from_request(self, request):
         manifest_fn = os.path.join(self.manifest_dir, request.name + ".json")
         if os.path.exists(manifest_fn):
             try:
@@ -64,9 +64,14 @@ class DynamicBuilder(object):
         else:
             manifest = {}
 
+        return (manifest, manifest_fn)
+
+    def handle_loadmodels_request(self, request):
+        (manifest, manifest_fn) = self.load_manifest_from_request(request)
+
         # TODO: Check version number to make sure this is not a downgrade ?
 
-        hash = self.generate_request_hash(request)
+        hash = self.generate_request_hash(request, state="load")
         if hash == manifest.get("hash"):
             # The hash of the incoming request is identical to the manifest that we have saved, so this request is a
             # no-op.
@@ -75,7 +80,7 @@ class DynamicBuilder(object):
 
         self.pre_validate_models(request)
 
-        manifest = self.save_models(request, hash=hash)
+        manifest = self.save_models(request, state="load", hash=hash)
 
         self.run_xosgenx_service(manifest)
 
@@ -86,27 +91,49 @@ class DynamicBuilder(object):
 
         return self.SOMETHING_CHANGED
 
-        # TODO: schedule a restart
+    def handle_unloadmodels_request(self, request):
+        (manifest, manifest_fn) = self.load_manifest_from_request(request)
 
-    def generate_request_hash(self, request):
+        # TODO: Check version number to make sure this is not a downgrade ?
+
+        hash = self.generate_request_hash(request, state="unload")
+        if hash == manifest.get("hash"):
+            # The hash of the incoming request is identical to the manifest that we have saved, so this request is a
+            # no-op.
+            log.info("Models are already up-to-date; skipping dynamic unload.", name=request.name)
+            return self.NOTHING_TO_DO
+
+        manifest = self.save_models(request, state="unload", hash=hash)
+
+        self.remove_service(manifest)
+
+        log.debug("Saving service manifest", name=request.name)
+        file(manifest_fn, "w").write(json.dumps(manifest))
+
+        log.info("Finished UnloadModels request", name=request.name)
+
+        return self.SOMETHING_CHANGED
+
+    def generate_request_hash(self, request, state):
         # TODO: could we hash the request rather than individually hashing the subcomponents of the request?
         m = hashlib.sha1()
         m.update(request.name)
         m.update(request.version)
-        for item in request.xprotos:
-            m.update(item.filename)
-            m.update(item.contents)
-        for item in request.decls:
-            m.update(item.filename)
-            m.update(item.contents)
-        for item in request.decls:
-            m.update(item.filename)
-            m.update(item.contents)
+        if (state == "load"):
+            for item in request.xprotos:
+                m.update(item.filename)
+                m.update(item.contents)
+            for item in request.decls:
+                m.update(item.filename)
+                m.update(item.contents)
+            for item in request.decls:
+                m.update(item.filename)
+                m.update(item.contents)
         return m.hexdigest()
 
-    def save_models(self, request, hash=None):
+    def save_models(self, request, state, hash=None):
         if not hash:
-            hash = self.generate_request_hash(request)
+            hash = self.generate_request_hash(request, state)
 
         service_dir = os.path.join(self.services_dir, request.name)
         if not os.path.exists(service_dir):
@@ -126,6 +153,7 @@ class DynamicBuilder(object):
         service_manifest = {"name": request.name,
                             "version": request.version,
                             "hash": hash,
+                            "state": state,
                             "dir": service_dir,
                             "manifest_fn": manifest_fn,
                             "dest_dir": os.path.join(self.services_dest_dir, request.name),
@@ -133,22 +161,23 @@ class DynamicBuilder(object):
                             "decls": [],
                             "attics": []}
 
-        for item in request.xprotos:
-            file(os.path.join(service_dir, item.filename), "w").write(item.contents)
-            service_manifest["xprotos"].append({"filename": item.filename})
+        if (state == "load"):
+            for item in request.xprotos:
+                file(os.path.join(service_dir, item.filename), "w").write(item.contents)
+                service_manifest["xprotos"].append({"filename": item.filename})
 
-        for item in request.decls:
-            file(os.path.join(service_dir, item.filename), "w").write(item.contents)
-            service_manifest["decls"].append({"filename": item.filename})
+            for item in request.decls:
+                file(os.path.join(service_dir, item.filename), "w").write(item.contents)
+                service_manifest["decls"].append({"filename": item.filename})
 
-        if request.attics:
-            attic_dir = os.path.join(service_dir, "attic")
-            service_manifest["attic_dir"] = attic_dir
-            if not os.path.exists(attic_dir):
-                os.makedirs(attic_dir)
-            for item in request.attics:
-                file(os.path.join(attic_dir, item.filename), "w").write(item.contents)
-                service_manifest["attics"].append({"filename": item.filename})
+            if request.attics:
+                attic_dir = os.path.join(service_dir, "attic")
+                service_manifest["attic_dir"] = attic_dir
+                if not os.path.exists(attic_dir):
+                    os.makedirs(attic_dir)
+                for item in request.attics:
+                    file(os.path.join(attic_dir, item.filename), "w").write(item.contents)
+                    service_manifest["attics"].append({"filename": item.filename})
 
         return service_manifest
 
@@ -218,3 +247,26 @@ class DynamicBuilder(object):
             shutil.copyfile(attic_header_py_src, service_header_py_dest)
         elif os.path.exists(service_header_py_dest):
             os.remove(service_header_py_dest)
+
+    def remove_service(self, manifest):
+        # remove any xproto files, otherwise "make rebuild_protos" will pick them up
+        if os.path.exists(manifest["dir"]):
+            for fn in os.listdir(manifest["dir"]):
+                fn = os.path.join(manifest["dir"], fn)
+                if fn.endswith(".xproto"):
+                    os.remove(fn)
+
+        # Rather than trying to unmigrate while the core is running, let's handle unmigrating the service while we're
+        # outside of the core process. We're going to save the manifest file, and the manifest file will have
+        # {"state": "unload"} in it. That can be our external signal to unmigrate.
+
+        # This is what unmigrate will do, external to this process:
+        #     1) remove the models (./manage.py migrate my_app_name zero)
+        #     2) remove the contenttypes
+        #            # does step 1 already do this?
+        #            from django.contrib.contenttypes.models import ContentType
+        #            for c in ContentType.objects.all():
+        #                if not c.model_class():
+        #                    print "deleting %s" % c
+        #                    c.delete()
+        #     3) Remove the service files

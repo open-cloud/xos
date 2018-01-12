@@ -112,10 +112,32 @@ def listDirtyModels(*args, **kwargs):
 def listModelDefs():
     return current_client.modeldefs.ListModelDefs(Empty())
 
+def loadModels(name, version, xproto_filenames=[], decl_filenames=[], attic_filenames=[]):
+    request = current_client.dynamicload_pb2.LoadModelsRequest(name=name, version=version)
+    for fn in xproto_filenames:
+        item = request.xprotos.add()
+        item.filename = fn
+        item.contents = open(fn).read()
+    for fn in decl_filenames:
+        item = request.decls.add()
+        item.filename = fn
+        item.contents = open(fn).read()
+    for fn in attic_filenames:
+        item = request.attics.add()
+        item.filename = fn
+        item.contents = open(fn).read()
+    return current_client.dynamicload.LoadModels(request)
+
+def unloadModels(name, version):
+    request = current_client.dynamicload_pb2.UnloadModelsRequest(name=name, version=version)
+    return current_client.dynamicload.UnloadModels(request)
+
 def listUtility():
     print 'setDirtyModels(class_name=None)'
     print 'listDirtyModels(class_name=None)'
     print 'listModelDefs()'
+    print 'loadModels(name, version, xproto_filenames, decl_filenames, attic_filenames)'
+    print 'unloadModels(name, version)'
 
 def examples():
     print 'Slice.objects.all() # list all slices'

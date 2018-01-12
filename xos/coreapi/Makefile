@@ -19,7 +19,10 @@ all: prep start
 start:
 	bash -c "source env.sh && python ./core_main.py"
 
-prep: app_lists rebuild_protos compile_protos try_models makemigrations migrate
+prep: unload_unwanted app_lists rebuild_protos compile_protos try_models makemigrations migrate
+
+unload_unwanted:
+	python unload_unwanted_apps.py
 
 app_lists:
 	python app_list_builder.py

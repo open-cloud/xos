@@ -35,13 +35,26 @@ class DynamicLoadService(dynamicload_pb2.dynamicloadServicer):
     def stop(self):
         pass
 
-    #@translate_exceptions
     def LoadModels(self, request, context):
-        print "load models"
-
         try:
             builder = DynamicBuilder()
             result = builder.handle_loadmodels_request(request)
+
+            if (result == builder.SOMETHING_CHANGED):
+                self.server.delayed_shutdown(5)
+
+            response = dynamicload_pb2.LoadModelsReply()
+            response.status = response.SUCCESS
+
+            return response
+        except Exception, e:
+            import traceback; traceback.print_exc()
+            raise e
+
+    def UnloadModels(self, request, context):
+        try:
+            builder = DynamicBuilder()
+            result = builder.handle_unloadmodels_request(request)
 
             if (result == builder.SOMETHING_CHANGED):
                 self.server.delayed_shutdown(5)
