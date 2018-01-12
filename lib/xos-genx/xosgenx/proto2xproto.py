@@ -70,7 +70,7 @@ def replace_link(obj):
 
 class Proto2XProto(Visitor):
     fol_lexer = lex.lex(module=FOLLexer())
-    fol_parser = yacc.yacc(module=FOLParser(), start='goal')
+    fol_parser = yacc.yacc(module=FOLParser(), start='goal', debug=0, outputdir='/tmp')
 
     def __init__(self):
         super(Proto2XProto, self).__init__()

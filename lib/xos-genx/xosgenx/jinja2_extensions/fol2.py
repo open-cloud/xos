@@ -683,7 +683,7 @@ def main():
             else: inp+=inp_line
             
         fol_lexer = lex.lex(module=FOLLexer())
-        fol_parser = yacc.yacc(module=FOLParser(), start='goal')
+        fol_parser = yacc.yacc(module=FOLParser(), start='goal', outputdir='/tmp', debug=0)
 
         val = fol_parser.parse(inp, lexer=fol_lexer)
         a = xproto_fol_to_python_test('pol', val, 'output', 'Test')
