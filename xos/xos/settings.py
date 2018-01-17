@@ -47,17 +47,14 @@ LOGIN_REDIRECT_URL = '/admin/loggedin/'
 
 MANAGERS = ADMINS
 
-db_service = Config.get_service_info('xos-db')
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': Config.get('database.name'),                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': Config.get('database.name'),
         'USER': Config.get('database.username'),
         'PASSWORD': Config.get('database.password'),
-        'HOST': db_service['url'],                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': db_service['port'],                      # Set to empty string for default.
+        'HOST': "xos_db",
+        'PORT': 5432,
     }
 }
 
