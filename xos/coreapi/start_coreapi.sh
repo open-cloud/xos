@@ -15,6 +15,9 @@
 # limitations under the License.
 
 while true; do
-    make
+    make prep 2>&1 | tee coreapi_output.txt
+    MODEL_STATUS=${PIPESTATUS[0]}
+
+    make start MODEL_STATUS=$MODEL_STATUS MODEL_OUTPUT=coreapi_output.txt
     sleep 1
 done

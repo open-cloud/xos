@@ -14,6 +14,7 @@
 # limitations under the License.
 
 
+import argparse
 import os
 import sys
 import time
@@ -25,6 +26,19 @@ from multistructlog import create_logger
 
 log = create_logger(Config().get('logging'))
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_status", dest="model_status", type=int, default=0, help="status of model prep")
+    parser.add_argument("--model_output", dest="model_output", type=file, default=None, help="file containing output of model prep step")
+    args = parser.parse_args()
+
+    if args.model_output:
+        args.model_output = args.model_output.read()
+    else:
+        args.model_output = ""
+
+    return args
+
 def init_reaper():
     reaper = None
     try:
@@ -32,16 +46,22 @@ def init_reaper():
         reaper = ReaperThread()
         reaper.start()
     except:
-        logger.log_exception("Failed to initialize reaper")
+        log.exception("Failed to initialize reaper")
 
     return reaper
 
 if __name__ == '__main__':
-    server = XOSGrpcServer()
-    server.init_django()
+    args = parse_args()
+
+    server = XOSGrpcServer(model_status = args.model_status,
+                           model_output = args.model_output)
     server.start()
 
-    reaper = init_reaper()
+    if server.django_initialized:
+        reaper = init_reaper()
+    else:
+        log.warning("Skipping reaper as django is not initialized")
+        reaper = None
 
     restart_related_containers()
 
@@ -55,4 +75,6 @@ if __name__ == '__main__':
         log.info("XOS core terminated by keyboard interrupt")
 
     server.stop()
-    reaper.stop()
+
+    if reaper:
+        reaper.stop()

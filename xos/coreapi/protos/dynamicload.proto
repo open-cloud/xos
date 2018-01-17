@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package xos;
 
-// import "google/protobuf/empty.proto";
+import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 // import "common.proto";
 
@@ -42,6 +42,18 @@ message UnloadModelsRequest {
     string version = 2;
 };
 
+message ServiceModelStatus {
+    string name = 1;
+    string version = 2;
+    string state = 3;
+};
+
+message LoadStatusReply {
+    int32 model_status = 1;
+    string model_output = 2;
+    repeated ServiceModelStatus services = 3;
+}
+
 service dynamicload {
   rpc LoadModels(LoadModelsRequest) returns (LoadModelsReply) {
         option (google.api.http) = {
@@ -52,6 +64,12 @@ service dynamicload {
   rpc UnloadModels(UnloadModelsRequest) returns (LoadModelsReply) {
         option (google.api.http) = {
             post: "/xosapi/v1/dynamicload/unload_models"
+            body: "*"
+        };
+  }
+  rpc GetLoadStatus(google.protobuf.Empty) returns (LoadStatusReply) {
+        option (google.api.http) = {
+            get: "/xosapi/v1/dynamicload/load_status"
             body: "*"
         };
   }

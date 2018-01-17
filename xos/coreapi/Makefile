@@ -14,10 +14,22 @@
 # limitations under the License.
 #
 
-all: prep start
+# Allow MODEL_STATUS and MODEL_OUTPUT to be passed from command line
+# when using "make start"
+
+START_OPTIONS ?=
+ifdef MODEL_STATUS
+  START_OPTIONS += --model_status $(MODEL_STATUS)
+endif
+ifdef MODEL_OUTPUT
+  START_OPTIONS += --model_output $(MODEL_OUTPUT)
+endif
+
+all:
+	echo "please use \"make start\" or \"make prep\""
 
 start:
-	bash -c "source env.sh && python ./core_main.py"
+	bash -c "source env.sh && python ./core_main.py $(START_OPTIONS)"
 
 prep: unload_unwanted app_lists rebuild_protos compile_protos try_models makemigrations migrate
 

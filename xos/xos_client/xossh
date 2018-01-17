@@ -132,12 +132,17 @@ def unloadModels(name, version):
     request = current_client.dynamicload_pb2.UnloadModelsRequest(name=name, version=version)
     return current_client.dynamicload.UnloadModels(request)
 
+def getLoadStatus():
+    request = Empty()
+    return current_client.dynamicload.GetLoadStatus(request)
+
 def listUtility():
     print 'setDirtyModels(class_name=None)'
     print 'listDirtyModels(class_name=None)'
     print 'listModelDefs()'
     print 'loadModels(name, version, xproto_filenames, decl_filenames, attic_filenames)'
     print 'unloadModels(name, version)'
+    print 'getLoadStatus()'
 
 def examples():
     print 'Slice.objects.all() # list all slices'

@@ -35,8 +35,6 @@ Config.init()
 log = create_logger(Config().get('logging'))
 
 from protos import schema_pb2, dynamicload_pb2
-#from xos_modeldefs_api import ModelDefsService
-#from xos_utility_api import UtilityService
 from xos_dynamicload_api import DynamicLoadService
 from dynamicbuild import DynamicBuilder
 from google.protobuf.empty_pb2 import Empty
@@ -96,11 +94,14 @@ class SchemaService(schema_pb2.SchemaServiceServicer):
 
 class XOSGrpcServer(object):
 
-    def __init__(self, port=50055):
+    def __init__(self, port=50055, model_status=0, model_output=""):
         self.port = port
+        self.model_status = model_status
+        self.model_output = model_output
         log.info('Initializing GRPC Server', port = port)
         self.thread_pool = futures.ThreadPoolExecutor(max_workers=1)
         self.server = grpc.server(self.thread_pool)
+        self.django_initialized = False
 
         server_key = open(SERVER_KEY,"r").read()
         server_cert = open(SERVER_CERT,"r").read()
@@ -117,6 +118,7 @@ class XOSGrpcServer(object):
         import django
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
         django.setup()
+        self.django_initialized = True
 
     def register_core(self):
         from xos_grpc_api import XosService
@@ -147,9 +149,13 @@ class XOSGrpcServer(object):
                       dynamicload_pb2.add_dynamicloadServicer_to_server,
                       DynamicLoadService(self.thread_pool, self))
 
-        self.register_core()
-        self.register_utility()
-        self.register_modeldefs()
+        if (self.model_status == 0):
+            self.init_django()
+
+        if (self.django_initialized):
+            self.register_core()
+            self.register_utility()
+            self.register_modeldefs()
 
         # open port
         self.server.add_insecure_port('[::]:%s' % self.port)
@@ -216,25 +222,5 @@ def restart_related_containers():
     # TODO: remove once Tosca container is able to react internally
     restart_docker_container("xos_tosca_1")
 
-
-# This is to allow running the GRPC server in stand-alone mode
-
-if __name__ == '__main__':
-    server = XOSGrpcServer()
-    server.init_django()
-    server.start()
-
-    restart_related_containers()
-
-    log.info("XOS core entering wait loop")
-    _ONE_DAY_IN_SECONDS = 60 * 60 * 24
-    try:
-        while True:
-            if server.exit_event.wait(_ONE_DAY_IN_SECONDS):
-                break
-    except KeyboardInterrupt:
-        log.info("XOS core terminated by keyboard interrupt")
-
-    server.stop()
 
 

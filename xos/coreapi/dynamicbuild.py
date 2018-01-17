@@ -53,6 +53,18 @@ class DynamicBuilder(object):
         for item in request.attics:
             self.pre_validate_file(item)
 
+    def get_manifests(self):
+        manifests=[]
+        for fn in os.listdir(self.manifest_dir):
+            if fn.endswith(".json"):
+                manifest_fn = os.path.join(self.manifest_dir, fn)
+                try:
+                    manifest = json.loads(open(manifest_fn).read())
+                    manifests.append(manifest)
+                except:
+                    log.exception("Error loading manifest", filename=manifest_fn)
+        return manifests
+
     def load_manifest_from_request(self, request):
         manifest_fn = os.path.join(self.manifest_dir, request.name + ".json")
         if os.path.exists(manifest_fn):
