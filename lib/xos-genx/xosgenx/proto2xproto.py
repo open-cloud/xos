@@ -97,7 +97,7 @@ class Proto2XProto(Visitor):
                 rhs = rhs[1:-1]
 
             if rhs.startswith('policy:'):
-                str = rhs.split(':')[1]
+                str = rhs.split(':',1)[1]
                 val = self.fol_parser.parse(str, lexer = self.fol_lexer)
 
                 return m.PolicyDefinition(obj.name, val)
