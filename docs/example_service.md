@@ -71,8 +71,12 @@ Loop](dev/workflow_pod.md#development-loop).
 
 ## Define a Model
 
-The first step is to create a set of models for the service. To do this, create
-a file named `exampleservice.xproto` in your service's `xos` directory. This
+The first step is to create a set of models for the service. Before you do
+this, make a new root directory for your service, and within that directory,
+create an `xos` subdirectory. The `xos` subdirectory will hold files that XOS
+needs to on-board your service. 
+
+Your models live in a file named `exampleservice.xproto` in your service's `xos` directory. This
 file encodes the models in the service in a format called
 [xproto](../xos/dev/xproto.md) which is a combination of Google Protocol
 Buffers and some XOS-specific annotations to facilitate the generation of
