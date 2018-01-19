@@ -45,28 +45,27 @@ def generate_swagger_docs(xproto):
         print "ERROR: Couldn't generate swagger specs"
         print e
 
+def get_xproto_recursively(root):
+    files = []
+    items = os.listdir(root)
+    # iterate over the content of the folder excluding hidden items
+    for item in [i for i in items if i[0] is not "."]:
+        item_abs_path = os.path.abspath(root + "/" + item)
+        if os.path.isdir(item_abs_path):
+            files = files + get_xproto_recursively(item_abs_path)
+        elif os.path.isfile(item_abs_path):
+            files.append(item_abs_path)
+
+    return [f for f in files if "xproto" in f]
+
+
 def main():
 
-    # generate_swagger_docs('core', XOS_XPROTO)
     protos = [XOS_XPROTO]
 
-    services = os.listdir(SERVICE_DIR)
-    for service in services:
-        xos_folder = os.path.abspath(SERVICE_DIR + "/%s/xos" % service);
-        if os.path.isdir(xos_folder):
-            for file in os.listdir(xos_folder):
-                if 'xproto' in file and "monitoring" not in file:
-                    proto = os.path.abspath(xos_folder + "/%s" % file)
-                    # generate_swagger_docs(service, proto)
-                    if os.path.isfile(proto):
-                        protos.append(proto)
-                    else:
-                        print "ERROR: Couldn't find xproto file for %s at: %s" % (service, file)
-                else:
-                    "WARNING: %s does not have an xproto file" % service
-        else:
-            print "WARNING: %s does not have an XOS folder" % service
-    generate_swagger_docs(protos)
+    service_protos = get_xproto_recursively(SERVICE_DIR)
+
+    generate_swagger_docs(protos + service_protos)
 
 
 if __name__ == '__main__':
