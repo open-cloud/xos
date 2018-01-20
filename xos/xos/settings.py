@@ -53,7 +53,7 @@ DATABASES = {
         'NAME': Config.get('database.name'),
         'USER': Config.get('database.username'),
         'PASSWORD': Config.get('database.password'),
-        'HOST': "xos_db",
+        'HOST': "xos-db",
         'PORT': 5432,
     }
 }
