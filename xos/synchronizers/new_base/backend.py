@@ -104,6 +104,11 @@ class Backend:
         else:
             self.log.info("Skipping model policies thread due to no model_policies dir.")
 
+        if (not observer_thread) and (not watcher_thread) and (not model_policy_thread):
+            self.log.info("No sync steps and no policies. Synchronizer exiting.")
+            # the caller will exit with status 0
+            return
+
         while True:
             try:
                 time.sleep(1000)
