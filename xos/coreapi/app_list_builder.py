@@ -32,8 +32,6 @@ class AppListBuilder(object):
             if (not fn.startswith(".")) and os.path.isdir(service_dir):
                 models_fn = os.path.join(service_dir, "models.py")
                 if os.path.exists(models_fn):
-                    if fn == "syndicate_storage":
-                        continue
                     app_names.append(fn)
 
         # Generate the migration list

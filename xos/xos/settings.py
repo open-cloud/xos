@@ -169,13 +169,9 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    # 'django.contrib.sites',
     'django.contrib.messages',
     'django_extensions',
     'core',
-    'services.syndicate_storage',
-    # 'geoposition',
-    # 'rest_framework_swagger',
 )
 
 # add services that were configured by xosbuilder to INSTALLED_APPS
