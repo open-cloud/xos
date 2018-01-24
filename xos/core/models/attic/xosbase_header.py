@@ -16,6 +16,7 @@
 
 import datetime
 import time
+import calendar
 import json
 import pytz
 import inspect
@@ -48,7 +49,7 @@ def date_handler(obj):
         # json can't serialize DstTzInfo
         return str(obj)
     elif hasattr(obj, 'timetuple'):
-        return time.mktime(obj.timetuple())
+        return calendar.timegm(obj.timetuple())
     else:
         return obj
 
