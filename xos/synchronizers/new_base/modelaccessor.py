@@ -136,9 +136,9 @@ def import_models_to_globals():
 
 def keep_trying(client, reactor):
     # Keep checking the connection to wait for it to become unavailable.
-    # Then reconnect.
-
-    # log.info("keep_trying")   # message is unneccesarily verbose
+    # Then reconnect. The strategy is to send NoOp operations, one per second, until eventually a NoOp throws an
+    # exception. This will indicate the server has reset. When that happens, we force the client to reconnect, and
+    # it will download a new API from the server.
 
     from xosapi.xos_grpc_client import Empty
 
@@ -159,6 +159,32 @@ def keep_trying(client, reactor):
 def grpcapi_reconnect(client, reactor):
     global model_accessor
 
+    # Make sure to try to load models before trying to initialize the ORM. It might be the ORM is broken because it
+    # is waiting on our models.
+
+    if Config.get("models_dir"):
+        try:
+            ModelLoadClient(client).upload_models(Config.get("name"), Config.get("models_dir"))
+        except Exception, e:  # TODO: narrow exception scope
+            if (hasattr(e, "code") and callable(e.code) and hasattr(e.code(), "name") and (e.code().name) == "UNAVAILABLE"):
+                # We need to make sure we force a reconnection, as it's possible that we will end up downloading a
+                # new xos API.
+                log.info("grpc unavailable during loadmodels. Force a reconnect")
+                client.connected = False
+                client.connect()
+                return
+            log.exception("failed to onboard models")
+            # If it's some other error, then we don't need to force a reconnect. Just try the LoadModels() again.
+            reactor.callLater(10, functools.partial(grpcapi_reconnect, client, reactor))
+            return
+
+    # If the ORM is broken, then wait for the orm to become available.
+
+    if not getattr(client, "xos_orm", None):
+        log.warning("No xos_orm. Will keep trying...")
+        reactor.callLater(1, functools.partial(keep_trying, client, reactor))
+        return
+
     # this will prevent updated timestamps from being automatically updated
     client.xos_orm.caller_kind = "synchronizer"
 
@@ -166,14 +192,6 @@ def grpcapi_reconnect(client, reactor):
 
     from apiaccessor import CoreApiModelAccessor
     model_accessor = CoreApiModelAccessor(orm=client.xos_orm)
-
-    if Config.get("models_dir"):
-        try:
-            ModelLoadClient(client).upload_models(Config.get("name"), Config.get("models_dir"))
-        except Exception, e:  # TODO: narrow exception scope
-            log.exception("failed to onboard models")
-            reactor.callLater(10, functools.partial(grpcapi_reconnect, client, reactor))
-            return
 
     # If required_models is set, then check to make sure the required_models
     # are present. If not, then the synchronizer needs to go to sleep until
