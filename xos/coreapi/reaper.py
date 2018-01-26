@@ -138,6 +138,9 @@ class ReaperThread(threading.Thread):
                         log.info("skipping because it has need_delete_policy set", object = d)
                         continue
 
+                    if hasattr(d, "leaf_model"):
+                        d = d.leaf_model
+
                     cascade_set = self.get_cascade_set(d)
                     if cascade_set:
                         self.journal_object(d, "reaper.cascade_set", msg=",".join([str(m) for m in cascade_set]))
@@ -152,6 +155,7 @@ class ReaperThread(threading.Thread):
                         self.journal_object(d, "reaper.purge.exception")
                         log.error('REAPER: exception purging object', object = d)
                         traceback.print_exc()
+
             try:
                 reset_queries()
             except:

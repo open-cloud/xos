@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,20 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from xos.exceptions import *
+from controller_decl import *
 
-import json
-from xosapi.orm import ORMWrapper, ORMLocalObjectManager, register_convenience_wrapper
-
-class ORMWrapperSlice(ORMWrapper):
-    # TODO: this looks to be incorrect
-    @property
-    def slicename(self):
-        return "%s_%s" % (self.site.login_base, self.name)
-
-    # networks - emulates the ManyToMany from Slice to Network via NetworkSlice
-    @property
-    def networks(self):
-        idList = [x.network.id for x in self.networkslices.all()]
-        return ORMLocalObjectManager(self.stub, "Network", idList, False)
-
-register_convenience_wrapper("Slice", ORMWrapperSlice)
+class Controller(Controller_decl):
+    class Meta:
+        proxy = True

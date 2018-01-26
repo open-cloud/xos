@@ -239,7 +239,6 @@ class XOSAPIHelperMixin(object):
             elif (ftype == "GenericIPAddressField"):
                 setattr(p_obj, field.name, str(getattr(obj, field.name)))
 
-
         # Introspecting the django object for related objects is problematic due to _decl-style attics. The descendant
         # class's _meta's related_objects doesn't include related objects from the base. For example, VSGServiceInstance
         # was missing provided_links and subscribed_links, since those were declared in ServiceInstance. (This problem

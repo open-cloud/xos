@@ -272,3 +272,9 @@ def xproto_field_to_swagger_enum(f):
         return list
     else:
         return False
+
+def xproto_is_true(x):
+    # TODO: Audit xproto and make specification of trueness more uniform
+    if (x==True) or (x=="True") or (x=='"True"'):
+        return True
+    return False

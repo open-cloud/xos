@@ -1,6 +1,23 @@
+{%- if options.legacy =='"True"' -%}
+{%- set legacy_tag = '_decl' -%}
+{%- set legacy = True -%}
+{%- else -%}
+{%- set legacy_tag = '' -%}
+{%- set legacy = False -%}
+{%- endif -%}
 {% for m in proto.messages %}{% if not m.options.skip_django -%}
+{% if legacy %}
+{# handle models that use custom headers rather than deriving from xosbase #}
+{% if m.options.custom_header %}
+from {{ m.options.custom_header|replace('"','') }} import *
+{% else %}
+from core.models.xosbase import *
+{% endif %}
+{% else %}
 {% if file_exists(xproto_base_name(m.name)|lower+'_header.py') -%}from {{xproto_base_name(m.name)|lower }}_header import *{%- else -%}from header import *{% endif %}
 {% if file_exists(xproto_base_name(m.name)|lower+'_top.py') -%}{{ include_file(xproto_base_name(m.name)|lower+'_top.py') }} {% endif %}
+{% endif %}
+
 {%- for l in m.links %}
 
 {% if l.peer.name != m.name %}
@@ -24,7 +41,7 @@ from {{b.name | lower}} import {{ b.name }}
 {{ xproto_fol_to_python_validator(policy, proto.policies[policy], m, error) }}
 {% endfor %}
 
-class {{ m.name }}{{ xproto_base_def(m.name, m.bases) }}:
+class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases) }}:
   plural_name = "{{ xproto_pluralize(m) }}"
 
 {#  {% if m.options.no_sync or m.options.no_policy %}#}
@@ -53,11 +70,16 @@ class {{ m.name }}{{ xproto_base_def(m.name, m.bases) }}:
   {%- endfor %}
 
   # Meta
+  class Meta:
   {%- set uniques = xproto_field_graph_components(m.fields) %}
   {%- if uniques %}
-  class Meta:
       unique_together = {{ xproto_tuplify(uniques) }}
   {%- endif %}
+  {%- if xproto_is_true(m.options.abstract) %}
+      abstract=True
+  {%- endif %}
+      pass
+
   {% if file_exists(m.name|lower + '_model.py') -%}{{ include_file(m.name|lower + '_model.py') | indent(width=2)}}{%- endif %}
   pass
 
@@ -75,7 +97,7 @@ class {{ m.name }}{{ xproto_base_def(m.name, m.bases) }}:
       {% for policy,error in xproto_validations(m.options) %}
       policy_{{policy}}_validator(self, None)
       {% endfor %}
-      super({{ m.name }}, self).save(*args, **kwds)
+      super({{ m.name }}{{ legacy_tag }}, self).save(*args, **kwds)
 
   def can_access(self, ctx):
       {% if m.policy %}

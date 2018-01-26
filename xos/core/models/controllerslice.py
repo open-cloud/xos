@@ -13,20 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from xos.exceptions import *
+from controllerslice_decl import *
 
-import json
-from xosapi.orm import ORMWrapper, ORMLocalObjectManager, register_convenience_wrapper
+class ControllerSlice(ControllerSlice_decl):
+    class Meta:
+        proxy = True
 
-class ORMWrapperSlice(ORMWrapper):
-    # TODO: this looks to be incorrect
-    @property
-    def slicename(self):
-        return "%s_%s" % (self.site.login_base, self.name)
-
-    # networks - emulates the ManyToMany from Slice to Network via NetworkSlice
-    @property
-    def networks(self):
-        idList = [x.network.id for x in self.networkslices.all()]
-        return ORMLocalObjectManager(self.stub, "Network", idList, False)
-
-register_convenience_wrapper("Slice", ORMWrapperSlice)
+    def tologdict(self):
+        d=super(ControllerSlice,self).tologdict()
+        try:
+            d['slice_name']=self.slice.name
+            d['controller_name']=self.controller.name
+        except:
+            pass
+        return d

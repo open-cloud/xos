@@ -610,6 +610,7 @@ def make_ORMWrapper(wrapped_class, *args, **kwargs):
 import convenience.addresspool
 import convenience.privilege
 import convenience.instance
+import convenience.network
 import convenience.cordsubscriberroot
 import convenience.volttenant
 import convenience.vsgserviceinstance
