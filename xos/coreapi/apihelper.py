@@ -230,12 +230,27 @@ class XOSAPIHelperMixin(object):
             elif (ftype == "GenericIPAddressField"):
                 setattr(p_obj, field.name, str(getattr(obj, field.name)))
 
-        for field in obj._meta.related_objects:
-            related_name = field.related_name
-            if not related_name:
+
+        # Introspecting the django object for related objects is problematic due to _decl-style attics. The descendant
+        # class's _meta's related_objects doesn't include related objects from the base. For example, VSGServiceInstance
+        # was missing provided_links and subscribed_links, since those were declared in ServiceInstance. (This problem
+        # does not exist with older style attics)
+        #
+        # Instead, look through the protobuf object since we know it's right because we generated it from xproto. Look
+        # for any field that ended in "_ids", and use that to extract the appropriate field from the django
+        # object. This handles both ManyToOne reverse relations and ManyToMany.
+
+        for field_name in p_obj.DESCRIPTOR.fields_by_name.keys():
+            if not field_name.endswith("_ids"):
+                # only look for reverse relations
                 continue
-            if "+" in related_name:
+
+            related_name = field_name[:-4]
+            if not hasattr(obj, related_name):
+                # if field doesn't exist in the django object, then ignore it
+                log.warning("Protobuf field %s doesn't have a corresponding django field" % field_name)
                 continue
+
             try:
                 rel_objs = getattr(obj, related_name)
             except Exception as e:
@@ -251,29 +266,9 @@ class XOSAPIHelperMixin(object):
                 continue
 
             for rel_obj in rel_objs.all():
-                if not hasattr(p_obj, related_name + "_ids"):
+                if not hasattr(p_obj, field_name):
                     continue
-                getattr(p_obj, related_name + "_ids").append(rel_obj.id)
-
-        # Go through any many-to-many relations. This is almost the same as the related_objects loop above, but slightly
-        # different due to how django handles m2m.
-
-        for m2m in obj._meta.many_to_many:
-            related_name = m2m.name
-            if not related_name:
-                continue
-            if "+" in related_name:   # duplicated logic from related_objects; not sure if necessary
-                continue
-
-            rel_objs = getattr(obj, related_name)
-
-            if not hasattr(rel_objs, "all"):
-                continue
-
-            for rel_obj in rel_objs.all():
-                if not hasattr(p_obj, related_name + "_ids"):
-                    continue
-                getattr(p_obj, related_name + "_ids").append(rel_obj.id)
+                getattr(p_obj, field_name).append(rel_obj.id)
 
         # Generate a list of class names for the object. This includes its
         # ancestors. Anything that is a descendant of XOSBase or User
