@@ -1,4 +1,4 @@
-# Virtual POD Workflow
+# Workflow: CiaB Scenario
 
 For service or core development using a [virtual POD
 (CiaB)](/install_virtual.md), we have a tighter development workflow loop which

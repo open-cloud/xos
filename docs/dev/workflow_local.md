@@ -1,4 +1,4 @@
-# Local Workflow
+# Workflow: Local Scenario
 
 The following describes a workflow for XOS core or GUI development using a
 local environment (e.g., a laptop) with the local 'scenario'. To learn more

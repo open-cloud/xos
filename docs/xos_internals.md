@@ -1,16 +1,9 @@
-# XOS Internal
+# XOS Containers
 
-XOS, often referred as the CORD orchestrator, is the unique source of truth in a CORD installation. 
-Here is an overview of its structure.
-
-> Please note that this page is a work in progress, and help/contribution is really appreciated.
-
-# Containers
-
-XOS is made up of a set of Docker containers that cooperate to provide the platform functionalities, 
-from data-model to northbound APIs to synchronizers.
-
-Here is an inventory of those containers:
+XOS is made up of a set of Docker containers that cooperate to provide
+platform controller functionaly, including the data model,
+synchronizers, and northbound APIs. The following is an inventory of
+those containers:
 
 | Name | Description | Ports |
 | ---- | ----------- | ----- |

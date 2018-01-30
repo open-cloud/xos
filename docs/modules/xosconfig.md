@@ -1,17 +1,17 @@
-# Configuring XOS
+# XOS Configuration
 
 The `xosconfig` module is used to read, validate and distribute
 configuration information for all XOS-related components.
 
-_The code for this module can be found in lib/xos-config_
+The code for this module can be found in `lib/xos-config`.
 
 The `xosconfig` module uses a combination of parameters provided
 via a `.yaml` file and a service discovery mechanism.
 
 ## How to Use This Module
 
-This module needs to be initialized once (and only once) when you
-start the application. You can do it with:
+This module needs to be initialized once (and only once) when XOS
+starts. You can do it with:
 
 ```python
 from xosconfig import Config
@@ -100,7 +100,7 @@ returns an array of available services; by default:
 > curl consul:8500/v1/catalog/services
 >```
 
-#### Retrieve Information for a Single Service
+#### Retrieving Information for a Single Service
 
 Invoking
 

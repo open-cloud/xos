@@ -1,4 +1,4 @@
-# Mock/Single Workflow
+# Workflow: Mock/Single Scenario
 
 The following describes a workflow for service or core development using a
 local environment (e.g., a laptop) with the `rcord-mock` or `rcord-single`
