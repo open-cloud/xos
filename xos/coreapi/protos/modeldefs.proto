@@ -4,7 +4,6 @@ package xos;
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
-import "common.proto";
 
 // This API is used by the UI to validate fields.
 

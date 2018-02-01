@@ -231,3 +231,42 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
         res.xproto = xproto
         return res
 
+    @translate_exceptions
+    def GetPopulatedServiceInstances(self, request, context):
+        """
+        Return a service instance with provider and subsciber service instance ids
+        """
+        response = utility_pb2.PopulatedServiceInstance()
+
+        si = ServiceInstance.objects.get(id=request.id)
+
+
+        # populate the response object
+        response.id = si.id
+        response.leaf_model_name = si.leaf_model_name
+        response.owner_id = si.owner_id
+
+        if si.name:
+            response.name = si.name
+
+        # find links
+        provided_links = si.provided_links.all()
+        subscribed_links = si.subscribed_links.all()
+
+        # import pdb; pdb.set_trace()
+
+        for l in provided_links:
+            response.provided_service_instances.append(l.subscriber_service_instance.id)
+
+        for l in subscribed_links:
+            if l.subscriber_service_instance:
+                response.subscribed_service_instances.append(l.provider_service_instance_id)
+            elif l.subscriber_service:
+                response.subscribed_service.append(l.subscriber_service.id)
+            elif l.subscriber_network:
+                response.subscribed_network.append(l.subscriber_network.id)
+
+        return response
+
+
+
