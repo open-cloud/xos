@@ -1,33 +1,32 @@
-#Modeling Conventions
+# Modeling Conventions
 
-CORD adopts the following terminology and data modeling conventions
-(some of which is carried over from an earlier Django-based implementation).
+CORD adopts the following terminology and data modeling conventions (some of
+which is carried over from an earlier Django-based implementation).
 
 ## Terminology
 
-A *Model*  consists of a set of *Fields*. Each
-Field has a *Type* and each Type has a set of *Attributes*. Some of these
-Attributes are core (common across all Types) and some are
-Type-specific. *Relationships* between Models are expressed by Fields
-with one of a set of distinguished relationship-oriented Types (e.g,
+A *Model*  consists of a set of *Fields*. Each Field has a *Type* and each Type
+has a set of *Attributes*. Some of these Attributes are core (common across all
+Types) and some are Type-specific. *Relationships* between Models are expressed
+by Fields with one of a set of distinguished relationship-oriented Types (e.g,
 *OneToOneField*). Finally, an *Object* is an instance (instantiation) of a
-Model, where each Object has a unique primary key (or more precisely,
-a primary index into the table that implements the Model). By
-convention, that index/key is auto-generated for any Model that has
-not identified a separate unique primary key. The default primary key
-is always `id` for system level tables, and `pk` for model tables.
+Model, where each Object has a unique primary key (or more precisely, a primary
+index into the table that implements the Model). By convention, that index/key
+is auto-generated for any Model that has not identified a separate unique
+primary key. The default primary key is always `id` for system level tables,
+and `pk` for model tables.
 
 ## Naming Conventions
 
 Model names should use CamelCase without underscore. Model names should always
 be singular, never plural. For example: `Slice`, `Network`, `Site`.
 
-Sometimes a model is used to relate two other models, and
-should be named after the two models that it relates. For example, a model that
-relates the `Controller` and `User` models should be called `ControllerUser`.
+Sometimes a model is used to relate two other models, and should be named after
+the two models that it relates. For example, a model that relates the
+`Controller` and `User` models should be called `ControllerUser`.
 
-Field names use lower case with underscores separating names. Examples of
-valid field names are: name, `disk_format`, `controller_format`.
+Field names use lower case with underscores separating names. Examples of valid
+field names are: name, `disk_format`, `controller_format`.
 
 ## Field Types
 
@@ -56,21 +55,22 @@ The following Field-level optional attributes are currently in use.
 | help_text="..." | Provides some context-based help for the field; will show up in the GUI display.|
 | default=... | Allows a predefined default value to be specified.|
 | choices=CHOICE_LIST | An interable (list or tuple). Allows the field to be filled in from an enumerated choice. For example, *ROLE_CHOICES = (('admin', 'Admin'), ('pi', 'Principle Investigator'), ('user','User'))*|
-| unique=True |	Requires that the field be unique across all entries.|
+| unique=True | Requires that the field be unique across all entries.|
 | blank=True | Allows the field to be present but empty.|
 | null=True | Allows the field to have a value of null if the field is blank.|
 | editable=False | If you would like to make this a readOnly field to the user.|
 | gui_hidden=True | Hide a particular field from the GUI. This can be specified for an entire model.|
 
-The following Field-level optional attributes should not be used (or use judiciously).
+The following Field-level optional attributes should not be used (or use
+judiciously).
 
 | Attribute          | Why                |
 |--------------------|--------------------|
 | primary_key        | Some of the plugins we use, particularly in the REST area, do not do well with CharField's as the primary key. In general, it is best to use the system primary key instead, and put a *db_index=True, unique=True* on the CharField you would have used.|
 | db_column, db_tablespace | Convention is to use the Field name as the db column, and use verbose_name if you want to change the display. For tablespace, all models should be defined within the application they are specified in. Overwriting the tablespace will make it more challenging for the next developer to find and fix any issues that might arise.|
 
-The following Field-level optional attributes are not currently used but may
-be used at some point.
+The following Field-level optional attributes are not currently used but may be
+used at some point.
 
 | Attribute          | Effect             |
 |--------------------|--------------------|
@@ -88,11 +88,11 @@ There are a few different types of Relationship-based fields.
 | ManyToManyField    | Used to represent an N-to-N relationship. For example: Deployments may have 0 or more Sites; Sites may have 0 or more Deployments.|
 | OneToOneField      | Not currently in use, but would be useful for applications that wanted to augment a core class with their own additional settings. This has the same affect as a ForeignKey with unique=True.  The difference is that the reverse side of the relationship will always be 1 object (not a list).|
 | GenericForeignKey | Not currently in use, but can be used to specify a non specific relation to "another object." Meaning object A relates to any other object. This relationship requires a reverse attribute in the "other" object to see the relationship -- but would primarily be accessed through the GenericForeignKey owner Model.
-The nuances of these relationships is brought about by the additional optional attributes that can be ascribed to each Field.
+The nuances of these relationships is brought about by the additional optional attributes that can be ascribed to each Field. |
 
->Note that we should likely convert our Tags to use GenericForeignKey
->so that all objects can be extensible during development, but then
->converted/promoted to attributes once the model has stabilized.
+> Note: We should likely convert our Tags to use GenericForeignKey so that all
+> objects can be extensible during development, but then converted/promoted to
+> attributes once the model has stabilized.
 
 ## Optional Attribute Side Effects
 
@@ -107,8 +107,8 @@ The nuances of these relationships is brought about by the additional optional a
 
 ## Avoid List
 
-Avoid using the following optional attributes as they can have adverse
-effects on data integrity and REST relationships:
+Avoid using the following optional attributes as they can have adverse effects
+on data integrity and REST relationships:
 
 | Attribute          | Effect             |
 |--------------------|--------------------|
@@ -125,6 +125,4 @@ effects on data integrity and REST relationships:
 | ordering | Defines the default column to order lists of the object type by. For example, Users => email.|
 | description | Provide an explation of the model. It's rendered in the GUI to help the operator.|
 | gui_hidden=True | Hide a particular model from the GUI. This can be specified for a single field.|
-
-
 

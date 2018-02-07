@@ -1,26 +1,25 @@
 # XOS Configuration
 
-The `xosconfig` module is used to read, validate and distribute
-configuration information for all XOS-related components.
+The `xosconfig` module is used to read, validate and distribute configuration
+information for all XOS-related components.
 
 The code for this module can be found in `lib/xos-config`.
 
-The `xosconfig` module uses a combination of parameters provided
-via a `.yaml` file and a service discovery mechanism.
+The `xosconfig` module uses a combination of parameters provided via a `.yaml`
+file and a service discovery mechanism.
 
 ## How to Use This Module
 
-This module needs to be initialized once (and only once) when XOS
-starts. You can do it with:
+This module needs to be initialized once (and only once) when XOS starts. You
+can do it with:
 
 ```python
 from xosconfig import Config
 Config.init()
 ```
 
-By default, `xosconfig` looks for a configuration file
-in `/opt/xos/config.yaml`. Passing a
-different config file can be done with:
+By default, `xosconfig` looks for a configuration file in
+`/opt/xos/config.yaml`. Passing a different config file can be done with:
 
 ```python
 from xosconfig import Config
@@ -29,18 +28,19 @@ Config.init("/path/to/my/config.yaml")
 
 ### Configuration Defaults
 
-Defaults are defined for some of the configuration items
-in `lib/xos-config/xosconfig/default.py`.
+Defaults are defined for some of the configuration items in
+`lib/xos-config/xosconfig/default.py`.
 
 ### Reading Data from the Configuration File
 
-To access static information defined in the `config.yaml` file, use
-the following API:
+To access static information defined in the `config.yaml` file, use the
+following API:
 
 ```python
 from xosconfig import Config
 res = Config.get('database')
 ```
+
 This call returns something like:
 
 ```python
@@ -50,28 +50,27 @@ This call returns something like:
 }
 ```
 
-Since the configuration supports a nested dictionary, it is possible to
-query directly nested values using `dot` notation. For example:
+Since the configuration supports a nested dictionary, it is possible to query
+directly nested values using `dot` notation. For example:
 
 ```python
 from xosconfig import Config
 res = Config.get('database.username')
 ```
 
-returns
+returns:
 
 ```python
 "test"
 ```
 
-**The configuration schema is defined in `/lib/xos-config/config-schema.yaml`**
+The configuration schema is defined in `/lib/xos-config/config-schema.yaml`
 
 ### Reading Service Information
 
-XOS is composed of a set of services. To discover these services and
-their address, use the
-[registrator](https://github.com/gliderlabs/registrator) tool.
- 
+XOS is composed of a set of services. To discover these services and their
+address, use the [registrator](https://github.com/gliderlabs/registrator) tool.
+
 #### Retrieving a List of Services
 
 Invoking
@@ -95,10 +94,11 @@ returns an array of available services; by default:
 ]
 ```
 
->You can get the same information on the `head node` using:
->```bash
+> NOTE: You can get the same information on the `head node` using:
+>
+> ```bash
 > curl consul:8500/v1/catalog/services
->```
+> ```
 
 #### Retrieving Information for a Single Service
 
@@ -118,10 +118,11 @@ returns
     'port': 5432
 }
 ```
->You can get the same information on the `head node` using:
->```bash
+
+> NOTE: You can get the same information on the `head node` using:
+> ```bash
 > curl consul:8500/v1/catalog/service/xos-db
->```
+> ```
 
 #### Retrieving Endpoint for a Single Service
 
@@ -137,3 +138,4 @@ returns
 ```python
 "http://172.18.0.4:5432"
 ```
+

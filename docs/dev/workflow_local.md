@@ -8,9 +8,9 @@ CORD](/install.md#included-scenarios).
 The `local` scenario is suitable for working on (and verifying the correctness
 of):
 
-- `core` models
-- `service` models
-- `gui`
+* `core` models
+* `service` models
+* `gui`
 
 It runs in a set of local docker containers, and is the most lightweight of all
 CORD development environments.
@@ -30,7 +30,7 @@ script](/install.md#cord-bootstrapsh-script), with the `-d` option.
 
 You can setup a `local` POD config on your machine as follows.
 
-```
+```shell
 cd ~/cord/build
 make PODCONFIG=rcord-local.yml config
 make build
@@ -43,13 +43,13 @@ If you are using this on a remote node that uses Ubuntu as the base OS, you can
 deploy an Apache proxy and set `/etc/hosts` variables to allow it to proxy the
 connection remotely:
 
-```
+```shell
 make local-ubuntu-dev-env
 ```
 
 Example combining all of these using `cord-boostrap.sh`:
 
-```
+```shell
 bash ./cord-bootstrap.sh -d -t "PODCONFIG=rcord-local.yml config" -t "local-ubuntu-dev-env" -t "build"
 ```
 
@@ -58,7 +58,7 @@ bash ./cord-bootstrap.sh -d -t "PODCONFIG=rcord-local.yml config" -t "local-ubun
 This is the workflow that you'll need to follow if you want to start from a
 fresh XOS installation. Note that it wipes the out the XOS database.
 
-```
+```shell
 cd ~/cord/build
 make local-xos-teardown
 make build
