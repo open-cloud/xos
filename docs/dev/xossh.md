@@ -17,7 +17,7 @@ __   __   ____     _____    _____   _    _
   > <   | |  | |  \___ \   \___ \  |  __  |
  / . \  | |__| |  ____) |  ____) | | |  | |
 /_/ \_\  \____/  |_____/  |_____/  |_|  |_|
- 
+
 XOS Core server at xos-core.cord.lab:50051
 Type "listObjects()" for a list of all objects
 Type "listUtility()" for a list of utility functions

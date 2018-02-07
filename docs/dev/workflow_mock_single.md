@@ -8,17 +8,17 @@ Building and Installing CORD](/install.md#scenarios).
 The `mock` scenario is suitable for working on (and verifying the
 correctness of):
 
-- `core` models
-- `service` models
-- `gui`
-- `profile` configurations
+* `core` models
+* `service` models
+* `gui`
+* `profile` configurations
 
 The `single` scenario also runs the CORD synchronizer containers and can
 optionally run ONOS and ElasticStack, and may be suitable for working on:
 
-- `synchronizer` steps
-- Interaction between XOS's ONOS synchronizer and ONOS
-- Logging with ElasticStack
+* `synchronizer` steps
+* Interaction between XOS's ONOS synchronizer and ONOS
+* Logging with ElasticStack
 
 ## Requirements
 
@@ -36,7 +36,7 @@ script](/install.md#cord-bootstrapsh-script).
 You can setup a `mock` deployment on your machine as follows. If using
 `single`, replace `rcord-mock.yml` with `rcord-single.yml`:
 
-```
+```shell
 cd ~/cord/build
 make PODCONFIG=rcord-mock.yml config
 make -j4 build
@@ -45,8 +45,8 @@ make -j4 build
 This setups a `Vagrant VM`, and once the install is complete,
 you can access:
 
-- the XOS GUI at `192.168.46.100:8080/xos`
-- the Vagrant VM via `ssh headnode`
+* the XOS GUI at `192.168.46.100:8080/xos`
+* the Vagrant VM via `ssh headnode`
 
 ### Configure Your Deployment
 
@@ -54,7 +54,7 @@ By default the `libvirt` provider is used to manage the Vagrant VM.  If you
 prefer to use `VirtualBox` (this is the typical Mac OS case), you can invoke
 the build command as:
 
-```
+```shell
 VAGRANT_PROVIDER=virtualbox make -j4 build
 ```
 
@@ -74,14 +74,14 @@ scale your development VM up or down accordingly to the available resources.
 
 Note that the code is shared in the VM so that:
 
-- `~/cord` is mounted on `/opt/cord`
-- `~/cord_profile` is mounted on `/opt/cord_profile`
-- `~/cord/platform-install/credentials/` is mounted on `~/opt/credentials`
+* `~/cord` is mounted on `/opt/cord`
+* `~/cord_profile` is mounted on `/opt/cord_profile`
+* `~/cord/platform-install/credentials/` is mounted on `~/opt/credentials`
   (only in the `single` scenario)
 
 ### Update the Code Running in the Containers
 
-```
+```shell
 cd ~/cord/build
 make xos-update-images
 make -j4 build
@@ -93,7 +93,7 @@ This is the workflow that you'll need to follow if you want
 to start from a fresh XOS installation. Note that it wipes the
 out the XOS database.
 
-```
+```shell
 cd ~/cord/build
 make xos-teardown
 make -j4 build
@@ -101,7 +101,7 @@ make -j4 build
 
 ### Update the Profile Configuration
 
-```
+```shell
 cd ~/cord/build
 make clean-profile
 make PODCONFIG=rcord-mock.yml config
@@ -116,7 +116,7 @@ and has optional ElasticStack or ONOS functionality.
 To use these, you would invoke the ONOS or ElasticStack milestone target before
 the `build` target:
 
-```
+```shell
 make PODCONFIG=rcord-single.yml config
 make -j4 milestones/deploy-elasticstack
 make -j4 build
@@ -124,7 +124,7 @@ make -j4 build
 
 or
 
-```
+```shell
 make PODCONFIG=rcord-single.yml config
 make -j4 milestones/deploy-onos
 make -j4 build
