@@ -28,6 +28,8 @@ When first created, each Data Network is *Private* by default, analogous to a pr
 > Note: While it is natural to expect an Instance to connect directly to a
 Public network (as opposed to first connecting to a private network and then splicing that network to a public network), that exploits a race condition involving Neutron. Should Neutron have had the opportunity to come up before the public network is connected, a private address rather than a public address would be assigned to each Instance's Port. Instead, our approach is that (a) the private network be established as a first step, and (b) it is possible to assign a second address (in this case public) to each Port. This allows a private network to be made public at any time, and in general, being able to assign multiple addresses to a Port is a requirement.
 
+In addition to adding public connectivity to a private network, it is also possible to create a network that is public by default. This is done by setting the network's template's `VTN_KIND` to `public`.
+
 ## Interconnecting Networks
 
 VTN programs the underlying software switches (e.g., OvS) to forward packets to/from the Ports of the Service’s Instances. Connecting a network onto an existing Data Network means Instances in the two networks can exchange packets according to the parameters of the splicing operation (see below) and it may result in a new address being assigned to each Port.
@@ -78,116 +80,19 @@ Because VTN provides a CLI to purge its internal state, it uses the XOS-provided
 
 ## XOS Provided API
 
-### ServicePorts
+* `GET xosapi/v1/vtn/vtnservices` Get a list of VTN services
+* `PUT xosapi/v1/vtn/vtnservices/{service_id}` Update a VTN service
 
-* `GET api/service/vtn/servicePorts` List service ports including port details 
+To cause VTN to be resynchronized from XOS to the VTN app, the following steps are performed:
 
-* `GET api/service/vtn/servicePorts/{port_id}`  Show service port details
+1. `GET xosapi/v1/vtn/vtnservices/` This will provide a list of registered VTN services. There's usually only one, and it's `id` is typically set to `1`, but we recommend always getting the list of services rather than assuming an the id.
+2. `PUT xosapi/v1/vtn/vtnservices/{service_id}` with data `{"resync": true}`. `{service_id}` is the identifier you retrieved in step (1). 
 
-_Service Port Details_
 
-| Parameters | Type | Description |
-| --------- | ---- | --------- |
-| id |UUID | UUID of the port|
-| vlan_id (optional) | number | VLAN ID of the port interface|
-| floating_address_pairs (optional) | list | Additional public IP addresses allowed to the port interface |
-| ip_address | string | Additional public IP address |
-|mac_address | string | Additional MAC address mapped to the public IP address |
-
-Example json response:
-
-```
-{
-   "servicePorts": [
-       {
-           "id": "55d1b71f-efe2-455d-a78c-e48e9d3a4094"
-       },
-       {
-           "id": "7098f0a8-cdcb-4bce-9706-05aecacb784b",
-           "vlan_id": 222,
-           "floating_address_pairs": [
-               {
-                   "ip_address": "20.0.0.3",
-                   "mac_address" : "fa:16:3e:ca:05:9c"
-               }
-           ]
-       }
-   ]
- }
-```
-   
-### ServiceNetworks
-   
-* `GET api/service/vtn/serviceNetworks`  List service networks including the details 
-
-* `GET api/service/vtn/serviceNetworks/{network_id}`  Show service network details
-
-_Service Network Details_
-
-| Parameters | Type | Description |
-| --------- | ---- | --------- |
-| id | UUID | UUID of the network|
-| type | string | service network type | 
-| providerNetworks | list | List of provider network IDs |
-| tenantNetworks | list | List of tenant network IDs |
-| bidirectional | boolean | The dependency, which is bidirectional (true) or unidirectional (false) |
-
-_ServiceNetwork Types_
-* PRIVATE: virtual network for the instances in the same service 
-* PUBLIC: externally accessible network 
-* MANAGEMENT_LOCAL: instance management network which does not span compute nodes, only accessible from the host machine 
-* MANAGEMENT_HOST: real management network which spans compute and head nodes
-* VSG: access-side network
-* ACCESS_AGENT: network for access agent infrastructure service 
-
-Example json response:
-
-```
-{
-    "serviceNetworks": [
-        {
-            "id": "8ab38619-327e-47ce-9304-2c595c1b6708",
-            "type": "public",
-            "providerNetworks": [],
-            "tenantNetworks": []
-        },
-        {
-            "id": "a14d7a6b-dffb-4271-8a17-5d715b362d1e",
-            "type": "private",
-            "providerNetworks": [],
-            "tenantNetworks": [
-                {
-                    "id": "71cc8c93-f809-42ff-b1d6-0c8d92c6cd2b",
-                    "bidirectional": true
-                }
-            ]
-        }
-    ]
-}
-```
-
-Example json response: 
-
-```
-{
-    "service": {
-        "id": "a14d7a6b-dffb-4271-8a17-5d715b362d1e",
-        "type": "private",
-        "providerNetworks": [],
-        "tenantNetworks": [
-            {
-                "id": "71cc8c93-f809-42ff-b1d6-0c8d92c6cd2b",
-                "bidirectional": true
-            }
-        ]
-    }
-	}
-```
-	
 ## VTN Provided API
-	
+
 ### ServicePorts
-	
+
 * `POST onos/cordvtn/servicePorts`  Create a service port 
 
 * `GET onos/cordvtn/servicePorts`  List service ports including service port details
@@ -304,7 +209,9 @@ currently supported:
 
 * `Public` Connected via a public network (currently implemented by vRouter)
 
-* `Private` Connected via a private network (currently implemented by VTN)
+* `Private-unidirectional` Connected via a private network with unidirectional connectivity (currently implemented by VTN)
+
+* `Private-bidirectional` Connected via a private network with bidirectional connectivity (currently implemented by VTN) 
 
 * `Other` Connected via some other network (how specified is TBD)
 
@@ -324,5 +231,5 @@ The second is the *NetworkTemplate* model, which defines the parameters by which
 
 * `ACCESS_AGENT` Provides a network for access agent infrastructure service 
 
->Note: The NetworkTemplate model needs to be cleaned up and reconciled with the ServiceDependency model. For example, there are currently three different places one can specify some version of public versus private, the `choices` imposed on various fields are not currently enforced, and there is currently no way to specify whether a network is `Unidirectional` or `Bidirectional`. The logic that controls how XOS invokes VTN can be found in the VTN synchronizer, and can be summarized as follows: If a ServiceDependency exists between Services A and B, then VTN will connect every eligible Network in A to every eligible network in B, where a network is eligible if its NetworkTemplate's `vtn_kind` field is set of `VSG` or `Private`.
+>Note: The NetworkTemplate model needs to be cleaned up and reconciled with the ServiceDependency model. For example, there are currently three different places one can specify some version of public versus private, and the `choices` imposed on various fields are not currently enforced. The logic that controls how XOS invokes VTN can be found in the VTN synchronizer, and can be summarized as follows: If a ServiceDependency exists between Services A and B, then VTN will connect every eligible Network in A to every eligible network in B, where a network is eligible if its NetworkTemplate's `vtn_kind` field is set of `VSG` or `Private`.
 
