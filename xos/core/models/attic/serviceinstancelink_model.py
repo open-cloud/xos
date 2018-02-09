@@ -20,6 +20,21 @@ def __xos_save_base(self, *args, **kwargs):
         raise XOSConflictingField(
             "Only one of subscriber_service, subscriber_service_instance, subscriber_network should be set")
 
+    try:
+        existing_instance = ServiceInstanceLink.objects.get(
+            provider_service_instance=self.provider_service_instance,
+            subscriber_service_instance=self.subscriber_service_instance,
+            subscriber_service=self.subscriber_service,
+            subscriber_network=self.subscriber_network
+        )
+
+        if (not self.pk and existing_instance) or (self.pk and self.pk != existing_instance.pk):
+            raise XOSValidationError("A ServiceInstanceLink with attributes 'provider_service_instance=%s, subscriber_service_instance=%s, subscriber_service=%s, subscriber_network=%s' already exists"
+                                     % (self.provider_service_instance, self.subscriber_service_instance, self.subscriber_service, self.subscriber_network))
+    except self.DoesNotExist:
+        # NOTE this is correct, no duplicated links
+        pass
+
 
 def delete(self, *args, **kwargs):
     provider_service_instance = self.provider_service_instance
