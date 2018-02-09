@@ -15,7 +15,7 @@
 
 
 import unittest
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs, XProtoTestHelpers
 import pdb
 import mock
@@ -48,7 +48,7 @@ class XProtoXOSSecurityTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         exec(output) # This loads the generated function, which should look like this:
 
@@ -87,7 +87,7 @@ class XProtoXOSSecurityTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         exec(output) # This loads the generated function, which should look like this:
 
         """
@@ -135,7 +135,7 @@ class XProtoXOSSecurityTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         exec(output) # This loads the generated function, which should look like this:
 
@@ -181,7 +181,7 @@ class XProtoXOSSecurityTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         exec(output) # This loads the generated function, which should look like this:
 

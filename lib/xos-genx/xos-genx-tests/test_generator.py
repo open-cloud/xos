@@ -17,7 +17,7 @@
 import unittest
 import os
 from helpers import FakeArgs, OUTPUT_DIR
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 
 TEST_EXPECTED_OUTPUT = """
     name: XOSModel
@@ -39,7 +39,7 @@ SPLIT_TARGET = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/x
 
 TEST_ATTICS = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/attics/")
 
-class XOSGeneratorTest(unittest.TestCase):
+class XOSProcessorTest(unittest.TestCase):
     """
     Testing the XOS Generative Toolchain
     """
@@ -58,7 +58,7 @@ class XOSGeneratorTest(unittest.TestCase):
         args = FakeArgs()
         args.files = [TEST_XPROTO]
         args.target = TEST_TARGET
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertEqual(output, TEST_EXPECTED_OUTPUT)
 
     def test_generator_custom_target_from_inputs(self):
@@ -68,7 +68,7 @@ class XOSGeneratorTest(unittest.TestCase):
         args = FakeArgs()
         args.inputs = open(TEST_XPROTO).read()
         args.target = TEST_TARGET
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertEqual(output, TEST_EXPECTED_OUTPUT)
 
     def test_django_with_attic(self):
@@ -82,7 +82,7 @@ class XOSGeneratorTest(unittest.TestCase):
         args.output = OUTPUT_DIR
         args.dest_extension = 'py'
         args.write_to_file = 'model'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         # xosmodel has custom header attic
         self.assertIn('from xosmodel_header import *', output['XOSModel'])
@@ -113,7 +113,7 @@ class XOSGeneratorTest(unittest.TestCase):
         args.output = OUTPUT_DIR
         args.dest_extension = 'py'
         args.write_to_file = 'model'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         # verify files
         xosmodel = OUTPUT_DIR + '/xosmodel.py'
@@ -138,7 +138,7 @@ class XOSGeneratorTest(unittest.TestCase):
         args.output = OUTPUT_DIR
         args.dest_extension = 'txt'
         args.write_to_file = 'model'
-        XOSGenerator.generate(args)
+        XOSProcessor.process(args)
 
         generated_files = [f for f in os.listdir(OUTPUT_DIR) if not f.startswith('.')]
         self.assertEqual(len(generated_files), 2)
@@ -158,7 +158,7 @@ class XOSGeneratorTest(unittest.TestCase):
         args.target = SPLIT_TARGET
         args.output = OUTPUT_DIR
         args.write_to_file = 'target'
-        XOSGenerator.generate(args)
+        XOSProcessor.process(args)
 
         generated_files = [f for f in os.listdir(OUTPUT_DIR) if not f.startswith('.')]
         self.assertEqual(len(generated_files), 2)
@@ -176,7 +176,7 @@ class XOSGeneratorTest(unittest.TestCase):
         args.output = OUTPUT_DIR
         args.dest_extension = 'py'
         args.write_to_file = 'model'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         # should not print a file if options.skip_django = True
         file = OUTPUT_DIR + '/user.py'
@@ -188,7 +188,7 @@ class XOSGeneratorTest(unittest.TestCase):
         args.target = 'service.xtarget'
         args.output = OUTPUT_DIR
         args.write_to_file = 'target'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         model = OUTPUT_DIR + '/models.py'
         self.assertTrue(os.path.isfile(model))

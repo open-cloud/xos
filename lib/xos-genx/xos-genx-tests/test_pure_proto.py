@@ -16,7 +16,7 @@
 
 
 import unittest
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs, XProtoTestHelpers
 
 # Generate from xproto, then generate from equivalent proto
@@ -86,7 +86,7 @@ class {{ m.name }}{{ xproto_base_def(m, m.bases) }}:
 		args_xproto = FakeArgs()
 		args_xproto.inputs = xproto
 		args_xproto.target = target
-		xproto_gen = XOSGenerator.generate(args_xproto)
+		xproto_gen = XOSProcessor.process(args_xproto)
 
 		count1 = len(xproto_gen.split('\n'))
 
@@ -94,7 +94,7 @@ class {{ m.name }}{{ xproto_base_def(m, m.bases) }}:
 		args_proto.inputs = proto
 		args_proto.target = target
 		args_proto.rev = True
-		proto_gen = XOSGenerator.generate(args_proto)
+		proto_gen = XOSProcessor.process(args_proto)
 		count2 = len(proto_gen.split('\n'))
 
 		self.assertEqual(count1, count2)
@@ -117,13 +117,13 @@ option my_policy = "policy:< exists x:a=b >";
 		args_xproto = FakeArgs()
 		args_xproto.inputs = xproto
 		args_xproto.target = target
-		xproto_gen = XOSGenerator.generate(args_xproto)
+		xproto_gen = XOSProcessor.process(args_xproto)
 
 		args_proto = FakeArgs()
 		args_proto.inputs = proto
 		args_proto.target = target
 		args_proto.rev = True
-		proto_gen = XOSGenerator.generate(args_proto)
+		proto_gen = XOSProcessor.process(args_proto)
 
 		self.assertEqual(proto_gen, xproto_gen)
 

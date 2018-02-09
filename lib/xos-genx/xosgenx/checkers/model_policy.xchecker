@@ -1,0 +1,5 @@
+{% for m in proto.messages %}
+{% if not m.options.no_policy %}
+{{ xproto_check_policy(m) }}
+{% endif %}
+{% endfor %}

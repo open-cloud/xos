@@ -15,7 +15,7 @@
 
 
 import unittest
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs, XProtoTestHelpers
 import pdb
 
@@ -47,7 +47,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         exec(output) # This loads the generated function, which should look like this:
 
@@ -71,7 +71,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         exec(output) # This loads the generated function, which should look like this:
 
@@ -101,7 +101,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         exec(output) # This loads the generated function, which should look like this:
 
@@ -131,7 +131,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         exec(output) # This loads the generated function, which should look like this:
 
         """
@@ -162,7 +162,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         exec(output) # This loads the generated function, which should look like this:
 
         """
@@ -182,7 +182,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
 	args = FakeArgs()
         args.inputs = xproto
         args.target = self.target
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         exec(output) # This loads the generated function, which should look like this:
 
         """
@@ -207,7 +207,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         exec(output,globals()) # This loads the generated function, which should look like this:
 
@@ -244,7 +244,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         """
         def policy_output_enforcer(obj, ctx):

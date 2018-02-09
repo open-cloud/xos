@@ -1,0 +1,32 @@
+{# Using regular variables has scoping issues. #}
+{# See: https://stackoverflow.com/questions/7537439/how-to-increment-a-variable-on-a-for-loop-in-jinja-template/7537466 #}
+{% set counter = {
+    'num_service_models': 0,
+    'num_service_instance_models': 0,
+    'num_orphaned_models': 0,
+    } %}
+{% macro increment(key) %}
+    {% if counter.update({key: counter[key] + 1}) %} {% endif %}
+{% endmacro %}
+{% for m in proto.messages %}
+{% set matched = False %}
+{% set base_names = m.bases | map(attribute='name') | list %}
+{% if 'Service' in base_names %}
+{{ increment('num_service_models') }}
+{% set matched = True %}
+{% endif %}
+{% if not matched and 'ServiceInstance' in base_names or 'Tenant' in base_names or 'TenantWithContainer' in base_names %}
+{{ increment('num_service_instance_models') }}
+{% set matched = True %}
+{% endif %}
+{% if not matched and 'XOSBase' not in base_names %}
+501 Model does not have a parent - {{ m.name }}
+{% endif %}
+{% endfor %}
+{% if counter.num_service_models !=1 %}
+502 {{ counter.num_service_models }} Service models instead of 1
+{% elif counter.num_service_instance_models !=1 %}
+503 {{ counter.num_service_instance_models }} ServiceInstance models instead of 1
+{% else %}
+200 OK
+{% endif %}

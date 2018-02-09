@@ -15,7 +15,7 @@
 
 
 import unittest
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs, XProtoTestHelpers
 
 """The function below is for eliminating warnings arising due to the missing output_security_check,
@@ -46,7 +46,7 @@ class XProtoSecurityTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         exec(output) # This loads the generated function, which should look like this:
 
@@ -69,7 +69,7 @@ class XProtoSecurityTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         exec(output) # This loads the generated function, which should look like this:
 
@@ -97,7 +97,7 @@ class XProtoSecurityTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         exec(output,globals()) # This loads the generated function, which should look like this:
 
@@ -135,7 +135,7 @@ class XProtoSecurityTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         exec(output,globals()) # This loads the generated function, which should look like this:
 
@@ -171,7 +171,7 @@ class XProtoSecurityTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         exec(output) # This loads the generated function, which should look like this:
 
         """
@@ -202,7 +202,7 @@ class XProtoSecurityTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         exec(output) # This loads the generated function, which should look like this:
 
         """
@@ -221,7 +221,7 @@ class XProtoSecurityTest(unittest.TestCase):
 	args = FakeArgs()
         args.inputs = xproto
         args.target = self.target
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         exec(output) # This loads the generated function, which should look like this:
 
         """
@@ -244,7 +244,7 @@ class XProtoSecurityTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         """
         def output_security_check(obj, ctx):
             i2 = Credential.objects.filter((~ Q(obj_id=obj_id)))[0]

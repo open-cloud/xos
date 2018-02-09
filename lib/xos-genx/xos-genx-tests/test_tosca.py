@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import unittest
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs, XProtoTestHelpers
 
 
@@ -46,7 +46,7 @@ class XProtoToscaTypeTest(unittest.TestCase):
         args = FakeArgs()
         args.inputs = xproto
         args.target = self.target_tosca_type
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn('string', output)
         self.assertIn('boolean', output)
         self.assertIn('integer', output)
@@ -77,7 +77,7 @@ message Foo {
         args = FakeArgs()
         args.inputs = xproto
         args.target = self.target_tosca_keys
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn('name', output)
 
     def test_xproto_fields_to_tosca_keys_custom(self):
@@ -98,7 +98,7 @@ message Foo {
         args = FakeArgs()
         args.inputs = xproto
         args.target = self.target_tosca_keys
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertNotIn('name', output)
         self.assertIn('key_1', output)
         self.assertIn('key_2', output)
@@ -120,7 +120,7 @@ message Foo {
         args = FakeArgs()
         args.inputs = xproto
         args.target = self.target_tosca_keys
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertNotIn('name', output)
         self.assertIn('provider_service_instance_id', output)
 
@@ -147,7 +147,7 @@ message Foo {
         args = FakeArgs()
         args.inputs = xproto
         args.target = self.target_tosca_keys
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("['name', ['key_4', 'key_3'], ['key_1', 'key_2']]", output)
 
         xproto = \
@@ -166,5 +166,5 @@ message Foo {
             """
 
         args.inputs = xproto
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("['name', ['key_1_id', 'key_3_id', 'key_2_id']]", output)

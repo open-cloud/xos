@@ -16,7 +16,7 @@
 
 import unittest
 import os
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs, XProtoTestHelpers, OUTPUT_DIR
 
 TEST_FILE = "test_file"
@@ -43,7 +43,7 @@ class XProtoTargetTests(unittest.TestCase):
         args.inputs = ''
         args.target = target
         args.attic = OUTPUT_DIR
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn(TEST_OUTPUT, output)
 
     def test_xproto_lib(self):
@@ -54,7 +54,7 @@ class XProtoTargetTests(unittest.TestCase):
         args = FakeArgs()
         args.inputs = ''
         args.target = target
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("Eureka", output)
 
     def test_context(self):
@@ -66,7 +66,7 @@ class XProtoTargetTests(unittest.TestCase):
         args.inputs = ''
         args.target = target
         args.kv='what:what is what'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("what is what", output)
 
     def test_singularize(self):
@@ -93,7 +93,7 @@ class XProtoTargetTests(unittest.TestCase):
         args = FakeArgs()
         args.inputs = proto
         args.target = target
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertEqual("one,sheep,radius,slice,network,omf_friendly", output.lstrip().rstrip().rstrip(','))
 
     def test_pluralize(self):
@@ -120,7 +120,7 @@ class XProtoTargetTests(unittest.TestCase):
         args = FakeArgs()
         args.inputs = proto
         args.target = target
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertEqual("data,sheep,radii,slices,networks,omf_friendlies", output.lstrip().rstrip().rstrip(','))
 
 if __name__ == '__main__':

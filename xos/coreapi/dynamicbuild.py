@@ -17,7 +17,7 @@ import json
 import hashlib
 import os
 import shutil
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 
 from xosconfig import Config
 from multistructlog import create_logger
@@ -218,7 +218,7 @@ class DynamicBuilder(object):
             args.dest_extension = 'py'
             args.write_to_file = 'model'
 
-        XOSGenerator.generate(args)
+        XOSProcessor.process(args)
 
         # Generate security checks
         class SecurityArgs:
@@ -228,7 +228,7 @@ class DynamicBuilder(object):
             write_to_file = 'single'
             files = xproto_filenames
 
-        XOSGenerator.generate(SecurityArgs())
+        XOSProcessor.process(SecurityArgs())
 
         # Generate __init__.py
         if manifest["name"] == "core":
@@ -239,7 +239,7 @@ class DynamicBuilder(object):
                 write_to_file = 'single'
                 files = xproto_filenames
 
-            XOSGenerator.generate(InitArgs())
+            XOSProcessor.process(InitArgs())
 
         else:
             init_py_filename = os.path.join(manifest["dest_dir"], "__init__.py")

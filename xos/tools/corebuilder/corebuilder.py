@@ -67,7 +67,7 @@ import sys
 import tempfile
 import traceback
 import urlparse
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from toscaparser.tosca_template import ToscaTemplate
 
 BUILD_DIR = "/opt/xos_corebuilder/BUILD"
@@ -332,7 +332,7 @@ class XOSCoreBuilder(object):
                         args.dest_extension = 'py'
                         args.write_to_file = 'model'
 
-                    XOSGenerator.generate(args)
+                    XOSProcessor.process(args)
 
                     # Generate security checks
                     class SecurityArgs:
@@ -342,7 +342,7 @@ class XOSCoreBuilder(object):
                         write_to_file = 'single'
                         files = file_list
 
-                    XOSGenerator.generate(SecurityArgs())
+                    XOSProcessor.process(SecurityArgs())
 
                     # Generate __init__.py
                     if service_name == "core":
@@ -353,7 +353,7 @@ class XOSCoreBuilder(object):
                             write_to_file = 'single'
                             files = file_list
 
-                        XOSGenerator.generate(InitArgs())
+                        XOSProcessor.process(InitArgs())
 
                 except Exception, e:
                     print 'xproto build failed.'

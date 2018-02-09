@@ -15,7 +15,7 @@
 
 
 import unittest
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs, XProtoTestHelpers
 
 class XProtoGraphTests(unittest.TestCase):
@@ -115,7 +115,7 @@ message Slice (PlCoreBase){
         args = FakeArgs()
         args.inputs = proto
         args.target = target
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         num_semis = output.count(';')
         self.assertGreater(num_semis, 3) # 3 is the number of links, each of which contains at least one field
 
@@ -216,7 +216,7 @@ message Slice (PlCoreBase){
         args = FakeArgs()
         args.inputs = proto
         args.target = xtarget
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         num_semis = output.count(';')
         self.assertGreater(num_semis, 3)
@@ -308,7 +308,7 @@ message Slice (Network){
         args = FakeArgs()
         args.inputs = proto
         args.target = xtarget
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn('easter_egg', output)
 
 if __name__ == '__main__':

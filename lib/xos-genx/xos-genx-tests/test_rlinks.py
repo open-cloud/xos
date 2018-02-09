@@ -15,7 +15,7 @@
 
 
 import unittest
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs, XProtoTestHelpers
 
 class XProtoRlinkTests(unittest.TestCase):
@@ -56,7 +56,7 @@ message VRouterDevice (PlCoreBase){
         args = FakeArgs()
         args.inputs = xproto
         args.target = target
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("'src_port': 'device_ports'", output)
         self.assertIn("'src_port': 'ports'", output)
 

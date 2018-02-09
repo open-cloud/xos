@@ -16,7 +16,7 @@
 
 import unittest
 import os
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs, XProtoTestHelpers
 
 class XProtoPackageTest(unittest.TestCase):
@@ -46,7 +46,7 @@ message Port (PlCoreBase,ParameterMixin) {
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         self.assertIn('Port,xos.core,xos.core.Port', output)
 
@@ -162,7 +162,7 @@ message Slice (PlCoreBase){
         args = FakeArgs()
         args.inputs = xproto
         args.target = target
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         self.assertIn('numberCores', output) # Instance showed up via cross-package call
         self.assertIn('ip;', output) # Network showed up via cross-package call
@@ -223,7 +223,7 @@ message Instance (xos.network.Port){
         args = FakeArgs()
         args.inputs = xproto
         args.target = target
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         self.assertIn('xos_created', output)
 
@@ -324,7 +324,7 @@ message Slice (Network){
         args = FakeArgs()
         args.inputs = xproto
         args.target = target
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         self.assertIn('easter_egg', output)
 
@@ -430,7 +430,7 @@ message Slice (Network){
         args = FakeArgs()
         args.inputs = xproto
         args.target = target
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         self.assertEqual(output.count('firstapp'), 2)
         self.assertEqual(output.count('networkapp'), 2)

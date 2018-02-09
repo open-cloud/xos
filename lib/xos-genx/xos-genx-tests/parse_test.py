@@ -15,7 +15,7 @@
 
 
 import unittest
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs, XProtoTestHelpers
 
 class XProtoParseTests(unittest.TestCase):
@@ -31,7 +31,7 @@ class XProtoParseTests(unittest.TestCase):
         args = FakeArgs()
         args.inputs = xproto
         args.target = xtarget
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("vsg", output)
         self.assertIn("vSG Service", output)
 
@@ -60,7 +60,7 @@ message Person {
         args = FakeArgs()
         args.inputs = xproto
         args.target = xtarget
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("PhoneNumber", output)
 
     def test_link_extensions(self):
@@ -75,7 +75,7 @@ message links {
         args = FakeArgs()
         args.inputs = xproto
         args.target = xtarget
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("VRouterService", output)
 	
 	pass
@@ -91,7 +91,7 @@ message links {
         args = FakeArgs()
         args.inputs = xproto
         args.target = xtarget
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("ServiceProxy", output)
 
     def test_message_options(self):
@@ -105,7 +105,7 @@ message link {
         args = FakeArgs()
         args.inputs = xproto
         args.target = xtarget
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("e1000", output)
 
 	pass
@@ -121,7 +121,7 @@ message base(Base) {
         args = FakeArgs()
         args.inputs = xproto
         args.target = xtarget
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("Base", output)
 
 if __name__ == '__main__':

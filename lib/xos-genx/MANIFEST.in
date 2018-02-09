@@ -1,2 +1,3 @@
 include xosgenx/targets/*
+include xosgenx/checkers/*
 include xosgenx/jinja2_extensions/*

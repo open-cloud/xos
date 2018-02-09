@@ -22,7 +22,7 @@ from xosgenx.xosgen import XosGen
 class Args:
     pass
 
-class XOSGeneratorTest(unittest.TestCase):
+class XOSProcessorTest(unittest.TestCase):
     """
     Testing the CLI binding for the XOS Generative Toolchain
     """
@@ -47,11 +47,10 @@ class XOSGeneratorTest(unittest.TestCase):
         expected_args.target = os.path.abspath(os.getcwd() + '/' + args.target)
         expected_args.output = os.path.abspath(os.getcwd() + '/' + args.output)
 
-        with patch("xosgenx.xosgen.XOSGenerator.generate") as generator:
+        with patch("xosgenx.xosgen.XOSProcessor.process") as generator:
             XosGen.init(args)
             actual_args = generator.call_args[0][0]
             self.assertEqual(actual_args.files, expected_args.files)
-            self.assertEqual(actual_args.target, expected_args.target)
             self.assertEqual(actual_args.output, expected_args.output)
 
 if __name__ == '__main__':

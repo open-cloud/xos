@@ -17,7 +17,7 @@
 import unittest
 from xosgenx.jinja2_extensions import FieldNotFound
 from helpers import FakeArgs, OUTPUT_DIR, XProtoTestHelpers
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 
 class XProtoFieldGraphTest(unittest.TestCase):
     def test_field_graph(self):
@@ -46,7 +46,7 @@ message VRouterDevice (PlCoreBase){
         args = FakeArgs()
         args.inputs = xproto
         args.target = target
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         output =  eval(output)
         self.assertIn({'A','B','C'}, output)
         self.assertIn({'openflow_id','name'}, output)
@@ -80,10 +80,10 @@ message VRouterDevice (PlCoreBase){
             args = FakeArgs()
             args.inputs = xproto
             args.target = target
-            output = XOSGenerator.generate(args)
+            output = XOSProcessor.process(args)
 
         # The following call generates some output, which should disappear
-        # when Matteo merges his refactoring of XOSGenerator.
+        # when Matteo merges his refactoring of XOSProcessor.
         self.assertRaises(FieldNotFound, generate)
 
 if __name__ == '__main__':

@@ -17,13 +17,13 @@
 import unittest
 
 import yaml
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs, OUTPUT_DIR
 
 class Args:
     pass
 
-class XOSGeneratorTest(unittest.TestCase):
+class XOSProcessorTest(unittest.TestCase):
 
     def test_swagger_target(self):
         """
@@ -63,7 +63,7 @@ class XOSGeneratorTest(unittest.TestCase):
         args.write_to_file = "single"
         args.dest_file = "swagger.yaml"
         args.quiet = False
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("/xosapi/v1/core/instances/:", output)
         self.assertIn("/xosapi/v1/core/instances/{id}:", output)
         self.assertIn("Instance:", output)

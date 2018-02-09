@@ -16,7 +16,7 @@
 
 import unittest
 import os
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs
 import yaml
 
@@ -37,7 +37,7 @@ class XProtoTranslatorTest(unittest.TestCase):
         args = FakeArgs()
         args.files = [VROUTER_XPROTO]
         args.target = 'proto.xtarget'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertEqual(output, PROTO_EXPECTED_OUTPUT)
 
     def test_yaml_generator(self):
@@ -122,7 +122,7 @@ message Slice (PlCoreBase){
         args = FakeArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         yaml_ir = yaml.load(output)
         self.assertEqual(len(yaml_ir['items']), 4)
@@ -145,7 +145,7 @@ message Bar {
         args = FakeArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         yaml_ir = yaml.load(output)
         self.assertEqual(len(yaml_ir['items']), 1)
         self.assertIn('Bar', output)
@@ -164,7 +164,7 @@ message Foo {
         args = FakeArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         yaml_ir = yaml.load(output)
         self.assertEqual(len(yaml_ir['items']), 1)
         self.assertIn('name', output)
@@ -184,7 +184,7 @@ message Foo {
         args = FakeArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("options:", output)
         self.assertIn(" {'id': 'container_vm', 'label': 'Container In VM'}", output)
 
@@ -201,7 +201,7 @@ message Foo {
         args = FakeArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertNotIn("options:", output)
 
     def test_default_value_in_modeldef(self):
@@ -221,7 +221,7 @@ message Foo {
         args = FakeArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn('default: "bar"', output)
         self.assertIn('default: "false"', output)
         self.assertIn('default: "true"', output)
@@ -241,7 +241,7 @@ message Foo {
         args = FakeArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertNotIn('default:', output)
 
     def test_one_to_many_in_modeldef(self):
@@ -262,7 +262,7 @@ message Service {
         args = FakeArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         # Service deps model
         self.assertIn('{model: Service, type: manytoone, on_field: provider_service}', output)
         self.assertIn('{model: Service, type: manytoone, on_field: provider_service}', output)
@@ -290,7 +290,7 @@ message Bar {
         args = FakeArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn('description: "This is the Foo model"', output)
 
     def test_model_verbose_name(self):
@@ -312,7 +312,7 @@ message Bar {
         args = FakeArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn('verbose_name: "Verbose Foo Name"', output)
 
 if __name__ == '__main__':

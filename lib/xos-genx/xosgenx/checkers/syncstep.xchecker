@@ -1,0 +1,5 @@
+{% for m in proto.messages %}
+{% if not m.options.no_sync %}
+{{ xproto_check_synchronizer(m) }}
+{% endif %}
+{% endfor %}

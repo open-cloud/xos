@@ -1,0 +1,12 @@
+{% set required_options = ['name','verbose_name','app_label'] %}
+
+{% for m in proto.messages %}
+{% for o in required_options %}
+{% if not options[o] and not m.options[o] %}
+504 Required option {{ o }} is missing from model {{ m.name }}
+{% endif %}
+
+{% set required_field_options = ['tosca_key'] %}
+
+{% endfor %}
+{% endfor %}

@@ -26,7 +26,7 @@ from colorama import Fore
 loader = jinja2.PackageLoader(__name__, 'templates')
 env = jinja2.Environment(loader=loader)
 
-class XOSGenerator:
+class XOSProcessor:
 
     @staticmethod
     def _read_input_from_files(files):
@@ -78,8 +78,8 @@ class XOSGenerator:
     @staticmethod
     def _load_jinja2_extensions(os_template_env, attic):
 
-        os_template_env.globals['include_file'] = XOSGenerator._include_file(attic)  # Generates a function
-        os_template_env.globals['file_exists'] = XOSGenerator._file_exists(attic)  # Generates a function
+        os_template_env.globals['include_file'] = XOSProcessor._include_file(attic)  # Generates a function
+        os_template_env.globals['file_exists'] = XOSProcessor._file_exists(attic)  # Generates a function
 
         os_template_env.filters['yaml'] = yaml.dump
         for f in dir(jinja2_extensions):
@@ -168,8 +168,7 @@ class XOSGenerator:
         return ne_pointer
 
     @staticmethod
-    def generate(args):
-
+    def process(args, operator = None):
         # Setting defaults
         if not hasattr(args, 'attic'):
             args.attic = None
@@ -196,19 +195,25 @@ class XOSGenerator:
             raise Exception("[XosGenX] The output dir must be a directory!")
 
         if hasattr(args, 'files'):
-            inputs = XOSGenerator._read_input_from_files(args.files)
+            inputs = XOSProcessor._read_input_from_files(args.files)
         elif hasattr(args, 'inputs'):
             inputs = args.inputs
         else:
             raise Exception("[XosGenX] No inputs provided!")
 
-        template_path = XOSGenerator._get_template(args.target)
+        if not operator:
+            operator = args.target
+            template_path = XOSProcessor._get_template(operator)
+        else:
+            template_path = operator
+
+
         [template_folder, template_name] = os.path.split(template_path)
         os_template_loader = jinja2.FileSystemLoader(searchpath=[template_folder])
         os_template_env = jinja2.Environment(loader=os_template_loader)
-        os_template_env = XOSGenerator._load_jinja2_extensions(os_template_env, args.attic)
+        os_template_env = XOSProcessor._load_jinja2_extensions(os_template_env, args.attic)
         template = os_template_env.get_template(template_name)
-        context = XOSGenerator._add_context(args)
+        context = XOSProcessor._add_context(args)
 
         parser = plyxproto.ProtobufAnalyzer()
         try:
@@ -216,7 +221,7 @@ class XOSGenerator:
         except plyxproto.ParsingError, e:
             line, start, end = e.error_range
 
-            ptr = XOSGenerator._find_last_nonempty_line(inputs, start)
+            ptr = XOSProcessor._find_last_nonempty_line(inputs, start)
 
             if start == 0:
                 beginning = ''
@@ -236,14 +241,14 @@ class XOSGenerator:
             exit(1)
 
 
-        v = XOSGenerator._attach_parser(ast, args)
+        v = XOSProcessor._attach_parser(ast, args)
 
         if args.output is not None and args.write_to_file == "model":
             rendered = {}
             for i, model in enumerate(v.models):
                 models = {}
                 models[model] = v.models[model]
-                messages = [XOSGenerator._find_message_by_model_name(v.messages, model)]
+                messages = [XOSProcessor._find_message_by_model_name(v.messages, model)]
 
                 rendered[model] = template.render(
                     {"proto":
@@ -257,7 +262,7 @@ class XOSGenerator:
                         "options": v.options
                     }
                 )
-            XOSGenerator._write_file_per_model(rendered, args.output, args.dest_extension, args.quiet)
+            XOSProcessor._write_file_per_model(rendered, args.output, args.dest_extension, args.quiet)
         else:
             rendered = template.render(
                 {"proto":
@@ -272,8 +277,8 @@ class XOSGenerator:
                 }
             )
             if args.output is not None and args.write_to_file == "target":
-                XOSGenerator._write_split_target(rendered, args.output, args.quiet)
+                XOSProcessor._write_split_target(rendered, args.output, args.quiet)
             elif args.output is not None and args.write_to_file == "single":
-                XOSGenerator._write_single_file(rendered, args.output, args.dest_file, args.quiet)
+                XOSProcessor._write_single_file(rendered, args.output, args.dest_file, args.quiet)
 
         return rendered

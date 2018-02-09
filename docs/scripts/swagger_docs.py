@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import os
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 
 CWD = OUTPUT_DIR = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 SWAGGER_DOCS_DIR = os.path.abspath(CWD + '/../swagger/specs')
@@ -40,7 +40,7 @@ def generate_swagger_docs(xproto):
     args.dest_file = "swagger.yaml"
     args.quiet = False
     try:
-        XOSGenerator.generate(args)
+        XOSProcessor.process(args)
     except Exception, e:
         print "ERROR: Couldn't generate swagger specs"
         print e

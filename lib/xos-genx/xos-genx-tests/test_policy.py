@@ -15,7 +15,7 @@
 
 
 import unittest
-from xosgenx.generator import XOSGenerator
+from xosgenx.generator import XOSProcessor
 from helpers import FakeArgs, XProtoTestHelpers
 import pdb
 
@@ -41,7 +41,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         self.assertIn("true_policy", output)
 
     def test_constant(self):
@@ -56,7 +56,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args).replace('t','T')
+        output = XOSProcessor.process(args).replace('t','T')
         self.assertTrue(eval(output)) 
 
     def test_function_term(self):
@@ -70,7 +70,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
        
         slice = FakeArgs()
         slice.user = FakeArgs()
@@ -90,7 +90,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
        
         slice = FakeArgs()
         slice.user = FakeArgs()
@@ -110,7 +110,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
        
         slice = FakeArgs()
         slice.user = FakeArgs()
@@ -130,7 +130,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
        
         slice = FakeArgs()
         slice.user = FakeArgs()
@@ -150,7 +150,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
        
         slice = FakeArgs()
         slice.user = 'twin'
@@ -172,7 +172,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         slice = FakeArgs()
         slice.is_admin = False
@@ -194,7 +194,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
 
         slice = FakeArgs()
         slice.is_admin = False
@@ -218,7 +218,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         
         Privilege = FakeArgs()
         Privilege.object_id = 1
@@ -243,7 +243,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         
         (op, operands), = eval(output).items()
 
@@ -263,7 +263,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.target = target
 
         with self.assertRaises(Exception):
-            output = XOSGenerator.generate(args)
+            output = XOSProcessor.process(args)
         
 
     def test_forall(self):
@@ -279,7 +279,7 @@ class XProtoPolicyTest(unittest.TestCase):
         args.inputs = xproto
         args.target = target
 
-        output = XOSGenerator.generate(args)
+        output = XOSProcessor.process(args)
         (op, operands), = eval(output).items()
 
         self.assertEqual(op,'forall')
