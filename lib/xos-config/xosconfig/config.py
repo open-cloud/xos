@@ -202,48 +202,5 @@ class Config:
             param = param[k]
         return param
 
-    @staticmethod
-    def get_service_list():
-        """
-        Query registrator to get the list of services
-        NOTE: we assume that consul is a valid URL
-        :return: a list of service names
-        """
-        service_dict = requests.get('http://consul:8500/v1/catalog/services').json()
-        service_list = []
-        for s in service_dict:
-            service_list.append(s)
-        return service_list
-
-    @staticmethod
-    def get_service_info(service_name):
-        """
-        Query registrator to get the details about a service
-        NOTE: we assume that consul is a valid URL
-        :param service_name: the name of the service, can be retrieved from get_service_list
-        :return: the informations about a service
-        """
-        response = requests.get('http://consul:8500/v1/catalog/service/%s' % service_name)
-        if not response.ok:
-            raise Exception('[XOS-Config] Registrator is down')
-        service = response.json()
-        if not service or len(service) == 0:
-            raise Exception('[XOS-Config] The service missing-service looking for does not exist')
-        return {
-            'name': service[0]['ServiceName'],
-            'url': service[0]['ServiceAddress'],
-            'port': service[0]['ServicePort']
-        }
-
-    @staticmethod
-    def get_service_endpoint(service_name):
-        """
-        Query registrator to get the details about a service and return the endpoint in for of a string
-        :param service_name: the name of the service, can be retrieved from get_service_list
-        :return: the endpoint of the service
-        """
-        service = Config.get_service_info(service_name)
-        return 'http://%s:%s' % (service['url'], service['port'])
-
 if __name__ == '__main__':
     Config.init()
