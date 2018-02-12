@@ -14,7 +14,6 @@
 # limitations under the License.
 
 
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 from django import VERSION as DJANGO_VERSION
 import socket
 import os
@@ -180,12 +179,6 @@ if os.path.exists("/opt/xos/xos/xosbuilder_app_list"):
         line = line.strip()
         if line:
             INSTALLED_APPS = list(INSTALLED_APPS) + [line]
-
-# Added for django-suit form
-TEMPLATE_CONTEXT_PROCESSORS = TCP + (
-    'django.core.context_processors.request',
-    'core.context_processors.xos',
-)
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

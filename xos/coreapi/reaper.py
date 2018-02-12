@@ -34,6 +34,7 @@ if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 
 from datetime import datetime
+import django
 from django.db import reset_queries
 from django.db.models import F, Q
 from django.db.models.signals import post_save
@@ -117,7 +118,7 @@ class ReaperThread(threading.Thread):
             # Reap non-sync'd models here
             # models_to_reap = [Slice,Network,NetworkSlice]
 
-            models_to_reap = django_models.get_models(include_auto_created=False)
+            models_to_reap = django.apps.apps.get_models(include_auto_created=False)
             for m in models_to_reap:
                 if not hasattr(m, "deleted_objects"):
                     continue
@@ -143,21 +144,14 @@ class ReaperThread(threading.Thread):
                         log.info('REAPER: cannot purge object because its cascade_set is nonempty',object = d, cascade_set = ",".join([str(m) for m in cascade_set]))
                         continue
 
-#                    XXX I don't think we need dependency_walker here anymore,
-#                    XXX since the cascade set would include any inverse
-#                    XXX dependencies automatically.
-#                    deps = walk_inv_deps(noop, d)
-#                    if (not deps):
-
-                    if (True):
-                        self.journal_object(d, "reaper.purge")
-                        log.info('REAPER: purging object',object = d)
-                        try:
-                            d.delete(purge=True)
-                        except:
-                            self.journal_object(d, "reaper.purge.exception")
-                            log.error('REAPER: exception purging object', object = d)
-                            traceback.print_exc()
+                    self.journal_object(d, "reaper.purge")
+                    log.info('REAPER: purging object',object = d)
+                    try:
+                        d.delete(purge=True)
+                    except:
+                        self.journal_object(d, "reaper.purge.exception")
+                        log.error('REAPER: exception purging object', object = d)
+                        traceback.print_exc()
             try:
                 reset_queries()
             except:

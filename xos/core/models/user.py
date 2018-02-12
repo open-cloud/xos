@@ -23,6 +23,7 @@ from operator import attrgetter, itemgetter
 from core.middleware import get_request
 from xosbase import XOSBase, PlModelMixIn
 from core.models.xosbase import StrippedCharField, XOSCollector
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives
@@ -32,7 +33,6 @@ from django.db import router
 from django.db.models import F, Q
 from django.forms.models import model_to_dict
 from django.utils import timezone
-from timezones.fields import TimeZoneField
 from django.contrib.contenttypes.models import ContentType
 
 # The following manual import is needed because we do not
@@ -162,7 +162,7 @@ class User(AbstractBaseUser, PlModelMixIn):
     no_sync = models.BooleanField(default=False)     # prevent object sync
     no_policy = models.BooleanField(default=False)   # prevent model_policy run
 
-    timezone = TimeZoneField()
+    timezone = models.CharField(max_length=100, null=True, blank=True, default=settings.TIME_ZONE)
 
     leaf_model_name = models.CharField( help_text = "The most specialized model in this chain of inheritance, often defined by a service developer", max_length = 1024, null = False )
 
