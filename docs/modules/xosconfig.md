@@ -64,4 +64,6 @@ returns:
 "test"
 ```
 
-**The configuration schema is defined in `/lib/xos-config/config-schema.yaml`**
+> NOTE: The configuration schema is defined in
+> `/lib/xos-config/config-schema.yaml`
+
