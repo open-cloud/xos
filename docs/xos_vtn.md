@@ -193,7 +193,6 @@ are performed:
 2. `PUT xosapi/v1/vtn/vtnservices/{service_id}` with data `{"resync": true}`.
    `{service_id}` is the identifier you retrieved in step (1).
 
-
 ## VTN Provided API
 
 ### ServicePorts
@@ -220,7 +219,8 @@ are performed:
 | floating_address_pairs | list | Additional public addresses allowed to the port interface.|
 | ip_address | string | Additional public IP address.|
 | mac_address | string | Additional MAC address mapped to the public IP address.|
-_* fields are mandatory for creating a new service port._
+
+> NOTE: `*` fields are mandatory for creating a new service port.
 
 Example json request:
 
@@ -254,7 +254,7 @@ Example json request:
 * `GET onos/cordvtn/serviceNetworks`  List service networks including the
   details
 
-* `GET onos/cordvtn/serviceNetworks/{network_id} `  Show service network
+* `GET onos/cordvtn/serviceNetworks/{network_id}`  Show service network
   details
 
 * `PUT onos/cordvtn/serviceNetworks/{network_id}`  Update a service network
@@ -267,17 +267,17 @@ Example json request:
 | Parameters | Type | Description |
 | --------- | ---- | --------- |
 | id * | UUID | The UUID of the service network. |
-| name	| string | The name of the service network. |
+| name | string | The name of the service network. |
 | type * | string | The type of the service network |
 |segment_id | integer | The ID of the isolated segment on the physical network. Currently, only VXLAN based isolation is supported and this ID is a VNI. |
 | subnet | string | The associated subnet. |
 | providers | list | The list of the provider service networks.|
 | id | string | The UUID of the provider service network.|
 | bidirectional | boolean | The dependency, which is bidirectional (true) or unidirectional (false).|
-_* fields are mandatory for creating a new service network_
+
+> NOTE: `*` fields are mandatory for creating a new service port.
 
 #### Service Network Types
-
 
 * PRIVATE: virtual network for the instances in the same service
 * PUBLIC: externally accessible network
