@@ -218,7 +218,6 @@ def restart_docker_container(name):
             client.restart(container["Names"][0])
 
 def restart_related_containers():
-    restart_docker_container("xos_chameleon_1")
     # TODO: remove once Tosca container is able to react internally
     restart_docker_container("xos_tosca_1")
 
