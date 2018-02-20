@@ -63,3 +63,33 @@ class ServiceInstance(ServiceInstance_decl):
             return None
         return sorted(st, key=attrgetter('id'))[0]
 
+    def save(self, *args, **kwargs):
+        if hasattr(self, "OWNER_CLASS_NAME"):
+            owner_class = self.get_model_class_by_name(self.OWNER_CLASS_NAME)
+            if not owner_class:
+                raise XOSValidationError("Cannot find owner class %s" % self.OWNER_CLASS_NAME)
+
+            need_set_owner = True
+            if self.owner_id:
+                # Check to see if owner is set to a valid instance of owner_class. If it is, then we already have an
+                # owner. If it is not, then some other misbehaving class must have altered the ServiceInstance.meta
+                # to point to its own default (these services are being cleaned up).
+                if owner_class.objects.filter(id=self.owner_id).exists():
+                    need_set_owner = False
+
+            if need_set_owner:
+                owners = owner_class.objects.all()
+                if not owners:
+                    raise XOSValidationError("Cannot find eligible owner of class %s" % self.OWNER_CLASS_NAME)
+
+                self.owner = owners[0]
+
+        # If the model has a Creator and it's not specified, then attempt to default to the Caller. Caller is
+        # automatically filled in my the API layer. This code was typically used by ServiceInstances that lead to
+        # instance creation.
+        if (hasattr(self, "creator")) and (not self.creator) and (hasattr(self, "caller")) and (self.caller):
+            self.creator = self.caller
+
+        super(ServiceInstance, self).save(*args, **kwargs)
+
+

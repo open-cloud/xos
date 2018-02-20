@@ -144,6 +144,15 @@ class PlModelMixIn(object):
     def get_field_diff(self, field_name):
         return self.diff.get(field_name, None)
 
+    @classmethod
+    def get_model_class_by_name(cls, name):
+        all_models = django.apps.apps.get_models(include_auto_created=False)
+        all_models_by_name = {}
+        for model in all_models:
+            all_models_by_name[model.__name__] = model
+
+        return all_models_by_name.get(name)
+
     @property
     def leaf_model(self):
         leaf_model_name = getattr(self, "leaf_model_name", None)
@@ -153,12 +162,7 @@ class PlModelMixIn(object):
         if (leaf_model_name == self.__class__.__name__):
             return self
 
-        all_models = django.apps.apps.get_models(include_auto_created=False)
-        all_models_by_name = {}
-        for model in all_models:
-            all_models_by_name[model.__name__] = model
-
-        leaf_model_class = all_models_by_name.get(self.leaf_model_name)
+        leaf_model_class = self.get_model_class_by_name(self.leaf_model_name)
 
         assert (self.id)
 

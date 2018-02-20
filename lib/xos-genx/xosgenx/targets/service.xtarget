@@ -43,6 +43,10 @@ class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases, legacy_tag
 
   KIND = {{ xproto_first_non_empty([m.options.kind, options.kind, options.name, "Set a kind in your xproto!"]) }}
 
+  {% if m.options.owner_class_name %}
+  OWNER_CLASS_NAME = {{ m.options.owner_class_name }}
+  {% endif %}
+
   class Meta:
       app_label = {{ xproto_first_non_empty([m.options.app_label, options.app_label, options.name, "Set an app label in your xproto!"]) | lower}}
       # name = {{ xproto_first_non_empty([m.options.name, options.name, "Set a name in your xproto!"]) }}
