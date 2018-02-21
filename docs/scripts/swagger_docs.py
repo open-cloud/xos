@@ -19,6 +19,7 @@ CWD = OUTPUT_DIR = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 SWAGGER_DOCS_DIR = os.path.abspath(CWD + '/../swagger/specs')
 ORCHESTRATION_DIR = os.path.abspath(CWD + "/../../../")
 SERVICE_DIR = os.path.abspath(ORCHESTRATION_DIR + "/xos_services")
+PROFILE_DIR = os.path.abspath(ORCHESTRATION_DIR + "/profiles")
 
 XOS_XPROTO = os.path.abspath(CWD + "/../../xos/core/models/core.xproto")
 
@@ -65,7 +66,9 @@ def main():
 
     service_protos = get_xproto_recursively(SERVICE_DIR)
 
-    generate_swagger_docs(protos + service_protos)
+    profile_protos = get_xproto_recursively(PROFILE_DIR)
+
+    generate_swagger_docs(protos + service_protos + profile_protos)
 
 
 if __name__ == '__main__':
