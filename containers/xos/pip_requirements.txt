@@ -38,10 +38,8 @@ django-timezones==0.2
 djangorestframework==3.7.7
 dnslib==0.9.6
 docutils==0.13.1
-docker-compose==1.9.0
 docker-py==1.10.6
 docker_pycreds==0.2.1
-dockerpty==0.4.1
 docopt==0.6.2
 dogpile.cache==0.6.2
 enum34==1.1.6

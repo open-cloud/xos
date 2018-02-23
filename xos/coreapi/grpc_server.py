@@ -197,29 +197,6 @@ class XOSGrpcServer(object):
         self.delayed_shutdown_timer = threading.Timer(seconds, self.stop_and_exit)
         self.delayed_shutdown_timer.start()
 
-def restart_docker_container(name):
-    import docker
-
-    def find_container(client, search_name):
-        for c in client.containers():
-            for c_name in c["Names"]:
-                if (search_name in c_name):
-                    return c
-        return None
-
-    client=docker.from_env()
-    container = find_container(client, name)
-    if container:
-        try:
-            # the first attempt always fails with 404 error
-            # docker-py bug?
-            client.restart(container["Names"][0])
-        except:
-            client.restart(container["Names"][0])
-
-def restart_related_containers():
-    # TODO: remove once Tosca container is able to react internally
-    restart_docker_container("xos_tosca_1")
 
 
 

@@ -19,7 +19,7 @@ import os
 import sys
 import time
 
-from grpc_server import XOSGrpcServer, restart_related_containers
+from grpc_server import XOSGrpcServer
 
 from xosconfig import Config
 from multistructlog import create_logger
@@ -62,8 +62,6 @@ if __name__ == '__main__':
     else:
         log.warning("Skipping reaper as django is not initialized")
         reaper = None
-
-    restart_related_containers()
 
     log.info("XOS core entering wait loop")
     _ONE_DAY_IN_SECONDS = 60 * 60 * 24
