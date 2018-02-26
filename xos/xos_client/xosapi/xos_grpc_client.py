@@ -44,7 +44,7 @@ class UsernamePasswordCallCredentials(grpc.AuthMetadataPlugin):
         self._password = password
   def __call__(self, context, callback):
         basic_auth = "Basic %s" % base64.b64encode("%s:%s" % (self._username, self._password))
-        metadata = (('Authorization', basic_auth),)
+        metadata = (('authorization', basic_auth),)
         callback(metadata, None)
 
 class SessionIdCallCredentials(grpc.AuthMetadataPlugin):
@@ -87,7 +87,7 @@ class XOSClient(chameleon_client.GrpcClient):
                 print >> sys.stderr, "failed to locate api", api
 
         if hasattr(self, "xos"):
-            self.xos_orm = orm.ORMStub(self.xos, "xos")
+            self.xos_orm = orm.ORMStub(self.xos, self.xos_pb2, "xos")
 
         if self.reconnect_callback2:
             self.reconnect_callback2()

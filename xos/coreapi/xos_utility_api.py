@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +19,7 @@ import os
 import sys
 import time
 import traceback
-from protos import utility_pb2
+from protos import utility_pb2, utility_pb2_grpc
 from google.protobuf.empty_pb2 import Empty
 
 from importlib import import_module
@@ -61,7 +60,7 @@ def get_xproto(folder):
             matches.append(os.path.join(root, filename))
     return matches
 
-class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
+class UtilityService(utility_pb2_grpc.utilityServicer, XOSAPIHelperMixin):
     def __init__(self, thread_pool):
         self.thread_pool = thread_pool
         XOSAPIHelperMixin.__init__(self)
@@ -267,6 +266,3 @@ class UtilityService(utility_pb2.utilityServicer, XOSAPIHelperMixin):
                 response.subscribed_network.append(l.subscriber_network.id)
 
         return response
-
-
-

@@ -326,6 +326,16 @@ class FakeStub(object):
         k = self.make_key(classname, id)
         del self.objs[k]
 
+class FakeCommonProtos(object):
+    def __init__(self):
+        self.ID = ID
+
+class FakeProtos(object):
+    def __init__(self):
+        for name in ["Controller", "Deployment", "Slice", "Site", "ID", "Tag", "Service", "ServiceInstance", "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice"]:
+            setattr(self, name, globals()[name])
+            self.common__pb2 = FakeCommonProtos()
+
 class FakeSymDb(object):
     def __init__(self):
         self._classes = {}

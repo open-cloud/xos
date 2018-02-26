@@ -489,9 +489,11 @@ class ORMModelClass(object):
         return self.objects.new(*args, **kwargs)
 
 class ORMStub(object):
-    def __init__(self, stub, package_name, invoker=None, caller_kind="grpcapi", sym_db = None, empty = None,
+    def __init__(self, stub, protos, package_name, invoker=None, caller_kind="grpcapi", empty = None,
                  enable_backoff=True, restart_on_disconnect=False):
         self.grpc_stub = stub
+        self.protos = protos
+        self.common_protos = protos.common__pb2
         self.all_model_names = []
         self.all_grpc_classes = {}
         self.content_type_map = {}
@@ -501,15 +503,8 @@ class ORMStub(object):
         self.enable_backoff = enable_backoff
         self.restart_on_disconnect = restart_on_disconnect
 
-        if not sym_db:
-            from google.protobuf import symbol_database as _symbol_database
-            sym_db = _symbol_database.Default()
-
-        self._sym_db = sym_db
-
         if not empty:
-            from google.protobuf.empty_pb2 import Empty
-            empty = Empty
+            empty = self.protos.google_dot_protobuf_dot_empty__pb2.Empty
         self._empty = empty
 
         for name in dir(stub):
@@ -519,7 +514,7 @@ class ORMStub(object):
 
                self.all_model_names.append(model_name)
 
-               grpc_class = self._sym_db._classes["%s.%s" % (package_name, model_name)]
+               grpc_class = getattr(self.protos, model_name)
                self.all_grpc_classes[model_name] = grpc_class
 
                ct = grpc_class.DESCRIPTOR.GetOptions().Extensions._FindExtensionByName("xos.contentTypeId")
@@ -583,13 +578,13 @@ class ORMStub(object):
 
 
     def make_ID(self, id):
-        return self._sym_db._classes["xos.ID"](id=id)
+        return getattr(self.common_protos, "ID")(id=id)
 
     def make_empty(self):
         return self._empty()
 
     def make_Query(self):
-        return self._sym_db._classes["xos.Query"]()
+        return getattr(self.common_protos, "Query")()
 
     def listObjects(self):
         return self.all_model_names

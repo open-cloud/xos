@@ -91,7 +91,7 @@ class XOSConfigTest(unittest.TestCase):
         """
         with self.assertRaises(Exception) as e:
             Config.init(yaml_not_valid)
-        self.assertEqual(e.exception.message, "[XOS-Config] The config format is wrong: Unable to load any data from source yaml file")
+        self.assertTrue(e.exception.message.startswith("[XOS-Config] The config format is wrong:"))
 
     def test_invalid_format(self):
         """

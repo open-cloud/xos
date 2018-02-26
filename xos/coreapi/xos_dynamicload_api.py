@@ -21,13 +21,14 @@ import sys
 import time
 import traceback
 from protos import dynamicload_pb2
+from protos import dynamicload_pb2_grpc
 from google.protobuf.empty_pb2 import Empty
 
 from importlib import import_module
 
 from dynamicbuild import DynamicBuilder
 
-class DynamicLoadService(dynamicload_pb2.dynamicloadServicer):
+class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
     def __init__(self, thread_pool, server):
         self.thread_pool = thread_pool
         self.server = server
@@ -85,5 +86,3 @@ class DynamicLoadService(dynamicload_pb2.dynamicloadServicer):
         except Exception, e:
             import traceback; traceback.print_exc()
             raise e
-
-

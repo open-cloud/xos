@@ -17,7 +17,7 @@
 import base64
 import time
 import yaml
-from protos import modeldefs_pb2
+from protos import modeldefs_pb2, modeldefs_pb2_grpc
 from google.protobuf.empty_pb2 import Empty
 
 from xos.exceptions import *
@@ -35,7 +35,7 @@ def yaml_to_grpc(yaml_repr, grpc_container, yaml_key = None, grpc_parent = None)
     else:
         setattr(grpc_parent, yaml_key, yaml_repr)
 
-class ModelDefsService(modeldefs_pb2.modeldefsServicer, XOSAPIHelperMixin):
+class ModelDefsService(modeldefs_pb2_grpc.modeldefsServicer, XOSAPIHelperMixin):
     def __init__(self, thread_pool):
         self.thread_pool = thread_pool
 
@@ -60,4 +60,3 @@ if __name__=='__main__':
     modeldefs = modeldefs_pb2.ModelDefs()
     yaml_to_grpc(yaml_repr, modeldefs)
     print modeldefs
-    

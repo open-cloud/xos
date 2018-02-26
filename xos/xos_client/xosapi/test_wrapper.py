@@ -44,10 +44,10 @@ class TestWrappers(unittest.TestCase):
     def make_coreapi(self):
         if USE_FAKE_STUB:
             import xosapi.orm
-            from fake_stub import FakeStub, FakeSymDb, FakeObj
+            from fake_stub import FakeStub, FakeObj, FakeProtos
 
             stub = FakeStub()
-            api = xosapi.orm.ORMStub(stub=stub, package_name = "xos", sym_db = FakeSymDb(), empty = FakeObj, enable_backoff = False)
+            api = xosapi.orm.ORMStub(stub=stub, package_name = "xos", protos=FakeProtos(), empty = FakeObj, enable_backoff = False)
             return api
         else:
             return xos_grpc_client.coreapi

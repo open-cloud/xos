@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +33,7 @@ from multistructlog import create_logger
 Config.init()
 log = create_logger(Config().get('logging'))
 
-from protos import schema_pb2, dynamicload_pb2
+from protos import schema_pb2, dynamicload_pb2, schema_pb2_grpc, dynamicload_pb2_grpc
 from xos_dynamicload_api import DynamicLoadService
 from dynamicbuild import DynamicBuilder
 from google.protobuf.empty_pb2 import Empty
@@ -43,7 +42,7 @@ SERVER_KEY="/opt/cord_profile/core_api_key.pem"
 SERVER_CERT="/opt/cord_profile/core_api_cert.pem"
 SERVER_CA="/usr/local/share/ca-certificates/local_certs.crt"
 
-class SchemaService(schema_pb2.SchemaServiceServicer):
+class SchemaService(schema_pb2_grpc.SchemaServiceServicer):
 
     def __init__(self, thread_pool):
         self.thread_pool = thread_pool
@@ -122,31 +121,31 @@ class XOSGrpcServer(object):
 
     def register_core(self):
         from xos_grpc_api import XosService
-        from protos import xos_pb2
+        from protos import xos_pb2, xos_pb2_grpc
 
-        self.register("xos", xos_pb2.add_xosServicer_to_server, XosService(self.thread_pool))
+        self.register("xos", xos_pb2_grpc.add_xosServicer_to_server, XosService(self.thread_pool))
 
     def register_utility(self):
         from xos_utility_api import UtilityService
-        from protos import utility_pb2
+        from protos import utility_pb2, utility_pb2_grpc
 
-        self.register("utility", utility_pb2.add_utilityServicer_to_server, UtilityService(self.thread_pool))
+        self.register("utility", utility_pb2_grpc.add_utilityServicer_to_server, UtilityService(self.thread_pool))
 
     def register_modeldefs(self):
         from xos_modeldefs_api import ModelDefsService
-        from protos import modeldefs_pb2
+        from protos import modeldefs_pb2_grpc
 
-        self.register("modeldefs", modeldefs_pb2.add_modeldefsServicer_to_server, ModelDefsService(self.thread_pool))
+        self.register("modeldefs", modeldefs_pb2_grpc.add_modeldefsServicer_to_server, ModelDefsService(self.thread_pool))
 
     def start(self):
         log.info('Starting GRPC Server')
 
         self.register("schema",
-                      schema_pb2.add_SchemaServiceServicer_to_server,
+                      schema_pb2_grpc.add_SchemaServiceServicer_to_server,
                       SchemaService(self.thread_pool))
 
         self.register("dynamicload",
-                      dynamicload_pb2.add_dynamicloadServicer_to_server,
+                      dynamicload_pb2_grpc.add_dynamicloadServicer_to_server,
                       DynamicLoadService(self.thread_pool, self))
 
         if (self.model_status == 0):
@@ -196,7 +195,3 @@ class XOSGrpcServer(object):
             self.delayed_shutdown_timer.cancel()
         self.delayed_shutdown_timer = threading.Timer(seconds, self.stop_and_exit)
         self.delayed_shutdown_timer.start()
-
-
-
-

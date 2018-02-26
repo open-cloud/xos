@@ -1,13 +1,13 @@
 import base64
 import time
-from protos import xos_pb2
+from protos import xos_pb2, xos_pb2_grpc
 from google.protobuf.empty_pb2 import Empty
 
 from django.contrib.auth import authenticate as django_authenticate
 from xos.exceptions import *
 from apihelper import XOSAPIHelperMixin, translate_exceptions
 
-class XosService(xos_pb2.xosServicer, XOSAPIHelperMixin):
+class XosService(xos_pb2_grpc.xosServicer, XOSAPIHelperMixin):
     def __init__(self, thread_pool):
         self.thread_pool = thread_pool
         XOSAPIHelperMixin.__init__(self)
