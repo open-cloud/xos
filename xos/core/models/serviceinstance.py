@@ -83,6 +83,15 @@ class ServiceInstance(ServiceInstance_decl):
                     raise XOSValidationError("Cannot find eligible owner of class %s" % self.OWNER_CLASS_NAME)
 
                 self.owner = owners[0]
+        else:
+            # Deal with legacy services that specify their owner as _meta field default. This is a workaround for
+            # what is probably a django bug (if a SerivceInstance without a default is created before a ServiceInstance
+            # that does have a default, then the later service's default is not honored by django).
+
+            # TODO: Delete this after all services have been migrated away from using field defaults
+
+            if (not self.owner_id) and (self._meta.get_field("owner").default):
+                self.owner = Service.objects.get(id = self._meta.get_field("owner").default)
 
         # If the model has a Creator and it's not specified, then attempt to default to the Caller. Caller is
         # automatically filled in my the API layer. This code was typically used by ServiceInstances that lead to
