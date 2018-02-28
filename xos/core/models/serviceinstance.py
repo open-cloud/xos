@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from django.db.models.fields import NOT_PROVIDED
 from xos.exceptions import *
 from serviceinstance_decl import *
 
@@ -90,7 +91,8 @@ class ServiceInstance(ServiceInstance_decl):
 
             # TODO: Delete this after all services have been migrated away from using field defaults
 
-            if (not self.owner_id) and (self._meta.get_field("owner").default):
+            if (not self.owner_id) and (self._meta.get_field("owner").default) and \
+                    (self._meta.get_field("owner").default!=NOT_PROVIDED):
                 self.owner = Service.objects.get(id = self._meta.get_field("owner").default)
 
         # If the model has a Creator and it's not specified, then attempt to default to the Caller. Caller is
