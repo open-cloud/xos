@@ -3,14 +3,16 @@
 # This is a stub for launching xossh in the xosproject/xos-client container.
 # It's assumed that this script is being invoked on your machine in the local scenario
 
-SCRIPT_DIR=`dirname $0`
-CERT_FILE="$PWD/$SCRIPT_DIR/../../../../../cord_profile/im_cert_chain.pem"
-CRED_FILENAME="$SCRIPT_DIR/../../../../build/platform-install/credentials/xosadmin@opencord.org"
+CERT_FILE="$PWD/../../../../../cord_profile/im_cert_chain.pem"
+CRED_FILENAME="$PWD/../../../../build/platform-install/credentials/xosadmin@opencord.org"
 PASSWORD=`cat $CRED_FILENAME`
+
+echo $CERT_FILE
+echo $PASSWORD
 
 docker run --rm -it --name xossh \
 	--link rcord_xos_core_1:xos-core --net xos \
-	-v "$CERT_FILE":/usr/local/share/ca-certificates/local_certs.crt \
+	-v $CERT_FILE:/usr/local/share/ca-certificates/local_certs.crt \
 	xosproject/xos-client:candidate \
 	 -u xosadmin@opencord.org \
 	 -p "$PASSWORD" \

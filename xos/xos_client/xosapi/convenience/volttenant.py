@@ -30,15 +30,25 @@ class ORMWrapperVOLTTenant(ORMWrapper):
     # DEPRECATED
     @property
     def vcpe(self):
+        self.logger.warning('VOLTTenant.vcpe is DEPRECATED, use VOLTTenant.vsg instead')
         return self.vsg
 
     @property
     def subscriber(self):
+        # NOTE this assume that each VOLT has just 1 subscriber, is that right?
         links = self.stub.ServiceInstanceLink.objects.filter(provider_service_instance_id = self.id)
         for link in links:
             subs = self.stub.CordSubscriberRoot.objects.filter(id=link.subscriber_service_instance_id)
             if subs:
                 return subs[0]
         return None
+
+    @property
+    def c_tag(self):
+        return self.subscriber.c_tag
+
+    @property
+    def s_tag(self):
+        return self.subscriber.s_tag
 
 register_convenience_wrapper("VOLTTenant", ORMWrapperVOLTTenant)
