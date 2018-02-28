@@ -26,6 +26,10 @@ RUN chmod +x /opt/xos/tools/xos-manage \
  && sync \
  && /opt/xos/tools/xos-manage genkeys
 
+RUN xosgenx --output /opt/xos/core/models --target django.xtarget --dest-extension py --write-to-file model /opt/xos/core/models/core.xproto
+RUN xosgenx --output /opt/xos/core/models --target django-security.xtarget --dest-file security.py --write-to-file single /opt/xos/core/models/core.xproto
+RUN xosgenx --output /opt/xos/core/models --target init.xtarget --dest-file __init__.py --write-to-file single /opt/xos/core/models/core.xproto
+
 # Set environment variables
 ENV HOME /root
 
