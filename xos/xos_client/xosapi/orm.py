@@ -612,7 +612,7 @@ import convenience.privilege
 import convenience.instance
 import convenience.network
 import convenience.cordsubscriberroot
-import convenience.volttenant
+import convenience.voltserviceinstance
 import convenience.vsgserviceinstance
 import convenience.vrouterservice
 import convenience.vroutertenant

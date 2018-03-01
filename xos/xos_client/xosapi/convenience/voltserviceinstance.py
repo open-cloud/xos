@@ -16,7 +16,7 @@
 
 from xosapi.orm import ORMWrapper, register_convenience_wrapper
 
-class ORMWrapperVOLTTenant(ORMWrapper):
+class ORMWrapperVOLTServiceInstance(ORMWrapper):
     @property
     def vsg(self):
         links = self.stub.ServiceInstanceLink.objects.filter(subscriber_service_instance_id = self.id)
@@ -30,7 +30,7 @@ class ORMWrapperVOLTTenant(ORMWrapper):
     # DEPRECATED
     @property
     def vcpe(self):
-        self.logger.warning('VOLTTenant.vcpe is DEPRECATED, use VOLTTenant.vsg instead')
+        self.logger.warning('VOLTServiceInstance.vcpe is DEPRECATED, use VOLTServiceInstance.vsg instead')
         return self.vsg
 
     @property
@@ -51,4 +51,4 @@ class ORMWrapperVOLTTenant(ORMWrapper):
     def s_tag(self):
         return self.subscriber.s_tag
 
-register_convenience_wrapper("VOLTTenant", ORMWrapperVOLTTenant)
+register_convenience_wrapper("VOLTServiceInstance", ORMWrapperVOLTServiceInstance)

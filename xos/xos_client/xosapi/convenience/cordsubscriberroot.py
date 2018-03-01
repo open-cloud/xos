@@ -23,8 +23,8 @@ class ORMWrapperCordSubscriberRoot(ORMWrapper):
         links = self.subscribed_links.all()
         for link in links:
             # TODO: hardcoded service dependency
-            # cast from ServiceInstance to VOLTTenant
-            volts = self.stub.VOLTTenant.objects.filter(id = link.provider_service_instance.id)
+            # cast from ServiceInstance to VOLTServiceInstance
+            volts = self.stub.VOLTServiceInstance.objects.filter(id = link.provider_service_instance.id)
             if volts:
                 return volts[0]
         return None
