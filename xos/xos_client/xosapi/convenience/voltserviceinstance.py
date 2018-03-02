@@ -17,6 +17,7 @@
 from xosapi.orm import ORMWrapper, register_convenience_wrapper
 
 class ORMWrapperVOLTServiceInstance(ORMWrapper):
+
     @property
     def vsg(self):
         links = self.stub.ServiceInstanceLink.objects.filter(subscriber_service_instance_id = self.id)
@@ -49,6 +50,10 @@ class ORMWrapperVOLTServiceInstance(ORMWrapper):
 
     @property
     def s_tag(self):
-        return self.subscriber.s_tag
+        olt_device = self.stub.VOLTDevice.objects.get(device_id = self.subscriber.olt_device)
+        olt_port = self.stub.VOLTDevicePort.objects.get(port_id = self.subscriber.olt_port, volt_device_id=olt_device.id)
+        if olt_port:
+            return olt_port.s_tag
+        return None
 
 register_convenience_wrapper("VOLTServiceInstance", ORMWrapperVOLTServiceInstance)
