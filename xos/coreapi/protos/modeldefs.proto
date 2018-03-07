@@ -35,6 +35,7 @@ message ModelField {
     repeated FieldValidator validators = 5;
     repeated FieldOption options = 6;
     string default = 7;
+    bool read_only = 8;
 };
 
 message ModelDef {

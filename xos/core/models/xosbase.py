@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from xos.exceptions import *
+from xos.exceptions import*
 from xosbase_decl import *
 
 class XOSBase(XOSBase_decl):
@@ -131,6 +131,20 @@ class XOSBase(XOSBase_decl):
         always_update_timestamp = False
         if "always_update_timestamp" in kwargs:
             always_update_timestamp = always_update_timestamp or kwargs.pop("always_update_timestamp")
+
+        # validate that only synchronizers can write feedback state
+
+        # this for operator support via xossh in case if you want to force changes in feedback state
+        allow_modify_feedback = False
+        if "allow_modify_feedback" in kwargs:
+            allow_modify_feedback = kwargs.pop("allow_modify_feedback")
+
+        if hasattr(self, "feedback_state_fields") and not allow_modify_feedback and not self.is_new:
+            feedback_changed = [field for field in self.changed_fields if field in self.feedback_state_fields]
+
+            if len(feedback_changed) > 0 and caller_kind != "synchronizer":
+                log.error('A non Synchronizer is trying to update fields marked as feedback_state', model=self._dict, feedback_state_fields=self.feedback_state_fields, caller_kind=caller_kind)
+                raise XOSPermissionDenied('A non Synchronizer is trying to update fields marked as feedback_state')
 
         # SMBAKER: if an object is trying to delete itself, or if the observer
         # is updating an object's backend_* fields, then let it slip past the

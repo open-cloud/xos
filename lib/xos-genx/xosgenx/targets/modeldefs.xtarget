@@ -29,6 +29,7 @@ items:
     {% endfor %}
   {%- endif %}
     type: {{ xproto_type_to_ui_type(f) }}
+    read_only: {{ xproto_is_true(f.options.feedback_state) }}
     {% set validators = xproto_validators(f) -%}
     {% if validators -%}
     validators:

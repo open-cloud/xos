@@ -41,6 +41,11 @@ from core.models import {{ b.name }}
 class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases, legacy_tag, proto.message_names) }}:
   plural_name = "{{ xproto_pluralize(m) }}"
 
+  {%- set feedback_state_fields = xproto_optioned_fields_to_list(xproto_base_fields(m, proto.message_table) + m.fields, 'feedback_state', 'True')  %}
+  {%- if feedback_state_fields|length > 0 %}
+  feedback_state_fields = {{ feedback_state_fields }}
+  {%- endif %}
+
   KIND = {{ xproto_first_non_empty([m.options.kind, options.kind, options.name, "Set a kind in your xproto!"]) }}
 
   {% if m.options.owner_class_name %}

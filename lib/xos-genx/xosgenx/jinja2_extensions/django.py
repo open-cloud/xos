@@ -168,3 +168,27 @@ def xproto_validations(options):
         return [map(str.strip, validation.split(':')) for validation in unquote(options['validators']).split(',')]
     except KeyError:
         return []
+
+def xproto_optioned_fields_to_list(fields, option, val):
+    """
+    List all the field that have a particural option
+    :param fields: (list) an array of message fields
+    :param option: (string) the option to look for
+    :param val: (any) the value of the option
+    :return: list of strings, field names where option is set
+    """
+
+    optioned_fields = []
+    for f in fields:
+        option_names = []
+        for k, v in f['options'].items():
+            option_names.append(k)
+
+        if option in  option_names and f['options'][option] == val:
+            optioned_fields.append(f['name'])
+
+    return optioned_fields
+
+# TODO
+# - in modeldefs add info about this fields
+# - update the gui to have this fields as readonly

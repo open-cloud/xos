@@ -13,18 +13,18 @@ message XOSBase {
      required string updated = 2 [default = "now()", content_type = "date"];
      optional string enacted = 3 [null = True, content_type = "date", blank = True, default = None];
      optional string policed = 4 [null = True, content_type = "date", blank = True, default = None];
-     optional string backend_register = 5 [default = "{}", max_length = 1024];
+     optional string backend_register = 5 [default = "{}", max_length = 1024, feedback_state = True];
      required bool backend_need_delete = 6 [default = False, blank = True];
      required bool backend_need_reap = 7 [default = False, blank = True];
-     required string backend_status = 8 [default = "Provisioning in progress", max_length = 1024, null = True];
-     required int32 backend_code = 9 [default = 0];
+     required string backend_status = 8 [default = "Provisioning in progress", max_length = 1024, null = True, feedback_state = True];
+     required int32 backend_code = 9 [default = 0, feedback_state = True];
      required bool deleted = 10 [default = False, blank = True];
      required bool write_protect = 12 [default = False, blank = True];
      required bool lazy_blocked = 13 [default = False, blank = True];
      required bool no_sync = 14 [default = False, blank = True];
      required bool no_policy = 15 [default = False, blank = True];
-     optional string policy_status = 16 [default = "Policy in process", max_length = 1024];
-     optional int32 policy_code = 16 [default = 0];
+     optional string policy_status = 16 [default = "Policy in process", max_length = 1024, feedback_state = True];
+     optional int32 policy_code = 16 [default = 0, feedback_state = True];
      required string leaf_model_name = 17 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
      required bool backend_need_delete_policy = 18 [default = False, help_text = "True if delete model_policy must be run before object can be reaped", blank = True];
 }
@@ -288,10 +288,10 @@ policy instance_policy < *slice_policy(slice) >
 
 message Instance::instance_policy (XOSBase) {
      option validators = "instance_creator:Instance has no creator, instance_isolation: Container instance {obj.name} must use container image, instance_isolation_container_vm_parent:Container-vm instance {obj.name} must have a parent, instance_parent_isolation_container_vm:Parent field can only be set on Container-vm instances ({obj.name}), instance_isolation_vm: VM Instance {obj.name} must use VM image, instance_creator_privilege: instance creator has no privileges on slice";
-     optional string instance_id = 1 [max_length = 200, content_type = "stripped", blank = True, help_text = "Nova instance id", null = True, db_index = False];
-     optional string instance_uuid = 2 [max_length = 200, content_type = "stripped", blank = True, help_text = "Nova instance uuid", null = True, db_index = False];
+     optional string instance_id = 1 [max_length = 200, content_type = "stripped", blank = True, help_text = "Nova instance id", null = True, db_index = False, feedback_state = True];
+     optional string instance_uuid = 2 [max_length = 200, content_type = "stripped", blank = True, help_text = "Nova instance uuid", null = True, db_index = False, feedback_state = True];
      required string name = 3 [max_length = 200, content_type = "stripped", blank = False, help_text = "Instance name", null = False, db_index = False];
-     optional string instance_name = 4 [max_length = 200, content_type = "stripped", blank = True, help_text = "OpenStack generated name", null = True, db_index = False];
+     optional string instance_name = 4 [max_length = 200, content_type = "stripped", blank = True, help_text = "OpenStack generated name", null = True, db_index = False, feedback_state = True];
      optional string ip = 5 [max_length = 39, content_type = "ip", blank = True, help_text = "Instance ip address", null = True, db_index = False, gui_hidden = True];
      required manytoone image->Image:instances = 6 [db_index = True, null = False, blank = False];
      optional manytoone creator->User:instances = 7 [db_index = True, null = True, blank = True];

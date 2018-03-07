@@ -50,6 +50,9 @@ class ORMWrapperVOLTServiceInstance(ORMWrapper):
 
     @property
     def s_tag(self):
+        if not self.subscriber:
+            raise Exception("vOLT %s has no subscriber" % self.name)
+
         olt_device = self.stub.VOLTDevice.objects.get(device_id = self.subscriber.olt_device)
         olt_port = self.stub.VOLTDevicePort.objects.get(port_id = self.subscriber.olt_port, volt_device_id=olt_device.id)
         if olt_port:

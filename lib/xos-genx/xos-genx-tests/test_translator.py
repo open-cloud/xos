@@ -315,6 +315,28 @@ message Bar {
         output = XOSProcessor.process(args)
         self.assertIn('verbose_name: "Verbose Foo Name"', output)
 
+    def test_feedback_field(self):
+        xproto = \
+"""
+option app_label = "test";
+
+message ParentFoo {
+    required string parent_name = 1 [null = False, blank = False, feedback_state = True];
+}
+
+message Foo (ParentFoo) {
+    required string name = 1 [null = False, blank = False, feedback_state = True];
+}
+"""
+
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = 'modeldefs.xtarget'
+        output = XOSProcessor.process(args)
+
+        read_only = filter(lambda s: 'read_only: True' in s, output.splitlines())
+        self.assertEqual(len(read_only), 3) # readonly is 1 for ParentFoo and 2 for Foo
+
 if __name__ == '__main__':
     unittest.main()
 
