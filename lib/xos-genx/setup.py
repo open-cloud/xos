@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 # Copyright 2017-present Open Networking Foundation
 #
@@ -13,13 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-#!/usr/bin/env python
-
 from setuptools import setup
 
+try:
+    from xosutil.autoversion_setup import setup_with_auto_version as setup
+except ImportError:
+    # xosutil is not installed. Expect this to happen when we build an egg, in which case xosgenx.version will
+    # automatically have the right version.
+    from setuptools import setup
+
+from xosgenx.version import __version__
+
 setup(name='XosGenX',
-      version='1.0',
+      version=__version__,
       description='XOS Generative Toolchain',
       author='Sapan Bhatia, Matteo Scandolo',
       author_email='sapan@opennetworking.org, teo@opennetworking.org',

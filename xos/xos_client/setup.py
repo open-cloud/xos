@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 # Copyright 2017-present Open Networking Foundation
 #
@@ -13,13 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-#! /usr/bin/env python
-
 import os
 import sys
 import site
-from distutils.core import setup
+from setuptools.command.install import install
+
+
+try:
+    from xosutil.autoversion_setup import setup_with_auto_version as setup
+except ImportError:
+    # xosutil is not installed. Expect this to happen when we build an egg, in which case xosgenx.version will
+    # automatically have the right version.
+    from setuptools import setup
+
+from xosapi.version import __version__
 
 CHAMELEON_DIR='xosapi/chameleon'
 
@@ -29,7 +37,18 @@ if not os.path.exists(CHAMELEON_DIR):
 if not os.path.exists(os.path.join(CHAMELEON_DIR, "protos/schema_pb2.py")):
     raise Exception("Please make the chameleon protos")
 
-setup(name='xosapi',
+# Chameleon requires these files have executable permission set.
+class InstallFixChameleonPermissions(install):
+    def run(self):
+        install.run(self)
+        for filepath in self.get_outputs():
+            if filepath.endswith("chameleon/protoc_plugins/gw_gen.py") or \
+               filepath.endswith("chameleon/protoc_plugins/swagger_gen.py"):
+               os.chmod(filepath, 0777)
+
+setup_result = setup(name='xosapi',
+      version=__version__,
+      cmdclass={"install": InstallFixChameleonPermissions},
       description='XOS api client',
       package_dir= {'xosapi.chameleon': CHAMELEON_DIR},
       packages=['xosapi.chameleon.grpc_client',
@@ -49,24 +68,5 @@ setup(name='xosapi',
       scripts = ['xossh'],
      )
 
-# If we're not running a Virtual Env
-if not hasattr(sys, 'real_prefix'):
-    # Chameleon needs the following files set as executable
-    for dir in site.getsitepackages():
-       fn = os.path.join(dir, "xosapi/chameleon/protoc_plugins/gw_gen.py")
-       if os.path.exists(fn):
-           os.chmod(fn, 0777)
-       fn = os.path.join(dir, "xosapi/chameleon/protoc_plugins/swagger_gen.py")
-       if os.path.exists(fn):
-           os.chmod(fn, 0777)
-
-
-"""
-from twisted.internet import reactor
-from xosapi.xos_grpc_client import InsecureClient
-client = InsecureClient(endpoint="xos-core.cord.lab:50055")
-client.start()
-reactor.run()
-"""
 
 

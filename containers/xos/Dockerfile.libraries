@@ -19,9 +19,13 @@ FROM xosproject/xos-base:candidate
 # Add libraries
 COPY lib /opt/xos/lib
 
+COPY VERSION /opt/xos
+
 # Install the config module
 # and the xosgenx library
-RUN cd /opt/xos/lib/xos-config/; \
+RUN cd /opt/xos/lib/xos-util; \
+        python setup.py install; \
+        cd /opt/xos/lib/xos-config/; \
 	python setup.py install; \
 	cd /opt/xos/lib/xos-genx/; \
 	python setup.py install

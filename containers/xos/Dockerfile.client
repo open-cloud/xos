@@ -18,10 +18,13 @@
 FROM xosproject/xos-libraries:candidate
 
 # Install XOS client
-ADD xos/xos_client /tmp/xos_client
+COPY xos/xos_client /tmp/xos_client
+
+# Install the VERSION file
+COPY VERSION tmp/xos_client
 
 # Install chameleon
-ADD containers/xos/tmp.chameleon /tmp/xos_client/xosapi/chameleon
+COPY containers/xos/tmp.chameleon /tmp/xos_client/xosapi/chameleon
 
 #ENV HOME /root
 #WORKDIR /opt/xos

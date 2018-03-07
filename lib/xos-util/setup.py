@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python 
 
 # Copyright 2017-present Open Networking Foundation
 #
@@ -14,22 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+import os
+
 from setuptools import setup
 
-try:
-    from xosutil.autoversion_setup import setup_with_auto_version as setup
-except ImportError:
-    # xosutil is not installed. Expect this to happen when we build an egg, in which case xosgenx.version will
-    # automatically have the right version.
-    from setuptools import setup
+from xosutil.autoversion_setup import setup_with_auto_version
+from xosutil.version import __version__
 
-from xosconfig.version import __version__
-
-setup(name='XosConfig',
+setup_with_auto_version(name='XosUtil',
       version=__version__,
-      description='XOS Config Library',
-      author='Matteo Scandolo',
-      author_email='teo@onlab.us',
-      packages=['xosconfig'],
+      description='XOS Utility Library',
+      author='Scott Baker',
+      author_email='scottb@opennetworking.org',
+      packages=['xosutil'],
       include_package_data=True
      )
