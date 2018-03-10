@@ -17,9 +17,6 @@
 # xosproject/xos-ui
 FROM xosproject/xos:candidate
 
-# Install file from corebuilder
-ADD containers/xos/BUILD /
-
 # Label image
 ARG org_label_schema_schema_version=1.0
 ARG org_label_schema_name=xos-corebuilder
