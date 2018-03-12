@@ -31,7 +31,7 @@ all:
 start:
 	bash -c "source env.sh && python ./core_main.py $(START_OPTIONS)"
 
-prep: unload_unwanted app_lists rebuild_protos compile_protos try_models makemigrations migrate
+prep: unload_unwanted app_lists rebuild_protos compile_protos try_models wait_for_db makemigrations migrate
 
 unload_unwanted:
 	python unload_unwanted_apps.py
@@ -53,3 +53,6 @@ compile_protos:
 
 try_models:
 	python ./try_models.py
+
+wait_for_db:
+	python ./wait_for_db.py
