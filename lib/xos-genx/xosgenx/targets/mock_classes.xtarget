@@ -138,6 +138,9 @@ class ModelAccessor:
         for store in AllMockObjectStores:
             store.items = []
 
+    def get_model_class(self, classname):
+        return globals()[classname]
+
 model_accessor = ModelAccessor()
 
 class ObjectSet(object):
