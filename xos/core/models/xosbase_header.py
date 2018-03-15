@@ -303,7 +303,7 @@ class PlModelMixIn(object):
 
             if deleted:
                 json_dict['deleted'] = True
-                json_dict['object'] = {'id': pk}
+                json_dict['object']['id'] = pk
 
             payload = json.dumps(json_dict, default=json_handler)
             r.publish(self.__class__.__name__, payload)
