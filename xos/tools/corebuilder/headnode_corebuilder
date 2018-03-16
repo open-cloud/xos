@@ -1,6 +1,0 @@
-#! /bin/bash
-
-# Runs the corebuilder tools from inside the xosproject/corebuilder container
-# This script is setup to be run from the headnode, using paths based in /opt/cord 
-
-docker run -it -v /opt/cord:/opt/cord:ro -v /opt/cord/orchestration/xos/containers/xos/BUILD:/opt/xos_corebuilder/BUILD xosproject/xos-corebuilder:candidate $@

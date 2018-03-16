@@ -19,7 +19,7 @@ FROM xosproject/xos:candidate
 
 # Label image
 ARG org_label_schema_schema_version=1.0
-ARG org_label_schema_name=xos-corebuilder
+ARG org_label_schema_name=xos-ui
 ARG org_label_schema_version=unknown
 ARG org_label_schema_vcs_url=unknown
 ARG org_label_schema_vcs_ref=unknown
