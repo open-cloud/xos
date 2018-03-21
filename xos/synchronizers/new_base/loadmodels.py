@@ -19,8 +19,8 @@ class ModelLoadClient(object):
     def __init__(self, api):
         self.api = api
 
-    def upload_models(self, name, dir):
-        request = self.api.dynamicload_pb2.LoadModelsRequest(name=name, version="unknown")
+    def upload_models(self, name, dir, version="unknown"):
+        request = self.api.dynamicload_pb2.LoadModelsRequest(name=name, version=version)
 
         for fn in os.listdir(dir):
             if fn.endswith(".xproto"):

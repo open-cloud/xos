@@ -49,3 +49,10 @@ def autodiscover_version_of_caller(*args, **kwargs):
     frame = inspect.stack()[1]
     module = inspect.getmodule(frame[0])
     return autodiscover_version(module.__file__, *args, **kwargs)
+
+def autodiscover_version_of_main(*args, **kwargs):
+    import __main__
+    if hasattr(__main__, "__file__"):
+        return autodiscover_version(__main__.__file__, *args, **kwargs)
+    else:
+        return None

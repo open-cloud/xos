@@ -35,6 +35,7 @@ from loadmodels import ModelLoadClient
 
 from xosconfig import Config
 from multistructlog import create_logger
+from xosutil.autodiscover_version import autodiscover_version_of_main
 
 log = create_logger(Config().get('logging'))
 
@@ -163,8 +164,10 @@ def grpcapi_reconnect(client, reactor):
     # is waiting on our models.
 
     if Config.get("models_dir"):
+        version = autodiscover_version_of_main() or "unknown"
+        log.info("Service version is %s" % version)
         try:
-            ModelLoadClient(client).upload_models(Config.get("name"), Config.get("models_dir"))
+            ModelLoadClient(client).upload_models(Config.get("name"), Config.get("models_dir"), version=version)
         except Exception, e:  # TODO: narrow exception scope
             if (hasattr(e, "code") and callable(e.code) and hasattr(e.code(), "name") and (e.code().name) == "UNAVAILABLE"):
                 # We need to make sure we force a reconnection, as it's possible that we will end up downloading a
