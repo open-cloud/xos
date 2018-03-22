@@ -54,6 +54,9 @@ class DynamicBuilder(object):
             self.pre_validate_file(item)
 
     def get_manifests(self):
+        if not os.path.exists(self.manifest_dir):
+            return []
+
         manifests=[]
         for fn in os.listdir(self.manifest_dir):
             if fn.endswith(".json"):

@@ -70,7 +70,6 @@ service dynamicload {
   rpc GetLoadStatus(google.protobuf.Empty) returns (LoadStatusReply) {
         option (google.api.http) = {
             get: "/xosapi/v1/dynamicload/load_status"
-            body: "*"
         };
   }
 };

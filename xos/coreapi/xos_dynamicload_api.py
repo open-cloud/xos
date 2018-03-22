@@ -32,9 +32,17 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
     def __init__(self, thread_pool, server):
         self.thread_pool = thread_pool
         self.server = server
+        self.django_apps = None
 
     def stop(self):
         pass
+
+    def set_django_apps(self, django_apps):
+        """ Allows the creator of DynamicLoadService to pass in a pointer to django's app list once django has been
+            installed. This is optional. We don't import django.apps directly, as DynamicLoadService must be able
+            to run even if django is broken due to modeling issues.
+        """
+        self.django_apps = django_apps
 
     def LoadModels(self, request, context):
         try:
@@ -69,6 +77,11 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
             raise e
 
     def GetLoadStatus(self, request, context):
+        django_apps_by_name = {}
+        if self.django_apps:
+            for app in self.django_apps.get_app_configs():
+                django_apps_by_name[app.name] = app
+
         try:
             builder = DynamicBuilder()
             manifests = builder.get_manifests()
@@ -81,6 +94,12 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
                 item.name = manifest["name"]
                 item.version = manifest["version"]
                 item.state = manifest.get("state", "unspecified")
+
+                if item.state == "load":
+                    django_app = django_apps_by_name.get("services." + item.name)
+                    if django_app:
+                        item.state = "present"
+                        # TODO: Might be useful to return a list of models as well
 
             return response
         except Exception, e:

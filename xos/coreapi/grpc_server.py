@@ -101,6 +101,7 @@ class XOSGrpcServer(object):
         self.thread_pool = futures.ThreadPoolExecutor(max_workers=1)
         self.server = grpc.server(self.thread_pool)
         self.django_initialized = False
+        self.django_apps = []
 
         server_key = open(SERVER_KEY,"r").read()
         server_cert = open(SERVER_CERT,"r").read()
@@ -114,10 +115,15 @@ class XOSGrpcServer(object):
         self.services = []
 
     def init_django(self):
-        import django
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
-        django.setup()
-        self.django_initialized = True
+        try:
+            import django
+            os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
+            django.setup()
+            from django.apps import apps
+            self.django_apps = apps
+            self.django_initialized = True
+        except:
+            log.exception("Failed to initialize django")
 
     def register_core(self):
         from xos_grpc_api import XosService
@@ -144,14 +150,16 @@ class XOSGrpcServer(object):
                       schema_pb2_grpc.add_SchemaServiceServicer_to_server,
                       SchemaService(self.thread_pool))
 
+        dynamic_load_service = DynamicLoadService(self.thread_pool, self)
         self.register("dynamicload",
                       dynamicload_pb2_grpc.add_dynamicloadServicer_to_server,
-                      DynamicLoadService(self.thread_pool, self))
+                      dynamic_load_service)
 
         if (self.model_status == 0):
             self.init_django()
 
         if (self.django_initialized):
+            dynamic_load_service.set_django_apps(self.django_apps)
             self.register_core()
             self.register_utility()
             self.register_modeldefs()
