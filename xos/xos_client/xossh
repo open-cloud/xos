@@ -11,6 +11,7 @@ import readline
 import rlcompleter
 
 from twisted.internet import reactor
+from xosapi.version import __version__
 from xosapi.xos_grpc_client import InsecureClient, SecureClient, setup_logging, Empty
 
 current_client = None
@@ -81,6 +82,13 @@ def parse_args():
     parser.add_argument('-v', '--verbose',
                         dest='verbose',
                         action='count',
+                        help=_help)
+
+    _help = 'enable verbose logging'
+    parser.add_argument('-V', '--version',
+                        dest='version',
+                        action='store_true',
+                        default=False,
                         help=_help)
 
     args = parser.parse_args()
@@ -255,6 +263,10 @@ def main():
     args = parse_args()
 
     setup_logging(args)
+
+    if args.version:
+        print __version__
+        sys.exit(0)
 
     login(username=args.username, password=args.password)
     reactor.run()

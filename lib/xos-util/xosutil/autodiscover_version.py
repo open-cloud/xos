@@ -24,7 +24,7 @@
 import inspect
 import os
 
-def autodiscover_version(caller_filename=None, save_to=None):
+def autodiscover_version(caller_filename=None, save_to=None, max_parent_depth=None):
     """ walk back along the path to the current module, searching for a VERSION file """
     if not caller_filename:
         caller_filename = os.path.realpath(__file__)
@@ -40,6 +40,12 @@ def autodiscover_version(caller_filename=None, save_to=None):
                 f.write("__version__ = '%s'\n" % version)
                 f.close()
             return version
+
+        # limit_parent_depth can be used to limit how far back we search the tree for a VERSION file.
+        if (max_parent_depth is not None):
+            if (max_parent_depth <= 0):
+                return None
+            max_parent_depth -= 1
 
         (cur_path, remainder) = os.path.split(cur_path)
         if not remainder:

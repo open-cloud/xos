@@ -26,6 +26,7 @@ from google.protobuf.empty_pb2 import Empty
 
 from importlib import import_module
 
+from xosutil.autodiscover_version import autodiscover_version_of_main
 from dynamicbuild import DynamicBuilder
 
 class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
@@ -100,6 +101,15 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
                     if django_app:
                         item.state = "present"
                         # TODO: Might be useful to return a list of models as well
+
+            # the core is always onboarded, so doesn't have an explicit manifest
+            item = response.services.add()
+            item.name = "core"
+            item.version = autodiscover_version_of_main()
+            if "core" in django_apps_by_name:
+                item.state = "present"
+            else:
+                item.state = "load"
 
             return response
         except Exception, e:

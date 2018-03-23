@@ -164,7 +164,7 @@ def grpcapi_reconnect(client, reactor):
     # is waiting on our models.
 
     if Config.get("models_dir"):
-        version = autodiscover_version_of_main() or "unknown"
+        version = autodiscover_version_of_main(max_parent_depth=0) or "unknown"
         log.info("Service version is %s" % version)
         try:
             ModelLoadClient(client).upload_models(Config.get("name"), Config.get("models_dir"), version=version)
