@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 # xosproject/xos-core
 FROM xosproject/xos-libraries:candidate
 
@@ -21,14 +19,13 @@ FROM xosproject/xos-libraries:candidate
 ADD xos /opt/xos
 ADD lib /opt/xos/lib
 
-RUN chmod +x /opt/xos/tools/xos-manage \
- && mkdir -p /opt/cord_profile /opt/xos_services /opt/xos_libraries \
- && sync \
- && /opt/xos/tools/xos-manage genkeys
-
-RUN xosgenx --output /opt/xos/core/models --target django.xtarget --dest-extension py --write-to-file model /opt/xos/core/models/core.xproto
-RUN xosgenx --output /opt/xos/core/models --target django-security.xtarget --dest-file security.py --write-to-file single /opt/xos/core/models/core.xproto
-RUN xosgenx --output /opt/xos/core/models --target init.xtarget --dest-file __init__.py --write-to-file single /opt/xos/core/models/core.xproto
+RUN mkdir -p /opt/cord_profile /opt/xos_services /opt/xos_libraries \
+ && xosgenx --output /opt/xos/core/models --target django.xtarget --dest-extension py \
+      --write-to-file model /opt/xos/core/models/core.xproto \
+ && xosgenx --output /opt/xos/core/models --target django-security.xtarget --dest-file security.py \
+      --write-to-file single /opt/xos/core/models/core.xproto \
+ && xosgenx --output /opt/xos/core/models --target init.xtarget --dest-file __init__.py \
+      --write-to-file single /opt/xos/core/models/core.xproto
 
 # Set environment variables
 ENV HOME /root

@@ -320,7 +320,7 @@ message Network::network_policy (XOSBase) {
      required manytoone owner->Slice:ownedNetworks = 8 [help_text = "Slice that owns control of this Network", null = False, db_index = True, blank = False];
      required bool permit_all_slices = 10 [default = False, null = False, db_index = False, blank = True];
      required bool autoconnect = 17 [help_text = "This network can be autoconnected to the slice that owns it", default = True, null = False, db_index = False, blank = True];
-     required manytomany permitted_slices->Slice/Network_permitted_slices:availableNetworks = 18 [db_index = False, null = False, blank = True];
+     required manytomany permitted_slices->Slice/Network_permitted_slices:availableNetworks = 18 [db_index = False, blank = True];
 }
 
 
@@ -371,7 +371,7 @@ message Node::node_policy (XOSBase) {
 }
 message NodeLabel (XOSBase) {
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "label name", null = False, db_index = False];
-     required manytomany node->Node/NodeLabel_node:nodelabels = 2 [db_index = False, null = False, blank = True];
+     required manytomany node->Node/NodeLabel_node:nodelabels = 2 [db_index = False, blank = True];
 }
 
 policy port_validator < (obj.instance.slice in obj.network.permitted_slices.all()) | (obj.instance.slice = obj.network.owner) | obj.network.permit_all_slices >

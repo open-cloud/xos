@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,49 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 # Dockerfile.base
 # This image isn't used, but installs the prereqs for the other XOS images
-FROM ubuntu:14.04.5
+FROM ubuntu:16.04
 
 # Install apt packages, including docker
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y \
     apt-transport-https \
+    build-essential \
     curl \
-    cython \
-    gcc \
-    geoip-database \
-    git \
-    graphviz \
-    graphviz-dev \
-    libcurl4-gnutls-dev \
-    libffi-dev \
-    libgeoip1 \
     libpq-dev \
-    libxslt1-dev \
-    libxslt1.1 \
     libyaml-dev \
-    m4 \
     openssh-client \
-    pkg-config \
-    python-dev \
     python-pip \
-    rsync \
     software-properties-common \
     sshpass \
-    supervisor \
-    unzip \
-    wget \
- && apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 \
-    --recv-keys 58118E89F3A912897C070ADBF76221572C52609D \
- && echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" | \
-    tee /etc/apt/sources.list.d/docker.list \
  && apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 \
     --recv-keys 46095ACC8548582C1A2699A9D27D666CD88E42B4 \
  && echo "deb https://artifacts.elastic.co/packages/6.x/apt stable main" | \
     tee -a /etc/apt/sources.list.d/elastic-6.x.list \
  && apt-get update \
- && apt-get install -y docker-engine \
  && apt-get install -y filebeat \
  && update-rc.d filebeat defaults 95 10 \
  && rm -rf /var/lib/apt/lists/* \
@@ -66,11 +42,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
 COPY filebeat.yml /etc/filebeat/filebeat.yml
 
 # Install python packages with pip
+# Upgrade methodology - pip_requested.txt is the manually generated list of pip
+# packages desired, without any added dependencies. It is used to generate
+# pip_requirements.txt by running: pip install -r pip_requested.txt then use
+# `pipdeptree` to make sure dependencies aren't broken, then
+# `pip freeze > pip_requirements.txt` and manually clean up.
 COPY pip_requirements.txt /tmp/pip_requirements.txt
-
-# Upgrade requests from apt installed version
-RUN pip install --no-deps -U -I requests==2.11.1 \
- && pip install --no-deps -U -I pip==9.0.1 setuptools==36.0.1 \
+RUN pip install --no-deps -U -I pip==9.0.3 setuptools==39.0.1 requests==2.18.4 \
  && pip install --no-deps -r /tmp/pip_requirements.txt \
  && pip freeze > /var/xos/pip_freeze_pip_up_`date -u +%Y%m%dT%H%M%S`
 

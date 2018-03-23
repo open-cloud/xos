@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 # Copyright 2017-present Open Networking Foundation
 #
@@ -13,9 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-#!/usr/bin/env python
-
 import os
 import sys
 import pdb
@@ -26,8 +24,8 @@ from ansible import constants
 constants = reload(constants)
 
 from tempfile import NamedTemporaryFile
-from ansible.inventory import Inventory
-from ansible.vars import VariableManager
+from ansible.inventory.manager import InventoryManager
+from ansible.vars.manager import VariableManager
 from ansible.parsing.dataloader import DataLoader
 from ansible.executor import playbook_executor
 from ansible.utils.display import Display
@@ -218,56 +216,97 @@ class Options(object):
     """
     Options class to replace Ansible OptParser
     """
-    def __init__(self, verbosity=None, inventory=None, listhosts=None, subset=None, module_paths=None, extra_vars=None,
-                 forks=None, ask_vault_pass=None, vault_password_files=None, new_vault_password_file=None,
-                 output_file=None, tags=None, skip_tags=None, one_line=None, tree=None, ask_sudo_pass=None, ask_su_pass=None,
-                 sudo=None, sudo_user=None, become=None, become_method=None, become_user=None, become_ask_pass=None,
-                 ask_pass=None, private_key_file=None, remote_user=None, connection=None, timeout=None, ssh_common_args=None,
-                 sftp_extra_args=None, scp_extra_args=None, ssh_extra_args=None, poll_interval=None, seconds=None, check=None,
-                 syntax=None, diff=None, force_handlers=None, flush_cache=None, listtasks=None, listtags=None, module_path=None):
-        self.verbosity = verbosity
-        self.inventory = inventory
-        self.listhosts = listhosts
-        self.subset = subset
-        self.module_paths = module_paths
-        self.extra_vars = extra_vars
-        self.forks = forks
-        self.ask_vault_pass = ask_vault_pass
-        self.vault_password_files = vault_password_files
-        self.new_vault_password_file = new_vault_password_file
-        self.output_file = output_file
-        self.tags = tags
-        self.skip_tags = skip_tags
-        self.one_line = one_line
-        self.tree = tree
-        self.ask_sudo_pass = ask_sudo_pass
+    def __init__(self,
+                 ask_pass=None,
+                 ask_su_pass=None,
+                 ask_sudo_pass=None,
+                 become=None,
+                 become_ask_pass=None,
+                 become_method=None,
+                 become_user=None,
+                 check=None,
+                 connection=None,
+                 diff=None,
+                 flush_cache=None,
+                 force_handlers=None,
+                 forks=1,
+                 listtags=None,
+                 listtasks=None,
+                 module_path=None,
+                 new_vault_password_file=None,
+                 one_line=None,
+                 output_file=None,
+                 poll_interval=None,
+                 private_key_file=None,
+                 remote_user=None,
+                 scp_extra_args=None,
+                 seconds=None,
+                 sftp_extra_args=None,
+                 skip_tags=None,
+                 ssh_common_args=None,
+                 ssh_extra_args=None,
+                 sudo=None,
+                 sudo_user=None,
+                 syntax=None,
+                 tags=None,
+                 timeout=None,
+                 tree=None,
+                 vault_password_files=None,
+                 ask_vault_pass=None,
+                 extra_vars=None,
+                 inventory=None,
+                 listhosts=None,
+                 module_paths=None,
+                 subset=None,
+                 verbosity=None
+                 ):
+
+        if tags:
+            self.tags = tags
+
+        if skip_tags:
+            self.skip_tags = skip_tags
+
+        self.ask_pass = ask_pass
         self.ask_su_pass = ask_su_pass
-        self.sudo = sudo
-        self.sudo_user = sudo_user
+        self.ask_sudo_pass = ask_sudo_pass
+        self.ask_vault_pass = ask_vault_pass
         self.become = become
+        self.become_ask_pass = become_ask_pass
         self.become_method = become_method
         self.become_user = become_user
-        self.become_ask_pass = become_ask_pass
-        self.ask_pass = ask_pass
+        self.check = check
+        self.connection = connection
+        self.diff = diff
+        self.extra_vars = extra_vars
+        self.flush_cache = flush_cache
+        self.force_handlers = force_handlers
+        self.forks = forks
+        self.inventory = inventory
+        self.listhosts = listhosts
+        self.listtags = listtags
+        self.listtasks = listtasks
+        self.module_path = module_path
+        self.module_paths = module_paths
+        self.new_vault_password_file = new_vault_password_file
+        self.one_line = one_line
+        self.output_file = output_file
+        self.poll_interval = poll_interval
         self.private_key_file = private_key_file
         self.remote_user = remote_user
-        self.connection = connection
-        self.timeout = timeout
-        self.ssh_common_args = ssh_common_args
-        self.sftp_extra_args = sftp_extra_args
         self.scp_extra_args = scp_extra_args
-        self.ssh_extra_args = ssh_extra_args
-        self.poll_interval = poll_interval
         self.seconds = seconds
-        self.check = check
+        self.sftp_extra_args = sftp_extra_args
+        self.ssh_common_args = ssh_common_args
+        self.ssh_extra_args = ssh_extra_args
+        self.subset = subset
+        self.sudo = sudo
+        self.sudo_user = sudo_user
         self.syntax = syntax
-        self.diff = diff
-        self.force_handlers = force_handlers
-        self.flush_cache = flush_cache
-        self.listtasks = listtasks
-        self.listtags = listtags
-        self.module_path = module_path
-
+        self.timeout = timeout
+        self.tree = tree
+        self.vault_password_files = vault_password_files
+        self.verbosity = verbosity
 
 class Runner(object):
 
@@ -299,20 +338,18 @@ class Runner(object):
         self.loader = DataLoader()
         try:
             self.loader.set_vault_password(os.environ['VAULT_PASS'])
-        except KeyError:
+        except AttributeError:
             pass
-
-        # All the variables from all the various places
-        self.variable_manager = VariableManager()
-        self.variable_manager.extra_vars = {} # self.run_data
 
         # Set inventory, using most of above objects
         if (host_file):
-            self.inventory = Inventory(loader=self.loader, variable_manager=self.variable_manager, host_list = host_file)
+            self.inventory = InventoryManager(loader=self.loader, sources = host_file)
         else:
-            self.inventory = Inventory(loader=self.loader, variable_manager=self.variable_manager)
+            self.inventory = InventoryManager(loader=self.loader)
 
-        self.variable_manager.set_inventory(self.inventory)
+        # All the variables from all the various places
+        self.variable_manager = VariableManager(loader=self.loader, inventory=self.inventory)
+        self.variable_manager.extra_vars = {} # self.run_data
 
         # Setup playbook executor, but don't run until run() called
         self.pbex = playbook_executor.PlaybookExecutor(

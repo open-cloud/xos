@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 # Copyright 2017-present Open Networking Foundation
 #
@@ -12,9 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-#!/usr/bin/env python
 
 import jinja2
 import tempfile
@@ -124,7 +122,7 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
     f = open(fqp,'w')
     f.write(buffer)
     f.flush()
-    
+
     """
     q = Queue()
     p = Process(target=run_playbook, args=(ansible_hosts, ansible_config, fqp, opts, q,))
@@ -165,7 +163,7 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
                     pass
 
             # FIXME (zdw, 2017-02-19) - may not be needed with new callback logging
-            
+
             ofile.write('%s: %s\n'%(x._task, str(x._result)))
 
 	    if (object):
@@ -202,8 +200,6 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
         else:
             raise
 
-    
-            
     processed_results = map(lambda x:x._result, ok_results)
     return processed_results[1:] # 0 is setup
 
@@ -226,7 +222,7 @@ def run_template_ssh(name, opts, path='', expected_num=None, object=None):
 
     (opts, fqp) = get_playbook_fn(opts, path)
     private_key_pathname = fqp + ".key"
-    config_pathname = fqp + ".config"
+    config_pathname = fqp + ".cfg"
     hosts_pathname = fqp + ".hosts"
 
     f = open(private_key_pathname, "w")
