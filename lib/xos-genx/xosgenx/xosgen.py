@@ -18,6 +18,7 @@
 
 import argparse
 from generator import *
+from version import __version__
 
 parse = argparse.ArgumentParser(description='XOS Generative Toolchain')
 parse.add_argument('--rev', dest='rev', action='store_true',default=False, help='Convert proto to xproto')
@@ -25,6 +26,7 @@ parse.add_argument('--output', dest='output', action='store',default=None, help=
 parse.add_argument('--attic', dest='attic', action='store',default=None, help='The location at which static files are stored')
 parse.add_argument('--kvpairs', dest='kv', action='store',default=None, help='Key value pairs to make available to the target')
 parse.add_argument('--write-to-file', dest='write_to_file', choices = ['single', 'model', 'target'], action='store',default=None, help='Single output file (single) or output file per model (model) or let target decide (target)')
+parse.add_argument('--version', action='version', version=__version__)
 
 group = parse.add_mutually_exclusive_group()
 group.add_argument('--dest-file', dest='dest_file', action='store',default=None, help='Output file name (if write-to-file is set to single)')
