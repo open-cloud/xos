@@ -215,19 +215,6 @@ class User(AbstractBaseUser, PlModelMixIn):
     def is_superuser(self):
         return False
 
-#    def get_roles(self):
-#        from core.models.site import SitePrivilege
-#        from core.models.slice import SliceMembership
-#
-#        site_privileges = SitePrivilege.objects.filter(user=self)
-#        slice_memberships = SliceMembership.objects.filter(user=self)
-#        roles = defaultdict(list)
-#        for site_privilege in site_privileges:
-#            roles[site_privilege.role.role_type].append(site_privilege.site.login_base)
-#        for slice_membership in slice_memberships:
-#            roles[slice_membership.role.role_type].append(slice_membership.slice.name)
-#        return roles
-
     def delete(self, *args, **kwds):
         # so we have something to give the observer
         purge = kwds.get('purge',False)

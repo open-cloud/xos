@@ -22,15 +22,12 @@ class Slice(Slice_decl):
 
     NETWORK_CHOICES = ((None, 'Default'), ('host', 'Host'), ('bridged', 'Bridged'), ('noauto', 'No Automatic Networks'))
 
-    @property
-    def slicename(self):
-        return "%s_%s" % (self.site.login_base, self.name)
-
     def save(self, *args, **kwargs):
         # set creator on first save
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
 
+        # TODO: Verify this logic is still in use
         # only admins change a slice's creator
         if 'creator' in self.changed_fields and \
             (not hasattr(self, 'caller') or not self.caller.is_admin):

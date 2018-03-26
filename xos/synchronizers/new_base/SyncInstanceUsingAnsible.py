@@ -244,6 +244,7 @@ class SyncInstanceUsingAnsible(SyncStep):
 
     def delete_record(self, o):
         try:
+            # TODO: This may be broken, as get_controller() does not exist in convenience wrapper
             controller = o.get_controller()
             controller_register = json.loads(o.node.site_deployment.controller.backend_register)
 
