@@ -3,7 +3,7 @@ syntax = "proto3";
 package xos;
 
 import "google/protobuf/empty.proto";
-import "google/api/annotations.proto";
+import "annotations.proto";
 import "common.proto";
 import "xosoptions.proto";
 
@@ -57,54 +57,54 @@ message PopulatedServiceInstance {
 service utility {
 
   rpc Login(LoginRequest) returns (LoginResponse) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             post: "/xosapi/v1/utility/login"
             body: "*"
         };
   }
 
   rpc Logout(google.protobuf.Empty) returns (google.protobuf.Empty) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             post: "/xosapi/v1/utility/logout"
             body: "*"
         };
   }
 
   rpc NoOp(google.protobuf.Empty) returns (google.protobuf.Empty) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             post: "/xosapi/v1/utility/noop"
             body: "*"
         };
   }
 
   rpc AuthenticatedNoOp(google.protobuf.Empty) returns (google.protobuf.Empty) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             post: "/xosapi/v1/utility/auth_noop"
             body: "*"
         };
   }
 
   rpc SetDirtyModels(ModelFilter) returns (ModelList) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             post: "/xosapi/v1/utility/dirty_models"
             body: "*"
         };
   }
 
   rpc ListDirtyModels(ModelFilter) returns (ModelList) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             get: "/xosapi/v1/utility/dirty_models"
         };
   }
 
   rpc GetXproto(google.protobuf.Empty) returns (XProtos) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             get: "/xosapi/v1/xproto"
         };
   }
 
   rpc GetPopulatedServiceInstances(ID) returns (PopulatedServiceInstance) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             get: "/xosapi/v1/core/populatedserviceinstance/{id}"
         };
   }

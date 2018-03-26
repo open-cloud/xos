@@ -28,6 +28,7 @@ import functools
 import importlib
 import os
 import signal
+import sys
 import time
 from xosconfig import Config
 from diag import update_diag
@@ -150,8 +151,9 @@ def keep_trying(client, reactor):
         # So reconnect.
 
         log.exception("exception in NoOp", e=e)
-        client.connected = False
-        client.connect()
+        log.info("restarting synchronizer")
+
+        os.execv(sys.executable, ['python'] + sys.argv)
         return
 
     reactor.callLater(1, functools.partial(keep_trying, client, reactor))

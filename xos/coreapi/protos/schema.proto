@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package schema;
 
-import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+import "annotations.proto";
 
 // Contains the name and content of a *.proto file
 message ProtoFile {
@@ -30,7 +30,7 @@ service SchemaService {
 
     // Return active grpc schemas
     rpc GetSchema(google.protobuf.Empty) returns (Schemas) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             get: "/schema"
         };
     }

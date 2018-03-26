@@ -61,9 +61,11 @@ class SchemaService(schema_pb2_grpc.SchemaServiceServicer):
         proto_dir = abspath(join(dirname(__file__), './protos'))
 
         def find_files(dir, suffix):
+            proto_blacklist = ['schema.proto']
+
             proto_files = [
                 join(dir, fname) for fname in os.listdir(dir)
-                if fname.endswith(suffix)
+                if fname.endswith(suffix) and fname not in proto_blacklist
             ]
             return proto_files
 

@@ -3,7 +3,7 @@ syntax = "proto3";
 package xos;
 
 import "google/protobuf/empty.proto";
-import "google/api/annotations.proto";
+import "annotations.proto";
 
 // This API is used by the UI to validate fields.
 
@@ -54,7 +54,7 @@ message ModelDefs {
 service modeldefs {
 
   rpc ListModelDefs(google.protobuf.Empty) returns (ModelDefs) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             get: "/xosapi/v1/modeldefs"
         };
   }

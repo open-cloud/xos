@@ -33,4 +33,10 @@ setup(name='XosGenX',
       packages=['xosgenx'],
       scripts=['bin/xosgenx'],
       include_package_data=True,
+      # TODO add all deps to the install_requires section
+      install_requires=[
+          'pattern>=2.6',
+          'astunparse>=1.5.0'
+          ]
      )
+

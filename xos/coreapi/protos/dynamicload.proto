@@ -3,8 +3,7 @@ syntax = "proto3";
 package xos;
 
 import "google/protobuf/empty.proto";
-import "google/api/annotations.proto";
-// import "common.proto";
+import "annotations.proto";
 
 message Xproto {
     string filename = 1;
@@ -56,19 +55,19 @@ message LoadStatusReply {
 
 service dynamicload {
   rpc LoadModels(LoadModelsRequest) returns (LoadModelsReply) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             post: "/xosapi/v1/dynamicload/load_models"
             body: "*"
         };
   }
   rpc UnloadModels(UnloadModelsRequest) returns (LoadModelsReply) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             post: "/xosapi/v1/dynamicload/unload_models"
             body: "*"
         };
   }
   rpc GetLoadStatus(google.protobuf.Empty) returns (LoadStatusReply) {
-        option (google.api.http) = {
+        option (googleapi.http) = {
             get: "/xosapi/v1/dynamicload/load_status"
         };
   }
