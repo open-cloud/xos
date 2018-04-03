@@ -12,22 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from synchronizers.new_base.pullstep import PullStep
+from mock_modelaccessor import *
 
-name: test-synchronizer
-accessor:
-  username: xosadmin@opencord.org
-  password: "sample"
-  kind: testframework
-logging:
-  version: 1
-  handlers:
-    console:
-      class: logging.StreamHandler
-  loggers:
-    '':
-      handlers:
-          - console
-      level: DEBUG 
-dependency_graph: "tests/model-deps"
-steps_dir: "tests/steps"
-pull_steps_dir: "tests/pull_steps"
+class TestPullStep(PullStep):
+    def __init__(self):
+        super(TestPullStep, self).__init__(observed_model=Instance)

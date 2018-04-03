@@ -64,8 +64,10 @@ class TestRun(unittest.TestCase):
 
         b = backend.Backend()
         steps_dir = Config.get("steps_dir")
+        pull_steps_dir = Config.get("pull_steps_dir")
         self.steps = b.load_sync_step_modules(steps_dir)
-        self.synchronizer = event_loop.XOSObserver(self.steps)
+        self.pull_steps = b.load_pull_step_modules(pull_steps_dir)
+        self.synchronizer = event_loop.XOSObserver(self.steps, self.pull_steps)
         try:
             os.remove('/tmp/sync_ports')
         except OSError:
@@ -81,7 +83,10 @@ class TestRun(unittest.TestCase):
 
     @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template)
     @mock.patch("event_loop.model_accessor")
-    def test_run_once(self, mock_run_template, mock_accessor, *_other_accessors):
+    @mock.patch("pull_step.TestPullStep.pull_records")
+    def test_run_once(self, mock_pull_records, mock_run_template, mock_accessor, *_other_accessors):
+
+
         pending_objects, pending_steps = self.synchronizer.fetch_pending()
         pending_objects2 = list(pending_objects)
 
@@ -93,12 +98,15 @@ class TestRun(unittest.TestCase):
         any_cs.slice = slice
 
         self.synchronizer.run_once()
+
         sync_ports = open('/tmp/sync_ports').read()
         delete_ports = open('/tmp/delete_ports').read()
 
         self.assertIn("successful", sync_ports)
         self.assertIn("successful", delete_ports)
-    
+
+        mock_pull_records.assert_called_once()
+
 
 if __name__ == '__main__':
     unittest.main()

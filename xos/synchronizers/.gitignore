@@ -3,3 +3,4 @@ new_base/mock_modelaccessor.py
 new_base/mock_modelaccessor.py.context
 new_base/synchronizers.new_base.ansible_helper
 new_base/xos.synchronizers.new_base.tests.test_payload
+new_base/synchronizers.new_base.diag

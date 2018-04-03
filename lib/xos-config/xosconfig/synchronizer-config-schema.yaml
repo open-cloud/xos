@@ -57,6 +57,8 @@ map:
     type: str
   steps_dir:
     type: str
+  pull_steps_dir:
+    type: str
   sys_dir:
     type: str
   models_dir:

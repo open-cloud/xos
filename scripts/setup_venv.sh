@@ -15,7 +15,7 @@
 # limitations under the License.
 
 BASEDIR=$(pwd)
-REQUIREMENTS=$BASEDIR/containers/xos/pip_requirements.txt
+REQUIREMENTS=$BASEDIR/containers/xos/pip_requested.txt
 VENVDIR=venv-xos
 
 echo $BASEDIR
@@ -48,7 +48,12 @@ cd $BASEDIR/xos/xos_client/xosapi/chameleon/protos; VOLTHA_BASE=anything make &&
 cd $BASEDIR/xos/xos_client; python setup.py install && \
 chmod 777 $BASEDIR/venv-xos/lib/python2.7/site-packages/xosapi/chameleon/protoc_plugins/gw_gen.py && \
 chmod 777 $BASEDIR/venv-xos/lib/python2.7/site-packages/xosapi/chameleon/protoc_plugins/swagger_gen.py && \
-cd $BASEDIR/lib/xos-genx; python setup.py install
+
+#install xos-genx
+cd $BASEDIR/lib/xos-genx; python setup.py install && \
+
+#install xos-util
+cd $BASEDIR/lib/xos-util; python setup.py install
  then
    echo "Requirements installed."
    echo "Virtualenv ready"

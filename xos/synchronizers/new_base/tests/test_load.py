@@ -55,8 +55,10 @@ class TestScheduling(unittest.TestCase):
 
         b = backend.Backend()
         steps_dir = Config.get("steps_dir")
+        pull_steps_dir = Config.get("pull_steps_dir")
         self.steps = b.load_sync_step_modules(steps_dir)
-        self.synchronizer = event_loop.XOSObserver(self.steps)
+        self.pull_steps = b.load_pull_step_modules(pull_steps_dir)
+        self.synchronizer = event_loop.XOSObserver(self.steps, self.pull_steps)
 
     def tearDown(self):
         sys.path = self.sys_path_save
@@ -95,6 +97,9 @@ class TestScheduling(unittest.TestCase):
 
             observed_names = [o.__name__ for o in observes]
             self.assertIn(k, observed_names)
+
+    def test_load_pull_steps(self):
+        self.assertEqual(len(self.synchronizer.pull_steps), 1)
 
 if __name__ == '__main__':
     unittest.main()
