@@ -16,9 +16,9 @@
 
 import json
 from xosapi.orm import ORMWrapper, register_convenience_wrapper
-from xosapi.convenience.tenant import ORMWrapperTenant
+from xosapi.convenience.serviceinstance import ORMWrapperServiceInstance
 
-class ORMWrapperONOSApp(ORMWrapperTenant):
+class ORMWrapperONOSApp(ORMWrapperServiceInstance):
     pass
 
 register_convenience_wrapper("ONOSApp", ORMWrapperONOSApp)

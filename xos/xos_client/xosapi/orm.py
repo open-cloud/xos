@@ -609,11 +609,11 @@ import convenience.network
 import convenience.cordsubscriberroot
 import convenience.voltserviceinstance
 import convenience.vsgserviceinstance
+import convenience.serviceinstance
 import convenience.vrouterservice
 import convenience.vroutertenant
 import convenience.vrouterapp
 import convenience.service
-import convenience.tenant
 import convenience.onosapp
 import convenience.controller
 import convenience.user
