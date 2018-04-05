@@ -195,8 +195,11 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAPIHelperMixin):
             objs = model.objects.all()
             for obj in objs:
                 try:
-                     obj.caller = user
-                     obj.save()
+                    obj.caller = user
+                    obj.save()
+                    item = dirty_models.items.add()
+                    item.class_name = model.__name__
+                    item.id = obj.id
                 except Exception, e:
                     item = dirty_models.items.add()
                     item.class_name = model.__name__
