@@ -48,5 +48,21 @@ class ORMWrapperService(ORMWrapper):
     def get_service_instance_class(self):
         return getattr(self.stub, self.get_service_instance_class_name())
 
+    @property
+    def provider_services(self):
+        svcs = []
+        service_deps = self.subscribed_dependencies.all()
+        for dep in service_deps:
+            svcs.append(dep.provider_service)
+        return svcs
+
+    @property
+    def subscriber_services(self):
+        svcs = []
+        service_deps = self.provided_dependencies.all()
+        for dep in service_deps:
+            svcs.append(dep.subscriber_service)
+        return svcs
+
 
 register_convenience_wrapper("Service", ORMWrapperService)

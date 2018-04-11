@@ -55,18 +55,65 @@ class ORMWrapperVOLTServiceInstance(ORMWrapper):
             'VOLTServiceInstance.c_tag is DEPRECATED, use get_westbound_service_instance_properties instead')
         return self.subscriber.c_tag
 
-    @property
-    def s_tag(self):
-        log.warning(
-            'VOLTServiceInstance.s_tag is DEPRECATED, use get_westbound_service_instance_properties instead')
+    def get_olt_device_by_subscriber(self):
         if not self.subscriber:
-            raise Exception("vOLT %s has no subscriber" % self.name)
+            raise Exception("vOLTServiceInstance %s has no subscriber" % self.name)
 
         olt_device = self.stub.OLTDevice.objects.get(name=self.subscriber.olt_device)
-        olt_port = self.stub.PONPort.objects.get(name=self.subscriber.olt_port, olt_device_id=olt_device.id)
+        return olt_device
 
-        if olt_port:
-            return olt_port.s_tag
-        return None
+    def get_olt_port_by_subscriber(self):
+        if not self.subscriber:
+            raise Exception("vOLTServiceInstance %s has no subscriber" % self.name)
+
+        olt_device = self.get_olt_device_by_subscriber()
+        olt_port = self.stub.PONPort.objects.get(name=self.subscriber.olt_port, olt_device_id=olt_device.id)
+        return olt_port
+
+    @property
+    def s_tag(self):
+        try:
+            olt_port = self.get_olt_device_by_subscriber()
+
+            if olt_port:
+                return olt_port.s_tag
+            return None
+        except Exception, e:
+            log.warning('Error while reading c_tag: %s' % e.message)
+            return None
+
+    @property
+    def switch_datapath_id(self):
+        try:
+            olt_device = self.get_olt_device_by_subscriber()
+            if olt_device:
+                return olt_device.switch_datapath_id
+            return None
+        except Exception, e:
+            log.warning('Error while reading switch_datapath_id: %s' % e.message)
+            return None
+
+    @property
+    def switch_port(self):
+        try:
+            olt_device = self.get_olt_device_by_subscriber()
+            if olt_device:
+                return olt_device.switch_port
+            return None
+        except Exception, e:
+            log.warning('Error while reading switch_port: %s' % e.message)
+            return None
+
+    @property
+    def outer_tpid(self):
+        try:
+            olt_device = self.get_olt_device_by_subscriber()
+            if olt_device:
+                return olt_device.outer_tpid
+            return None
+        except Exception, e:
+            log.warning('Error while reading outer_tpid: %s' % e.message)
+            return None
+
 
 register_convenience_wrapper("VOLTServiceInstance", ORMWrapperVOLTServiceInstance)

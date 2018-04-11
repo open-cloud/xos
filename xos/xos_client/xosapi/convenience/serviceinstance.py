@@ -75,12 +75,15 @@ class ORMWrapperServiceInstance(ORMWrapper):
         wi = self.westbound_service_instances
 
         if len(wi) == 0:
-            raise Exception('ServiceInstance %s has no westbound service instances')
+            log.error("ServiceInstance with id %s has no westbound service instances, can't find property %s in the chain" % (self.id, prop_name))
+            raise Exception("ServiceInstance with id %s has no westbound service instances" % self.id)
 
         for i in wi:
             if hasattr(i, prop_name):
                 return getattr(i, prop_name)
             else:
+                # cast to the ServiceInstance model
+                i = self.stub.ServiceInstance.objects.get(id=i.id)
                 return i.get_westbound_service_instance_properties(prop_name)
 
 register_convenience_wrapper("ServiceInstance", ORMWrapperServiceInstance)
