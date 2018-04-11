@@ -56,30 +56,32 @@ class ORMWrapperVOLTServiceInstance(ORMWrapper):
         return self.subscriber.c_tag
 
     def get_olt_device_by_subscriber(self):
-        if not self.subscriber:
-            raise Exception("vOLTServiceInstance %s has no subscriber" % self.name)
+        si = self.stub.ServiceInstance.objects.get(id=self.id)
 
-        olt_device = self.stub.OLTDevice.objects.get(name=self.subscriber.olt_device)
+        olt_device_name = si.get_westbound_service_instance_properties("olt_device")
+
+        olt_device = self.stub.OLTDevice.objects.get(name=olt_device_name)
         return olt_device
 
     def get_olt_port_by_subscriber(self):
-        if not self.subscriber:
-            raise Exception("vOLTServiceInstance %s has no subscriber" % self.name)
+        si = self.stub.ServiceInstance.objects.get(id=self.id)
+
+        olt_port_name = si.get_westbound_service_instance_properties("olt_port")
 
         olt_device = self.get_olt_device_by_subscriber()
-        olt_port = self.stub.PONPort.objects.get(name=self.subscriber.olt_port, olt_device_id=olt_device.id)
+        olt_port = self.stub.PONPort.objects.get(name=olt_port_name, olt_device_id=olt_device.id)
         return olt_port
 
     @property
     def s_tag(self):
         try:
-            olt_port = self.get_olt_device_by_subscriber()
+            olt_port = self.get_olt_port_by_subscriber()
 
             if olt_port:
                 return olt_port.s_tag
             return None
         except Exception, e:
-            log.warning('Error while reading c_tag: %s' % e.message)
+            log.warning('Error while reading s_tag: %s' % e.message)
             return None
 
     @property
