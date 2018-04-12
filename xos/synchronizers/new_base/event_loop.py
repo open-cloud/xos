@@ -430,6 +430,7 @@ class XOSObserver:
         # Cleanup: Move self.driver into a synchronizer context
         # made available to every sync step.
         if not self.driver.enabled:
+            self.log.warning('Driver is not enabled. Not running sync steps.')
             return
 
         while True:
