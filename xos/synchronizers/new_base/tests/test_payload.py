@@ -30,6 +30,12 @@ ANSIBLE_FILE='/tmp/payload_test'
 def run_fake_ansible_template(*args,**kwargs):
     opts = args[1]
     open(ANSIBLE_FILE,'w').write(json.dumps(opts))
+    return [{"rc": 0}]
+
+def run_fake_ansible_template_fail(*args,**kwargs):
+    opts = args[1]
+    open(ANSIBLE_FILE,'w').write(json.dumps(opts))
+    return [{"rc": 1}]
 
 def get_ansible_output():
     ansible_str = open(ANSIBLE_FILE).read()
@@ -92,7 +98,21 @@ class TestPayload(unittest.TestCase):
             a = get_ansible_output()
             self.assertDictContainsSubset({'delete':True, 'name':o.name}, a)
             o.save.assert_called_with(update_fields=['backend_need_reap'])
-        
+
+    @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template_fail)
+    @mock.patch("event_loop.model_accessor")
+    def test_delete_record_fail(self, mock_run_template, mock_modelaccessor):
+        with mock.patch.object(Instance, "save") as instance_save:
+            o = Instance()
+            o.name = "Sisi Pascal"
+
+            o.synchronizer_step = steps.sync_instances.SyncInstances()
+
+            with self.assertRaises(Exception) as e:
+                self.synchronizer.delete_record(o, log)
+
+            self.assertEqual(e.exception.message, "Nonzero rc from Ansible during delete_record")
+
     @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template)
     @mock.patch("event_loop.model_accessor")
     def test_sync_record(self, mock_run_template, mock_modelaccessor):
