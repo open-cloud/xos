@@ -423,7 +423,7 @@ class FOL2Python:
         self.verdict_next()
         function_str = """
 def %(fn_name)s(obj, ctx):
-    if not %(vvar)s: raise ValidationError("%(message)s".format(obj=obj, ctx=ctx))
+    if not %(vvar)s: raise XOSValidationError("%(message)s".format(obj=obj, ctx=ctx))
         """ % {'fn_name': policy_function_name, 'vvar': self.verdict_variable, 'message': message}
 
         function_ast = self.str_to_ast(function_str)

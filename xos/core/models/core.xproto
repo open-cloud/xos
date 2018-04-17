@@ -465,14 +465,11 @@ message SiteRole (XOSBase) {
      required string role = 1 [choices = "(('admin', 'Admin'), ('pi', 'PI'), ('tech', 'Tech'), ('billing', 'Billing'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False, tosca_key=True];
 }
 
-policy slice_name < obj.id | {{ obj.name.startswith(obj.site.login_base) }} >
 policy slice_name_length_and_no_spaces < {{ len(obj.site.login_base) + 1 < len(obj.name) and ' ' not in obj.name }} >
 policy slice_has_creator < obj.creator >
 
-
-            
 message Slice::slice_policy (XOSBase) {
-     option validators = "slice_name:Slice name ({obj.name}) must begin with site login_base ({obj.site.login_base}), slice_name_length_and_no_spaces:Slice name too short or contains spaces, slice_has_creator:Slice has no creator";
+     option validators = "slice_name_length_and_no_spaces:Slice name too short or contains spaces, slice_has_creator:Slice has no creator";
      option plural = "Slices";
 
      required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", null = False, db_index = False];
