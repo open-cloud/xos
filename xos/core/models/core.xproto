@@ -27,6 +27,8 @@ message XOSBase {
      optional int32 policy_code = 16 [default = 0, feedback_state = True];
      required string leaf_model_name = 17 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
      required bool backend_need_delete_policy = 18 [default = False, help_text = "True if delete model_policy must be run before object can be reaped", blank = True];
+     required bool xos_managed = 19 [default = False, help_text = "True if xos is responsible for creating/deleting this object", blank = True];
+     optional string backend_handle = 20 [max_length = 1024, feedback_state = True, blank=True, null=True, help_text = "Handle used by the backend to track this object"];
 }
 
 // The calling user represents the user being accessed, or is a site admin.
@@ -107,6 +109,11 @@ message AddressPool (XOSBase) {
      optional string cidr = 5 [db_index = False, max_length = 32, null = True, blank = False];
      optional string inuse = 6 [db_index = False, null = True, blank = True, varchar = True];
      optional manytoone service->Service:addresspools = 7 [db_index = True, null = True, blank = True];
+}
+
+message ComputeServiceInstance (ServiceInstance) {
+     required manytoone slice->Slice:computeserviceinstances = 1 [db_index = True, null = False, blank = False, help_text = "Slice that controls this ServiceInstance"];
+     required manytoone image->Image:computeserviceinstances = 2 [db_index = True, null = False, blank = False, help_text = "Image used to instantiate this ServiceInstance"];
 }
 
 // Admins at a deployment have access to controllers at those deployments
@@ -387,6 +394,10 @@ message Port::port_policy (XOSBase) {
      required bool xos_created = 6 [default = False, null = False, db_index = False, blank = True];
 }
 
+message Principal (XOSBase) {
+     required string name = 1 [max_length = 128, null = False, db_index = True, blank = False, help_text = "The name of this principal"];
+     required manytoone trust_domain->TrustDomain:principals = 2 [db_index = True, null = False, blank = False, help_text = "Trust domain this principal resides in"];
+}
 
 message Role (XOSBase) {
      required string role_type = 1 [db_index = False, max_length = 80, null = False, content_type = "stripped", blank = False];
@@ -411,6 +422,13 @@ message Service (XOSBase,AttributeMixin) {
      optional string service_specific_attribute = 12 [db_index = False, null = True, blank = True, varchar = True];
 }
 
+message ServicePort (XOSBase) {
+     required string name = 1 [max_length = 128, null = False, db_index = False, blank = False, help_text = "Service Port Name"];
+     required int32 external_port = 2 [blank = False, help_text = "external port number"];
+     required int32 internal_port = 3 [blank = False, help_text = "internal port number"];
+     required string protocol = 4 [max_length = 32, null = False, db_index = False, blank = False, default="TCP", help_text = "Protocol"];
+     required manytoone service->Service:serviceports = 5 [null = False, db_index = True, blank = False, help_text = "The Service this ServicePort is associated with"];
+}
 
 message ServiceAttribute (XOSBase) {
      required string name = 1 [help_text = "Attribute Name", max_length = 128, null = False, db_index = False, blank = False, unique_with="service"];
@@ -465,11 +483,11 @@ message SiteRole (XOSBase) {
      required string role = 1 [choices = "(('admin', 'Admin'), ('pi', 'PI'), ('tech', 'Tech'), ('billing', 'Billing'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False, tosca_key=True];
 }
 
-policy slice_name_length_and_no_spaces < {{ len(obj.site.login_base) + 1 < len(obj.name) and ' ' not in obj.name }} >
+policy slice_name_no_spaces < {{ ' ' not in obj.name }} >
 policy slice_has_creator < obj.creator >
 
 message Slice::slice_policy (XOSBase) {
-     option validators = "slice_name_length_and_no_spaces:Slice name too short or contains spaces, slice_has_creator:Slice has no creator";
+     option validators = "slice_name_no_spaces:Slice name contains spaces, slice_has_creator:Slice has no creator";
      option plural = "Slices";
 
      required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", null = False, db_index = False, unique = True];
@@ -487,6 +505,10 @@ message Slice::slice_policy (XOSBase) {
      optional manytoone default_node->Node:slices = 15 [db_index = True, null = True, blank = True];
      optional string mount_data_sets = 16 [default = "GenBank", max_length = 256, content_type = "stripped", blank = True, null = True, db_index = False];
      required string default_isolation = 17 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))", max_length = 30, blank = False, null = False, db_index = False];
+     optional manytoone trust_domain->TrustDomain:slices = 12 [db_index = True, null = False, blank = False, help_text = "Trust domain this slice resides in"];
+     optional manytoone principal->Principal:slices = 12 [db_index = True, null = False, blank = False, help_text = "Principal this slice may use to interact with other components"];
+     optional int32 controller_replica_count = 13 [default = 0, null = False, db_index = False, blank = False, help_text = "Replica count, controller-dependent"];
+     optional string controller_kind = 14 [max_length = 256, content_type = "stripped", blank = True, help_text = "Type of controller, vim-dependent", null = True, db_index = False];
 }
 
 message SlicePrivilege (XOSBase) {
@@ -549,6 +571,11 @@ message TenantWithContainer (ServiceInstance) {
      optional string external_hostname = 3 [max_length = 30, content_type = "stripped", blank = True, help_text = "External host name", null = True, db_index = False];
      optional string external_container = 4 [max_length = 30, content_type = "stripped", blank = True, help_text = "External host name", null = True, db_index = False];
      optional string node_label = 5 [max_length = 30, content_type = "stripped", blank = True, help_text = "Node constraint", null = True, db_index = False];
+}
+
+message TrustDomain (XOSBase) {
+     required string name = 1 [max_length = 255, null = False, db_index = True, blank = False, help_text = "Name of this trust domain"];
+     required manytoone owner->Service:owned_trust_domains = 2 [null = False, db_index = True, blank = False, help_text = "Service partioned by this trust domain"];
 }
 
 message XOSCore (XOSBase) {
