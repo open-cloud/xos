@@ -68,7 +68,7 @@ to add a new customer-facing service to R-CORD.
 A Virtual Pod includes a build machine, a head node, switches, and a compute
 node all running as VMs on a single host.  Before proceeding you should
 familiarize yourself with the CiaB environment and the [POD Development
-Loop](dev/workflow_pod.md#development-loop).
+Loop](/xos/dev/workflow_pod.md#development-loop).
 
 ## Create the synchronizer directory
 
@@ -89,7 +89,7 @@ the `synchronizer` container image.
 
 Your models live in a file named `exampleservice.xproto` in your service's
 `xos/synchronizer/models` directory. This file encodes the models in the
-service in a format called [xproto](../xos/dev/xproto.md) which is a
+service in a format called [xproto](/xos/dev/xproto.md) which is a
 combination of Google Protocol Buffers and some XOS-specific annotations to
 facilitate the generation of service components, such as the GRPC and REST
 APIs, security policies, and database models among other things. It consists of
