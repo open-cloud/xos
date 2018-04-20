@@ -33,7 +33,7 @@ sys.path = [currentdir] + sys.path
 import chameleon.grpc_client.grpc_client as chameleon_client
 
 from twisted.internet import reactor
-
+from google.protobuf.empty_pb2 import Empty
 
 SERVER_CA="/usr/local/share/ca-certificates/local_certs.crt"
 
@@ -61,9 +61,30 @@ class XOSClient(chameleon_client.GrpcClient):
 
     def set_reconnect_callback(self, reconnect_callback):
         self.reconnect_callback2 = reconnect_callback
+
         return self
 
+    def load_convenience_methods(self):
+
+        convenience_methods_dir = "/usr/local/lib/python2.7/dist-packages/xosapi/convenience/"
+
+        try:
+            cms = self.dynamicload.GetConvenienceMethods(Empty())
+        except grpc._channel._Rendezvous, e:
+            code = e.code()
+            if code == grpc.StatusCode.UNAVAILABLE:
+                # NOTE if the core is not available, restart the synchronizer
+                os.execv(sys.executable, ['python'] + sys.argv)
+        print "Loading convenience methods: %s" % [m.filename for m in cms.convenience_methods]
+
+        for cm in cms.convenience_methods:
+            print "Saving %s" % cm.filename
+            save_path = os.path.join(convenience_methods_dir, cm.filename)
+            file(save_path, "w").write(cm.contents)
+
+
     def reconnected(self):
+
         for api in ['modeldefs', 'utility', 'xos', 'dynamicload']:
             pb2_file_name = os.path.join(self.work_dir, api + "_pb2.py")
             pb2_grpc_file_name = os.path.join(self.work_dir, api + "_pb2_grpc.py")
@@ -88,6 +109,12 @@ class XOSClient(chameleon_client.GrpcClient):
 
         if hasattr(self, "xos"):
             self.xos_orm = orm.ORMStub(self.xos, self.xos_pb2, "xos")
+
+        # ask the core for the convenience methods
+        self.load_convenience_methods()
+
+        # Load convenience methods after reconnect
+        orm.import_convenience_methods()
 
         if self.reconnect_callback2:
             self.reconnect_callback2()
@@ -122,19 +149,16 @@ def parse_args():
 
     defs = {"grpc_insecure_endpoint": "xos-core.cord.lab:50055",
             "grpc_secure_endpoint": "xos-core.cord.lab:50051",
-            "consul": None}
+            "config": '/opt/xos/config.yml'}
 
-    _help = '<hostname>:<port> to consul agent (default: %s)' % defs['consul']
+    _help = 'Path to the config file (default: %s)' % defs['config']
     parser.add_argument(
-        '-C', '--consul', dest='consul', action='store',
-        default=defs['consul'],
+        '-C', '--config', dest='config', action='store',
+        default=defs['config'],
         help=_help)
 
-    _help = ('gRPC insecure end-point to connect to. It can either be a direct'
-             'definition in the form of <hostname>:<port>, or it can be an'
-             'indirect definition in the form of @<service-name> where'
-             '<service-name> is the name of the grpc service as registered'
-             'in consul (example: @voltha-grpc). (default: %s'
+    _help = ('gRPC insecure end-point to connect to. It is a direct',
+             '. (default: %s'
              % defs['grpc_insecure_endpoint'])
     parser.add_argument('-G', '--grpc-insecure-endpoint',
                         dest='grpc_insecure_endpoint',
@@ -142,11 +166,8 @@ def parse_args():
                         default=defs["grpc_insecure_endpoint"],
                         help=_help)
 
-    _help = ('gRPC secure end-point to connect to. It can either be a direct'
-             'definition in the form of <hostname>:<port>, or it can be an'
-             'indirect definition in the form of @<service-name> where'
-             '<service-name> is the name of the grpc service as registered'
-             'in consul (example: @voltha-grpc). (default: %s'
+    _help = ('gRPC secure end-point to connect to. It is a direct',
+             '. (default: %s'
              % defs["grpc_secure_endpoint"])
     parser.add_argument('-S', '--grpc-secure-endpoint',
                         dest='grpc_secure_endpoint',
@@ -190,18 +211,27 @@ def parse_args():
     return args
 
 def setup_logging(args):
-    import logging
-    import structlog
+    import os
 
-    verbosity_adjust = (args.verbose or 0) - (args.quiet or 0)
-    logging.basicConfig()
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG - 10*verbosity_adjust)
+    if os.path.isfile(args.config):
+        from xosconfig import Config
+        from multistructlog import create_logger
+        Config.init(args.config, 'synchronizer-config-schema.yaml')
+        log = create_logger(Config().get('logging'))
+    else:
+        import logging
+        import structlog
 
-    def logger_factory():
-        return logger
+        verbosity_adjust = (args.verbose or 0) - (args.quiet or 0)
+        logging.basicConfig()
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG - 10 * verbosity_adjust)
 
-    structlog.configure(logger_factory=logger_factory)
+        def logger_factory():
+            return logger
+
+        structlog.configure(logger_factory=logger_factory)
+
 
 def coreclient_reconnect(client, reconnect_callback, *args, **kwargs):
     global coreapi

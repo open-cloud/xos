@@ -14,6 +14,10 @@
 # limitations under the License.
 
 import os
+from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 class ModelLoadClient(object):
     def __init__(self, api):
@@ -36,11 +40,20 @@ class ModelLoadClient(object):
 
         attic_dir = os.path.join(dir, "attic")
         if os.path.exists(attic_dir):
+            log.warn("Attics are deprecated, please use the legacy=True option in xProto")
             for fn in os.listdir(attic_dir):
                 if fn.endswith(".py"):
                     item = request.attics.add()
                     item.filename = fn
                     item.contents = open(os.path.join(attic_dir, fn)).read()
+
+        api_convenience_dir = os.path.join(dir, "convenience")
+        if os.path.exists(api_convenience_dir):
+            for fn in os.listdir(api_convenience_dir):
+                if fn.endswith(".py") and not "test" in fn:
+                    item = request.convenience_methods.add()
+                    item.filename = fn
+                    item.contents = open(os.path.join(api_convenience_dir, fn)).read()
 
         result = self.api.dynamicload.LoadModels(request)
 

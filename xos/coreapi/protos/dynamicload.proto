@@ -20,13 +20,23 @@ message AtticFile {
     string contents = 2;
 };
 
+message APIConvenienceFile {
+    string filename = 1;
+    string contents = 2;
+};
+
 message LoadModelsRequest {
     string name = 1;
     string version = 2;
     repeated Xproto xprotos = 3;
     repeated DeclFile decls = 4;
     repeated AtticFile attics = 5;
+    repeated APIConvenienceFile convenience_methods = 6;
 };
+
+message ListConvenienceMethodsReply {
+    repeated APIConvenienceFile convenience_methods = 1;
+}
 
 message LoadModelsReply {
     enum LoadModelsStatus {
@@ -69,6 +79,12 @@ service dynamicload {
   rpc GetLoadStatus(google.protobuf.Empty) returns (LoadStatusReply) {
         option (googleapi.http) = {
             get: "/xosapi/v1/dynamicload/load_status"
+        };
+  }
+  rpc GetConvenienceMethods(google.protobuf.Empty) returns (ListConvenienceMethodsReply) {
+        option (googleapi.http) = {
+            // NOTE do we need to expose this via rest? maybe for debug...
+            get: "/xosapi/v1/dynamicload/convenience_methods"
         };
   }
 };

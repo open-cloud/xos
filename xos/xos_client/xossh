@@ -19,21 +19,18 @@ current_client = None
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    defs = {"grpc_insecure_endpoint": "xos-core.cord.lab:50055",
-            "grpc_secure_endpoint": "xos-core.cord.lab:50051",
-            "consul": None}
+    defs = {"grpc_insecure_endpoint": "xos-core:50055",
+            "grpc_secure_endpoint": "xos-core:50051",
+            "config": '/opt/xos/config.yml'}
 
-    _help = '<hostname>:<port> to consul agent (default: %s)' % defs['consul']
+    _help = 'Path to the config file (default: %s)' % defs['config']
     parser.add_argument(
-        '-C', '--consul', dest='consul', action='store',
-        default=defs['consul'],
+        '-C', '--config', dest='config', action='store',
+        default=defs['config'],
         help=_help)
 
-    _help = ('gRPC insecure end-point to connect to. It can either be a direct'
-             'definition in the form of <hostname>:<port>, or it can be an'
-             'indirect definition in the form of @<service-name> where'
-             '<service-name> is the name of the grpc service as registered'
-             'in consul (example: @voltha-grpc). (default: %s'
+    _help = ('gRPC insecure end-point to connect to. It is a direct',
+             '. (default: %s'
              % defs['grpc_insecure_endpoint'])
     parser.add_argument('-G', '--grpc-insecure-endpoint',
                         dest='grpc_insecure_endpoint',
@@ -41,11 +38,8 @@ def parse_args():
                         default=defs["grpc_insecure_endpoint"],
                         help=_help)
 
-    _help = ('gRPC secure end-point to connect to. It can either be a direct'
-             'definition in the form of <hostname>:<port>, or it can be an'
-             'indirect definition in the form of @<service-name> where'
-             '<service-name> is the name of the grpc service as registered'
-             'in consul (example: @voltha-grpc). (default: %s'
+    _help = ('gRPC secure end-point to connect to. It is a direct',
+             '. (default: %s'
              % defs["grpc_secure_endpoint"])
     parser.add_argument('-S', '--grpc-secure-endpoint',
                         dest='grpc_secure_endpoint',

@@ -28,6 +28,8 @@ from importlib import import_module
 
 from xosutil.autodiscover_version import autodiscover_version_of_main
 from dynamicbuild import DynamicBuilder
+# NOTE/FIXME this file is loaded before Django, we can't import apihelper
+# from apihelper import XOSAPIHelperMixin, translate_exceptions
 
 class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
     def __init__(self, thread_pool, server):
@@ -115,3 +117,24 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
         except Exception, e:
             import traceback; traceback.print_exc()
             raise e
+
+    def GetConvenienceMethods(self, request, context):
+        # self.authenticate(context, required=True)
+        try:
+            builder = DynamicBuilder()
+            manifests = builder.get_manifests()
+
+            response = dynamicload_pb2.ListConvenienceMethodsReply()
+
+            for manifest in manifests:
+                for cm in manifest["convenience_methods"]:
+                    item = response.convenience_methods.add()
+                    item.filename = cm["filename"]
+                    item.contents = open(cm["path"]).read()
+            return response
+
+        except Exception, e:
+            import traceback; traceback.print_exc()
+            raise e
+
+

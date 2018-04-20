@@ -30,7 +30,6 @@ import os
 import signal
 import sys
 import time
-from xosconfig import Config
 from diag import update_diag
 from loadmodels import ModelLoadClient
 
@@ -230,7 +229,6 @@ def grpcapi_reconnect(client, reactor):
 
     # Restore the sigint handler
     signal.signal(signal.SIGINT, orig_sigint)
-
 
 def config_accessor_grpcapi():
     global orig_sigint

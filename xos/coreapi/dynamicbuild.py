@@ -36,6 +36,7 @@ class DynamicBuilder(object):
         self.coreapi_dir = os.path.join(base_dir, "coreapi")
         self.protos_dir = os.path.join(base_dir, "coreapi/protos")
         self.app_metadata_dir = os.path.join(base_dir, "xos")
+        self.convenience_methods_dir = os.path.join(base_dir, "xos_client/xosapi/convenience")
 
     def pre_validate_file(self, item):
         # someone might be trying to trick us into writing files outside the designated directory
@@ -174,7 +175,8 @@ class DynamicBuilder(object):
                             "dest_dir": os.path.join(self.services_dest_dir, request.name),
                             "xprotos": [],
                             "decls": [],
-                            "attics": []}
+                            "attics": [],
+                            "convenience_methods": []}
 
         if (state == "load"):
             for item in request.xprotos:
@@ -193,6 +195,14 @@ class DynamicBuilder(object):
                 for item in request.attics:
                     file(os.path.join(attic_dir, item.filename), "w").write(item.contents)
                     service_manifest["attics"].append({"filename": item.filename})
+
+            for item in request.convenience_methods:
+                save_path = os.path.join(self.convenience_methods_dir, item.filename)
+                file(save_path, "w").write(item.contents)
+                service_manifest["convenience_methods"].append({
+                    "filename": item.filename,
+                    "path": save_path
+                })
 
         return service_manifest
 
