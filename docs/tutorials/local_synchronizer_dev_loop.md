@@ -6,7 +6,7 @@ development loop. A synchronizer can be developed locally
 as long as:
 
 * The VNF independently executes somewhere that you can connect to
-from your local machine.
+  from your local machine.
 * The VNF does not require OpenStack be deployed as part of the POD.
 
 > Note: The following assumes: (1) you have a local scenario up and
