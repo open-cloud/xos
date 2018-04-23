@@ -35,12 +35,17 @@ c=grpc_client.SecureClient("xos-core.cord.lab", username="padmin@vicci.org", pas
 u=c.xos_orm.User.objects.get(id=1)
 """
 
-import functools
 import os
 import sys
 import time
 
 convenience_wrappers = {}
+
+class ORMGenericContentNotFoundException(Exception):
+    pass
+
+class ORMGenericObjectNotFoundException(Exception):
+    pass
 
 class ORMWrapper(object):
     """ Wraps a protobuf object to provide ORM features """
@@ -525,8 +530,19 @@ class ORMStub(object):
                        self.reverse_content_type_map[model_name] = ct
 
     def genericForeignKeyResolve(self, content_type_id, id):
+        if content_type_id.endswith("_decl"):
+            content_type_id = content_type_id[:-5]
+
+        if content_type_id not in self.content_type_map:
+            raise ORMGenericContentNotFoundException("Content_type %s not found in self.content_type_map" % content_type_id)
+
         model_name = self.content_type_map[content_type_id]
+
         model = getattr(self, model_name)
+        objs = model.objects.filter(id=id)
+        if not objs:
+            raise ORMGenericObjectNotFoundException("Object %s of model %s was not found" % (id,model_name))
+
         return model.objects.get(id=id)
 
     def add_default_metadata(self, metadata):

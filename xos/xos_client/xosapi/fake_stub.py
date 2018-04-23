@@ -275,6 +275,27 @@ class FakeItemList(object):
     def __init__(self, items):
         self.items = items
 
+class FakeElement(object):
+    EQUAL="equal"
+
+    def __init__(self):
+        pass
+
+class FakeElements(object):
+    def __init__(self):
+        self.items = []
+
+    def add(self):
+        el=FakeElement()
+        self.items.append(el)
+        return el
+
+class FakeQuery(object):
+    DEFAULT="default"
+
+    def __init__(self):
+        self.elements = FakeElements()
+
 class FakeStub(object):
     def __init__(self):
         self.id_counter = 1
@@ -285,6 +306,7 @@ class FakeStub(object):
             setattr(self, "Create%s" % name, functools.partial(self.create, name))
             setattr(self, "Delete%s" % name, functools.partial(self.delete, name))
             setattr(self, "Update%s" % name, functools.partial(self.update, name))
+            setattr(self, "Filter%s" % name, functools.partial(self.filter, name))
 
 
     def make_key(self, name, id):
@@ -300,6 +322,22 @@ class FakeStub(object):
             (this_classname, id) = k.split(":")
             if this_classname == classname:
                     items.append(v)
+        return FakeItemList(items)
+
+    def filter(self, classname, query, metadata=None):
+        items = []
+        for (k,v) in self.objs.items():
+            (this_classname, id) = k.split(":")
+            if this_classname != classname:
+                continue
+            for q in query.elements.items:
+                iValue = getattr(q, "iValue", None)
+                if (iValue is not None) and getattr(v,q.name)!=iValue:
+                    continue
+                sValue = getattr(q, "sValue", None)
+                if (sValue is not None) and getattr(v, q.name) != sValue:
+                    continue
+                items.append(v)
         return FakeItemList(items)
 
     def create(self, classname, obj, metadata=None):
@@ -329,6 +367,7 @@ class FakeStub(object):
 class FakeCommonProtos(object):
     def __init__(self):
         self.ID = ID
+        self.Query = FakeQuery
 
 class FakeProtos(object):
     def __init__(self):

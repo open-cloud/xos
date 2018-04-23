@@ -328,6 +328,47 @@ class TestORM(unittest.TestCase):
         self.assertNotEqual(tag.content_object, None)
         self.assertEqual(tag.content_object.id, site.id)
 
+    def test_generic_foreign_key_get_decl(self):
+        orm = self.make_coreapi()
+        service = orm.Service(name="myservice")
+        service.save()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        tag = orm.Tag(service=service, name="mytag", value="somevalue", content_type=site.self_content_type_id + "_decl", object_id=site.id)
+        tag.save()
+        self.assertTrue(tag.id > 0)
+        self.assertNotEqual(tag.content_object, None)
+        self.assertEqual(tag.content_object.id, site.id)
+
+    def test_generic_foreign_key_get_bad_contenttype(self):
+        orm = self.make_coreapi()
+        service = orm.Service(name="myservice")
+        service.save()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        tag = orm.Tag(service=service, name="mytag", value="somevalue", content_type="does_not_exist", object_id=site.id)
+        tag.save()
+        self.assertTrue(tag.id > 0)
+        with self.assertRaises(Exception) as e:
+            obj = tag.content_object
+        self.assertEqual(e.exception.message, "Content_type does_not_exist not found in self.content_type_map")
+
+    def test_generic_foreign_key_get_bad_id(self):
+        orm = self.make_coreapi()
+        service = orm.Service(name="myservice")
+        service.save()
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+        tag = orm.Tag(service=service, name="mytag", value="somevalue", content_type=site.self_content_type_id, object_id=4567)
+        tag.save()
+        self.assertTrue(tag.id > 0)
+        with self.assertRaises(Exception) as e:
+            obj = tag.content_object
+        self.assertEqual(e.exception.message, "Object 4567 of model Site was not found")
+
     def test_generic_foreign_key_set(self):
         orm = self.make_coreapi()
         service = orm.Service(name="myservice")

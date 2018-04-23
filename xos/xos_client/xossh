@@ -8,7 +8,7 @@ import functools
 import os, sys
 import atexit
 import readline
-import rlcompleter
+import traceback
 
 from twisted.internet import reactor
 from xosapi.version import __version__
@@ -245,8 +245,8 @@ def do_xossh_prompt(client):
                     # Do it
                     code = compile(command, "<stdin>", "single")
                     exec code
-                except Exception, err:
-                    print err
+                except Exception:
+                    traceback.print_exc()
 
             # check to see if login() was used
             if client.session_change:
