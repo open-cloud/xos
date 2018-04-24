@@ -143,8 +143,8 @@ class XOSBase(XOSBase_decl):
             feedback_changed = [field for field in self.changed_fields if field in self.feedback_state_fields]
 
             if len(feedback_changed) > 0 and caller_kind != "synchronizer":
-                log.error('A non Synchronizer is trying to update fields marked as feedback_state', model=self._dict, feedback_state_fields=self.feedback_state_fields, caller_kind=caller_kind)
-                raise XOSPermissionDenied('A non Synchronizer is trying to update fields marked as feedback_state')
+                log.error('A non Synchronizer is trying to update fields marked as feedback_state', model=self._dict, feedback_state_fields=self.feedback_state_fields, caller_kind=caller_kind, feedback_changed=feedback_changed)
+                raise XOSPermissionDenied('A non Synchronizer is trying to update fields marked as feedback_state: %s' % feedback_changed)
 
         # SMBAKER: if an object is trying to delete itself, or if the observer
         # is updating an object's backend_* fields, then let it slip past the
