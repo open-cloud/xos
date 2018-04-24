@@ -612,7 +612,7 @@ class XOSAPIHelperMixin(object):
             log.exception("Exception in apihelper.filter")
             raise
 
-    def authenticate(self, context, required=False):
+    def authenticate(self, context, required=True):
         for (k, v) in context.invocation_metadata():
             if (k.lower() == "authorization"):
                 (method, auth) = v.split(" ", 1)
@@ -633,10 +633,10 @@ class XOSAPIHelperMixin(object):
                     raise XOSPermissionDenied(
                         "failed to authenticate token %s" % v)
                 user = User.objects.get(id=id)
-                print "authenticated sessionid %s as %s" % (v, user)
+                log.info("authenticated sessionid %s as %s" % (v, user))
                 return user
 
         if required:
-            raise XOSPermissionDenied("This API requires authentication")
+            raise XOSNotAuthenticated("This API requires authentication")
 
         return None
