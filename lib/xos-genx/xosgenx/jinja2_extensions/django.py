@@ -79,7 +79,7 @@ def xproto_django_link_type(f):
             return 'GenericRelation'
 
 def map_xproto_to_django(f):
-    allowed_keys=['help_text','default','max_length','modifier','blank','choices','db_index','null','editable','on_delete','verbose_name', 'auto_now_add']
+    allowed_keys=['help_text','default','max_length','modifier','blank','choices','db_index','null','editable','on_delete','verbose_name', 'auto_now_add', 'unique']
 
     m = {'modifier':{'optional':True, 'required':False, '_target':'null'}}
     out = {}
