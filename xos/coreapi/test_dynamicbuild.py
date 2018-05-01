@@ -86,7 +86,8 @@ message EmbeddedImage (XOSBase){
 
         self.example_request = DynamicLoadRequest(name = "exampleservice",
                                                   version = "1",
-                                                  xprotos = [self.example_xproto_item])
+                                                  xprotos = [self.example_xproto_item],
+                                                  convenience_methods = [])
 
         self.example_unload_request = DynamicUnloadRequest(name = "exampleservice",
                                                   version = "1")
