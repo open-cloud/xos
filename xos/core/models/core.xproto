@@ -92,10 +92,10 @@ policy grant_policy < ctx.user.is_admin
 
 message Privilege::grant_policy (XOSBase) {
      required int32 accessor_id = 1 [null = False, blank=False];
-     required string accessor_type = 2 [null = False, max_length=1024];
-     required int32 controller_id = 3 [null = True];
+     required string accessor_type = 2 [null = False, max_length=1024, blank = False];
+     optional int32 controller_id = 3 [null = True, blank = True];
      required int32 object_id = 4 [null = False, blank=False];
-     required string object_type = 5 [null = False, max_length=1024];
+     required string object_type = 5 [null = False, max_length=1024, blank = False];
      required string permission = 6 [null = False, default = "all", max_length=1024, tosca_key=True];
      required string granted = 7 [content_type = "date", auto_now_add = True, max_length=1024];
      required string expires = 8 [content_type = "date", null = True, max_length=1024];
@@ -262,15 +262,15 @@ message Diag (XOSBase) {
 message Flavor (XOSBase) {
      required string name = 1 [max_length = 32, content_type = "stripped", blank = False, help_text = "name of this flavor, as displayed to users", null = False, db_index = False, unique = True];
      optional string description = 2 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
-     required string flavor = 3 [max_length = 32, content_type = "stripped", blank = False, help_text = "flavor string used to configure deployments", null = False, db_index = False];
+     required string flavor = 3 [max_length = 32, content_type = "stripped", blank = True, help_text = "flavor string used to configure deployments", null = False, db_index = False];
 }
 
 
 message Image (XOSBase) {
      required string name = 1 [db_index = False, max_length = 256, null = False, content_type = "stripped", blank = False, unique = True];
      required string kind = 2 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'))", max_length = 30, blank = False, null = False, db_index = False];
-     required string disk_format = 3 [db_index = False, max_length = 256, null = False, content_type = "stripped", blank = False];
-     required string container_format = 4 [db_index = False, max_length = 256, null = False, content_type = "stripped", blank = False];
+     optional string disk_format = 3 [db_index = False, max_length = 256, null = True, content_type = "stripped", blank = True];
+     optional string container_format = 4 [db_index = False, max_length = 256, null = True, content_type = "stripped", blank = True];
      optional string path = 5 [max_length = 256, content_type = "stripped", blank = True, help_text = "Path to image on local disk", null = True, db_index = False];
      optional string tag = 6 [max_length = 256, content_type = "stripped", blank = True, help_text = "For Docker Images, tag of image", null = True, db_index = False];
 }
@@ -341,7 +341,7 @@ message NetworkParameter (XOSBase) {
 
 message NetworkParameterType (XOSBase) {
      required string name = 1 [help_text = "The name of this parameter", max_length = 128, null = False, db_index = True, blank = False, unique = True];
-     required string description = 2 [db_index = False, max_length = 1024, null = False, blank = False];
+     required string description = 2 [db_index = False, max_length = 1024, null = False, blank = True];
 }
 
 policy network_slice_validator < (obj.slice in obj.network.permitted_slices.all()) | (obj.slice = obj.network.owner) | obj.network.permit_all_slices >
@@ -371,10 +371,10 @@ policy node_policy < *site_policy(site_deployment.site) >
 message Node::node_policy (XOSBase) {
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the Node", null = False, db_index = False, unique = True];
      required manytoone site_deployment->SiteDeployment:nodes = 2 [db_index = True, null = False, blank = False];
-     required string bridgeId = 3 [max_length = 200, content_type = "stripped", blank = False, help_text = "Bridge Id", null = False, db_index = False];
-     required string dataPlaneIntf = 4 [max_length = 200, content_type = "stripped", blank = False, help_text = "Dataplane Interface", null = False, db_index = False];
-     required string dataPlaneIp = 5 [max_length = 200, content_type = "stripped", blank = True, help_text = "Dataplane Ip", null = True, db_index = False];
-     required string hostManagementIface = 6 [max_length = 200, content_type = "stripped", blank = True, help_text = "Host Management Interface", null = True, db_index = False];
+     optional string bridgeId = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "Bridge Id", null = True, db_index = False];
+     optional string dataPlaneIntf = 4 [max_length = 200, content_type = "stripped", blank = True, help_text = "Dataplane Interface", null = True, db_index = False];
+     optional string dataPlaneIp = 5 [max_length = 200, content_type = "stripped", blank = True, help_text = "Dataplane Ip", null = True, db_index = False];
+     optional string hostManagementIface = 6 [max_length = 200, content_type = "stripped", blank = True, help_text = "Host Management Interface", null = True, db_index = False];
 }
 message NodeLabel (XOSBase) {
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "label name", null = False, db_index = False, unique = True];

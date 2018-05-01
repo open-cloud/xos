@@ -156,6 +156,14 @@ class XOSBase(XOSBase_decl):
                 if not (field in ["backend_register", "backend_status", "deleted", "enacted", "updated"]):
                     ignore_composite_key_check=False
 
+        # Django only enforces field.blank=False during form validation. We'd like it to be enforced when saving the
+        # model.
+        for field in self._meta.fields:
+            if field.get_internal_type() == "CharField":
+                if getattr(field, "blank", None)==False:
+                    if getattr(self, field.name) == "":
+                        raise XOSValidationError("Blank is not allowed on field %s" % field.name)
+
         if (caller_kind!="synchronizer") or always_update_timestamp:
             self.updated = timezone.now()
         else:
