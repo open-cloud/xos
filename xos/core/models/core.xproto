@@ -27,7 +27,7 @@ message XOSBase {
      optional int32 policy_code = 16 [default = 0, feedback_state = True];
      required string leaf_model_name = 17 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
      required bool backend_need_delete_policy = 18 [default = False, help_text = "True if delete model_policy must be run before object can be reaped", blank = True];
-     required bool xos_managed = 19 [default = False, help_text = "True if xos is responsible for creating/deleting this object", blank = True];
+     required bool xos_managed = 19 [default = True, help_text = "True if xos is responsible for creating/deleting this object", blank = True];
      optional string backend_handle = 20 [max_length = 1024, feedback_state = True, blank=True, null=True, help_text = "Handle used by the backend to track this object"];
 }
 
