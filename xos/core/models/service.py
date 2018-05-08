@@ -36,5 +36,21 @@ class Service(Service_decl):
                 nets.append(net)
         return nets
 
+    @property
+    def provider_services(self):
+        svcs = []
+        service_deps = self.subscribed_dependencies.all()
+        for dep in service_deps:
+            svcs.append(dep.provider_service)
+        return svcs
+
+    @property
+    def subscriber_services(self):
+        svcs = []
+        service_deps = self.provided_dependencies.all()
+        for dep in service_deps:
+            svcs.append(dep.subscriber_service)
+        return svcs
+
 
 
