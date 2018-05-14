@@ -69,19 +69,24 @@ class XOSClient(chameleon_client.GrpcClient):
         convenience_methods_dir = "/usr/local/lib/python2.7/dist-packages/xosapi/convenience/"
 
         try:
-            cms = self.dynamicload.GetConvenienceMethods(Empty())
+            response = self.dynamicload.GetConvenienceMethods(Empty())
+
+            if response:
+                print "Loading convenience methods: %s" % [m.filename for m in response.convenience_methods]
+
+                for cm in response.convenience_methods:
+                    print "Saving %s" % cm.filename
+                    save_path = os.path.join(convenience_methods_dir, cm.filename)
+                    file(save_path, "w").write(cm.contents)
+            else:
+                print 'Cannot load convenience methods, restarting the synchronzier'
+                os.execv(sys.executable, ['python'] + sys.argv)
+
         except grpc._channel._Rendezvous, e:
             code = e.code()
             if code == grpc.StatusCode.UNAVAILABLE:
                 # NOTE if the core is not available, restart the synchronizer
                 os.execv(sys.executable, ['python'] + sys.argv)
-        print "Loading convenience methods: %s" % [m.filename for m in cms.convenience_methods]
-
-        for cm in cms.convenience_methods:
-            print "Saving %s" % cm.filename
-            save_path = os.path.join(convenience_methods_dir, cm.filename)
-            file(save_path, "w").write(cm.contents)
-
 
     def reconnected(self):
 
