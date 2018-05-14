@@ -57,6 +57,8 @@ map:
     type: str
   steps_dir:
     type: str
+  event_steps_dir:
+    type: str
   pull_steps_dir:
     type: str
   sys_dir:
@@ -72,6 +74,15 @@ map:
       username:
         type: str
       password:
+        type: str
+      kind:
+        type: str
+        required: False
+  event_bus:
+    type: map
+    required: False
+    map:
+      endpoint:
         type: str
       kind:
         type: str

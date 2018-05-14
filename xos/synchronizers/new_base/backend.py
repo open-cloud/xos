@@ -23,6 +23,7 @@ import time
 from synchronizers.new_base.syncstep import SyncStep
 from synchronizers.new_base.event_loop import XOSObserver
 from synchronizers.new_base.model_policy_loop import XOSPolicyEngine
+from synchronizers.new_base.event_engine import XOSEventEngine
 from synchronizers.new_base.modelaccessor import *
 
 from xosconfig import Config
@@ -100,6 +101,7 @@ class Backend:
         observer_thread = None
         watcher_thread = None
         model_policy_thread = None
+        event_engine = None
 
         model_accessor.update_diag(sync_start=time.time(), backend_status="Synchronizer Start")
 
@@ -133,6 +135,14 @@ class Backend:
             self.log.info(""
                           "Skipping observer and watcher threads due to no steps dir.")
 
+        event_steps_dir = Config.get("event_steps_dir")
+        if event_steps_dir:
+            event_engine = XOSEventEngine()
+            event_engine.load_event_step_modules(event_steps_dir)
+            event_engine.start()
+        else:
+            self.log.info("Skipping event engine due to no event_steps dir.")
+
         # start model policies thread
         policies_dir = Config.get("model_policies_dir")
         if policies_dir:
@@ -142,8 +152,8 @@ class Backend:
         else:
             self.log.info("Skipping model policies thread due to no model_policies dir.")
 
-        if (not observer_thread) and (not watcher_thread) and (not model_policy_thread):
-            self.log.info("No sync steps and no policies. Synchronizer exiting.")
+        if (not observer_thread) and (not watcher_thread) and (not model_policy_thread) and (not event_engine):
+            self.log.info("No sync steps, no policies, and no event steps. Synchronizer exiting.")
             # the caller will exit with status 0
             return
 
