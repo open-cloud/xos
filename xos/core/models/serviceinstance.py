@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from django.db.models.fields import NOT_PROVIDED
-from xos.exceptions import *
+from xos.exceptions import XOSValidationError, XOSMissingField, XOSDuplicateKey
 from serviceinstance_decl import *
 
 class ServiceInstance(ServiceInstance_decl):
@@ -39,7 +39,7 @@ class ServiceInstance(ServiceInstance_decl):
                 raise XOSDuplicateKey("service_specific_id %s already exists" % self.service_specific_id, fields={
                                       "service_specific_id": "duplicate key"})
 
-    def save(self, *args, **kwargs):
+    def set_owner(self):
         if hasattr(self, "OWNER_CLASS_NAME"):
             owner_class = self.get_model_class_by_name(self.OWNER_CLASS_NAME)
             if not owner_class:
@@ -69,6 +69,9 @@ class ServiceInstance(ServiceInstance_decl):
             if (not self.owner_id) and (self._meta.get_field("owner").default) and \
                     (self._meta.get_field("owner").default!=NOT_PROVIDED):
                 self.owner = Service.objects.get(id = self._meta.get_field("owner").default)
+
+    def save(self, *args, **kwargs):
+        self.set_owner()
 
         # If the model has a Creator and it's not specified, then attempt to default to the Caller. Caller is
         # automatically filled in my the API layer. This code was typically used by ServiceInstances that lead to
