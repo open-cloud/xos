@@ -38,9 +38,11 @@ class XOSKafkaThread(threading.Thread):
         self.bootstrap_servers = bootstrap_servers
         self.daemon = True
 
-    def run(self):
+    def create_kafka_consumer(self):
         from kafka import KafkaConsumer
+        return KafkaConsumer(bootstrap_servers=self.bootstrap_servers)
 
+    def run(self):
         if (not self.step.topics) and (not self.step.pattern):
             raise Exception("Neither topics nor pattern is defined for step %s" % self.step.__name__)
 
@@ -50,7 +52,7 @@ class XOSKafkaThread(threading.Thread):
 
         while True:
             try:
-                self.consumer = KafkaConsumer(bootstrap_servers=self.bootstrap_servers)
+                self.consumer = self.create_kafka_consumer()
                 if self.step.topics:
                     self.consumer.subscribe(topics=self.step.topics)
                 elif self.step.pattern:

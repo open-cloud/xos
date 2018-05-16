@@ -12,26 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from synchronizers.new_base.eventstep import EventStep
+from mock_modelaccessor import *
 
-name: test-synchronizer
-accessor:
-  username: xosadmin@opencord.org
-  password: "sample"
-  kind: testframework
-event_bus:
-  endpoint: "fake"
-  kind: kafka
-logging:
-  version: 1
-  handlers:
-    console:
-      class: logging.StreamHandler
-  loggers:
-    '':
-      handlers:
-          - console
-      level: DEBUG
-dependency_graph: "tests/model-deps"
-steps_dir: "tests/steps"
-pull_steps_dir: "tests/pull_steps"
-event_steps_dir: "tests/event_steps"
+class TestEventStep(EventStep):
+    technology = "kafka"
+    topics = ["sometopic"]
+    pattern = None
+
+    def __init__(self, log, *args, **kwargs):
+        super(TestEventStep, self).__init__(log, *args, **kwargs)
+
+    def process_event(self, event):
+        print "received an event", event
+
