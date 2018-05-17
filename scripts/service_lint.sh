@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2017-present Open Networking Foundation
+# Copyright 2018-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# USAGE
-# from the XOS folder: repo forall -c "bash $PWD/scripts/get_current_gerrit_ids.sh"
+# service_lint.sh
+# Performs various linting tasks on a service directory
 
-CHANGE_ID=$(git log -1 | grep Change-Id | cut -c16-)
+set -u -o pipefail
 
-CHANGE_NUMBER=$(curl -s https://gerrit.opencord.org/changes/$CHANGE_ID | tail -n +2 | jq ._number)
+LINE_MAX=99
 
-echo $(basename `pwd`):$CHANGE_NUMBER
+echo "Checking python code with flake8: $(flake8 --version)"
+flake8 --max-line-length=${LINE_MAX}
+
+# NOTE: not checking helm templates!
+echo -n "Checking YAML with yamllint: "; yamllint --version
+yamllint --strict -d "{line-length: {max: ${LINE_MAX}}}" helm-charts/*/*.yaml
+
+echo "Checking helm charts with helm: $(helm version --client)"
+helm lint --strict helm-charts/*

@@ -1,0 +1,17 @@
+Jinja2==2.10
+Pattern==2.6
+PyYAML==3.12
+astunparse==1.5.0
+colorama==0.3.9
+grpcio-tools==1.12.0
+grpcio==1.12.0
+ipaddress==1.0.19
+kafka==1.3.5
+multistructlog==1.5
+netaddr==0.7.19
+networkx==1.11
+nose2==0.7.4
+plyxproto==3.0.1
+pykwalify==1.6.1
+requests-mock==1.5.0
+tosca-parser==0.9.0
