@@ -633,7 +633,7 @@ def import_convenience_methods():
                 log.debug("Loading: %s" % file)
                 imp.load_source(file[:-3], pathname)
             except Exception, e:
-                log.error("Cannot import api convenience method for: %s, %s", (file[:-3], pathname))
+                log.exception("Cannot import api convenience method for: %s, %s" % (file[:-3], pathname))
 
 
 # import convenience.addresspool
