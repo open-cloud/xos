@@ -54,7 +54,7 @@ class MockObjectList:
     def get(self, **kwargs):
         objs = self.filter(**kwargs)
         if not objs:
-            raise Exception("No objects matching %s" % str(kwargs))
+            raise IndexError("No objects matching %s" % str(kwargs))
         return objs[0]
 
 class MockObjectStore(MockObjectList):
