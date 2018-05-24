@@ -46,6 +46,8 @@ class TestWrappers(unittest.TestCase):
             import xosapi.orm
             from fake_stub import FakeStub, FakeObj, FakeProtos
 
+            xosapi.orm.import_convenience_methods()
+
             stub = FakeStub()
             api = xosapi.orm.ORMStub(stub=stub, package_name = "xos", protos=FakeProtos(), empty = FakeObj, enable_backoff = False)
             return api
