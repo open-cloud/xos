@@ -38,7 +38,7 @@ class {{ m.name }}{{ xproto_base_def(m.name, m.bases) }}:
   {%- endfor %}
 
   # Meta
-  {%- set uniques = xproto_field_graph_components(m.fields) %}
+  {%- set uniques = xproto_field_graph_components(m.fields, m) %}
   {%- if uniques %}
   class Meta:
       unique_together = {{ xproto_tuplify(uniques) }}

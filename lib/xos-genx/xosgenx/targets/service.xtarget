@@ -56,7 +56,7 @@ class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases, legacy_tag
       app_label = {{ xproto_first_non_empty([m.options.app_label, options.app_label, options.name, "Set an app label in your xproto!"]) | lower}}
       # name = {{ xproto_first_non_empty([m.options.name, options.name, "Set a name in your xproto!"]) }}
       verbose_name = "{{ xproto_unquote(xproto_first_non_empty([m.options.verbose_name, m.name])) }}"
-  {%- set uniques = xproto_field_graph_components(m.fields) %}
+  {%- set uniques = xproto_field_graph_components(m.fields, m) %}
   {%- if uniques %}
       unique_together = {{ xproto_tuplify(uniques) }}
   {%- endif %}

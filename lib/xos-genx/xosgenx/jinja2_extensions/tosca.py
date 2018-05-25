@@ -33,11 +33,11 @@ def xproto_tosca_field_type(type):
     else:
         return type
 
-def xproto_fields_to_tosca_keys(fields):
+def xproto_fields_to_tosca_keys(fields, m):
     keys = []
 
     # look for one_of keys
-    _one_of = xproto_field_graph_components(fields, 'tosca_key_one_of')
+    _one_of = xproto_field_graph_components(fields, m, 'tosca_key_one_of')
     one_of = [list(i) for i in _one_of]
 
     # look for explicit keys

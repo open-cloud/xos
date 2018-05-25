@@ -176,7 +176,7 @@ def xproto_tuplify(nested_list_or_set):
     else:
         return tuple([xproto_tuplify(i) for i in nested_list_or_set])
 
-def xproto_field_graph_components(fields, tag='unique_with'):
+def xproto_field_graph_components(fields, model, tag='unique_with'):
     def find_components(graph):
         pending = set(graph.keys())
         components = []
@@ -188,10 +188,10 @@ def xproto_field_graph_components(fields, tag='unique_with'):
             while front:
                 node = front.pop()
                 neighbours = graph[node]
-                neighbours-=component # These we have already visited
+                neighbours -= component  # These we have already visited
                 front |= neighbours
 
-                pending-=neighbours
+                pending -= neighbours
                 component |= neighbours
             
             components.append(component)
@@ -208,15 +208,14 @@ def xproto_field_graph_components(fields, tag='unique_with'):
 
             for uf in tagged_fields:
                 if uf not in field_names:
-                    raise FieldNotFound('Field %s not found'%uf)
+                    raise FieldNotFound('Field "%s" not found in model "%s", referenced from field "%s" by option "%s"' % (uf, model['name'], f['name'], tag))
 
-                field_graph.setdefault(f['name'],set()).add(uf)
-                field_graph.setdefault(uf,set()).add(f['name'])
+                field_graph.setdefault(f['name'], set()).add(uf)
+                field_graph.setdefault(uf, set()).add(f['name'])
         except KeyError:
             pass
 
-    components = find_components(field_graph)
-    return components
+    return find_components(field_graph)
 
 def xproto_api_opts(field):
     options = []

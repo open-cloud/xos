@@ -57,7 +57,7 @@ class XProtoToscaKeyTest(unittest.TestCase):
         self.target_tosca_keys = XProtoTestHelpers.write_tmp_target(
             """
             {%- for m in proto.messages %}
-                {{ xproto_fields_to_tosca_keys(m.fields) }}
+                {{ xproto_fields_to_tosca_keys(m.fields, m) }}
             {% endfor -%}
             """)
 
