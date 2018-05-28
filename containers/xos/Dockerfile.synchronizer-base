@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 # xosproject/xos-synchronizer-base
 FROM xosproject/xos-client:candidate
 
@@ -22,6 +20,9 @@ COPY xos/xos/logger.py /opt/xos/xos/logger.py
 COPY xos/xos/xml_util.py /opt/xos/xos/xml_util.py
 COPY xos/xos/__init__.py /opt/xos/xos/__init__.py
 COPY xos/synchronizers/__init__.py /opt/xos/synchronizers/__init__.py
+
+# Copy over ansible hosts
+COPY containers/xos/ansible-hosts /etc/ansible/hosts
 
 # Label image
 ARG org_label_schema_schema_version=1.0
@@ -45,6 +46,3 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.opencord.component.chameleon.version=$org_opencord_component_chameleon_version \
       org.opencord.component.chameleon.vcs-url=$org_opencord_component_chameleon_vcs_url \
       org.opencord.component.chameleon.vcs-ref=$org_opencord_component_chameleon_vcs_ref
-
-ENTRYPOINT ["bash"]
-

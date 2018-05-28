@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 # xosproject/xos-client
 FROM xosproject/xos-libraries:candidate
 
@@ -25,8 +23,6 @@ COPY VERSION tmp/xos_client
 
 # Install chameleon
 COPY containers/xos/tmp.chameleon /tmp/xos_client/xosapi/chameleon
-
-#ENV HOME /root
 #WORKDIR /opt/xos
 
 # install the client library and xossh
@@ -56,4 +52,4 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.opencord.component.chameleon.vcs-ref=$org_opencord_component_chameleon_vcs_ref
 
 
-ENTRYPOINT ["xossh"]
+CMD ["xossh"]

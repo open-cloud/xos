@@ -27,19 +27,9 @@ RUN apt-get update && apt-get install -y \
     python-pip \
     software-properties-common \
     sshpass \
- && apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 \
-    --recv-keys 46095ACC8548582C1A2699A9D27D666CD88E42B4 \
- && echo "deb https://artifacts.elastic.co/packages/6.x/apt stable main" | \
-    tee -a /etc/apt/sources.list.d/elastic-6.x.list \
- && apt-get update \
- && apt-get install -y filebeat \
- && update-rc.d filebeat defaults 95 10 \
  && rm -rf /var/lib/apt/lists/* \
  && mkdir /var/xos \
  && pip freeze > /var/xos/pip_freeze_apt_`date -u +%Y%m%dT%H%M%S`
-
-# Configure filebeat to collect json data
-COPY filebeat.yml /etc/filebeat/filebeat.yml
 
 # Install python packages with pip
 # Upgrade methodology - pip_requested.txt is the manually generated list of pip
@@ -51,9 +41,6 @@ COPY pip_requirements.txt /tmp/pip_requirements.txt
 RUN pip install --no-deps -U -I pip==9.0.3 setuptools==39.0.1 requests==2.18.4 \
  && pip install --no-deps -r /tmp/pip_requirements.txt \
  && pip freeze > /var/xos/pip_freeze_pip_up_`date -u +%Y%m%dT%H%M%S`
-
-# Copy over ansible hosts
-COPY ansible-hosts /etc/ansible/hosts
 
 # Label image
 ARG org_label_schema_schema_version=1.0
