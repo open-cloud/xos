@@ -381,11 +381,9 @@ message NodeLabel (XOSBase) {
      required manytomany node->Node/NodeLabel_node:nodelabels = 2 [db_index = False, blank = True];
 }
 
-policy port_validator < (obj.instance.slice in obj.network.permitted_slices.all()) | (obj.instance.slice = obj.network.owner) | obj.network.permit_all_slices >
 policy port_policy < *instance_policy(instance) & *network_policy(network) >
 
 message Port::port_policy (XOSBase) {
-     option validators = "port_validator:Slice is not allowed to connect to network";
      required manytoone network->Network:links = 1 [db_index = True, null = False, blank = False, unique_with = "instance"];
      optional manytoone instance->Instance:ports = 2 [db_index = True, null = True, blank = True];
      optional string ip = 3 [max_length = 39, content_type = "ip", blank = True, help_text = "Instance ip address", null = True, db_index = False];
