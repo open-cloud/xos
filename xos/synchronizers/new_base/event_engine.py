@@ -20,6 +20,7 @@ import threading
 import time
 from xosconfig import Config
 from multistructlog import create_logger
+from kafka.errors import NoBrokersAvailable
 
 log = create_logger(Config().get('logging'))
 
@@ -69,6 +70,9 @@ class XOSKafkaThread(threading.Thread):
                         self.step(log=log).process_event(msg)
                     except:
                         log.exception("Exception in event step", msg=msg, step=self.step.__name__)
+            except NoBrokersAvailable:
+                log.warning("No brokers available on %s" % self.bootstrap_servers)
+                time.sleep(20)
             except:
                 # Maybe Kafka has not started yet. Log the exception and try again in a second.
                 log.exception("Exception in kafka loop")
