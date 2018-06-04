@@ -87,10 +87,11 @@ class Backend:
                     # make sure 'c' is a descendent of SyncStep and has a
                     # provides field (this eliminates the abstract base classes
                     # since they don't have a provides)
-                    
+
                     if inspect.isclass(c):
-                        base_names = [b.__name__ for b in c.__bases__]
-                        if ('SyncStep' in base_names or 'OpenStackSyncStep' in base_names or 'SyncInstanceUsingAnsible' in base_names) and (hasattr(c,"provides") or hasattr(c,"observes")) and (c not in sync_steps):
+                        bases = inspect.getmro(c)
+                        base_names = [b.__name__ for b in bases]
+                        if ('SyncStep' in base_names) and (hasattr(c,"provides") or hasattr(c,"observes")) and (c not in sync_steps):
                             sync_steps.append(c)
 
         self.log.info("Loaded sync steps", steps = sync_steps)
