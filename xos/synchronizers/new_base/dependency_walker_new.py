@@ -37,7 +37,10 @@ log = create_logger(Config().get('logging'))
 
 missing_links = {}
 
-dep_data = open(Config.get("dependency_graph")).read()
+if Config.get("dependency_graph"):
+    dep_data = open(Config.get("dependency_graph")).read()
+else:
+    dep_data = '{}'
 
 dependencies = json.loads(dep_data)
 dependencies = {k:[item[0] for item in items] for k,items in dependencies.items()}

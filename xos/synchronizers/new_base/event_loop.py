@@ -98,11 +98,14 @@ class XOSObserver:
         self.event_cond.release()
 
     def load_dependency_graph(self):
-        dep_path = Config.get("dependency_graph")
-        self.log.info('Loading model dependency graph', path=dep_path)
 
         try:
-            dep_graph_str = open(dep_path).read()
+            if Config.get("dependency_graph"):
+                self.log.info('Loading model dependency graph', path=Config.get("dependency_graph"))
+                dep_graph_str = open(Config.get("dependency_graph")).read()
+            else:
+                self.log.debug('Using defualt model dependency graph', graph={})
+                dep_graph_str = '{}'
 
             # joint_dependencies is of the form { Model1 -> [(Model2, src_port, dst_port), ...] }
             # src_port is the field that accesses Model2 from Model1

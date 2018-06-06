@@ -50,7 +50,7 @@ DEFAULT_VALUES = {
     },
     'keep_temp_files': False,
     'enable_watchers': False,
-    'dependency_graph': '/opt/xos/model-deps',
+    'dependency_graph': None,
     'error_map_path': '/opt/xos/error_map.txt',
     'feefie': {
         'client_user': 'pl'
