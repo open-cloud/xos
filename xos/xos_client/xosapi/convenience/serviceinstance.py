@@ -13,7 +13,10 @@
 
 from xosapi.orm import ORMWrapper, register_convenience_wrapper
 
-import logging as log
+from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 class ORMWrapperServiceInstance(ORMWrapper):
 

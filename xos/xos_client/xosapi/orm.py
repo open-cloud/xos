@@ -39,7 +39,10 @@ import os
 import sys
 import time
 import imp
-import logging as log
+from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 convenience_wrappers = {}
 

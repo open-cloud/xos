@@ -12,7 +12,6 @@ import traceback
 
 from twisted.internet import reactor
 from xosapi.version import __version__
-from xosapi.xos_grpc_client import InsecureClient, SecureClient, setup_logging, Empty
 
 current_client = None
 
@@ -90,6 +89,7 @@ def parse_args():
     return args
 
 def login(username=None, password=None):
+    from xosapi.xos_grpc_client import InsecureClient, SecureClient
     if current_client:
         current_client.stop()
         current_client.session_change = True
@@ -256,7 +256,14 @@ def main():
     global args
     args = parse_args()
 
-    setup_logging(args)
+    from xosconfig import Config
+
+    config_file = args.config
+    Config.init(config_file, 'synchronizer-config-schema.yaml')
+
+    from xosapi.xos_grpc_client import setup_logging
+
+    setup_logging()
 
     if args.version:
         print __version__

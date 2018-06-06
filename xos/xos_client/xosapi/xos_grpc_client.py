@@ -35,6 +35,11 @@ import chameleon.grpc_client.grpc_client as chameleon_client
 from twisted.internet import reactor
 from google.protobuf.empty_pb2 import Empty
 
+from xosconfig import Config
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
+
 SERVER_CA="/usr/local/share/ca-certificates/local_certs.crt"
 
 class UsernamePasswordCallCredentials(grpc.AuthMetadataPlugin):
@@ -72,14 +77,14 @@ class XOSClient(chameleon_client.GrpcClient):
             response = self.dynamicload.GetConvenienceMethods(Empty())
 
             if response:
-                print "Loading convenience methods: %s" % [m.filename for m in response.convenience_methods]
+                log.info("Loading convenience methods",  methods=[m.filename for m in response.convenience_methods])
 
                 for cm in response.convenience_methods:
-                    print "Saving %s" % cm.filename
+                    log.debug("Saving convenience method", method=cm.filename)
                     save_path = os.path.join(convenience_methods_dir, cm.filename)
                     file(save_path, "w").write(cm.contents)
             else:
-                print 'Cannot load convenience methods, restarting the synchronzier'
+                log.exception("Cannot load convenience methods, restarting the synchronzier")
                 os.execv(sys.executable, ['python'] + sys.argv)
 
         except grpc._channel._Rendezvous, e:
@@ -89,7 +94,6 @@ class XOSClient(chameleon_client.GrpcClient):
                 os.execv(sys.executable, ['python'] + sys.argv)
 
     def reconnected(self):
-
         for api in ['modeldefs', 'utility', 'xos', 'dynamicload']:
             pb2_file_name = os.path.join(self.work_dir, api + "_pb2.py")
             pb2_grpc_file_name = os.path.join(self.work_dir, api + "_pb2_grpc.py")
@@ -215,27 +219,8 @@ def parse_args():
 
     return args
 
-def setup_logging(args):
-    import os
-
-    if os.path.isfile(args.config):
-        from xosconfig import Config
-        from multistructlog import create_logger
-        Config.init(args.config, 'synchronizer-config-schema.yaml')
-        log = create_logger(Config().get('logging'))
-    else:
-        import logging
-        import structlog
-
-        verbosity_adjust = (args.verbose or 0) - (args.quiet or 0)
-        logging.basicConfig()
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG - 10 * verbosity_adjust)
-
-        def logger_factory():
-            return logger
-
-        structlog.configure(logger_factory=logger_factory)
+def setup_logging():
+    log = create_logger(Config().get('logging'))
 
 
 def coreclient_reconnect(client, reconnect_callback, *args, **kwargs):
@@ -268,7 +253,7 @@ def start_api_parseargs(reconnect_callback):
 
     args = parse_args()
 
-    setup_logging(args)
+    setup_logging()
 
     if args.username:
         start_api(reconnect_callback, endpoint=args.grpc_secure_endpoint, username=args.username, password=args.password)
@@ -292,7 +277,7 @@ def insecure_callback(client):
     reactor.callLater(0, start_secure_test)
 
 def start_insecure_test():
-    client = InsecureClient(endpoint="xos-core.cord.lab:50055")
+    client = InsecureClient(endpoint="xos-core:50055")
     client.set_reconnect_callback(functools.partial(insecure_callback, client))
     client.start()
 
@@ -303,7 +288,7 @@ def secure_callback(client):
     reactor.stop()
 
 def start_secure_test():
-    client = SecureClient(endpoint="xos-core.cord.lab:50051", username="xosadmin@opencord.org", password="BQSPdpRsR0MrrZ9u7SPe")
+    client = SecureClient(endpoint="xos-core:50051", username="admin@opencord.org", password="letmein")
     client.set_reconnect_callback(functools.partial(secure_callback, client))
     client.start()
 

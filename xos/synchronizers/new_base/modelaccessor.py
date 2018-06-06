@@ -233,6 +233,8 @@ def grpcapi_reconnect(client, reactor):
 def config_accessor_grpcapi():
     global orig_sigint
 
+    log.info("Connecting to the gRPC API")
+
     grpcapi_endpoint = Config.get("accessor.endpoint")
     grpcapi_username = Config.get("accessor.username")
     grpcapi_password = Config.get("accessor.password")

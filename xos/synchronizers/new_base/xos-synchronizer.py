@@ -22,15 +22,13 @@ import sys
 sys.path.append('/opt/xos')
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
+import time
+from synchronizers.new_base.modelaccessor import *
 from xosconfig import Config
 from multistructlog import create_logger
-
-log = create_logger(Config().get('logging'))
-import time
-
-from synchronizers.new_base.modelaccessor import *
 from synchronizers.new_base.backend import Backend
 
+log = create_logger(Config().get('logging'))
 def main():
 
     models_active = False
