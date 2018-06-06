@@ -3,11 +3,13 @@
 CORD adopts a model-based design, which is to say all aspects
 of operating and managing CORD is mediated by a model-based
 control plane. XOS is the component in CORD that implements
-this control plane.
+this control plane. For an overview of XOS, see the following
+white paper:
+[XOS: Modeling-as-a-Service](https://wiki.opencord.org/display/CORD/XOS%3A+The+CORD+Controller?preview=/1279317/4981376/XOS%20Modeling-as-a-Service.pdf).
 
-This guide describes XOS, and the role it plays in the CORD Controller.
-XOS is not a monolithic component. It is best viewed as having
-three inter-related aspects, and this guide is organized accordingly.
+This guide describes XOS, and the role it plays in implementing CORD's
+control plane. XOS is not a monolithic component. It is best viewed as
+having three inter-related aspects, and this guide is organized accordingly.
 
 First, XOS defines a [modeling framework](dev/xproto.md), which
 includes both a modeling language (*xproto*) and a generative
