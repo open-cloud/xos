@@ -231,7 +231,7 @@ def do_xossh_prompt(client):
                 reactor.stop()
                 return
 
-            if command == "":
+            if (command == "") or (command.strip().startswith("#")):
                 # blank line
                 pass
             else:
