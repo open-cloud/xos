@@ -5,7 +5,7 @@ of operating and managing CORD is mediated by a model-based
 control plane. XOS is a tool that CORD uses to implement this
 control plane. For an overview of XOS, see the following
 white paper:
-[XOS: Modeling-as-a-Service](https://wiki.opencord.org/display/CORD/XOS%3A+The+CORD+Controller?preview=/1279317/4981376/XOS%20Modeling-as-a-Service.pdf).
+[XOS: Modeling-as-a-Service](https://wiki.opencord.org/display/CORD/XOS+and+the+CORD+Controller?preview=/1279317/4981376/XOS%20Modeling-as-a-Service.pdf).
 
 This guide describes XOS, and the role it plays in implementing CORD's
 control plane. XOS is not a monolithic component. It is best viewed as
