@@ -1,11 +1,12 @@
 # Core Models
 
-The XOS modeling framework provides a foundation for building CORD, but it is
-just a tool to defining a set of core models. It is these core models that
-provide a coherent interface for configuring, controlling, and applying policy
-to a CORD POD. This gives operators a way to specify and reason about the
-behavior of CORD, while allowing for a wide range of implementation choices for
-the underlying software components.
+The XOS modeling framework provides a foundation for building CORD,
+but it is just a tool used to define a set of core models. It is these
+core models that provide a coherent interface for configuring,
+controlling, and applying policy to a CORD POD. This gives operators a
+way to specify and reason about the behavior of CORD, while allowing
+for a wide range of implementation choices for the underlying software
+components.
 
 ## Services, Slices, and ServiceInstances
 

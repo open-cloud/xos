@@ -96,7 +96,7 @@ The actors of a synchronizer interact with this state in the following manner:
     * Read/Write Declarative state
     * Subscribe to changes to Declarative state
 
-## Relationships Between Synchronizers and Data Models
+## Relationships Between Synchronizers and Models
 
 A single synchronizer can synchronize multiple data models, usually through an
 actuator per model. However, a given model can only be handled by one actuator.

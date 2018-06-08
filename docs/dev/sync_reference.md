@@ -12,14 +12,14 @@ from the synchronizers.
 `convenience_methods` can be defined in a folder (`convenience`) that needs to 
 be a child of the `models_dir` as per your configuration. 
 
-> For example if your configuration contains:
->
-> ```yaml 
-> models_dir: "/opt/xos/synchronizers/<synchronizer_name>/models"
-> ```
->
-> then you `convenience methods` needs to be located in 
-> `/opt/xos/synchronizers/<synchronizer_name>/models/convenience`
+For example if your configuration contains:
+
+```yaml 
+models_dir: "/opt/xos/synchronizers/<synchronizer_name>/models"
+```
+
+then you `convenience methods` needs to be located in 
+`/opt/xos/synchronizers/<synchronizer_name>/models/convenience`
 
 Assuming our model definition looks like:
 

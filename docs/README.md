@@ -1,9 +1,9 @@
-# Defining Models for CORD
+# Modeling Guide
 
 CORD adopts a model-based design, which is to say all aspects
 of operating and managing CORD is mediated by a model-based
-control plane. XOS is the component in CORD that implements
-this control plane. For an overview of XOS, see the following
+control plane. XOS is a tool that CORD uses to implement this
+control plane. For an overview of XOS, see the following
 white paper:
 [XOS: Modeling-as-a-Service](https://wiki.opencord.org/display/CORD/XOS%3A+The+CORD+Controller?preview=/1279317/4981376/XOS%20Modeling-as-a-Service.pdf).
 
