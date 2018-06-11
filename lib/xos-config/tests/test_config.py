@@ -24,6 +24,8 @@ basic_conf = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/con
 yaml_not_valid = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/confs/yaml_not_valid.yaml")
 invalid_format = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/confs/invalid_format.yaml")
 sample_conf = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/confs/sample_conf.yaml")
+override_conf = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/confs/override_conf.yaml")
+extend_conf = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/confs/extend_conf.yaml")
 
 small_schema = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/schemas/small_schema.yaml")
 
@@ -158,7 +160,7 @@ class XOSConfigTest(unittest.TestCase):
 
     def test_get_missing_param(self):
         """
-        [XOS-Config] Should raise reading a missing param
+        [XOS-Config] Should return None reading a missing param
         """
         Config.init(sample_conf)
         res = Config.get("foo")
@@ -178,13 +180,33 @@ class XOSConfigTest(unittest.TestCase):
             "password": "safe"
         })
 
-    def _test_get_child_level(self):
+    def test_get_child_level(self):
         """
         [XOS-Config] Should return a child level param
         """
         Config.init(sample_conf)
-        res = Config.get("nested.parameter.for")
-        self.assertEqual(res, "testing")
+        res = Config.get("database.name")
+        self.assertEqual(res, "xos")
+
+    def test_config_override(self):
+        """
+        [XOS-Config] If an override is provided for the config, it should return the overridden value
+        """
+        Config.init(sample_conf, 'xos-config-schema.yaml', override_conf)
+        res = Config.get("logging.level")
+        self.assertEqual(res, "info")
+        res = Config.get("database.password")
+        self.assertEqual(res, "overridden_password")
+
+    def test_config_extend(self):
+        """
+        [XOS-Config] If an override is provided for the config, it should return the overridden value (also if not defined in the base one)
+        """
+        Config.init(sample_conf, 'xos-config-schema.yaml', extend_conf)
+        res = Config.get("xos_dir")
+        self.assertEqual(res, "/opt/xos")
+        res = Config.get("database.password")
+        self.assertEqual(res, "safe")
 
 if __name__ == '__main__':
     unittest.main()

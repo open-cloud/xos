@@ -67,7 +67,7 @@ map:
     type: str
   accessor:
     type: map
-    required: True
+    required: False
     map:
       endpoint:
         type: str

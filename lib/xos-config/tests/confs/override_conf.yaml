@@ -14,13 +14,8 @@
 # limitations under the License.
 
 
-name: xos-core
 database:
+  # as per xos-config-schema.yaml these are all required
   name: xos
   username: test
-  password: safe
-logging:
-  level: info
-  channels:
-    - file
-    - console
+  password: overridden_password

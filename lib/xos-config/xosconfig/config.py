@@ -20,6 +20,9 @@ import yaml
 import requests
 import default
 from pykwalify.core import Core as PyKwalify
+import pykwalify
+
+pykwalify.init_logging(1)
 
 DEFAULT_CONFIG_FILE = "/opt/xos/xos_config.yaml"
 DEFAULT_CONFIG_SCHEMA = 'xos-config-schema.yaml'
@@ -27,9 +30,7 @@ INITIALIZED = False
 CONFIG_FILE = None
 CONFIG = {}
 
-GLOBAL_CONFIG_FILE = DEFAULT_CONFIG_FILE
-GLOBAL_CONFIG_SCHEMA = DEFAULT_CONFIG_SCHEMA
-GLOBAL_CONFIG = {}
+OVERRIDE_CONFIG = {}
 
 class Config:
     """
@@ -37,7 +38,7 @@ class Config:
     """
 
     @staticmethod
-    def init(config_file=DEFAULT_CONFIG_FILE, config_schema=DEFAULT_CONFIG_SCHEMA):
+    def init(config_file=DEFAULT_CONFIG_FILE, config_schema=DEFAULT_CONFIG_SCHEMA, override_config_file=None):
 
         # make schema relative to this directory
         # TODO give the possibility to specify an absolute path
@@ -47,12 +48,13 @@ class Config:
         global CONFIG
         global CONFIG_FILE
 
-        global GLOBAL_CONFIG
-        global GLOBAL_CONFIG_FILE
-        global GLOBAL_CONFIG_SCHEMA
+        global OVERRIDE_CONFIG
+        global OVERRIDE_CONFIG_FILE
+        global OVERRIDE_CONFIG_SCHEMA
 
         # Use same schema for both provided and global config by default
-        GLOBAL_CONFIG_SCHEMA = config_schema
+        OVERRIDE_CONFIG_SCHEMA = config_schema
+        OVERRIDE_CONFIG_FILE = override_config_file
 
         # the config module can be initialized only one
         if INITIALIZED:
@@ -69,11 +71,11 @@ class Config:
         if os.environ.get('XOS_CONFIG_SCHEMA'):
             config_schema = Config.get_abs_path(os.environ['XOS_CONFIG_SCHEMA'])
 
-        # allow GLOBAL_CONFIG_* to be overridden  by env vars
-        if os.environ.get('XOS_GLOBAL_CONFIG_FILE'):
-            GLOBAL_CONFIG_FILE = os.environ['XOS_GLOBAL_CONFIG_FILE']
-        if os.environ.get('XOS_GLOBAL_CONFIG_SCHEMA'):
-            GLOBAL_CONFIG_SCHEMA = Config.get_abs_path(os.environ['XOS_GLOBAL_CONFIG_SCHEMA'])
+        # allow OVERRIDE_CONFIG_* to be overridden  by env vars
+        if os.environ.get('XOS_OVERRIDE_CONFIG_FILE'):
+            OVERRIDE_CONFIG_FILE = os.environ['XOS_OVERRIDE_CONFIG_FILE']
+        if os.environ.get('XOS_OVERRIDE_CONFIG_SCHEMA'):
+            OVERRIDE_CONFIG_SCHEMA = Config.get_abs_path(os.environ['XOS_OVERRIDE_CONFIG_SCHEMA'])
 
         # if a -C parameter is set in the cli override the config_file
         # FIXME shouldn't this stay in whatever module call this one? and then just pass the file to the init method
@@ -84,8 +86,9 @@ class Config:
         CONFIG_FILE = config_file
         CONFIG = Config.read_config(config_file, config_schema)
 
-        # Load global schema
-        GLOBAL_CONFIG = Config.read_config(GLOBAL_CONFIG_FILE, GLOBAL_CONFIG_SCHEMA, True)
+        # if an override is set
+        if OVERRIDE_CONFIG_FILE is not None:
+            OVERRIDE_CONFIG = Config.read_config(OVERRIDE_CONFIG_FILE, OVERRIDE_CONFIG_SCHEMA, True)
 
     @staticmethod
     def get_config_file():
@@ -154,14 +157,19 @@ class Config:
         """
         global INITIALIZED
         global CONFIG
-        global GLOBAL_CONFIG
+        global OVERRIDE_CONFIG
+        global OVERRIDE_CONFIG_FILE
 
         if not INITIALIZED:
             raise Exception('[XOS-Config] Module has not been initialized')
 
         val = Config.get_param(query, CONFIG)
-        if not val:
-            val = Config.get_param(query, GLOBAL_CONFIG)
+        if OVERRIDE_CONFIG_FILE or not val:
+            # if we specified an override configuration, we should override the value
+            # we also look for the value in case it's missing
+            over_val = Config.get_param(query, OVERRIDE_CONFIG)
+            if over_val is not None:
+                val = over_val
         if not val:
             val = Config.get_param(query, default.DEFAULT_VALUES)
         if not val:

@@ -14,13 +14,4 @@
 # limitations under the License.
 
 
-name: xos-core
-database:
-  name: xos
-  username: test
-  password: safe
-logging:
-  level: info
-  channels:
-    - file
-    - console
+xos_dir: /opt/xos
