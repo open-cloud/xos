@@ -43,7 +43,7 @@ class ORMWrapperServiceInstance(ORMWrapper):
 
     @property
     def eastbound_service_instances(self):
-        links = self.subscriber_links.all()
+        links = self.subscribed_links.all()
         instances = []
         for link in links:
             instances.append(link.provider_service_instance.leaf_model)
