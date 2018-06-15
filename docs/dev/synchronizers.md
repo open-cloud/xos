@@ -1,4 +1,4 @@
-# Writing Synchronizers
+# XOS Synchronizer Framework
 
 Synchronizers are the components of CORD that map the abstract declarative
 state about how the system is suppose to behave (as defined by the XOS data

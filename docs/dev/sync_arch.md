@@ -1,4 +1,4 @@
-# Synchronizer Design Guidelines
+# Synchronizer Design
 
 Synchronizers act as the link between the data model and the functional half of
 the system. The data model contains a clean, abstract and declarative

@@ -1,4 +1,4 @@
-# Synchronizer Implementation Details
+# Synchronizer Implementation
 
 There are three types of synchronizers: _Work-based_, _Event-based_, and
 _Hybrid_ (the last of which subsume the functionalities of the first two).
@@ -119,7 +119,7 @@ class SyncFabricService(SyncStep):
     watched = [ModelLink(Instance,via='instance',into='ip')]
 ```
 
-#### Activate the Watcher by connecting the Synchronzier Container to Redis
+#### Activate the Watcher by Connecting to Redis
 
 * Set the `observer_enable_watchers` option to true in your XOS synchronizer
   config file.
