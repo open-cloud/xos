@@ -34,6 +34,12 @@ PARENT_DIR=os.path.join(os.path.dirname(__file__), "..")
 
 class TestWrappers(unittest.TestCase):
     def setUp(self):
+        from xosconfig import Config
+        test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+        config = os.path.join(test_path, "test_config.yaml")
+        Config.clear()
+        Config.init(config, 'synchronizer-config-schema.yaml')
+
         if (USE_FAKE_STUB):
             sys.path.append(PARENT_DIR)
 
