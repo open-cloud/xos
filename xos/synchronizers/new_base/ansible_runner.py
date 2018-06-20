@@ -368,14 +368,6 @@ class Runner(object):
         self.pbex.run()
         stats = self.pbex._tqm._stats
 
-        # Test if success for record_logs
-        run_success = True
-        hosts = sorted(stats.processed.keys())
-        for h in hosts:
-            t = stats.summarize(h)
-            if t['unreachable'] > 0 or t['failures'] > 0:
-                run_success = False
-
         #os.remove(self.hosts.name)
 
         return stats,callback.results

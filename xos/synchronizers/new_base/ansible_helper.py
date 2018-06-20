@@ -166,16 +166,16 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
 
             ofile.write('%s: %s\n'%(x._task, str(x._result)))
 
-	    if (object):
-		oprops = object.tologdict()
-		ansible = x._result
-		oprops['xos_type']='ansible'
-		oprops['ansible_result']=json.dumps(ansible)
+            if (object):
+                oprops = object.tologdict()
+                ansible = x._result
+                oprops['xos_type']='ansible'
+                oprops['ansible_result']=json.dumps(ansible)
 
                 if failed == 0:
-		    oprops['ansible_status']='OK'
+                    oprops['ansible_status']='OK'
                 else:
-		    oprops['ansible_status']='FAILED'
+                    oprops['ansible_status']='FAILED'
 
                 log.info('Ran Ansible task',task = x._task, **oprops)
 
@@ -185,10 +185,18 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
         if (expected_num is not None) and (len(ok_results) != expected_num):
             raise ValueError('Unexpected num %s!=%d' % (str(expected_num), len(ok_results)) )
 
-        #total_unreachable = stats.unreachable
+        if (failed):
+            raise ValueError('Ansible playbook failed.')
 
-	if (failed):
-		raise ValueError('Ansible playbook failed.')
+        # NOTE(smbaker): Playbook errors are slipping through where `aresults` does not show any failed tasks, but
+        # `stats` does show them. See CORD-3169.
+        hosts = sorted(stats.processed.keys())
+        for h in hosts:
+            t = stats.summarize(h)
+            if t['unreachable'] > 0:
+                raise ValueError("Ansible playbook reported unreachable for host %s" % h)
+            if t['failures'] > 0:
+                raise ValueError("Ansible playbook reported failures for host %s" % h)
 
     except ValueError,e:
         if error_msg:
