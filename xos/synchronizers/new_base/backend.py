@@ -24,6 +24,7 @@ from synchronizers.new_base.syncstep import SyncStep
 from synchronizers.new_base.event_loop import XOSObserver
 from synchronizers.new_base.model_policy_loop import XOSPolicyEngine
 from synchronizers.new_base.event_engine import XOSEventEngine
+from synchronizers.new_base.pull_step_engine import XOSPullStepEngine
 from synchronizers.new_base.modelaccessor import *
 
 from xosconfig import Config
@@ -42,25 +43,6 @@ class Backend:
     def __init__(self, log = log):
         self.log = log
         pass
-
-    def load_pull_step_modules(self, pull_step_dir):
-        pull_steps = []
-        self.log.info("Loading pull steps", pull_step_dir=pull_step_dir)
-        # NOTE we'll load all the classes that inherit from PullStep
-        for fn in os.listdir(pull_step_dir):
-            pathname = os.path.join(pull_step_dir, fn)
-            if os.path.isfile(pathname) and fn.endswith(".py") and (fn != "__init__.py") and not "test" in fn:
-                module = imp.load_source(fn[:-3], pathname)
-
-                for classname in dir(module):
-                    c = getattr(module, classname, None)
-
-                    if inspect.isclass(c):
-                        base_names = [b.__name__ for b in c.__bases__]
-                        if 'PullStep' in base_names:
-                            pull_steps.append(c)
-        self.log.info("Loaded pull steps", steps=pull_steps)
-        return pull_steps
 
     def load_sync_step_modules(self, step_dir):
         sync_steps = []
@@ -107,22 +89,18 @@ class Backend:
         model_accessor.update_diag(sync_start=time.time(), backend_status="Synchronizer Start")
 
         steps_dir = Config.get("steps_dir")
-        pull_steps_dir = Config.get("pull_steps_dir")
-        if steps_dir or pull_steps_dir:
+        if steps_dir:
             sync_steps = []
-            pull_steps = []
 
-            # load sync_steps and pull_steps
+            # load sync_steps
             if steps_dir:
                 sync_steps = self.load_sync_step_modules(steps_dir)
-            if pull_steps_dir:
-                pull_steps = self.load_pull_step_modules(pull_steps_dir)
 
-            # if we have at least one sync_step or one pull_step
-            if len(sync_steps) > 0 or len(pull_steps) > 0:
+            # if we have at least one sync_step
+            if len(sync_steps) > 0:
                 # start the observer
-                self.log.info("Starting XOSObserver", sync_steps=sync_steps, pull_steps=pull_steps)
-                observer = XOSObserver(sync_steps, pull_steps, log = self.log)
+                self.log.info("Starting XOSObserver", sync_steps=sync_steps)
+                observer = XOSObserver(sync_steps, log = self.log)
                 observer_thread = threading.Thread(target=observer.run,name='synchronizer')
                 observer_thread.start()
 
@@ -133,8 +111,15 @@ class Backend:
                     watcher_thread = threading.Thread(target=watcher.run,name='watcher')
                     watcher_thread.start()
         else:
-            self.log.info(""
-                          "Skipping observer and watcher threads due to no steps dir.")
+            self.log.info("Skipping observer and watcher threads due to no steps dir.")
+
+        pull_steps_dir = Config.get("pull_steps_dir")
+        if pull_steps_dir:
+            pull_steps_engine = XOSPullStepEngine()
+            pull_steps_engine.load_pull_step_modules(pull_steps_dir)
+            pull_steps_engine.start()
+        else:
+            self.log.info("Skipping event engine due to no event_steps dir.")
 
         event_steps_dir = Config.get("event_steps_dir")
         if event_steps_dir:

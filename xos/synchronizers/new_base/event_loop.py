@@ -71,12 +71,11 @@ def set_driver(x):
 class XOSObserver:
     sync_steps = []
 
-    def __init__(self, sync_steps, pull_steps=[], log=log):
+    def __init__(self, sync_steps, log=log):
         # The Condition object via which events are received
         self.log = log
         self.step_lookup = {}
         self.sync_steps = sync_steps
-        self.pull_steps = pull_steps
         self.load_sync_steps()
 
         self.load_dependency_graph()
@@ -673,27 +672,6 @@ class XOSObserver:
             model_accessor.check_db_connection_okay()
 
             loop_start = time.time()
-
-            # Run pull_steps (just once, before doing everything else)
-            self.log.debug('Starting pull steps', steps=self.pull_steps)
-            pull_threads = []
-            for ps in self.pull_steps:
-                i = ps()
-                thread = threading.Thread(
-                    target=i.pull_records, name='pullstep', args=()
-                )
-                pull_threads.append(thread)
-
-            # Start threads
-            for t in pull_threads:
-                t.start()
-
-            # Wait for all threads to finish before continuing with the run
-            # loop
-            for t in pull_threads:
-                t.join()
-
-            self.log.debug('Done with pull steps', steps=self.pull_steps)
 
             # Two passes. One for sync, the other for deletion.
             for deletion in (False, True):
