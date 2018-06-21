@@ -14,24 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e -o pipefail
+
 BASEDIR=$(pwd)
 VENVDIR=venv-xosdocs
 
 # create venv if it's not yet there
 if [ ! -d "$BASEDIR/$VENVDIR" ]; then
-    echo "Setting up virtualenv for XOS Swagger Docs"
-    virtualenv -q $BASEDIR/$VENVDIR --no-site-packages
-    pip install --upgrade pip
-    echo "Virtualenv created."
+  echo "Setting up virtualenv for XOS Swagger Docs"
+  virtualenv -q $BASEDIR/$VENVDIR --no-site-packages
+  pip install --upgrade pip
+  echo "Virtualenv created."
 fi
 
 # activate the virtual env
 if [ ! $VIRTUAL_ENV ]; then
-    source $BASEDIR/$VENVDIR/bin/activate
-    echo "Virtualenv activated."
+  source $BASEDIR/$VENVDIR/bin/activate
+  echo "Virtualenv activated."
 fi
 
 # install pip packages
 pip install -e $BASEDIR/$VENVDIR/../../lib/xos-genx
 pip install plyxproto jinja2 pattern astunparse pyyaml colorama
-

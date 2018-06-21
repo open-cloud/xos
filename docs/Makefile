@@ -3,10 +3,12 @@ DOCSDIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 swagger: swagger_clean swagger_docs swagger_serve_spec
 
 venv-xosdocs:
-	bash venv-xosdocs.sh
+	./venv-xosdocs.sh
 
 swagger_docs: venv-xosdocs
 	bash -c 'source $(DOCSDIR)venv-xosdocs/bin/activate && python $(DOCSDIR)scripts/swagger_docs.py'
+
+clean: swagger_clean venv_clean
 
 swagger_clean:
 	rm -rf swagger/specs/*
