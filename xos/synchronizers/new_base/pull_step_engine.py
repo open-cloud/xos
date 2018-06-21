@@ -73,7 +73,7 @@ class XOSPullStepEngine:
 
     def load_pull_step_modules(self, pull_step_dir):
         self.pull_steps = []
-        log.info("Loading event steps", pull_step_dir=pull_step_dir)
+        log.info("Loading pull steps", pull_step_dir=pull_step_dir)
 
         # NOTE we'll load all the classes that inherit from PullStep
         for fn in os.listdir(pull_step_dir):

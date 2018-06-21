@@ -115,14 +115,17 @@ class Backend:
 
         pull_steps_dir = Config.get("pull_steps_dir")
         if pull_steps_dir:
+            self.log.info("Starting XOSPullStepEngine", pull_steps_dir=pull_steps_dir)
             pull_steps_engine = XOSPullStepEngine()
             pull_steps_engine.load_pull_step_modules(pull_steps_dir)
-            pull_steps_engine.start()
+            pull_steps_thread = threading.Thread(target=pull_steps_engine.start, name="pull_step_engine")
+            pull_steps_thread.start()
         else:
-            self.log.info("Skipping event engine due to no event_steps dir.")
+            self.log.info("Skipping pull step engine due to no pull_steps_dir dir.")
 
         event_steps_dir = Config.get("event_steps_dir")
         if event_steps_dir:
+            self.log.info("Starting XOSEventEngine", event_steps_dir=event_steps_dir)
             event_engine = XOSEventEngine()
             event_engine.load_event_step_modules(event_steps_dir)
             event_engine.start()

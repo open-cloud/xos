@@ -96,7 +96,7 @@ class XOSEventEngine:
 
     def load_event_step_modules(self, event_step_dir):
         self.event_steps = []
-        log.info("Loading event steps", pull_step_dir=event_step_dir)
+        log.info("Loading event steps", event_step_dir=event_step_dir)
 
         # NOTE we'll load all the classes that inherit from EventStep
         for fn in os.listdir(event_step_dir):
