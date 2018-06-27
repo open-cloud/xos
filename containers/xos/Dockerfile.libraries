@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-FROM xosproject/xos-base:candidate
+FROM xosproject/xos-base:2.0.0
 
 # Add libraries
 COPY lib /opt/xos/lib
