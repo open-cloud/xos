@@ -1,12 +1,15 @@
 # Summary
 
 * [Introduction](README.md)
-    * [Contribute to the documentation](contribute_docs.md)
-* Modules
-    * [XOS Config](modules/xosconfig.md)
-* Developer How Tos
-    * [Workflow: Mock Config](dev/workflow_mock.md)
-    * [Workflow: CORD-in-a-Box](dev/workflow_ciab.md)
-        * [Local Dev Environmet](dev/local_env.md)
-    * [xproto](dev/xproto.md)
+* [Overview](overview.md)
+* [Installing XOS](install.md)
+* [Using XOS](use.md)
+    * [XOS Modeling Framework](xos/dev/xproto.md)
+        * [XOS Tool Chain (Internals)](xos/dev/xosgenx.md)
+    * [XOS Synchronizer Framework](xos/dev/synchronizers.md)
+        * [Synchronizer Design](xos/dev/sync_arch.md)
+        * [Synchronizer Implementation](xos/dev/sync_impl.md)
+        * [Synchronizer Reference](xos/dev/sync_reference.md)
+    * [Core Models](xos/core_models.md)
+    * [Security Policies](xos/security_policies.md)
 
