@@ -4,12 +4,15 @@ The xosgenx tool converts a xproto file into an intermediate representation and
 passes it to a target, which in turn generates the output code. The target has
 access to a library of auxiliary functions implemented in Python. The target
 itself is written as a jinja2 template. The following figure depicts the
-processing pipeline. Developers will not need to interact with xosgenx
-directly, except when there is an opportunity to create a new target.
+processing pipeline, using the `slice.xproto` model and `Django`
+target as an example.
+
+> **Note:** Developers will not need to interact with xosgenx
+> directly, except when there is an opportunity to create a new target.
 
 ![xosgenx toolchain](toolchain.png)
 
-## Intermediate Representation (IR) 
+## Intermediate Representation (IR)
 
 The IR is a representation of a parsed xproto file in the form of nested Python
 dictionaries. Here is a description of its structure.

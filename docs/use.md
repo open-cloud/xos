@@ -21,9 +21,9 @@ organized accordingly.
   Service developers typically write a synchronizer to on-board their
   services.
 
-* **Core Models and Policies:** A system as a whole is defined by
-  a [core](core_models.md) set of *xproto* models, plus a set of
-  [security policies](security_policies.md) that govern how
+* **Core Models and Policies:** An XOS-managed system is
+  defined by a [core](core_models.md) set of *xproto* models, plus
+  a set of [security policies](security_policies.md) that govern how
   various principals can act on those models in a multi-tenant
   environment. Platform developers typically define and evolve the
   core models and policies, which effectively establishes the

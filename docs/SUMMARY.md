@@ -1,8 +1,8 @@
 # Summary
 
 * [Introduction](README.md)
-* [Overview](overview.md)
 * [Installing XOS](install.md)
+    * [Download Source Code](repo.md)
 * [Using XOS](use.md)
     * [XOS Modeling Framework](dev/xproto.md)
         * [XOS Tool Chain (Internals)](dev/xosgenx.md)
@@ -12,4 +12,12 @@
         * [Synchronizer Reference](dev/sync_reference.md)
     * [Core Models](core_models.md)
     * [Security Policies](security_policies.md)
+    * [Tutorial](tutorials/basic_synchronizer.md)
+* [Platform Services](platform.md)
+    * [Kubernetes](kubernetes/kubernetes-service.md)
+    * [OpenStack](openstack/openstack-service.md)
+    * [ONOS](onos/README.md)
+* [Example Services](examples.md)
+    * [Simple Example Service](simpleexampleservice/simple-example-service.md)
+    * [Example Service](exampleservice/example-service.md)
 

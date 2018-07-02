@@ -1,20 +1,21 @@
 # Core Models
 
-The XOS modeling framework provides a foundation for building CORD,
-but it is just a tool used to define a set of core models. It is these
-core models that provide a coherent interface for configuring,
-controlling, and applying policy to a CORD POD. This gives operators a
-way to specify and reason about the behavior of CORD, while allowing
-for a wide range of implementation choices for the underlying software
-components.
+The XOS modeling framework provides a foundation for building systems
+like CORD, but it is just a tool used to define a set of core models. It is
+these core models that provide a coherent interface for configuring,
+controlling, and applying policies to an operational system. This
+gives operators a way to specify and reason about the system's
+behavior, while allowing for a wide range of implementation choices
+for the underlying software components.
 
 ## Services, Slices, and ServiceInstances
 
-CORD's core starts with the **Service** model, which represents all
-functionality that can be on-boarded into CORD. This model is designed to meet
-two requirements. The first is to be implementation-agnostic, supporting both
-*server-based* implementations (e.g., legacy VNFs running in VMs and
-micro-services running in containers) and *switch-based* implementations (e.g.,
+The XOS core starts with the **Service** model, which represents all
+functionality that can be on-boarded into an XOS-managed system.
+This model is designed to meet two requirements. The first is to be
+implementation-agnostic, supporting both *server-based*
+implementations (e.g., legacy VNFs running in VMs and micro-services
+running in containers) and *switch-based* implementations (e.g.,
 SDN control applications that install flow rules into white-box switches). The
 second is to be multi-tenant, supporting isolated and virtualized instances
 that can be created on behalf of both trusted and untrusted tenants.
@@ -75,13 +76,13 @@ there is no need to control vSGW on a per-subscriber basis.
 ## Service Graphs and Service Chains
 
 Given a set of Services (and their corresponding Slices and ServiceInstances),
-CORD also defines two core models for interconnecting them:
+XOS also defines two core models for interconnecting them:
 **ServiceDependencies** and **ServiceInstanceLinks**. The first defines a
-dependency of one Service on another, thereby forming a CORD-wide *Service
+dependency of one Service on another, thereby forming a system-wide *Service
 Graph*. The second defines a dependency between a pair of ServiceInstances,
 thereby forming a per-subscriber *Service Chain*.
 
-> NOTE: Service Graphs and Service Chains are not explicit models in CORD, but
+> NOTE: Service Graphs and Service Chains are not explicit models in XOS, but
 > rather, they are defined by a set of vertices (Services, ServiceInstances)
 > and edges (ServiceDependency, ServiceInstanceLink).
 
@@ -119,7 +120,7 @@ data plane connection (e.g., what address each is known by).
 
 ## Model Glossary
 
-CORD's core models are defined by a set of [xproto](dev/xproto.md)
+The XOS core models are defined by a set of [xproto](dev/xproto.md)
 specifications. They are defined in their full detail in the source code (see
 [core.xproto](https://github.com/opencord/xos/blob/master/xos/core/models/core.xproto)).
 The following summarizes these core models—along with the key relationships
@@ -139,16 +140,16 @@ The following summarizes these core models—along with the key relationships
   having a "controller" which effectively corresponds to the
   `Service` model itself (i.e., its purpose is to generate a "control
   interface" for the service). There  is no "Controller" model
-  bound to a service. (Confusingly, CORD does include a `Controller`
+  bound to a service. (Confusingly, XOS does include a `Controller`
   model, but it represents information about OpenStack. There is
-  also a `ServiceController` construct in the TOSCA interface for
-  CORD, which provides a means to load the `Service` model for
-  a given service into CORD.)
+  also a `ServiceController` construct in the TOSCA interface,
+  which provides a means to load the `Service` model for
+  a given service into XOS.)
 
 * **ServiceDependency:** Represents a dependency between a *Subscriber* service
   on a *Provider*  service. The set of `ServiceDependency` and `Service` models
-  defined in CORD collectively represent the edges and verticies of a *Service
-  Graph*, but there is no explicit "ServiceGraph" model in CORD. The dependency
+  collectively represent the edges and verticies of a *Service
+  Graph*, but there is no explicit "ServiceGraph" model. The dependency
   between a pair of services is parameterized by the `connect_method` by which
   the service are interconnected in the data plane.Connect methods include:
 
@@ -164,15 +165,14 @@ The following summarizes these core models—along with the key relationships
   Service might be called a "Volume" or a "Bucket." Confusingly, there are also
   instances of a `Service` model that represent different services, but this is
   a consequence of standard modeling terminology, whereas  `ServiceInstance` is
-  a core model in CORD (and yes, there are instances of the `ServiceInstance`
+  a core model (and yes, there are instances of the `ServiceInstance`
   model).
 
 * **ServiceInstanceLink:** Represents a logical connection between
   `ServiceInstances` of two `Services`. A related model, `ServiceInterface`,
   types the `ServiceInstanceLink` between two `ServiceInstances`. A connected
   sequence of `ServiceInstances` and `ServiceInstanceLinks` form what is often
-  called a *Service Chain*, but there is no explicit "ServiceChain" model in
-  CORD.
+  called a *Service Chain*, but there is no explicit "ServiceChain" model.
 
 * **Slice:** Represents a distributed resource container that includes the
   compute and network resources that belong to (are used by) some `Service`.
@@ -220,7 +220,7 @@ The following summarizes these core models—along with the key relationships
 * **Site:** Represents a logical grouping of `Nodes` that are co-located at the
   same geographic location, which also typically corresponds to the nodes'
   location in the physical network.  The typical use case involves one
-  configuration of a CORD POD deployed at a single location, although the
+  configuration of a system deployed at a single location, although the
   underlying core includes allows for multi-site deployments.
 
     * Bound to a set of `Nodes` located at the `Site`.

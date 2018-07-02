@@ -1,8 +1,9 @@
 # Security Policies
 
-CORD security policies are implemented by XOS. These policies answer the
-question: *Who can do what?* The *who* in this case generally refers to a user
-(represented by a *User* model), but it can also refer to an API context. The
+XOS provides hooks for specifying security policies. These policies
+answer the question: *Who can do what?* The *who* in this case
+generally refers to a user (represented by a *User* model), but it can
+also refer to an API context. The
 *what* refers to two things: (1) the piece of information being accessed (a
 model, an object, or a field within that object), and (2) the access type
 (whether it is a read, a write, or a privilege update).

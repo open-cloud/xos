@@ -86,19 +86,25 @@ helm init
 
 The helm charts used to deploy XOS are currently bundled in the CORD
 `helm-chart` repository. The rest of this section assumes all you download
-this repository into a directory named `~/cord`. 
+this repository into a directory named `~/xos`.
 
 ```shell
-mkdir ~/cord
-cd ~/cord
+mkdir ~/xos
+cd ~/xos
 git clone https://gerrit.opencord.org/helm-charts
 cd helm-charts
 ```
 
+While downloading the simple `helm-charts` repository is sufficient
+for bringing up XOS, you may also want to download the XOS source
+code, for example, so you can walk through the
+[XOS tutorial](tutorial/basic_synchronizer.md). The easiest way to do
+this uses the `repo` tool, as described [here](repo.md).
+
 ## Bring Up XOS
 
 To deploy `xos-core` (plus affiliated micro-services) into your
-Kubernetes cluster, execute the following from the `~/cord/helm-charts`
+Kubernetes cluster, execute the following from the `~/xos/helm-charts`
 directory:
 
 ```shell
@@ -117,14 +123,15 @@ xos-core-57fd788db-8b97d                       1/1       Running   0          2m
 xos-db-f9ddc6589-rtrml                         1/1       Running   0          2m
 xos-gui-7fcfcd4474-prhfb                       1/1       Running   0          2m
 xos-redis-74c5cdc969-ppd7z                     1/1       Running   0          2m
-xos-tosca-7c665f97b6-krp5k                     1/1       Running   0          2m 
-xos-ws-55d676c696-pxsqk                        1/1       Running   0          2m 
+xos-tosca-7c665f97b6-krp5k                     1/1       Running   0          2m
+xos-ws-55d676c696-pxsqk                        1/1       Running   0          2m
 ```
 
 ## Bring Up a Service
 
 Optionally, you can bring up a simple service to be managed by XOS.
-This involves deploying two additional helm charts: `base-kubernetes` and `demo-simpleexampleservice`. Again from the `~/cord/helm-charts`
+This involves deploying two additional helm charts: `base-kubernetes`
+and `demo-simpleexampleservice`. Again from the `~/xos/helm-charts`
 directory, execute the following:
 
 ```shell
@@ -167,10 +174,11 @@ minikube service xos-gui
 ```
 
 This will launch a window in your default browser. Administrator login
-and password are defined in `~/cord/helm-charts/xos-core/values.yaml`. 
+and password are defined in `~/xos/helm-charts/xos-core/values.yaml`.
 
 ## Next Steps
 
 This completes the installation process. At this point, you can
-drill down on the internals of `SimpleExampleService` by visiting
-its [CORD Guid tutorial](https://guide.opencord.org/simpleexampleservice/simple-example-service.html).
+drill down on the internals of
+[Simple Example Service](simpleexampleservice/simple-example-service.md).
+

@@ -20,7 +20,7 @@ serve: setup
 build: setup
 	gitbook build
 
-setup: xos-gui xos-tosca
+setup: xos-gui xos-tosca kubernetes openstack onos simpleexampleservice exampleservice
 	gitbook init
 	gitbook install
 
@@ -43,6 +43,22 @@ xos-gui:
 
 xos-tosca:
 	ln -s ../../xos-tosca/docs xos-tosca
+
+kubernetes:
+	ln -s ../../services/kubernetes-service/docs kubernetes
+
+openstack:
+	ln -s ../../services/openstack/docs openstack
+
+onos:
+	ln -s ../../services/onos-service/docs onos
+
+exampleservice:
+	ln -s ../../services/exampleservice/docs exampleservice
+
+simpleexampleservice:
+	ln -s ../../services/simpleexampleservice/docs simpleexampleservice
+
 
 # HOW TO
 # - load the virtual env (https://guide.opencord.org/xos/dev/local_env.html)
@@ -75,4 +91,4 @@ clean: swagger_clean venv_clean
 	rm -rf $(GENERATED_DOCS)
 	rm -rf _book
 	rm -rf node_modules
-	rm -rf xos xos-gui xos-tosca
+	rm -rf xos xos-gui xos-tosca kubernetes openstack onos simpleexampleservice exampleservice
