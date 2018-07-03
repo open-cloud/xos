@@ -25,25 +25,13 @@ sudo chmod a+x /usr/local/bin/repo
 
 ## Download Repositories
 
-The XOS repositories are usually checked out to `~/xos` in most of our
-examples:
+We assume the XOS repositories are checked out into directory `$SRC_DIR`:
 
 ```shell
-mkdir ~/xos
-cd ~/xos
+mkdir $SRC_DIR/
+cd $SRC_DIR
 repo init -u https://gerrit.opencord.org/xos-manifest -b master
 repo sync
-```
-
-When this is complete, a listing (`ls`) inside this directory should yield
-output similar to:
-
-```shell
-./				helm-charts/			xos-rest-gw/
-../				profiles/			xos-sample-gui-extension/
-.repo/					services/			xos-tosca/
-automation-tools/		xos-core/
-components/			xos-gui/
 ```
 
 ## Development Notes

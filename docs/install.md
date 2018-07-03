@@ -86,11 +86,11 @@ helm init
 
 The helm charts used to deploy XOS are currently bundled in the CORD
 `helm-chart` repository. The rest of this section assumes all you download
-this repository into a directory named `~/xos`.
+this repository into directory `$SRC_DIR`.
 
 ```shell
-mkdir ~/xos
-cd ~/xos
+mkdir $SRC_DIR
+cd $SRC_DIR
 git clone https://gerrit.opencord.org/helm-charts
 cd helm-charts
 ```
@@ -104,7 +104,7 @@ this uses the `repo` tool, as described [here](repo.md).
 ## Bring Up XOS
 
 To deploy `xos-core` (plus affiliated micro-services) into your
-Kubernetes cluster, execute the following from the `~/xos/helm-charts`
+Kubernetes cluster, execute the following from the `$SRC_DIR/helm-charts`
 directory:
 
 ```shell
@@ -131,7 +131,7 @@ xos-ws-55d676c696-pxsqk                        1/1       Running   0          2m
 
 Optionally, you can bring up a simple service to be managed by XOS.
 This involves deploying two additional helm charts: `base-kubernetes`
-and `demo-simpleexampleservice`. Again from the `~/xos/helm-charts`
+and `demo-simpleexampleservice`. Again from the `$SRC_DIR/helm-charts`
 directory, execute the following:
 
 ```shell
@@ -174,7 +174,7 @@ minikube service xos-gui
 ```
 
 This will launch a window in your default browser. Administrator login
-and password are defined in `~/xos/helm-charts/xos-core/values.yaml`.
+and password are defined in `$SRC_DIR/helm-charts/xos-core/values.yaml`.
 
 ## Next Steps
 

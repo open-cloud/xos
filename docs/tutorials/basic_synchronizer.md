@@ -14,7 +14,7 @@ This includes:
 ## Prerequisites
 
 The following assumes you start with a simple deployment of
-XOS on `minikube` as described [here](../install.md), so that
+XOS on Kubernetes, so that
 running `kubectl get pods` returns something similar to:
 
 ```shell
@@ -28,24 +28,24 @@ xos-tosca-69588f677c-77lll       1/1       Running   0          20h
 xos-ws-748c7f9f75-cnjnh          1/1       Running   0          21h
 ```
 
-The tutorial also assumes you have downloaded the XOS source code,
-as described [here](../repo.md).
+The tutorial also assumes you have downloaded the XOS source code
+into directory `$SRC_DIR`.
 
 ## Directory Structure
 
-XOS services are located under `~/xos/services`. The first step
+XOS services are located under `$SRC_DIR/services`. The first step
 is to create a new directory to store our models and synchronizer
 code. We will use the name `hello-world` for this example:
 
 ```shell
-cd ~/xos/services
+cd $SRC_DIR/services
 mkdir hello-world
 cd hello-world
 ```
 
 Although empty when we start, we will end up with a directory
 structure that looks like the following. You can look at the
-corresponding directories of other services in `~/xos/services`
+corresponding directories of other services in `$SRC_DIR/services`
 for examples.
 
 ```shell
@@ -136,8 +136,9 @@ logging:
       level: DEBUG
 ```
 
-This tells the synchronizer framework in a running system where
-to fine the configuration parameters specific to HelloWorld.
+This tells the synchronizer framework in a running container where
+to fine the configuration parameters specific to HelloWorld. By
+convention, we use `/opt/xos`.
 
 ## Define Models
 
@@ -169,7 +170,7 @@ This specifies two models: `HelloWorldService` extends the
 `Service` model, and `HelloWorldServiceInstance` extends the
 `ServiceInstance` model. Both of these models inherit the
 attributes defined in the parent classes, which you can see in
-file `~/xos/xos-core/core/models/core.xproto`.
+file `$SRC_DIR/xos-core/core/models/core.xproto`.
 
 ## Load the Models into the Core
 
@@ -218,7 +219,7 @@ docker tag xosproject/xos-synchronizer-base:master xosproject/xos-synchronizer-b
 ```
 
 Now we can build our synchronizer image by executing the following
-from the `~/xos/service/hello-world` directory:
+from the `$SRC_DIR/service/hello-world` directory:
 
 ```shell
 eval $(minikube docker-env)
