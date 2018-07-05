@@ -45,19 +45,19 @@ xos-tosca:
 	ln -s ../../xos-tosca/docs xos-tosca
 
 kubernetes:
-	ln -s ../../services/kubernetes-service/docs kubernetes
+	ln -s ../../xos-services/kubernetes-service/docs kubernetes
 
 openstack:
-	ln -s ../../services/openstack/docs openstack
+	ln -s ../../xos-services/openstack/docs openstack
 
 onos:
-	ln -s ../../services/onos-service/docs onos
+	ln -s ../../xos-services/onos-service/docs onos
 
 exampleservice:
-	ln -s ../../services/exampleservice/docs exampleservice
+	ln -s ../../xos-services/exampleservice/docs exampleservice
 
 simpleexampleservice:
-	ln -s ../../services/simpleexampleservice/docs simpleexampleservice
+	ln -s ../../xos-services/simpleexampleservice/docs simpleexampleservice
 
 
 # HOW TO
