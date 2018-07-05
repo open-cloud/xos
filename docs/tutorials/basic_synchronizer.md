@@ -1,9 +1,9 @@
 # Tutorial
 
 This section walks you through the process of writing an XOS
-model and synchronizer. This exercise is not extensive. Its only
-purpose is to guide you through the most common use cases.
-This includes:
+model and synchronizer. It does not provide exhaustive coverage,
+but it does guide you through the most common use cases,
+including:
 
 - How to define XOS models.
 - How to load the models into the `xos-core`.
@@ -13,8 +13,8 @@ This includes:
 
 ## Prerequisites
 
-The following assumes you start with a simple deployment of
-XOS on Kubernetes, so that
+The following assumes you start with a `minikube` deployment
+of XOS (although any Kubernetes cluster will do), so that
 running `kubectl get pods` returns something similar to:
 
 ```shell
@@ -30,6 +30,9 @@ xos-ws-748c7f9f75-cnjnh          1/1       Running   0          21h
 
 The tutorial also assumes you have downloaded the XOS source code
 into directory `$SRC_DIR`.
+
+> **Note:** Instructions on how to install XOS on a Kubernetes cluster
+> and download the XOS source code is provided elsewhere in this Guide.
 
 ## Directory Structure
 
@@ -284,7 +287,7 @@ Use the default credentials `admin@opencord.org/letmein` to login.
 ### Create TOSCA Recipes to Instantiate Your Models
 
 The models you defined earlier in this tutorial are, more precisely,
-a model schema. Once your model schema has been loaded into the
+model schema. Once your model schema has been loaded into the
 XOS core, you can create one or more *instances* of those models.
 We typically use a TOSCA recipe to do this.
 
