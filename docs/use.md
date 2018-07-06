@@ -1,7 +1,7 @@
 # Using XOS
 
-XOS has three inter-related aspects, and this section is
-organized accordingly.
+There are three inter-related aspects to on-boarding a service into
+XOS. This section is organized accordingly.
 
 * **Modeling Framework:** XOS defines a
   [modeling framework](dev/xproto.md), which

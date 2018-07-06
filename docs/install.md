@@ -10,7 +10,7 @@ XOS runs on any version of Kubernetes (1.10 or greater), and uses the
 Helm client-side tool. If you are new to Kubernetes, we recommend this [tutorial](https://kubernetes.io/docs/tutorials/) as a good place to start.
 
 Although you are free to set up Kubernetes and Helm in whatever way
-makes sense for your system, the following walks you through an
+makes sense to you, the following walks you through an
 example installation sequence on  MacOS. It was tested on version 10.12.6.
 
 ## Prerequisites
@@ -98,7 +98,7 @@ cd helm-charts
 While downloading the simple `helm-charts` repository is sufficient
 for bringing up XOS, you may also want to download the XOS source
 code, for example, so you can walk through the
-[XOS tutorial](tutorial/basic_synchronizer.md). The easiest way to do
+[XOS tutorial](tutorials/basic_synchronizer.md). The easiest way to do
 this uses the `repo` tool, as described [here](repo.md).
 
 ## Bring Up XOS
@@ -178,7 +178,7 @@ and password are defined in `$SRC_DIR/helm-charts/xos-core/values.yaml`.
 
 ## Next Steps
 
-This completes the installation process. At this point, you can
+This completes the installation process. At this point, you can either
 drill down on the internals of
-[Simple Example Service](simpleexampleservice/simple-example-service.md).
-
+[Simple Example Service](simpleexampleservice/simple-example-service.md),
+or you can work through the [XOS tutorial](tutorials/basic_synchronizer.md).

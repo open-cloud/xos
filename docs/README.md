@@ -3,8 +3,8 @@
 XOS provides a framework for defining a set of declarative models and
 then using those models to manage a collection of components that have
 been configured into an operational system. XOS is itself deployed as
-a set of micro-services, collectively forming a
-*ControlPlane-as-a-Service* that:
+a set of micro-services, collectively forming an
+*Extensible Service Control Plane* that:
 
 * Serves as a single unifying interface to a collection of backend
   services, avoiding the management silos that otherwise result from
@@ -33,7 +33,7 @@ XOS is currently being used in three projects:
 
 * **End-to-End Service Chains in a Multi-Cloud:** XOS is being used
   to manage end-to-end service chains that span customer premises,
-  edge sites, and commodity clouds.
+  edge sites, Internet exchange points, and commodity clouds.
 
 For additional white papers describing XOS, see the project
 [wiki page](https://wiki.opencord.org/display/CORD/XOS+and+the+CORD+Controller).

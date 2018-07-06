@@ -1,9 +1,9 @@
 # Download Source Code
 
-The easiest way to download source code for XOS -- including the
+The easiest way to download source code for XOS—including the
 XOS core, the XOS-related interfaces (e.g., GUI, TOSCA), the helm
 charts used to deploy XOS, and the model/synchronizers
-for the services being managed by XOS -- is to use the `repo` tool.
+for the services being managed by XOS—is to use the `repo` tool.
 
 ## Install repo
 
