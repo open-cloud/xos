@@ -3,6 +3,7 @@
 * [Introduction](README.md)
 * [Installing XOS](install.md)
     * [Download Source Code](repo.md)
+    * [XOS Containers](xos_internals.md)
 * [Using XOS](use.md)
     * [XOS Modeling Framework](dev/xproto.md)
         * [XOS Tool Chain (Internals)](dev/xosgenx.md)
