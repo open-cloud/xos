@@ -15,7 +15,6 @@
 
 
 from modelaccessor import ModelAccessor
-import pytz
 import datetime
 import time
 
@@ -68,9 +67,7 @@ class CoreApiModelAccessor(ModelAccessor):
 
     def now(self):
         """ Return the current time for timestamping purposes """
-        utc = pytz.utc
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
-        return time.mktime(now.timetuple())
+        return (datetime.datetime.utcnow()-datetime.datetime.fromtimestamp(0)).total_seconds()
 
     def is_type(self, obj, name):
         return obj._wrapped_class.__class__.__name__ == name
