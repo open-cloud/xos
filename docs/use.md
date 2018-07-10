@@ -11,7 +11,8 @@ XOS. This section is organized accordingly.
   generate code for several elements required to control the system
   (including an API that serves the set of models that have been
   loaded into XOS). Service developers typically write one or more
-  models to on-board their service.
+  xproto models to on-board their service. Platform developers
+  sometimes extend xosgenx to support new target elements.
 
 * **Synchronizer Framework:** XOS defines a
   [synchronization framework](dev/synchronizers.md)

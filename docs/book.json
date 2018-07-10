@@ -10,7 +10,6 @@
   "plugins": [
     "anchorjs",
     "smart-nav-collapse",
-    "page-toc",
     "versions-select"
   ]
 }
