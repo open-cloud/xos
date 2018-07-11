@@ -1,7 +1,7 @@
 # Summary
 
 * [Introduction](README.md)
-    * [End-to-End Example](use_case.md)
+    * [Example Use Case](use_case.md)
 * [Installing XOS](install.md)
     * [Download Source Code](repo.md)
     * [XOS Containers](xos_internals.md)
