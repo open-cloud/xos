@@ -94,9 +94,9 @@ An example set of target definitions can be found in
 It is possible to run the xosgenx tool chain directly. This is useful, for
 example, when developing a new target.
 
-To do do, first setup the python virtual environment as described
-[here](local_env.md). Then drop an xproto file in your working directory. For
-example, you can copy-and-paste the following content into a file named
+To do do, first setup the python virtual environment as described in the [unit
+testing docs](unittest.md). Then drop an xproto file in your working directory.
+For example, you can copy-and-paste the following content into a file named
 `slice.xproto`:
 
 ```protobuf

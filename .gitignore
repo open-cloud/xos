@@ -35,10 +35,10 @@ venv-xos*
 _book/
 .noseids
 
-lib/xos-config/cover/
-lib/xos-config/.coverage
-lib/xos-config/coverage.xml
+# testing/coverage files
+nose2-junit.xml
+.coverage
+coverage.xml
 
+lib/xos-config/cover/
 lib/xos-genx/cover/
-lib/xos-genx/.coverage
-lib/xos-genx/coverage.xml

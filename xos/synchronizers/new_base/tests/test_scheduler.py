@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TEST_FRAMEWORK: IGNORE
-
 import unittest
 from mock import patch
 import mock
@@ -27,6 +25,9 @@ test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 xos_dir = os.path.join(test_path, '..', '..', '..')
 
 class TestScheduling(unittest.TestCase):
+
+    __test__ = False
+
     def setUp(self):
         global mock_enumerator, event_loop
 

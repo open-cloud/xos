@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Copyright 2017-present Open Networking Foundation
 #
@@ -14,50 +14,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-BASEDIR=$(pwd)
-REQUIREMENTS=$BASEDIR/containers/xos/pip_requested.txt
-VENVDIR=venv-xos
+# setup_venv_lite.sh
+# sets up a python virtualenv for testing and service development
 
-echo $BASEDIR
-echo $REQUIREMENTS
-echo $VENVDIR
+set -e -o pipefail
+
+WORKSPACE=${WORKSPACE:-.}
+XOS_DIR=${XOS_DIR:-.}
+PIP_REQS=${PIP_REQS:-${XOS_DIR}/scripts/xos_dev_reqs.txt}
+VENVDIR="${WORKSPACE}/venv-xos"
 
 # create venv if it's not yet there
-if [ ! -d "$BASEDIR/$VENVDIR" ]; then
-   echo "Setting up virtualenv for XOS"
-   virtualenv -q $BASEDIR/$VENVDIR --no-site-packages
-   pip install --upgrade pip
-   echo "Virtualenv created."
+if [ ! -x "${VENVDIR}/bin/activate" ]; then
+  echo "Setting up dev/test virtualenv in ${VENVDIR} for XOS"
+  virtualenv -q "${VENVDIR}" --no-site-packages
+  echo "Virtualenv created."
 fi
 
-# activate the virtual env
-if [ ! $VIRTUAL_ENV ]; then
-   source $BASEDIR/$VENVDIR/bin/activate
-   echo "Virtualenv activated."
-fi
+echo "Installing python requirements in virtualenv with pip"
+source "${VENVDIR}/bin/activate"
+pip install --upgrade pip
+pip install -r "$PIP_REQS"
 
-# install pip requirements
-if \
-pip install cryptography --global-option=build_ext --global-option="-L/usr/local/opt/openssl/lib" --global-option="-I/usr/local/opt/openssl/include" && \
-pip install -r $REQUIREMENTS && \
-cd $BASEDIR/lib/xos-config; python setup.py install && \
+pushd "$XOS_DIR/lib/xos-util"
+python setup.py install
+echo "xos-util Installed"
+popd
 
-#install xos-client
-cp -R $BASEDIR/containers/xos/tmp.chameleon $BASEDIR/xos/xos_client/xosapi/chameleon && \
-cd $BASEDIR/xos/xos_client/xosapi/chameleon/protos; VOLTHA_BASE=anything make && \
-cd $BASEDIR/xos/xos_client; python setup.py install && \
-chmod 777 $BASEDIR/venv-xos/lib/python2.7/site-packages/xosapi/chameleon/protoc_plugins/gw_gen.py && \
-chmod 777 $BASEDIR/venv-xos/lib/python2.7/site-packages/xosapi/chameleon/protoc_plugins/swagger_gen.py && \
+pushd "$XOS_DIR/lib/xos-config"
+python setup.py install
+echo "xos-config Installed"
+popd
 
-#install xos-genx
-cd $BASEDIR/lib/xos-genx; python setup.py install && \
+pushd "$XOS_DIR//lib/xos-genx"
+python setup.py install
+echo "xos-genx Installed"
+popd
 
-#install xos-util
-cd $BASEDIR/lib/xos-util; python setup.py install
- then
-   echo "Requirements installed."
-   echo "Virtualenv ready"
- else
-   echo "An error occurred"
-fi
-cd $BASEDIR
+pushd "$XOS_DIR/xos/xos_client"
+make
+echo "xos-client Installed"
+popd
+
+echo "XOS dev/test virtualenv created. Run 'source ${VENVDIR}/bin/activate'."
