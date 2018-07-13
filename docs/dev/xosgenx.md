@@ -86,6 +86,9 @@ This target simply prints the IR for an xproto definition.
 The example target outputs a Python function that enumerates the ids of the
 objects from which the current object is linked.
 
+An example set of target definitions can be found in
+`$SRC_DIR/lib/xos-genx/xosgenx/targets/`.
+
 ## Running xosgenx
 
 It is possible to run the xosgenx tool chain directly. This is useful, for
@@ -159,3 +162,6 @@ optional arguments:
                         Output file extension (if write-to-file is set to
                         single)
 ```
+
+For example usage of `xosgenx`, see the Dockerfiles in
+`$SRC_DIR/containers/xos/`.

@@ -34,9 +34,8 @@ XOS Core. This tool chain can be used to produce multiple targets, including:
   run.
 * Unit Tests – auto-generate API unit tests.
 
-The next two sections describe xproto (first the models and then policies that
-can be applied to the models), and the following section describes xosgenx and
-how it can be used to generate different targets.
+The rest of this section describes xproto: first the models and then policies that
+can be applied to the models.
 
 ## Models
 
