@@ -510,6 +510,10 @@ class XOSAPIHelperMixin(object):
                     save_kwargs["caller_kind"] = v
                 elif k == "always_update_timestamp":
                     save_kwargs["always_update_timestamp"] = True
+                elif k == "is_sync_save":
+                    save_kwargs["is_sync_save"] = True
+                elif k == "is_policy_save":
+                    save_kwargs["is_policy_save"] = True
 
             obj.save(**save_kwargs)
 
@@ -585,14 +589,14 @@ class XOSAPIHelperMixin(object):
                         query = self.query_element_to_q(element)
                 queryset = djangoClass.objects.filter(query)
             elif request.kind == request.SYNCHRONIZER_DIRTY_OBJECTS:
-                query = (Q(enacted__lt=F('updated')) | Q(enacted=None)) & Q(
-                    lazy_blocked=False) & Q(no_sync=False)
+                query = (Q(enacted=None) | Q(enacted__lt=F('updated')) | Q(enacted__lt=F('changed_by_policy'))) \
+                        & Q(lazy_blocked=False) & Q(no_sync=False)
                 queryset = djangoClass.objects.filter(query)
             elif request.kind == request.SYNCHRONIZER_DELETED_OBJECTS:
                 queryset = djangoClass.deleted_objects.all()
             elif request.kind == request.SYNCHRONIZER_DIRTY_POLICIES:
-                query = (Q(policed__lt=F('updated')) | Q(
-                    policed=None)) & Q(no_policy=False)
+                query = (Q(policed=None) | Q(policed__lt=F('updated')) | Q(policed__lt=F('changed_by_step'))) \
+                        & Q(no_policy=False)
                 queryset = djangoClass.objects.filter(query)
             elif request.kind == request.SYNCHRONIZER_DELETED_POLICIES:
                 query = Q(policed__lt=F('updated')) | Q(policed=None)

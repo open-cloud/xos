@@ -137,6 +137,7 @@ class Backend:
         if policies_dir:
             policy_engine = XOSPolicyEngine(policies_dir=policies_dir, log = self.log)
             model_policy_thread = threading.Thread(target=policy_engine.run, name="policy_engine")
+            model_policy_thread.is_policy_thread=True
             model_policy_thread.start()
         else:
             self.log.info("Skipping model policies thread due to no model_policies dir.")

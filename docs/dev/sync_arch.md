@@ -192,3 +192,28 @@ to it, but not if that interface is bound to a different node. When there is a
 failure, the synchronizer core re-executes the actuator at a later time, and
 then again at increasing intervals.
 
+## Timestamps
+
+XOS models come with a variety of timestamps. The first three timestamps indicate changes that occur to the models:
+
+* `Updated`. Updated is set whenever a model is saved by a non-synchronizer. For example, updating a model via the GUI or the REST API will cause the updated timestamp to be set. The updated timestamp is set regardless of whether or not any actual changes have occurred to the model. This allows a developer or operator to save a model and cause the model to be resynchronized.
+
+* `changed_by_step`. This timestamp is set whenever non-bookkeeping fields in the model are changed during the execution of a syncstep. If no changes occur during a save, then this timestamp is not set.
+
+* `changed_by_policy`. This timestamp is set whenever non-bookkeeping fields in the model are changed during the execution of a model policy. If no changes occur during a save, then this timestamp is not set.
+
+For a given model, if we take the maximum of the three timestamps, `max(model.updated, model.changed_by_step, model.changed.by_policy)`, we can use that calculation as an overall version of the substantive fields of the model. If a user updated the model, or if a policy or syncstep changed the model, then one of those timestamps will be updated. 
+
+The following two timestamps are set when a sync or a model_policy is completed.
+
+* `enacted`. Enacted indicates the model has been successfully synced. It is set to `max(model.updated, model.changed_by_policy)`. The enacted timestamp does not indicate the time of the synchronization, but rather indicates the version of the data that was synchronized.
+
+* `policed`. Policed indicates the model has successfully had model policies applied. It is set to `max(model.updated, model.changed_by_step)`. The policed timestamp does not indicate the time the policy completed, but rather indicates the version of the data that had policies applied. 
+
+The rules for running steps and policies are as follows:
+
+* Model policies are run if `model.updated > model.policed || model.changed_by_step > model.policed`. In other words, if a user updates the model, or a syncstep changes the model, then policies will run.
+
+* Sync steps are run if `model.udpated > model.enacted || model.changed_by_policy > model.enacted`. In other words, if a user updates the model, or a policy changes the model, then steps will be run.
+
+This means it is possible for a syncstep to trigger a policy, and it is possible for a policy to trigger a syncstep. A cycle is not necessarily bad assuming the cycle does eventually terminate in a steady state. Because the `changed_by_` timestamps are only set when a model changes (i.e. authoritative state change), and not merely when it is saved, simply no longer making changes to a model will break any cycle. It's recommended that developers do exercise caution when modifying models from both syncsteps and policies.

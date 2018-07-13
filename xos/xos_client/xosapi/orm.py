@@ -37,6 +37,7 @@ u=c.xos_orm.User.objects.get(id=1)
 
 import os
 import sys
+import threading
 import time
 import imp
 from xosconfig import Config
@@ -275,7 +276,7 @@ class ORMWrapper(object):
             self.cache.clear()
             self.reverse_cache.clear()
 
-    def save(self, update_fields=None, always_update_timestamp=False):
+    def save(self, update_fields=None, always_update_timestamp=False, is_sync_save=False, is_policy_save=False):
         if self.is_new:
            new_class = self.stub.invoke("Create%s" % self._wrapped_class.__class__.__name__, self._wrapped_class)
            self._wrapped_class = new_class
@@ -286,6 +287,10 @@ class ORMWrapper(object):
                metadata.append( ("update_fields", ",".join(update_fields)) )
            if always_update_timestamp:
                metadata.append( ("always_update_timestamp", "1") )
+           if is_policy_save:
+               metadata.append( ("is_policy_save", "1") )
+           if is_sync_save:
+               metadata.append( ("is_sync_save", "1") )
            self.stub.invoke("Update%s" % self._wrapped_class.__class__.__name__, self._wrapped_class, metadata=metadata)
         self.do_post_save_fixups()
 
@@ -552,6 +557,14 @@ class ORMStub(object):
 
     def add_default_metadata(self, metadata):
         default_metadata = [ ("caller_kind", self.caller_kind) ]
+
+        # introspect to see if we're running from a synchronizer thread
+        if getattr(threading.current_thread(), "is_sync_thread", False):
+            default_metadata.append( ("is_sync_save", "1") )
+
+        # introspect to see if we're running from a model_policy thread
+        if getattr(threading.current_thread(), "is_policy_thread", False):
+            default_metadata.append( ("is_policy_save", "1") )
 
         # build up a list of metadata keys we already have
         md_keys=[x[0] for x in metadata]
