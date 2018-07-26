@@ -27,8 +27,8 @@ message XOSBase {
      optional int32 policy_code = 16 [default = 0, feedback_state = True];
      required string leaf_model_name = 17 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
      required bool backend_need_delete_policy = 18 [default = False, help_text = "True if delete model_policy must be run before object can be reaped", blank = True];
-     required bool xos_managed = 19 [default = True, help_text = "True if xos is responsible for creating/deleting this object", blank = True];
-     optional string backend_handle = 20 [max_length = 1024, feedback_state = True, blank=True, null=True, help_text = "Handle used by the backend to track this object"];
+     required bool xos_managed = 19 [default = True, help_text = "True if xos is responsible for creating/deleting this object", blank = True, gui_hidden = True];
+     optional string backend_handle = 20 [max_length = 1024, feedback_state = True, blank=True, null=True, help_text = "Handle used by the backend to track this object", gui_hidden = True];
 }
 
 // The calling user represents the user being accessed, or is a site admin.
@@ -408,17 +408,16 @@ policy service_policy <ctx.user.is_admin | exists Privilege: Privilege.accessor_
 
 message Service (XOSBase,AttributeMixin) {
      optional string description = 1 [help_text = "Description of Service", max_length = 254, null = True, db_index = False, blank = True, varchar = True];
-     required bool enabled = 2 [default = True, null = False, db_index = False, blank = True];
+     required bool enabled = 2 [default = True, null = False, db_index = False, blank = True, gui_hidden = True];
      required string kind = 3 [default = "generic", max_length = 30, content_type = "stripped", blank = False, help_text = "Kind of service", null = False, db_index = False, choices="(('generic', 'Generic'), ('data', 'Data Plane'), ('control', 'Control Plane'))"];
      required string name = 4 [max_length = 30, content_type = "stripped", blank = False, help_text = "Service Name", null = False, db_index = False, unique = True];
      optional string versionNumber = 5 [max_length = 30, content_type = "stripped", blank = True, help_text = "Version of Service Definition", null = True, db_index = False];
-     required bool published = 6 [default = True, null = False, db_index = False, blank = True];
-     optional string view_url = 7 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
-     optional string icon_url = 8 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
-     optional string public_key = 9 [help_text = "Public key string", max_length = 4096, null = True, db_index = False, blank = True, varchar = True];
-     optional string private_key_fn = 10 [db_index = False, max_length = 4096, null = True, content_type = "stripped", blank = True];
+     required bool published = 6 [default = True, null = False, db_index = False, blank = True, gui_hidden = True];
+     optional string icon_url = 8 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True, gui_hidden = True];
+     optional string public_key = 9 [help_text = "Public key string", max_length = 4096, null = True, db_index = False, blank = True, varchar = True, gui_hidden = True];
+     optional string private_key_fn = 10 [db_index = False, max_length = 4096, null = True, content_type = "stripped", blank = True, gui_hidden = True];
      optional string service_specific_id = 11 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
-     optional string service_specific_attribute = 12 [db_index = False, null = True, blank = True, varchar = True];
+     optional string service_specific_attribute = 12 [db_index = False, null = True, blank = True, varchar = True, gui_hidden = True];
 }
 
 message ServicePort (XOSBase) {
@@ -544,10 +543,10 @@ message ServiceInterface (XOSBase) {
 message ServiceInstance (XOSBase, AttributeMixin) {
      optional string name = 1 [db_index = False, max_length = 200, null = True, content_type = "stripped", blank = True];
      required manytoone owner->Service:service_instances = 2 [db_index = True, null = False, blank = False];
-     optional string service_specific_id = 3 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
-     optional string service_specific_attribute = 10 [db_index = False, null = True, blank = True, varchar = True];
-     optional uint32 link_deleted_count = 11 [default = 0, help_text = "Incremented each time a provided_link is deleted from this ServiceInstance"];
-     optional manytoone master_serviceinstance->ServiceInstance:child_serviceinstances = 12 [help_text = "The master service instance that set this service instance up"];
+     optional string service_specific_id = 3 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True, gui_hidden = True];
+     optional string service_specific_attribute = 10 [db_index = False, null = True, blank = True, varchar = True, gui_hidden = True];
+     optional uint32 link_deleted_count = 11 [default = 0, help_text = "Incremented each time a provided_link is deleted from this ServiceInstance", gui_hidden = True];
+     optional manytoone master_serviceinstance->ServiceInstance:child_serviceinstances = 12 [help_text = "The master service instance that set this service instance up", gui_hidden = True];
 }
 
 message ServiceInstanceLink (XOSBase) {

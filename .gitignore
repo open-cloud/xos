@@ -42,3 +42,4 @@ coverage.xml
 
 lib/xos-config/cover/
 lib/xos-genx/cover/
+.vscode
