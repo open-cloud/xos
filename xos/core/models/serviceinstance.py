@@ -71,7 +71,9 @@ class ServiceInstance(ServiceInstance_decl):
                 self.owner = Service.objects.get(id = self._meta.get_field("owner").default)
 
     def save(self, *args, **kwargs):
-        self.set_owner()
+        # NOTE(CORD-3128): Only set the owner if not in deleted state.
+        if not self.deleted:
+            self.set_owner()
 
         # If the model has a Creator and it's not specified, then attempt to default to the Caller. Caller is
         # automatically filled in my the API layer. This code was typically used by ServiceInstances that lead to
