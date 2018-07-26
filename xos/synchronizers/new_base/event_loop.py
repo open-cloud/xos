@@ -239,6 +239,12 @@ class XOSObserver:
         model_accessor.journal_object(o, "syncstep.call.save_update")
         o.save(update_fields=['enacted', 'backend_status',
                               'backend_register', 'backend_code'])
+
+        if hasattr(step, "after_sync_save"):
+            step.log = log.bind(step=step)
+            step.after_sync_save(o)
+            step.log = self.log
+
         log.info("Saved sync object, new enacted", enacted=new_enacted)
 
     """ This function needs a cleanup. FIXME: Rethink backend_status, backend_register """

@@ -144,6 +144,9 @@ class XOSPolicyEngine(object):
                 instance.policy_status = "done"
                 instance.policy_code = 1
                 instance.save(update_fields=['policed', 'policy_status', 'policy_code'])
+
+                if hasattr(policy, "after_policy_save"):
+                    policy().after_policy_save(instance)
             except:
                 log.exception('MODEL POLICY: Object failed to update policed timestamp', instance =instance)
 

@@ -51,7 +51,7 @@ class Backend:
 
         for fn in os.listdir(step_dir):
             pathname = os.path.join(step_dir,fn)
-            if os.path.isfile(pathname) and fn.endswith(".py") and (fn!="__init__.py") and not "test" in fn:
+            if os.path.isfile(pathname) and fn.endswith(".py") and (fn!="__init__.py") and (not fn.startswith("test")):
 
                 # we need to extend the path to load modules in the step_dir
                 sys_path_save = sys.path
