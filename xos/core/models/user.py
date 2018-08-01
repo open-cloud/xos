@@ -149,8 +149,8 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    enacted = models.DateTimeField(null=True, default=None)
-    policed = models.DateTimeField(null=True, default=None)
+    enacted = models.DateTimeField(null=True, blank = True, default=None)
+    policed = models.DateTimeField(null=True, blank = True, default=None)
     backend_status = StrippedCharField(max_length=1024,
                                        default="Provisioning in progress")
     backend_code = models.IntegerField( default = 0, null = False )
@@ -304,6 +304,8 @@ class User(AbstractBaseUser, PlModelMixIn):
 
         if not self.username:
             self.username = self.email
+
+        self.full_clean()
 
         super(User, self).save(*args, **kwargs)
 

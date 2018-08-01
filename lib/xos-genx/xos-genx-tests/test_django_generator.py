@@ -95,9 +95,29 @@ class XProtoProtobufGeneratorTest(unittest.TestCase):
         args.target = 'django.xtarget'
         output = XOSProcessor.process(args)
 
-        print output
-
         self.assertIn("feedback_state_fields = ['parent_name', 'name']", output)
+
+    def test_min_max_validators(self):
+        """
+        [XOS-GenX] Use django validors for min and max values
+        """
+        xproto = \
+            """
+            option app_label = "test";
+
+            message Foo (ParentFoo) {
+                required int32 val = 1 [min_value = 1, max_value = 10];
+            }
+            """
+
+        args = FakeArgs()
+        args.inputs = xproto
+        args.target = 'django.xtarget'
+        output = XOSProcessor.process(args)
+
+        self.assertIn("validators=[", output)
+        self.assertIn("MinValueValidator(1)", output)
+        self.assertIn("MaxValueValidator(10)", output)
 
 if __name__ == '__main__':
     unittest.main()

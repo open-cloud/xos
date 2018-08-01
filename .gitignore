@@ -4,6 +4,7 @@
 profile
 *.moved-aside
 .idea
+.vscode
 setup/*
 setup/id_rsa/*
 xos/configurations/frontend/Dockerfile

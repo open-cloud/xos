@@ -266,6 +266,13 @@ A label to be used by the GUI display for this field:
 option verbose_name = “Verbose name goes here”;
 ```
 
+A min/max value for the field
+
+```protobuf
+option min_value = 10;
+option max_value = 100;
+```
+
 Do not display this field in the GUI (also available at the model level):
 
 ```protobuf

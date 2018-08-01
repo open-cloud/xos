@@ -99,6 +99,8 @@ class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases) }}:
       except AttributeError:
           pass
 
+      self.full_clean()
+
       {% for policy,error in xproto_validations(m.options) %}
       policy_{{policy}}_validator(self, None)
       {% endfor %}
