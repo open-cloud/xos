@@ -517,7 +517,9 @@ class XOSAPIHelperMixin(object):
 
             obj.save(**save_kwargs)
 
-            self.handle_m2m(obj, message, m2m_update_fields)
+            # CORD-3088: Do not call handle_m2m for deleted objects
+            if not obj.deleted:
+                self.handle_m2m(obj, message, m2m_update_fields)
 
             return self.objToProto(obj)
         except:
