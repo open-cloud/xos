@@ -498,7 +498,6 @@ message Slice::slice_policy (XOSBase) {
      required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", null = False, db_index = False, unique = True];
      required bool enabled = 2 [help_text = "Status for this Slice", default = True, null = False, db_index = False, blank = True];
      required string description = 4 [help_text = "High level description of the slice and expected activities", max_length = 1024, null = False, db_index = False, blank = True, varchar = True];
-     required string slice_url = 5 [db_index = False, max_length = 512, null = False, content_type = "url", blank = True];
      required manytoone site->Site:slices = 6 [help_text = "The Site this Slice belongs to", null = False, db_index = True, blank = False];
      required int32 max_instances = 7 [default = 10, null = False, db_index = False, blank = False];
      optional manytoone service->Service:slices = 8 [db_index = True, null = True, blank = True];
