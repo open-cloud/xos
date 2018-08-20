@@ -53,6 +53,25 @@ class FakeObj(object):
         self.is_set[name] = True
         super(FakeObj, self).__setattr__(name, value)
 
+    def HasField(self, name):
+        """ Return True if the field is set in the protobuf. """
+
+        # gRPC throws a valueerror if the field doesn't exist in the schema
+        if name not in self.fields:
+            raise ValueError("Field %s does not exist in schema" % name)
+
+        # Fields that are always set
+        if name in ["leaf_model_name"]:
+            return True
+
+        field = self.DESCRIPTOR.fields_by_name[name].field_decl
+
+        # Reverse foreign keys lists are never None, they are an empty list
+        if field.get("fk_reverse", None):
+            return True
+
+        return self.is_set.get(name, False)
+
     @property
     def self_content_type_id(self):
         return "xos.%s" % self.__class__.__name__.lower()
@@ -78,6 +97,8 @@ class FakeFieldOption(object):
 class FakeField(object):
     def __init__(self, field):
         extensions = {}
+
+        self.field_decl = field
 
         fk_model = field.get("fk_model", None)
         if fk_model:
@@ -268,6 +289,16 @@ class Tag(FakeObj):
 
     DESCRIPTOR = FakeDescriptor("Tag")
 
+class TestModel(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "intfield", "default": 0} )
+
+    def __init__(self, **kwargs):
+        return super(TestModel, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("TestModel")
+
+
 class ID(FakeObj):
     pass
 
@@ -300,7 +331,9 @@ class FakeStub(object):
     def __init__(self):
         self.id_counter = 1
         self.objs = {}
-        for name in ["Controller", "Deployment", "Slice", "Site", "Tag", "Service", "ServiceInstance", "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice"]:
+        for name in ["Controller", "Deployment", "Slice", "Site", "Tag", "Service", "ServiceInstance", "ONOSService",
+                     "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice",
+                     "TestModel"]:
             setattr(self, "Get%s" % name, functools.partial(self.get, name))
             setattr(self, "List%s" % name, functools.partial(self.list, name))
             setattr(self, "Create%s" % name, functools.partial(self.create, name))
@@ -371,14 +404,18 @@ class FakeCommonProtos(object):
 
 class FakeProtos(object):
     def __init__(self):
-        for name in ["Controller", "Deployment", "Slice", "Site", "ID", "Tag", "Service", "ServiceInstance", "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice"]:
+        for name in ["Controller", "Deployment", "Slice", "Site", "ID", "Tag", "Service", "ServiceInstance",
+                     "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice",
+                     "TestModel"]:
             setattr(self, name, globals()[name])
             self.common__pb2 = FakeCommonProtos()
 
 class FakeSymDb(object):
     def __init__(self):
         self._classes = {}
-        for name in ["Controller", "Deployment", "Slice", "Site", "ID", "Tag", "Service", "ServiceInstance", "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice"]:
+        for name in ["Controller", "Deployment", "Slice", "Site", "ID", "Tag", "Service", "ServiceInstance",
+                     "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice",
+                     "TestModel"]:
             self._classes["xos.%s" % name] = globals()[name]
 
 

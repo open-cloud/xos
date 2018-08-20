@@ -232,6 +232,16 @@ class ORMWrapper(object):
         if name in self._reverse_fkmap.keys():
             return self.reverse_fk_resolve(name)
 
+        try:
+            # When sending a reply, XOS will leave the field unset if it is None in the data model. If
+            # HasField(<fieldname>)==False for an existing object, then the caller can infer that field was set to
+            # None.
+            if (not self.is_new) and (not self._wrapped_class.HasField(name)):
+                return None
+        except ValueError:
+            # ValueError is thrown if the field does not exist. We will handle that case in the getattr() below.
+            pass
+
         return getattr(self._wrapped_class, name, *args, **kwargs)
 
     def __setattr__(self, name, value):
@@ -239,6 +249,11 @@ class ORMWrapper(object):
             self.fk_set(name, value)
         elif name in self.__dict__:
             super(ORMWrapper,self).__setattr__(name, value)
+        elif value is None:
+            # When handling requests, XOS interprets gRPC HasField(<fieldname>)==False to indicate that the caller
+            # has not set the field and wants it to continue to use its existing (or default) value. That leaves us
+            # with no easy way to support setting a field to None.
+            raise ValueError("Setting a non-foreignkey field to None is not supported")
         else:
             setattr(self._wrapped_class, name, value)
 
