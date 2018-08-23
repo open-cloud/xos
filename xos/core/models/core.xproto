@@ -109,13 +109,13 @@ message Privilege::grant_policy (XOSBase) {
 }
 
 message AddressPool (XOSBase) {
-     required string name = 1 [db_index = False, max_length = 32, null = False, blank = False, unique = True];
-     optional string addresses = 2 [db_index = False, null = True, blank = True, varchar = True];
-     optional string gateway_ip = 3 [db_index = False, max_length = 32, null = True, blank = False];
-     optional string gateway_mac = 4 [db_index = False, max_length = 32, null = True, blank = False];
-     optional string cidr = 5 [db_index = False, max_length = 32, null = True, blank = False];
-     optional string inuse = 6 [db_index = False, null = True, blank = True, varchar = True];
-     optional manytoone service->Service:addresspools = 7 [db_index = True, null = True, blank = True];
+     required string name = 1 [db_index = False, max_length = 32, null = False, blank = False, unique = True, help_text="Name of this AddressPool"];
+     optional string addresses = 2 [db_index = False, null = True, blank = True, varchar = True, help_text="Space-separated list of available addresses"];
+     required string gateway_ip = 3 [db_index = False, max_length = 32, help_text="Gateway IP address for this AddressPool"];
+     required string gateway_mac = 4 [db_index = False, max_length = 32, help_text="Gateway MAC address for this AddressPool"];
+     required string cidr = 5 [db_index = False, max_length = 32, help_text="Subnet for this AddressPool"];
+     optional string inuse = 6 [db_index = False, null = True, blank = True, varchar = True, help_text="Space-separated list of inuse addresses"];
+     optional manytoone service->Service:addresspools = 7 [db_index = True, null = True, blank = True, help_text="Service this AddressPool belongs to"];
 }
 
 message ComputeServiceInstance (ServiceInstance) {
