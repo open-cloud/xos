@@ -74,7 +74,10 @@ class ORMWrapperServiceInstance(ORMWrapper):
             link = ServiceInstanceLink(provider_service_instance=eastbound_si, subscriber_service_instance=si)
             link.save()
 
-    def get_westbound_service_instance_properties(self, prop_name):
+    def get_westbound_service_instance_properties(self, prop_name, include_self=False):
+        if include_self and hasattr(self, prop_name):
+            return getattr(self, prop_name)
+
         wi = self.westbound_service_instances
 
         if len(wi) == 0:

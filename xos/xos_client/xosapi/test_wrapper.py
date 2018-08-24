@@ -132,6 +132,22 @@ class TestWrappers(unittest.TestCase):
 
         self.assertEqual(service_one.get_service_instance_class().model_name, "ServiceInstance")
 
+    def test_wrapper_from__class__dot_name(self):
+        """ The Service model has a wrapper, so it should be returned when make_ORMWrapper looks for a wrapper based
+            on the class name.
+        """
+        orm = self.make_coreapi()
+        obj = orm.Service()
+        self.assertEqual(obj.__class__.__name__, "ORMWrapperService")
+
+    def test_wrapper_from_class_names(self):
+        """ ONOSService._wrapped_class.class_names is "ONOSService, Service" so we should fall back to getting the
+            Service wrapper.
+        """
+        orm = self.make_coreapi()
+        obj = orm.ONOSService()
+        self.assertEqual(obj.__class__.__name__, "ORMWrapperService")
+
 def main():
     global USE_FAKE_STUB
     global xos_grpc_client

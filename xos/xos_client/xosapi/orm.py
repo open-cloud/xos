@@ -644,9 +644,26 @@ def register_convenience_wrapper(class_name, wrapper):
     convenience_wrappers[class_name] = wrapper
 
 def make_ORMWrapper(wrapped_class, *args, **kwargs):
-    if wrapped_class.__class__.__name__ in convenience_wrappers:
+    cls = None
+
+    if (not cls) and wrapped_class.__class__.__name__ in convenience_wrappers:
         cls = convenience_wrappers[wrapped_class.__class__.__name__]
-    else:
+
+    if (not cls):
+        # Search the list of class names for this model to see if we have any applicable wrappers. The list is always
+        # sorted from most specific to least specific, so the first one we find will automatically be the most relevant
+        # one. If we don't find any, then default to ORMWrapper
+
+        # Note: Only works on objects that have been fetched from the server, not objects that are created on the
+        # client. This is because wrapped_class.class_names is filled in by the server.
+
+        # TODO(smbaker): Ought to be able to make this work with newly created objects after they are saved.
+
+        for name in wrapped_class.class_names.split(","):
+            if name in convenience_wrappers:
+                cls = convenience_wrappers[name]
+
+    if (not cls):
         cls = ORMWrapper
 
     return cls(wrapped_class, *args, **kwargs)
