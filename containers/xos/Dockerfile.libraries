@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,22 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 FROM xosproject/xos-base:master
 
 # Add libraries
 COPY lib /opt/xos/lib
-
 COPY VERSION /opt/xos
 
-# Install the config module
-# and the xosgenx library
-RUN cd /opt/xos/lib/xos-util; \
-        python setup.py install; \
-        cd /opt/xos/lib/xos-config/; \
-	python setup.py install; \
-	cd /opt/xos/lib/xos-genx/; \
-	python setup.py install
+# Install python modules included with XOS
+RUN cd /opt/xos/lib/xos-util && python setup.py install \
+ && cd /opt/xos/lib/xos-config && python setup.py install \
+ && cd /opt/xos/lib/xos-genx && python setup.py install \
+ && cd /opt/xos/lib/kafkaloghandler && python setup.py install
 
 # Label image
 ARG org_label_schema_schema_version=1.0
