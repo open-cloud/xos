@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,5 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from .config import Config
+
+# Custom TRACE logging level
+# ref: https://stackoverflow.com/questions/2183233/how-to-add-a-custom-loglevel-to-pythons-logging-facility/13638084#13638084
+
+import logging
+
+# Logging levels: https://docs.python.org/2/library/logging.html#logging-levels
+# Add a sub-DEBUG Trace level
+TRACE_LOGLVL = 5
+
+logging.addLevelName(TRACE_LOGLVL, "TRACE")
+
+
+def trace_loglevel(self, message, *args, **kws):
+    if self.isEnabledFor(TRACE_LOGLVL):
+        self._log(TRACE_LOGLVL, message, args, **kws)
+
+
+logging.Logger.trace = trace_loglevel

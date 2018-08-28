@@ -100,10 +100,10 @@ class XOSObserver:
 
         try:
             if Config.get("dependency_graph"):
-                self.log.info('Loading model dependency graph', path=Config.get("dependency_graph"))
+                self.log.trace('Loading model dependency graph', path=Config.get("dependency_graph"))
                 dep_graph_str = open(Config.get("dependency_graph")).read()
             else:
-                self.log.debug('Using defualt model dependency graph', graph={})
+                self.log.trace('Using defualt model dependency graph', graph={})
                 dep_graph_str = '{}'
 
             # joint_dependencies is of the form { Model1 -> [(Model2, src_port, dst_port), ...] }
@@ -132,7 +132,7 @@ class XOSObserver:
                 True: model_dependency_graph_rev,
                 False: model_dependency_graph
             }
-            self.log.info(
+            self.log.trace(
                 "Loaded dependencies",
                 edges=model_dependency_graph.edges())
         except Exception as e:
@@ -442,9 +442,9 @@ class XOSObserver:
             return
 
         while True:
-            self.log.debug('Waiting for event or timeout')
+            self.log.trace('Waiting for event or timeout')
             self.wait_for_event(timeout=5)
-            self.log.debug('Synchronizer awake')
+            self.log.trace('Synchronizer awake')
 
             self.run_once()
 
@@ -483,7 +483,7 @@ class XOSObserver:
                 # This needs to be dropped soon.
                 pending_steps.append(step)
 
-        self.log.debug(
+        self.log.trace(
             'Fetched pending data',
             pending_objects=pending_objects,
             legacy_steps=pending_steps)
@@ -689,7 +689,7 @@ class XOSObserver:
                     objects_to_process, deletion)
 
                 threads = []
-                self.log.debug('In run once inner loop', deletion=deletion)
+                self.log.trace('In run once inner loop', deletion=deletion)
 
                 for cohort in dependent_cohorts:
                     thread = threading.Thread(
