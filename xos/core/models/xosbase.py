@@ -145,11 +145,11 @@ class XOSBase(XOSBase_decl):
             # intended, as kwargs will be passed to save() below.
             update_fields = kwargs["update_fields"]
 
-        # NOTE(smbaker): always_update_timestamp is deprecated, and will be removed when synchronizers are cleaned up.
+        # NOTE(smbaker): always_update_timestamp still has some relevance for event_steps and pull_steps that
+        # want to cause an update. For model_policies or sync_steps it should no longer be required.
         always_update_timestamp = False
         if "always_update_timestamp" in kwargs:
             always_update_timestamp = always_update_timestamp or kwargs.pop("always_update_timestamp")
-            log.warning("always_update_timestamp is deprecated, was used on model", model=self)
 
         is_sync_save = False
         if "is_sync_save" in kwargs:
