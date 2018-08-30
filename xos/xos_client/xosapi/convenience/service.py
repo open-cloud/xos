@@ -64,5 +64,39 @@ class ORMWrapperService(ORMWrapper):
             svcs.append(dep.subscriber_service)
         return svcs
 
+    def acquire_service_instance(self, subscriber_service_instance):
+        """ Given a subscriber_service_instance:
+              1) If there is an eligible provider_service_instance that can be used, then link to it
+              2) Otherwise, create a new provider_service_instance and link to it.
+
+            This is the base class, knows nothing of service specifics, so it assumes that #1 always yields no
+            eligible provider_service_instances. To get custom behavior, override this method in your own
+            convenience wrapper.
+        """
+        si_classname = self.get_service_instance_class_name()
+
+        ServiceInstanceLink = self.stub.ServiceInstanceLink
+
+        eastbound_si_class = getattr(self.stub, si_classname)
+        eastbound_si = eastbound_si_class(owner_id = self.id)
+        eastbound_si.save()
+
+        link = ServiceInstanceLink(provider_service_instance=eastbound_si,
+                                   subscriber_service_instance=subscriber_service_instance)
+        link.save()
+
+    def validate_links(self, subscriber_service_instance):
+        """ Validate existing links between the provider and subscriber service instances. If a valid link exists,
+            then return it. Return [] otherwise.
+
+            This is the base class, knows nothing of service specifics, so it assumes that all existing links are
+            valid. To get custom behavior, override this method in your own convenience wrapper.
+        """
+        matched = []
+        for link in subscriber_service_instance.subscribed_links.all():
+            if link.provider_service_instance.owner.id == self.id:
+                matched.append(link.provider_service_instance.leaf_model)
+        return matched
+
 
 register_convenience_wrapper("Service", ORMWrapperService)
