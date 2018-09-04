@@ -91,7 +91,8 @@ class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases, legacy_tag
       except AttributeError:
           base_save_in_attic = False
 
-      self.full_clean()
+      if not self.deleted:
+          self.full_clean()
 
       if not base_save_in_attic:
           super({{ m.name }}{{ legacy_tag }}, self).save(*args, **kwds)
