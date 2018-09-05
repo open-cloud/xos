@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 
 import os
 import inspect
@@ -31,11 +29,6 @@ from xosconfig import Config
 from multistructlog import create_logger
 
 log = create_logger(Config().get('logging'))
-
-watchers_enabled = Config.get("enable_watchers")
-
-if (watchers_enabled):
-    from synchronizers.new_base.watchers import XOSWatcher
 
 
 class Backend:
@@ -82,7 +75,6 @@ class Backend:
 
     def run(self):
         observer_thread = None
-        watcher_thread = None
         model_policy_thread = None
         event_engine = None
 
@@ -102,14 +94,8 @@ class Backend:
                 observer_thread = threading.Thread(target=observer.run,name='synchronizer')
                 observer_thread.start()
 
-                # start the watcher thread
-                if (watchers_enabled):
-                    self.log.info("Starting XOSWatcher", sync_steps=sync_steps)
-                    watcher = XOSWatcher(sync_steps)
-                    watcher_thread = threading.Thread(target=watcher.run,name='watcher')
-                    watcher_thread.start()
         else:
-            self.log.info("Skipping observer and watcher threads due to no steps dir.")
+            self.log.info("Skipping observer thread due to no steps dir.")
 
         pull_steps_dir = Config.get("pull_steps_dir")
         if pull_steps_dir:
@@ -140,7 +126,7 @@ class Backend:
         else:
             self.log.info("Skipping model policies thread due to no model_policies dir.")
 
-        if (not observer_thread) and (not watcher_thread) and (not model_policy_thread) and (not event_engine):
+        if (not observer_thread) and (not model_policy_thread) and (not event_engine):
             self.log.info("No sync steps, no policies, and no event steps. Synchronizer exiting.")
             # the caller will exit with status 0
             return
@@ -153,8 +139,6 @@ class Backend:
                 # TODO: See about setting the threads as daemons
                 if observer_thread:
                     observer_thread._Thread__stop()
-                if watcher_thread:
-                    watcher_thread._Thread__stop()
                 if model_policy_thread:
                     model_policy_thread._Thread__stop()
                 sys.exit(1)

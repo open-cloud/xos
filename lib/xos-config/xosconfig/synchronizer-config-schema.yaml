@@ -105,8 +105,6 @@ map:
         type: str
       user:
         type: str
-  enable_watchers:
-    type: bool
   model_policies_dir:
     type: str
   error_map_path:

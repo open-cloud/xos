@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 
 import os
 import inspect
@@ -28,11 +26,6 @@ from multistructlog import create_logger
 
 log = create_logger(Config().get('logging'))
 
-watchers_enabled = Config.get("enable_watchers")
-
-# NOTE is this used or can be removed?
-if (watchers_enabled):
-    from synchronizers.new_base.watchers import XOSWatcher
 
 class Backend:
     def run(self):

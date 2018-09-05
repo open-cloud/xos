@@ -47,7 +47,6 @@ DEFAULT_VALUES = {
         'kind': 'grpcapi',
     },
     'keep_temp_files': False,
-    'enable_watchers': False,
     'dependency_graph': None,
     'error_map_path': '/opt/xos/error_map.txt',
     'feefie': {
