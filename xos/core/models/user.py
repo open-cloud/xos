@@ -39,9 +39,6 @@ from django.contrib.contenttypes.models import ContentType
 # currently generate the User models.
 import security
 
-import redis
-from redis import ConnectionError
-
 # Create your models here.
 
 
@@ -309,7 +306,7 @@ class User(AbstractBaseUser, PlModelMixIn):
 
         super(User, self).save(*args, **kwargs)
 
-        self.push_redis_event()
+        self.push_messagebus_event()
 
         self._initial = self._dict
 

@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import confluent_kafka
 import imp
 import inspect
 import os
@@ -20,15 +20,15 @@ import threading
 import time
 from xosconfig import Config
 from multistructlog import create_logger
-from kafka.errors import NoBrokersAvailable
 
 log = create_logger(Config().get('logging'))
 
+
 class XOSKafkaThread(threading.Thread):
-    """ XOSKafkaTrhead
+    """ XOSKafkaThread
 
         A Thread for servicing Kafka events. There is one event_step associated with one XOSKafkaThread. A
-        KafkaConsumer is launched to listen on the topics specified by the thread. The thread's process_event()
+        Consumer is launched to listen on the topics specified by the thread. The thread's process_event()
         function is called for each event.
     """
 
@@ -40,8 +40,11 @@ class XOSKafkaThread(threading.Thread):
         self.daemon = True
 
     def create_kafka_consumer(self):
-        from kafka import KafkaConsumer
-        return KafkaConsumer(bootstrap_servers=self.bootstrap_servers)
+        consumer_config = {
+            'bootstrap.servers': ','.join(self.bootstrap_servers),
+        }
+
+        return confluent_kafka.Consumer(**consumer_config)
 
     def run(self):
         if (not self.step.topics) and (not self.step.pattern):
@@ -55,27 +58,28 @@ class XOSKafkaThread(threading.Thread):
             try:
                 self.consumer = self.create_kafka_consumer()
                 if self.step.topics:
-                    self.consumer.subscribe(topics=self.step.topics)
+                    self.consumer.subscribe(self.step.topics)
                 elif self.step.pattern:
-                    self.consumer.subscribe(pattern=self.step.pattern)
+                    self.consumer.subscribe(self.step.pattern)
 
                 log.info("Waiting for events",
                          topic=self.step.topics,
                          pattern=self.step.pattern,
                          step=self.step.__name__)
 
-                for msg in self.consumer:
+                for msg in self.consumer.poll():
                     log.info("Processing event", msg=msg, step=self.step.__name__)
                     try:
                         self.step(log=log).process_event(msg)
                     except:
                         log.exception("Exception in event step", msg=msg, step=self.step.__name__)
-            except NoBrokersAvailable:
-                log.warning("No brokers available on %s" % self.bootstrap_servers)
+
+            except confluent_kafka.KafkaError._ALL_BROKERS_DOWN, e:
+                log.warning("No brokers available on %s, %s" % (self.bootstrap_servers, e))
                 time.sleep(20)
-            except:
+            except confluent_kafka.KafkaError, e:
                 # Maybe Kafka has not started yet. Log the exception and try again in a second.
-                log.exception("Exception in kafka loop")
+                log.exception("Exception in kafka loop: %s" % e)
                 time.sleep(1)
 
 class XOSEventEngine:

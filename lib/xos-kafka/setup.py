@@ -24,21 +24,21 @@ def readme():
 
 
 setup_with_auto_version(
-    name='kafkaloghandler',
+    name='xoskafka',
     version=__version__,
-    description='Kafka Logging Handler',
+    description='Wrapper around kafka for XOS',
     long_description=readme(),
     classifiers=[
-        'Topic :: System :: Logging',
-        'Topic :: Internet :: Log Analysis',
         'License :: OSI Approved :: Apache Software License',
     ],
     author='Zack Williams',
     author_email='zdw@opennetworking.org',
-    packages=['kafkaloghandler'],
+    packages=['xoskafka'],
     license='Apache v2',
     install_requires=[
         'confluent-kafka>=0.11.5',
+        'xosconfig>=2.1.0',
+        'multistructlog>=1.5',
         ],
     include_package_data=True,
     zip_safe=False,

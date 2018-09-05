@@ -50,7 +50,7 @@ class XOSBase(XOSBase_decl):
         if (purge):
             pk = self.pk
             super(XOSBase, self).delete(*args, **kwds)
-            self.push_redis_event(deleted=True, pk=pk)
+            self.push_messagebus_event(deleted=True, pk=pk)
         else:
             if (not self.write_protect ):
                 self.deleted = True
@@ -205,7 +205,7 @@ class XOSBase(XOSBase_decl):
             self.verify_live_keys(update_fields = update_fields)
             super(XOSBase, self).save(*args, **kwargs)
 
-        self.push_redis_event()
+        self.push_messagebus_event()
 
         self._initial = self._dict
 

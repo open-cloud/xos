@@ -26,6 +26,10 @@ from multistructlog import create_logger
 
 log = create_logger(Config().get('logging'))
 
+# create an single kafka producer connection for the core
+from xoskafka import XOSKafkaProducer
+XOSKafkaProducer.init()
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_status", dest="model_status", type=int, default=0, help="status of model prep")

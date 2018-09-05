@@ -6,6 +6,7 @@ Twisted==16.6.0
 Werkzeug==0.14.1
 ansible==2.5.0
 astunparse==1.5.0
+confluent-kafka==0.11.5
 django-extensions==2.0.6
 django-timezones==0.2
 djangorestframework==3.7.7

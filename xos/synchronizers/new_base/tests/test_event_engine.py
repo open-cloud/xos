@@ -15,7 +15,6 @@
 import functools
 import unittest
 from mock import patch, PropertyMock, ANY
-from kafka.errors import NoBrokersAvailable
 
 import os, sys
 import time
@@ -33,20 +32,14 @@ class FakeKafkaConsumer():
     def __init__(self, values=["sampleevent"]):
         self.values = values
 
-    def subscribe(self, topics=None, pattern=None):
+    def subscribe(self, topics):
         pass
 
-    def __iter__(self):
+    def poll(self):
         for x in self.values:
             yield x
         # block forever
         time.sleep(1000)
-
-class MockKafkaError:
-    NoBrokersAvailable = Exception
-
-class MockKafka:
-    error = MockKafkaError
 
 class TestEventEngine(unittest.TestCase):
     def setUp(self):
@@ -58,7 +51,7 @@ class TestEventEngine(unittest.TestCase):
         sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
         sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base', 'tests', 'event_steps'))
 
-        config =     os.path.join(test_path, "test_config.yaml")
+        config = os.path.join(test_path, "test_config.yaml")
         from xosconfig import Config
         Config.clear()
         Config.init(config, 'synchronizer-config-schema.yaml')
@@ -97,7 +90,7 @@ class TestEventEngine(unittest.TestCase):
             time.sleep(0.1)
 
             # We should have subscribed to the fake consumer
-            fake_subscribe.assert_called_with(topics=["sometopic"])
+            fake_subscribe.assert_called_with(["sometopic"])
 
             # The fake consumer will have returned one event, and that event will have been passed to our step
             process_event.assert_called_with("sampleevent")
@@ -123,20 +116,11 @@ class TestEventEngine(unittest.TestCase):
             time.sleep(0.1)
 
             # We should have subscribed to the fake consumer
-            fake_subscribe.assert_called_with(pattern="somepattern")
+            fake_subscribe.assert_called_with("somepattern")
 
             # The fake consumer will have returned one event, and that event will have been passed to our step
             process_event.assert_called_with("sampleevent")
 
-    def _test_start_no_bus(self):
-        self.event_engine.load_event_step_modules(self.event_steps_dir)
-        with patch.object(XOSKafkaThread, "create_kafka_consumer") as create_kafka_consumer, \
-                patch.object(event_engine_log, "warning") as log_warning:
-
-                create_kafka_consumer.side_effect = NoBrokersAvailable()
-                self.event_engine.start()
-
-        log_warning.assert_called()
 
     def test_start_bad_tech(self):
         """ Set an unknown Technology in the event_step. XOSEventEngine.start() should print an error message and

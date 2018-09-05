@@ -40,3 +40,7 @@ map:
     type: any
   xos_dir:
     type: str
+  kafka_bootstrap_servers:
+    type: seq
+    sequence:
+      - type: str

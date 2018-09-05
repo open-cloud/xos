@@ -46,9 +46,14 @@ python setup.py install
 echo "xos-config Installed"
 popd
 
-pushd "$XOS_DIR//lib/xos-genx"
+pushd "$XOS_DIR/lib/xos-genx"
 python setup.py install
 echo "xos-genx Installed"
+popd
+
+pushd "$XOS_DIR/lib/xos-kafka"
+python setup.py install
+echo "xos-kafka Installed"
 popd
 
 pushd "$XOS_DIR/xos/xos_client"
