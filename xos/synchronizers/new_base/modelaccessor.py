@@ -30,7 +30,6 @@ import os
 import signal
 import sys
 import time
-from diag import update_diag
 from loadmodels import ModelLoadClient
 
 from xosconfig import Config
@@ -94,11 +93,6 @@ class ModelAccessor(object):
     def now(self):
         """ Return the current time for timestamping purposes """
         raise Exception("Not Implemented")
-
-    def update_diag(self, loop_end=None, loop_start=None, syncrecord_start=None, sync_start=None, backend_status=None, backend_code=0):
-        if self.has_model_class("Diag"):
-            return update_diag(self.get_model_class("Diag"), loop_end, loop_start, syncrecord_start, sync_start,
-                               backend_status,backend_code=0)
 
     def is_type(self, obj, name):
         """ returns True is obj is of model type "name" """

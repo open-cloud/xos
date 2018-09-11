@@ -226,9 +226,6 @@ class XOSObserver:
 
         log.debug("Synced object", **o.tologdict())
 
-        model_accessor.update_diag(
-            syncrecord_start=time.time(), backend_status="Synced Record", backend_code=1)
-
         o.enacted = max(o.updated, o.changed_by_policy)
         scratchpad = {'next_run': 0, 'exponent': 0,
                       'last_success': time.time()}
@@ -719,18 +716,8 @@ class XOSObserver:
 
             loop_end = time.time()
 
-            model_accessor.update_diag(
-                loop_end=loop_end,
-                loop_start=loop_start,
-                backend_code=1,
-                backend_status="Bottom Of Loop")
-
         except Exception as e:
             self.log.exception(
                 'Core error. This seems like a misconfiguration or bug. This error will not be relayed to the user!',
                 e=e)
             self.log.error("Exception in observer run loop")
-
-            model_accessor.update_diag(
-                backend_code=2,
-                backend_status="Exception in Event Loop")

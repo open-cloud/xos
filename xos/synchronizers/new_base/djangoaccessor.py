@@ -80,7 +80,7 @@ class DjangoModelAccessor(ModelAccessor):
         # django implodes if the database connection is closed by
         # docker-compose
         try:
-            diag = self.get_model_class("Diag").objects.filter(name="foo").first()
+            db.connection.cursor()
         except Exception as e:
             from django import db
             if "connection already closed" in traceback.format_exc():

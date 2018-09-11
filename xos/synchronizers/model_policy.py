@@ -139,7 +139,6 @@ def check_db_connection_okay():
     from django import db
     try:
         db.connection.cursor()
-        #diag = Diag.objects.filter(name="foo").first()
     except Exception, e:
         if "connection already closed" in traceback.format_exc():
            log.error("XXX connection already closed")

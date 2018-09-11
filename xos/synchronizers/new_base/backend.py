@@ -86,8 +86,6 @@ class Backend:
         model_policy_thread = None
         event_engine = None
 
-        model_accessor.update_diag(sync_start=time.time(), backend_status="Synchronizer Start")
-
         steps_dir = Config.get("steps_dir")
         if steps_dir:
             sync_steps = []

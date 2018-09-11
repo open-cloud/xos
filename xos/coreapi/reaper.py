@@ -67,7 +67,6 @@ class ReaperThread(threading.Thread):
         from django import db
         try:
             db.connection.cursor()
-            #diag = Diag.objects.filter(name="foo").first()
         except Exception, e:
             if "connection already closed" in traceback.format_exc():
                log.exception("XXX connection already closed", e = e)

@@ -260,12 +260,6 @@ message Deployment::deployment_policy (XOSBase) {
 }
 
 
-message Diag (XOSBase) {
-    option gui_hidden = True;
-    required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the synchronizer", null = False, db_index = False, unique = True];
-}
-
-
 message Flavor (XOSBase) {
      required string name = 1 [max_length = 32, content_type = "stripped", blank = False, help_text = "name of this flavor, as displayed to users", null = False, db_index = False, unique = True];
      optional string description = 2 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
