@@ -34,9 +34,6 @@ from django.db import router
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-import redis
-from redis import ConnectionError
-
 from xoskafka import XOSKafkaProducer
 
 from xosconfig import Config
@@ -284,39 +281,6 @@ class PlModelMixIn(object):
 
     def push_messagebus_event(self, deleted=False, pk=None):
         self.push_kafka_event(deleted, pk)
-        self.push_redis_event(deleted, pk)
-
-    def push_redis_event(self, deleted=False, pk=None):
-        # Transmit update via Redis
-        try:
-            r = redis.Redis("redis")
-
-            model = self.serialize_for_messagebus()
-            bases = inspect.getmro(self.__class__)
-            class_names = ",".join([x.__name__ for x in bases])
-
-            model['class_names'] = class_names
-
-            if not pk:
-                pk = self.pk
-
-            json_dict = {
-                'pk': pk,
-                'changed_fields': self.changed_fields,
-                'object': model
-            }
-
-            if deleted:
-                json_dict['deleted'] = True
-                json_dict['object']['id'] = pk
-
-            payload = json.dumps(json_dict, default=json_handler)
-            r.publish(self.__class__.__name__, payload)
-
-        except ConnectionError:
-            # Redis not running.
-            log.error('Connection to Redis failed')
-            pass
 
     def push_kafka_event(self, deleted=False, pk=None):
         # Transmit update via kafka

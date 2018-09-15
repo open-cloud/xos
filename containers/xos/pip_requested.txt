@@ -42,7 +42,6 @@ python-neutronclient==5.1.0
 python-novaclient==10.1.0
 python-openstackclient==3.14.0
 pytz==2018.3
-redis==2.10.6
 requests==2.18.4
 service-identity==17.0.0
 shade==1.27.1
