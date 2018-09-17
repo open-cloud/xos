@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import confluent_kafka
 import functools
 import unittest
+
 from mock import patch, PropertyMock, ANY
 
 import os, sys
@@ -28,18 +30,56 @@ def config_get_mock(orig, overrides, key):
     else:
         return orig(key)
 
+
 class FakeKafkaConsumer():
-    def __init__(self, values=["sampleevent"]):
+    def __init__(self, values=[]):
         self.values = values
 
     def subscribe(self, topics):
         pass
 
-    def poll(self):
-        for x in self.values:
-            yield x
+    def poll(self, timeout=1.0):
+        if self.values:
+            return FakeKafkaMessage(self.values.pop())
         # block forever
         time.sleep(1000)
+
+
+class FakeKafkaMessage():
+    ''' Works like Message in confluent_kafka
+        https://docs.confluent.io/current/clients/confluent-kafka-python/#message
+    '''
+
+    def __init__(self, timestamp=None, topic='faketopic',
+                 key='fakekey', value='fakevalue', error=False):
+
+        if timestamp is None:
+            self.fake_ts_type = confluent_kafka.TIMESTAMP_NOT_AVAILABLE
+            self.fake_timestamp = None
+        else:
+            self.fake_ts_type = confluent_kafka.TIMESTAMP_CREATE_TIME
+            self.fake_timestamp = timestamp
+
+        self.fake_topic = topic
+        self.fake_key = key
+        self.fake_value = value
+        self.fake_error = error
+
+    def error(self):
+        return self.fake_error
+
+    def timestamp(self):
+        return (self.fake_ts_type, self.fake_timestamp)
+
+    def topic(self):
+        return self.fake_topic
+
+    def key(self):
+        return self.fake_key
+
+    def value(self):
+        return self.fake_value
+
 
 class TestEventEngine(unittest.TestCase):
     def setUp(self):
@@ -81,7 +121,8 @@ class TestEventEngine(unittest.TestCase):
         with patch.object(XOSKafkaThread, "create_kafka_consumer") as create_kafka_consumer, \
              patch.object(FakeKafkaConsumer, "subscribe") as fake_subscribe, \
              patch.object(self.event_engine.event_steps[0], "process_event") as process_event:
-            create_kafka_consumer.return_value = FakeKafkaConsumer()
+
+            create_kafka_consumer.return_value = FakeKafkaConsumer(values=["sampleevent"])
             self.event_engine.start()
 
             self.assertEqual(len(self.event_engine.threads), 1)
@@ -90,10 +131,11 @@ class TestEventEngine(unittest.TestCase):
             time.sleep(0.1)
 
             # We should have subscribed to the fake consumer
-            fake_subscribe.assert_called_with(["sometopic"])
+            fake_subscribe.assert_called_once()
 
-            # The fake consumer will have returned one event, and that event will have been passed to our step
-            process_event.assert_called_with("sampleevent")
+            # The fake consumer will have returned one event
+            process_event.assert_called_once()
+
 
     def test_start_with_pattern(self):
         self.event_engine.load_event_step_modules(self.event_steps_dir)
@@ -107,7 +149,7 @@ class TestEventEngine(unittest.TestCase):
             pattern.return_value = "somepattern"
             topics.return_value = []
 
-            create_kafka_consumer.return_value = FakeKafkaConsumer()
+            create_kafka_consumer.return_value = FakeKafkaConsumer(values=["sampleevent"])
             self.event_engine.start()
 
             self.assertEqual(len(self.event_engine.threads), 1)
@@ -118,8 +160,8 @@ class TestEventEngine(unittest.TestCase):
             # We should have subscribed to the fake consumer
             fake_subscribe.assert_called_with("somepattern")
 
-            # The fake consumer will have returned one event, and that event will have been passed to our step
-            process_event.assert_called_with("sampleevent")
+            # The fake consumer will have returned one event
+            process_event.assert_called_once()
 
 
     def test_start_bad_tech(self):
