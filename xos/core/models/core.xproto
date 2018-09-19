@@ -268,7 +268,7 @@ message Flavor (XOSBase) {
 
 
 message Image (XOSBase) {
-     required string name = 1 [db_index = False, max_length = 256, null = False, content_type = "stripped", blank = False, unique = True];
+     required string name = 1 [db_index = False, max_length = 256, null = False, content_type = "stripped", blank = False, unique_with = "tag"];
      required string kind = 2 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'))", max_length = 30, blank = False, null = False, db_index = False];
      optional string disk_format = 3 [db_index = False, max_length = 256, null = True, content_type = "stripped", blank = True];
      optional string container_format = 4 [db_index = False, max_length = 256, null = True, content_type = "stripped", blank = True];
