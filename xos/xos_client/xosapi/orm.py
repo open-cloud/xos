@@ -469,6 +469,9 @@ class ORMObjectManager(object):
             elif name.endswith("__lte"):
                 name = name[:-5]
                 el.operator = el.LESS_THAN_OR_EQUAL
+            elif name.endswith("__iexact"):
+                name = name[:-8]
+                el.operator = el.IEXACT
             else:
                 el.operator = el.EQUAL
 

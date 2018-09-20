@@ -322,6 +322,7 @@ class FakeItemList(object):
 
 class FakeElement(object):
     EQUAL="equal"
+    IEXACT="iexact"
 
     def __init__(self):
         pass
@@ -334,6 +335,12 @@ class FakeElements(object):
         el=FakeElement()
         self.items.append(el)
         return el
+
+    def __getitem__(self, index):
+        return self.items[index]
+
+    def __len__(self):
+        return len(self.items)
 
 class FakeQuery(object):
     DEFAULT="default"

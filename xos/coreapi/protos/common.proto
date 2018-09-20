@@ -13,6 +13,7 @@ message QueryElement {
         LESS_THAN = 2;
         GREATER_THAN_OR_EQUAL = 3;
         LESS_THAN_OR_EQUAL = 4;
+        IEXACT = 5;
     }
     QueryOperator operator = 1;
     bool invert = 2;

@@ -21,6 +21,7 @@ import shutil
 import string
 import sys
 import unittest
+from mock import patch
 
 # by default, use fake stub rather than real core
 USE_FAKE_STUB=True
@@ -453,6 +454,30 @@ class TestORM(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             tm.intfile = None
         self.assertEqual(e.exception.message, "Setting a non-foreignkey field to None is not supported")
+
+    def test_query_iexact(self):
+        orm = self.make_coreapi()
+        with patch.object(orm.grpc_stub, "FilterTestModel", autospec=True) as filter:
+            orm.TestModel.objects.filter(name__iexact = "foo")
+            self.assertEqual(filter.call_count, 1)
+            q = filter.call_args[0][0]
+
+            self.assertEqual(q.kind, q.DEFAULT)
+            self.assertEqual(len(q.elements), 1)
+            self.assertEqual(q.elements[0].operator, q.elements[0].IEXACT)
+            self.assertEqual(q.elements[0].sValue, "foo")
+
+    def test_query_equal(self):
+        orm = self.make_coreapi()
+        with patch.object(orm.grpc_stub, "FilterTestModel", autospec=True) as filter:
+            orm.TestModel.objects.filter(name = "foo")
+            self.assertEqual(filter.call_count, 1)
+            q = filter.call_args[0][0]
+
+            self.assertEqual(q.kind, q.DEFAULT)
+            self.assertEqual(len(q.elements), 1)
+            self.assertEqual(q.elements[0].operator, q.elements[0].EQUAL)
+            self.assertEqual(q.elements[0].sValue, "foo")
 
 def main():
     global USE_FAKE_STUB

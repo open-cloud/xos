@@ -557,6 +557,8 @@ class XOSAPIHelperMixin(object):
             q = Q(**{element.name + "__gt": value})
         elif element.operator == element.GREATER_THAN_OR_EQUAL:
             q = Q(**{element.name + "__gte": value})
+        elif element.operator == element.IEXACT:
+            q = Q(**{element.name + "__iexact": value})
         else:
             raise Exception("unknown operator")
 
