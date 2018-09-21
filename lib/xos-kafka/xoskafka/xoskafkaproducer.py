@@ -64,8 +64,15 @@ class XOSKafkaProducer:
                 callback=cls._kafka_delivery_callback
                 )
 
+            # see https://github.com/confluentinc/confluent-kafka-python/issues/16
+            kafka_producer.poll(0)
+
         except confluent_kafka.KafkaError, err:
             log.exception("Kafka Error", err)
+
+    def __del__(self):
+       if kafka_producer is not None:
+            kafka_producer.flush()
 
     @staticmethod
     def _kafka_delivery_callback(err, msg):
