@@ -184,6 +184,36 @@ message EmbeddedImage (XOSBase){
         self.assertEqual(manifest["dest_dir"], service_dir)
         self.assertEqual(len(manifest["xprotos"]), 1)
 
+    def test_pre_validate_python_good(self):
+        good_python = \
+"""
+import foo
+
+x=1
+y="abc"
+"""
+        python_item = DynamicLoadItem(filename="somefile.py",
+                                      contents=good_python)
+
+        self.builder.pre_validate_python(python_item)
+
+    def test_pre_validate_python_bad(self):
+        bad_python = \
+"""
+import foo
+
+this is not valid code
+y="abc"
+"""
+        python_item = DynamicLoadItem(filename="somefile.py",
+                                      contents=bad_python)
+
+        with self.assertRaises(Exception) as e:
+             self.builder.pre_validate_python(python_item)
+
+        self.assertEqual(e.exception.message, "python file somefile.py failed compile test")
+
+
 def main():
     unittest.main()
 

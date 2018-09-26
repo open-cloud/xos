@@ -17,6 +17,7 @@ import json
 import hashlib
 import os
 import shutil
+import tempfile
 from xosgenx.generator import XOSProcessor
 
 from xosconfig import Config
@@ -43,6 +44,16 @@ class DynamicBuilder(object):
         if "/" in item.filename:
             raise Exception("illegal character in filename %s" % item.filename)
 
+    def pre_validate_python(self, item):
+        (handle, fn) = tempfile.mkstemp()
+        try:
+            os.write(handle, item.contents)
+            os.close(handle)
+            if (os.system("python -m py_compile %s" % fn) != 0):
+                raise Exception("python file %s failed compile test" % item.filename)
+        finally:
+            os.remove(fn)
+
     def pre_validate_models(self, request):
         # do whatever validation we can before saving the files
         for item in request.xprotos:
@@ -53,6 +64,10 @@ class DynamicBuilder(object):
 
         for item in request.attics:
             self.pre_validate_file(item)
+
+        for item in request.convenience_methods:
+            self.pre_validate_file(item)
+            self.pre_validate_python(item)
 
     def get_manifests(self):
         if not os.path.exists(self.manifest_dir):
