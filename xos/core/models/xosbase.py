@@ -114,8 +114,8 @@ class XOSBase(XOSBase_decl):
                 raise Exception("Attempt to save object with deleted foreign key reference")
 
     def has_important_changes(self):
-        """ Determine whether the model has changes that should be reflected in one of the changed_by_* timestampes.
-            Ignores varous feedback and bookeeeping state set by synchronizers.
+        """ Determine whether the model has changes that should be reflected in one of the changed_by_* timestamps.
+            Ignores various feedback and bookkeeping state set by synchronizers.
         """
         for field_name in self.changed_fields:
             if field_name in ["policed", "updated", "enacted", "changed_by_step", "changed_by_policy"]:
@@ -141,7 +141,7 @@ class XOSBase(XOSBase_decl):
 
         update_fields = None
         if "update_fields" in kwargs:
-            # NOTE(smbaker): modifying update_fields will cause kwargs["update_fiels"] to be modified. This is
+            # NOTE(smbaker): modifying update_fields will cause kwargs["update_fields"] to be modified. This is
             # intended, as kwargs will be passed to save() below.
             update_fields = kwargs["update_fields"]
 
