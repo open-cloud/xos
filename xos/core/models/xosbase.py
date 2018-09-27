@@ -173,14 +173,6 @@ class XOSBase(XOSBase_decl):
                 log.error('A non Synchronizer is trying to update fields marked as feedback_state', model=self._dict, feedback_state_fields=self.feedback_state_fields, caller_kind=caller_kind, feedback_changed=feedback_changed)
                 raise XOSPermissionDenied('A non Synchronizer is trying to update fields marked as feedback_state: %s' % feedback_changed)
 
-        # Django only enforces field.blank=False during form validation. We'd like it to be enforced when saving the
-        # model.
-        for field in self._meta.fields:
-            if field.get_internal_type() == "CharField":
-                if getattr(field, "blank", None)==False:
-                    if getattr(self, field.name) == "":
-                        raise XOSValidationError("Blank is not allowed on field %s" % field.name)
-
         if (caller_kind != "synchronizer") or always_update_timestamp:
             # Non-synchronizers update the `updated` timestamp
             self.updated = timezone.now()
