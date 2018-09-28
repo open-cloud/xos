@@ -72,41 +72,6 @@ def count_fields(body):
             count += 1
     return count
 
-def compute_rlinks(messages, message_dict):
-    rev_links = {}
-
-    link_opposite = {
-        'manytomany': 'manytomany',
-        'manytoone': 'onetomany',
-        'onetoone': 'onetoone',
-        'onetomany': 'manytoone'
-    }
-
-    for m in messages:
-        for l in m['links']:
-            rlink = copy.deepcopy(l)
-
-            rlink['_type'] = 'rlink'  # An implicit link, not declared in the model
-            rlink['src_port'] = l['dst_port']
-            rlink['dst_port'] = l['src_port']
-            rlink['peer'] = {'name': m['name'], 'package': m['package'], 'fqn': m['fqn']}
-            rlink['link_type'] = link_opposite[l['link_type']]
-
-            try:
-                try:
-                    rev_links[l['peer']['fqn']].append(rlink)
-                except TypeError:
-                    pass
-            except KeyError:
-                rev_links[l['peer']['fqn']] = [rlink]
-
-    for m in messages:
-        try:
-            m['rlinks'] = rev_links[m['name']]
-            message_dict[m['name']]['rlinks'] = m['rlinks']
-        except KeyError:
-            pass
-
 
 def name_to_value(obj):
     try:
@@ -129,7 +94,7 @@ class Stack(list):
     in addition to traversing it '''
 
 class XOS2Jinja(Visitor):
-    def __init__(self):
+    def __init__(self, args):
         super(XOS2Jinja, self).__init__()
 
         self.stack = Stack()
@@ -145,6 +110,7 @@ class XOS2Jinja(Visitor):
         self.verbose = 0
         self.first_field = True
         self.first_method = True
+        self.args = args
 
     def visit_PolicyDefinition(self, obj):
         if self.package:
@@ -240,6 +206,11 @@ class XOS2Jinja(Visitor):
                 s['peer'] = obj.name.pval
             except AttributeError:
                 s['peer'] = obj.name
+
+        try:
+            s['reverse_id'] = obj.reverse_id.pval
+        except AttributeError:
+            s['reverse_id'] = obj.reverse_id
 
         s['_type'] = 'link'
         s['options'] = {'modifier': 'optional'}
@@ -397,7 +368,7 @@ class XOS2Jinja(Visitor):
 
             messages.insert(0, m)
 
-        compute_rlinks(messages, self.models)
+        self.compute_rlinks(messages, self.models)
 
         self.messages = messages
         return True
@@ -406,3 +377,45 @@ class XOS2Jinja(Visitor):
         count = self.count_stack.pop()
         self.count_stack.push(count + 1)
         return True
+
+    def compute_rlinks(self, messages, message_dict):
+        rev_links = {}
+
+        link_opposite = {
+            'manytomany': 'manytomany',
+            'manytoone': 'onetomany',
+            'onetoone': 'onetoone',
+            'onetomany': 'manytoone'
+        }
+
+        for m in messages:
+            for l in m['links']:
+                rlink = copy.deepcopy(l)
+
+                rlink['_type'] = 'rlink'  # An implicit link, not declared in the model
+                rlink['src_port'] = l['dst_port']
+                rlink['dst_port'] = l['src_port']
+                rlink['peer'] = {'name': m['name'], 'package': m['package'], 'fqn': m['fqn']}
+                rlink['link_type'] = link_opposite[l['link_type']]
+                rlink["reverse_id"] = l['reverse_id']
+
+                if (not l['reverse_id']) and (self.args.verbosity >= 1):
+                    print >> sys.stderr, "WARNING: Field %s in model %s has no reverse_id" % (l["src_port"], m["name"])
+
+                if l["reverse_id"] and ((int(l["reverse_id"]) < 1000) or (int(l["reverse_id"]) >= 1900)):
+                    raise Exception("reverse id for field %s in model %s should be between 1000 and 1899" % (l["src_port"], m["name"]))
+
+                try:
+                    try:
+                        rev_links[l['peer']['fqn']].append(rlink)
+                    except TypeError:
+                        pass
+                except KeyError:
+                    rev_links[l['peer']['fqn']] = [rlink]
+
+        for m in messages:
+            try:
+                m['rlinks'] = rev_links[m['name']]
+                message_dict[m['name']]['rlinks'] = m['rlinks']
+            except KeyError:
+                pass

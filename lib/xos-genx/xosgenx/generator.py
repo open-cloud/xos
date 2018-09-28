@@ -42,7 +42,7 @@ class XOSProcessor:
             v = Proto2XProto()
             ast.accept(v)
 
-        v = XOS2Jinja()
+        v = XOS2Jinja(args)
         ast.accept(v)
         return v
 

@@ -120,7 +120,10 @@ def xproto_base_fields(m, table):
         if accessor:
             base_fields = xproto_base_fields(table[accessor], table)
 
-            model_fields = table[accessor]['fields']
+            model_fields = [x.copy() for x in table[accessor]['fields']]
+            for field in model_fields:
+                field["accessor"] = accessor
+
             fields.extend(base_fields)
             fields.extend(model_fields)
 
@@ -129,6 +132,53 @@ def xproto_base_fields(m, table):
 
     if 'no_policy' in m['options'] and m['options']['no_policy']:
         fields = [f for f in fields if f['name'] != 'policy_status' and f['name'] != 'policy_code']
+
+    return fields
+
+def xproto_fields(m, table):
+    """ Generate the full list of models for the xproto message `m` including fields from the classes it inherits.
+
+        Inserts the special field "id" at the very beginning.
+
+        Each time we descend a new level of inheritance, increment the offset field numbers by 100. The base
+        class's fields will be numbered from 1-99, the first descendant will be number 100-199, the second
+        descdendant numbered from 200-299, and so on. This assumes any particular model as at most 100
+        fields.
+    """
+
+    model_fields = [x.copy() for x in m["fields"]]
+    for field in model_fields:
+        field["accessor"] = m["fqn"]
+
+    fields = xproto_base_fields(m, table) + model_fields
+
+    # The "id" field is a special field. Every model has one. Put it up front and pretend it's part of the
+
+    id_field = {'type': 'int32', 'name': 'id', 'options': {}, "id": "1", "accessor": fields[0]["accessor"]}
+
+    fields = [id_field] + fields
+
+    # Walk through the list of fields. They will be in depth-first search order from the base model forward. Each time
+    # the model changes, offset the protobuf field numbers by 100.
+    offset = 0
+    last_accessor = fields[0]["accessor"]
+    for field in fields:
+        if (field["accessor"] != last_accessor):
+            last_accessor = field["accessor"]
+            offset += 100
+        field_id = int(field["id"])
+        if (field_id < 1) or (field_id >= 100):
+            raise Exception("Only field numbers from 1 to 99 are permitted, field %s in model %s" % (field["name"], field["accessor"]))
+        field["id"] = int(field["id"]) + offset
+
+    # Check for duplicates
+    fields_by_number = {}
+    for field in fields:
+        id = field["id"]
+        dup = fields_by_number.get(id)
+        if dup:
+            raise Exception("Field %s has duplicate number %d with field %s in model %s" % (field["name"], id, dup["name"], field["accessor"]))
+        fields_by_number[id] = field
 
     return fields
 
@@ -145,6 +195,38 @@ def xproto_base_rlinks(m, table):
             links.extend(model_rlinks)
 
     return links
+
+def xproto_rlinks(m, table):
+    """ Return the reverse links for the xproto message `m`.
+
+        If the link includes a reverse_id, then it will be used for the protobuf field id. If there is no
+        reverse_id, then one will automatically be allocated started at id 1900. It is incouraged that all links
+        include reverse_ids, so that field identifiers are deterministic across all protobuf messages.
+    """
+
+    index = 1900
+    links = xproto_base_rlinks(m, table) + m["rlinks"]
+
+    links = [x for x in links if ("+" not in x["src_port"]) and ("+" not in x["dst_port"])]
+
+    for link in links:
+        if link["reverse_id"]:
+            link["id"] = int(link["reverse_id"])
+        else:
+            link["id"] = index
+            index += 1
+
+    # check for duplicates
+    links_by_number={}
+    for link in links:
+        id = link["id"]
+        dup=links_by_number.get(id)
+        if dup:
+            raise Exception("Field %s has duplicate number %d with field %s in model %s" % (link["src_port"], id, link["src_port"], m["name"]))
+        links_by_number[id] = link
+
+    return links
+
 
 def xproto_base_links(m, table):
     links = []

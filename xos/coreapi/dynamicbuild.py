@@ -234,6 +234,7 @@ class DynamicBuilder(object):
         is_service = manifest["name"] != 'core'
 
         args = Args()
+        args.verbosity = 0
         args.output = manifest["dest_dir"]
         args.attic = os.path.join(manifest["dir"], 'attic')
         args.files = xproto_filenames
@@ -250,6 +251,7 @@ class DynamicBuilder(object):
 
         # Generate security checks
         class SecurityArgs:
+            verbosity = 0
             output = manifest["dest_dir"]
             target = 'django-security.xtarget'
             dest_file = 'security.py'
