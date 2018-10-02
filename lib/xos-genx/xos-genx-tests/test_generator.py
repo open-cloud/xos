@@ -32,9 +32,11 @@ TEST_EXPECTED_OUTPUT = """
 
 BASE_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/base.xproto")
 TEST_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/test.xproto")
+FIELDTEST_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/fieldtest.xproto")
 SKIP_DJANGO_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/skip_django.xproto")
 VROUTER_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/vrouterport.xproto")
 TEST_TARGET = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xtarget/test.xtarget")
+FIELDTEST_TARGET = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xtarget/fieldtest.xtarget")
 SPLIT_TARGET = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xtarget/split.xtarget")
 
 TEST_ATTICS = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/attics/")
@@ -204,6 +206,28 @@ class XOSProcessorTest(unittest.TestCase):
                 vrouter_line = line_num
         self.assertLess(base_line, xosmodel_line)
         self.assertLess(xosmodel_line, vrouter_line)
+
+    def test_field_numbers(self):
+        args = FakeArgs()
+        args.files = [FIELDTEST_XPROTO]
+        args.target = FIELDTEST_TARGET
+        output = XOSProcessor.process(args)
+
+        def _assert_field(modelname, fieldname, id):
+            self.assertIn("%s,%s,%s" % (modelname, fieldname, id), output)
+
+        _assert_field("Site", "id", 1)
+        _assert_field("Site", "base_field", 2)
+        _assert_field("Site", "base_field2", 3)
+        _assert_field("Site", "otherstuff_field", 102)
+        _assert_field("Site", "slice_field", 201)
+        _assert_field("Site", "slices_ids", 1002)
+
+        _assert_field("Slice", "id", 1)
+        _assert_field("Slice", "base_field", 2)
+        _assert_field("Slice", "base_field2", 3)
+        _assert_field("Slice", "slice_field", 101)
+        _assert_field("Slice", "site", 102)
 
 
 if __name__ == '__main__':

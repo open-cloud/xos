@@ -1,0 +1,8 @@
+{% for object in proto.messages|sort(attribute='name') %}
+{%- for field in xproto_fields(object, proto.message_table) | sort(attribute='id') %}
+{{ object.name }},{{ field.name }},{{ field.id }}
+{%- endfor %}
+{%- for field in xproto_rlinks(object, proto.message_table) | sort(attribute='id') %}
+{{ object.name}},{{ field.src_port }}_ids,{{ field.id }}
+{%- endfor %}
+{%- endfor %}

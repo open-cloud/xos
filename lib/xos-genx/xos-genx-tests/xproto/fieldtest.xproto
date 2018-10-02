@@ -1,0 +1,19 @@
+option app_label = "core";
+
+message XOSBase {
+    optional string base_field = 2 [default = "stuff", max_length = 1024];
+    optional string base_field2 = 3 [default = "stuff", max_length = 1024];
+}
+
+message Otherstuff {
+    optional string otherstuff_field = 2 [default = "stuff", max_length = 1024];
+}
+
+message Site (XOSBase, Otherstuff) {
+    optional string slice_field = 1 [default = "other stuff", max_length=1024];
+}
+
+message Slice (XOSBase) {
+    optional string slice_field = 1 [default = "other stuff", max_length=1024];
+    required manytoone site->Site:slices = 2:1002 [help_text = "The Site this Slice belongs to", null = False, db_index = True, blank = False];
+}
