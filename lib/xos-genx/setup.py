@@ -35,7 +35,7 @@ setup(name='XosGenX',
       include_package_data=True,
       # TODO add all deps to the install_requires section
       install_requires=[
-          'pattern>=2.6',
+          'inflect>=1.0.1',
           'astunparse>=1.5.0'
           ]
      )

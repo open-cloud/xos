@@ -16,7 +16,9 @@
 
 import pdb
 import re
-from pattern import en
+from inflect import engine as inflect_engine_class
+
+inflect_engine = inflect_engine_class()
 
 class FieldNotFound(Exception):
     def __init__(self, message):
@@ -41,7 +43,7 @@ def xproto_singularize(field):
         singular = field['options']['singular']
         singular = unquote(singular)
     except KeyError:
-        singular = en.singularize(field['name'])
+        singular = inflect_engine.singular_noun(field['name'])
 
     return singular
 
@@ -51,7 +53,7 @@ def xproto_singularize_pluralize(field):
         plural = field['options']['plural']
         plural = unquote(plural)
     except KeyError:
-        plural = en.pluralize(en.singularize(field['name']))
+        plural = inflect_engine.plural_noun(inflect_engine.singular_noun(field['name']))
 
     return plural
 
@@ -61,7 +63,7 @@ def xproto_pluralize(field):
         plural = field['options']['plural']
         plural = unquote(plural)
     except KeyError:
-        plural = en.pluralize(field['name'])
+        plural = inflect_engine.plural_noun(field['name'])
 
     return plural
 

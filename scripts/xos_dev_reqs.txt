@@ -1,5 +1,5 @@
 Jinja2==2.10
-Pattern==2.6
+inflect==1.0.1
 PyYAML==3.12
 Twisted==16.6.0
 astunparse==1.5.0
