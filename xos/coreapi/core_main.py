@@ -30,6 +30,8 @@ log = create_logger(Config().get('logging'))
 from xoskafka import XOSKafkaProducer
 XOSKafkaProducer.init()
 
+import prometheus_client
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_status", dest="model_status", type=int, default=0, help="status of model prep")
@@ -56,6 +58,10 @@ def init_reaper():
 
 if __name__ == '__main__':
     args = parse_args()
+
+    # start the prometheus server
+    # TODO (teone) consider moving this in a separate process so that it won't die when we load services
+    prometheus_client.start_http_server(8000)
 
     server = XOSGrpcServer(model_status = args.model_status,
                            model_output = args.model_output)

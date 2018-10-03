@@ -30,6 +30,7 @@ oslo.utils==3.36.0
 ply==3.11
 plyxproto==3.1.0
 protobuf==3.5.2
+prometheus_client==0.4.0
 # Avoids a warning, see http://initd.org/psycopg/docs/faq.html#faq-compile
 psycopg2==2.7.4 --no-binary psycopg2
 pyOpenSSL==17.5.0

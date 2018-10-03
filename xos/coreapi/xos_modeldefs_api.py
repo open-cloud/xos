@@ -13,15 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import base64
-import time
 import yaml
 from protos import modeldefs_pb2, modeldefs_pb2_grpc
-from google.protobuf.empty_pb2 import Empty
-
+import grpc
 from xos.exceptions import *
 from apihelper import XOSAPIHelperMixin
+from apistats import REQUEST_COUNT, track_request_time
 
 def yaml_to_grpc(yaml_repr, grpc_container, yaml_key = None, grpc_parent = None):
     if isinstance(yaml_repr, dict):
@@ -42,6 +39,7 @@ class ModelDefsService(modeldefs_pb2_grpc.modeldefsServicer, XOSAPIHelperMixin):
     def stop(self):
         pass
 
+    @track_request_time("Modeldefs", "ListModelDefs")
     def ListModelDefs(self, request, context):
         ystr = open('protos/modeldefs.yaml').read()
         yaml_repr = yaml.load(ystr)
@@ -50,6 +48,7 @@ class ModelDefsService(modeldefs_pb2_grpc.modeldefsServicer, XOSAPIHelperMixin):
 
         yaml_to_grpc(yaml_repr, modeldefs)
 
+        REQUEST_COUNT.labels('xos-core', "Modeldefs", "ListModelDefs", grpc.StatusCode.OK).inc()
         return modeldefs
 
 

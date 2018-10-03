@@ -32,6 +32,8 @@ from django.db.models import F,Q
 from core.models import *
 from xos.exceptions import *
 from apihelper import XOSAPIHelperMixin, translate_exceptions
+import grpc
+from apistats import REQUEST_COUNT, track_request_time
 
 # The Tosca engine expects to be run from /opt/xos/tosca/ or equivalent. It
 # needs some sys.path fixing up.
@@ -68,7 +70,8 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAPIHelperMixin):
     def stop(self):
         pass
 
-    @translate_exceptions
+    @translate_exceptions("Utilities", "Login")
+    @track_request_time("Utilities", "Login")
     def Login(self, request, context):
         if not request.username:
             raise XOSNotAuthenticated("No username")
@@ -87,9 +90,11 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAPIHelperMixin):
         response = utility_pb2.LoginResponse()
         response.sessionid = session.session_key
 
+        REQUEST_COUNT.labels('xos-core', "Utilities", "Login", grpc.StatusCode.OK).inc()
         return response
 
-    @translate_exceptions
+    @translate_exceptions("Utilities", "Logout")
+    @track_request_time("Utilities", "Logout")
     def Logout(self, request, context):
         for (k, v) in context.invocation_metadata():
             if (k.lower()=="x-xossession"):
@@ -97,9 +102,12 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAPIHelperMixin):
                 if "_auth_user_id" in s:
                     del s["_auth_user_id"]
                     s.save()
+        REQUEST_COUNT.labels('xos-core', "Utilities", "Login", grpc.StatusCode.OK).inc()
         return Empty()
 
-    @translate_exceptions
+    # FIXME are we still using these?
+    @translate_exceptions("Utilities", "RunTosca")
+    @track_request_time("Utilities", "RunTosca")
     def RunTosca(self, request, context):
         user=self.authenticate(context, required=True)
 
@@ -123,7 +131,8 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAPIHelperMixin):
 
         return response
 
-    @translate_exceptions
+    @translate_exceptions("Utilities", "DestryTosca")
+    @track_request_time("Utilities", "DestryTosca")
     def DestroyTosca(self, request, context):
         user=self.authenticate(context, required=True)
 
@@ -146,17 +155,23 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAPIHelperMixin):
         response.messages = "\n".join(xt.log_msgs)
 
         return response
+    # end FIXME
 
-    @translate_exceptions
+    @translate_exceptions("Utilities", "NoOp")
+    @track_request_time("Utilities", "NoOp")
     def NoOp(self, request, context):
+        REQUEST_COUNT.labels('xos-core', "Utilities", "NoOp", grpc.StatusCode.OK).inc()
         return Empty()
 
-    @translate_exceptions
+    @translate_exceptions("Utilities", "AuthenticatedNoOp")
+    @track_request_time("Utilities", "AuthenticatedNoOp")
     def AuthenticatedNoOp(self, request, context):
         self.authenticate(context, required=True)
+        REQUEST_COUNT.labels('xos-core', "Utilities", "AuthenticatedNoOp", grpc.StatusCode.OK).inc()
         return Empty()
 
-    @translate_exceptions
+    @translate_exceptions("Utilities", "ListDirtyModels")
+    @track_request_time("Utilities", "ListDirtyModels")
     def ListDirtyModels(self, request, context):
         dirty_models = utility_pb2.ModelList()
 
@@ -175,9 +190,11 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAPIHelperMixin):
                 item.class_name = model.__name__
                 item.id = obj.id
 
+        REQUEST_COUNT.labels('xos-core', "Utilities", "ListDirtyModels", grpc.StatusCode.OK).inc()
         return dirty_models
 
-    @translate_exceptions
+    @translate_exceptions("Utilities", "SetDirtyModels")
+    @track_request_time("Utilities", "SetDirtyModels")
     def SetDirtyModels(self, request, context):
         user=self.authenticate(context, required=True)
 
@@ -206,9 +223,11 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAPIHelperMixin):
                     item.id = obj.id
                     item.info = str(e)
 
+        REQUEST_COUNT.labels('xos-core', "Utilities", "SetDirtyModels", grpc.StatusCode.OK).inc()
         return dirty_models
 
-    @translate_exceptions
+    @translate_exceptions("Utilities", "GetXproto")
+    @track_request_time("Utilities", "GetXproto")
     def GetXproto(self, request, context):
         res = utility_pb2.XProtos()
 
@@ -231,9 +250,11 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAPIHelperMixin):
             xproto += content
 
         res.xproto = xproto
+        REQUEST_COUNT.labels('xos-core', "Utilities", "GetXproto", grpc.StatusCode.OK).inc()
         return res
 
-    @translate_exceptions
+    @translate_exceptions("Utilities", "GetPopulatedServiceInstances")
+    @track_request_time("Utilities", "GetPopulatedServiceInstances")
     def GetPopulatedServiceInstances(self, request, context):
         """
         Return a service instance with provider and subsciber service instance ids
@@ -268,4 +289,5 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAPIHelperMixin):
             elif l.subscriber_network:
                 response.subscribed_network.append(l.subscriber_network.id)
 
+        REQUEST_COUNT.labels('xos-core', "Utilities", "GetPopulatedServiceInstances", grpc.StatusCode.OK).inc()
         return response

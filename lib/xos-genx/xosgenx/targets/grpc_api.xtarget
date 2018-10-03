@@ -2,10 +2,12 @@ import base64
 import time
 from protos import xos_pb2, xos_pb2_grpc
 from google.protobuf.empty_pb2 import Empty
+from apistats import track_request_time, REQUEST_COUNT
 
 from django.contrib.auth import authenticate as django_authenticate
 from xos.exceptions import *
 from apihelper import XOSAPIHelperMixin, translate_exceptions
+import grpc
 
 class XosService(xos_pb2_grpc.xosServicer, XOSAPIHelperMixin):
     def __init__(self, thread_pool):
@@ -17,41 +19,59 @@ class XosService(xos_pb2_grpc.xosServicer, XOSAPIHelperMixin):
 
 {% for object in proto.messages | sort(attribute='name') %}
 {%- if object.name!='XOSBase' %}
-    @translate_exceptions
+    @translate_exceptions("{{ object.name }}", "List{{ object.name }}")
+    @track_request_time("{{ object.name }}", "List{{ object.name }}")
     def List{{ object.name }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.name }}")
-      return self.list(model, user)
+      res = self.list(model, user)
+      REQUEST_COUNT.labels('xos-core', "{{ object.name }}", "List{{ object.name }}", grpc.StatusCode.OK).inc()
+      return res
 
-    @translate_exceptions
+    @translate_exceptions("{{ object.name }}", "Filter{{ object.name }}")
+    @track_request_time("{{ object.name }}", "Filter{{ object.name }}")
     def Filter{{ object.name }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.name }}")
-      return self.filter(model, user, request)
+      res = self.filter(model, user, request)
+      REQUEST_COUNT.labels('xos-core', "{{ object.name }}", "List{{ object.name }}", grpc.StatusCode.OK).inc()
+      return res
 
-    @translate_exceptions
+    @translate_exceptions("{{ object.name }}", "Get{{ object.name }}")
+    @track_request_time("{{ object.name }}", "Get{{ object.name }}")
     def Get{{ object.name }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.name }}")
-      return self.get(model, user, request.id)
+      res = self.get(model, user, request.id)
+      REQUEST_COUNT.labels('xos-core', "{{ object.name }}", "List{{ object.name }}", grpc.StatusCode.OK).inc()
+      return res
 
-    @translate_exceptions
+    @translate_exceptions("{{ object.name }}", "Create{{ object.name }}")
+    @track_request_time("{{ object.name }}", "Create{{ object.name }}")
     def Create{{ object.name }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.name }}")
-      return self.create(model, user, request)
+      res = self.create(model, user, request)
+      REQUEST_COUNT.labels('xos-core', "{{ object.name }}", "List{{ object.name }}", grpc.StatusCode.OK).inc()
+      return res
 
-    @translate_exceptions
+    @translate_exceptions("{{ object.name }}", "Delete{{ object.name }}")
+    @track_request_time("{{ object.name }}", "Delete{{ object.name }}")
     def Delete{{ object.name }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.name }}")
-      return self.delete(model, user, request.id)
+      res = self.delete(model, user, request.id)
+      REQUEST_COUNT.labels('xos-core', "{{ object.name }}", "List{{ object.name }}", grpc.StatusCode.OK).inc()
+      return res
 
-    @translate_exceptions
+    @translate_exceptions("{{ object.name }}", "Update{{ object.name }}")
+    @track_request_time("{{ object.name }}", "Update{{ object.name }}")
     def Update{{ object.name }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.name }}")
-      return self.update(model, user, request.id, request, context)
+      res = self.update(model, user, request.id, request, context)
+      REQUEST_COUNT.labels('xos-core', "{{ object.name }}", "List{{ object.name }}", grpc.StatusCode.OK).inc()
+      return res
 {%- endif %}
 {% endfor %}
 

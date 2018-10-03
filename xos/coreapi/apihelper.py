@@ -23,9 +23,7 @@ import time
 from protos import xos_pb2
 from google.protobuf.empty_pb2 import Empty
 import grpc
-import json
 
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import authenticate as django_authenticate
 from django.db.models import F, Q
 from core.models import *
@@ -37,7 +35,7 @@ from django.conf import settings
 from xosconfig import Config
 from multistructlog import create_logger
 log = create_logger(Config().get('logging'))
-
+from apistats import REQUEST_COUNT
 
 class XOSDefaultSecurityContext(object):
     grant_access = True
@@ -61,39 +59,45 @@ xos_anonymous_user = User(
 
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
 
-
-def translate_exceptions(function):
+def translate_exceptions(model, method):
     """ this decorator translates XOS exceptions to grpc status codes """
-    def wrapper(*args, **kwargs):
-        try:
-            return function(*args, **kwargs)
-        except Exception as e:
 
-            import traceback
-            tb = traceback.format_exc()
-            print tb
-            # TODO can we propagate it over the APIs?
+    def decorator(function):
+        def wrapper(*args, **kwargs):
+            try:
+                return function(*args, **kwargs)
+            except Exception as e:
 
-            if "context" in kwargs:
-                context = kwargs["context"]
-            else:
-                context = args[2]
+                import traceback
+                tb = traceback.format_exc()
+                print tb
+                # TODO can we propagate it over the APIs?
 
-            if hasattr(e, 'json_detail'):
-                context.set_details(e.json_detail)
-            elif hasattr(e, 'detail'):
-                context.set_details(e.detail)
+                if "context" in kwargs:
+                    context = kwargs["context"]
+                else:
+                    context = args[2]
 
-            if (isinstance(e, XOSPermissionDenied)):
-                context.set_code(grpc.StatusCode.PERMISSION_DENIED)
-            elif (isinstance(e, XOSValidationError)):
-                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-            elif (isinstance(e, XOSNotAuthenticated)):
-                context.set_code(grpc.StatusCode.UNAUTHENTICATED)
-            elif (isinstance(e, XOSNotFound)):
-                context.set_code(grpc.StatusCode.NOT_FOUND)
-            raise
-    return wrapper
+                if hasattr(e, 'json_detail'):
+                    context.set_details(e.json_detail)
+                elif hasattr(e, 'detail'):
+                    context.set_details(e.detail)
+
+                if (isinstance(e, XOSPermissionDenied)):
+                    REQUEST_COUNT.labels('xos-core', model, method, grpc.StatusCode.PERMISSION_DENIED).inc()
+                    context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+                elif (isinstance(e, XOSValidationError)):
+                    REQUEST_COUNT.labels('xos-core', model, method, grpc.StatusCode.INVALID_ARGUMENT).inc()
+                    context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                elif (isinstance(e, XOSNotAuthenticated)):
+                    REQUEST_COUNT.labels('xos-core', model, method, grpc.StatusCode.UNAUTHENTICATED).inc()
+                    context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+                elif (isinstance(e, XOSNotFound)):
+                    REQUEST_COUNT.labels('xos-core', model, method, grpc.StatusCode.NOT_FOUND).inc()
+                    context.set_code(grpc.StatusCode.NOT_FOUND)
+                raise
+        return wrapper
+    return decorator
 
 
 bench_tStart = time.time()
@@ -477,7 +481,8 @@ class XOSAPIHelperMixin(object):
 
             self.handle_m2m(new_obj, request, [])
 
-            return self.objToProto(new_obj)
+            response = self.objToProto(new_obj)
+            return response
         except:
             log.exception("Exception in apihelper.create")
             raise
@@ -521,7 +526,8 @@ class XOSAPIHelperMixin(object):
             if not obj.deleted:
                 self.handle_m2m(obj, message, m2m_update_fields)
 
-            return self.objToProto(obj)
+            response = self.objToProto(obj)
+            return response
         except:
             log.exception("Exception in apihelper.update")
             raise
@@ -577,7 +583,8 @@ class XOSAPIHelperMixin(object):
             # FIXME: Implement auditing here
             # logging.info("User requested x objects, y objects were filtered out by policy z")
 
-            return self.querysetToProto(djangoClass, filtered_queryset)
+            response = self.querysetToProto(djangoClass, filtered_queryset)
+            return response
         except:
             log.exception("Exception in apihelper.list")
             raise
@@ -615,7 +622,8 @@ class XOSAPIHelperMixin(object):
             # FIXME: Implement auditing here
             # logging.info("User requested x objects, y objects were filtered out by policy z")
 
-            return self.querysetToProto(djangoClass, filtered_queryset)
+            response = self.querysetToProto(djangoClass, filtered_queryset)
+            return response
         except:
             log.exception("Exception in apihelper.filter")
             raise

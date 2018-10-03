@@ -44,3 +44,7 @@ coverage.xml
 lib/xos-config/cover/
 lib/xos-genx/cover/
 .vscode
+
+lib/xos-kafka/build/
+lib/xos-kafka/dist/
+lib/xos-kafka/xoskafka.egg-info/
