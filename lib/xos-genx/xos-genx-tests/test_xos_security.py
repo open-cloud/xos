@@ -15,10 +15,8 @@
 
 
 import unittest
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs, XProtoTestHelpers
-import pdb
-import mock
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import XProtoTestHelpers
 
 """The function below is for eliminating warnings arising due to the missing policy_output_enforcer,
 which is generated and loaded dynamically.
@@ -44,7 +42,7 @@ class XProtoXOSSecurityTest(unittest.TestCase):
 """
     policy test_policy < ctx.user.is_admin | exists Privilege: Privilege.accessor_id = ctx.user.id & Privilege.object_type = "Deployment" & Privilege.permission = "role:admin" & Privilege.object_id = obj.id >
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
 
@@ -83,7 +81,7 @@ class XProtoXOSSecurityTest(unittest.TestCase):
              & Privilege.object_id = obj.owner.site.id
              & Privilege.permission = "role:admin") >
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
 
@@ -131,7 +129,7 @@ class XProtoXOSSecurityTest(unittest.TestCase):
             )>
     
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
 
@@ -177,7 +175,7 @@ class XProtoXOSSecurityTest(unittest.TestCase):
              & Privilege.object_type = "Site"
              & Privilege.object_id = ctx.user.site.id) >
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
 

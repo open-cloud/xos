@@ -17,8 +17,8 @@
 import unittest
 
 import yaml
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs, OUTPUT_DIR
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import OUTPUT_DIR
 
 class Args:
     pass
@@ -56,7 +56,7 @@ class XOSProcessorTest(unittest.TestCase):
                  optional manytoone parent->Instance:instance = 16 [help_text = "Parent Instance for containers nested inside of VMs", null = True, db_index = True, blank = True];
             }
             """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = 'swagger.xtarget'
         args.output = OUTPUT_DIR

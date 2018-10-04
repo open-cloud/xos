@@ -15,8 +15,8 @@
 
 
 import unittest
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs, XProtoTestHelpers
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import XProtoTestHelpers, FakeObject
 
 """The function below is for eliminating warnings arising due to the missing output_security_check,
 which is generated and loaded dynamically.
@@ -42,9 +42,8 @@ class XProtoSecurityTest(unittest.TestCase):
 """
     policy output < True >
 """
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
 
@@ -65,9 +64,8 @@ class XProtoSecurityTest(unittest.TestCase):
     policy output < ctx.user = obj.user >
 """
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
 
@@ -79,10 +77,10 @@ class XProtoSecurityTest(unittest.TestCase):
             return i1
         """
 
-        obj = FakeArgs()
-	obj.user = 1
-        ctx = FakeArgs()
-	ctx.user = 1
+        obj = FakeObject()
+        obj.user = 1
+        ctx = FakeObject()
+        ctx.user = 1
 
         verdict = output_security_check(obj, ctx)
 
@@ -93,9 +91,8 @@ class XProtoSecurityTest(unittest.TestCase):
     policy output < *sub_policy(child) >
 """
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
 
@@ -114,12 +111,12 @@ class XProtoSecurityTest(unittest.TestCase):
 	    return i1
         """
 
-        obj = FakeArgs()
-        obj.child = FakeArgs()
-	obj.child.user = 1
+        obj = FakeObject()
+        obj.child = FakeObject()
+        obj.child.user = 1
 
-        ctx = FakeArgs()
-	ctx.user = 1
+        ctx = FakeObject()
+        ctx.user = 1
 
         verdict = output_security_check(obj, ctx)
         self.assertTrue(verdict)
@@ -131,9 +128,8 @@ class XProtoSecurityTest(unittest.TestCase):
     policy output < *sub_policy(child) >
 """
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
 
@@ -152,11 +148,11 @@ class XProtoSecurityTest(unittest.TestCase):
 	    return i1
         """
 
-        obj = FakeArgs()
+        obj = FakeObject()
         obj.child = None
 
-        ctx = FakeArgs()
-	ctx.user = 1
+        ctx = FakeObject()
+        ctx.user = 1
 
         verdict = output_security_check(obj, ctx)
         self.assertTrue(verdict)
@@ -167,9 +163,8 @@ class XProtoSecurityTest(unittest.TestCase):
     policy output < ctx.is_admin = True | obj.empty = True>
 """
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
         exec(output) # This loads the generated function, which should look like this:
@@ -182,11 +177,11 @@ class XProtoSecurityTest(unittest.TestCase):
 	    return i1
         """
 
-        obj = FakeArgs()
-	obj.empty = True
+        obj = FakeObject()
+        obj.empty = True
 
-	ctx = FakeArgs()
-	ctx.is_admin = True
+        ctx = FakeObject()
+        ctx.is_admin = True
 
         verdict = output_security_check(obj, ctx)
 
@@ -198,9 +193,8 @@ class XProtoSecurityTest(unittest.TestCase):
 """
     policy output < exists Privilege: Privilege.object_id = obj.id >
 """
-	args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
         exec(output) # This loads the generated function, which should look like this:
@@ -218,9 +212,8 @@ class XProtoSecurityTest(unittest.TestCase):
 """
     policy output < {{ "jack" in ["the", "box"] }} = False >
 """
-	args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
         output = XOSProcessor.process(args)
         exec(output) # This loads the generated function, which should look like this:
 
@@ -240,9 +233,8 @@ class XProtoSecurityTest(unittest.TestCase):
     policy output < forall Credential: Credential.obj_id = obj_id >
 """
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
         """

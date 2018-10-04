@@ -16,8 +16,8 @@
 
 import unittest
 from xosgenx.jinja2_extensions import FieldNotFound
-from helpers import FakeArgs, OUTPUT_DIR, XProtoTestHelpers
-from xosgenx.generator import XOSProcessor
+from helpers import XProtoTestHelpers
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 
 class XProtoFieldGraphTest(unittest.TestCase):
     def _test_field_graph(self):
@@ -43,9 +43,8 @@ message VRouterDevice (PlCoreBase){
 {{ xproto_field_graph_components(proto.messages.0.fields, proto.messages.0) }}
 """)
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = target)
         output = XOSProcessor.process(args)
         output =  eval(output)
         self.assertIn({'A','B','C'}, output)
@@ -69,9 +68,8 @@ message Foo (PlCoreBase){
 """)
 
         def generate():
-            args = FakeArgs()
-            args.inputs = xproto
-            args.target = target
+            args = XOSProcessorArgs(inputs = xproto,
+                                    target = target)
             output = XOSProcessor.process(args)
 
         with self.assertRaises(FieldNotFound) as e:

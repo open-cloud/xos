@@ -15,8 +15,8 @@
 
 
 import unittest
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs, XProtoTestHelpers
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import FakeObject, XProtoTestHelpers
 
 """The function below is for eliminating warnings arising due to the missing policy_output_validator,
 which is generated and loaded dynamically.
@@ -38,13 +38,13 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
 """
     policy test_policy < (obj.isolation = "container" | obj.isolation = "container_vm" ) -> (obj.image.kind = "container") >
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
 
         output = XOSProcessor.process(args)
 
-        obj = FakeArgs()
+        obj = FakeObject()
         obj.isolation = 'container'
         obj.kind = 'not a container'
 
@@ -68,13 +68,13 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
 """
     policy test_policy < not obj.id -> {{ obj.name.startswith(obj.site.login_base) }} >
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
 
         output = XOSProcessor.process(args)
 
-        obj = FakeArgs()
+        obj = FakeObject()
         obj.isolation = 'container'
         obj.kind = 'not a container'
 
@@ -99,7 +99,7 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
     policy test_policy < not (ctx.user = obj.user) >
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
 
@@ -115,10 +115,10 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
                 raise Exception('Necessary Failure')
         """
 
-        obj = FakeArgs()
-	obj.user = 1
-        ctx = FakeArgs()
-	ctx.user = 1
+        obj = FakeObject()
+        obj.user = 1
+        ctx = FakeObject()
+        ctx.user = 1
 
         with self.assertRaises(Exception):
            policy_output_validator(obj, ctx)
@@ -129,7 +129,7 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
     policy test_policy < not (ctx.is_admin = True | obj.empty = True) | False>
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
 
@@ -145,11 +145,11 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
                 raise Exception('Necessary Failure')
         """
 
-        obj = FakeArgs()
-	obj.empty = True
+        obj = FakeObject()
+        obj.empty = True
 
-	ctx = FakeArgs()
-	ctx.is_admin = True
+        ctx = FakeObject()
+        ctx.is_admin = True
 
         with self.assertRaises(Exception):
             verdict = policy_output_validator(obj, ctx)
@@ -160,7 +160,7 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
 """
     policy test_policy < exists Privilege: Privilege.object_id = obj.id >
 """
-	args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
 
@@ -181,7 +181,7 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
 """
     policy test_policy < {{ "jack" in ["the", "box"] }} = True >
 """
-	args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
         output = XOSProcessor.process(args)
@@ -205,7 +205,7 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
     policy test_policy < forall Credential: Credential.obj_id = obj_id >
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
 

@@ -11,7 +11,7 @@ import "xosoptions.proto";
 // fields that are set by the caller, regardless if they are set to a default
 // value. XOS uses this to know when to apply a default value.
 
-{% for object in proto.messages|sort(attribute='name') %}
+{% for object in proto.messages|selectattr("is_included")|sort(attribute='name') %}
 {% if object.name != 'XOSBase' -%}
 message {{ object.name }} {
     {%- if object.name=='CordSubscriberRoot' %}
@@ -47,7 +47,7 @@ message {{ xproto_pluralize(object) }} {
 {% endfor %}
 
 service xos {
-{% for object in proto.messages | sort(attribute='name')%}
+{% for object in proto.messages | selectattr("is_included") | sort(attribute='name')%}
 {% if object.name != 'XOSBase' -%}
   rpc List{{ object.name }}(google.protobuf.Empty) returns ({{ xproto_pluralize(object) }}) {
         option (googleapi.http) = {

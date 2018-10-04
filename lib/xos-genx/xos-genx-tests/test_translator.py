@@ -16,8 +16,7 @@
 
 import unittest
 import os
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 import yaml
 
 PROTO_EXPECTED_OUTPUT = """
@@ -34,7 +33,7 @@ VROUTER_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "
 # Generate other formats from xproto
 class XProtoTranslatorTest(unittest.TestCase):
     def _test_proto_generator(self):
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.files = [VROUTER_XPROTO]
         args.target = 'proto.xtarget'
         output = XOSProcessor.process(args)
@@ -119,7 +118,7 @@ message Slice (PlCoreBase){
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
         output = XOSProcessor.process(args)
@@ -142,7 +141,7 @@ message Bar {
     required string name = 1 [ null = "False", blank="False"];
 }
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
         output = XOSProcessor.process(args)
@@ -161,7 +160,7 @@ message Foo {
     required string secret = 1 [ null = "False", blank="False", gui_hidden = "True"];
 }
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
         output = XOSProcessor.process(args)
@@ -181,7 +180,7 @@ message Foo {
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
         output = XOSProcessor.process(args)
@@ -198,7 +197,7 @@ message Foo {
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
         output = XOSProcessor.process(args)
@@ -218,7 +217,7 @@ message Foo {
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
         output = XOSProcessor.process(args)
@@ -238,7 +237,7 @@ message Foo {
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
         output = XOSProcessor.process(args)
@@ -259,7 +258,7 @@ message Service {
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
         output = XOSProcessor.process(args)
@@ -287,7 +286,7 @@ message Bar {
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
         output = XOSProcessor.process(args)
@@ -309,7 +308,7 @@ message Bar {
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
         output = XOSProcessor.process(args)
@@ -329,7 +328,7 @@ message Foo (ParentFoo) {
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = 'modeldefs.xtarget'
         output = XOSProcessor.process(args)

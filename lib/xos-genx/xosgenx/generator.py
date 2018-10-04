@@ -26,6 +26,43 @@ from colorama import Fore
 loader = jinja2.PackageLoader(__name__, 'templates')
 env = jinja2.Environment(loader=loader)
 
+class XOSProcessorArgs:
+    """ Helper class for use cases that want to call XOSProcessor directly, rather than executing xosgenx from the
+        command line.
+    """
+
+    default_rev = False
+    default_output = None
+    default_attic = None
+    default_kvpairs = None
+    default_write_to_file = None
+    default_dest_file = None
+    default_dest_extension = None
+    default_target = None
+    default_checkers = None
+    default_verbosity = 0         # Higher numbers = more verbosity, lower numbers = less verbosity
+    default_include_models = []   # If neither include_models nor include_apps is specified, then all models will
+    default_include_apps = []     # be included.
+
+    def __init__(self, **kwargs):
+        # set defaults
+        self.rev = XOSProcessorArgs.default_rev
+        self.output = XOSProcessorArgs.default_output
+        self.attic = XOSProcessorArgs.default_attic
+        self.kvpairs = XOSProcessorArgs.default_kvpairs
+        self.verbosity = XOSProcessorArgs.default_verbosity
+        self.write_to_file = XOSProcessorArgs.default_write_to_file
+        self.default_dest_file = XOSProcessorArgs.default_dest_file
+        self.default_dest_extension = XOSProcessorArgs.default_dest_extension
+        self.default_target = XOSProcessorArgs.default_target
+        self.default_checkers = XOSProcessorArgs.default_target
+        self.include_models = XOSProcessorArgs.default_include_models
+        self.include_apps = XOSProcessorArgs.default_include_apps
+
+        # override defaults with kwargs
+        for (k,v) in kwargs.items():
+            setattr(self, k, v)
+
 class XOSProcessor:
 
     @staticmethod
@@ -225,7 +262,7 @@ class XOSProcessor:
             if start == 0:
                 beginning = ''
             else:
-                beginning = inputs[ptr:start-1] 
+                beginning = inputs[ptr:start-1]
 
             line_end_char = inputs[start+end:].find('\n')
             line_end = inputs[line_end_char]
@@ -242,6 +279,19 @@ class XOSProcessor:
 
         v = XOSProcessor._attach_parser(ast, args)
 
+        if args.include_models or args.include_apps:
+            for message in v.messages:
+                message["is_included"] = False
+                if message["name"] in args.include_models:
+                    message["is_included"] = True
+                else:
+                    app_label = message.get("options", {}).get("app_label").strip('"')
+                    if app_label in args.include_apps:
+                        message["is_included"] = True
+        else:
+            for message in v.messages:
+                message["is_included"] = True
+
         if args.output is not None and args.write_to_file == "model":
             rendered = {}
             for i, model in enumerate(v.models):
@@ -255,7 +305,7 @@ class XOSProcessor:
                             'message_table': models,
                             'messages': messages,
                             'policies': v.policies,
-                            'message_names': [m['name'] for m in messages]
+                            'message_names': [m['name'] for m in v.messages]
                         },
                         "context": context,
                         "options": v.options

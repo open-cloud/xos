@@ -164,6 +164,9 @@ def xproto_fields(m, table):
 
     # The "id" field is a special field. Every model has one. Put it up front and pretend it's part of the
 
+    if not fields:
+        raise Exception("Model %s has no fields. Check for missing base class." % m["name"])
+
     id_field = {'type': 'int32', 'name': 'id', 'options': {}, "id": "1", "accessor": fields[0]["accessor"]}
 
     fields = [id_field] + fields

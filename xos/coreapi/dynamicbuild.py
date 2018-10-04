@@ -18,7 +18,7 @@ import hashlib
 import os
 import shutil
 import tempfile
-from xosgenx.generator import XOSProcessor
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 
 from xosconfig import Config
 from multistructlog import create_logger
@@ -227,17 +227,12 @@ class DynamicBuilder(object):
 
         xproto_filenames = [os.path.join(manifest["dir"], x["filename"]) for x in manifest["xprotos"]]
 
-        class Args:
-            pass
-
         # Generate models
         is_service = manifest["name"] != 'core'
 
-        args = Args()
-        args.verbosity = 0
-        args.output = manifest["dest_dir"]
-        args.attic = os.path.join(manifest["dir"], 'attic')
-        args.files = xproto_filenames
+        args = XOSProcessorArgs(output = manifest["dest_dir"],
+                                attic = os.path.join(manifest["dir"], 'attic'),
+                                files = xproto_filenames)
 
         if is_service:
             args.target = 'service.xtarget'
@@ -250,15 +245,13 @@ class DynamicBuilder(object):
         XOSProcessor.process(args)
 
         # Generate security checks
-        class SecurityArgs:
-            verbosity = 0
-            output = manifest["dest_dir"]
-            target = 'django-security.xtarget'
-            dest_file = 'security.py'
-            write_to_file = 'single'
-            files = xproto_filenames
+        security_args = XOSProcessorArgs(output = manifest["dest_dir"],
+                                         target = 'django-security.xtarget',
+                                         dest_file = 'security.py',
+                                         write_to_file = 'single',
+                                         files = xproto_filenames)
 
-        XOSProcessor.process(SecurityArgs())
+        XOSProcessor.process(security_args)
 
         # Generate __init__.py
         if manifest["name"] == "core":

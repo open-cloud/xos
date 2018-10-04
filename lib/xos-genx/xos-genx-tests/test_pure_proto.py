@@ -16,8 +16,8 @@
 
 
 import unittest
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs, XProtoTestHelpers
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import XProtoTestHelpers
 
 # Generate from xproto, then generate from equivalent proto
 class XPureProtobufGenerator(unittest.TestCase):
@@ -83,14 +83,14 @@ class {{ m.name }}{{ xproto_base_def(m, m.bases) }}:
 {% endfor %}
 """)
 
-		args_xproto = FakeArgs()
+		args_xproto = XOSProcessorArgs()
 		args_xproto.inputs = xproto
 		args_xproto.target = target
 		xproto_gen = XOSProcessor.process(args_xproto)
 
 		count1 = len(xproto_gen.split('\n'))
 
-		args_proto = FakeArgs()
+		args_proto = XOSProcessorArgs()
 		args_proto.inputs = proto
 		args_proto.target = target
 		args_proto.rev = True
@@ -114,12 +114,12 @@ option my_policy = "policy:< exists x:a=b >";
 {{ policies }}
 """)
 
-		args_xproto = FakeArgs()
+		args_xproto = XOSProcessorArgs()
 		args_xproto.inputs = xproto
 		args_xproto.target = target
 		xproto_gen = XOSProcessor.process(args_xproto)
 
-		args_proto = FakeArgs()
+		args_proto = XOSProcessorArgs()
 		args_proto.inputs = proto
 		args_proto.target = target
 		args_proto.rev = True

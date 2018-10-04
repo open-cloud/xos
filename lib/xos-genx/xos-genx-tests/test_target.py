@@ -16,8 +16,8 @@
 
 import unittest
 import os
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs, XProtoTestHelpers, OUTPUT_DIR
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import XProtoTestHelpers, OUTPUT_DIR
 
 TEST_FILE = "test_file"
 
@@ -39,7 +39,7 @@ class XProtoTargetTests(unittest.TestCase):
 """%(TEST_FILE, TEST_FILE)
         )
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = ''
         args.target = target
         args.attic = OUTPUT_DIR
@@ -51,7 +51,7 @@ class XProtoTargetTests(unittest.TestCase):
 """
   {{ xproto_first_non_empty([None, None, None, None, None, None, "Eureka"]) }}
 """)
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = ''
         args.target = target
         output = XOSProcessor.process(args)
@@ -62,7 +62,7 @@ class XProtoTargetTests(unittest.TestCase):
 """
   {{ context.what }}
 """)
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = ''
         args.target = target
         args.kv='what:what is what'
@@ -89,7 +89,7 @@ class XProtoTargetTests(unittest.TestCase):
 {{ xproto_singularize(m) }},
 {%- endfor %}
 """)
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = proto
         args.target = target
         output = XOSProcessor.process(args)
@@ -115,7 +115,7 @@ class XProtoTargetTests(unittest.TestCase):
 {{ xproto_pluralize(m) }},
 {%- endfor %}
 """)
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = proto
         args.target = target
         output = XOSProcessor.process(args)

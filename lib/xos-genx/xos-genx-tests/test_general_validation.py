@@ -15,8 +15,8 @@
 
 
 import unittest
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs, XProtoTestHelpers
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import XProtoTestHelpers, FakeObject
 import pdb
 
 """The function below is for eliminating warnings arising due to the missing policy_output_validator,
@@ -43,9 +43,8 @@ class XProtoGeneralValidationTest(unittest.TestCase):
 """
     policy output < False >
 """
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
 
@@ -67,9 +66,8 @@ class XProtoGeneralValidationTest(unittest.TestCase):
     policy output < not (ctx.user = obj.user) >
 """
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
 
@@ -83,10 +81,10 @@ class XProtoGeneralValidationTest(unittest.TestCase):
                 raise Exception('Necessary Failure')
         """
 
-        obj = FakeArgs()
-	obj.user = 1
-        ctx = FakeArgs()
-	ctx.user = 1
+        obj = FakeObject()
+        obj.user = 1
+        ctx = FakeObject()
+        ctx.user = 1
 
         with self.assertRaises(Exception):
            policy_output_validator(obj, ctx)
@@ -97,9 +95,8 @@ class XProtoGeneralValidationTest(unittest.TestCase):
     policy output < not (ctx.user = obj.user) >
 """
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
 
@@ -113,10 +110,10 @@ class XProtoGeneralValidationTest(unittest.TestCase):
                 raise Exception('Necessary Failure')
         """
 
-        obj = FakeArgs()
-	obj.user = 1
-        ctx = FakeArgs()
-	ctx.user = 1
+        obj = FakeObject()
+        obj.user = 1
+        ctx = FakeObject()
+        ctx.user = 1
 
         with self.assertRaises(Exception):
            policy_output_validator(obj, ctx)
@@ -127,7 +124,7 @@ class XProtoGeneralValidationTest(unittest.TestCase):
     policy output < (ctx.is_admin = True | obj.empty = True) | False>
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
 
@@ -143,11 +140,11 @@ class XProtoGeneralValidationTest(unittest.TestCase):
                 raise Exception('Necessary Failure')
         """
 
-        obj = FakeArgs()
-	obj.empty = False
+        obj = FakeObject()
+        obj.empty = False
 
-	ctx = FakeArgs()
-	ctx.is_admin = False
+        ctx = FakeObject()
+        ctx.is_admin = False
 
         with self.assertRaises(Exception):
             verdict = policy_output_validator(obj, ctx)
@@ -158,9 +155,8 @@ class XProtoGeneralValidationTest(unittest.TestCase):
 """
     policy output < exists Privilege: Privilege.object_id = obj.id >
 """
-	args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
         exec(output) # This loads the generated function, which should look like this:
@@ -179,9 +175,8 @@ class XProtoGeneralValidationTest(unittest.TestCase):
 """
     policy output < {{ "jack" in ["the", "box"] }} = True >
 """
-	args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
         output = XOSProcessor.process(args)
         exec(output) # This loads the generated function, which should look like this:
 
@@ -203,9 +198,8 @@ class XProtoGeneralValidationTest(unittest.TestCase):
     policy output < *sub_policy(child) >
 """
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
 
@@ -223,12 +217,12 @@ class XProtoGeneralValidationTest(unittest.TestCase):
                 raise ValidationError('Necessary Failure')
         """
 
-        obj = FakeArgs()
-        obj.child = FakeArgs()
-	obj.child.user = 1
+        obj = FakeObject()
+        obj.child = FakeObject()
+        obj.child.user = 1
 
-        ctx = FakeArgs()
-	ctx.user = 1
+        ctx = FakeObject()
+        ctx.user = 1
 
         with self.assertRaises(Exception):
             verdict = policy_output_enforcer(obj, ctx)
@@ -240,9 +234,8 @@ class XProtoGeneralValidationTest(unittest.TestCase):
     policy output < forall Credential: Credential.obj_id = obj_id >
 """
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = self.target
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = self.target)
 
         output = XOSProcessor.process(args)
 

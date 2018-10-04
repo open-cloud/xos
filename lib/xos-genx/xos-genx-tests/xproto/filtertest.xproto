@@ -1,0 +1,15 @@
+option app_label = "core";
+
+message Model1 {
+    optional string somefield = 1;
+}
+
+message Model2 {
+    optional string somefield = 2;
+}
+
+message Model3 {
+    option app_label = "someservice";
+    optional string somefield = 3;
+}
+

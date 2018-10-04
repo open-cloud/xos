@@ -21,21 +21,36 @@ from generator import *
 from version import __version__
 
 parse = argparse.ArgumentParser(description='XOS Generative Toolchain')
-parse.add_argument('--rev', dest='rev', action='store_true',default=False, help='Convert proto to xproto')
-parse.add_argument('--output', dest='output', action='store',default=None, help='Destination dir')
-parse.add_argument('--attic', dest='attic', action='store',default=None, help='The location at which static files are stored')
-parse.add_argument('--kvpairs', dest='kv', action='store',default=None, help='Key value pairs to make available to the target')
-parse.add_argument('--write-to-file', dest='write_to_file', choices = ['single', 'model', 'target'], action='store',default=None, help='Single output file (single) or output file per model (model) or let target decide (target)')
+parse.add_argument('--rev', dest='rev', action='store_true',
+                   default=XOSProcessorArgs.default_rev, help='Convert proto to xproto')
+parse.add_argument('--output', dest='output', action='store',
+                   default=XOSProcessorArgs.default_output, help='Destination dir')
+parse.add_argument('--attic', dest='attic', action='store',
+                   default=XOSProcessorArgs.default_attic, help='The location at which static files are stored')
+parse.add_argument('--kvpairs', dest='kv', action='store',
+                   default=XOSProcessorArgs.default_kvpairs, help='Key value pairs to make available to the target')
+parse.add_argument('--write-to-file', dest='write_to_file', choices = ['single', 'model', 'target'], action='store',
+                   default=XOSProcessorArgs.default_write_to_file,
+                   help='Single output file (single) or output file per model (model) or let target decide (target)')
 parse.add_argument('--version', action='version', version=__version__)
-parse.add_argument("-v", "--verbosity", action="count", default=0, help="increase output verbosity")
+parse.add_argument("-v", "--verbosity", action="count",
+                   default=XOSProcessorArgs.default_verbosity, help="increase output verbosity")
+parse.add_argument("--include-models", dest="include_models", action="append",
+                   default=XOSProcessorArgs.default_include_models, help="list of models to include")
+parse.add_argument("--include-apps", dest="include_apps", action="append",
+                   default=XOSProcessorArgs.default_include_apps, help="list of models to include")
 
 group = parse.add_mutually_exclusive_group()
-group.add_argument('--dest-file', dest='dest_file', action='store',default=None, help='Output file name (if write-to-file is set to single)')
-group.add_argument('--dest-extension', dest='dest_extension', action='store',default=None, help='Output file extension (if write-to-file is set to single)')
+group.add_argument('--dest-file', dest='dest_file', action='store',
+                   default=XOSProcessorArgs.default_dest_file, help='Output file name (if write-to-file is set to single)')
+group.add_argument('--dest-extension', dest='dest_extension', action='store',
+                   default=XOSProcessorArgs.default_dest_extension, help='Output file extension (if write-to-file is set to single)')
 
 group = parse.add_mutually_exclusive_group(required=True)
-group.add_argument('--target', dest='target', action='store',default=None, help='Output format, corresponding to <output>.yaml file')
-group.add_argument('--checkers', dest='checkers', action='store', default=None, help='Comma-separated list of static checkers')
+group.add_argument('--target', dest='target', action='store',
+                   default=XOSProcessorArgs.default_target, help='Output format, corresponding to <output>.yaml file')
+group.add_argument('--checkers', dest='checkers', action='store',
+                   default=XOSProcessorArgs.default_checkers, help='Comma-separated list of static checkers')
 
 parse.add_argument('files', metavar='<input file>', nargs='+', action='store', help='xproto files to compile')
 

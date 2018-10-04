@@ -15,8 +15,8 @@
 
 
 import unittest
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs, XProtoTestHelpers
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import XProtoTestHelpers
 
 class XProtoGraphTests(unittest.TestCase):
     def test_cross_model(self):
@@ -112,7 +112,7 @@ message Slice (PlCoreBase){
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = proto
         args.target = target
         output = XOSProcessor.process(args)
@@ -213,7 +213,7 @@ message Slice (PlCoreBase){
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = proto
         args.target = xtarget
         output = XOSProcessor.process(args)
@@ -305,7 +305,7 @@ message Slice (Network){
      required manytomany tags->Tag = 18 [db_index = False, null = False, blank = True];
 }
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = proto
         args.target = xtarget
         output = XOSProcessor.process(args)

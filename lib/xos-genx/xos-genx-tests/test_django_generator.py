@@ -16,8 +16,7 @@
 
 import unittest
 import os
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 
 VROUTER_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/vrouterport.xproto")
 
@@ -27,9 +26,8 @@ class XProtoProtobufGeneratorTest(unittest.TestCase):
         """
         [XOS-GenX] Generate DJANGO models, verify Fields and Foreign Keys
         """
-        args = FakeArgs()
-        args.files = [VROUTER_XPROTO]
-        args.target = 'django.xtarget'
+        args = XOSProcessorArgs(files = [VROUTER_XPROTO],
+                                target = 'django.xtarget')
         output = XOSProcessor.process(args)
 
         fields = filter(lambda s:'Field(' in s, output.splitlines())
@@ -57,9 +55,8 @@ class XProtoProtobufGeneratorTest(unittest.TestCase):
             }
             """
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = 'django.xtarget'
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = 'django.xtarget')
         output = XOSProcessor.process(args)
 
         null_true = filter(lambda s: 'null = True' in s, output.splitlines())
@@ -90,9 +87,8 @@ class XProtoProtobufGeneratorTest(unittest.TestCase):
             }
             """
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = 'django.xtarget'
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = 'django.xtarget')
         output = XOSProcessor.process(args)
 
         self.assertIn("feedback_state_fields = ['parent_name', 'name']", output)
@@ -110,9 +106,8 @@ class XProtoProtobufGeneratorTest(unittest.TestCase):
             }
             """
 
-        args = FakeArgs()
-        args.inputs = xproto
-        args.target = 'django.xtarget'
+        args = XOSProcessorArgs(inputs = xproto,
+                                target = 'django.xtarget')
         output = XOSProcessor.process(args)
 
         self.assertIn("validators=[", output)

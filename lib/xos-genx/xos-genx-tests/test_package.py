@@ -16,12 +16,12 @@
 
 import unittest
 import os
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs, XProtoTestHelpers
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import XProtoTestHelpers
 
 class XProtoPackageTest(unittest.TestCase):
     def test_package_fqn(self):
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         target = XProtoTestHelpers.write_tmp_target(
 """
   {% for m in proto.messages %}
@@ -42,7 +42,7 @@ message Port (PlCoreBase,ParameterMixin) {
      required bool xos_created = 6 [default = False, null = False, db_index = False, blank = True];
 }
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
@@ -159,7 +159,7 @@ message Slice (PlCoreBase){
      required manytomany tags->Tag = 18 [db_index = False, null = False, blank = True];
 }
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
         output = XOSProcessor.process(args)
@@ -220,7 +220,7 @@ message Instance (xos.network.Port){
      required manytomany tags->Tag = 17 [db_index = False, null = False, blank = True];
 }
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
         output = XOSProcessor.process(args)
@@ -321,7 +321,7 @@ message Slice (Network){
      required manytomany tags->Tag = 18 [db_index = False, null = False, blank = True];
 }
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
         output = XOSProcessor.process(args)
@@ -427,7 +427,7 @@ message Slice (Network){
 }
 """
          
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
         output = XOSProcessor.process(args)

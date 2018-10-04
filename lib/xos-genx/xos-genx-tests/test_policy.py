@@ -15,8 +15,8 @@
 
 
 import unittest
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs, XProtoTestHelpers
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import FakeObject, XProtoTestHelpers
 import pdb
 
 """
@@ -37,7 +37,7 @@ class XProtoPolicyTest(unittest.TestCase):
 
         target = XProtoTestHelpers.write_tmp_target("{{ proto.messages.0 }}")
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
@@ -52,7 +52,7 @@ class XProtoPolicyTest(unittest.TestCase):
 
         target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.true_policy }}")
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
@@ -66,14 +66,14 @@ class XProtoPolicyTest(unittest.TestCase):
 """
 
         target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.slice_user }}")
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
         output = XOSProcessor.process(args)
        
-        slice = FakeArgs()
-        slice.user = FakeArgs()
+        slice = FakeObject()
+        slice.user = FakeObject()
         slice.user.compute_is_admin = lambda: True
 
         expr = eval(output)
@@ -86,14 +86,14 @@ class XProtoPolicyTest(unittest.TestCase):
 """
 
         target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.slice_user }}")
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
         output = XOSProcessor.process(args)
        
-        slice = FakeArgs()
-        slice.user = FakeArgs()
+        slice = FakeObject()
+        slice.user = FakeObject()
         slice.user.is_admin = True
 
         expr = eval(output)
@@ -106,14 +106,14 @@ class XProtoPolicyTest(unittest.TestCase):
 """
 
         target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.slice_user }}")
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
         output = XOSProcessor.process(args)
        
-        slice = FakeArgs()
-        slice.user = FakeArgs()
+        slice = FakeObject()
+        slice.user = FakeObject()
         slice.user.is_admin = True
 
         expr = eval(output)
@@ -126,14 +126,14 @@ class XProtoPolicyTest(unittest.TestCase):
 """
 
         target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.slice_user }}")
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
         output = XOSProcessor.process(args)
        
-        slice = FakeArgs()
-        slice.user = FakeArgs()
+        slice = FakeObject()
+        slice.user = FakeObject()
         slice.user.is_admin = True
 
         expr = eval(output)
@@ -146,15 +146,15 @@ class XProtoPolicyTest(unittest.TestCase):
 """
 
         target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.slice_user }}")
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
         output = XOSProcessor.process(args)
        
-        slice = FakeArgs()
+        slice = FakeObject()
         slice.user = 'twin'
-        obj = FakeArgs()
+        obj = FakeObject()
         obj.user = 'twin'
 
         (op, operands), = eval(output).items()
@@ -168,15 +168,15 @@ class XProtoPolicyTest(unittest.TestCase):
     policy slice_admin < slice.is_admin | obj.empty >
 """
         target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.slice_admin }}")
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
         output = XOSProcessor.process(args)
 
-        slice = FakeArgs()
+        slice = FakeObject()
         slice.is_admin = False
-        obj = FakeArgs()
+        obj = FakeObject()
         obj.empty = []
 
         (op, operands), = eval(output).items()
@@ -190,15 +190,15 @@ class XProtoPolicyTest(unittest.TestCase):
     policy implies < obj.name -> obj.creator >
 """
         target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.implies }}")
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
         output = XOSProcessor.process(args)
 
-        slice = FakeArgs()
+        slice = FakeObject()
         slice.is_admin = False
-        obj = FakeArgs()
+        obj = FakeObject()
         obj.name = 'Thing 1'
         obj.creator = None
 
@@ -214,15 +214,15 @@ class XProtoPolicyTest(unittest.TestCase):
 """
 
         target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.privilege }} ")
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
         output = XOSProcessor.process(args)
         
-        Privilege = FakeArgs()
+        Privilege = FakeObject()
         Privilege.object_id = 1
-        obj = FakeArgs()
+        obj = FakeObject()
         obj.id = 1
 
         (op, operands), = eval(output).items()
@@ -239,7 +239,7 @@ class XProtoPolicyTest(unittest.TestCase):
 """
 
         target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.network_slice_policy }} ")
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
@@ -258,7 +258,7 @@ class XProtoPolicyTest(unittest.TestCase):
 """
 
         target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.network_slice_policy }} ")
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 
@@ -275,7 +275,7 @@ class XProtoPolicyTest(unittest.TestCase):
 
         target = XProtoTestHelpers.write_tmp_target("{{ proto.policies.instance }}")
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
 

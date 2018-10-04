@@ -15,8 +15,8 @@
 
 
 import unittest
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs, XProtoTestHelpers
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import XProtoTestHelpers
 
 class XProtoParseTests(unittest.TestCase):
     def test_global_options(self):
@@ -28,7 +28,7 @@ class XProtoParseTests(unittest.TestCase):
     option kind = "vsg";
     option verbose_name = "vSG Service";
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = xtarget
         output = XOSProcessor.process(args)
@@ -57,7 +57,7 @@ message Person {
   repeated PhoneNumber phones = 4;
 }
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = xtarget
         output = XOSProcessor.process(args)
@@ -72,13 +72,11 @@ message links {
     required manytoone vrouter_service->VRouterService:device_ports = 4 [db_index = True, null = False, blank = False];
 }
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = xtarget
         output = XOSProcessor.process(args)
         self.assertIn("VRouterService", output)
-	
-	pass
 
     def test_through_extensions(self):
         xtarget = XProtoTestHelpers.write_tmp_target("{{ proto.messages.0.links.0.through }}")
@@ -88,7 +86,7 @@ message links {
     required manytomany vrouter_service->VRouterService/ServiceProxy:device_ports = 4 [db_index = True, null = False, blank = False];
 }
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = xtarget
         output = XOSProcessor.process(args)
@@ -102,13 +100,11 @@ message link {
     option type = "e1000";
 }
 """
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = xtarget
         output = XOSProcessor.process(args)
         self.assertIn("e1000", output)
-
-	pass
 
     def test_message_base(self):
         xtarget = XProtoTestHelpers.write_tmp_target("{{ proto.messages.0.bases }}")
@@ -118,7 +114,7 @@ message base(Base) {
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = xtarget
         output = XOSProcessor.process(args)

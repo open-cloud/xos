@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import unittest
-from xosgenx.generator import XOSProcessor
-from helpers import FakeArgs, XProtoTestHelpers
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import XProtoTestHelpers
 
 
 class XProtoToscaTypeTest(unittest.TestCase):
@@ -43,7 +43,7 @@ class XProtoToscaTypeTest(unittest.TestCase):
         }
         """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target_tosca_type
         output = XOSProcessor.process(args)
@@ -74,7 +74,7 @@ message Foo {
 }
 """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target_tosca_keys
         output = XOSProcessor.process(args)
@@ -95,7 +95,7 @@ message Foo {
             }
             """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target_tosca_keys
         output = XOSProcessor.process(args)
@@ -117,7 +117,7 @@ message Foo {
             }
             """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target_tosca_keys
         output = XOSProcessor.process(args)
@@ -144,7 +144,7 @@ message Foo {
             }
             """
 
-        args = FakeArgs()
+        args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target_tosca_keys
         output = XOSProcessor.process(args)
