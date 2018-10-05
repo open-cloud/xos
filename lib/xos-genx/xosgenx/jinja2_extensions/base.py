@@ -44,6 +44,9 @@ def xproto_singularize(field):
         singular = unquote(singular)
     except KeyError:
         singular = inflect_engine.singular_noun(field['name'])
+        if singular is False:
+            # singular_noun returns False on a noun it can't singularize
+            singular = field["name"]
 
     return singular
 
@@ -53,7 +56,12 @@ def xproto_singularize_pluralize(field):
         plural = field['options']['plural']
         plural = unquote(plural)
     except KeyError:
-        plural = inflect_engine.plural_noun(inflect_engine.singular_noun(field['name']))
+        singular = inflect_engine.singular_noun(field['name'])
+        if singular is False:
+            # singular_noun returns False on a noun it can't singularize
+            singular = field["name"]
+
+        plural = inflect_engine.plural_noun(singular)
 
     return plural
 

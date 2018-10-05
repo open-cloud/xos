@@ -16,7 +16,18 @@
 
 import unittest
 from xosgenx.jinja2_extensions.base import *
-from helpers import FakeArgs, XProtoTestHelpers
+
+
+# Several of the base functions require a Field object.
+def _field(name, singular=None, plural=None):
+    f = {}
+    f["name"] = name
+    f["options"] = {}
+    if singular:
+        f["options"]["singular"] = singular
+    if plural:
+        f["options"]["plural"] = plural
+    return f
 
 class Jinja2BaseTests(unittest.TestCase):
     def test_xproto_is_true(self):
@@ -28,6 +39,41 @@ class Jinja2BaseTests(unittest.TestCase):
         self.assertFalse(xproto_is_true('"False"'))
         self.assertFalse(xproto_is_true(None))
         self.assertFalse(xproto_is_true("something else"))
+
+    def test_unquote(self):
+        self.assertEqual(xproto_unquote("foo"), "foo")
+        self.assertEqual(xproto_unquote('"foo"'), "foo")
+
+    def test_pluralize(self):
+        self.assertEqual(xproto_pluralize(_field("sheep")), "sheep")
+        self.assertEqual(xproto_pluralize(_field("slice")), "slices")
+        self.assertEqual(xproto_pluralize(_field("network")), "networks")
+        self.assertEqual(xproto_pluralize(_field("omf_friendly")), "omf_friendlies")
+        # invalid words, should usually return <word>-es
+        self.assertEqual(xproto_pluralize(_field("xxx")), "xxxes")
+        # if a field option is set, use that
+        self.assertEqual(xproto_pluralize(_field("sheep", plural="turtles")), "turtles")
+
+    def test_singularize(self):
+        self.assertEqual(xproto_singularize(_field("sheep")), "sheep")
+        self.assertEqual(xproto_singularize(_field("slices")), "slice")
+        self.assertEqual(xproto_singularize(_field("networks")), "network")
+        self.assertEqual(xproto_singularize(_field("omf_friendlies")), "omf_friendly")
+        # invalid words, return the original word
+        self.assertEqual(xproto_singularize(_field("xxx")), "xxx")
+        # if a field option is set, use that
+        self.assertEqual(xproto_pluralize(_field("sheep", plural="turtles")), "turtles")
+
+    def test_singularize_pluralize(self):
+        self.assertEqual(xproto_singularize_pluralize(_field("sheep")), "sheep")
+        self.assertEqual(xproto_singularize_pluralize(_field("slices")), "slices")
+        self.assertEqual(xproto_singularize_pluralize(_field("networks")), "networks")
+        self.assertEqual(xproto_singularize_pluralize(_field("omf_friendlies")), "omf_friendlies")
+        # invalid words, should usually return <word>-es
+        self.assertEqual(xproto_singularize_pluralize(_field("xxx")), "xxxes")
+        # if a field option is set, use that
+        self.assertEqual(xproto_singularize(_field("sheep", singular="turtle")), "turtle")
+
 
 if __name__ == '__main__':
     unittest.main()
