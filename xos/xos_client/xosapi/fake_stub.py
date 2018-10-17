@@ -72,6 +72,14 @@ class FakeObj(object):
 
         return self.is_set.get(name, False)
 
+    def ListFields(self):
+        fbn = self.DESCRIPTOR.fields_by_name
+        l = []
+        for (k,v) in fbn.items():
+            if self.is_set.get(k, False):
+                l.append( (v, getattr(self, k)) )
+        return l
+
     @property
     def self_content_type_id(self):
         return "xos.%s" % self.__class__.__name__.lower()
@@ -99,6 +107,7 @@ class FakeField(object):
         extensions = {}
 
         self.field_decl = field
+        self.name = field["name"]
 
         fk_model = field.get("fk_model", None)
         if fk_model:
@@ -192,6 +201,7 @@ class Slice(FakeObj):
 class Site(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
                {"name": "name", "default": ""},
+               {"name": "login_base", "default": ""},
                {"name": "slices_ids", "default": [], "fk_reverse": "Slice"},
                {"name": "leaf_model_name", "default": "Site"},
                {"name": "class_names", "default": "Site"})

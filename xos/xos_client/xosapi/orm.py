@@ -69,6 +69,67 @@ class ORMWrapper(object):
         super(ORMWrapper, self).__setattr__("_fkmap", fkmap)
         reverse_fkmap=self.gen_reverse_fkmap()
         super(ORMWrapper, self).__setattr__("_reverse_fkmap", reverse_fkmap)
+        super(ORMWrapper, self).__setattr__("_initial", self._dict)
+
+    def fields_differ(self,f1,f2):
+        return (f1 != f2)
+
+    @property
+    def _dict(self):
+        """ Return a dictionary of {fieldname: fieldvalue} for the object.
+
+            This differs for the xos-core implementation of XOSBase. For new object, XOSBase will include field names
+            that are set to default values. ORM ignores fields that are set to default values.
+        """
+        d={}
+        for (fieldDesc, val) in self._wrapped_class.ListFields():
+            name = fieldDesc.name
+            d[name] = val
+        return d
+
+    @property
+    def diff(self):
+        d1 = self._initial
+        d2 = self._dict
+        all_field_names = self._wrapped_class.DESCRIPTOR.fields_by_name.keys()
+        diffs=[]
+        for k in all_field_names:
+            if (d1.get(k,None) != d2.get(k,None)):
+                diffs.append( (k, (d1.get(k,None), d2.get(k,None))) )
+
+        #diffs = [(k, (v, d2[k])) for k, v in d1.items() if self.fields_differ(v,d2[k])]
+        return dict(diffs)
+
+    @property
+    def has_changed(self):
+        return bool(self.diff)
+
+    @property
+    def changed_fields(self):
+        """ Return the list of changed fields.
+
+            This differs for the xos-core implementation of XOSBase. For new object, XOSBase will include field names
+            that are set to default values.
+        """
+        if self.is_new:
+            return self._dict.keys()
+        return self.diff.keys()
+
+    def has_field_changed(self, field_name):
+        return field_name in self.diff.keys()
+
+    def get_field_diff(self, field_name):
+        return self.diff.get(field_name, None)
+
+    def recompute_initial(self):
+        self._initial = self._dict
+
+    def save_changed_fields(self, always_update_timestamp=False):
+        if self.has_changed:
+            update_fields = self.changed_fields
+            if always_update_timestamp and "updated" not in update_fields:
+                update_fields.append("updated")
+            self.save(update_fields=sorted(update_fields), always_update_timestamp=always_update_timestamp)
 
     def create_attr(self, name, value=None):
         """ setattr(self, ...) will fail for attributes that don't exist in the
@@ -309,6 +370,9 @@ class ORMWrapper(object):
            self.stub.invoke("Update%s" % self._wrapped_class.__class__.__name__, self._wrapped_class, metadata=metadata)
         self.do_post_save_fixups()
 
+        # Now that object has saved, reset our initial state for diff calculation
+        self.recompute_initial()
+
     def delete(self):
         id = self.stub.make_ID(id=self._wrapped_class.id)
         self.stub.invoke("Delete%s" % self._wrapped_class.__class__.__name__, id)
@@ -502,6 +566,7 @@ class ORMObjectManager(object):
         o = make_ORMWrapper(cls(), self._stub, is_new=True)
         for (k,v) in  kwargs.items():
             setattr(o, k, v)
+        o.recompute_initial()
         return o
 
 class ORMModelClass(object):

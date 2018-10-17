@@ -74,26 +74,38 @@ class MockObjectStore(MockObjectList):
         else:
             self.get_items().append(o)
 
-class MockObject:
+class MockObject(object):
     objects = None
     id = None
     deleted = False
 
+    field_names = []
+
     def __init__(self, **kwargs):
+        object.__setattr__(self, 'is_set', {})
+
         setattr(self, 'backend_code', 0)
         setattr(self, 'id', 98052)
         setattr(self, 'pk', random.randint(0, 1<<30))
-        
+
+        self.leaf_model = self
+
+        # reset is_set
+        self.is_set = {}
+
         for (k,v) in kwargs.items():
             setattr(self,k,v)
+
+        self.is_new = True
+        self._initial = self._dict
+
+    def __setattr__(self, name, value):
+        self.is_set[name] = True
+        object.__setattr__(self, name, value)
 
     @property
     def self_content_type_id(self):
         return self.__class__.__name__
-
-    @property
-    def leaf_model(self):
-        return self
 
     def save(self, update_fields=[], always_update_timestamp=False):
         if self.objects:
@@ -104,6 +116,53 @@ class MockObject:
 
     def tologdict(self):
         return {}
+
+    @property
+    def _dict(self):
+        d={}
+        for name in self.field_names:
+            if self.is_set.get(name, False):
+                d[name] = getattr(self, name)
+        return d
+
+    @property
+    def diff(self):
+        d1 = self._initial
+        d2 = self._dict
+        all_field_names = self.field_names
+        diffs=[]
+        for k in all_field_names:
+            if (d1.get(k,None) != d2.get(k,None)):
+                diffs.append( (k, (d1.get(k,None), d2.get(k,None))) )
+
+        return dict(diffs)
+
+    @property
+    def has_changed(self):
+        return bool(self.diff)
+
+    @property
+    def changed_fields(self):
+        if self.is_new:
+            return self._dict.keys()
+        return self.diff.keys()
+
+    def has_field_changed(self, field_name):
+        return field_name in self.diff.keys()
+
+    def get_field_diff(self, field_name):
+        return self.diff.get(field_name, None)
+
+    def recompute_initial(self):
+        self._initial = self._dict
+
+    def save_changed_fields(self, always_update_timestamp=False):
+        if self.has_changed:
+            update_fields = self.changed_fields
+            if always_update_timestamp and "updated" not in update_fields:
+                update_fields.append("updated")
+            self.save(update_fields=sorted(update_fields), always_update_timestamp=always_update_timestamp)
+
 
 def get_MockObjectStore(x):
     store = globals()["Mock%sObjects" % x]()
@@ -163,4 +222,11 @@ class {{ m.name }}(MockObject):
     {% if f.link -%}{{ f.name }}_id = None{% endif %}
     {% endfor %}
     leaf_model_name = "{{ m.name }}"
+
+    field_names = ["id", \
+    {% for f in xproto_base_fields(m, proto.message_table) +  m.fields -%}
+       "{{ f.name }}",
+    {% endfor %}
+    ]
+
 {% endfor %}

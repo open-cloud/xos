@@ -479,6 +479,65 @@ class TestORM(unittest.TestCase):
             self.assertEqual(q.elements[0].operator, q.elements[0].EQUAL)
             self.assertEqual(q.elements[0].sValue, "foo")
 
+    def test_ORMWrapper_new_diff(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite")
+
+        self.assertEqual(site.is_new, True)
+        self.assertEqual(site._dict, {"name": "mysite"})
+        self.assertEqual(site.diff, {})
+        self.assertEqual(site.changed_fields, ["name"])
+        self.assertEqual(site.has_field_changed("name"), False)
+        self.assertEqual(site.has_field_changed("login_base"), False)
+
+        site.login_base = "bar"
+
+        self.assertEqual(site._dict, {'login_base': 'bar', 'name': 'mysite'})
+        self.assertEqual(site.diff, {'login_base': (None, 'bar')})
+        self.assertIn("name", site.changed_fields)
+        self.assertIn("login_base", site.changed_fields)
+        self.assertEqual(site.has_field_changed("name"), False)
+        self.assertEqual(site.has_field_changed("login_base"), True)
+        self.assertEqual(site.get_field_diff("login_base"), (None, "bar"))
+
+    def test_ORMWrapper_existing_diff(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite", login_base="foo")
+        site.save()
+        site = orm.Site.objects.first()
+
+        self.assertEqual(site.is_new, False)
+        self.assertEqual(site._dict, {"id": 1, "name": "mysite", "login_base": "foo"})
+        self.assertEqual(site.diff, {})
+        self.assertEqual(site.changed_fields, [])
+        self.assertEqual(site.has_field_changed("name"), False)
+        self.assertEqual(site.has_field_changed("login_base"), False)
+
+        site.login_base = "bar"
+
+        self.assertEqual(site._dict, {'id': 1, 'login_base': 'bar', 'name': 'mysite'})
+        self.assertEqual(site.diff, {'login_base': ("foo", 'bar')})
+        self.assertIn("login_base", site.changed_fields)
+        self.assertEqual(site.has_field_changed("name"), False)
+        self.assertEqual(site.has_field_changed("login_base"), True)
+
+    def test_ORMWrapper_diff_after_save(self):
+        orm = self.make_coreapi()
+        site = orm.Site(name="mysite", login_base="foo")
+        site.save()
+        site = orm.Site.objects.first()
+
+        self.assertEqual(site.diff, {})
+
+        site.login_base = "bar"
+
+        self.assertEqual(site.diff, {'login_base': ("foo", 'bar')})
+
+        site.save()
+
+        self.assertEqual(site.diff, {})
+
+
 def main():
     global USE_FAKE_STUB
     global xos_grpc_client
