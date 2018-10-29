@@ -203,7 +203,10 @@ def xproto_base_rlinks(m, table):
         if b in table:
             base_rlinks = xproto_base_rlinks(table[b], table)
 
-            model_rlinks = table[b]['rlinks']
+            model_rlinks = [x.copy() for x in table[b]['rlinks']]
+            for link in model_rlinks:
+                link["accessor"] = b
+
             links.extend(base_rlinks)
             links.extend(model_rlinks)
 
@@ -212,31 +215,48 @@ def xproto_base_rlinks(m, table):
 def xproto_rlinks(m, table):
     """ Return the reverse links for the xproto message `m`.
 
-        If the link includes a reverse_id, then it will be used for the protobuf field id. If there is no
-        reverse_id, then one will automatically be allocated started at id 1900. It is incouraged that all links
-        include reverse_ids, so that field identifiers are deterministic across all protobuf messages.
+        If the link includes a reverse_id, then it will be used for the protobuf field id. Each level of inheritance
+        will add an offset of 100 to the supplied reverse_id.
+
+        If there is no reverse_id, then one will automatically be allocated started at id 1900. It is encouraged that
+        all links include reverse_ids, so that field identifiers are deterministic across all protobuf messages.
     """
 
-    index = 1900
-    links = xproto_base_rlinks(m, table) + m["rlinks"]
+    model_rlinks = [x.copy() for x in m["rlinks"]]
+    for link in model_rlinks:
+        link["accessor"] = m["fqn"]
+
+    links = xproto_base_rlinks(m, table) + model_rlinks
 
     links = [x for x in links if ("+" not in x["src_port"]) and ("+" not in x["dst_port"])]
 
-    for link in links:
-        if link["reverse_id"]:
-            link["id"] = int(link["reverse_id"])
-        else:
-            link["id"] = index
-            index += 1
+    if links:
+        last_accessor = links[0]["accessor"]
+        offset = 0
+        index = 1900
+        for link in links:
+            if (link["accessor"] != last_accessor):
+                last_accessor = link["accessor"]
+                offset += 100
 
-    # check for duplicates
-    links_by_number={}
-    for link in links:
-        id = link["id"]
-        dup=links_by_number.get(id)
-        if dup:
-            raise Exception("Field %s has duplicate number %d with field %s in model %s" % (link["src_port"], id, link["src_port"], m["name"]))
-        links_by_number[id] = link
+            if link["reverse_id"]:
+                # Statically numbered reverse links. Use the id that the developer supplied, adding the offset based on
+                # inheritance depth.
+                link["id"] = int(link["reverse_id"]) + offset
+            else:
+                # Automatically numbered reverse links. These will eventually go away.
+                link["id"] = index
+                index += 1
+
+        # check for duplicates
+        links_by_number={}
+        for link in links:
+            id = link["id"]
+            dup=links_by_number.get(id)
+            if dup:
+                raise Exception("Field %s has duplicate number %d in model %s with reverse field %s" %
+                                (link["src_port"], id, m["name"], dup["src_port"]))
+            links_by_number[id] = link
 
     return links
 

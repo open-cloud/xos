@@ -1,0 +1,42 @@
+option app_label = "core";
+
+message XOSBase {
+    optional string base_field = 2 [default = "stuff", max_length = 1024];
+    optional string base_field2 = 3 [default = "stuff", max_length = 1024];
+}
+
+message Intermediate1(XOSBase) {
+}
+
+message Leaf1a(Intermediate1) {
+}
+
+message Leaf1b(Intermediate1) {
+}
+
+
+message Intermediate2(XOSBase) {
+}
+
+message Leaf2(Intermediate2) {
+}
+
+message RelatedToIntermediate1(XOSBase) {
+    required manytoone int1->Intermediate1:rel_int1s = 2:1001 [help_text = "The Intermediate1 this model is attached to", null = False, db_index = True, blank = False];
+}
+
+message RelatedToLeaf1a(XOSBase) {
+    required manytoone leaf1a->Leaf1a:rel_leaf1as = 2:1001 [help_text = "The Leaf1a this model is attached to", null = False, db_index = True, blank = False];
+}
+
+message RelatedToLeaf1b(XOSBase) {
+    required manytoone leaf1b->Leaf1b:rel_leaf1bs = 2:1001 [help_text = "The Leaf1b this model is attached to", null = False, db_index = True, blank = False];
+}
+
+message RelatedToIntermediate2(XOSBase) {
+    required manytoone int2->Intermediate2:rel_int2s = 2 [help_text = "The Intermediate2 this model is attached to", null = False, db_index = True, blank = False];
+}
+
+message RelatedToLeaf2(XOSBase) {
+    required manytoone leaf2->Leaf2:rel_leaf2s = 2 [help_text = "The Leaf2 this model is attached to", null = False, db_index = True, blank = False];
+}

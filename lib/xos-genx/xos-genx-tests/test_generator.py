@@ -33,6 +33,7 @@ TEST_EXPECTED_OUTPUT = """
 BASE_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/base.xproto")
 TEST_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/test.xproto")
 FIELDTEST_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/fieldtest.xproto")
+REVERSEFIELDTEST_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/reversefieldtest.xproto")
 FILTERTEST_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/filtertest.xproto")
 SKIP_DJANGO_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/skip_django.xproto")
 VROUTER_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/vrouterport.xproto")
@@ -221,6 +222,31 @@ class XOSProcessorTest(unittest.TestCase):
         _assert_field("Slice", "base_field2", 3)
         _assert_field("Slice", "slice_field", 101)
         _assert_field("Slice", "site", 102)
+
+    def test_field_numbers(self):
+        args = XOSProcessorArgs(files = [REVERSEFIELDTEST_XPROTO],
+                                target = FIELDTEST_TARGET)
+        output = XOSProcessor.process(args)
+
+        def _assert_field(modelname, fieldname, id):
+            self.assertIn("%s,%s,%s" % (modelname, fieldname, id), output)
+
+        # rel_int1s_ids is the reverse link from RelatedToIntermediate1. It gets the related id with no offset, so it
+        # will be assigned 1001. rel_leaf1as_ids inherits from Intermediate1, so its reverse links will all be offset
+        # by 100
+        _assert_field("Leaf1a", "rel_int1s_ids", 1001)
+        _assert_field("Leaf1a", "rel_leaf1as_ids", 1101)
+
+        # rel_int2s_ids is the reverse link from RelatedToIntermediate1. It gets the related id with no offset, so it
+        # will be assigned 1001. rel_leaf1bs_ids inherits from Intermediate1, so its reverse links will all be offset
+        # by 100
+        _assert_field("Leaf1b", "rel_int1s_ids", 1001)
+        _assert_field("Leaf1b", "rel_leaf1bs_ids", 1101)
+
+        # There are no reverse numbers specified for Intermediate2 or Leaf2, so xproto will fall back to automatic
+        # numbering starting at 1900.
+        _assert_field("Leaf2", "rel_int2s_ids", 1900)
+        _assert_field("Leaf2", "rel_leaf2s_ids", 1901)
 
     def test_unfiltered(self):
         """ With no include_* args, should get all models """
