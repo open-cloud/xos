@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # xosproject/xos-libraries
-FROM xosproject/xos-base:2.1.21
+FROM xosproject/xos-base:2.1.22
 
 # Add libraries
 COPY lib /opt/xos/lib
@@ -23,8 +23,7 @@ COPY VERSION /opt/xos
 RUN cd /opt/xos/lib/xos-util && python setup.py install \
  && cd /opt/xos/lib/xos-config && python setup.py install \
  && cd /opt/xos/lib/xos-genx && python setup.py install \
- && cd /opt/xos/lib/xos-kafka && python setup.py install \
- && cd /opt/xos/lib/kafkaloghandler && python setup.py install
+ && cd /opt/xos/lib/xos-kafka && python setup.py install
 
 # Label image
 ARG org_label_schema_schema_version=1.0
