@@ -49,7 +49,7 @@ jmespath==0.9.3
 jsonpatch==1.23
 jsonpointer==2.0
 jsonschema==2.6.0
-kafkaloghandler==0.8.0
+kafkaloghandler==0.9.0
 keystoneauth1==3.4.0
 kombu==4.2.1
 MarkupSafe==1.0
