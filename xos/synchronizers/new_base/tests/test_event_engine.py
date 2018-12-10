@@ -21,6 +21,8 @@ from mock import patch, PropertyMock, ANY
 import os, sys
 import time
 
+log = None
+
 test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 xos_dir = os.path.join(test_path, '..', '..', '..')
 
@@ -82,8 +84,24 @@ class FakeKafkaMessage():
 
 
 class TestEventEngine(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+
+        global log
+
+        config = os.path.join(test_path, "test_config.yaml")
+        from xosconfig import Config
+        Config.clear()
+        Config.init(config, 'synchronizer-config-schema.yaml')
+
+        if not log:
+            from multistructlog import create_logger
+            log = create_logger(Config().get('logging'))
+
+
     def setUp(self):
-        global XOSKafkaThread, Config, event_engine_log
+        global XOSKafkaThread, Config, log
 
         self.sys_path_save = sys.path
         self.cwd_save = os.getcwd()
@@ -102,10 +120,9 @@ class TestEventEngine(unittest.TestCase):
         os.chdir(os.path.join(test_path, '..'))  # config references tests/model-deps
 
         from event_engine import XOSKafkaThread, XOSEventEngine
-        from event_engine import log as event_engine_log
 
         self.event_steps_dir = Config.get("event_steps_dir")
-        self.event_engine = XOSEventEngine()
+        self.event_engine = XOSEventEngine(log)
 
     def tearDown(self):
         sys.path = self.sys_path_save
@@ -172,7 +189,7 @@ class TestEventEngine(unittest.TestCase):
         self.event_engine.load_event_step_modules(self.event_steps_dir)
 
         with patch.object(XOSKafkaThread, "create_kafka_consumer") as create_kafka_consumer, \
-                patch.object(event_engine_log, "error") as log_error, \
+                patch.object(log, "error") as log_error, \
                 patch.object(self.event_engine.event_steps[0], "technology") as technology:
             technology.return_value = "not_kafka"
             create_kafka_consumer.return_value = FakeKafkaConsumer()
@@ -234,7 +251,7 @@ class TestEventEngine(unittest.TestCase):
 
         config_get_orig = Config.get
         with patch.object(XOSKafkaThread, "create_kafka_consumer") as create_kafka_consumer, \
-                patch.object(event_engine_log, "error") as log_error, \
+                patch.object(log, "error") as log_error, \
                 patch.object(Config, "get", new=functools.partial(config_get_mock, config_get_orig, {"event_bus.kind": None})):
 
             create_kafka_consumer.return_value = FakeKafkaConsumer()
@@ -253,7 +270,7 @@ class TestEventEngine(unittest.TestCase):
 
         config_get_orig = Config.get
         with patch.object(XOSKafkaThread, "create_kafka_consumer") as create_kafka_consumer, \
-                patch.object(event_engine_log, "error") as log_error, \
+                patch.object(log, "error") as log_error, \
                 patch.object(Config, "get",
                              new=functools.partial(config_get_mock, config_get_orig, {"event_bus.kind": "not_kafka"})):
             create_kafka_consumer.return_value = FakeKafkaConsumer()

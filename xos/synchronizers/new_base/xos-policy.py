@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 # Copyright 2017-present Open Networking Foundation
 #
@@ -12,9 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-#!/usr/bin/env python
 
 """ xos-policy.py
 
@@ -39,9 +37,10 @@ from synchronizers.new_base.modelaccessor import *
 from xosconfig import Config
 from multistructlog import create_logger
 
-log = create_logger(Config().get('logging'))
 
 def main():
+
+    log = create_logger(Config().get('logging'))
 
     models_active = False
     wait = False
@@ -62,7 +61,8 @@ def main():
     # start model policies thread
     policies_dir = Config.get("model_policies_dir")
 
-    XOSPolicyEngine(policies_dir=policies_dir).run()
+
+    XOSPolicyEngine(policies_dir=policies_dir, log=log).run()
 
 if __name__ == '__main__':
     main()

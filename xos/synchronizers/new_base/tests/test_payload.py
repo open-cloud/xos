@@ -27,6 +27,8 @@ xos_dir = os.path.join(test_path, '..', '..', '..')
 
 ANSIBLE_FILE='/tmp/payload_test'
 
+log = None
+
 def run_fake_ansible_template(*args,**kwargs):
     opts = args[1]
     open(ANSIBLE_FILE,'w').write(json.dumps(opts))
@@ -42,7 +44,24 @@ def get_ansible_output():
     return json.loads(ansible_str)
 
 class TestPayload(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+
+        global log
+
+        config = os.path.join(test_path, "test_config.yaml")
+        from xosconfig import Config
+        Config.clear()
+        Config.init(config, 'synchronizer-config-schema.yaml')
+
+        if not log:
+            from multistructlog import create_logger
+            log = create_logger(Config().get('logging'))
+
+
     def setUp(self):
+
         global log, steps, event_loop
 
         self.sys_path_save = sys.path
@@ -72,10 +91,6 @@ class TestPayload(unittest.TestCase):
         # import all class names to globals
         for (k, v) in model_accessor.all_model_classes.items():
             globals()[k] = v
-
-        from multistructlog import create_logger
-        log = create_logger()
-
         b = backend.Backend()
         steps_dir = Config.get("steps_dir")
         self.steps = b.load_sync_step_modules(steps_dir)

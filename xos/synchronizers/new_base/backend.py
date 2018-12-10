@@ -50,6 +50,9 @@ class Backend:
                 sys_path_save = sys.path
                 sys.path.append(step_dir)
                 module = imp.load_source(fn[:-3],pathname)
+
+                self.log.debug("Loaded file: %s", pathname)
+
                 # reset the original path
                 sys.path = sys_path_save
 
@@ -90,7 +93,7 @@ class Backend:
             if len(sync_steps) > 0:
                 # start the observer
                 self.log.info("Starting XOSObserver", sync_steps=sync_steps)
-                observer = XOSObserver(sync_steps, log = self.log)
+                observer = XOSObserver(sync_steps, self.log)
                 observer_thread = threading.Thread(target=observer.run,name='synchronizer')
                 observer_thread.start()
 
@@ -110,7 +113,7 @@ class Backend:
         event_steps_dir = Config.get("event_steps_dir")
         if event_steps_dir:
             self.log.info("Starting XOSEventEngine", event_steps_dir=event_steps_dir)
-            event_engine = XOSEventEngine()
+            event_engine = XOSEventEngine(self.log)
             event_engine.load_event_step_modules(event_steps_dir)
             event_engine.start()
         else:

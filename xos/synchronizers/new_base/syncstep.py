@@ -96,6 +96,9 @@ class SyncStep(object):
         except:
             self.soft_deadline = 5  # 5 seconds
 
+        if 'log' in args:
+            self.log = args.get('log')
+
         return
 
     def fetch_pending(self, deletion=False):

@@ -23,13 +23,9 @@ import pdb
 import time
 import traceback
 
-from xosconfig import Config
-from multistructlog import create_logger
-
-log = create_logger(Config().get('logging'))
 
 class XOSPolicyEngine(object):
-    def __init__(self, policies_dir, log = log):
+    def __init__(self, policies_dir, log):
         self.model_policies = self.load_model_policies(policies_dir)
         self.policies_by_name = {}
         self.policies_by_class = {}

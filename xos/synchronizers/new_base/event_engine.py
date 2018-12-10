@@ -20,9 +20,6 @@ import os
 import threading
 import time
 from xosconfig import Config
-from multistructlog import create_logger
-
-log = create_logger(Config().get('logging'))
 
 
 class XOSKafkaMessage():
@@ -48,11 +45,12 @@ class XOSKafkaThread(threading.Thread):
         function is called for each event.
     """
 
-    def __init__(self, step, bootstrap_servers, *args, **kwargs):
+    def __init__(self, step, bootstrap_servers, log, *args, **kwargs):
         super(XOSKafkaThread, self).__init__(*args, **kwargs)
         self.consumer = None
         self.step = step
         self.bootstrap_servers = bootstrap_servers
+        self.log = log
         self.daemon = True
 
     def create_kafka_consumer(self):
@@ -73,10 +71,10 @@ class XOSKafkaThread(threading.Thread):
             raise Exception("Both topics and pattern are defined for step %s. Choose one." %
                             self.step.__name__)
 
-        log.info("Waiting for events",
-                 topic=self.step.topics,
-                 pattern=self.step.pattern,
-                 step=self.step.__name__)
+        self.log.info("Waiting for events",
+                      topic=self.step.topics,
+                      pattern=self.step.pattern,
+                      step=self.step.__name__)
 
         while True:
             try:
@@ -91,13 +89,13 @@ class XOSKafkaThread(threading.Thread):
                         self.consumer.subscribe(self.step.pattern)
 
             except confluent_kafka.KafkaError._ALL_BROKERS_DOWN, e:
-                log.warning("No brokers available on %s, %s" % (self.bootstrap_servers, e))
+                self.log.warning("No brokers available on %s, %s" % (self.bootstrap_servers, e))
                 time.sleep(20)
                 continue
 
             except confluent_kafka.KafkaError, e:
                 # Maybe Kafka has not started yet. Log the exception and try again in a second.
-                log.exception("Exception in kafka loop: %s" % e)
+                self.log.exception("Exception in kafka loop: %s" % e)
                 time.sleep(1)
                 continue
 
@@ -109,25 +107,25 @@ class XOSKafkaThread(threading.Thread):
 
             if msg.error():
                 if msg.error().code() == confluent_kafka.KafkaError._PARTITION_EOF:
-                    log.debug("Reached end of kafka topic %s, partition: %s, offset: %d" %
+                    self.log.debug("Reached end of kafka topic %s, partition: %s, offset: %d" %
                               (msg.topic(), msg.partition(), msg.offset()))
                 else:
-                    log.exception("Error in kafka message: %s" % msg.error())
+                    self.log.exception("Error in kafka message: %s" % msg.error())
 
             else:
                 # wrap parsing the event in a class
                 event_msg = XOSKafkaMessage(msg)
 
-                log.info("Processing event", event_msg=event_msg, step=self.step.__name__)
+                self.log.info("Processing event", event_msg=event_msg, step=self.step.__name__)
 
                 try:
-                    self.step(log=log).process_event(event_msg)
+                    self.step(log=self.log).process_event(event_msg)
 
                 except:
-                    log.exception("Exception in event step", event_msg=event_msg, step=self.step.__name__)
+                    self.log.exception("Exception in event step", event_msg=event_msg, step=self.step.__name__)
 
 
-class XOSEventEngine:
+class XOSEventEngine(object):
     """ XOSEventEngine
 
         Subscribe to and handle processing of events. Two methods are defined:
@@ -139,13 +137,14 @@ class XOSEventEngine:
                         will be called before start().
     """
 
-    def __init__(self):
+    def __init__(self, log):
         self.event_steps = []
         self.threads = []
+        self.log = log
 
     def load_event_step_modules(self, event_step_dir):
         self.event_steps = []
-        log.info("Loading event steps", event_step_dir=event_step_dir)
+        self.log.info("Loading event steps", event_step_dir=event_step_dir)
 
         # NOTE we'll load all the classes that inherit from EventStep
         for fn in os.listdir(event_step_dir):
@@ -160,28 +159,28 @@ class XOSEventEngine:
                         base_names = [b.__name__ for b in c.__bases__]
                         if 'EventStep' in base_names:
                             self.event_steps.append(c)
-        log.info("Loaded event steps", steps=self.event_steps)
+        self.log.info("Loaded event steps", steps=self.event_steps)
 
     def start(self):
         eventbus_kind = Config.get("event_bus.kind")
         eventbus_endpoint = Config.get("event_bus.endpoint")
 
         if not eventbus_kind:
-            log.error("Eventbus kind is not configured in synchronizer config file.")
+            self.log.error("Eventbus kind is not configured in synchronizer config file.")
             return
 
         if eventbus_kind not in ["kafka"]:
-            log.error("Eventbus kind is set to a technology we do not implement.", eventbus_kind=eventbus_kind)
+            self.log.error("Eventbus kind is set to a technology we do not implement.", eventbus_kind=eventbus_kind)
             return
 
         if not eventbus_endpoint:
-            log.error("Eventbus endpoint is not configured in synchronizer config file.")
+            self.log.error("Eventbus endpoint is not configured in synchronizer config file.")
             return
 
         for step in self.event_steps:
             if step.technology == "kafka":
-                thread = XOSKafkaThread(step=step, bootstrap_servers=[eventbus_endpoint])
+                thread = XOSKafkaThread(step, [eventbus_endpoint], self.log)
                 thread.start()
                 self.threads.append(thread)
             else:
-                log.error("Unknown technology. Skipping step", technology=step.technology, step=step.__name__)
+                self.log.error("Unknown technology. Skipping step", technology=step.technology, step=step.__name__)

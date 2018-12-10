@@ -17,18 +17,13 @@
 # - 2 sets of Instance, ControllerSlice, ControllerNetworks - delete and create case
 
 import time
-import sys
 import threading
 import json
-import pprint
-import traceback
 
 from collections import defaultdict
-from networkx import DiGraph, dfs_edges, weakly_connected_component_subgraphs, all_shortest_paths, NetworkXNoPath
+from networkx import DiGraph, weakly_connected_component_subgraphs, all_shortest_paths, NetworkXNoPath
 from networkx.algorithms.dag import topological_sort
 
-from datetime import datetime
-from xosconfig import Config
 from synchronizers.new_base.steps import *
 from syncstep import InnocuousException, DeferredException, SyncStep
 from synchronizers.new_base.modelaccessor import *
@@ -37,7 +32,6 @@ from xosconfig import Config
 from multistructlog import create_logger
 
 log = create_logger(Config().get('logging'))
-
 
 class StepNotReady(Exception):
     pass
@@ -68,12 +62,13 @@ def set_driver(x):
     DRIVER = x
 
 
-class XOSObserver:
+class XOSObserver(object):
     sync_steps = []
 
     def __init__(self, sync_steps, log=log):
         # The Condition object via which events are received
         self.log = log
+
         self.step_lookup = {}
         self.sync_steps = sync_steps
         self.load_sync_steps()
@@ -103,7 +98,7 @@ class XOSObserver:
                 self.log.trace('Loading model dependency graph', path=Config.get("dependency_graph"))
                 dep_graph_str = open(Config.get("dependency_graph")).read()
             else:
-                self.log.trace('Using defualt model dependency graph', graph={})
+                self.log.trace('Using default model dependency graph', graph={})
                 dep_graph_str = '{}'
 
             # joint_dependencies is of the form { Model1 -> [(Model2, src_port, dst_port), ...] }
@@ -176,9 +171,13 @@ class XOSObserver:
             else:
                 logdict = {}
 
-            log.error("exception in reset_queries", **logdict)
+            self.log.error("exception in reset_queries", **logdict)
 
-    def delete_record(self, o, log):
+    def delete_record(self, o, dr_log = None):
+
+        if dr_log is None:
+            dr_log = self.log
+
         if getattr(o, "backend_need_reap", False):
             # the object has already been deleted and marked for reaping
             model_accessor.journal_object(
@@ -189,19 +188,20 @@ class XOSObserver:
                 raise ExternalDependencyFailed
 
             model_accessor.journal_object(o, "syncstep.call.delete_record")
-            log.debug("Deleting object", **o.tologdict())
 
-            step.log = log.bind(step=step)
+            dr_log.debug("Deleting object", **o.tologdict())
+
+            step.log = dr_log.new(step=step)
             step.delete_record(o)
-            step.log = self.log
+            step.log = dr_log
 
-            log.debug("Deleted object", **o.tologdict())
+            dr_log.debug("Deleted object", **o.tologdict())
 
             model_accessor.journal_object(o, "syncstep.call.delete_set_reap")
             o.backend_need_reap = True
             o.save(update_fields=['backend_need_reap'])
 
-    def sync_record(self, o, log):
+    def sync_record(self, o, sr_log=None):
         try:
             step = o.synchronizer_step
         except AttributeError:
@@ -209,6 +209,9 @@ class XOSObserver:
 
         if step is None:
             raise ExternalDependencyFailed
+
+        if sr_log is None:
+            sr_log = self.log
 
         # Mark this as an object that will require delete. Do
         # this now rather than after the syncstep,
@@ -218,13 +221,13 @@ class XOSObserver:
 
         model_accessor.journal_object(o, "syncstep.call.sync_record")
 
-        log.debug("Syncing object", **o.tologdict())
+        sr_log.debug("Syncing object", **o.tologdict())
 
-        step.log = log.bind(step=step)
+        step.log = sr_log.new(step=step)
         step.sync_record(o)
-        step.log = self.log
+        step.log = sr_log
 
-        log.debug("Synced object", **o.tologdict())
+        sr_log.debug("Synced object", **o.tologdict())
 
         o.enacted = max(o.updated, o.changed_by_policy)
         scratchpad = {'next_run': 0, 'exponent': 0,
@@ -237,11 +240,11 @@ class XOSObserver:
                               'backend_register', 'backend_code'])
 
         if hasattr(step, "after_sync_save"):
-            step.log = log.bind(step=step)
+            step.log = sr_log.new(step=step)
             step.after_sync_save(o)
-            step.log = self.log
+            step.log = sr_log
 
-        log.info("Saved sync object", o=o)
+        sr_log.info("Saved sync object", o=o)
 
     """ This function needs a cleanup. FIXME: Rethink backend_status, backend_register """
 
@@ -328,10 +331,12 @@ class XOSObserver:
 
     def sync_cohort(self, cohort, deletion):
         threading.current_thread().is_sync_thread=True
-        log = self.log.bind(thread_id=threading.current_thread().ident)
+
+        sc_log = self.log.new(thread_id=threading.current_thread().ident)
+
         try:
             start_time = time.time()
-            log.debug(
+            sc_log.debug(
                 "Starting to work on cohort",
                 cohort=cohort,
                 deletion=deletion)
@@ -354,9 +359,9 @@ class XOSObserver:
 
                     try:
                         if (deletion):
-                            self.delete_record(o, log)
+                            self.delete_record(o, sc_log)
                         else:
-                            self.sync_record(o, log)
+                            self.sync_record(o, sc_log)
                     except ExternalDependencyFailed:
                         dependency_error = 'External dependency on object %s id %d not met' % (
                             o.leaf_model_name, o.id)
@@ -366,7 +371,7 @@ class XOSObserver:
                             o, e)
 
                 except StopIteration:
-                    log.debug(
+                    sc_log.debug(
                         "Cohort completed",
                         cohort=cohort,
                         deletion=deletion)
@@ -458,13 +463,13 @@ class XOSObserver:
 
         for step_class in step_list:
             step = step_class(driver=self.driver)
-            step.log = self.log.bind(step=step)
+            step.log = self.log.new(step=step)
 
             if not hasattr(step, 'call'):
                 pending = step.fetch_pending(deletion)
                 for obj in pending:
                     step = step_class(driver=self.driver)
-                    step.log = self.log.bind(step=step)
+                    step.log = self.log.new(step=step)
                     obj.synchronizer_step = step
 
                 pending_service_dependencies = self.compute_service_instance_dependencies(
@@ -592,7 +597,7 @@ class XOSObserver:
                 except AttributeError as e:
                     if sa!='fake_accessor':
                         self.log.debug(
-                            'Could not check object dependencies, making conservative choice', src_object=src_object, sa=sa, o1=o1, o2=o2)
+                            'Could not check object dependencies, making conservative choice %s', e, src_object=src_object, sa=sa, o1=o1, o2=o2)
                     return True, edge_type
 
                 src_object = dst_object
