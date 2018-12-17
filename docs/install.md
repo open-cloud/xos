@@ -10,8 +10,8 @@ XOS runs on any version of Kubernetes (1.10 or greater), and uses the
 Helm client-side tool. If you are new to Kubernetes, we recommend this [tutorial](https://kubernetes.io/docs/tutorials/) as a good place to start.
 
 Although you are free to set up Kubernetes and Helm in whatever way
-makes sense to you, the following walks you through an
-example installation sequence on  MacOS. It was tested on version 10.12.6.
+makes sense to you, the following walks through an example
+installation sequence on  MacOS. It was tested on version 10.12.6.
 
 ## Prerequisites
 
@@ -101,84 +101,124 @@ code, for example, so you can walk through the
 [XOS tutorial](tutorials/basic_synchronizer.md). The easiest way to do
 this uses the `repo` tool, as described [here](repo.md).
 
-## Bring Up XOS
+## Bring Up XOS 
 
-To deploy `xos-core` (plus affiliated micro-services) into your
+To deploy `xos-core` (plus affiliated micro-services) into your 
 Kubernetes cluster, execute the following from the `$SRC_DIR/helm-charts`
 directory:
 
-```shell
-helm dep update xos-core
-helm install xos-core -n xos-core
+```shell 
+helm dep update xos-core 
+helm install xos-core -n xos-core 
 ```
 
-Use `kubectl get pods` to verify that all containers that implement XOS
-are successfully running. You should see output that looks something
-like this:
+You also need to start the Kafka message bus to catch event 
+notifications send by the various components:
 
-```shell
-NAME                                           READY     STATUS    RESTARTS   AGE
-xos-chameleon-6f49b67f68-pdf6n                 1/1       Running   0          2m
-xos-core-57fd788db-8b97d                       1/1       Running   0          2m
-xos-db-f9ddc6589-rtrml                         1/1       Running   0          2m
-xos-gui-7fcfcd4474-prhfb                       1/1       Running   0          2m
-xos-redis-74c5cdc969-ppd7z                     1/1       Running   0          2m
-xos-tosca-7c665f97b6-krp5k                     1/1       Running   0          2m
-xos-ws-55d676c696-pxsqk                        1/1       Running   0          2m
+```shell 
+helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator 
+helm install -f examples/kafka-single.yaml --version 0.8.8 -n cord-kafka incubator/kafka 
 ```
 
-## Bring Up a Service
+Use `kubectl get pods` to verify that all containers that implement XOS 
+(and Kafka) are successfully running. You should see output that looks 
+something like this:
 
-Optionally, you can bring up a simple service to be managed by XOS.
+```shell 
+NAME                             READY     STATUS    RESTARTS   AGE 
+cord-kafka-0                     1/1       Running   0          3m  
+cord-kafka-zookeeper-0           1/1       Running   0          3m  
+xos-chameleon-58c5b847d6-48jvf   1/1       Running   0          11m 
+xos-core-7dc45f677b-pzhm6        1/1       Running   0          11m 
+xos-db-c49549b7f-mzs4n           1/1       Running   0          11m 
+xos-gui-7c96669d8c-8zkhq         1/1       Running   0          11m 
+xos-tosca-7f6cf85657-gzddq       1/1       Running   0          11m 
+xos-ws-5f47ff7d94-xg9f5          1/1       Running   0          11m 
+```
+
+## Bring Up Monitoring and Logging 
+
+Although not required, we recommend that you also bring up two 
+auxilary services to capture and display monitoring and logging 
+information. This is done by executing the following Helm charts. 
+
+Monitoring (once running, access [Grafana](http://docs.grafana.org/) 
+Dashboard at port 31300):
+
+
+```shell 
+helm dep update nem-monitoring 
+helm install -n nem-monitoring nem-monitoring 
+```
+
+Logging (once running, access 
+[Kabana](https://www.elastic.co/guide/en/kibana/current/index.html) 
+Dashboard at port 30601):
+
+```shell 
+helm dep up logging 
+helm install -f examples/logging-single.yaml -n logging logging 
+```
+
+> **Note:** The `-f examples/logging-single.yaml` option says to 
+> not use persistent storage, which is fine for development or demo 
+> purposes, but not for operational deployments. 
+
+## Bring Up a Service 
+
+Optionally, you can bring up a simple service to be managed by XOS. 
 This involves deploying two additional helm charts: `base-kubernetes`
 and `demo-simpleexampleservice`. Again from the `$SRC_DIR/helm-charts`
 directory, execute the following:
 
-```shell
-helm dep update xos-profiles/base-kubernetes
-helm install xos-profiles/base-kubernetes -n base-kubernetes
-helm dep update xos-profiles/demo-simpleexampleservice
-helm install xos-profiles/demo-simpleexampleservice -n demo-simpleexampleservice
+```shell 
+helm dep update xos-profiles/base-kubernetes 
+helm install xos-profiles/base-kubernetes -n base-kubernetes 
+helm dep update xos-profiles/demo-simpleexampleservice 
+helm install xos-profiles/demo-simpleexampleservice -n demo-simpleexampleservice 
 ```
 
-> **Note:** It will take some time for the various helm charts to
-> deploy and the containers to come online. The `tosca-loader`
-> container may error and retry several times as it waits for
-> services to be dynamically loaded. This is normal, and eventually
-> the `tosca-loader` will enter the completed state.
+When all the containers are successfully up and running, `kubectl get 
+pod` will return output that looks something like this:
 
-As before, when all the containers are successfully up and running,
-`kubectl get pod` will return output that looks something like this:
 
-```shell
-NAME                                           READY     STATUS    RESTARTS   AGE
-base-kubernetes-kubernetes-55c55bd897-rn9ln    1/1       Running   0          2m
-base-kubernetes-tosca-loader-vs6pv             1/1       Running   1          2m
-demo-simpleexampleservice-787454b84b-ckpn2     1/1       Running   0          1m
-demo-simpleexampleservice-tosca-loader-4q7zg   1/1       Running   0          1m
-xos-chameleon-6f49b67f68-pdf6n                 1/1       Running   0          12m
-xos-core-57fd788db-8b97d                       1/1       Running   0          12m
-xos-db-f9ddc6589-rtrml                         1/1       Running   0          12m
-xos-gui-7fcfcd4474-prhfb                       1/1       Running   0          12m
-xos-redis-74c5cdc969-ppd7z                     1/1       Running   0          12m
-xos-tosca-7c665f97b6-krp5k                     1/1       Running   0          12m 
-xos-ws-55d676c696-pxsqk                        1/1       Running   0          12m 
+```shell 
+NAME                                           READY     STATUS    RESTARTS   AGE 
+base-kubernetes-kubernetes-75d68b65bc-h594m    1/1       Running     0          6m 
+base-kubernetes-tosca-loader-ltdzg             0/1       Completed   4          6m 
+cord-kafka-0                                   1/1       Running     1          15m 
+cord-kafka-zookeeper-0                         1/1       Running     0          15m 
+demo-simpleexampleservice-cc8fbfb7-s4r68       1/1       Running     0          5m 
+demo-simpleexampleservice-tosca-loader-46qtg   0/1       Completed   4          5m 
+xos-chameleon-58c5b847d6-rcqff                 1/1       Running     0          16m 
+xos-core-7dc45f677b-27vc9                      1/1       Running     0          16m 
+xos-db-c49549b7f-589n6                         1/1       Running     0          16m 
+xos-gui-7c96669d8c-gcwsv                       1/1       Running     0          16m 
+xos-tosca-7f6cf85657-bf276                     1/1       Running     0          16m 
+xos-ws-5f47ff7d94-mpn7g                        1/1       Running     0          16m 
 ```
 
-## Visit XOS Dashboard
+The two `tosca-loader` items with `Completed` status are jobs, as 
+opposed to pods. Their job is to load TOSCA-based provisioning and 
+configuration information into XOS, and so they run to complettion and 
+then terminate. It is not uncommon to see them in an `Error` state as 
+they retry while waiting for the corresponding services to come 
+on-line. 
+
+## Visit XOS Dashboard 
 
 Finally, to view the XOS dashboard, run the following:
 
-```shell
-minikube service xos-gui
+```shell 
+minikube service xos-gui 
 ```
 
-This will launch a window in your default browser. Administrator login
-and password are defined in `$SRC_DIR/helm-charts/xos-core/values.yaml`.
+This will launch a window in your default browser. Administrator login 
+and password are defined in `$SRC_DIR/helm-charts/xos-core/values.yaml`. 
 
-## Next Steps
+## Next Steps 
 
-This completes the installation process. At this point, you can either
-drill down on the internals of
+This completes the installation process. At this point, you can either 
+drill down on the internals of 
 [Simple Example Service](simpleexampleservice/simple-example-service.md),
 or you can work through the [XOS tutorial](tutorials/basic_synchronizer.md).

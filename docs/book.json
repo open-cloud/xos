@@ -9,7 +9,13 @@
   },
   "plugins": [
     "anchorjs",
+    "custom-favicon",
     "smart-nav-collapse",
     "versions-select"
-  ]
+  ],
+  "pluginsConfig": {
+    "favicon": "static/xos.ico"
+  }
 }
+
+

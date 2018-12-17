@@ -24,29 +24,29 @@ into it:
 2. Teardown the existing XOS installation and clean up OpenStack to
    remove any leftover instances or networks:
 
-    ```
-    cd ~/cord/build
-    make xos-teardown
-    make clean-openstack
-    ```
+```shell
+cd ~/cord/build
+make xos-teardown
+make clean-openstack
+```
 
 3. Optional: Teardown ONOS. Sometimes we find it helpful to reinstall the
    onos-cord and onos-fabric containers, to ensure that all state is wiped
    clean from ONOS.
 
-    ```
-    cd ~/cord/build
-    make clean-onos
-    ```
+```shell
+cd ~/cord/build
+make clean-onos
+```
 
 4. Build the new XOS container images and deploy to the pod.
 
-    ```
-    cd ~/cord/build
-    make -j4 build
-    make compute-node-refresh
-    make pod-test
-    ```
+```shell
+cd ~/cord/build
+make -j4 build
+make compute-node-refresh
+make pod-test
+```
 
 5. Test and verify your changes.
 

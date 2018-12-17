@@ -314,6 +314,7 @@ You will see the TOSCA definition for the `HelloWorldService` model.
 You can use that (and the `HelloWorldServiceInstance` model definition
 too) to create an instance of both models. For your convenience, save
 the following content to a file called `hello-world-tosca.yaml`
+
 ```yaml
 tosca_definitions_version: tosca_simple_yaml_1_0
 imports:
