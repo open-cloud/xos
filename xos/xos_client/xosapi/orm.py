@@ -486,15 +486,18 @@ class ORMObjectManager(object):
     """ Manages a remote list of objects """
 
     # constants better agree with common.proto
+    DEFAULT = 0
+    ALL = 1
     SYNCHRONIZER_DIRTY_OBJECTS = 2
     SYNCHRONIZER_DELETED_OBJECTS = 3
     SYNCHRONIZER_DIRTY_POLICIES = 4
     SYNCHRONIZER_DELETED_POLICIES = 5
 
-    def __init__(self, stub, modelName, packageName):
+    def __init__(self, stub, modelName, packageName, kind=0):
         self._stub = stub
         self._modelName = modelName
         self._packageName = packageName
+        self._kind = kind
 
     def wrap_single(self, obj):
         return make_ORMWrapper(obj, self._stub)
@@ -506,17 +509,20 @@ class ORMObjectManager(object):
         return ORMQuerySet(result)
 
     def all(self):
-        return self.wrap_list(self._stub.invoke("List%s" % self._modelName, self._stub.make_empty()))
+        if (self._kind == self.DEFAULT):
+            return self.wrap_list(self._stub.invoke("List%s" % self._modelName, self._stub.make_empty()))
+        else:
+            return self.filter()
 
     def first(self):
-        objs=self.wrap_list(self._stub.invoke("List%s" % self._modelName, self._stub.make_empty()))
+        objs = self.all()
         if not objs:
             return None
         return objs[0]
 
     def filter(self, **kwargs):
         q = self._stub.make_Query()
-        q.kind = q.DEFAULT
+        q.kind = self._kind
 
         for (name, val) in kwargs.items():
             el = q.elements.add()
@@ -562,6 +568,9 @@ class ORMObjectManager(object):
             return objs[0]
 
     def new(self, **kwargs):
+        if (self._kind != ORMObjectManager.DEFAULT):
+            raise Exception("Creating objects is only supported by the DEFAULT object manager")
+
         cls = self._stub.all_grpc_classes[self._modelName]
         o = make_ORMWrapper(cls(), self._stub, is_new=True)
         for (k,v) in  kwargs.items():
@@ -574,6 +583,7 @@ class ORMModelClass(object):
         self.model_name = model_name
         self._stub = stub
         self.objects = ORMObjectManager(stub, model_name, package_name)
+        self.deleted_objects = ORMObjectManager(stub, model_name, package_name, ORMObjectManager.SYNCHRONIZER_DELETED_OBJECTS)
 
     @property
     def __name__(self):

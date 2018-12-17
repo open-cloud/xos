@@ -537,6 +537,43 @@ class TestORM(unittest.TestCase):
 
         self.assertEqual(site.diff, {})
 
+    def test_deleted_objects_all(self):
+        orm = self.make_coreapi()
+        orig_len_sites = len(orm.Site.objects.all())
+        orig_len_deleted_sites = len(orm.Site.deleted_objects.all())
+        site = orm.Site(name="mysite")
+        site.save()
+        site.delete()
+        sites = orm.Site.objects.all()
+        self.assertEqual(len(sites), orig_len_sites)
+        deleted_sites = orm.Site.deleted_objects.all()
+        self.assertEqual(len(deleted_sites), orig_len_deleted_sites+1)
+
+    def test_deleted_objects_filter(self):
+        orm = self.make_coreapi()
+        with patch.object(orm.grpc_stub, "FilterTestModel", wraps=orm.grpc_stub.FilterTestModel) as filter:
+            foo = orm.TestModel(name="foo")
+            foo.save()
+            foo.delete()
+
+            # There should be no live objects
+            objs = orm.TestModel.objects.filter(name = "foo")
+            self.assertEqual(len(objs), 0)
+
+            # There should be one deleted object
+            deleted_objs = orm.TestModel.deleted_objects.filter(name = "foo")
+            self.assertEqual(len(deleted_objs), 1)
+
+            # Two calls, one for when we checked live objects, the other for when we checked deleted objects
+            self.assertEqual(filter.call_count, 2)
+            q = filter.call_args[0][0]
+
+            # Now spy on the query that was generated, to make sure it looks like we expect
+            self.assertEqual(q.kind, q.SYNCHRONIZER_DELETED_OBJECTS)
+            self.assertEqual(len(q.elements), 1)
+            self.assertEqual(q.elements[0].operator, q.elements[0].EQUAL)
+            self.assertEqual(q.elements[0].sValue, "foo")
+
 
 def main():
     global USE_FAKE_STUB

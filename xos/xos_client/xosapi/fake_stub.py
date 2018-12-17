@@ -353,7 +353,12 @@ class FakeElements(object):
         return len(self.items)
 
 class FakeQuery(object):
-    DEFAULT="default"
+    DEFAULT=0
+    ALL = 1
+    SYNCHRONIZER_DIRTY_OBJECTS = 2
+    SYNCHRONIZER_DELETED_OBJECTS = 3
+    SYNCHRONIZER_DIRTY_POLICIES = 4
+    SYNCHRONIZER_DELETED_POLICIES = 5
 
     def __init__(self):
         self.elements = FakeElements()
@@ -362,6 +367,7 @@ class FakeStub(object):
     def __init__(self):
         self.id_counter = 1
         self.objs = {}
+        self.deleted_objs = {}
         for name in ["Controller", "Deployment", "Slice", "Site", "Tag", "Service", "ServiceInstance", "ONOSService",
                      "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice",
                      "TestModel"]:
@@ -390,17 +396,25 @@ class FakeStub(object):
 
     def filter(self, classname, query, metadata=None):
         items = []
-        for (k,v) in self.objs.items():
+
+        if query.kind == FakeQuery.SYNCHRONIZER_DELETED_OBJECTS:
+            objs = self.deleted_objs.items()
+        else:
+            objs = self.objs.items()
+
+        for (k,v) in objs:
             (this_classname, id) = k.split(":")
             if this_classname != classname:
                 continue
+            match = True
             for q in query.elements.items:
                 iValue = getattr(q, "iValue", None)
                 if (iValue is not None) and getattr(v,q.name)!=iValue:
-                    continue
+                    match = False
                 sValue = getattr(q, "sValue", None)
                 if (sValue is not None) and getattr(v, q.name) != sValue:
-                    continue
+                    match = False
+            if match:
                 items.append(v)
         return FakeItemList(items)
 
@@ -426,7 +440,9 @@ class FakeStub(object):
 
     def delete(self, classname, id, metadata=None):
         k = self.make_key(classname, id)
+        obj = self.objs[k]
         del self.objs[k]
+        self.deleted_objs[k] = obj
 
 class FakeCommonProtos(object):
     def __init__(self):

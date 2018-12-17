@@ -589,28 +589,42 @@ class XOSAPIHelperMixin(object):
             log.exception("Exception in apihelper.list")
             raise
 
+    def build_filter(self, request, query=None):
+        """ Given a filter request, turn it into a django query.
+
+            If argument query is not None, then the new query will be appended to the existing query.
+        """
+        for element in request.elements:
+            if query:
+                query = query & self.query_element_to_q(element)
+            else:
+                query = self.query_element_to_q(element)
+        return query
+
     def filter(self, djangoClass, user, request):
         try:
-            query = None
             if request.kind == request.DEFAULT:
-                for element in request.elements:
-                    if query:
-                        query = query & self.query_element_to_q(element)
-                    else:
-                        query = self.query_element_to_q(element)
+                query = self.build_filter(request, None)
                 queryset = djangoClass.objects.filter(query)
             elif request.kind == request.SYNCHRONIZER_DIRTY_OBJECTS:
                 query = (Q(enacted=None) | Q(enacted__lt=F('updated')) | Q(enacted__lt=F('changed_by_policy'))) \
                         & Q(lazy_blocked=False) & Q(no_sync=False)
+                query = self.build_filter(request, query)
                 queryset = djangoClass.objects.filter(query)
             elif request.kind == request.SYNCHRONIZER_DELETED_OBJECTS:
-                queryset = djangoClass.deleted_objects.all()
+                query = self.build_filter(request, None)
+                if query:
+                    queryset = djangoClass.deleted_objects.filter(query)
+                else:
+                    queryset = djangoClass.deleted_objects.all()
             elif request.kind == request.SYNCHRONIZER_DIRTY_POLICIES:
                 query = (Q(policed=None) | Q(policed__lt=F('updated')) | Q(policed__lt=F('changed_by_step'))) \
                         & Q(no_policy=False)
+                query = self.build_filter(request, query)
                 queryset = djangoClass.objects.filter(query)
             elif request.kind == request.SYNCHRONIZER_DELETED_POLICIES:
                 query = Q(policed__lt=F('updated')) | Q(policed=None)
+                query = self.build_filter(request, query)
                 queryset = djangoClass.deleted_objects.filter(query)
             elif request.kind == request.ALL:
                 queryset = djangoClass.objects.all()
