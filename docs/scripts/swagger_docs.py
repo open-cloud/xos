@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import os
-from xosgenx.generator import XOSProcessor
+from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 
 CWD = OUTPUT_DIR = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 SWAGGER_DOCS_DIR = os.path.abspath(CWD + '/../swagger/specs')
@@ -33,7 +33,7 @@ def generate_swagger_docs(xproto):
     #     return
 
     print "Generating swagger docs for %s" % (xproto)
-    args = Args()
+    args = XOSProcessorArgs()
     args.files = xproto
     args.target = 'swagger.xtarget'
     args.output = SWAGGER_DOCS_DIR
