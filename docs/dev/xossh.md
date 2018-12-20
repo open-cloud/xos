@@ -1,15 +1,25 @@
 # XOSSH
 
-XOSSH is a cli tool that lets you perfom operations on the data model.
-To set it up, deploy the [`xossh`](../../charts/xossh.md) chart:
+XOSSH is a shell (CLI tool) that lets you directly operate on the XOS
+data model. To use XOSSH, first deploy it using the `xossh` helm
+chart:
 
-To connect to the `xossh` container, you can use this command (from the `helm-chart` folder):
+```shell
+cd helm-charts
+helm install xos-tools/xossh -n xossh
+```
+
+To connect to the `xossh` container, you can use this command (from
+the `helm-chart` directory):
+
 ```bash
 bash xos-tools/xossh/xossh-attach.sh
 ```
 
-It will connect to the `grpc` APIs exposed by `xos-core` and start a `python` shell.
-Once started you should see this on your console:
+This will connect to the `grpc` APIs exposed by `xos-core` and start a
+`python` shell.
+
+Once started, you should see this on your console:
 
 ```bash
 __   __   ____     _____    _____   _    _

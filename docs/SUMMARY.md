@@ -16,6 +16,7 @@
     * [Core Models](core_models.md)
     * [Security Policies](security_policies.md)
     * [Tutorial](tutorials/basic_synchronizer.md)
+    * [XOS Shell (xossh)](dev/xossh.md)
 * [Platform Services](platform.md)
     * [Kubernetes](kubernetes/kubernetes-service.md)
     * [OpenStack](openstack/openstack-service.md)
