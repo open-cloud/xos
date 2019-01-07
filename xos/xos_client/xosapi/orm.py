@@ -402,10 +402,6 @@ class ORMWrapper(object):
     def ansible_tag(self):
         return "%s_%s" % (self._wrapped_class.__class__.__name__, self.id)
 
-#    @property
-#    def self_content_type_id(self):
-#        return getattr(self.stub, self._wrapped_class.__class__.__name__).content_type_id
-
 class ORMQuerySet(list):
     """ Makes lists look like django querysets """
     def first(self):
@@ -761,25 +757,4 @@ def import_convenience_methods():
             except Exception, e:
                 log.exception("Cannot import api convenience method for: %s, %s" % (file[:-3], pathname))
 
-
-# import convenience.addresspool
-# import convenience.privilege
-# import convenience.instance
-# import convenience.network
-# import convenience.cordsubscriberroot
-# import convenience.vsgserviceinstance
-# import convenience.serviceinstance
-# import convenience.vrouterservice
-# import convenience.vroutertenant
-# import convenience.vrouterapp
-# import convenience.service
-# import convenience.onosapp
-# import convenience.controller
-# import convenience.user
-# import convenience.slice
-# import convenience.port
-# import convenience.tag
-# import convenience.vtrtenant
-# import convenience.addressmanagerservice
-# import convenience.addressmanagerserviceinstance
 

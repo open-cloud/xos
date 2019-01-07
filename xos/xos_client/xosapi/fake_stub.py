@@ -315,12 +315,26 @@ class Tag(FakeObj):
 class TestModel(FakeObj):
     FIELDS = ( {"name": "id", "default": 0},
                {"name": "intfield", "default": 0},
+               {"name": "stringfield", "default": "somestring"},
+               {"name": "testmodeltwos_ids", "default": [], "fk_reverse": "TestModelTwo"},
                {"name": "class_names", "default": "TestModel"} )
 
     def __init__(self, **kwargs):
         return super(TestModel, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("TestModel")
+
+class TestModelTwo(FakeObj):
+    FIELDS = ( {"name": "id", "default": 0},
+               {"name": "intfieldtwo", "default": 0},
+               {"name": "stringfieldtwo", "default": "somestringtwo"},
+               {"name": "testmodel_id", "default": 0, "fk_model": "TestModel", "fk_reverseFieldName": "testmodeltwos"},
+               {"name": "class_names", "default": "TestModel"})
+
+    def __init__(self, **kwargs):
+        return super(TestModelTwo, self).__init__(self.FIELDS, **kwargs)
+
+    DESCRIPTOR = FakeDescriptor("TestModelTwo")
 
 
 class ID(FakeObj):
@@ -370,7 +384,7 @@ class FakeStub(object):
         self.deleted_objs = {}
         for name in ["Controller", "Deployment", "Slice", "Site", "Tag", "Service", "ServiceInstance", "ONOSService",
                      "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice",
-                     "TestModel"]:
+                     "TestModel", "TestModelTwo"]:
             setattr(self, "Get%s" % name, functools.partial(self.get, name))
             setattr(self, "List%s" % name, functools.partial(self.list, name))
             setattr(self, "Create%s" % name, functools.partial(self.create, name))
@@ -453,7 +467,7 @@ class FakeProtos(object):
     def __init__(self):
         for name in ["Controller", "Deployment", "Slice", "Site", "ID", "Tag", "Service", "ServiceInstance",
                      "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice",
-                     "TestModel"]:
+                     "TestModel", "TestModelTwo"]:
             setattr(self, name, globals()[name])
             self.common__pb2 = FakeCommonProtos()
 
@@ -462,7 +476,7 @@ class FakeSymDb(object):
         self._classes = {}
         for name in ["Controller", "Deployment", "Slice", "Site", "ID", "Tag", "Service", "ServiceInstance",
                      "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice",
-                     "TestModel"]:
+                     "TestModel", "TestModelTwo"]:
             self._classes["xos.%s" % name] = globals()[name]
 
 

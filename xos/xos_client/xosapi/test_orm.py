@@ -17,11 +17,11 @@
 import exceptions
 import os
 import random
-import shutil
 import string
 import sys
 import unittest
-from mock import patch
+from mock import patch, ANY
+from StringIO import StringIO
 
 # by default, use fake stub rather than real core
 USE_FAKE_STUB=True
@@ -37,6 +37,11 @@ class TestORM(unittest.TestCase):
         Config.init(config, 'synchronizer-config-schema.yaml')
         if (USE_FAKE_STUB):
             sys.path.append(PARENT_DIR)
+
+        # Import these after config, in case they depend on config
+        from xosapi.orm import ORMQuerySet, ORMLocalObjectManager
+        self.ORMQuerySet = ORMQuerySet
+        self.ORMLocalObjectManager = ORMLocalObjectManager
 
     def tearDown(self):
         if (USE_FAKE_STUB):
@@ -91,6 +96,16 @@ class TestORM(unittest.TestCase):
         self.assertNotEqual(s, None)
         self.assertEqual(s.dumpstr(), '')
 
+    def test_dump(self):
+        """ dump() is like dumpstr() but prints to stdout. Mock stdout by using a stringIO. """
+
+        orm = self.make_coreapi()
+        s = orm.Slice(name="foo")
+        self.assertNotEqual(s, None)
+        with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
+            s.dump()
+            self.assertEqual(mock_stdout.getvalue(), 'name: "foo"\n\n')
+
     def test_create(self):
         orm = self.make_coreapi()
         site = orm.Site(name="mysite")
@@ -105,6 +120,51 @@ class TestORM(unittest.TestCase):
         got_site = orm.Site.objects.get(id = site.id)
         self.assertNotEqual(got_site, None)
         self.assertEqual(got_site.id, site.id)
+
+    def test_invalidate_cache(self):
+        orm = self.make_coreapi()
+        testModel = orm.TestModel()
+
+        # populate the caches with some placeholders we can test for
+        testModel.cache = {"a": 1}
+        testModel.reverse_cache = {"b": 2}
+
+        testModel.invalidate_cache()
+
+        self.assertEqual(testModel.cache, {})
+        self.assertEqual(testModel.reverse_cache, {})
+
+    def test_save_new(self):
+        orm = self.make_coreapi()
+        orig_len_sites = len(orm.Site.objects.all())
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+
+    def test_save_existing(self):
+        orm = self.make_coreapi()
+        orig_len_sites = len(orm.Site.objects.all())
+        site = orm.Site(name="mysite")
+        site.save()
+        self.assertTrue(site.id > 0)
+
+        # there should be one new site
+        self.assertEqual(len(orm.Site.objects.all()), orig_len_sites+1)
+
+        # retrieve the site, and update it
+        created_site_id = site.id
+        site = orm.Site.objects.get(id=created_site_id)
+        site.name="mysitetwo"
+        site.save()
+
+        # the site_id should not have changed
+        self.assertEqual(site.id, created_site_id)
+
+        # there should still be only one new site
+        self.assertEqual(len(orm.Site.objects.all()), orig_len_sites + 1)
+
+        # the name should have changed
+        self.assertEqual(orm.Site.objects.get(id=created_site_id).name, "mysitetwo")
 
     def test_delete(self):
         orm = self.make_coreapi()
@@ -479,6 +539,13 @@ class TestORM(unittest.TestCase):
             self.assertEqual(q.elements[0].operator, q.elements[0].EQUAL)
             self.assertEqual(q.elements[0].sValue, "foo")
 
+    def test_ORMWrapper_dict(self):
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel(intfield=7, stringfield="foo")
+
+        self.assertDictEqual(testModel._dict, {"intfield": 7, "stringfield": "foo"})
+
     def test_ORMWrapper_new_diff(self):
         orm = self.make_coreapi()
         site = orm.Site(name="mysite")
@@ -537,6 +604,193 @@ class TestORM(unittest.TestCase):
 
         self.assertEqual(site.diff, {})
 
+    def test_ORMWrapper_recompute_initial(self):
+        """ For saved models, Recompute_initial should take recompute the set of initial values, removing all items
+            from the diff set.
+        """
+
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel()
+        testModel.save()
+
+        testModel.intfield = 9
+        self.assertEqual(testModel.changed_fields, ["intfield"])
+
+        testModel.recompute_initial()
+        self.assertEqual(testModel.changed_fields, [])
+
+    def test_ORMWrapper_create_attr(self):
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel()
+        testModel.create_attr("some_new_attribute", "foo")
+        self.assertEqual(testModel.some_new_attribute, "foo")
+
+    def test_ORMWrapper_save_changed_fields(self):
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel(intfield=7, stringfield="foo")
+        testModel.save()
+
+        testModel.intfield=9
+
+        with patch.object(orm.grpc_stub, "UpdateTestModel", wraps=orm.grpc_stub.UpdateTestModel) as update:
+            testModel.save_changed_fields()
+            update.assert_called_with(ANY, metadata=[("update_fields", "intfield"), ANY])
+
+    def test_ORMWrapper_get_generic_foreignkeys(self):
+        """ Currently this is a placeholder that returns an empty list """
+
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel()
+        self.assertEqual(testModel.get_generic_foreignkeys(), [])
+
+    def test_ORMWrapper_gen_fkmap(self):
+        """ TestModelTwo includes a foreignkey relation to TestModel, and the fkmap should contain that relation """
+
+        orm = self.make_coreapi()
+
+        testModelTwo = orm.TestModelTwo()
+
+        self.assertDictEqual(testModelTwo.gen_fkmap(),
+                             {'testmodel': {'kind': 'fk',
+                                            'modelName': 'TestModel',
+                                            'reverse_fieldName': 'testmodeltwos',
+                                            'src_fieldName': 'testmodel_id'}})
+
+    def test_ORMWrapper_gen_reverse_fkmap(self):
+        """ TestModel includes a reverse relation back to TestModelTwo, and the reverse_fkmap should contain that
+            relation.
+        """
+
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel()
+
+        self.assertDictEqual(testModel.gen_reverse_fkmap(),
+                             {'testmodeltwos': {'modelName': 'TestModelTwo',
+                                                'src_fieldName': 'testmodeltwos_ids',
+                                                'writeable': False}})
+
+    def test_ORMWrapper_fk_resolve(self):
+        """ If we create a TestModelTwo that has a foreign key reference to a TestModel, then calling fk_resolve should
+            return that model.
+        """
+
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel()
+        testModel.save()
+
+        testModelTwo = orm.TestModelTwo(testmodel_id=testModel.id)
+
+        testModel_resolved = testModelTwo.fk_resolve("testmodel")
+        self.assertEqual(testModel_resolved.id, testModel.id)
+
+    def test_ORMWrapper_reverse_fk_resolve(self):
+        """ If a TestModelTwo has a relation to TestModel, then TestModel's reverse_fk should be resolvable to a list
+            of TestModelTwo objects.
+        """
+
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel()
+        testModel.save()
+
+        testModelTwo = orm.TestModelTwo(testmodel_id=testModel.id)
+        testModelTwo.save()
+
+        # fake_stub.py doesn't populate the reverse relations for us, so force what the server would have done...
+        testModel._wrapped_class.testmodeltwos_ids = [testModelTwo.id]
+
+        testModelTwos_resolved = testModel.reverse_fk_resolve("testmodeltwos")
+        self.assertEqual(testModelTwos_resolved.count(), 1)
+
+    def test_ORMWrapper_fk_set(self):
+        """ fk_set will set the testmodel field on TesTModelTwo to point to the TestModel. """
+
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel()
+        testModel.save()
+
+        testModelTwo = orm.TestModelTwo()
+
+        testModelTwo.fk_set("testmodel", testModel)
+
+        self.assertEqual(testModelTwo.testmodel_id, testModel.id)
+
+    def test_ORMWrapper_post_save_fixups_remove(self):
+        """ Apply a post_save_fixup that removes a reverse foreign key """
+
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel()
+        testModel.save()
+
+        testModelTwo = orm.TestModelTwo(testmodel_id=testModel.id)
+
+        # fake_stub.py doesn't populate the reverse relations for us, so force what the server would have done...
+        testModel._wrapped_class.testmodeltwos_ids = [testModelTwo.id]
+
+        post_save_fixups = [{"src_fieldName": "testmodel",
+                             "dest_id": None, # this field appears to not be used...
+                             "dest_model": testModel,
+                             "remove": True,
+                             "reverse_fieldName": "testmodeltwos"}]
+
+        testModelTwo.post_save_fixups = post_save_fixups
+        testModelTwo.do_post_save_fixups()
+
+        self.assertEqual(testModel._wrapped_class.testmodeltwos_ids, [])
+
+    def test_ORMWrapper_post_save_fixups_add(self):
+        """ Apply a post_save_fixup that adds a reverse foreign key """
+
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel()
+        testModel.save()
+
+        testModelTwo = orm.TestModelTwo(testmodel_id=testModel.id)
+        testModelTwo.save()
+
+        # Make sure the reverse_relation is unpopulated. This should be the case, as fake_stub.py() doesn't populate
+        # the reverse relation. But let's be sure, in case someone fixes that.
+        testModel._wrapped_class.testmodeltwos_ids = []
+
+        post_save_fixups = [{"src_fieldName": "testmodel",
+                             "dest_id": None, # this field appears to not be used...
+                             "dest_model": testModel,
+                             "remove": False,
+                             "reverse_fieldName": "testmodeltwos"}]
+
+        testModelTwo.post_save_fixups = post_save_fixups
+        testModelTwo.do_post_save_fixups()
+
+        self.assertEqual(testModel._wrapped_class.testmodeltwos_ids, [testModelTwo.id])
+
+
+    def test_ORMWrapper_tologdict(self):
+        """ Tologdict contains the model name and id, used for structured logging """
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel(intfield=7, stringfile="foo")
+
+        self.assertDictEqual(testModel.tologdict(), {'model_name': 'TestModel', 'pk': 0})
+
+    def test_ORMWrapper_ansible_tag(self):
+        """ Ansible_tag is used by old-style synchronizers. Deprecated. """
+
+        orm = self.make_coreapi()
+
+        testModel = orm.TestModel(id=7)
+
+        self.assertEqual(testModel.ansible_tag, "TestModel_7")
+
+
     def test_deleted_objects_all(self):
         orm = self.make_coreapi()
         orig_len_sites = len(orm.Site.objects.all())
@@ -574,6 +828,90 @@ class TestORM(unittest.TestCase):
             self.assertEqual(q.elements[0].operator, q.elements[0].EQUAL)
             self.assertEqual(q.elements[0].sValue, "foo")
 
+    def test_ORMQuerySet_first_nonempty(self):
+        qs = self.ORMQuerySet([1,2,3])
+        self.assertEqual(qs.first(), 1)
+
+    def test_ORMQuerySet_first_empty(self):
+        qs = self.ORMQuerySet([])
+        self.assertEqual(qs.first(), None)
+
+    def test_ORMQuerySet_exists_nonempty(self):
+        qs = self.ORMQuerySet([1,2,3])
+        self.assertEqual(qs.exists(), True)
+
+    def test_ORMQuerySet_exists_empty(self):
+        qs = self.ORMQuerySet()
+        self.assertEqual(qs.exists(), False)
+
+    def test_ORMLocalObjectManager_nonempty(self):
+        """ Test all(), first(), exists(), and count() together since they're all closely related. Use a nonempty
+            list.
+        """
+        orm = self.make_coreapi()
+
+        t = orm.TestModel()
+        t.save()
+
+        lobjs = self.ORMLocalObjectManager(t.stub, "TestModel", [t.id], False)
+        self.assertEqual(len(lobjs.all()), 1)
+        self.assertEqual(lobjs.all()[0].id, t.id)
+        self.assertEqual(lobjs.exists(), True)
+        self.assertEqual(lobjs.count(), 1)
+        self.assertEqual(lobjs.first().id, t.id)
+
+    def test_ORMLocalObjectManager_empty(self):
+        """ Test all(), first(), exists(), and count() together since they're all closely related. Use an empty
+            list.
+        """
+        orm = self.make_coreapi()
+
+        t = orm.TestModel()
+        t.save()
+
+        lobjs = self.ORMLocalObjectManager(t.stub, "TestModel", [], False)
+        self.assertEqual(len(lobjs.all()), 0)
+        self.assertEqual(lobjs.exists(), False)
+        self.assertEqual(lobjs.count(), 0)
+        self.assertEqual(lobjs.first(), None)
+
+    def test_ORMLocalObjectManager_not_writeable(self):
+        """ An ORMLocalObjectManager that is not writeable should throw exceptions on add() and remove() """
+        orm = self.make_coreapi()
+
+        t = orm.TestModel()
+        t.save()
+
+        lobjs = self.ORMLocalObjectManager(t.stub, "TestModel", [t.id], False)
+
+        with self.assertRaises(Exception) as e:
+            lobjs.add(123)
+        self.assertEqual(e.exception.message, "Only ManyToMany lists are writeable")
+
+        with self.assertRaises(Exception) as e:
+            lobjs.remove(123)
+        self.assertEqual(e.exception.message, "Only ManyToMany lists are writeable")
+
+    def test_ORMLocalObjectManager_add(self):
+        orm = self.make_coreapi()
+
+        t = orm.TestModel()
+        t.save()
+
+        lobjs = self.ORMLocalObjectManager(t.stub, "TestModel", [], True)
+        lobjs.add(t)
+        self.assertEqual(lobjs.count(), 1)
+        self.assertEqual(lobjs.first().id, t.id)
+
+    def test_ORMLocalObjectManager_remove(self):
+        orm = self.make_coreapi()
+
+        t = orm.TestModel()
+        t.save()
+
+        lobjs = self.ORMLocalObjectManager(t.stub, "TestModel", [t.id], True)
+        lobjs.remove(t)
+        self.assertEqual(lobjs.count(), 0)
 
 def main():
     global USE_FAKE_STUB
