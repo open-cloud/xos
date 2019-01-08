@@ -689,6 +689,9 @@ class TestORM(unittest.TestCase):
         testModel_resolved = testModelTwo.fk_resolve("testmodel")
         self.assertEqual(testModel_resolved.id, testModel.id)
 
+        # the cache should have been populated
+        self.assertIn(("testmodel", testModel_resolved), testModelTwo.cache.items())
+
     def test_ORMWrapper_reverse_fk_resolve(self):
         """ If a TestModelTwo has a relation to TestModel, then TestModel's reverse_fk should be resolvable to a list
             of TestModelTwo objects.
@@ -707,6 +710,9 @@ class TestORM(unittest.TestCase):
 
         testModelTwos_resolved = testModel.reverse_fk_resolve("testmodeltwos")
         self.assertEqual(testModelTwos_resolved.count(), 1)
+
+        # the reverse_cache should have been populated
+        self.assertIn(("testmodeltwos", testModelTwos_resolved), testModel.reverse_cache.items())
 
     def test_ORMWrapper_fk_set(self):
         """ fk_set will set the testmodel field on TesTModelTwo to point to the TestModel. """

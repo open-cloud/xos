@@ -218,9 +218,9 @@ class ORMWrapper(object):
     def reverse_fk_resolve(self, name):
         if name not in self.reverse_cache:
             fk_entry = self._reverse_fkmap[name]
-            self.cache[name] = ORMLocalObjectManager(self.stub, fk_entry["modelName"], getattr(self, fk_entry["src_fieldName"]), fk_entry["writeable"])
+            self.reverse_cache[name] = ORMLocalObjectManager(self.stub, fk_entry["modelName"], getattr(self, fk_entry["src_fieldName"]), fk_entry["writeable"])
 
-        return self.cache[name]
+        return self.reverse_cache[name]
 
     def fk_set(self, name, model):
         fk_entry = self._fkmap[name]
