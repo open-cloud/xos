@@ -637,7 +637,11 @@ class TestORM(unittest.TestCase):
 
         with patch.object(orm.grpc_stub, "UpdateTestModel", wraps=orm.grpc_stub.UpdateTestModel) as update:
             testModel.save_changed_fields()
-            update.assert_called_with(ANY, metadata=[("update_fields", "intfield"), ANY])
+
+            self.assertEqual(update.call_count, 1)
+            self.assertIn("metadata", update.call_args[1])
+            update_fields_arg = [x[1] for x in update.call_args[1]["metadata"] if x[0]=="update_fields"]
+            self.assertEqual(update_fields_arg, ["intfield"])
 
     def test_ORMWrapper_get_generic_foreignkeys(self):
         """ Currently this is a placeholder that returns an empty list """
