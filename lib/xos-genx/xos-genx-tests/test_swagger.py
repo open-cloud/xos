@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,11 +19,12 @@ import yaml
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from helpers import OUTPUT_DIR
 
+
 class Args:
     pass
 
-class XOSProcessorTest(unittest.TestCase):
 
+class XOSProcessorTest(unittest.TestCase):
     def test_swagger_target(self):
         """
         [XOS-GenX] The swagger xtarget should generate the appropriate json
@@ -32,10 +32,9 @@ class XOSProcessorTest(unittest.TestCase):
 
         # xosgenx --output . --target xosgenx/targets/swagger.xtarget --write-to-file single  --dest-file swagger.yaml ../../xos/core/models/core.xproto
         # http-server --cors Users/teone/Sites/opencord/orchestration/xos/lib/xos-genx/
-        xproto = \
-            """
+        xproto = """
             option app_label = "core";
-    
+
             message Instance::instance_policy (XOSBase) {
                  option validators = "instance_creator:Instance has no creator, instance_isolation: Container instance {obj.name} must use container image, instance_isolation_container_vm_parent:Container-vm instance {obj.name} must have a parent, instance_parent_isolation_container_vm:Parent field can only be set on Container-vm instances ({obj.name}), instance_isolation_vm: VM Instance {obj.name} must use VM image, instance_creator_privilege: instance creator has no privileges on slice";
                  optional string instance_id = 1 [max_length = 200, content_type = "stripped", blank = True, help_text = "Nova instance id", null = True, db_index = False];
@@ -58,7 +57,7 @@ class XOSProcessorTest(unittest.TestCase):
             """
         args = XOSProcessorArgs()
         args.inputs = xproto
-        args.target = 'swagger.xtarget'
+        args.target = "swagger.xtarget"
         args.output = OUTPUT_DIR
         args.write_to_file = "single"
         args.dest_file = "swagger.yaml"
@@ -68,5 +67,6 @@ class XOSProcessorTest(unittest.TestCase):
         self.assertIn("/xosapi/v1/core/instances/{id}:", output)
         self.assertIn("Instance:", output)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

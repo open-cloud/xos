@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
 import os
 import inspect
 import imp
@@ -28,28 +29,32 @@ from synchronizers.new_base.modelaccessor import *
 from xosconfig import Config
 from multistructlog import create_logger
 
-log = create_logger(Config().get('logging'))
+log = create_logger(Config().get("logging"))
 
 
 class Backend:
-
-    def __init__(self, log = log):
+    def __init__(self, log=log):
         self.log = log
         pass
 
     def load_sync_step_modules(self, step_dir):
         sync_steps = []
 
-        self.log.info("Loading sync steps", step_dir = step_dir)
+        self.log.info("Loading sync steps", step_dir=step_dir)
 
         for fn in os.listdir(step_dir):
-            pathname = os.path.join(step_dir,fn)
-            if os.path.isfile(pathname) and fn.endswith(".py") and (fn!="__init__.py") and (not fn.startswith("test")):
+            pathname = os.path.join(step_dir, fn)
+            if (
+                os.path.isfile(pathname)
+                and fn.endswith(".py")
+                and (fn != "__init__.py")
+                and (not fn.startswith("test"))
+            ):
 
                 # we need to extend the path to load modules in the step_dir
                 sys_path_save = sys.path
                 sys.path.append(step_dir)
-                module = imp.load_source(fn[:-3],pathname)
+                module = imp.load_source(fn[:-3], pathname)
 
                 self.log.debug("Loaded file: %s", pathname)
 
@@ -59,7 +64,7 @@ class Backend:
                 for classname in dir(module):
                     c = getattr(module, classname, None)
 
-                    #if classname.startswith("Sync"):
+                    # if classname.startswith("Sync"):
                     #    print classname, c, inspect.isclass(c), issubclass(c, SyncStep), hasattr(c,"provides")
 
                     # make sure 'c' is a descendent of SyncStep and has a
@@ -69,10 +74,14 @@ class Backend:
                     if inspect.isclass(c):
                         bases = inspect.getmro(c)
                         base_names = [b.__name__ for b in bases]
-                        if ('SyncStep' in base_names) and (hasattr(c,"provides") or hasattr(c,"observes")) and (c not in sync_steps):
+                        if (
+                            ("SyncStep" in base_names)
+                            and (hasattr(c, "provides") or hasattr(c, "observes"))
+                            and (c not in sync_steps)
+                        ):
                             sync_steps.append(c)
 
-        self.log.info("Loaded sync steps", steps = sync_steps)
+        self.log.info("Loaded sync steps", steps=sync_steps)
 
         return sync_steps
 
@@ -94,7 +103,9 @@ class Backend:
                 # start the observer
                 self.log.info("Starting XOSObserver", sync_steps=sync_steps)
                 observer = XOSObserver(sync_steps, self.log)
-                observer_thread = threading.Thread(target=observer.run,name='synchronizer')
+                observer_thread = threading.Thread(
+                    target=observer.run, name="synchronizer"
+                )
                 observer_thread.start()
 
         else:
@@ -105,7 +116,9 @@ class Backend:
             self.log.info("Starting XOSPullStepEngine", pull_steps_dir=pull_steps_dir)
             pull_steps_engine = XOSPullStepEngine()
             pull_steps_engine.load_pull_step_modules(pull_steps_dir)
-            pull_steps_thread = threading.Thread(target=pull_steps_engine.start, name="pull_step_engine")
+            pull_steps_thread = threading.Thread(
+                target=pull_steps_engine.start, name="pull_step_engine"
+            )
             pull_steps_thread.start()
         else:
             self.log.info("Skipping pull step engine due to no pull_steps_dir dir.")
@@ -122,15 +135,21 @@ class Backend:
         # start model policies thread
         policies_dir = Config.get("model_policies_dir")
         if policies_dir:
-            policy_engine = XOSPolicyEngine(policies_dir=policies_dir, log = self.log)
-            model_policy_thread = threading.Thread(target=policy_engine.run, name="policy_engine")
-            model_policy_thread.is_policy_thread=True
+            policy_engine = XOSPolicyEngine(policies_dir=policies_dir, log=self.log)
+            model_policy_thread = threading.Thread(
+                target=policy_engine.run, name="policy_engine"
+            )
+            model_policy_thread.is_policy_thread = True
             model_policy_thread.start()
         else:
-            self.log.info("Skipping model policies thread due to no model_policies dir.")
+            self.log.info(
+                "Skipping model policies thread due to no model_policies dir."
+            )
 
         if (not observer_thread) and (not model_policy_thread) and (not event_engine):
-            self.log.info("No sync steps, no policies, and no event steps. Synchronizer exiting.")
+            self.log.info(
+                "No sync steps, no policies, and no event steps. Synchronizer exiting."
+            )
             # the caller will exit with status 0
             return
 
@@ -138,11 +157,10 @@ class Backend:
             try:
                 time.sleep(1000)
             except KeyboardInterrupt:
-                print "exiting due to keyboard interrupt"
+                print("exiting due to keyboard interrupt")
                 # TODO: See about setting the threads as daemons
                 if observer_thread:
                     observer_thread._Thread__stop()
                 if model_policy_thread:
                     model_policy_thread._Thread__stop()
                 sys.exit(1)
-

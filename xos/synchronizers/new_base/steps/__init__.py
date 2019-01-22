@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +13,9 @@
 # limitations under the License.
 
 
-#from .sync_controller_sites import SyncControllerSites
-#from .sync_controller_slices import SyncControllerSlices
-#from .sync_controller_users import SyncControllerUsers
-#from .sync_controller_site_privileges import SyncControllerSitePrivileges
-#from .sync_controller_slice_privileges import SyncControllerSlicePrivileges
-#from .sync_controller_networks import SyncControllerNetworks
+# from .sync_controller_sites import SyncControllerSites
+# from .sync_controller_slices import SyncControllerSlices
+# from .sync_controller_users import SyncControllerUsers
+# from .sync_controller_site_privileges import SyncControllerSitePrivileges
+# from .sync_controller_slice_privileges import SyncControllerSlicePrivileges
+# from .sync_controller_networks import SyncControllerNetworks

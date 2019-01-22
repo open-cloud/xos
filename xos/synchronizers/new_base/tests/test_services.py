@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,32 +18,42 @@ import mock
 import pdb
 import networkx as nx
 
-import os, sys
+import os
+import sys
 
 test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-xos_dir = os.path.join(test_path, '..', '..', '..')
+xos_dir = os.path.join(test_path, "..", "..", "..")
+
 
 class TestServices(unittest.TestCase):
     def setUp(self):
         self.sys_path_save = sys.path
         self.cwd_save = os.getcwd()
         sys.path.append(xos_dir)
-        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
-        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base', 'tests', 'steps'))
+        sys.path.append(os.path.join(xos_dir, "synchronizers", "new_base"))
+        sys.path.append(
+            os.path.join(xos_dir, "synchronizers", "new_base", "tests", "steps")
+        )
 
         config = os.path.join(test_path, "test_config.yaml")
         from xosconfig import Config
-        Config.clear()
-        Config.init(config, 'synchronizer-config-schema.yaml')
 
-        from synchronizers.new_base.mock_modelaccessor_build import build_mock_modelaccessor
+        Config.clear()
+        Config.init(config, "synchronizer-config-schema.yaml")
+
+        from synchronizers.new_base.mock_modelaccessor_build import (
+            build_mock_modelaccessor,
+        )
+
         build_mock_modelaccessor(xos_dir, services_dir=None, service_xprotos=[])
 
-        os.chdir(os.path.join(test_path, '..'))  # config references tests/model-deps
+        os.chdir(os.path.join(test_path, ".."))  # config references tests/model-deps
 
         import event_loop
+
         reload(event_loop)
         import backend
+
         reload(backend)
         from modelaccessor import model_accessor
 
@@ -65,17 +74,18 @@ class TestServices(unittest.TestCase):
         s = Service()
         a = ServiceInstance(owner=s)
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([a,s], False)
-        self.assertIn([s,a], cohorts)
+        cohorts = self.synchronizer.compute_dependent_cohorts([a, s], False)
+        self.assertIn([s, a], cohorts)
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([s,a], False)
-        self.assertIn([s,a], cohorts)
+        cohorts = self.synchronizer.compute_dependent_cohorts([s, a], False)
+        self.assertIn([s, a], cohorts)
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([a,s], True)
-        self.assertIn([a,s], cohorts)
+        cohorts = self.synchronizer.compute_dependent_cohorts([a, s], True)
+        self.assertIn([a, s], cohorts)
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([s,a], True)
-        self.assertIn([a,s], cohorts)
+        cohorts = self.synchronizer.compute_dependent_cohorts([s, a], True)
+        self.assertIn([a, s], cohorts)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

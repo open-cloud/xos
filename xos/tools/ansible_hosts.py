@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,7 @@
 
 #! /usr/bin/env python
 
+from __future__ import print_function
 import json
 import os
 import requests
@@ -25,12 +25,13 @@ from operator import itemgetter, attrgetter
 
 opencloud_auth = None
 
-REST_API="http://portal.opencloud.us/xos/"
+REST_API = "http://portal.opencloud.us/xos/"
 
 NODES_API = REST_API + "nodes/"
 SITES_API = REST_API + "sites/"
 SLICES_API = REST_API + "slices/"
 SLIVERS_API = REST_API + "instance/"
+
 
 def get_nodes_by_site():
     r = requests.get(SITES_API + "?no_hyperlinks=1", auth=opencloud_auth)
@@ -48,6 +49,7 @@ def get_nodes_by_site():
             sites[site_id]["hostnames"].append(node["name"])
 
     return sites
+
 
 """
    WIP
@@ -81,17 +83,18 @@ def get_nodes_by_slice():
     return slices
 """
 
+
 def main():
     global opencloud_auth
 
-    if len(sys.argv)!=3:
-        print >> sys.stderr, "syntax: get_instance_name.py <username>, <password>"
+    if len(sys.argv) != 3:
+        print("syntax: get_instance_name.py <username>, <password>", file=sys.stderr)
         sys.exit(-1)
 
     username = sys.argv[1]
     password = sys.argv[2]
 
-    opencloud_auth=(username, password)
+    opencloud_auth = (username, password)
 
     sites = get_nodes_by_site()
 
@@ -99,17 +102,17 @@ def main():
         if not site["hostnames"]:
             continue
 
-        print "[%s]" % site["name"]
+        print("[%s]" % site["name"])
         for hostname in site["hostnames"]:
-            print hostname
-        print ""
+            print(hostname)
+        print("")
 
-    print "[all-opencloud:children]"
+    print("[all-opencloud:children]")
     for site in sites.values():
         if not site["hostnames"]:
             continue
-        print site["name"]
+        print(site["name"])
+
 
 if __name__ == "__main__":
     main()
-

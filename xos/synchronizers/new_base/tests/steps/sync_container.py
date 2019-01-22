@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,12 +26,13 @@ from mock_modelaccessor import *
 from synchronizers.new_base.syncstep import SyncStep
 
 # hpclibrary will be in steps/..
-parentdir = os.path.join(os.path.dirname(__file__),"..")
+parentdir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, parentdir)
 
+
 class SyncContainer(SyncInstanceUsingAnsible):
-    provides=[Instance]
-    observes=Instance
+    provides = [Instance]
+    observes = Instance
     template_name = "sync_container.yaml"
 
     def __init__(self, *args, **kwargs):
@@ -46,7 +46,7 @@ class SyncContainer(SyncInstanceUsingAnsible):
         k = Instance()
         k.name = "Embarrassed Cat"
 
-        objs = [i,j,k]
+        objs = [i, j, k]
         return objs
 
     def sync_record(self, o):

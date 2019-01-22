@@ -16,17 +16,20 @@ from prometheus_client import Counter, Histogram
 import time
 
 REQUEST_COUNT = Counter(
-    'grpc_request_count', 'GRPC Request Count',
-    ['app_name', 'model_name', 'endpoint', 'status']
+    "grpc_request_count",
+    "GRPC Request Count",
+    ["app_name", "model_name", "endpoint", "status"],
 )
 
 # TODO (teone) add caller as label for the counter (eg: GUI, TOSCA, SYNCHRONIZER)
 # TODO (teone) add user informations as label for the counter
 
 REQUEST_LATENCY = Histogram(
-    'grpc_request_latency_seconds', 'GRPC Request latency',
-    ['app_name', 'model_name', 'endpoint']
+    "grpc_request_latency_seconds",
+    "GRPC Request latency",
+    ["app_name", "model_name", "endpoint"],
 )
+
 
 def track_request_time(model, method):
     """
@@ -34,13 +37,12 @@ def track_request_time(model, method):
     """
 
     def decorator(function):
-
         def wrapper(*args, **kwargs):
 
             start_time = time.time()
             res = function(*args, **kwargs)
             resp_time = time.time() - start_time
-            REQUEST_LATENCY.labels('xos-core', model, method).observe(resp_time)
+            REQUEST_LATENCY.labels("xos-core", model, method).observe(resp_time)
             return res
 
         return wrapper

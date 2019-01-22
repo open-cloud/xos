@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,7 @@
 from xos.exceptions import *
 from service_decl import *
 
+
 class Service(Service_decl):
     class Meta:
         proxy = True
@@ -23,12 +23,14 @@ class Service(Service_decl):
     KIND = "generic"
 
     def get_composable_networks(self):
-        SUPPORTED_VTN_SERVCOMP_KINDS = ['VSG','PRIVATE']
+        SUPPORTED_VTN_SERVCOMP_KINDS = ["VSG", "PRIVATE"]
 
         nets = []
         for slice in self.slices.all():
             for net in slice.networks.all():
-                if (net.template.vtn_kind not in SUPPORTED_VTN_SERVCOMP_KINDS) or (net.owner != slice):
+                if (net.template.vtn_kind not in SUPPORTED_VTN_SERVCOMP_KINDS) or (
+                    net.owner != slice
+                ):
                     continue
 
                 if not net.controllernetworks.exists():
@@ -51,6 +53,3 @@ class Service(Service_decl):
         for dep in service_deps:
             svcs.append(dep.subscriber_service)
         return svcs
-
-
-

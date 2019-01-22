@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,7 @@
 import json
 import os
 import shutil
+
 
 class AppUnloader(object):
     def __init__(self):
@@ -41,9 +41,10 @@ class AppUnloader(object):
         os.system("cd /opt/xos; python ./manage.py migrate %s zero" % manifest["name"])
 
         # be paranoid about calling rmtree
-        assert(os.path.abspath(manifest["dest_dir"]).startswith("/opt/xos"))
+        assert os.path.abspath(manifest["dest_dir"]).startswith("/opt/xos")
 
         shutil.rmtree(manifest["dest_dir"])
+
 
 if __name__ == "__main__":
     AppUnloader().unload_all_eligible()

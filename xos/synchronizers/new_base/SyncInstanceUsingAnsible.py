@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,7 +47,7 @@ class SyncInstanceUsingAnsible(SyncStep):
     def defer_sync(self, o, reason):
         # zdw, 2017-02-18 - is raising the exception here necessary? - seems like
         # it's just logging the same thing twice
-        self.log.info("defer object", object = str(o), reason = reason, **o.tologdict())
+        self.log.info("defer object", object=str(o), reason=reason, **o.tologdict())
         raise DeferredException("defer object %s due to %s" % (str(o), reason))
 
     def get_extra_attributes(self, o):
@@ -78,7 +77,9 @@ class SyncInstanceUsingAnsible(SyncStep):
             template_name = self.template_name
         tStart = time.time()
         run_template_ssh(template_name, fields, object=o)
-        self.log.info("playbook execution time", time = int(time.time() - tStart), **o.tologdict())
+        self.log.info(
+            "playbook execution time", time=int(time.time() - tStart), **o.tologdict()
+        )
 
     def pre_sync_hook(self, o, fields):
         pass
@@ -101,7 +102,11 @@ class SyncInstanceUsingAnsible(SyncStep):
 
     def get_key_name(self, instance):
         if instance.isolation == "vm":
-            if instance.slice and instance.slice.service and instance.slice.service.private_key_fn:
+            if (
+                instance.slice
+                and instance.slice.service
+                and instance.slice.service.private_key_fn
+            ):
                 key_name = instance.slice.service.private_key_fn
             else:
                 raise Exception("Make sure to set private_key_fn in the service")
@@ -118,27 +123,29 @@ class SyncInstanceUsingAnsible(SyncStep):
         # return all of the fields that tell Ansible how to talk to the context
         # that's setting up the container.
 
-        if (instance.isolation == "vm"):
+        if instance.isolation == "vm":
             # legacy where container was configured by sync_vcpetenant.py
 
-            fields = {"instance_name": instance.name,
-                      "hostname": instance.node.name,
-                      "instance_id": instance.instance_id,
-                      "username": "ubuntu",
-                      "ssh_ip": instance.get_ssh_ip(),
-                      }
+            fields = {
+                "instance_name": instance.name,
+                "hostname": instance.node.name,
+                "instance_id": instance.instance_id,
+                "username": "ubuntu",
+                "ssh_ip": instance.get_ssh_ip(),
+            }
 
-        elif (instance.isolation == "container"):
+        elif instance.isolation == "container":
             # container on bare metal
             node = self.get_node(instance)
             hostname = node.name
-            fields = {"hostname": hostname,
-                      "baremetal_ssh": True,
-                      "instance_name": "rootcontext",
-                      "username": "root",
-                      "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
-                      # ssh_ip is not used for container-on-metal
-                      }
+            fields = {
+                "hostname": hostname,
+                "baremetal_ssh": True,
+                "instance_name": "rootcontext",
+                "username": "root",
+                "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
+                # ssh_ip is not used for container-on-metal
+            }
         else:
             # container in a VM
             if not instance.parent:
@@ -149,13 +156,14 @@ class SyncInstanceUsingAnsible(SyncStep):
                 raise Exception("Container-in-VM parent has no service")
             if not instance.parent.slice.service.private_key_fn:
                 raise Exception("Container-in-VM parent service has no private_key_fn")
-            fields = {"hostname": instance.parent.node.name,
-                      "instance_name": instance.parent.name,
-                      "instance_id": instance.parent.instance_id,
-                      "username": "ubuntu",
-                      "ssh_ip": instance.parent.get_ssh_ip(),
-                      "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
-                      }
+            fields = {
+                "hostname": instance.parent.node.name,
+                "instance_name": instance.parent.name,
+                "instance_id": instance.parent.instance_id,
+                "username": "ubuntu",
+                "ssh_ip": instance.parent.get_ssh_ip(),
+                "container_name": "%s-%s" % (instance.slice.name, str(instance.id)),
+            }
 
         key_name = self.get_key_name(instance)
         if not os.path.exists(key_name):
@@ -170,22 +178,33 @@ class SyncInstanceUsingAnsible(SyncStep):
         if not instance.deleted:
             cslice = ControllerSlice.objects.get(slice_id=instance.slice.id)
             if not cslice:
-                raise Exception("Controller slice object for %s does not exist" % instance.slice.name)
+                raise Exception(
+                    "Controller slice object for %s does not exist"
+                    % instance.slice.name
+                )
 
             cuser = ControllerUser.objects.get(user_id=instance.creator.id)
             if not cuser:
-                raise Exception("Controller user object for %s does not exist" % instance.creator)
+                raise Exception(
+                    "Controller user object for %s does not exist" % instance.creator
+                )
 
-            fields.update({"keystone_tenant_id": cslice.tenant_id,
-                           "keystone_user_id": cuser.kuser_id,
-                           "rabbit_user": getattr(instance.controller, "rabbit_user", None),
-                           "rabbit_password": getattr(instance.controller, "rabbit_password", None),
-                           "rabbit_host": getattr(instance.controller, "rabbit_host", None)})
+            fields.update(
+                {
+                    "keystone_tenant_id": cslice.tenant_id,
+                    "keystone_user_id": cuser.kuser_id,
+                    "rabbit_user": getattr(instance.controller, "rabbit_user", None),
+                    "rabbit_password": getattr(
+                        instance.controller, "rabbit_password", None
+                    ),
+                    "rabbit_host": getattr(instance.controller, "rabbit_host", None),
+                }
+            )
 
         return fields
 
     def sync_record(self, o):
-        self.log.info("sync'ing object", object = str(o), **o.tologdict())
+        self.log.info("sync'ing object", object=str(o), **o.tologdict())
 
         self.prepare_record(o)
 
@@ -198,12 +217,13 @@ class SyncInstanceUsingAnsible(SyncStep):
                 # UNTESTED
 
                 (hostname, container_name) = self.get_external_sync(o)
-                fields = {"hostname": hostname,
-                          "baremetal_ssh": True,
-                          "instance_name": "rootcontext",
-                          "username": "root",
-                          "container_name": container_name
-                          }
+                fields = {
+                    "hostname": hostname,
+                    "baremetal_ssh": True,
+                    "instance_name": "rootcontext",
+                    "username": "root",
+                    "container_name": container_name,
+                }
                 key_name = self.get_node_key(node)
                 if not os.path.exists(key_name):
                     raise Exception("Node key %s does not exist" % key_name)
@@ -225,7 +245,9 @@ class SyncInstanceUsingAnsible(SyncStep):
 
                 fields = self.get_ansible_fields(instance)
 
-        fields["ansible_tag"] = getattr(o, "ansible_tag", o.__class__.__name__ + "_" + str(o.id))
+        fields["ansible_tag"] = getattr(
+            o, "ansible_tag", o.__class__.__name__ + "_" + str(o.id)
+        )
 
         # If 'o' defines a 'sync_attributes' list, then we'll copy those
         # attributes into the Ansible recipe's field list automatically.
@@ -243,10 +265,14 @@ class SyncInstanceUsingAnsible(SyncStep):
         try:
             # TODO: This may be broken, as get_controller() does not exist in convenience wrapper
             controller = o.get_controller()
-            controller_register = json.loads(o.node.site_deployment.controller.backend_register)
+            controller_register = json.loads(
+                o.node.site_deployment.controller.backend_register
+            )
 
-            if (controller_register.get('disabled', False)):
-                raise InnocuousException('Controller %s is disabled' % o.node.site_deployment.controller.name)
+            if controller_register.get("disabled", False):
+                raise InnocuousException(
+                    "Controller %s is disabled" % o.node.site_deployment.controller.name
+                )
         except AttributeError:
             pass
 
@@ -265,15 +291,18 @@ class SyncInstanceUsingAnsible(SyncStep):
 
             # XXX - this probably needs more work...
 
-            fields = {"hostname": instance,
-                      "instance_id": "ubuntu",  # this is the username to log into
-                      "private_key": service.key,
-                      }
+            fields = {
+                "hostname": instance,
+                "instance_id": "ubuntu",  # this is the username to log into
+                "private_key": service.key,
+            }
         else:
             # sync to an XOS instance
             fields = self.get_ansible_fields(instance)
 
-            fields["ansible_tag"] = getattr(o, "ansible_tag", o.__class__.__name__ + "_" + str(o.id))
+            fields["ansible_tag"] = getattr(
+                o, "ansible_tag", o.__class__.__name__ + "_" + str(o.id)
+            )
 
         # If 'o' defines a 'sync_attributes' list, then we'll copy those
         # attributes into the Ansible recipe's field list automatically.
@@ -284,9 +313,8 @@ class SyncInstanceUsingAnsible(SyncStep):
         if hasattr(self, "map_delete_inputs"):
             fields.update(self.map_delete_inputs(o))
 
-        fields['delete'] = True
+        fields["delete"] = True
         res = self.run_playbook(o, fields)
 
         if hasattr(self, "map_delete_outputs"):
             self.map_delete_outputs(o, res)
-

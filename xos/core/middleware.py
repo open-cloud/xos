@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +17,14 @@ from threading import local
 
 _active = local()
 
+
 def get_request():
     if not hasattr(_active, "request"):
-        raise Exception("Please add 'core.middleware.GlobalRequestMiddleware' to <XOS_DIR>/xos.settings.py:MIDDLEWARE_CLASSES")
+        raise Exception(
+            "Please add 'core.middleware.GlobalRequestMiddleware' to <XOS_DIR>/xos.settings.py:MIDDLEWARE_CLASSES"
+        )
     return _active.request
+
 
 class GlobalRequestMiddleware(object):
     def process_view(self, request, view_func, view_args, view_kwargs):

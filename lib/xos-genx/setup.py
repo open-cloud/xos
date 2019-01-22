@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from setuptools import setup
-
 try:
     from xosutil.autoversion_setup import setup_with_auto_version as setup
 except ImportError:
@@ -25,18 +23,15 @@ except ImportError:
 
 from xosgenx.version import __version__
 
-setup(name='XosGenX',
-      version=__version__,
-      description='XOS Generative Toolchain',
-      author='Sapan Bhatia, Matteo Scandolo',
-      author_email='sapan@opennetworking.org, teo@opennetworking.org',
-      packages=['xosgenx'],
-      scripts=['bin/xosgenx'],
-      include_package_data=True,
-      # TODO add all deps to the install_requires section
-      install_requires=[
-          'inflect>=1.0.1',
-          'astunparse>=1.5.0'
-          ]
-     )
-
+setup(
+    name="XosGenX",
+    version=__version__,
+    description="XOS Generative Toolchain",
+    author="Sapan Bhatia, Matteo Scandolo",
+    author_email="sapan@opennetworking.org, teo@opennetworking.org",
+    packages=["xosgenx"],
+    scripts=["bin/xosgenx"],
+    include_package_data=True,
+    # TODO add all deps to the install_requires section
+    install_requires=["inflect>=1.0.1", "astunparse>=1.5.0"],
+)

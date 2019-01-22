@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,39 +14,50 @@
 
 
 import unittest
-from mock import patch
 import os
 from xosconfig import Config
 from xosconfig import Config as Config2
 
-basic_conf = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/confs/basic_conf.yaml")
-yaml_not_valid = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/confs/yaml_not_valid.yaml")
-invalid_format = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/confs/invalid_format.yaml")
-sample_conf = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/confs/sample_conf.yaml")
-override_conf = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/confs/override_conf.yaml")
-extend_conf = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/confs/extend_conf.yaml")
+basic_conf = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/confs/basic_conf.yaml"
+)
+yaml_not_valid = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/confs/yaml_not_valid.yaml"
+)
+invalid_format = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/confs/invalid_format.yaml"
+)
+sample_conf = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/confs/sample_conf.yaml"
+)
+override_conf = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/confs/override_conf.yaml"
+)
+extend_conf = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/confs/extend_conf.yaml"
+)
 
-small_schema = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/schemas/small_schema.yaml")
+small_schema = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/schemas/small_schema.yaml"
+)
 
-services_list = {
-  "xos-ws": [],
-  "xos-db": [],
-}
+services_list = {"xos-ws": [], "xos-db": []}
 
 db_service = [
-          {
-            "ModifyIndex": 6,
-            "CreateIndex": 6,
-            "Node": "0152982c3159",
-            "Address": "172.19.0.2",
-            "ServiceID": "0d53ce210785:frontend_xos_db_1:5432",
-            "ServiceName": "xos-db",
-            "ServiceTags": [],
-            "ServiceAddress": "172.18.0.4",
-            "ServicePort": 5432,
-            "ServiceEnableTagOverride": "false"
-          }
-        ]
+    {
+        "ModifyIndex": 6,
+        "CreateIndex": 6,
+        "Node": "0152982c3159",
+        "Address": "172.19.0.2",
+        "ServiceID": "0d53ce210785:frontend_xos_db_1:5432",
+        "ServiceName": "xos-db",
+        "ServiceTags": [],
+        "ServiceAddress": "172.18.0.4",
+        "ServicePort": 5432,
+        "ServiceEnableTagOverride": "false",
+    }
+]
+
 
 class XOSConfigTest(unittest.TestCase):
     """
@@ -77,15 +87,19 @@ class XOSConfigTest(unittest.TestCase):
         """
         with self.assertRaises(Exception) as e:
             Config.get("database")
-        self.assertEqual(e.exception.message, "[XOS-Config] Module has not been initialized")
+        self.assertEqual(
+            e.exception.message, "[XOS-Config] Module has not been initialized"
+        )
 
     def test_missing_file_exception(self):
         """
-        [XOS-Config] Raise if file not found 
+        [XOS-Config] Raise if file not found
         """
         with self.assertRaises(Exception) as e:
             Config.init("missing_conf")
-        self.assertEqual(e.exception.message, "[XOS-Config] Config file not found at: missing_conf")
+        self.assertEqual(
+            e.exception.message, "[XOS-Config] Config file not found at: missing_conf"
+        )
 
     def test_yaml_not_valid(self):
         """
@@ -93,7 +107,9 @@ class XOSConfigTest(unittest.TestCase):
         """
         with self.assertRaises(Exception) as e:
             Config.init(yaml_not_valid)
-        self.assertTrue(e.exception.message.startswith("[XOS-Config] The config format is wrong:"))
+        self.assertTrue(
+            e.exception.message.startswith("[XOS-Config] The config format is wrong:")
+        )
 
     def test_invalid_format(self):
         """
@@ -101,7 +117,13 @@ class XOSConfigTest(unittest.TestCase):
         """
         with self.assertRaises(Exception) as e:
             Config.init(invalid_format)
-        self.assertEqual(e.exception.message, "[XOS-Config] The config format is wrong: Schema validation failed:\n - Value '['I am', 'a yaml', 'but the', 'format is not', 'correct']' is not a dict. Value path: ''.")
+        self.assertEqual(
+            e.exception.message,
+            (
+                "[XOS-Config] The config format is wrong: Schema validation failed:\n"
+                " - Value '['I am', 'a yaml', 'but the', 'format is not', 'correct']' is not a dict. Value path: ''."
+            ),
+        )
 
     def test_env_override(self):
         """
@@ -110,7 +132,9 @@ class XOSConfigTest(unittest.TestCase):
         os.environ["XOS_CONFIG_FILE"] = "env.yaml"
         with self.assertRaises(Exception) as e:
             Config.init("missing_conf")
-        self.assertEqual(e.exception.message, "[XOS-Config] Config file not found at: env.yaml")
+        self.assertEqual(
+            e.exception.message, "[XOS-Config] Config file not found at: env.yaml"
+        )
         del os.environ["XOS_CONFIG_FILE"]
 
     def test_schema_override(self):
@@ -120,7 +144,10 @@ class XOSConfigTest(unittest.TestCase):
         os.environ["XOS_CONFIG_SCHEMA"] = "env-schema.yaml"
         with self.assertRaises(Exception) as e:
             Config.init(basic_conf)
-        self.assertRegexpMatches(e.exception.message, '\[XOS\-Config\] Config schema not found at: (.+)env-schema\.yaml')
+        self.assertRegexpMatches(
+            e.exception.message,
+            r"\[XOS\-Config\] Config schema not found at: (.+)env-schema\.yaml",
+        )
         # self.assertEqual(e.exception.message, "[XOS-Config] Config schema not found at: env-schema.yaml")
         del os.environ["XOS_CONFIG_SCHEMA"]
 
@@ -131,7 +158,13 @@ class XOSConfigTest(unittest.TestCase):
         os.environ["XOS_CONFIG_SCHEMA"] = small_schema
         with self.assertRaises(Exception) as e:
             Config.init(basic_conf)
-        self.assertEqual(e.exception.message, "[XOS-Config] The config format is wrong: Schema validation failed:\n - Key 'database' was not defined. Path: ''.")
+        self.assertEqual(
+            e.exception.message,
+            (
+                "[XOS-Config] The config format is wrong: Schema validation failed:\n"
+                " - Key 'database' was not defined. Path: ''."
+            ),
+        )
         del os.environ["XOS_CONFIG_SCHEMA"]
 
     def test_get_cli_param(self):
@@ -174,11 +207,7 @@ class XOSConfigTest(unittest.TestCase):
         # NOTE we are using Config2 here to be sure that the configuration is readable from any import,
         # not only from the one that has been used to initialize it
         res = Config2.get("database")
-        self.assertEqual(res, {
-            "name": "xos",
-            "username": "test",
-            "password": "safe"
-        })
+        self.assertEqual(res, {"name": "xos", "username": "test", "password": "safe"})
 
     def test_get_child_level(self):
         """
@@ -192,7 +221,7 @@ class XOSConfigTest(unittest.TestCase):
         """
         [XOS-Config] If an override is provided for the config, it should return the overridden value
         """
-        Config.init(sample_conf, 'xos-config-schema.yaml', override_conf)
+        Config.init(sample_conf, "xos-config-schema.yaml", override_conf)
         res = Config.get("logging.level")
         self.assertEqual(res, "info")
         res = Config.get("database.password")
@@ -200,13 +229,16 @@ class XOSConfigTest(unittest.TestCase):
 
     def test_config_extend(self):
         """
-        [XOS-Config] If an override is provided for the config, it should return the overridden value (also if not defined in the base one)
+        [XOS-Config] If an override is provided for the config, it should
+        return the overridden value (also if not defined in the base one)
         """
-        Config.init(sample_conf, 'xos-config-schema.yaml', extend_conf)
+
+        Config.init(sample_conf, "xos-config-schema.yaml", extend_conf)
         res = Config.get("xos_dir")
         self.assertEqual(res, "/opt/xos")
         res = Config.get("database.password")
         self.assertEqual(res, "safe")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

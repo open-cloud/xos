@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,6 +38,7 @@
 # IN THE WORK.
 # ----------------------------------------------------------------------
 
+from __future__ import print_function
 import os
 import sys
 import traceback
@@ -62,22 +62,23 @@ class Logger:
 
         # Logstash config
         try:
-            logstash_host, logstash_port = 'cordloghost', '5617'
+            logstash_host, logstash_port = "cordloghost", "5617"
             logstash_handler = logstash.LogstashHandler(
-                logstash_host, int(logstash_port), version=1)
+                logstash_host, int(logstash_port), version=1
+            )
             # always log at DEBUG level to logstash
             logstash_handler.setLevel(logging.DEBUG)
             raise Exception("Disabled")
-        except:
+        except BaseException:
             # if connection fails (eg: logstash is not there) just move on
             logstash_handler = None
 
         # default is to locate loggername from the logfile if avail.
         if not logfile:
-            logfile = '/var/log/xos_legacy.log'
+            logfile = "/var/log/xos_legacy.log"
 
         # allow config-file override of console/logfile level
-        level_str = 'info'
+        level_str = "info"
         if level_str:
             level_str = level_str.lower()
 
@@ -90,7 +91,7 @@ class Logger:
         elif level_str == "error":
             level = logging.ERROR
 
-        if (logfile == "console"):
+        if logfile == "console":
             loggername = "console"
             handler = logging.StreamHandler()
 
@@ -99,27 +100,32 @@ class Logger:
                 loggername = os.path.basename(logfile)
             try:
                 handler = logging.handlers.RotatingFileHandler(
-                    logfile, maxBytes=1000000, backupCount=5)
+                    logfile, maxBytes=1000000, backupCount=5
+                )
             except IOError:
                 # This is usually a permissions error becaue the file is
                 # owned by root, but httpd is trying to access it.
-                tmplogfile = os.getenv(
-                    "TMPDIR", "/tmp") + os.path.sep + os.path.basename(logfile)
+                tmplogfile = (
+                    os.getenv("TMPDIR", "/tmp")
+                    + os.path.sep
+                    + os.path.basename(logfile)
+                )
                 # In strange uses, 2 users on same machine might use same code,
                 # meaning they would clobber each others files
                 # We could (a) rename the tmplogfile, or (b)
                 # just log to the console in that case.
                 # Here we default to the console.
-                if os.path.exists(tmplogfile) and not os.access(
-                        tmplogfile, os.W_OK):
+                if os.path.exists(tmplogfile) and not os.access(tmplogfile, os.W_OK):
                     loggername = loggername + "-console"
                     handler = logging.StreamHandler()
                 else:
                     handler = logging.handlers.RotatingFileHandler(
-                        tmplogfile, maxBytes=1000000, backupCount=5)
+                        tmplogfile, maxBytes=1000000, backupCount=5
+                    )
 
-        handler.setFormatter(logging.Formatter(
-            "%(asctime)s - %(levelname)s - %(message)s"))
+        handler.setFormatter(
+            logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+        )
         self.logger = logging.getLogger(loggername)
         self.logger.setLevel(level)
 
@@ -127,7 +133,7 @@ class Logger:
         if not len(self.logger.handlers):
             self.logger.addHandler(handler)
 
-            if (logstash_handler):
+            if logstash_handler:
                 self.logger.addHandler(logstash_handler)
 
         self.loggername = loggername
@@ -153,6 +159,7 @@ class Logger:
             self.logger.setLevel(logging.INFO)
         elif verbose >= 2:
             self.logger.setLevel(logging.DEBUG)
+
     # in case some other code needs a boolean
 
     def getBoolVerboseFromOpt(self, verbose):
@@ -166,8 +173,8 @@ class Logger:
     def extract_context(self, cur):
         try:
             observer_name = Config.get("name")
-            cur['synchronizer_name'] = observer_name
-        except:
+            cur["synchronizer_name"] = observer_name
+        except BaseException:
             pass
 
         self.sanitize_extra_args(cur)
@@ -175,12 +182,12 @@ class Logger:
 
     def sanitize_extra_args(self, extra):
         illegal_keys = logging.LogRecord(
-            None, None, None, None, None, None, None, None).__dict__.keys()
+            None, None, None, None, None, None, None, None
+        ).__dict__.keys()
         for k in illegal_keys:
             try:
                 del extra[k]
-                self.logger.warn(
-                    "*** WARNING: Dropped field %s from extra args ***")
+                self.logger.warn("*** WARNING: Dropped field %s from extra args ***")
             except KeyError:
                 pass
 
@@ -213,21 +220,17 @@ class Logger:
     def log_exc(self, message, extra={}):
         extra = self.extract_context(extra)
         self.error(
-            "%s BEG TRACEBACK" %
-            message +
-            "\n" +
-            traceback.format_exc().strip("\n"),
-            extra=extra)
+            "%s BEG TRACEBACK" % message + "\n" + traceback.format_exc().strip("\n"),
+            extra=extra,
+        )
         self.error("%s END TRACEBACK" % message, extra=extra)
 
     def log_exc_critical(self, message, extra={}):
         extra = self.extract_context(extra)
         self.critical(
-            "%s BEG TRACEBACK" %
-            message +
-            "\n" +
-            traceback.format_exc().strip("\n"),
-            extra=extra)
+            "%s BEG TRACEBACK" % message + "\n" + traceback.format_exc().strip("\n"),
+            extra=extra,
+        )
         self.critical("%s END TRACEBACK" % message, extra=extra)
 
     # for investigation purposes, can be placed anywhere
@@ -244,16 +247,15 @@ class Logger:
         self.logger.addHandler(handler)
 
 
-info_logger = Logger(loggername='info', level=logging.INFO)
-debug_logger = Logger(loggername='debug', level=logging.DEBUG)
-warn_logger = Logger(loggername='warning', level=logging.WARNING)
-error_logger = Logger(loggername='error', level=logging.ERROR)
-critical_logger = Logger(loggername='critical', level=logging.CRITICAL)
+info_logger = Logger(loggername="info", level=logging.INFO)
+debug_logger = Logger(loggername="debug", level=logging.DEBUG)
+warn_logger = Logger(loggername="warning", level=logging.WARNING)
+error_logger = Logger(loggername="error", level=logging.ERROR)
+critical_logger = Logger(loggername="critical", level=logging.CRITICAL)
 logger = info_logger
 observer_logger = Logger(
-    logfile='/var/log/observer.log',
-    loggername='observer',
-    level=logging.DEBUG)
+    logfile="/var/log/observer.log", loggername="observer", level=logging.DEBUG
+)
 ########################################
 
 
@@ -265,32 +267,41 @@ def profile(logger):
     def foo(...):
         ...
     """
+
     def logger_profile(callable):
         def wrapper(*args, **kwds):
             start = time.time()
             result = callable(*args, **kwds)
             end = time.time()
             args = map(str, args)
-            args += ["%s = %s" % (name, str(value))
-                     for (name, value) in kwds.iteritems()]
+            args += [
+                "%s = %s" % (name, str(value)) for (name, value) in kwds.iteritems()
+            ]
             # should probably use debug, but then debug is not always enabled
-            logger.info("PROFILED %s (%s): %.02f s" %
-                        (callable.__name__, ", ".join(args), end - start))
+            logger.info(
+                "PROFILED %s (%s): %.02f s"
+                % (callable.__name__, ", ".join(args), end - start)
+            )
             return result
+
         return wrapper
+
     return logger_profile
 
 
-if __name__ == '__main__':
-    print 'testing logging into logger.log'
-    logger1 = Logger('logger.log', loggername='std(info)')
-    logger2 = Logger('logger.log', loggername='error', level=logging.ERROR)
-    logger3 = Logger('logger.log', loggername='debug', level=logging.DEBUG)
+if __name__ == "__main__":
+    print("testing logging into logger.log")
+    logger1 = Logger("logger.log", loggername="std(info)")
+    logger2 = Logger("logger.log", loggername="error", level=logging.ERROR)
+    logger3 = Logger("logger.log", loggername="debug", level=logging.DEBUG)
 
-    for (logger, msg) in [(logger1, "std(info)"),
-                          (logger2, "error"), (logger3, "debug")]:
+    for (logger, msg) in [
+        (logger1, "std(info)"),
+        (logger2, "error"),
+        (logger3, "debug"),
+    ]:
 
-        print "====================", msg, logger.logger.handlers
+        print("====================", msg, logger.logger.handlers)
 
         logger.enable_console()
         logger.critical("logger.critical")
@@ -305,7 +316,7 @@ if __name__ == '__main__':
         def sleep(seconds=1):
             time.sleep(seconds)
 
-        logger.info('console.info')
+        logger.info("console.info")
         sleep(0.5)
         logger.setLevel(logging.DEBUG)
         sleep(0.25)

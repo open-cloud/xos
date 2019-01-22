@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,13 +19,16 @@ import base64
 from xosconfig import Config
 from synchronizers.new_base.modelaccessor import *
 from synchronizers.new_base.ansible_helper import run_template
-#from tests.steps.mock_modelaccessor import model_accessor
+
+# from tests.steps.mock_modelaccessor import model_accessor
 
 import json
 import time
 import pdb
 
 from xosconfig import Config
+from functools import reduce
+
 
 def f7(seq):
     seen = set()
@@ -35,13 +37,13 @@ def f7(seq):
 
 
 def elim_dups(backend_str):
-    strs = backend_str.split(' // ')
+    strs = backend_str.split(" // ")
     strs2 = f7(strs)
-    return ' // '.join(strs2)
+    return " // ".join(strs2)
 
 
 def deepgetattr(obj, attr):
-    return reduce(getattr, attr.split('.'), obj)
+    return reduce(getattr, attr.split("."), obj)
 
 
 def obj_class_name(obj):
@@ -78,7 +80,7 @@ class SyncStep(object):
     def get_prop(self, prop):
         # NOTE config_dir is never define, is this used?
         sync_config_dir = Config.get("config_dir")
-        prop_config_path = '/'.join(sync_config_dir, self.name, prop)
+        prop_config_path = "/".join(sync_config_dir, self.name, prop)
         return open(prop_config_path).read().rstrip()
 
     def __init__(self, **args):
@@ -88,16 +90,16 @@ class SyncStep(object):
                 provides -- XOS models sync'd by this step
         """
         dependencies = []
-        self.driver = args.get('driver')
-        self.error_map = args.get('error_map')
+        self.driver = args.get("driver")
+        self.error_map = args.get("error_map")
 
         try:
-            self.soft_deadline = int(self.get_prop('soft_deadline_seconds'))
-        except:
+            self.soft_deadline = int(self.get_prop("soft_deadline_seconds"))
+        except BaseException:
             self.soft_deadline = 5  # 5 seconds
 
-        if 'log' in args:
-            self.log = args.get('log')
+        if "log" in args:
+            self.log = args.get("log")
 
         return
 
@@ -116,10 +118,10 @@ class SyncStep(object):
             return
 
         main_objs = self.observes
-        if (type(main_objs) is list):
+        if isinstance(main_objs, list):
             main_objs = main_objs[0]
 
-        path = ''.join(main_objs.__name__).lower()
+        path = "".join(main_objs.__name__).lower()
         res = run_template(self.playbook, tenant_fields, path=path, object=o)
 
         if hasattr(self, "map_sync_outputs"):
@@ -137,12 +139,12 @@ class SyncStep(object):
         tenant_fields = self.map_delete_inputs(o)
 
         main_objs = self.observes
-        if (type(main_objs) is list):
+        if isinstance(main_objs, list):
             main_objs = main_objs[0]
 
-        path = ''.join(main_objs.__name__).lower()
+        path = "".join(main_objs.__name__).lower()
 
-        tenant_fields['delete'] = True
+        tenant_fields["delete"] = True
         res = run_template(self.playbook, tenant_fields, path=path)
 
         if hasattr(self, "map_delete_outputs"):

@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +19,7 @@ from xosutil import autodiscover_version
 
 test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 
+
 class XOSUtilTest(unittest.TestCase):
     """
     Testing the XOS Util Module
@@ -40,9 +40,15 @@ class XOSUtilTest(unittest.TestCase):
         test_save_fn = os.path.join(test_path, "test_version.py")
         if os.path.exists(test_save_fn):
             os.remove(test_save_fn)
-        self.assertEqual(version, autodiscover_version.autodiscover_version_of_caller(save_to="test_version.py"))
+        self.assertEqual(
+            version,
+            autodiscover_version.autodiscover_version_of_caller(
+                save_to="test_version.py"
+            ),
+        )
         self.assertTrue(os.path.exists(test_save_fn))
         self.assertTrue(version in open(test_save_fn).read())
+
 
 if __name__ == "__main__":
     unittest.main()

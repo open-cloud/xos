@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +15,11 @@
 
 from synchronizers.new_base.syncstep import *
 
+
 class SyncObject(SyncStep):
-    provides=[] # Caller fills this in
-    requested_interval=0
-    observes=[] # Caller fills this in
+    provides = []  # Caller fills this in
+    requested_interval = 0
+    observes = []  # Caller fills this in
 
     def sync_record(self, r):
-        raise DeferredException('Waiting for Service dependency: %r'%r)
+        raise DeferredException("Waiting for Service dependency: %r" % r)

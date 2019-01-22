@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
+import os
+import sys
+import threading
+import time
+import imp
+from xosconfig import Config
+from multistructlog import create_logger
 
 """
 Django-like ORM layer for gRPC
@@ -35,23 +42,19 @@ c=grpc_client.SecureClient("xos-core.cord.lab", username="padmin@vicci.org", pas
 u=c.xos_orm.User.objects.get(id=1)
 """
 
-import os
-import sys
-import threading
-import time
-import imp
-from xosconfig import Config
-from multistructlog import create_logger
 
-log = create_logger(Config().get('logging'))
+log = create_logger(Config().get("logging"))
 
 convenience_wrappers = {}
+
 
 class ORMGenericContentNotFoundException(Exception):
     pass
 
+
 class ORMGenericObjectNotFoundException(Exception):
     pass
+
 
 class ORMWrapper(object):
     """ Wraps a protobuf object to provide ORM features """
@@ -65,14 +68,14 @@ class ORMWrapper(object):
         super(ORMWrapper, self).__setattr__("dependent", None)
         super(ORMWrapper, self).__setattr__("is_new", is_new)
         super(ORMWrapper, self).__setattr__("post_save_fixups", [])
-        fkmap=self.gen_fkmap()
+        fkmap = self.gen_fkmap()
         super(ORMWrapper, self).__setattr__("_fkmap", fkmap)
-        reverse_fkmap=self.gen_reverse_fkmap()
+        reverse_fkmap = self.gen_reverse_fkmap()
         super(ORMWrapper, self).__setattr__("_reverse_fkmap", reverse_fkmap)
         super(ORMWrapper, self).__setattr__("_initial", self._dict)
 
-    def fields_differ(self,f1,f2):
-        return (f1 != f2)
+    def fields_differ(self, f1, f2):
+        return f1 != f2
 
     @property
     def _dict(self):
@@ -81,7 +84,7 @@ class ORMWrapper(object):
             This differs for the xos-core implementation of XOSBase. For new object, XOSBase will include field names
             that are set to default values. ORM ignores fields that are set to default values.
         """
-        d={}
+        d = {}
         for (fieldDesc, val) in self._wrapped_class.ListFields():
             name = fieldDesc.name
             d[name] = val
@@ -92,12 +95,12 @@ class ORMWrapper(object):
         d1 = self._initial
         d2 = self._dict
         all_field_names = self._wrapped_class.DESCRIPTOR.fields_by_name.keys()
-        diffs=[]
+        diffs = []
         for k in all_field_names:
-            if (d1.get(k,None) != d2.get(k,None)):
-                diffs.append( (k, (d1.get(k,None), d2.get(k,None))) )
+            if d1.get(k, None) != d2.get(k, None):
+                diffs.append((k, (d1.get(k, None), d2.get(k, None))))
 
-        #diffs = [(k, (v, d2[k])) for k, v in d1.items() if self.fields_differ(v,d2[k])]
+        # diffs = [(k, (v, d2[k])) for k, v in d1.items() if self.fields_differ(v,d2[k])]
         return dict(diffs)
 
     @property
@@ -129,7 +132,10 @@ class ORMWrapper(object):
             update_fields = self.changed_fields
             if always_update_timestamp and "updated" not in update_fields:
                 update_fields.append("updated")
-            self.save(update_fields=sorted(update_fields), always_update_timestamp=always_update_timestamp)
+            self.save(
+                update_fields=sorted(update_fields),
+                always_update_timestamp=always_update_timestamp,
+            )
 
     def create_attr(self, name, value=None):
         """ setattr(self, ...) will fail for attributes that don't exist in the
@@ -151,23 +157,37 @@ class ORMWrapper(object):
         all_field_names = self._wrapped_class.DESCRIPTOR.fields_by_name.keys()
 
         for (name, field) in self._wrapped_class.DESCRIPTOR.fields_by_name.items():
-           if name.endswith("_id"):
-               foreignKey = field.GetOptions().Extensions._FindExtensionByName("xos.foreignKey")
-               fk = field.GetOptions().Extensions[foreignKey]
-               if fk and fk.modelName:
-                   fkdict = {"src_fieldName": name, "modelName": fk.modelName, "kind": "fk"}
-                   if fk.reverseFieldName:
-                       fkdict["reverse_fieldName"] = fk.reverseFieldName
-                   fkmap[name[:-3]] = fkdict
-               else:
-                   # If there's a corresponding _type_id field, then see if this
-                   # is a generic foreign key.
-                   type_name = name[:-3] + "_type_id"
-                   if type_name in all_field_names:
-                       fkmap[name[:-3]] = {"src_fieldName": name, "ct_fieldName": type_name, "kind": "generic_fk"}
+            if name.endswith("_id"):
+                foreignKey = field.GetOptions().Extensions._FindExtensionByName(
+                    "xos.foreignKey"
+                )
+                fk = field.GetOptions().Extensions[foreignKey]
+                if fk and fk.modelName:
+                    fkdict = {
+                        "src_fieldName": name,
+                        "modelName": fk.modelName,
+                        "kind": "fk",
+                    }
+                    if fk.reverseFieldName:
+                        fkdict["reverse_fieldName"] = fk.reverseFieldName
+                    fkmap[name[:-3]] = fkdict
+                else:
+                    # If there's a corresponding _type_id field, then see if this
+                    # is a generic foreign key.
+                    type_name = name[:-3] + "_type_id"
+                    if type_name in all_field_names:
+                        fkmap[name[:-3]] = {
+                            "src_fieldName": name,
+                            "ct_fieldName": type_name,
+                            "kind": "generic_fk",
+                        }
 
         for gfk in self.get_generic_foreignkeys():
-            fkmap[gfk["name"]] = {"src_fieldName": gfk["id"], "ct_fieldName": gfk["content_type"], "kind": "generic_fk"}
+            fkmap[gfk["name"]] = {
+                "src_fieldName": gfk["id"],
+                "ct_fieldName": gfk["content_type"],
+                "kind": "generic_fk",
+            }
 
         return fkmap
 
@@ -175,17 +195,28 @@ class ORMWrapper(object):
         reverse_fkmap = {}
 
         for (name, field) in self._wrapped_class.DESCRIPTOR.fields_by_name.items():
-           if name.endswith("_ids"):
-               reverseForeignKey = field.GetOptions().Extensions._FindExtensionByName("xos.reverseForeignKey")
-               fk = field.GetOptions().Extensions[reverseForeignKey]
-               if fk and fk.modelName:
-                   reverse_fkmap[name[:-4]] = {"src_fieldName": name, "modelName": fk.modelName, "writeable": False}
-               else:
-                   manyToManyForeignKey = field.GetOptions().Extensions._FindExtensionByName("xos.manyToManyForeignKey")
-                   fk = field.GetOptions().Extensions[manyToManyForeignKey]
-                   if fk and fk.modelName:
-                       reverse_fkmap[name[:-4]] = {"src_fieldName": name, "modelName": fk.modelName, "writeable": True}
-
+            if name.endswith("_ids"):
+                reverseForeignKey = field.GetOptions().Extensions._FindExtensionByName(
+                    "xos.reverseForeignKey"
+                )
+                fk = field.GetOptions().Extensions[reverseForeignKey]
+                if fk and fk.modelName:
+                    reverse_fkmap[name[:-4]] = {
+                        "src_fieldName": name,
+                        "modelName": fk.modelName,
+                        "writeable": False,
+                    }
+                else:
+                    manyToManyForeignKey = field.GetOptions().Extensions._FindExtensionByName(
+                        "xos.manyToManyForeignKey"
+                    )
+                    fk = field.GetOptions().Extensions[manyToManyForeignKey]
+                    if fk and fk.modelName:
+                        reverse_fkmap[name[:-4]] = {
+                            "src_fieldName": name,
+                            "modelName": fk.modelName,
+                            "writeable": True,
+                        }
 
         return reverse_fkmap
 
@@ -200,12 +231,14 @@ class ORMWrapper(object):
         if not fk_id:
             return None
 
-        if fk_kind=="fk":
-            id=self.stub.make_ID(id=fk_id)
+        if fk_kind == "fk":
+            id = self.stub.make_ID(id=fk_id)
             dest_model = self.stub.invoke("Get%s" % fk_entry["modelName"], id)
 
-        elif fk_kind=="generic_fk":
-            dest_model = self.stub.genericForeignKeyResolve(getattr(self, fk_entry["ct_fieldName"]), fk_id)._wrapped_class
+        elif fk_kind == "generic_fk":
+            dest_model = self.stub.genericForeignKeyResolve(
+                getattr(self, fk_entry["ct_fieldName"]), fk_id
+            )._wrapped_class
 
         else:
             raise Exception("unknown fk_kind")
@@ -218,7 +251,12 @@ class ORMWrapper(object):
     def reverse_fk_resolve(self, name):
         if name not in self.reverse_cache:
             fk_entry = self._reverse_fkmap[name]
-            self.reverse_cache[name] = ORMLocalObjectManager(self.stub, fk_entry["modelName"], getattr(self, fk_entry["src_fieldName"]), fk_entry["writeable"])
+            self.reverse_cache[name] = ORMLocalObjectManager(
+                self.stub,
+                fk_entry["modelName"],
+                getattr(self, fk_entry["src_fieldName"]),
+                fk_entry["writeable"],
+            )
 
         return self.reverse_cache[name]
 
@@ -231,29 +269,41 @@ class ORMWrapper(object):
             id = 0
         setattr(self._wrapped_class, fk_entry["src_fieldName"], id)
 
-        if fk_kind=="generic_fk":
-            setattr(self._wrapped_class, fk_entry["ct_fieldName"], model.self_content_type_id)
+        if fk_kind == "generic_fk":
+            setattr(
+                self._wrapped_class,
+                fk_entry["ct_fieldName"],
+                model.self_content_type_id,
+            )
 
         if name in self.cache:
             old_model = self.cache[name]
             if fk_entry.get("reverse_fieldName"):
                 # Note this fk change so that we can update the destination model after we save.
-                self.post_save_fixups.append({"src_fieldName": fk_entry["src_fieldName"],
-                                              "dest_id": id,
-                                              "dest_model": old_model,
-                                              "remove": True,
-                                              "reverse_fieldName": fk_entry.get("reverse_fieldName")})
+                self.post_save_fixups.append(
+                    {
+                        "src_fieldName": fk_entry["src_fieldName"],
+                        "dest_id": id,
+                        "dest_model": old_model,
+                        "remove": True,
+                        "reverse_fieldName": fk_entry.get("reverse_fieldName"),
+                    }
+                )
             del self.cache[name]
 
         if model:
             self.cache[name] = model
             if fk_entry.get("reverse_fieldName"):
                 # Note this fk change so that we can update the destination model after we save.
-                self.post_save_fixups.append({"src_fieldName": fk_entry["src_fieldName"],
-                                              "dest_id": id,
-                                              "dest_model": model,
-                                              "remove": False,
-                                              "reverse_fieldName": fk_entry.get("reverse_fieldName")})
+                self.post_save_fixups.append(
+                    {
+                        "src_fieldName": fk_entry["src_fieldName"],
+                        "dest_id": id,
+                        "dest_model": model,
+                        "remove": False,
+                        "reverse_fieldName": fk_entry.get("reverse_fieldName"),
+                    }
+                )
         elif name in self.cache:
             del self.cache[name]
 
@@ -284,7 +334,7 @@ class ORMWrapper(object):
         #       self.__dict__
 
         # pk is a synonym for id
-        if (name == "pk"):
+        if name == "pk":
             name = "id"
 
         if name in self._fkmap.keys():
@@ -309,7 +359,7 @@ class ORMWrapper(object):
         if name in self._fkmap.keys():
             self.fk_set(name, value)
         elif name in self.__dict__:
-            super(ORMWrapper,self).__setattr__(name, value)
+            super(ORMWrapper, self).__setattr__(name, value)
         elif value is None:
             # When handling requests, XOS interprets gRPC HasField(<fieldname>)==False to indicate that the caller
             # has not set the field and wants it to continue to use its existing (or default) value. That leaves us
@@ -340,7 +390,7 @@ class ORMWrapper(object):
         return self._wrapped_class.__repr__()
 
     def dump(self):
-        print self.dumpstr()
+        print(self.dumpstr())
 
     def invalidate_cache(self, name=None):
         if name:
@@ -352,22 +402,34 @@ class ORMWrapper(object):
             self.cache.clear()
             self.reverse_cache.clear()
 
-    def save(self, update_fields=None, always_update_timestamp=False, is_sync_save=False, is_policy_save=False):
+    def save(
+        self,
+        update_fields=None,
+        always_update_timestamp=False,
+        is_sync_save=False,
+        is_policy_save=False,
+    ):
         if self.is_new:
-           new_class = self.stub.invoke("Create%s" % self._wrapped_class.__class__.__name__, self._wrapped_class)
-           self._wrapped_class = new_class
-           self.is_new = False
+            new_class = self.stub.invoke(
+                "Create%s" % self._wrapped_class.__class__.__name__, self._wrapped_class
+            )
+            self._wrapped_class = new_class
+            self.is_new = False
         else:
-           metadata = []
-           if update_fields:
-               metadata.append( ("update_fields", ",".join(update_fields)) )
-           if always_update_timestamp:
-               metadata.append( ("always_update_timestamp", "1") )
-           if is_policy_save:
-               metadata.append( ("is_policy_save", "1") )
-           if is_sync_save:
-               metadata.append( ("is_sync_save", "1") )
-           self.stub.invoke("Update%s" % self._wrapped_class.__class__.__name__, self._wrapped_class, metadata=metadata)
+            metadata = []
+            if update_fields:
+                metadata.append(("update_fields", ",".join(update_fields)))
+            if always_update_timestamp:
+                metadata.append(("always_update_timestamp", "1"))
+            if is_policy_save:
+                metadata.append(("is_policy_save", "1"))
+            if is_sync_save:
+                metadata.append(("is_sync_save", "1"))
+            self.stub.invoke(
+                "Update%s" % self._wrapped_class.__class__.__name__,
+                self._wrapped_class,
+                metadata=metadata,
+            )
         self.do_post_save_fixups()
 
         # Now that object has saved, reset our initial state for diff calculation
@@ -379,8 +441,8 @@ class ORMWrapper(object):
 
     def tologdict(self):
         try:
-            d = {'model_name':self._wrapped_class.__class__.__name__, 'pk': self.pk}
-        except:
+            d = {"model_name": self._wrapped_class.__class__.__name__, "pk": self.pk}
+        except BaseException:
             d = {}
 
         return d
@@ -402,16 +464,19 @@ class ORMWrapper(object):
     def ansible_tag(self):
         return "%s_%s" % (self._wrapped_class.__class__.__name__, self.id)
 
+
 class ORMQuerySet(list):
     """ Makes lists look like django querysets """
+
     def first(self):
-        if len(self)>0:
+        if len(self) > 0:
             return self[0]
         else:
             return None
 
     def exists(self):
-        return len(self)>0
+        return len(self) > 0
+
 
 class ORMLocalObjectManager(object):
     """ Manages a local list of objects """
@@ -429,7 +494,9 @@ class ORMLocalObjectManager(object):
 
         models = []
         for id in self._idList:
-            models.append(self._stub.invoke("Get%s" % self._modelName, self._stub.make_ID(id=id)))
+            models.append(
+                self._stub.invoke("Get%s" % self._modelName, self._stub.make_ID(id=id))
+            )
 
         self._cache = models
 
@@ -437,17 +504,22 @@ class ORMLocalObjectManager(object):
 
     def all(self):
         models = self.resolve_queryset()
-        return [make_ORMWrapper(x,self._stub) for x in models]
+        return [make_ORMWrapper(x, self._stub) for x in models]
 
     def exists(self):
-        return len(self._idList)>0
+        return len(self._idList) > 0
 
     def count(self):
         return len(self._idList)
 
     def first(self):
         if self._idList:
-            model = make_ORMWrapper(self._stub.invoke("Get%s" % self._modelName, self._stub.make_ID(id=self._idList[0])), self._stub)
+            model = make_ORMWrapper(
+                self._stub.invoke(
+                    "Get%s" % self._modelName, self._stub.make_ID(id=self._idList[0])
+                ),
+                self._stub,
+            )
             return model
         else:
             return None
@@ -478,6 +550,7 @@ class ORMLocalObjectManager(object):
 
         self._idList.remove(id)
 
+
 class ORMObjectManager(object):
     """ Manages a remote list of objects """
 
@@ -499,14 +572,16 @@ class ORMObjectManager(object):
         return make_ORMWrapper(obj, self._stub)
 
     def wrap_list(self, obj):
-        result=[]
+        result = []
         for item in obj.items:
             result.append(make_ORMWrapper(item, self._stub))
         return ORMQuerySet(result)
 
     def all(self):
-        if (self._kind == self.DEFAULT):
-            return self.wrap_list(self._stub.invoke("List%s" % self._modelName, self._stub.make_empty()))
+        if self._kind == self.DEFAULT:
+            return self.wrap_list(
+                self._stub.invoke("List%s" % self._modelName, self._stub.make_empty())
+            )
         else:
             return self.filter()
 
@@ -557,29 +632,41 @@ class ORMObjectManager(object):
     def get(self, **kwargs):
         if kwargs.keys() == ["id"]:
             # the fast and easy case, look it up by id
-            return self.wrap_single(self._stub.invoke("Get%s" % self._modelName, self._stub.make_ID(id=kwargs["id"])))
+            return self.wrap_single(
+                self._stub.invoke(
+                    "Get%s" % self._modelName, self._stub.make_ID(id=kwargs["id"])
+                )
+            )
         else:
             # the slightly more difficult case, filter and return the first item
             objs = self.filter(**kwargs)
             return objs[0]
 
     def new(self, **kwargs):
-        if (self._kind != ORMObjectManager.DEFAULT):
-            raise Exception("Creating objects is only supported by the DEFAULT object manager")
+        if self._kind != ORMObjectManager.DEFAULT:
+            raise Exception(
+                "Creating objects is only supported by the DEFAULT object manager"
+            )
 
         cls = self._stub.all_grpc_classes[self._modelName]
         o = make_ORMWrapper(cls(), self._stub, is_new=True)
-        for (k,v) in  kwargs.items():
+        for (k, v) in kwargs.items():
             setattr(o, k, v)
         o.recompute_initial()
         return o
+
 
 class ORMModelClass(object):
     def __init__(self, stub, model_name, package_name):
         self.model_name = model_name
         self._stub = stub
         self.objects = ORMObjectManager(stub, model_name, package_name)
-        self.deleted_objects = ORMObjectManager(stub, model_name, package_name, ORMObjectManager.SYNCHRONIZER_DELETED_OBJECTS)
+        self.deleted_objects = ORMObjectManager(
+            stub,
+            model_name,
+            package_name,
+            ORMObjectManager.SYNCHRONIZER_DELETED_OBJECTS,
+        )
 
     @property
     def __name__(self):
@@ -592,9 +679,19 @@ class ORMModelClass(object):
     def __call__(self, *args, **kwargs):
         return self.objects.new(*args, **kwargs)
 
+
 class ORMStub(object):
-    def __init__(self, stub, protos, package_name, invoker=None, caller_kind="grpcapi", empty = None,
-                 enable_backoff=True, restart_on_disconnect=False):
+    def __init__(
+        self,
+        stub,
+        protos,
+        package_name,
+        invoker=None,
+        caller_kind="grpcapi",
+        empty=None,
+        enable_backoff=True,
+        restart_on_disconnect=False,
+    ):
         self.grpc_stub = stub
         self.protos = protos
         self.common_protos = protos.common__pb2
@@ -612,56 +709,62 @@ class ORMStub(object):
         self._empty = empty
 
         for name in dir(stub):
-           if name.startswith("Get"):
-               model_name = name[3:]
-               setattr(self,model_name, ORMModelClass(self, model_name, package_name))
+            if name.startswith("Get"):
+                model_name = name[3:]
+                setattr(self, model_name, ORMModelClass(self, model_name, package_name))
 
-               self.all_model_names.append(model_name)
+                self.all_model_names.append(model_name)
 
-               grpc_class = getattr(self.protos, model_name)
-               self.all_grpc_classes[model_name] = grpc_class
+                grpc_class = getattr(self.protos, model_name)
+                self.all_grpc_classes[model_name] = grpc_class
 
-               ct = grpc_class.DESCRIPTOR.GetOptions().Extensions._FindExtensionByName("xos.contentTypeId")
-               if ct:
-                   ct = grpc_class.DESCRIPTOR.GetOptions().Extensions[ct]
-                   if ct:
-                       self.content_type_map[ct] = model_name
-                       self.reverse_content_type_map[model_name] = ct
+                ct = grpc_class.DESCRIPTOR.GetOptions().Extensions._FindExtensionByName(
+                    "xos.contentTypeId"
+                )
+                if ct:
+                    ct = grpc_class.DESCRIPTOR.GetOptions().Extensions[ct]
+                    if ct:
+                        self.content_type_map[ct] = model_name
+                        self.reverse_content_type_map[model_name] = ct
 
     def genericForeignKeyResolve(self, content_type_id, id):
         if content_type_id.endswith("_decl"):
             content_type_id = content_type_id[:-5]
 
         if content_type_id not in self.content_type_map:
-            raise ORMGenericContentNotFoundException("Content_type %s not found in self.content_type_map" % content_type_id)
+            raise ORMGenericContentNotFoundException(
+                "Content_type %s not found in self.content_type_map" % content_type_id
+            )
 
         model_name = self.content_type_map[content_type_id]
 
         model = getattr(self, model_name)
         objs = model.objects.filter(id=id)
         if not objs:
-            raise ORMGenericObjectNotFoundException("Object %s of model %s was not found" % (id,model_name))
+            raise ORMGenericObjectNotFoundException(
+                "Object %s of model %s was not found" % (id, model_name)
+            )
 
         return model.objects.get(id=id)
 
     def add_default_metadata(self, metadata):
-        default_metadata = [ ("caller_kind", self.caller_kind) ]
+        default_metadata = [("caller_kind", self.caller_kind)]
 
         # introspect to see if we're running from a synchronizer thread
         if getattr(threading.current_thread(), "is_sync_thread", False):
-            default_metadata.append( ("is_sync_save", "1") )
+            default_metadata.append(("is_sync_save", "1"))
 
         # introspect to see if we're running from a model_policy thread
         if getattr(threading.current_thread(), "is_policy_thread", False):
-            default_metadata.append( ("is_policy_save", "1") )
+            default_metadata.append(("is_policy_save", "1"))
 
         # build up a list of metadata keys we already have
-        md_keys=[x[0] for x in metadata]
+        md_keys = [x[0] for x in metadata]
 
         # add any defaults that we don't already have
         for md in default_metadata:
             if md[0] not in md_keys:
-                metadata.append( (md[0], md[1]) )
+                metadata.append((md[0], md[1]))
 
     def invoke(self, name, request, metadata=[]):
         self.add_default_metadata(metadata)
@@ -669,17 +772,20 @@ class ORMStub(object):
         if self.invoker:
             # Hook in place to call Chameleon's invoke method, as soon as we
             # have rewritten the synchronizer to use reactor.
-            return self.invoker.invoke(self.grpc_stub.__class__, name, request, metadata={}).result[0]
+            return self.invoker.invoke(
+                self.grpc_stub.__class__, name, request, metadata={}
+            ).result[0]
         elif self.enable_backoff:
             # Our own retry mechanism. This works fine if there is a temporary
             # failure in connectivity, but does not re-download gRPC schema.
             import grpc
+
             backoff = [0.5, 1, 2, 4, 8]
             while True:
                 try:
                     method = getattr(self.grpc_stub, name)
                     return method(request, metadata=metadata)
-                except grpc._channel._Rendezvous, e:
+                except grpc._channel._Rendezvous as e:
                     code = e.code()
                     if code == grpc.StatusCode.UNAVAILABLE:
                         if self.restart_on_disconnect:
@@ -687,18 +793,17 @@ class ORMStub(object):
                             # the core is still serving up the same models it was when we established connectivity,
                             # so restart the synchronizer.
                             # TODO: Hash check on the core models to tell if something changed would be better.
-                            os.execv(sys.executable, ['python'] + sys.argv)
+                            os.execv(sys.executable, ["python"] + sys.argv)
                         if not backoff:
                             raise Exception("No more retries on %s" % name)
                         time.sleep(backoff.pop(0))
                     else:
                         raise
-                except:
+                except BaseException:
                     raise
         else:
             method = getattr(self.grpc_stub, name)
             return method(request, metadata=metadata)
-
 
     def make_ID(self, id):
         return getattr(self.common_protos, "ID")(id=id)
@@ -712,10 +817,12 @@ class ORMStub(object):
     def listObjects(self):
         return self.all_model_names
 
+
 def register_convenience_wrapper(class_name, wrapper):
     global convenience_wrappers
 
     convenience_wrappers[class_name] = wrapper
+
 
 def make_ORMWrapper(wrapped_class, *args, **kwargs):
     cls = None
@@ -723,7 +830,7 @@ def make_ORMWrapper(wrapped_class, *args, **kwargs):
     if (not cls) and wrapped_class.__class__.__name__ in convenience_wrappers:
         cls = convenience_wrappers[wrapped_class.__class__.__name__]
 
-    if (not cls):
+    if not cls:
         # Search the list of class names for this model to see if we have any applicable wrappers. The list is always
         # sorted from most specific to least specific, so the first one we find will automatically be the most relevant
         # one. If we don't find any, then default to ORMWrapper
@@ -737,10 +844,11 @@ def make_ORMWrapper(wrapped_class, *args, **kwargs):
             if name in convenience_wrappers:
                 cls = convenience_wrappers[name]
 
-    if (not cls):
+    if not cls:
         cls = ORMWrapper
 
     return cls(wrapped_class, *args, **kwargs)
+
 
 def import_convenience_methods():
 
@@ -749,12 +857,13 @@ def import_convenience_methods():
     cwd = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
     api_convenience_dir = os.path.join(cwd, "convenience")
     for file in os.listdir(api_convenience_dir):
-        if file.endswith(".py") and not "test" in file:
+        if file.endswith(".py") and "test" not in file:
             pathname = os.path.join(api_convenience_dir, file)
             try:
                 log.debug("Loading: %s" % file)
                 imp.load_source(file[:-3], pathname)
-            except Exception, e:
-                log.exception("Cannot import api convenience method for: %s, %s" % (file[:-3], pathname))
-
-
+            except Exception:
+                log.exception(
+                    "Cannot import api convenience method for: %s, %s"
+                    % (file[:-3], pathname)
+                )

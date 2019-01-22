@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +17,7 @@ from modelaccessor import ModelAccessor
 import datetime
 import time
 
+
 class CoreApiModelAccessor(ModelAccessor):
     def __init__(self, orm):
         self.orm = orm
@@ -26,33 +26,41 @@ class CoreApiModelAccessor(ModelAccessor):
     def get_all_model_classes(self):
         all_model_classes = {}
         for k in self.orm.all_model_names:
-            all_model_classes[k] = getattr(self.orm,k)
+            all_model_classes[k] = getattr(self.orm, k)
         return all_model_classes
 
     def fetch_pending(self, main_objs, deletion=False):
-        if (type(main_objs) is not list):
-                main_objs=[main_objs]
+        if not isinstance(main_objs, list):
+            main_objs = [main_objs]
 
         objs = []
         for main_obj in main_objs:
-            if (not deletion):
-                lobjs = main_obj.objects.filter_special(main_obj.objects.SYNCHRONIZER_DIRTY_OBJECTS)
+            if not deletion:
+                lobjs = main_obj.objects.filter_special(
+                    main_obj.objects.SYNCHRONIZER_DIRTY_OBJECTS
+                )
             else:
-                lobjs = main_obj.objects.filter_special(main_obj.objects.SYNCHRONIZER_DELETED_OBJECTS)
+                lobjs = main_obj.objects.filter_special(
+                    main_obj.objects.SYNCHRONIZER_DELETED_OBJECTS
+                )
             objs.extend(lobjs)
 
         return objs
 
     def fetch_policies(self, main_objs, deletion=False):
-        if (type(main_objs) is not list):
-                main_objs=[main_objs]
+        if not isinstance(main_objs, list):
+            main_objs = [main_objs]
 
         objs = []
         for main_obj in main_objs:
-            if (not deletion):
-                lobjs = main_obj.objects.filter_special(main_obj.objects.SYNCHRONIZER_DIRTY_POLICIES)
+            if not deletion:
+                lobjs = main_obj.objects.filter_special(
+                    main_obj.objects.SYNCHRONIZER_DIRTY_POLICIES
+                )
             else:
-                lobjs = main_obj.objects.filter_special(main_obj.objects.SYNCHRONIZER_DELETED_POLICIES)
+                lobjs = main_obj.objects.filter_special(
+                    main_obj.objects.SYNCHRONIZER_DELETED_POLICIES
+                )
             objs.extend(lobjs)
 
         return objs
@@ -67,7 +75,9 @@ class CoreApiModelAccessor(ModelAccessor):
 
     def now(self):
         """ Return the current time for timestamping purposes """
-        return (datetime.datetime.utcnow()-datetime.datetime.fromtimestamp(0)).total_seconds()
+        return (
+            datetime.datetime.utcnow() - datetime.datetime.fromtimestamp(0)
+        ).total_seconds()
 
     def is_type(self, obj, name):
         return obj._wrapped_class.__class__.__name__ == name
@@ -80,6 +90,3 @@ class CoreApiModelAccessor(ModelAccessor):
 
     def create_obj(self, cls, **kwargs):
         return cls.objects.new(**kwargs)
-
-
-

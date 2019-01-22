@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +17,7 @@
 
 # NOTE is this used or replaced by `new_base/dependency_walker_new.py`?
 
+from __future__ import print_function
 import os
 import imp
 from xosconfig import Config
@@ -34,16 +34,16 @@ from xosconfig import Config
 from multistructlog import create_logger
 
 Config.init()
-log = create_logger(Config().get('logging'))
+log = create_logger(Config().get("logging"))
 
 missing_links = {}
 
 try:
-    dep_data = open(Config.get('dependency_graph')).read()
+    dep_data = open(Config.get("dependency_graph")).read()
 except BaseException:
     raise Exception(
-        '[XOS-Dependency-Walker] File %s not found' %
-        Config.get('dependency_graph'))
+        "[XOS-Dependency-Walker] File %s not found" % Config.get("dependency_graph")
+    )
 
 dependencies = json.loads(dep_data)
 
@@ -57,10 +57,10 @@ for k, lst in dependencies.items():
 
 
 def plural(name):
-    if (name.endswith('s')):
-        return name + 'es'
+    if name.endswith("s"):
+        return name + "es"
     else:
-        return name + 's'
+        return name + "s"
 
 
 def walk_deps(fn, object):
@@ -95,14 +95,13 @@ def __walk_deps(fn, object, deps):
             try:
                 peer = getattr(object, link)
             except AttributeError:
-                if model + '.' + link not in missing_links:
+                if model + "." + link not in missing_links:
                     log.exception(
-                        "Model missing link for dependency.",
-                        model=model,
-                        link=link)
-                    missing_links[model + '.' + link] = True
+                        "Model missing link for dependency.", model=model, link=link
+                    )
+                    missing_links[model + "." + link] = True
 
-        if (peer):
+        if peer:
             try:
                 peer_objects = peer.all()
             except AttributeError:
@@ -112,7 +111,7 @@ def __walk_deps(fn, object, deps):
 
             for o in peer_objects:
                 # if (isinstance(o,XOSBase)):
-                if (hasattr(o, 'updated')):
+                if hasattr(o, "updated"):
                     fn(o, object)
                     ret.append(o)
                 # Uncomment the following line to enable recursion
@@ -121,16 +120,16 @@ def __walk_deps(fn, object, deps):
 
 
 def p(x, source):
-    print x, x.__class__.__name__
+    print(x, x.__class__.__name__)
     return
 
 
 def main():
     # pdb.set_trace()
-    s = Slice.objects.filter(name='princeton_sapan62')
+    s = Slice.objects.filter(name="princeton_sapan62")
     # pdb.set_trace()
-    print walk_inv_deps(p, s[0])
+    print(walk_inv_deps(p, s[0]))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

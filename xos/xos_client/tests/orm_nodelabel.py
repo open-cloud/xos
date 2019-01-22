@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +15,15 @@
 # These are functional tests of ManyToMany relations. These tests need to be conducted end-to-end with a real
 # API to verify that the client and server ends of the API are working with each other.
 
-import random
-import string
+from xosapi import xos_grpc_client
 import sys
 import unittest
 
 orm = None
 
-from xosapi import xos_grpc_client
 
 TEST_NODE_LABEL_1_NAME = "test_node_label_1"
+
 
 class TestORM(unittest.TestCase):
     def setUp(self):
@@ -33,16 +31,20 @@ class TestORM(unittest.TestCase):
 
         nodes1 = orm.Node.objects.filter(name="test_node_1")
         if nodes1:
-            self.node1=nodes1[0]
+            self.node1 = nodes1[0]
         else:
-            self.node1 = orm.Node(name="test_node_1", site_deployment=orm.SiteDeployment.objects.first())
+            self.node1 = orm.Node(
+                name="test_node_1", site_deployment=orm.SiteDeployment.objects.first()
+            )
             self.node1.save()
 
         nodes2 = orm.Node.objects.filter(name="test_node_2")
         if nodes2:
-            self.node2=nodes2[0]
+            self.node2 = nodes2[0]
         else:
-            self.node2 = orm.Node(name="test_node_2", site_deployment=orm.SiteDeployment.objects.first())
+            self.node2 = orm.Node(
+                name="test_node_2", site_deployment=orm.SiteDeployment.objects.first()
+            )
             self.node2.save()
 
     def tearDown(self):
@@ -61,54 +63,54 @@ class TestORM(unittest.TestCase):
         pass
 
     def test_create_empty_node_label(self):
-        n = orm.NodeLabel(name = self.test_node_label_1_name)
+        n = orm.NodeLabel(name=self.test_node_label_1_name)
         n.save()
 
-        labels = orm.NodeLabel.objects.filter(name = self.test_node_label_1_name)
-        self.assertEqual(len(labels),1)
+        labels = orm.NodeLabel.objects.filter(name=self.test_node_label_1_name)
+        self.assertEqual(len(labels), 1)
 
-        n=labels[0]
+        n = labels[0]
         self.assertNotEqual(n, None)
         self.assertEqual(len(n.node.all()), 0)
 
     def test_create_node_label_one_node(self):
-        n = orm.NodeLabel(name = self.test_node_label_1_name)
+        n = orm.NodeLabel(name=self.test_node_label_1_name)
         n.node.add(self.node1)
         n.save()
 
-        labels = orm.NodeLabel.objects.filter(name = self.test_node_label_1_name)
-        self.assertEqual(len(labels),1)
+        labels = orm.NodeLabel.objects.filter(name=self.test_node_label_1_name)
+        self.assertEqual(len(labels), 1)
 
-        n=labels[0]
+        n = labels[0]
         self.assertNotEqual(n, None)
         self.assertEqual(len(n.node.all()), 1)
 
     def test_create_node_label_two_nodes(self):
-        n = orm.NodeLabel(name = self.test_node_label_1_name)
+        n = orm.NodeLabel(name=self.test_node_label_1_name)
         n.node.add(self.node1)
         n.node.add(self.node2)
         n.save()
 
-        labels = orm.NodeLabel.objects.filter(name = self.test_node_label_1_name)
-        self.assertEqual(len(labels),1)
+        labels = orm.NodeLabel.objects.filter(name=self.test_node_label_1_name)
+        self.assertEqual(len(labels), 1)
 
-        n=labels[0]
+        n = labels[0]
         self.assertNotEqual(n, None)
         self.assertEqual(len(n.node.all()), 2)
 
     def test_add_node_to_label(self):
-        n = orm.NodeLabel(name = self.test_node_label_1_name)
+        n = orm.NodeLabel(name=self.test_node_label_1_name)
         n.save()
 
-        labels = orm.NodeLabel.objects.filter(name = self.test_node_label_1_name)
+        labels = orm.NodeLabel.objects.filter(name=self.test_node_label_1_name)
         self.assertEqual(len(labels), 1)
-        n=labels[0]
+        n = labels[0]
         n.node.add(self.node1)
         n.save()
 
-        labels = orm.NodeLabel.objects.filter(name = self.test_node_label_1_name)
+        labels = orm.NodeLabel.objects.filter(name=self.test_node_label_1_name)
         self.assertEqual(len(labels), 1)
-        n=labels[0]
+        n = labels[0]
         self.assertEqual(len(n.node.all()), 1)
 
     def test_remove_node_from_label(self):
@@ -152,8 +154,8 @@ def test_callback():
 
     orm = xos_grpc_client.coreclient.xos_orm
 
-    sys.argv=sys.argv[:1]  # unittest gets mad about the orm command line arguments
+    sys.argv = sys.argv[:1]  # unittest gets mad about the orm command line arguments
     unittest.main()
 
-xos_grpc_client.start_api_parseargs(test_callback)
 
+xos_grpc_client.start_api_parseargs(test_callback)

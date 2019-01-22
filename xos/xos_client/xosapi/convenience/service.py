@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import json
 from xosapi.orm import ORMWrapper, register_convenience_wrapper
+
 
 class ORMWrapperService(ORMWrapper):
     @property
@@ -26,12 +24,14 @@ class ORMWrapperService(ORMWrapper):
         return attrs
 
     def get_composable_networks(self):
-        SUPPORTED_VTN_SERVCOMP_KINDS = ['VSG','PRIVATE']
+        SUPPORTED_VTN_SERVCOMP_KINDS = ["VSG", "PRIVATE"]
 
         nets = []
         for slice in self.slices.all():
             for net in slice.networks.all():
-                if (net.template.vtn_kind not in SUPPORTED_VTN_SERVCOMP_KINDS) or (net.owner.id != slice.id):
+                if (net.template.vtn_kind not in SUPPORTED_VTN_SERVCOMP_KINDS) or (
+                    net.owner.id != slice.id
+                ):
                     continue
 
                 if not net.controllernetworks.exists():
@@ -78,11 +78,13 @@ class ORMWrapperService(ORMWrapper):
         ServiceInstanceLink = self.stub.ServiceInstanceLink
 
         eastbound_si_class = getattr(self.stub, si_classname)
-        eastbound_si = eastbound_si_class(owner_id = self.id)
+        eastbound_si = eastbound_si_class(owner_id=self.id)
         eastbound_si.save()
 
-        link = ServiceInstanceLink(provider_service_instance=eastbound_si,
-                                   subscriber_service_instance=subscriber_service_instance)
+        link = ServiceInstanceLink(
+            provider_service_instance=eastbound_si,
+            subscriber_service_instance=subscriber_service_instance,
+        )
         link.save()
 
     def validate_links(self, subscriber_service_instance):

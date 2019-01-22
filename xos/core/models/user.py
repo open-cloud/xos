@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,20 +43,19 @@ import security
 
 
 class UserManager(BaseUserManager):
-
     def create_user(self, email, firstname, lastname, password=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
         """
         if not email:
-            raise ValueError('Users must have an email address')
+            raise ValueError("Users must have an email address")
 
         user = self.model(
             email=UserManager.normalize_email(email),
             firstname=firstname,
             lastname=lastname,
-            password=password
+            password=password,
         )
         # user.set_password(password)
         user.is_admin = True
@@ -69,11 +67,9 @@ class UserManager(BaseUserManager):
         Creates and saves a superuser with the given email, date of
         birth and password.
         """
-        user = self.create_user(email,
-                                password=password,
-                                firstname=firstname,
-                                lastname=lastname
-                                )
+        user = self.create_user(
+            email, password=password, firstname=firstname, lastname=lastname
+        )
         user.is_admin = True
         user.save(using=self._db)
         return user
@@ -91,7 +87,6 @@ class UserManager(BaseUserManager):
 
 
 class DeletedUserManager(UserManager):
-
     def get_queryset(self):
         parent = super(UserManager, self)
         if hasattr(parent, "get_queryset"):
@@ -115,25 +110,24 @@ class User(AbstractBaseUser, PlModelMixIn):
         app_label = "core"
 
     email = models.EmailField(
-        verbose_name='email address',
-        max_length=255,
-        unique=True,
-        db_index=True,
+        verbose_name="email address", max_length=255, unique=True, db_index=True
     )
 
     username = StrippedCharField(max_length=255, default="Something")
 
-    firstname = StrippedCharField(
-        help_text="person's given name", max_length=200)
+    firstname = StrippedCharField(help_text="person's given name", max_length=200)
     lastname = StrippedCharField(help_text="person's surname", max_length=200)
 
-    phone = StrippedCharField(null=True, blank=True,
-                              help_text="phone number contact", max_length=100)
+    phone = StrippedCharField(
+        null=True, blank=True, help_text="phone number contact", max_length=100
+    )
     user_url = models.URLField(null=True, blank=True)
-    site = models.ForeignKey('Site', related_name='users',
-                             help_text="Site this user will be homed too")
+    site = models.ForeignKey(
+        "Site", related_name="users", help_text="Site this user will be homed too"
+    )
     public_key = models.TextField(
-        null=True, blank=True, max_length=1024, help_text="Public key string")
+        null=True, blank=True, max_length=1024, help_text="Public key string"
+    )
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -143,54 +137,102 @@ class User(AbstractBaseUser, PlModelMixIn):
     is_appuser = models.BooleanField(default=False)
 
     login_page = StrippedCharField(
-        help_text="send this user to a specific page on login", max_length=200, null=True, blank=True)
+        help_text="send this user to a specific page on login",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
 
-    created = models.DateTimeField(help_text="Time this model was created", auto_now_add=True, null=False, blank=False)
-    updated = models.DateTimeField(help_text="Time this model was changed by a non-synchronizer", default=now, null=False,
-                            blank=False)
-    enacted = models.DateTimeField(default=None, help_text="When synced, set to the timestamp of the data that was synced",
-                            null=True, blank=True)
-    policed = models.DateTimeField(default=None, help_text="When policed, set to the timestamp of the data that was policed",
-                            null=True, blank=True)
-    backend_status = StrippedCharField(max_length=1024,
-                                       default="Provisioning in progress")
-    backend_code = models.IntegerField( default = 0, null = False )
+    created = models.DateTimeField(
+        help_text="Time this model was created",
+        auto_now_add=True,
+        null=False,
+        blank=False,
+    )
+    updated = models.DateTimeField(
+        help_text="Time this model was changed by a non-synchronizer",
+        default=now,
+        null=False,
+        blank=False,
+    )
+    enacted = models.DateTimeField(
+        default=None,
+        help_text="When synced, set to the timestamp of the data that was synced",
+        null=True,
+        blank=True,
+    )
+    policed = models.DateTimeField(
+        default=None,
+        help_text="When policed, set to the timestamp of the data that was policed",
+        null=True,
+        blank=True,
+    )
+    backend_status = StrippedCharField(
+        max_length=1024, default="Provisioning in progress"
+    )
+    backend_code = models.IntegerField(default=0, null=False)
     backend_need_delete = models.BooleanField(default=False)
     backend_need_reap = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
     write_protect = models.BooleanField(default=False)
     lazy_blocked = models.BooleanField(default=False)
-    no_sync = models.BooleanField(default=False)     # prevent object sync
-    no_policy = models.BooleanField(default=False)   # prevent model_policy run
+    no_sync = models.BooleanField(default=False)  # prevent object sync
+    no_policy = models.BooleanField(default=False)  # prevent model_policy run
 
-    timezone = models.CharField(max_length=100, null=True, blank=True, default=settings.TIME_ZONE)
+    timezone = models.CharField(
+        max_length=100, null=True, blank=True, default=settings.TIME_ZONE
+    )
 
-    leaf_model_name = models.CharField( help_text = "The most specialized model in this chain of inheritance, often defined by a service developer", max_length = 1024, null = False )
+    leaf_model_name = models.CharField(
+        help_text="The most specialized model in this chain of inheritance, often defined by a service developer",
+        max_length=1024,
+        null=False,
+    )
 
-    policy_status = models.CharField( default = "0 - Policy in process", max_length = 1024, null = True )
-    policy_code = models.IntegerField( default = 0, null = True )
+    policy_status = models.CharField(
+        default="0 - Policy in process", max_length=1024, null=True
+    )
+    policy_code = models.IntegerField(default=0, null=True)
 
     backend_need_delete_policy = models.BooleanField(
-        help_text="True if delete model_policy must be run before object can be reaped", default=False, null=False,
-        blank=True)
-    xos_managed = models.BooleanField(help_text="True if xos is responsible for creating/deleting this object", default=True,
-                               null=False, blank=True)
-    backend_handle = models.CharField(help_text="Handle used by the backend to track this object", max_length=1024, null=True,
-                               blank=True)
-    changed_by_step = models.DateTimeField(default=None, help_text="Time this model was changed by a sync step", null=True,
-                                    blank=True)
-    changed_by_policy = models.DateTimeField(default=None, help_text="Time this model was changed by a model policy",
-                                      null=True, blank=True)
+        help_text="True if delete model_policy must be run before object can be reaped",
+        default=False,
+        null=False,
+        blank=True,
+    )
+    xos_managed = models.BooleanField(
+        help_text="True if xos is responsible for creating/deleting this object",
+        default=True,
+        null=False,
+        blank=True,
+    )
+    backend_handle = models.CharField(
+        help_text="Handle used by the backend to track this object",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    changed_by_step = models.DateTimeField(
+        default=None,
+        help_text="Time this model was changed by a sync step",
+        null=True,
+        blank=True,
+    )
+    changed_by_policy = models.DateTimeField(
+        default=None,
+        help_text="Time this model was changed by a model policy",
+        null=True,
+        blank=True,
+    )
 
     objects = UserManager()
     deleted_objects = DeletedUserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['firstname', 'lastname']
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["firstname", "lastname"]
 
     PI_FORBIDDEN_FIELDS = ["is_admin", "site", "is_staff"]
-    USER_FORBIDDEN_FIELDS = ["is_admin", "is_active",
-                             "site", "is_staff", "is_readonly"]
+    USER_FORBIDDEN_FIELDS = ["is_admin", "is_active", "site", "is_staff", "is_readonly"]
 
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
@@ -210,7 +252,7 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     @property
     def keyname(self):
-        return self.email[:self.email.find('@')]
+        return self.email[: self.email.find("@")]
 
     def __unicode__(self):
         return self.email
@@ -230,27 +272,31 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     def delete(self, *args, **kwds):
         # so we have something to give the observer
-        purge = kwds.get('purge',False)
+        purge = kwds.get("purge", False)
         if purge:
-            del kwds['purge']
-        silent = kwds.get('silent',False)
+            del kwds["purge"]
+        silent = kwds.get("silent", False)
         if silent:
-            del kwds['silent']
+            del kwds["silent"]
         try:
             purge = purge or observer_disabled
         except NameError:
             pass
 
-        if (purge):
+        if purge:
             super(User, self).delete(*args, **kwds)
         else:
-            if (not self.write_protect ):
+            if not self.write_protect:
                 self.deleted = True
-                self.enacted=None
-                self.policed=None
-                self.save(update_fields=['enacted','deleted','policed'], silent=silent)
+                self.enacted = None
+                self.policed = None
+                self.save(
+                    update_fields=["enacted", "deleted", "policed"], silent=silent
+                )
 
-                collector = XOSCollector(using=router.db_for_write(self.__class__, instance=self))
+                collector = XOSCollector(
+                    using=router.db_for_write(self.__class__, instance=self)
+                )
                 collector.collect([self])
                 with transaction.atomic():
                     for (k, models) in collector.data.items():
@@ -259,16 +305,25 @@ class User(AbstractBaseUser, PlModelMixIn):
                                 # in case it's already been deleted, don't delete again
                                 continue
                             model.deleted = True
-                            model.enacted=None
-                            model.policed=None
-                            model.save(update_fields=['enacted','deleted','policed'], silent=silent)
+                            model.enacted = None
+                            model.policed = None
+                            model.save(
+                                update_fields=["enacted", "deleted", "policed"],
+                                silent=silent,
+                            )
 
     def has_important_changes(self):
         """ Determine whether the model has changes that should be reflected in one of the changed_by_* timestamps.
             Ignores various feedback and bookkeeping state set by synchronizers.
         """
         for field_name in self.changed_fields:
-            if field_name in ["policed", "updated", "enacted", "changed_by_step", "changed_by_policy"]:
+            if field_name in [
+                "policed",
+                "updated",
+                "enacted",
+                "changed_by_step",
+                "changed_by_policy",
+            ]:
                 continue
             if field_name.startswith("backend_"):
                 continue
@@ -290,7 +345,7 @@ class User(AbstractBaseUser, PlModelMixIn):
         # let the user specify silence as either a kwarg or an instance varible
         silent = self.silent
         if "silent" in kwargs:
-            silent=silent or kwargs.pop("silent")
+            silent = silent or kwargs.pop("silent")
 
         caller_kind = "unknown"
 
@@ -307,7 +362,9 @@ class User(AbstractBaseUser, PlModelMixIn):
         # want to cause an update. For model_policies or sync_steps it should no longer be required.
         always_update_timestamp = False
         if "always_update_timestamp" in kwargs:
-            always_update_timestamp = always_update_timestamp or kwargs.pop("always_update_timestamp")
+            always_update_timestamp = always_update_timestamp or kwargs.pop(
+                "always_update_timestamp"
+            )
 
         is_sync_save = False
         if "is_sync_save" in kwargs:
@@ -317,13 +374,18 @@ class User(AbstractBaseUser, PlModelMixIn):
         if "is_policy_save" in kwargs:
             is_policy_save = kwargs.pop("is_policy_save")
 
-        if (caller_kind!="synchronizer") or always_update_timestamp:
+        if (caller_kind != "synchronizer") or always_update_timestamp:
             self.updated = timezone.now()
         else:
             # We're not auto-setting timestamp, but let's check to make sure that the caller hasn't tried to set our
             # timestamp backward...
-            if (self.updated != self._initial["updated"]) and ((not update_fields) or ("updated" in update_fields)):
-                log.info("Synchronizer tried to change `updated` timestamp on model %s from %s to %s. Ignored." % (self, self._initial["updated"], self.updated))
+            if (self.updated != self._initial["updated"]) and (
+                (not update_fields) or ("updated" in update_fields)
+            ):
+                log.info(
+                    "Synchronizer tried to change `updated` timestamp on model %s from %s to %s. Ignored."
+                    % (self, self._initial["updated"], self.updated)
+                )
                 self.updated = self._initial["updated"]
 
         if is_sync_save and self.has_important_changes():
@@ -351,13 +413,22 @@ class User(AbstractBaseUser, PlModelMixIn):
     def send_temporary_password(self):
         password = User.objects.make_random_password()
         self.set_password(password)
-        subject, from_email, to = 'OpenCloud Account Credentials', 'support@opencloud.us', str(
-            self.email)
-        text_content = 'This is an important message.'
+        subject, from_email, to = (
+            "OpenCloud Account Credentials",
+            "support@opencloud.us",
+            str(self.email),
+        )
+        text_content = "This is an important message."
         userUrl = "http://%s/" % get_request().get_host()
-        html_content = """<p>Your account has been created on OpenCloud. Please log in <a href=""" + userUrl + """>here</a> to activate your account<br><br>Username: """ + \
-            self.email + """<br>Temporary Password: """ + password + \
-            """<br>Please change your password once you successully login into the site.</p>"""
+        html_content = (
+            """<p>Your account has been created on OpenCloud. Please log in <a href="""
+            + userUrl
+            + """>here</a> to activate your account<br><br>Username: """
+            + self.email
+            + """<br>Temporary Password: """
+            + password
+            + """<br>Please change your password once you successully login into the site.</p>"""
+        )
         msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
@@ -386,8 +457,8 @@ class User(AbstractBaseUser, PlModelMixIn):
         cls = ct.model_class()
         return cls.objects.get(id=object_id)
 
-    ''' This function is hardcoded here because we do not yet
-    generate the User class'''
+    """ This function is hardcoded here because we do not yet
+    generate the User class"""
+
     def can_access(self, ctx):
         return security.user_policy_security_check(self, ctx), "user_policy"
-

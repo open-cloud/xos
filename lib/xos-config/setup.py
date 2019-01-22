@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from setuptools import setup
-
 try:
     from xosutil.autoversion_setup import setup_with_auto_version as setup
 except ImportError:
@@ -25,15 +23,14 @@ except ImportError:
 
 from xosconfig.version import __version__
 
-setup(name='XosConfig',
-      version=__version__,
-      description='XOS Config Library',
-      author='Matteo Scandolo',
-      author_email='teo@onlab.us',
-      packages=['xosconfig'],
-      include_package_data=True,
-      # TODO add all deps to the install_requires section
-      install_requires=[
-          'pykwalify>=1.6.0'
-          ]
-     )
+setup(
+    name="XosConfig",
+    version=__version__,
+    description="XOS Config Library",
+    author="Matteo Scandolo",
+    author_email="teo@onlab.us",
+    packages=["xosconfig"],
+    include_package_data=True,
+    # TODO add all deps to the install_requires section
+    install_requires=["pykwalify>=1.6.0"],
+)

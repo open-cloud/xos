@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +14,7 @@
 
 from xos.exceptions import *
 from servicemonitoringagentinfo_decl import *
+
 
 class ServiceMonitoringAgentInfo(ServiceMonitoringAgentInfo_decl):
     class Meta:

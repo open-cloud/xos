@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +18,10 @@ import os
 from mock import patch
 from xosgenx.xosgen import XosGen
 
+
 class Args:
     pass
+
 
 class XOSProcessorTest(unittest.TestCase):
     """
@@ -28,24 +29,28 @@ class XOSProcessorTest(unittest.TestCase):
     """
 
     def setUp(self):
-        os.chdir(os.path.join(os.path.abspath(os.path.dirname(os.path.realpath(__file__))), "..")) 
+        os.chdir(
+            os.path.join(
+                os.path.abspath(os.path.dirname(os.path.realpath(__file__))), ".."
+            )
+        )
 
     def test_generator(self):
         """
         [XOS-GenX] The CLI entry point should correctly parse params
         """
         args = Args()
-        args.files = ['xos-genx-tests/xproto/test.xproto']
-        args.target = 'xos-genx-tests/xtarget/test.xtarget'
-        args.output = 'xos-genx-tests/out/dir/'
+        args.files = ["xos-genx-tests/xproto/test.xproto"]
+        args.target = "xos-genx-tests/xtarget/test.xtarget"
+        args.output = "xos-genx-tests/out/dir/"
         args.write_to_file = "target"
         args.dest_file = None
         args.dest_extension = None
 
         expected_args = Args()
-        expected_args.files = [os.path.abspath(os.getcwd() + '/' + args.files[0])]
-        expected_args.target = os.path.abspath(os.getcwd() + '/' + args.target)
-        expected_args.output = os.path.abspath(os.getcwd() + '/' + args.output)
+        expected_args.files = [os.path.abspath(os.getcwd() + "/" + args.files[0])]
+        expected_args.target = os.path.abspath(os.getcwd() + "/" + args.target)
+        expected_args.output = os.path.abspath(os.getcwd() + "/" + args.output)
 
         with patch("xosgenx.xosgen.XOSProcessor.process") as generator:
             XosGen.init(args)
@@ -53,5 +58,6 @@ class XOSProcessorTest(unittest.TestCase):
             self.assertEqual(actual_args.files, expected_args.files)
             self.assertEqual(actual_args.output, expected_args.output)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

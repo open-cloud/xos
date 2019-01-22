@@ -5,13 +5,15 @@ import inspect
 from core.models import XOSBase, PlModelMixIn
 import pdb
 
+
 def count(lst):
     c = 0
     for l in lst[0]:
-       ll = l.lstrip()
-       if (ll and not ll.startswith('#') and ll.rstrip()!='pass' and 'ModelLink' not in ll and 'CHOICES' not in ll):
-           c+=1
+        ll = l.lstrip()
+        if (ll and not ll.startswith('#') and ll.rstrip() != 'pass' and 'ModelLink' not in ll and 'CHOICES' not in ll):
+            c += 1
     return c
+
 
 def is_model_class(model):
     """ Return True if 'model' is something that we're interested in """
@@ -26,9 +28,9 @@ def is_model_class(model):
 
     return False
 
+
 for a in dir(core.models):
-    x = getattr(core.models,a)
+    x = getattr(core.models, a)
     if (is_model_class(x)):
         lines = inspect.getsourcelines(x)
-        print x.__name__,":",count(lines)
-
+        print x.__name__, ":", count(lines)

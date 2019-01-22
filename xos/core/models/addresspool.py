@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +18,7 @@ import struct
 from xos.exceptions import *
 from addresspool_decl import *
 
+
 class AddressPool(AddressPool_decl):
     class Meta:
         proxy = True
@@ -30,7 +30,7 @@ class AddressPool(AddressPool_decl):
 
         dest = []
 
-        netmask = (~(pow(2, 32 - bits) - 1) & 0xFFFFFFFF)
+        netmask = ~(pow(2, 32 - bits) - 1) & 0xFFFFFFFF
 
         count = pow(2, 32 - bits)
         for i in range(2, count - 1):
@@ -75,7 +75,7 @@ class AddressPool(AddressPool_decl):
                     # were still in use.
                     continue
 
-                inuse_ips.insert(0,addr)
+                inuse_ips.insert(0, addr)
 
                 ap.inuse = " ".join(inuse_ips)
                 ap.addresses = " ".join(avail_ips)
@@ -91,7 +91,7 @@ class AddressPool(AddressPool_decl):
             addresses = ap.addresses or ""
             parts = addresses.split()
             if addr not in parts:
-                parts.insert(0,addr)
+                parts.insert(0, addr)
                 ap.addresses = " ".join(parts)
 
             inuse = ap.inuse or ""
@@ -101,5 +101,3 @@ class AddressPool(AddressPool_decl):
                 ap.inuse = " ".join(parts)
 
             ap.save()
-
-

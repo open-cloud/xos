@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,18 +18,19 @@ import os
 # Constants
 OUTPUT_DIR = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/out/")
 
-TMP_TARGET_PATH = os.path.join(OUTPUT_DIR, 'tmp.xtarget')
+TMP_TARGET_PATH = os.path.join(OUTPUT_DIR, "tmp.xtarget")
 
 # Passed around in various security / validation checks
+
+
 class FakeObject:
     pass
 
-class XProtoTestHelpers:
 
+class XProtoTestHelpers:
     @staticmethod
     def write_tmp_target(target):
-        tmp_file = open(TMP_TARGET_PATH, 'w')
+        tmp_file = open(TMP_TARGET_PATH, "w")
         tmp_file.write(target)
         tmp_file.close()
         return TMP_TARGET_PATH
-

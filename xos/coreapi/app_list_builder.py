@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +14,11 @@
 
 import os
 
+
 def makedirs_if_noexist(pathname):
     if not os.path.exists(pathname):
         os.makedirs(pathname)
+
 
 class AppListBuilder(object):
     def __init__(self):
@@ -42,7 +43,10 @@ class AppListBuilder(object):
         # Generate the app list
         app_list_fn = os.path.join(self.app_metadata_dir, "xosbuilder_app_list")
         makedirs_if_noexist(os.path.dirname(app_list_fn))
-        file(app_list_fn, "w").write("\n".join(["services.%s" % x for x in app_names]) + "\n")
+        file(app_list_fn, "w").write(
+            "\n".join(["services.%s" % x for x in app_names]) + "\n"
+        )
+
 
 if __name__ == "__main__":
     AppListBuilder().generate_app_lists()

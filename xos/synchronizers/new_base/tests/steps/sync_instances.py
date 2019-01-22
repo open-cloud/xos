@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,15 +23,17 @@ from mock_modelaccessor import *
 RESTAPI_HOSTNAME = socket.gethostname()
 RESTAPI_PORT = "8000"
 
+
 def escape(s):
-    s = s.replace('\n', r'\n').replace('"', r'\"')
+    s = s.replace("\n", r"\n").replace('"', r"\"")
     return s
+
 
 class SyncInstances(syncstep.SyncStep):
     provides = [Instance]
     requested_interval = 0
     observes = Instance
-    playbook = 'sync_instances.yaml'
+    playbook = "sync_instances.yaml"
 
     def fetch_pending(self, deletion=False):
         objs = super(SyncInstances, self).fetch_pending(deletion)
@@ -42,25 +43,24 @@ class SyncInstances(syncstep.SyncStep):
     def map_sync_inputs(self, instance):
         inputs = {}
         metadata_update = {}
-        
-        fields = {
-                  'name': instance.name,
-                  'delete': False,
-                 }
+
+        fields = {"name": instance.name, "delete": False}
         return fields
 
     def map_sync_outputs(self, instance, res):
         instance.save()
 
     def map_delete_inputs(self, instance):
-        input = {'endpoint': 'endpoint',
-                 'admin_user': 'admin_user',
-                 'admin_password': 'admin_password',
-                 'project_name': 'project_name',
-                 'tenant': 'tenant',
-                 'tenant_description': 'tenant_description',
-                 'name': instance.name,
-                 'ansible_tag': 'ansible_tag',
-                 'delete': True}
+        input = {
+            "endpoint": "endpoint",
+            "admin_user": "admin_user",
+            "admin_password": "admin_password",
+            "project_name": "project_name",
+            "tenant": "tenant",
+            "tenant_description": "tenant_description",
+            "name": instance.name,
+            "ansible_tag": "ansible_tag",
+            "delete": True,
+        }
 
         return input

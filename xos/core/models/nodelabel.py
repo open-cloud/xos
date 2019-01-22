@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,7 @@
 from xos.exceptions import *
 from nodelabel_decl import *
 
+
 class NodeLabel(NodeLabel_decl):
     class Meta:
         proxy = True
@@ -25,11 +25,11 @@ class NodeLabel(NodeLabel_decl):
             until the ORM is extended with support for ManyToMany relations.
         """
 
-        if self.name and '###' in self.name:
+        if self.name and "###" in self.name:
             from core.models import Node
 
-            self.name, node_id_str = self.name.split('###')
-            node_ids = map(int, node_id_str.split(','))
+            self.name, node_id_str = self.name.split("###")
+            node_ids = map(int, node_id_str.split(","))
 
             for node_id in node_ids:
                 node = Node.get(node_id)

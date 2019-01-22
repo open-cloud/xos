@@ -19,27 +19,25 @@ from xosutil.version import __version__
 
 
 def readme():
-    with open('README.rst') as f:
+    with open("README.rst") as f:
         return f.read()
 
 
 setup_with_auto_version(
-    name='xoskafka',
+    name="xoskafka",
     version=__version__,
-    description='Wrapper around kafka for XOS',
+    description="Wrapper around kafka for XOS",
     long_description=readme(),
-    classifiers=[
-        'License :: OSI Approved :: Apache Software License',
-    ],
-    author='Zack Williams',
-    author_email='zdw@opennetworking.org',
-    packages=['xoskafka'],
-    license='Apache v2',
+    classifiers=["License :: OSI Approved :: Apache Software License"],
+    author="Zack Williams",
+    author_email="zdw@opennetworking.org",
+    packages=["xoskafka"],
+    license="Apache v2",
     install_requires=[
-        'confluent-kafka>=0.11.5',
-        'xosconfig>=2.1.0',
-        'multistructlog>=1.5',
-        ],
+        "confluent-kafka>=0.11.5",
+        "xosconfig>=2.1.0",
+        "multistructlog>=1.5",
+    ],
     include_package_data=True,
     zip_safe=False,
-    )
+)

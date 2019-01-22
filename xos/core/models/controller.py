@@ -15,6 +15,7 @@
 from xos.exceptions import *
 from controller_decl import *
 
+
 class Controller(Controller_decl):
     class Meta:
         proxy = True

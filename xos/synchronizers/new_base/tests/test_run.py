@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,42 +19,54 @@ import mock
 import pdb
 import networkx as nx
 
-import os, sys
+import os
+import sys
 
 test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-xos_dir = os.path.join(test_path, '..', '..', '..')
+xos_dir = os.path.join(test_path, "..", "..", "..")
 
-ANSIBLE_FILE='/tmp/payload_test'
+ANSIBLE_FILE = "/tmp/payload_test"
 
-def run_fake_ansible_template(*args,**kwargs):
+
+def run_fake_ansible_template(*args, **kwargs):
     opts = args[1]
-    open(ANSIBLE_FILE,'w').write(json.dumps(opts))
+    open(ANSIBLE_FILE, "w").write(json.dumps(opts))
+
 
 def get_ansible_output():
     ansible_str = open(ANSIBLE_FILE).read()
     return json.loads(ansible_str)
+
 
 class TestRun(unittest.TestCase):
     def setUp(self):
         self.sys_path_save = sys.path
         self.cwd_save = os.getcwd()
         sys.path.append(xos_dir)
-        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
-        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base', 'tests', 'steps'))
+        sys.path.append(os.path.join(xos_dir, "synchronizers", "new_base"))
+        sys.path.append(
+            os.path.join(xos_dir, "synchronizers", "new_base", "tests", "steps")
+        )
 
         config = os.path.join(test_path, "test_config.yaml")
         from xosconfig import Config
-        Config.clear()
-        Config.init(config, 'synchronizer-config-schema.yaml')
 
-        from synchronizers.new_base.mock_modelaccessor_build import build_mock_modelaccessor
+        Config.clear()
+        Config.init(config, "synchronizer-config-schema.yaml")
+
+        from synchronizers.new_base.mock_modelaccessor_build import (
+            build_mock_modelaccessor,
+        )
+
         build_mock_modelaccessor(xos_dir, services_dir=None, service_xprotos=[])
 
-        os.chdir(os.path.join(test_path, '..'))  # config references tests/model-deps
+        os.chdir(os.path.join(test_path, ".."))  # config references tests/model-deps
 
         import event_loop
+
         reload(event_loop)
         import backend
+
         reload(backend)
         from modelaccessor import model_accessor
 
@@ -68,11 +79,11 @@ class TestRun(unittest.TestCase):
         self.steps = b.load_sync_step_modules(steps_dir)
         self.synchronizer = event_loop.XOSObserver(self.steps)
         try:
-            os.remove('/tmp/sync_ports')
+            os.remove("/tmp/sync_ports")
         except OSError:
             pass
         try:
-            os.remove('/tmp/delete_ports')
+            os.remove("/tmp/delete_ports")
         except OSError:
             pass
 
@@ -80,16 +91,22 @@ class TestRun(unittest.TestCase):
         sys.path = self.sys_path_save
         os.chdir(self.cwd_save)
 
-    @mock.patch("steps.sync_instances.syncstep.run_template",side_effect=run_fake_ansible_template)
+    @mock.patch(
+        "steps.sync_instances.syncstep.run_template",
+        side_effect=run_fake_ansible_template,
+    )
     @mock.patch("event_loop.model_accessor")
     def test_run_once(self, mock_run_template, mock_accessor, *_other_accessors):
-
 
         pending_objects, pending_steps = self.synchronizer.fetch_pending()
         pending_objects2 = list(pending_objects)
 
-        any_cs = next(obj for obj in pending_objects if obj.leaf_model_name == 'ControllerSlice')
-        any_instance = next(obj for obj in pending_objects2 if obj.leaf_model_name == 'Instance')
+        any_cs = next(
+            obj for obj in pending_objects if obj.leaf_model_name == "ControllerSlice"
+        )
+        any_instance = next(
+            obj for obj in pending_objects2 if obj.leaf_model_name == "Instance"
+        )
 
         slice = Slice()
         any_instance.slice = slice
@@ -97,11 +114,12 @@ class TestRun(unittest.TestCase):
 
         self.synchronizer.run_once()
 
-        sync_ports = open('/tmp/sync_ports').read()
-        delete_ports = open('/tmp/delete_ports').read()
+        sync_ports = open("/tmp/sync_ports").read()
+        delete_ports = open("/tmp/delete_ports").read()
 
         self.assertIn("successful", sync_ports)
         self.assertIn("successful", delete_ports)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +18,12 @@ import mock
 import pdb
 import networkx as nx
 
-import os, sys
+import os
+import sys
 
 test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-xos_dir = os.path.join(test_path, '..', '..', '..')
+xos_dir = os.path.join(test_path, "..", "..", "..")
+
 
 class TestScheduling(unittest.TestCase):
 
@@ -34,22 +35,30 @@ class TestScheduling(unittest.TestCase):
         self.sys_path_save = sys.path
         self.cwd_save = os.getcwd()
         sys.path.append(xos_dir)
-        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
-        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base', 'tests', 'steps'))
+        sys.path.append(os.path.join(xos_dir, "synchronizers", "new_base"))
+        sys.path.append(
+            os.path.join(xos_dir, "synchronizers", "new_base", "tests", "steps")
+        )
 
         config = os.path.join(test_path, "test_config.yaml")
         from xosconfig import Config
-        Config.clear()
-        Config.init(config, 'synchronizer-config-schema.yaml')
 
-        from synchronizers.new_base.mock_modelaccessor_build import build_mock_modelaccessor
+        Config.clear()
+        Config.init(config, "synchronizer-config-schema.yaml")
+
+        from synchronizers.new_base.mock_modelaccessor_build import (
+            build_mock_modelaccessor,
+        )
+
         build_mock_modelaccessor(xos_dir, services_dir=None, service_xprotos=[])
 
-        os.chdir(os.path.join(test_path, '..'))  # config references tests/model-deps
+        os.chdir(os.path.join(test_path, ".."))  # config references tests/model-deps
 
         import event_loop
+
         reload(event_loop)
         import backend
+
         reload(backend)
         from mock_modelaccessor import mock_enumerator
         from modelaccessor import model_accessor
@@ -92,7 +101,7 @@ class TestScheduling(unittest.TestCase):
         t = ControllerSlice(slice=s)
         u = ControllerSlice(slice=s)
 
-        s.controllerslices = mock_enumerator([t,u])
+        s.controllerslices = mock_enumerator([t, u])
 
         same, et = self.synchronizer.same_object(s.controllerslices, u)
         self.assertTrue(same)
@@ -120,7 +129,7 @@ class TestScheduling(unittest.TestCase):
     def test_concrete_path_no_model_path(self):
         p = Port()
         n = NetworkParameter()
-        verdict,_ = self.synchronizer.concrete_path_exists(p, n)
+        verdict, _ = self.synchronizer.concrete_path_exists(p, n)
         self.assertFalse(verdict)
 
     def test_concrete_no_object_path_adjacent(self):
@@ -128,16 +137,16 @@ class TestScheduling(unittest.TestCase):
         s1 = Slice()
         s2 = Slice()
         p.slice = s2
-        verdict,_ = self.synchronizer.concrete_path_exists(p, s1)
-        
+        verdict, _ = self.synchronizer.concrete_path_exists(p, s1)
+
         self.assertFalse(verdict)
-    
+
     def test_concrete_object_path_adjacent(self):
         p = Instance()
         s = Slice()
         p.slice = s
         verdict, edge_type = self.synchronizer.concrete_path_exists(p, s)
-        
+
         self.assertTrue(verdict)
         self.assertEqual(edge_type, event_loop.DIRECT_EDGE)
 
@@ -154,11 +163,10 @@ class TestScheduling(unittest.TestCase):
         s1.controllerslices = mock_enumerator([cs])
         s2.controllerslices = mock_enumerator([])
 
-
         verdict1, edge_type1 = self.synchronizer.concrete_path_exists(p, cs)
         verdict2, _ = self.synchronizer.concrete_path_exists(q, cs)
         verdict3, _ = self.synchronizer.concrete_path_exists(p, cs2)
-        
+
         self.assertTrue(verdict1)
         self.assertFalse(verdict2)
         self.assertFalse(verdict3)
@@ -188,10 +196,10 @@ class TestScheduling(unittest.TestCase):
     def test_concrete_no_object_path_distant(self):
         p = Instance()
         s = Slice()
-        s.controllerslice=mock_enumerator([])
+        s.controllerslice = mock_enumerator([])
 
         t = Site()
-        t.controllersite=mock_enumerator([])
+        t.controllersite = mock_enumerator([])
 
         ct = ControllerSite()
         ct.site = Site()
@@ -209,9 +217,9 @@ class TestScheduling(unittest.TestCase):
         c.slice = None
         c.image = None
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([i,p,c], False)
+        cohorts = self.synchronizer.compute_dependent_cohorts([i, p, c], False)
         self.assertEqual(len(cohorts), 3)
-    
+
     def test_cohorting_related(self):
         i = Image()
         p = Port()
@@ -219,8 +227,8 @@ class TestScheduling(unittest.TestCase):
         c.image = i
         s = ControllerSlice()
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([i,p,c,s], False)
-        self.assertIn([i,c], cohorts)
+        cohorts = self.synchronizer.compute_dependent_cohorts([i, p, c, s], False)
+        self.assertIn([i, c], cohorts)
         self.assertIn([p], cohorts)
         self.assertIn([s], cohorts)
 
@@ -235,7 +243,7 @@ class TestScheduling(unittest.TestCase):
         s.controllerslices = mock_enumerator([cs])
         c.slice = s
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([i,p,c,s,cs], False)
+        cohorts = self.synchronizer.compute_dependent_cohorts([i, p, c, s, cs], False)
 
         big_cohort = max(cohorts, key=len)
         self.assertGreater(big_cohort.index(c), big_cohort.index(i))
@@ -252,7 +260,7 @@ class TestScheduling(unittest.TestCase):
         cs.slice = s
         c.slice = s
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([i,p,c,s,cs], True)
+        cohorts = self.synchronizer.compute_dependent_cohorts([i, p, c, s, cs], True)
 
         big_cohort = max(cohorts, key=len)
         self.assertGreater(big_cohort.index(i), big_cohort.index(c))
@@ -266,10 +274,11 @@ class TestScheduling(unittest.TestCase):
         c.image = i
         s = ControllerSlice()
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([i,p,c,s], True)
-        self.assertIn([c,i], cohorts)
+        cohorts = self.synchronizer.compute_dependent_cohorts([i, p, c, s], True)
+        self.assertIn([c, i], cohorts)
         self.assertIn([p], cohorts)
         self.assertIn([s], cohorts)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

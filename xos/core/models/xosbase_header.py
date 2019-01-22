@@ -39,15 +39,16 @@ from xoskafka import XOSKafkaProducer
 from xosconfig import Config
 from multistructlog import create_logger
 
-log = create_logger(Config().get('logging'))
+log = create_logger(Config().get("logging"))
 
 XOS_GLOBAL_DEFAULT_SECURITY_POLICY = True
+
 
 def json_handler(obj):
     if isinstance(obj, pytz.tzfile.DstTzInfo):
         # json can't serialize DstTzInfo
         return str(obj)
-    elif hasattr(obj, 'timetuple'):
+    elif hasattr(obj, "timetuple"):
         return calendar.timegm(obj.timetuple())
     elif isinstance(obj, QuerySet):
         # django 1.11.0 - model_to_dict() turns reverse foreign relations into querysets
@@ -58,8 +59,10 @@ def json_handler(obj):
     else:
         return obj
 
+
 class StrippedCharField(models.CharField):
     """ CharField that strips trailing and leading spaces."""
+
     def clean(self, value, *args, **kwds):
         if value is not None:
             value = value.strip()
@@ -70,7 +73,7 @@ class StrippedCharField(models.CharField):
 # the core model is abstract.
 class XOSBaseDeletionManager(models.Manager):
     def get_queryset(self):
-        parent=super(XOSBaseDeletionManager, self)
+        parent = super(XOSBaseDeletionManager, self)
         if hasattr(parent, "get_queryset"):
             return parent.get_queryset().filter(deleted=True)
         else:
@@ -80,11 +83,12 @@ class XOSBaseDeletionManager(models.Manager):
     def get_query_set(self):
         return self.get_queryset()
 
+
 # This manager will be inherited by all subclasses because
 # the core model is abstract.
 class XOSBaseManager(models.Manager):
     def get_queryset(self):
-        parent=super(XOSBaseManager, self)
+        parent = super(XOSBaseManager, self)
         if hasattr(parent, "get_queryset"):
             return parent.get_queryset().filter(deleted=False)
         else:
@@ -93,6 +97,7 @@ class XOSBaseManager(models.Manager):
     # deprecated in django 1.7 in favor of get_queryset().
     def get_query_set(self):
         return self.get_queryset()
+
 
 class PlModelMixIn(object):
     # Provides useful methods for computing which objects in a model have
@@ -106,20 +111,23 @@ class PlModelMixIn(object):
 
     @property
     def _dict(self):
-        return model_to_dict(self, fields=[field.name for field in
-                             self._meta.fields])
+        return model_to_dict(self, fields=[field.name for field in self._meta.fields])
 
-    def fields_differ(self,f1,f2):
-        if isinstance(f1,datetime.datetime) and isinstance(f2,datetime.datetime) and (timezone.is_aware(f1) != timezone.is_aware(f2)):
+    def fields_differ(self, f1, f2):
+        if (
+            isinstance(f1, datetime.datetime)
+            and isinstance(f2, datetime.datetime)
+            and (timezone.is_aware(f1) != timezone.is_aware(f2))
+        ):
             return True
         else:
-            return (f1 != f2)
+            return f1 != f2
 
     @property
     def diff(self):
         d1 = self._initial
         d2 = self._dict
-        diffs = [(k, (v, d2[k])) for k, v in d1.items() if self.fields_differ(v,d2[k])]
+        diffs = [(k, (v, d2[k])) for k, v in d1.items() if self.fields_differ(v, d2[k])]
         return dict(diffs)
 
     @property
@@ -157,19 +165,19 @@ class PlModelMixIn(object):
         if not leaf_model_name:
             return self
 
-        if (leaf_model_name == self.__class__.__name__):
+        if leaf_model_name == self.__class__.__name__:
             return self
 
         leaf_model_class = self.get_model_class_by_name(self.leaf_model_name)
 
-        assert (self.id)
+        assert self.id
 
         if self.deleted:
             return leaf_model_class.deleted_objects.get(id=self.id)
         else:
             return leaf_model_class.objects.get(id=self.id)
 
-    #classmethod
+    # classmethod
     def getValidators(cls):
         """ primarily for REST API, return a dictionary of field names mapped
             to lists of the type of validations that need to be applied to
@@ -178,9 +186,9 @@ class PlModelMixIn(object):
         validators = {}
         for field in cls._meta.fields:
             l = []
-            if field.blank==False:
+            if not field.blank:
                 l.append("notBlank")
-            if field.__class__.__name__=="URLField":
+            if field.__class__.__name__ == "URLField":
                 l.append("url")
             validators[field.name] = l
         return validators
@@ -194,9 +202,9 @@ class PlModelMixIn(object):
     def set_backend_register(self, k, v):
         br = {}
         try:
-            br=json.loads(self.backend_register)
+            br = json.loads(self.backend_register)
         except AttributeError:
-            br={}
+            br = {}
 
         br[k] = v
         self.backend_register = json.dumps(br)
@@ -208,24 +216,24 @@ class PlModelMixIn(object):
             return (None, None, None, None)
 
         try:
-            exponent = scratchpad['exponent']
+            exponent = scratchpad["exponent"]
         except KeyError:
             exponent = None
 
         try:
-            last_success_time = scratchpad['last_success']
+            last_success_time = scratchpad["last_success"]
             dt = datetime.datetime.fromtimestamp(last_success_time)
             last_success = dt.strftime("%Y-%m-%d %H:%M")
         except KeyError:
             last_success = None
 
         try:
-            failures = scratchpad['failures']
+            failures = scratchpad["failures"]
         except KeyError:
-            failures=None
+            failures = None
 
         try:
-            last_failure_time = scratchpad['last_failure']
+            last_failure_time = scratchpad["last_failure"]
             dt = datetime.datetime.fromtimestamp(last_failure_time)
             last_failure = dt.strftime("%Y-%m-%d %H:%M")
         except KeyError:
@@ -234,25 +242,42 @@ class PlModelMixIn(object):
         return (exponent, last_success, last_failure, failures)
 
     def get_backend_icon(self):
-        is_perfect = (self.backend_status is not None) and self.backend_status.startswith("1 -")
-        is_good = (self.backend_status is not None) and (self.backend_status.startswith("0 -") or self.backend_status.startswith("1 -"))
-        is_provisioning = self.backend_status is None or self.backend_status == "Provisioning in progress" or self.backend_status==""
+        is_perfect = (
+            self.backend_status is not None
+        ) and self.backend_status.startswith("1 -")
+        is_good = (self.backend_status is not None) and (
+            self.backend_status.startswith("0 -")
+            or self.backend_status.startswith("1 -")
+        )
+        is_provisioning = (
+            self.backend_status is None
+            or self.backend_status == "Provisioning in progress"
+            or self.backend_status == ""
+        )
 
         # returns (icon_name, tooltip)
-        if (self.enacted is not None) and (self.enacted >= self.updated and is_good) or is_perfect:
+        if (
+            (self.enacted is not None)
+            and (self.enacted >= self.updated and is_good)
+            or is_perfect
+        ):
             return ("success", "successfully enacted")
         else:
             if is_good or is_provisioning:
-                return ("clock", "Pending sync, last_status = " + html_escape(self.backend_status, quote=True))
+                return (
+                    "clock",
+                    "Pending sync, last_status = "
+                    + html_escape(self.backend_status, quote=True),
+                )
             else:
                 return ("error", html_escape(self.backend_status, quote=True))
 
     def enforce_choices(self, field, choices):
         choices = [x[0] for x in choices]
         for choice in choices:
-            if field==choice:
+            if field == choice:
                 return
-            if (choice==None) and (field==""):
+            if (choice is None) and (field == ""):
                 # allow "" and None to be equivalent
                 return
         raise Exception("Field value %s is not in %s" % (field, str(choices)))
@@ -271,7 +296,7 @@ class PlModelMixIn(object):
 
         fields = model_to_dict(self)
         for k in fields.keys():
-            if field_types.get(k,None) == "ForeignKey":
+            if field_types.get(k, None) == "ForeignKey":
                 new_key_name = "%s_id" % k
                 if (k in fields) and (new_key_name not in fields):
                     fields[new_key_name] = fields[k]
@@ -289,20 +314,16 @@ class PlModelMixIn(object):
         bases = inspect.getmro(self.__class__)
         class_names = ",".join([x.__name__ for x in bases])
 
-        model['class_names'] = class_names
+        model["class_names"] = class_names
 
         if not pk:
             pk = self.pk
 
-        json_dict = {
-            'pk': pk,
-            'changed_fields': self.changed_fields,
-            'object': model
-        }
+        json_dict = {"pk": pk, "changed_fields": self.changed_fields, "object": model}
 
         if deleted:
-            json_dict['deleted'] = True
-            json_dict['object']['id'] = pk
+            json_dict["deleted"] = True
+            json_dict["object"]["id"] = pk
 
         topic = "xos.gui_events"
         key = self.__class__.__name__
@@ -332,8 +353,7 @@ class AttributeMixin(object):
 
     def get_initial_attribute(self, name, default=None):
         if self._initial["service_specific_attribute"]:
-            attributes = json.loads(
-                self._initial["service_specific_attribute"])
+            attributes = json.loads(self._initial["service_specific_attribute"])
         else:
             attributes = {}
         return attributes.get(name, default)
@@ -352,21 +372,31 @@ class AttributeMixin(object):
     @classmethod
     def setup_simple_attributes(cls):
         for (attrname, default) in cls.simple_attributes:
-            setattr(cls, attrname, property(
-                lambda self, attrname=attrname, default=default: self.get_attribute(attrname, default),
-                lambda self, value, attrname=attrname: self.set_attribute(
-                    attrname, value),
-                None,
-                attrname))
+            setattr(
+                cls,
+                attrname,
+                property(
+                    lambda self, attrname=attrname, default=default: self.get_attribute(
+                        attrname, default
+                    ),
+                    lambda self, value, attrname=attrname: self.set_attribute(
+                        attrname, value
+                    ),
+                    None,
+                    attrname,
+                ),
+            )
+
 
 # For cascading deletes, we need a Collector that doesn't do fastdelete,
 # so we get a full list of models.
 class XOSCollector(Collector):
-  def can_fast_delete(self, *args, **kwargs):
-    return False
+    def can_fast_delete(self, *args, **kwargs):
+        return False
+
 
 class ModelLink:
-    def __init__(self,dest,via,into=None):
-        self.dest=dest
-        self.via=via
-        self.into=into
+    def __init__(self, dest, via, into=None):
+        self.dest = dest
+        self.via = via
+        self.into = into

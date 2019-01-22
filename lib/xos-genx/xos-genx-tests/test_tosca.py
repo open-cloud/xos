@@ -18,7 +18,6 @@ from helpers import XProtoTestHelpers
 
 
 class XProtoToscaTypeTest(unittest.TestCase):
-
     def setUp(self):
         self.target_tosca_type = XProtoTestHelpers.write_tmp_target(
             """
@@ -27,13 +26,14 @@ class XProtoToscaTypeTest(unittest.TestCase):
                 {{ xproto_tosca_field_type(f.type) }}
             {% endfor -%}
             {% endfor -%}
-            """)
+            """
+        )
+
     def test_tosca_fields(self):
         """
         [XOS-GenX] should convert xproto types to tosca know types
         """
-        xproto = \
-        """
+        xproto = """
         option app_label = "test";
 
         message Foo {
@@ -47,26 +47,26 @@ class XProtoToscaTypeTest(unittest.TestCase):
         args.inputs = xproto
         args.target = self.target_tosca_type
         output = XOSProcessor.process(args)
-        self.assertIn('string', output)
-        self.assertIn('boolean', output)
-        self.assertIn('integer', output)
+        self.assertIn("string", output)
+        self.assertIn("boolean", output)
+        self.assertIn("integer", output)
+
 
 class XProtoToscaKeyTest(unittest.TestCase):
-
     def setUp(self):
         self.target_tosca_keys = XProtoTestHelpers.write_tmp_target(
             """
             {%- for m in proto.messages %}
                 {{ xproto_fields_to_tosca_keys(m.fields, m) }}
             {% endfor -%}
-            """)
+            """
+        )
 
     def test_xproto_fields_to_tosca_keys_default(self):
         """
         [XOS-GenX] if no "tosca_key" is specified, and a name attribute is present in the model, use that
         """
-        xproto = \
-"""
+        xproto = """
 option app_label = "test";
 
 message Foo {
@@ -78,16 +78,15 @@ message Foo {
         args.inputs = xproto
         args.target = self.target_tosca_keys
         output = XOSProcessor.process(args)
-        self.assertIn('name', output)
+        self.assertIn("name", output)
 
     def test_xproto_fields_to_tosca_keys_custom(self):
         """
         [XOS-GenX] if "tosca_key" is specified, use it
         """
-        xproto = \
-            """
+        xproto = """
             option app_label = "test";
-        
+
             message Foo {
                 required string name = 1 [ null = "False", blank="False"];
                 required string key_1 = 2 [ null = "False", blank="False", tosca_key=True];
@@ -99,16 +98,15 @@ message Foo {
         args.inputs = xproto
         args.target = self.target_tosca_keys
         output = XOSProcessor.process(args)
-        self.assertNotIn('name', output)
-        self.assertIn('key_1', output)
-        self.assertIn('key_2', output)
+        self.assertNotIn("name", output)
+        self.assertIn("key_1", output)
+        self.assertIn("key_2", output)
 
     def test_xproto_fields_link_to_tosca_keys_custom(self):
         """
         [XOS-GenX] if "tosca_key" is specified, use it
         """
-        xproto = \
-            """
+        xproto = """
             option app_label = "test";
 
             message Foo {
@@ -121,21 +119,20 @@ message Foo {
         args.inputs = xproto
         args.target = self.target_tosca_keys
         output = XOSProcessor.process(args)
-        self.assertNotIn('name', output)
-        self.assertIn('provider_service_instance_id', output)
+        self.assertNotIn("name", output)
+        self.assertIn("provider_service_instance_id", output)
 
     def test_xproto_model_to_oneof_key(self):
         """
         [XOS-GenX] in some models we need to have a combine key on variable fields, for example, keys can be subscriber_service_id + oneof(provider_service_id, provider_network_id)
         """
-        xproto = \
-            """
+        xproto = """
             option app_label = "test";
 
             message Foo {
-            
+
                 option tosca_key = "key1, oneof(key_2, key_3)";
-            
+
                 required string name = 1 [ null = "False", blank="False"];
                 required string key_1 = 2 [ null = "False", blank="False", tosca_key_one_of = "key_2"];
                 required string key_2 = 3 [ null = "False", blank="False", tosca_key_one_of = "key_1"];
@@ -150,8 +147,7 @@ message Foo {
         output = XOSProcessor.process(args)
         self.assertIn("['name', ['key_4', 'key_3'], ['key_1', 'key_2']]", output)
 
-        xproto = \
-            """
+        xproto = """
             option app_label = "test";
 
             message Foo {

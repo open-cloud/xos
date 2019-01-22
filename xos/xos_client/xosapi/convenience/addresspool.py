@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +14,7 @@
 
 
 from xosapi.orm import ORMWrapper, register_convenience_wrapper
+
 
 class ORMWrapperAddressPool(ORMWrapper):
     def get_address(self):
@@ -46,7 +46,6 @@ class ORMWrapperAddressPool(ORMWrapper):
 
         return None
 
-
     def put_address(self, addr):
         ap = self
         addresses = ap.addresses or ""
@@ -60,5 +59,6 @@ class ORMWrapperAddressPool(ORMWrapper):
         if addr in parts:
             parts.remove(addr)
             ap.inuse = " ".join(parts)
+
 
 register_convenience_wrapper("AddressPool", ORMWrapperAddressPool)

@@ -13,3 +13,5 @@
 # limitations under the License.
 
 from .xoskafkaproducer import XOSKafkaProducer
+
+__all__ = ["XOSKafkaProducer"]

@@ -18,13 +18,15 @@ import unittest
 
 from mock import patch, PropertyMock, ANY
 
-import os, sys
+import os
+import sys
 import time
 
 log = None
 
 test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-xos_dir = os.path.join(test_path, '..', '..', '..')
+xos_dir = os.path.join(test_path, "..", "..", "..")
+
 
 def config_get_mock(orig, overrides, key):
     if key in overrides:
@@ -33,7 +35,7 @@ def config_get_mock(orig, overrides, key):
         return orig(key)
 
 
-class FakeKafkaConsumer():
+class FakeKafkaConsumer:
     def __init__(self, values=[]):
         self.values = values
 
@@ -47,13 +49,19 @@ class FakeKafkaConsumer():
         time.sleep(1000)
 
 
-class FakeKafkaMessage():
-    ''' Works like Message in confluent_kafka
+class FakeKafkaMessage:
+    """ Works like Message in confluent_kafka
         https://docs.confluent.io/current/clients/confluent-kafka-python/#message
-    '''
+    """
 
-    def __init__(self, timestamp=None, topic='faketopic',
-                 key='fakekey', value='fakevalue', error=False):
+    def __init__(
+        self,
+        timestamp=None,
+        topic="faketopic",
+        key="fakekey",
+        value="fakevalue",
+        error=False,
+    ):
 
         if timestamp is None:
             self.fake_ts_type = confluent_kafka.TIMESTAMP_NOT_AVAILABLE
@@ -84,7 +92,6 @@ class FakeKafkaMessage():
 
 
 class TestEventEngine(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
 
@@ -92,13 +99,14 @@ class TestEventEngine(unittest.TestCase):
 
         config = os.path.join(test_path, "test_config.yaml")
         from xosconfig import Config
+
         Config.clear()
-        Config.init(config, 'synchronizer-config-schema.yaml')
+        Config.init(config, "synchronizer-config-schema.yaml")
 
         if not log:
             from multistructlog import create_logger
-            log = create_logger(Config().get('logging'))
 
+            log = create_logger(Config().get("logging"))
 
     def setUp(self):
         global XOSKafkaThread, Config, log
@@ -106,18 +114,24 @@ class TestEventEngine(unittest.TestCase):
         self.sys_path_save = sys.path
         self.cwd_save = os.getcwd()
         sys.path.append(xos_dir)
-        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
-        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base', 'tests', 'event_steps'))
+        sys.path.append(os.path.join(xos_dir, "synchronizers", "new_base"))
+        sys.path.append(
+            os.path.join(xos_dir, "synchronizers", "new_base", "tests", "event_steps")
+        )
 
         config = os.path.join(test_path, "test_config.yaml")
         from xosconfig import Config
-        Config.clear()
-        Config.init(config, 'synchronizer-config-schema.yaml')
 
-        from synchronizers.new_base.mock_modelaccessor_build import build_mock_modelaccessor
+        Config.clear()
+        Config.init(config, "synchronizer-config-schema.yaml")
+
+        from synchronizers.new_base.mock_modelaccessor_build import (
+            build_mock_modelaccessor,
+        )
+
         build_mock_modelaccessor(xos_dir, services_dir=None, service_xprotos=[])
 
-        os.chdir(os.path.join(test_path, '..'))  # config references tests/model-deps
+        os.chdir(os.path.join(test_path, ".."))  # config references tests/model-deps
 
         from event_engine import XOSKafkaThread, XOSEventEngine
 
@@ -135,11 +149,17 @@ class TestEventEngine(unittest.TestCase):
     def test_start(self):
         self.event_engine.load_event_step_modules(self.event_steps_dir)
 
-        with patch.object(XOSKafkaThread, "create_kafka_consumer") as create_kafka_consumer, \
-             patch.object(FakeKafkaConsumer, "subscribe") as fake_subscribe, \
-             patch.object(self.event_engine.event_steps[0], "process_event") as process_event:
+        with patch.object(
+            XOSKafkaThread, "create_kafka_consumer"
+        ) as create_kafka_consumer, patch.object(
+            FakeKafkaConsumer, "subscribe"
+        ) as fake_subscribe, patch.object(
+            self.event_engine.event_steps[0], "process_event"
+        ) as process_event:
 
-            create_kafka_consumer.return_value = FakeKafkaConsumer(values=["sampleevent"])
+            create_kafka_consumer.return_value = FakeKafkaConsumer(
+                values=["sampleevent"]
+            )
             self.event_engine.start()
 
             self.assertEqual(len(self.event_engine.threads), 1)
@@ -153,20 +173,27 @@ class TestEventEngine(unittest.TestCase):
             # The fake consumer will have returned one event
             process_event.assert_called_once()
 
-
     def test_start_with_pattern(self):
         self.event_engine.load_event_step_modules(self.event_steps_dir)
 
-        with patch.object(XOSKafkaThread, "create_kafka_consumer") as create_kafka_consumer, \
-             patch.object(FakeKafkaConsumer, "subscribe") as fake_subscribe, \
-             patch.object(self.event_engine.event_steps[0], "process_event") as process_event, \
-             patch.object(self.event_engine.event_steps[0], "pattern", new_callable=PropertyMock) as pattern, \
-             patch.object(self.event_engine.event_steps[0], "topics", new_callable=PropertyMock) as topics:
+        with patch.object(
+            XOSKafkaThread, "create_kafka_consumer"
+        ) as create_kafka_consumer, patch.object(
+            FakeKafkaConsumer, "subscribe"
+        ) as fake_subscribe, patch.object(
+            self.event_engine.event_steps[0], "process_event"
+        ) as process_event, patch.object(
+            self.event_engine.event_steps[0], "pattern", new_callable=PropertyMock
+        ) as pattern, patch.object(
+            self.event_engine.event_steps[0], "topics", new_callable=PropertyMock
+        ) as topics:
 
             pattern.return_value = "somepattern"
             topics.return_value = []
 
-            create_kafka_consumer.return_value = FakeKafkaConsumer(values=["sampleevent"])
+            create_kafka_consumer.return_value = FakeKafkaConsumer(
+                values=["sampleevent"]
+            )
             self.event_engine.start()
 
             self.assertEqual(len(self.event_engine.threads), 1)
@@ -180,7 +207,6 @@ class TestEventEngine(unittest.TestCase):
             # The fake consumer will have returned one event
             process_event.assert_called_once()
 
-
     def test_start_bad_tech(self):
         """ Set an unknown Technology in the event_step. XOSEventEngine.start() should print an error message and
             not create any threads.
@@ -188,17 +214,24 @@ class TestEventEngine(unittest.TestCase):
 
         self.event_engine.load_event_step_modules(self.event_steps_dir)
 
-        with patch.object(XOSKafkaThread, "create_kafka_consumer") as create_kafka_consumer, \
-                patch.object(log, "error") as log_error, \
-                patch.object(self.event_engine.event_steps[0], "technology") as technology:
+        with patch.object(
+            XOSKafkaThread, "create_kafka_consumer"
+        ) as create_kafka_consumer, patch.object(
+            log, "error"
+        ) as log_error, patch.object(
+            self.event_engine.event_steps[0], "technology"
+        ) as technology:
             technology.return_value = "not_kafka"
             create_kafka_consumer.return_value = FakeKafkaConsumer()
             self.event_engine.start()
 
             self.assertEqual(len(self.event_engine.threads), 0)
 
-            log_error.assert_called_with('Unknown technology. Skipping step', step="TestEventStep",
-                                         technology=ANY)
+            log_error.assert_called_with(
+                "Unknown technology. Skipping step",
+                step="TestEventStep",
+                technology=ANY,
+            )
 
     def test_start_bad_no_topics(self):
         """ Set no topics in the event_step. XOSEventEngine.start() will launch a thread, but the thread will fail
@@ -207,9 +240,13 @@ class TestEventEngine(unittest.TestCase):
 
         self.event_engine.load_event_step_modules(self.event_steps_dir)
 
-        with patch.object(XOSKafkaThread, "create_kafka_consumer") as create_kafka_consumer, \
-             patch.object(FakeKafkaConsumer, "subscribe") as fake_subscribe, \
-             patch.object(self.event_engine.event_steps[0], "topics", new_callable=PropertyMock) as topics:
+        with patch.object(
+            XOSKafkaThread, "create_kafka_consumer"
+        ) as create_kafka_consumer, patch.object(
+            FakeKafkaConsumer, "subscribe"
+        ) as fake_subscribe, patch.object(
+            self.event_engine.event_steps[0], "topics", new_callable=PropertyMock
+        ) as topics:
             topics.return_value = []
             create_kafka_consumer.return_value = FakeKafkaConsumer()
             self.event_engine.start()
@@ -228,9 +265,13 @@ class TestEventEngine(unittest.TestCase):
 
         self.event_engine.load_event_step_modules(self.event_steps_dir)
 
-        with patch.object(XOSKafkaThread, "create_kafka_consumer") as create_kafka_consumer, \
-             patch.object(FakeKafkaConsumer, "subscribe") as fake_subscribe, \
-             patch.object(self.event_engine.event_steps[0], "pattern", new_callable=PropertyMock) as pattern:
+        with patch.object(
+            XOSKafkaThread, "create_kafka_consumer"
+        ) as create_kafka_consumer, patch.object(
+            FakeKafkaConsumer, "subscribe"
+        ) as fake_subscribe, patch.object(
+            self.event_engine.event_steps[0], "pattern", new_callable=PropertyMock
+        ) as pattern:
             pattern.return_value = "foo"
             create_kafka_consumer.return_value = FakeKafkaConsumer()
             self.event_engine.start()
@@ -250,16 +291,26 @@ class TestEventEngine(unittest.TestCase):
         self.event_engine.load_event_step_modules(self.event_steps_dir)
 
         config_get_orig = Config.get
-        with patch.object(XOSKafkaThread, "create_kafka_consumer") as create_kafka_consumer, \
-                patch.object(log, "error") as log_error, \
-                patch.object(Config, "get", new=functools.partial(config_get_mock, config_get_orig, {"event_bus.kind": None})):
+        with patch.object(
+            XOSKafkaThread, "create_kafka_consumer"
+        ) as create_kafka_consumer, patch.object(
+            log, "error"
+        ) as log_error, patch.object(
+            Config,
+            "get",
+            new=functools.partial(
+                config_get_mock, config_get_orig, {"event_bus.kind": None}
+            ),
+        ):
 
             create_kafka_consumer.return_value = FakeKafkaConsumer()
             self.event_engine.start()
 
             self.assertEqual(len(self.event_engine.threads), 0)
 
-            log_error.assert_called_with('Eventbus kind is not configured in synchronizer config file.')
+            log_error.assert_called_with(
+                "Eventbus kind is not configured in synchronizer config file."
+            )
 
     def test_start_config_bad_eventbus_kind(self):
         """ Set an unknown event_bus.kind in Config. XOSEventEngine.start() should print an error message and
@@ -269,17 +320,27 @@ class TestEventEngine(unittest.TestCase):
         self.event_engine.load_event_step_modules(self.event_steps_dir)
 
         config_get_orig = Config.get
-        with patch.object(XOSKafkaThread, "create_kafka_consumer") as create_kafka_consumer, \
-                patch.object(log, "error") as log_error, \
-                patch.object(Config, "get",
-                             new=functools.partial(config_get_mock, config_get_orig, {"event_bus.kind": "not_kafka"})):
+        with patch.object(
+            XOSKafkaThread, "create_kafka_consumer"
+        ) as create_kafka_consumer, patch.object(
+            log, "error"
+        ) as log_error, patch.object(
+            Config,
+            "get",
+            new=functools.partial(
+                config_get_mock, config_get_orig, {"event_bus.kind": "not_kafka"}
+            ),
+        ):
             create_kafka_consumer.return_value = FakeKafkaConsumer()
             self.event_engine.start()
 
             self.assertEqual(len(self.event_engine.threads), 0)
 
-            log_error.assert_called_with('Eventbus kind is set to a technology we do not implement.',
-                                         eventbus_kind='not_kafka')
+            log_error.assert_called_with(
+                "Eventbus kind is set to a technology we do not implement.",
+                eventbus_kind="not_kafka",
+            )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

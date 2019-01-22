@@ -18,7 +18,8 @@ import confluent_kafka
 
 from xosconfig import Config
 from multistructlog import create_logger
-log = create_logger(Config().get('logging'))
+
+log = create_logger(Config().get("logging"))
 
 kafka_producer = None
 
@@ -34,23 +35,24 @@ class XOSKafkaProducer:
         global kafka_producer
 
         if kafka_producer:
-            raise Exception('XOSKafkaProducer already initialized')
+            raise Exception("XOSKafkaProducer already initialized")
 
         else:
-            log.info('Connecting to Kafka with bootstrap servers: %s' %
-                     Config.get('kafka_bootstrap_servers'))
+            log.info(
+                "Connecting to Kafka with bootstrap servers: %s"
+                % Config.get("kafka_bootstrap_servers")
+            )
 
             try:
                 producer_config = {
-                    'bootstrap.servers':
-                        ','.join(Config.get('kafka_bootstrap_servers')),
+                    "bootstrap.servers": ",".join(Config.get("kafka_bootstrap_servers"))
                 }
 
                 kafka_producer = confluent_kafka.Producer(**producer_config)
 
-                log.info('Connected to Kafka: %s' % kafka_producer)
+                log.info("Connected to Kafka: %s" % kafka_producer)
 
-            except confluent_kafka.KafkaError, e:
+            except confluent_kafka.KafkaError as e:
                 log.exception("Kafka Error: %s" % e)
 
     @classmethod
@@ -58,25 +60,22 @@ class XOSKafkaProducer:
 
         try:
             kafka_producer.produce(
-                topic,
-                value,
-                key,
-                callback=cls._kafka_delivery_callback
-                )
+                topic, value, key, callback=cls._kafka_delivery_callback
+            )
 
             # see https://github.com/confluentinc/confluent-kafka-python/issues/16
             kafka_producer.poll(0)
 
-        except confluent_kafka.KafkaError, err:
+        except confluent_kafka.KafkaError as err:
             log.exception("Kafka Error", err)
 
     def __del__(self):
-       if kafka_producer is not None:
+        if kafka_producer is not None:
             kafka_producer.flush()
 
     @staticmethod
     def _kafka_delivery_callback(err, msg):
         if err:
-            log.error('Message failed delivery: %s' % err)
+            log.error("Message failed delivery: %s" % err)
         else:
-            log.trace('Message delivered', message=msg)
+            log.trace("Message delivered", message=msg)

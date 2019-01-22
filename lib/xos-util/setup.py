@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 # Copyright 2017-present Open Networking Foundation
 #
@@ -15,18 +15,15 @@
 # limitations under the License.
 
 
-import os
-
-from setuptools import setup
-
 from xosutil.autoversion_setup import setup_with_auto_version
 from xosutil.version import __version__
 
-setup_with_auto_version(name='XosUtil',
-      version=__version__,
-      description='XOS Utility Library',
-      author='Scott Baker',
-      author_email='scottb@opennetworking.org',
-      packages=['xosutil'],
-      include_package_data=True
-     )
+setup_with_auto_version(
+    name="XosUtil",
+    version=__version__,
+    description="XOS Utility Library",
+    author="Scott Baker",
+    author_email="scottb@opennetworking.org",
+    packages=["xosutil"],
+    include_package_data=True,
+)

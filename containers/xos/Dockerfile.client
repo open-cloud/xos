@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # xosproject/xos-client
-FROM xosproject/xos-libraries:2.1.31
+FROM xosproject/xos-libraries:2.1.32
 
 # Install XOS client
 COPY xos/xos_client /tmp/xos_client

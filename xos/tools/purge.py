@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +13,21 @@
 # limitations under the License.
 
 
+from core.models import *
+import django
 import os
 import sys
+
 sys.path.append("/opt/xos")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
-import django
-from core.models import *
+
 django.setup()
+
 
 def purge(cls):
     for obj in cls.deleted_objects.all():
         obj.delete(purge=True)
+
 
 for model in [Instance, Slice, Site, Service, User, Image, ImageDeployments, Port]:
     purge(model)

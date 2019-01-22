@@ -15,6 +15,7 @@
 from synchronizers.new_base.pullstep import PullStep
 from mock_modelaccessor import *
 
+
 class TestPullStep(PullStep):
     def __init__(self):
         super(TestPullStep, self).__init__(observed_model=Instance)

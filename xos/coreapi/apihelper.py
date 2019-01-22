@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from __future__ import print_function
+from apistats import REQUEST_COUNT
 import base64
 import datetime
 import inspect
@@ -26,16 +26,22 @@ import grpc
 
 from django.contrib.auth import authenticate as django_authenticate
 from django.db.models import F, Q
-from core.models import *
-from xos.exceptions import *
+from core.models import Site, User, XOSBase
+from xos.exceptions import (
+    XOSNotAuthenticated,
+    XOSPermissionDenied,
+    XOSNotFound,
+    XOSValidationError,
+)
 
 from importlib import import_module
 from django.conf import settings
 
 from xosconfig import Config
 from multistructlog import create_logger
-log = create_logger(Config().get('logging'))
-from apistats import REQUEST_COUNT
+
+log = create_logger(Config().get("logging"))
+
 
 class XOSDefaultSecurityContext(object):
     grant_access = True
@@ -44,20 +50,23 @@ class XOSDefaultSecurityContext(object):
 
 
 xos_anonymous_site = Site(
-    name='XOS Anonymous Site',
+    name="XOS Anonymous Site",
     enabled=True,
     hosts_nodes=False,
     hosts_users=True,
-    login_base='xos',
-    abbreviated_name='xos-anonymous')
+    login_base="xos",
+    abbreviated_name="xos-anonymous",
+)
 
 xos_anonymous_user = User(
-    username='XOS Anonymous User',
-    email='xos@example.com',
+    username="XOS Anonymous User",
+    email="xos@example.com",
     is_admin=False,
-    site=xos_anonymous_site)
+    site=xos_anonymous_site,
+)
 
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
+
 
 def translate_exceptions(model, method):
     """ this decorator translates XOS exceptions to grpc status codes """
@@ -69,8 +78,9 @@ def translate_exceptions(model, method):
             except Exception as e:
 
                 import traceback
+
                 tb = traceback.format_exc()
-                print tb
+                print(tb)
                 # TODO can we propagate it over the APIs?
 
                 if "context" in kwargs:
@@ -78,25 +88,35 @@ def translate_exceptions(model, method):
                 else:
                     context = args[2]
 
-                if hasattr(e, 'json_detail'):
+                if hasattr(e, "json_detail"):
                     context.set_details(e.json_detail)
-                elif hasattr(e, 'detail'):
+                elif hasattr(e, "detail"):
                     context.set_details(e.detail)
 
-                if (isinstance(e, XOSPermissionDenied)):
-                    REQUEST_COUNT.labels('xos-core', model, method, grpc.StatusCode.PERMISSION_DENIED).inc()
+                if isinstance(e, XOSPermissionDenied):
+                    REQUEST_COUNT.labels(
+                        "xos-core", model, method, grpc.StatusCode.PERMISSION_DENIED
+                    ).inc()
                     context.set_code(grpc.StatusCode.PERMISSION_DENIED)
-                elif (isinstance(e, XOSValidationError)):
-                    REQUEST_COUNT.labels('xos-core', model, method, grpc.StatusCode.INVALID_ARGUMENT).inc()
+                elif isinstance(e, XOSValidationError):
+                    REQUEST_COUNT.labels(
+                        "xos-core", model, method, grpc.StatusCode.INVALID_ARGUMENT
+                    ).inc()
                     context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-                elif (isinstance(e, XOSNotAuthenticated)):
-                    REQUEST_COUNT.labels('xos-core', model, method, grpc.StatusCode.UNAUTHENTICATED).inc()
+                elif isinstance(e, XOSNotAuthenticated):
+                    REQUEST_COUNT.labels(
+                        "xos-core", model, method, grpc.StatusCode.UNAUTHENTICATED
+                    ).inc()
                     context.set_code(grpc.StatusCode.UNAUTHENTICATED)
-                elif (isinstance(e, XOSNotFound)):
-                    REQUEST_COUNT.labels('xos-core', model, method, grpc.StatusCode.NOT_FOUND).inc()
+                elif isinstance(e, XOSNotFound):
+                    REQUEST_COUNT.labels(
+                        "xos-core", model, method, grpc.StatusCode.NOT_FOUND
+                    ).inc()
                     context.set_code(grpc.StatusCode.NOT_FOUND)
                 raise
+
         return wrapper
+
     return decorator
 
 
@@ -106,17 +126,19 @@ bench_ops = 0
 
 def benchmark(function):
     """ this decorator will report gRPC benchmark statistics every 10 seconds """
+
     def wrapper(*args, **kwargs):
         global bench_tStart
         global bench_ops
         result = function(*args, **kwargs)
         bench_ops = bench_ops + 1
         elap = time.time() - bench_tStart
-        if (elap >= 10):
-            print "performance %d" % (bench_ops / elap)
+        if elap >= 10:
+            print("performance %d" % (bench_ops / elap))
             bench_ops = 0
             bench_tStart = time.time()
         return result
+
     return wrapper
 
 
@@ -127,7 +149,7 @@ class CachedAuthenticator(object):
 
     def __init__(self):
         self.cached_creds = {}
-        self.timeout = 10          # keep cache entries around for 10s
+        self.timeout = 10  # keep cache entries around for 10s
         # lock to keep multiple callers from trimming at the same time
         self.lock = threading.Lock()
 
@@ -150,7 +172,8 @@ class CachedAuthenticator(object):
             # user)
             self.cached_creds[key] = {
                 "timeout": time.time() + self.timeout,
-                "user_id": user.id}
+                "user_id": user.id,
+            }
 
         return user
 
@@ -196,8 +219,7 @@ class XOSAPIHelperMixin(object):
             return 0
         else:
             utc = pytz.utc
-            return (x - datetime.datetime(1970, 1,
-                                          1, tzinfo=utc)).total_seconds()
+            return (x - datetime.datetime(1970, 1, 1, tzinfo=utc)).total_seconds()
             # return time.mktime(x.timetuple())
 
     def convertForeignKey(self, x):
@@ -213,34 +235,35 @@ class XOSAPIHelperMixin(object):
                 continue
 
             ftype = field.get_internal_type()
-            if (ftype == "CharField") or (
-                    ftype == "TextField") or (ftype == "SlugField"):
+            if (
+                (ftype == "CharField")
+                or (ftype == "TextField")
+                or (ftype == "SlugField")
+            ):
                 setattr(p_obj, field.name, str(getattr(obj, field.name)))
-            elif (ftype == "BooleanField"):
+            elif ftype == "BooleanField":
                 setattr(p_obj, field.name, getattr(obj, field.name))
-            elif (ftype == "AutoField"):
+            elif ftype == "AutoField":
                 setattr(p_obj, field.name, int(getattr(obj, field.name)))
-            elif (ftype == "IntegerField") or (ftype == "PositiveIntegerField") or (ftype == "BigIntegerField"):
+            elif (
+                (ftype == "IntegerField")
+                or (ftype == "PositiveIntegerField")
+                or (ftype == "BigIntegerField")
+            ):
                 setattr(p_obj, field.name, int(getattr(obj, field.name)))
-            elif (ftype == "ForeignKey"):
+            elif ftype == "ForeignKey":
                 setattr(
                     p_obj,
                     field.name + "_id",
-                    self.convertForeignKey(
-                        getattr(
-                            obj,
-                            field.name)))
-            elif (ftype == "DateTimeField"):
+                    self.convertForeignKey(getattr(obj, field.name)),
+                )
+            elif ftype == "DateTimeField":
                 setattr(
-                    p_obj,
-                    field.name,
-                    self.convertDateTime(
-                        getattr(
-                            obj,
-                            field.name)))
-            elif (ftype == "FloatField"):
+                    p_obj, field.name, self.convertDateTime(getattr(obj, field.name))
+                )
+            elif ftype == "FloatField":
                 setattr(p_obj, field.name, float(getattr(obj, field.name)))
-            elif (ftype == "GenericIPAddressField"):
+            elif ftype == "GenericIPAddressField":
                 setattr(p_obj, field.name, str(getattr(obj, field.name)))
 
         # Introspecting the django object for related objects is problematic due to _decl-style attics. The descendant
@@ -260,7 +283,10 @@ class XOSAPIHelperMixin(object):
             related_name = field_name[:-4]
             if not hasattr(obj, related_name):
                 # if field doesn't exist in the django object, then ignore it
-                log.warning("Protobuf field %s doesn't have a corresponding django field" % field_name)
+                log.warning(
+                    "Protobuf field %s doesn't have a corresponding django field"
+                    % field_name
+                )
                 continue
 
             try:
@@ -287,10 +313,7 @@ class XOSAPIHelperMixin(object):
         # counts.
 
         bases = inspect.getmro(obj.__class__)
-        bases = [
-            x for x in bases if issubclass(
-                x, XOSBase) or issubclass(
-                x, User)]
+        bases = [x for x in bases if issubclass(x, XOSBase) or issubclass(x, User)]
         p_obj.class_names = ",".join([x.__name__ for x in bases])
 
         p_obj.self_content_type_id = obj.get_content_type_key()
@@ -310,31 +333,38 @@ class XOSAPIHelperMixin(object):
         for (fieldDesc, val) in message.ListFields():
             name = fieldDesc.name
             if name in fmap:
-                if (name == "id"):
+                if name == "id":
                     # don't let anyone set the id
                     continue
                 ftype = fmap[name].get_internal_type()
-                if (ftype == "CharField") or (
-                        ftype == "TextField") or (ftype == "SlugField"):
+                if (
+                    (ftype == "CharField")
+                    or (ftype == "TextField")
+                    or (ftype == "SlugField")
+                ):
                     args[name] = val
-                elif (ftype == "BooleanField"):
+                elif ftype == "BooleanField":
                     args[name] = val
-                elif (ftype == "AutoField"):
+                elif ftype == "AutoField":
                     args[name] = val
-                elif (ftype == "IntegerField") or (ftype == "PositiveIntegerField") or (ftype == "BigIntegerField"):
+                elif (
+                    (ftype == "IntegerField")
+                    or (ftype == "PositiveIntegerField")
+                    or (ftype == "BigIntegerField")
+                ):
                     args[name] = val
-                elif (ftype == "ForeignKey"):
+                elif ftype == "ForeignKey":
                     if val == 0:  # assume object id 0 means None
                         args[name] = None
                     else:
                         # field name already has "_id" at the end
                         args[name] = val
-                elif (ftype == "DateTimeField"):
+                elif ftype == "DateTimeField":
                     utc = pytz.utc
                     args[name] = datetime.datetime.fromtimestamp(val, tz=utc)
-                elif (ftype == "FloatField"):
+                elif ftype == "FloatField":
                     args[name] = val
-                elif (ftype == "GenericIPAddressField"):
+                elif ftype == "GenericIPAddressField":
                     args[name] = val
                 fset[name] = True
 
@@ -344,15 +374,17 @@ class XOSAPIHelperMixin(object):
         # fix for possible django bug?
         # Unless we refresh the object, django will ignore every other m2m save
 
-        #djangoClass = djangoClass.__class__.objects.get(id=djangoClass.id)
+        # djangoClass = djangoClass.__class__.objects.get(id=djangoClass.id)
         djangoClass.refresh_from_db()
 
-        fmap={}
+        fmap = {}
         for m2m in djangoClass._meta.many_to_many:
             related_name = m2m.name
             if not related_name:
                 continue
-            if "+" in related_name:   # duplicated logic from related_objects; not sure if necessary
+            if (
+                "+" in related_name
+            ):  # duplicated logic from related_objects; not sure if necessary
                 continue
 
             fmap[m2m.name + "_ids"] = m2m
@@ -360,11 +392,11 @@ class XOSAPIHelperMixin(object):
         fields_changed = []
         for (fieldDesc, val) in message.ListFields():
             if fieldDesc.name in fmap:
-                m2m = getattr(djangoClass,fmap[fieldDesc.name].name)
+                m2m = getattr(djangoClass, fmap[fieldDesc.name].name)
 
                 # remove items that are in the django object, but not in the proto object
                 for item in list(m2m.all()):
-                    if (not item.id in val):
+                    if item.id not in val:
                         m2m.remove(item.id)
                         fields_changed.append(fieldDesc.name)
 
@@ -382,7 +414,7 @@ class XOSAPIHelperMixin(object):
         # to set.
 
         for name in update_fields:
-            if (name in fmap) and (not name in fields_changed):
+            if (name in fmap) and (name not in fields_changed):
                 m2m = getattr(djangoClass, fmap[name].name)
                 m2m.clear()
                 fields_changed.append(name)
@@ -414,8 +446,8 @@ class XOSAPIHelperMixin(object):
             if not obj:
                 obj = djangoClass.objects.get(id=id)
             return obj
-        except djangoClass.DoesNotExist, e:
-            raise XOSNotFound(fields={'id': id, 'message': e.message})
+        except djangoClass.DoesNotExist as e:
+            raise XOSNotFound(fields={"id": id, "message": e.message})
 
     def xos_security_gate(self, obj, user, **access_types):
         sec_ctx = XOSDefaultSecurityContext()
@@ -427,8 +459,6 @@ class XOSAPIHelperMixin(object):
         for k, v in access_types.items():
             setattr(sec_ctx, k, v)
 
-        obj_ctx = obj
-
         verdict, policy_name = obj.can_access(ctx=sec_ctx)
 
         # FIXME: This is the central point of enforcement for security policies
@@ -438,16 +468,19 @@ class XOSAPIHelperMixin(object):
         if not verdict:
             #    logging.critical( ... )
             if obj.id:
-                object_descriptor = 'object %d' % obj.id
+                object_descriptor = "object %d" % obj.id
             else:
-                object_descriptor = 'new object'
+                object_descriptor = "new object"
 
             raise XOSPermissionDenied(
-                "User %(user_email)s cannot access %(django_class_name)s %(descriptor)s due to policy %(policy_name)s" % {
-                    'user_email': user.email,
-                    'django_class_name': obj.__class__.__name__,
-                    'policy_name': policy_name,
-                    'descriptor': object_descriptor})
+                "User %(user_email)s cannot access %(django_class_name)s %(descriptor)s due to policy %(policy_name)s"
+                % {
+                    "user_email": user.email,
+                    "django_class_name": obj.__class__.__name__,
+                    "policy_name": policy_name,
+                    "descriptor": object_descriptor,
+                }
+            )
 
     def xos_security_check(self, obj, user, **access_types):
         sec_ctx = XOSDefaultSecurityContext()
@@ -456,8 +489,6 @@ class XOSAPIHelperMixin(object):
         sec_ctx.user = user
         for k, v in access_types.items():
             setattr(sec_ctx, k, v)
-
-        obj_ctx = obj
 
         verdict, _ = obj.can_access(ctx=sec_ctx)
         return verdict
@@ -483,7 +514,7 @@ class XOSAPIHelperMixin(object):
 
             response = self.objToProto(new_obj)
             return response
-        except:
+        except BaseException:
             log.exception("Exception in apihelper.create")
             raise
 
@@ -498,7 +529,7 @@ class XOSAPIHelperMixin(object):
             for (k, v) in args.iteritems():
                 setattr(obj, k, v)
 
-            m2m_field_names = [x.name+"_ids" for x in djangoClass._meta.many_to_many]
+            m2m_field_names = [x.name + "_ids" for x in djangoClass._meta.many_to_many]
 
             update_fields = []
             m2m_update_fields = []
@@ -528,7 +559,7 @@ class XOSAPIHelperMixin(object):
 
             response = self.objToProto(obj)
             return response
-        except:
+        except BaseException:
             log.exception("Exception in apihelper.update")
             raise
 
@@ -540,7 +571,7 @@ class XOSAPIHelperMixin(object):
 
             obj.delete()
             return Empty()
-        except:
+        except BaseException:
             log.exception("Exception in apihelper.delete")
             raise
 
@@ -577,15 +608,17 @@ class XOSAPIHelperMixin(object):
         try:
             queryset = djangoClass.objects.all()
             filtered_queryset = (
-                elt for elt in queryset if self.xos_security_check(
-                    elt, user, read_access=True))
+                elt
+                for elt in queryset
+                if self.xos_security_check(elt, user, read_access=True)
+            )
 
             # FIXME: Implement auditing here
             # logging.info("User requested x objects, y objects were filtered out by policy z")
 
             response = self.querysetToProto(djangoClass, filtered_queryset)
             return response
-        except:
+        except BaseException:
             log.exception("Exception in apihelper.list")
             raise
 
@@ -607,8 +640,15 @@ class XOSAPIHelperMixin(object):
                 query = self.build_filter(request, None)
                 queryset = djangoClass.objects.filter(query)
             elif request.kind == request.SYNCHRONIZER_DIRTY_OBJECTS:
-                query = (Q(enacted=None) | Q(enacted__lt=F('updated')) | Q(enacted__lt=F('changed_by_policy'))) \
-                        & Q(lazy_blocked=False) & Q(no_sync=False)
+                query = (
+                    (
+                        Q(enacted=None)
+                        | Q(enacted__lt=F("updated"))
+                        | Q(enacted__lt=F("changed_by_policy"))
+                    )
+                    & Q(lazy_blocked=False)
+                    & Q(no_sync=False)
+                )
                 query = self.build_filter(request, query)
                 queryset = djangoClass.objects.filter(query)
             elif request.kind == request.SYNCHRONIZER_DELETED_OBJECTS:
@@ -618,50 +658,55 @@ class XOSAPIHelperMixin(object):
                 else:
                     queryset = djangoClass.deleted_objects.all()
             elif request.kind == request.SYNCHRONIZER_DIRTY_POLICIES:
-                query = (Q(policed=None) | Q(policed__lt=F('updated')) | Q(policed__lt=F('changed_by_step'))) \
-                        & Q(no_policy=False)
+                query = (
+                    Q(policed=None)
+                    | Q(policed__lt=F("updated"))
+                    | Q(policed__lt=F("changed_by_step"))
+                ) & Q(no_policy=False)
                 query = self.build_filter(request, query)
                 queryset = djangoClass.objects.filter(query)
             elif request.kind == request.SYNCHRONIZER_DELETED_POLICIES:
-                query = Q(policed__lt=F('updated')) | Q(policed=None)
+                query = Q(policed__lt=F("updated")) | Q(policed=None)
                 query = self.build_filter(request, query)
                 queryset = djangoClass.deleted_objects.filter(query)
             elif request.kind == request.ALL:
                 queryset = djangoClass.objects.all()
 
             filtered_queryset = (
-                elt for elt in queryset if self.xos_security_check(
-                    elt, user, read_access=True))
+                elt
+                for elt in queryset
+                if self.xos_security_check(elt, user, read_access=True)
+            )
 
             # FIXME: Implement auditing here
             # logging.info("User requested x objects, y objects were filtered out by policy z")
 
             response = self.querysetToProto(djangoClass, filtered_queryset)
             return response
-        except:
+        except BaseException:
             log.exception("Exception in apihelper.filter")
             raise
 
     def authenticate(self, context, required=True):
         for (k, v) in context.invocation_metadata():
-            if (k.lower() == "authorization"):
+            if k.lower() == "authorization":
                 (method, auth) = v.split(" ", 1)
-                if (method.lower() == "basic"):
+                if method.lower() == "basic":
                     auth = base64.b64decode(auth)
                     (username, password) = auth.split(":")
                     user = cached_authenticator.authenticate(
-                        username=username, password=password)
+                        username=username, password=password
+                    )
                     if not user:
                         raise XOSPermissionDenied(
-                            "failed to authenticate %s:%s" %
-                            (username, password))
+                            "failed to authenticate %s:%s" % (username, password)
+                        )
                     return user
-            elif (k.lower() == "x-xossession"):
+            elif k.lower() == "x-xossession":
                 s = SessionStore(session_key=v)
                 id = s.get("_auth_user_id", None)
                 if not id:
-                    raise XOSPermissionDenied(
-                        "failed to authenticate token %s" % v)
+                    raise XOSPermissionDenied("failed to authenticate token %s" % v)
                 user = User.objects.get(id=id)
                 log.info("authenticated sessionid %s as %s" % (v, user))
                 return user

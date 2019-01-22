@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,26 +15,30 @@
 
 from xosapi.orm import ORMWrapper, register_convenience_wrapper
 
-class ORMWrapperInstance(ORMWrapper):
 
+class ORMWrapperInstance(ORMWrapper):
     def all_ips(self):
-        ips={}
+        ips = {}
         for ns in self.ports.all():
-           if ns.ip:
-               ips[ns.network.name] = ns.ip
+            if ns.ip:
+                ips[ns.network.name] = ns.ip
         return ips
 
     def all_ips_string(self):
         result = []
         ips = self.all_ips()
         for key in sorted(ips.keys()):
-            #result.append("%s = %s" % (key, ips[key]))
+            # result.append("%s = %s" % (key, ips[key]))
             result.append(ips[key])
         return ", ".join(result)
 
     def get_public_ip(self):
         for ns in self.ports.all():
-            if (ns.ip) and (ns.network.template.visibility=="public") and (ns.network.template.translation=="none"):
+            if (
+                (ns.ip)
+                and (ns.network.template.visibility == "public")
+                and (ns.network.template.translation == "none")
+            ):
                 return ns.ip
         return None
 
@@ -50,11 +53,14 @@ class ORMWrapperInstance(ORMWrapper):
     def get_ssh_ip(self):
         # first look specifically for a management_local network
         for ns in self.ports.all():
-            if ns.network.template and ns.network.template.vtn_kind=="MANAGEMENT_LOCAL":
+            if (
+                ns.network.template
+                and ns.network.template.vtn_kind == "MANAGEMENT_LOCAL"
+            ):
                 return ns.ip
 
         # for compatibility, now look for any management network
-        management=self.get_network_ip("management")
+        management = self.get_network_ip("management")
         if management:
             return management
 
@@ -67,5 +73,6 @@ class ORMWrapperInstance(ORMWrapper):
             return self.node.site_deployment.controller
         else:
             return None
+
 
 register_convenience_wrapper("Instance", ORMWrapperInstance)

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 class EventStep(object):
     """
     All the event steps defined in each synchronizer needs to inherit from this class in order to be loaded
@@ -36,4 +37,7 @@ class EventStep(object):
     def process_event(self, event):
         # This method must be overridden in your class. Do not call the original method.
 
-        self.log.warning("There is no default process_event, please provide a process_event method", msg=event)
+        self.log.warning(
+            "There is no default process_event, please provide a process_event method",
+            msg=event,
+        )

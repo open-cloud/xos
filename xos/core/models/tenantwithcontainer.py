@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,7 @@
 from xos.exceptions import *
 from tenantwithcontainer_decl import *
 
+
 class TenantWithContainer(TenantWithContainer_decl):
     class Meta:
         proxy = True
@@ -28,7 +28,7 @@ class TenantWithContainer(TenantWithContainer_decl):
 
     # vSG service relies on instance_id attribute
     def get_attribute(self, name, default=None):
-        if name=="instance_id":
+        if name == "instance_id":
             if self.instance:
                 return self.instance.id
             else:
@@ -48,6 +48,7 @@ class TenantWithContainer(TenantWithContainer_decl):
     @property
     def image(self):
         from core.models import Image
+
         # Implement the logic here to pick the image that should be used when
         # instantiating the VM that will hold the container.
 
@@ -67,4 +68,3 @@ class TenantWithContainer(TenantWithContainer_decl):
             self.creator = self.caller
 
         super(TenantWithContainer, self).save(*args, **kwargs)
-

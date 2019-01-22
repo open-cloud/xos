@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,9 +21,11 @@ from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 
 from xosconfig import Config
 from multistructlog import create_logger
-log = create_logger(Config().get('logging'))
 
-DEFAULT_BASE_DIR="/opt/xos"
+log = create_logger(Config().get("logging"))
+
+DEFAULT_BASE_DIR = "/opt/xos"
+
 
 class DynamicBuilder(object):
     NOTHING_TO_DO = 0
@@ -37,7 +38,9 @@ class DynamicBuilder(object):
         self.coreapi_dir = os.path.join(base_dir, "coreapi")
         self.protos_dir = os.path.join(base_dir, "coreapi/protos")
         self.app_metadata_dir = os.path.join(base_dir, "xos")
-        self.convenience_methods_dir = os.path.join(base_dir, "xos_client/xosapi/convenience")
+        self.convenience_methods_dir = os.path.join(
+            base_dir, "xos_client/xosapi/convenience"
+        )
 
     def pre_validate_file(self, item):
         # someone might be trying to trick us into writing files outside the designated directory
@@ -49,7 +52,7 @@ class DynamicBuilder(object):
         try:
             os.write(handle, item.contents)
             os.close(handle)
-            if (os.system("python -m py_compile %s" % fn) != 0):
+            if os.system("python -m py_compile %s" % fn) != 0:
                 raise Exception("python file %s failed compile test" % item.filename)
         finally:
             os.remove(fn)
@@ -73,14 +76,14 @@ class DynamicBuilder(object):
         if not os.path.exists(self.manifest_dir):
             return []
 
-        manifests=[]
+        manifests = []
         for fn in os.listdir(self.manifest_dir):
             if fn.endswith(".json"):
                 manifest_fn = os.path.join(self.manifest_dir, fn)
                 try:
                     manifest = json.loads(open(manifest_fn).read())
                     manifests.append(manifest)
-                except:
+                except BaseException:
                     log.exception("Error loading manifest", filename=manifest_fn)
         return manifests
 
@@ -89,7 +92,7 @@ class DynamicBuilder(object):
         if os.path.exists(manifest_fn):
             try:
                 manifest = json.loads(open(manifest_fn).read())
-            except:
+            except BaseException:
                 log.exception("Error loading old manifest", filename=manifest_fn)
                 manifest = {}
         else:
@@ -106,7 +109,10 @@ class DynamicBuilder(object):
         if hash == manifest.get("hash"):
             # The hash of the incoming request is identical to the manifest that we have saved, so this request is a
             # no-op.
-            log.info("Models are already up-to-date; skipping dynamic load.", name=request.name)
+            log.info(
+                "Models are already up-to-date; skipping dynamic load.",
+                name=request.name,
+            )
             return self.NOTHING_TO_DO
 
         self.pre_validate_models(request)
@@ -131,7 +137,10 @@ class DynamicBuilder(object):
         if hash == manifest.get("hash"):
             # The hash of the incoming request is identical to the manifest that we have saved, so this request is a
             # no-op.
-            log.info("Models are already up-to-date; skipping dynamic unload.", name=request.name)
+            log.info(
+                "Models are already up-to-date; skipping dynamic unload.",
+                name=request.name,
+            )
             return self.NOTHING_TO_DO
 
         manifest = self.save_models(request, state="unload", hash=hash)
@@ -150,7 +159,7 @@ class DynamicBuilder(object):
         m = hashlib.sha1()
         m.update(request.name)
         m.update(request.version)
-        if (state == "load"):
+        if state == "load":
             for item in request.xprotos:
                 m.update(item.filename)
                 m.update(item.contents)
@@ -181,19 +190,21 @@ class DynamicBuilder(object):
             os.remove(manifest_fn)
 
         # convert the request to a manifest, so we can save it
-        service_manifest = {"name": request.name,
-                            "version": request.version,
-                            "hash": hash,
-                            "state": state,
-                            "dir": service_dir,
-                            "manifest_fn": manifest_fn,
-                            "dest_dir": os.path.join(self.services_dest_dir, request.name),
-                            "xprotos": [],
-                            "decls": [],
-                            "attics": [],
-                            "convenience_methods": []}
+        service_manifest = {
+            "name": request.name,
+            "version": request.version,
+            "hash": hash,
+            "state": state,
+            "dir": service_dir,
+            "manifest_fn": manifest_fn,
+            "dest_dir": os.path.join(self.services_dest_dir, request.name),
+            "xprotos": [],
+            "decls": [],
+            "attics": [],
+            "convenience_methods": [],
+        }
 
-        if (state == "load"):
+        if state == "load":
             for item in request.xprotos:
                 file(os.path.join(service_dir, item.filename), "w").write(item.contents)
                 service_manifest["xprotos"].append({"filename": item.filename})
@@ -208,16 +219,17 @@ class DynamicBuilder(object):
                 if not os.path.exists(attic_dir):
                     os.makedirs(attic_dir)
                 for item in request.attics:
-                    file(os.path.join(attic_dir, item.filename), "w").write(item.contents)
+                    file(os.path.join(attic_dir, item.filename), "w").write(
+                        item.contents
+                    )
                     service_manifest["attics"].append({"filename": item.filename})
 
             for item in request.convenience_methods:
                 save_path = os.path.join(self.convenience_methods_dir, item.filename)
                 file(save_path, "w").write(item.contents)
-                service_manifest["convenience_methods"].append({
-                    "filename": item.filename,
-                    "path": save_path
-                })
+                service_manifest["convenience_methods"].append(
+                    {"filename": item.filename, "path": save_path}
+                )
 
         return service_manifest
 
@@ -225,41 +237,48 @@ class DynamicBuilder(object):
         if not os.path.exists(manifest["dest_dir"]):
             os.makedirs(manifest["dest_dir"])
 
-        xproto_filenames = [os.path.join(manifest["dir"], x["filename"]) for x in manifest["xprotos"]]
+        xproto_filenames = [
+            os.path.join(manifest["dir"], x["filename"]) for x in manifest["xprotos"]
+        ]
 
         # Generate models
-        is_service = manifest["name"] != 'core'
+        is_service = manifest["name"] != "core"
 
-        args = XOSProcessorArgs(output = manifest["dest_dir"],
-                                attic = os.path.join(manifest["dir"], 'attic'),
-                                files = xproto_filenames)
+        args = XOSProcessorArgs(
+            output=manifest["dest_dir"],
+            attic=os.path.join(manifest["dir"], "attic"),
+            files=xproto_filenames,
+        )
 
         if is_service:
-            args.target = 'service.xtarget'
-            args.write_to_file = 'target'
+            args.target = "service.xtarget"
+            args.write_to_file = "target"
         else:
-            args.target = 'django.xtarget'
-            args.dest_extension = 'py'
-            args.write_to_file = 'model'
+            args.target = "django.xtarget"
+            args.dest_extension = "py"
+            args.write_to_file = "model"
 
         XOSProcessor.process(args)
 
         # Generate security checks
-        security_args = XOSProcessorArgs(output = manifest["dest_dir"],
-                                         target = 'django-security.xtarget',
-                                         dest_file = 'security.py',
-                                         write_to_file = 'single',
-                                         files = xproto_filenames)
+        security_args = XOSProcessorArgs(
+            output=manifest["dest_dir"],
+            target="django-security.xtarget",
+            dest_file="security.py",
+            write_to_file="single",
+            files=xproto_filenames,
+        )
 
         XOSProcessor.process(security_args)
 
         # Generate __init__.py
         if manifest["name"] == "core":
+
             class InitArgs:
                 output = manifest["dest_dir"]
-                target = 'init.xtarget'
-                dest_file = '__init__.py'
-                write_to_file = 'single'
+                target = "init.xtarget"
+                dest_file = "__init__.py"
+                write_to_file = "single"
                 files = xproto_filenames
 
             XOSProcessor.process(InitArgs())

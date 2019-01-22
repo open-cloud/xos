@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +13,22 @@
 # limitations under the License.
 
 
-#!/usr/bin/env python                                                                                                               
+#!/usr/bin/env python
 
+from core.models import XOS
+import django
+from __future__ import print_function
 import os
 import sys
+
 sys.path.append("/opt/xos")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
-import django
-from core.models import XOS
+
 django.setup()
 
 xoses = XOS.objects.all()
 if not xoses:
-    print "There is no XOS model"
+    print("There is no XOS model")
 
 for xos in xoses:
     xos.rebuild()
-

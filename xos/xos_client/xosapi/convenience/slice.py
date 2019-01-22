@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import json
 from xosapi.orm import ORMWrapper, ORMLocalObjectManager, register_convenience_wrapper
+
 
 class ORMWrapperSlice(ORMWrapper):
     # TODO: this looks to be incorrect
@@ -28,5 +26,6 @@ class ORMWrapperSlice(ORMWrapper):
     def networks(self):
         idList = [x.network.id for x in self.networkslices.all()]
         return ORMLocalObjectManager(self.stub, "Network", idList, False)
+
 
 register_convenience_wrapper("Slice", ORMWrapperSlice)

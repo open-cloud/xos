@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,19 +29,42 @@ TEST_EXPECTED_OUTPUT = """
                 description: "Help Files"
 """
 
-BASE_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/base.xproto")
-TEST_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/test.xproto")
-FIELDTEST_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/fieldtest.xproto")
-REVERSEFIELDTEST_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/reversefieldtest.xproto")
-FILTERTEST_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/filtertest.xproto")
-SKIP_DJANGO_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/skip_django.xproto")
-VROUTER_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/vrouterport.xproto")
-TEST_TARGET = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xtarget/test.xtarget")
-FIELDTEST_TARGET = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xtarget/fieldtest.xtarget")
-FILTERTEST_TARGET = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xtarget/filtertest.xtarget")
-SPLIT_TARGET = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xtarget/split.xtarget")
+BASE_XPROTO = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/xproto/base.xproto"
+)
+TEST_XPROTO = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/xproto/test.xproto"
+)
+FIELDTEST_XPROTO = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/xproto/fieldtest.xproto"
+)
+REVERSEFIELDTEST_XPROTO = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/xproto/reversefieldtest.xproto"
+)
+FILTERTEST_XPROTO = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/xproto/filtertest.xproto"
+)
+SKIP_DJANGO_XPROTO = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/xproto/skip_django.xproto"
+)
+VROUTER_XPROTO = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/xproto/vrouterport.xproto"
+)
+TEST_TARGET = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/xtarget/test.xtarget"
+)
+FIELDTEST_TARGET = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/xtarget/fieldtest.xtarget"
+)
+FILTERTEST_TARGET = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/xtarget/filtertest.xtarget"
+)
+SPLIT_TARGET = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/xtarget/split.xtarget"
+)
 
 TEST_ATTICS = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/attics/")
+
 
 class XOSProcessorTest(unittest.TestCase):
     """
@@ -50,18 +72,21 @@ class XOSProcessorTest(unittest.TestCase):
     """
 
     def setUp(self):
-        os.chdir(os.path.join(os.path.abspath(os.path.dirname(os.path.realpath(__file__))), "..")) 
+        os.chdir(
+            os.path.join(
+                os.path.abspath(os.path.dirname(os.path.realpath(__file__))), ".."
+            )
+        )
         filesToRemove = [f for f in os.listdir(OUTPUT_DIR)]
         for f in filesToRemove:
-            if not f.startswith('.'):
-                os.remove(OUTPUT_DIR + '/' + f)
+            if not f.startswith("."):
+                os.remove(OUTPUT_DIR + "/" + f)
 
     def test_generator_custom_target_from_file(self):
         """
         [XOS-GenX] Generate output from base.xproto
         """
-        args = XOSProcessorArgs(files = [TEST_XPROTO],
-                                target = TEST_TARGET)
+        args = XOSProcessorArgs(files=[TEST_XPROTO], target=TEST_TARGET)
         output = XOSProcessor.process(args)
         self.assertEqual(output, TEST_EXPECTED_OUTPUT)
 
@@ -69,8 +94,7 @@ class XOSProcessorTest(unittest.TestCase):
         """
         [XOS-GenX] Generate output from base.xproto
         """
-        args = XOSProcessorArgs(inputs = open(TEST_XPROTO).read(),
-                                target = TEST_TARGET)
+        args = XOSProcessorArgs(inputs=open(TEST_XPROTO).read(), target=TEST_TARGET)
         output = XOSProcessor.process(args)
         self.assertEqual(output, TEST_EXPECTED_OUTPUT)
 
@@ -78,73 +102,79 @@ class XOSProcessorTest(unittest.TestCase):
         """
         [XOS-GenX] Generate django output from test.xproto
         """
-        args = XOSProcessorArgs(files = [TEST_XPROTO, VROUTER_XPROTO],
-                                target = 'django.xtarget',
-                                attic = TEST_ATTICS,
-                                output = OUTPUT_DIR,
-                                dest_extension = 'py',
-                                write_to_file = 'model')
+        args = XOSProcessorArgs(
+            files=[TEST_XPROTO, VROUTER_XPROTO],
+            target="django.xtarget",
+            attic=TEST_ATTICS,
+            output=OUTPUT_DIR,
+            dest_extension="py",
+            write_to_file="model",
+        )
         output = XOSProcessor.process(args)
 
         # xosmodel has custom header attic
-        self.assertIn('from xosmodel_header import *', output['XOSModel'])
-        self.assertIn('class XOSModel(XOSBase):', output['XOSModel'])
+        self.assertIn("from xosmodel_header import *", output["XOSModel"])
+        self.assertIn("class XOSModel(XOSBase):", output["XOSModel"])
 
         # vrouter port use the default header
-        self.assertIn('header import *', output['VRouterPort'])
-        self.assertIn('class VRouterPort(XOSBase):', output['VRouterPort'])
+        self.assertIn("header import *", output["VRouterPort"])
+        self.assertIn("class VRouterPort(XOSBase):", output["VRouterPort"])
 
-        #verify files
-        xosmodel = OUTPUT_DIR + '/xosmodel.py'
+        # verify files
+        xosmodel = OUTPUT_DIR + "/xosmodel.py"
         self.assertTrue(os.path.isfile(xosmodel))
         xmf = open(xosmodel).read()
-        self.assertIn('from xosmodel_header import *', xmf)
-        self.assertIn('class XOSModel(XOSBase):', xmf)
+        self.assertIn("from xosmodel_header import *", xmf)
+        self.assertIn("class XOSModel(XOSBase):", xmf)
 
-        vrouterport = OUTPUT_DIR + '/vrouterport.py'
+        vrouterport = OUTPUT_DIR + "/vrouterport.py"
         self.assertTrue(os.path.isfile(vrouterport))
         vrpf = open(vrouterport).read()
-        self.assertIn('header import *', vrpf)
-        self.assertIn('class VRouterPort(XOSBase):', vrpf)
+        self.assertIn("header import *", vrpf)
+        self.assertIn("class VRouterPort(XOSBase):", vrpf)
 
     def test_django_with_base(self):
-        args = XOSProcessorArgs(files = [TEST_XPROTO, BASE_XPROTO],
-                                target = 'django.xtarget',
-                                attic = TEST_ATTICS,
-                                output = OUTPUT_DIR,
-                                dest_extension = 'py',
-                                write_to_file = 'model')
+        args = XOSProcessorArgs(
+            files=[TEST_XPROTO, BASE_XPROTO],
+            target="django.xtarget",
+            attic=TEST_ATTICS,
+            output=OUTPUT_DIR,
+            dest_extension="py",
+            write_to_file="model",
+        )
         output = XOSProcessor.process(args)
 
         # verify files
-        xosmodel = OUTPUT_DIR + '/xosmodel.py'
+        xosmodel = OUTPUT_DIR + "/xosmodel.py"
         self.assertTrue(os.path.isfile(xosmodel))
         xmf = open(xosmodel).read()
-        self.assertIn('from xosmodel_header import *', xmf)
-        self.assertIn('class XOSModel(XOSBase):', xmf)
+        self.assertIn("from xosmodel_header import *", xmf)
+        self.assertIn("class XOSModel(XOSBase):", xmf)
 
-        xosbase = OUTPUT_DIR + '/xosbase.py'
+        xosbase = OUTPUT_DIR + "/xosbase.py"
         self.assertTrue(os.path.isfile(xosbase))
         xbf = open(xosbase).read()
-        self.assertIn('header import *', xbf)
-        self.assertIn('class XOSBase(models.Model, PlModelMixIn):', xbf)
+        self.assertIn("header import *", xbf)
+        self.assertIn("class XOSBase(models.Model, PlModelMixIn):", xbf)
 
     def test_write_multiple_files(self):
         """
         [XOS-GenX] read multiple models as input, print one file per model
         """
-        args = XOSProcessorArgs(files = [TEST_XPROTO, VROUTER_XPROTO],
-                                target = TEST_TARGET,
-                                output = OUTPUT_DIR,
-                                dest_extension = 'txt',
-                                write_to_file = 'model')
+        args = XOSProcessorArgs(
+            files=[TEST_XPROTO, VROUTER_XPROTO],
+            target=TEST_TARGET,
+            output=OUTPUT_DIR,
+            dest_extension="txt",
+            write_to_file="model",
+        )
         XOSProcessor.process(args)
 
-        generated_files = [f for f in os.listdir(OUTPUT_DIR) if not f.startswith('.')]
+        generated_files = [f for f in os.listdir(OUTPUT_DIR) if not f.startswith(".")]
         self.assertEqual(len(generated_files), 2)
 
-        xosmodel = open(os.path.join(OUTPUT_DIR, 'xosmodel.txt'), "r").read()
-        vrouterport = open(os.path.join(OUTPUT_DIR, 'vrouterport.txt'), "r").read()
+        xosmodel = open(os.path.join(OUTPUT_DIR, "xosmodel.txt"), "r").read()
+        vrouterport = open(os.path.join(OUTPUT_DIR, "vrouterport.txt"), "r").read()
 
         self.assertIn("name: XOSModel", xosmodel)
         self.assertIn("name: VRouterPort", vrouterport)
@@ -153,58 +183,63 @@ class XOSProcessorTest(unittest.TestCase):
         """
         [XOS-GenX] read multiple models as input, print separate files based on +++
         """
-        args = XOSProcessorArgs(files = [TEST_XPROTO, VROUTER_XPROTO],
-                                target = SPLIT_TARGET,
-                                output = OUTPUT_DIR,
-                                write_to_file = 'target')
+        args = XOSProcessorArgs(
+            files=[TEST_XPROTO, VROUTER_XPROTO],
+            target=SPLIT_TARGET,
+            output=OUTPUT_DIR,
+            write_to_file="target",
+        )
         XOSProcessor.process(args)
 
-        generated_files = [f for f in os.listdir(OUTPUT_DIR) if not f.startswith('.')]
+        generated_files = [f for f in os.listdir(OUTPUT_DIR) if not f.startswith(".")]
         self.assertEqual(len(generated_files), 2)
 
-        xosmodel = open(os.path.join(OUTPUT_DIR, 'xosmodel.txt'), "r").read()
-        vrouterport = open(os.path.join(OUTPUT_DIR, 'vrouterport.txt'), "r").read()
+        xosmodel = open(os.path.join(OUTPUT_DIR, "xosmodel.txt"), "r").read()
+        vrouterport = open(os.path.join(OUTPUT_DIR, "vrouterport.txt"), "r").read()
 
         self.assertIn("name: XOSModel", xosmodel)
         self.assertIn("name: VRouterPort", vrouterport)
 
     def test_skip_django(self):
-        args = XOSProcessorArgs(files = [SKIP_DJANGO_XPROTO],
-                                target = 'django.xtarget',
-                                output = OUTPUT_DIR,
-                                dest_extension = 'py',
-                                write_to_file = 'model')
+        args = XOSProcessorArgs(
+            files=[SKIP_DJANGO_XPROTO],
+            target="django.xtarget",
+            output=OUTPUT_DIR,
+            dest_extension="py",
+            write_to_file="model",
+        )
         output = XOSProcessor.process(args)
 
         # should not print a file if options.skip_django = True
-        file = OUTPUT_DIR + '/user.py'
+        file = OUTPUT_DIR + "/user.py"
         self.assertFalse(os.path.isfile(file))
 
     def test_service_order(self):
-        args = XOSProcessorArgs(files = [BASE_XPROTO, TEST_XPROTO, VROUTER_XPROTO],
-                                target = 'service.xtarget',
-                                output = OUTPUT_DIR,
-                                write_to_file = 'target')
+        args = XOSProcessorArgs(
+            files=[BASE_XPROTO, TEST_XPROTO, VROUTER_XPROTO],
+            target="service.xtarget",
+            output=OUTPUT_DIR,
+            write_to_file="target",
+        )
         output = XOSProcessor.process(args)
 
-        model = OUTPUT_DIR + '/models.py'
+        model = OUTPUT_DIR + "/models.py"
         self.assertTrue(os.path.isfile(model))
         line_num = 0
 
         for line in open(model).readlines():
             line_num += 1
-            if line.find('class XOSBase(models.Model, PlModelMixIn):') >= 0:
+            if line.find("class XOSBase(models.Model, PlModelMixIn):") >= 0:
                 base_line = line_num
-            if line.find('XOSModel(XOSBase):') >= 0:
+            if line.find("XOSModel(XOSBase):") >= 0:
                 xosmodel_line = line_num
-            if line.find('class VRouterPort(XOSBase):') >= 0:
+            if line.find("class VRouterPort(XOSBase):") >= 0:
                 vrouter_line = line_num
         self.assertLess(base_line, xosmodel_line)
         self.assertLess(xosmodel_line, vrouter_line)
 
     def test_field_numbers(self):
-        args = XOSProcessorArgs(files = [FIELDTEST_XPROTO],
-                                target = FIELDTEST_TARGET)
+        args = XOSProcessorArgs(files=[FIELDTEST_XPROTO], target=FIELDTEST_TARGET)
         output = XOSProcessor.process(args)
 
         def _assert_field(modelname, fieldname, id):
@@ -224,8 +259,9 @@ class XOSProcessorTest(unittest.TestCase):
         _assert_field("Slice", "site", 102)
 
     def test_field_numbers(self):
-        args = XOSProcessorArgs(files = [REVERSEFIELDTEST_XPROTO],
-                                target = FIELDTEST_TARGET)
+        args = XOSProcessorArgs(
+            files=[REVERSEFIELDTEST_XPROTO], target=FIELDTEST_TARGET
+        )
         output = XOSProcessor.process(args)
 
         def _assert_field(modelname, fieldname, id):
@@ -250,32 +286,31 @@ class XOSProcessorTest(unittest.TestCase):
 
     def test_unfiltered(self):
         """ With no include_* args, should get all models """
-        args = XOSProcessorArgs(files = [FILTERTEST_XPROTO],
-                                target = FILTERTEST_TARGET)
+        args = XOSProcessorArgs(files=[FILTERTEST_XPROTO], target=FILTERTEST_TARGET)
         output = XOSProcessor.process(args)
 
         self.assertEqual(output, "Model1,Model2,Model3,")
 
     def test_filter_models(self):
         """ Should only get models specified by include_models """
-        args = XOSProcessorArgs(files = [FILTERTEST_XPROTO],
-                                target = FILTERTEST_TARGET,
-                                include_models = ["Model1", "Model3"])
+        args = XOSProcessorArgs(
+            files=[FILTERTEST_XPROTO],
+            target=FILTERTEST_TARGET,
+            include_models=["Model1", "Model3"],
+        )
         output = XOSProcessor.process(args)
 
         self.assertEqual(output, "Model1,Model3,")
 
     def test_filter_apps(self):
         """ Should only get models whose apps are specified by include_apps """
-        args = XOSProcessorArgs(files = [FILTERTEST_XPROTO],
-                                target = FILTERTEST_TARGET,
-                                include_apps = ["core"])
+        args = XOSProcessorArgs(
+            files=[FILTERTEST_XPROTO], target=FILTERTEST_TARGET, include_apps=["core"]
+        )
         output = XOSProcessor.process(args)
 
         self.assertEqual(output, "Model1,Model2,")
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

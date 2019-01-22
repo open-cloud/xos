@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import json
-from xosapi.orm import ORMWrapper, register_convenience_wrapper
+from xosapi.orm import register_convenience_wrapper
 from xosapi.convenience.serviceinstance import ORMWrapperServiceInstance
+
 
 class ORMWrapperONOSApp(ORMWrapperServiceInstance):
     pass
+
 
 register_convenience_wrapper("ONOSApp", ORMWrapperONOSApp)

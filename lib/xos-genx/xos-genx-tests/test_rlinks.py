@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,18 +17,20 @@ import unittest
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from helpers import XProtoTestHelpers
 
+
 class XProtoRlinkTests(unittest.TestCase):
     def test_proto_generator(self):
-        target = XProtoTestHelpers.write_tmp_target("""
+        target = XProtoTestHelpers.write_tmp_target(
+            """
 {% for m in proto.messages %}
    {% for r in m.rlinks %}
        {{ r }}
    {% endfor %}
 {% endfor %}
-""")
-
-        xproto = \
 """
+        )
+
+        xproto = """
 message VRouterPort (PlCoreBase){
      optional string name = 1 [help_text = "port friendly name", max_length = 20, null = True, db_index = False, blank = True];
      required string openflow_id = 2 [help_text = "port identifier in ONOS", max_length = 21, null = False, db_index = False, blank = False];
@@ -60,7 +61,6 @@ message VRouterDevice (PlCoreBase){
         self.assertIn("'src_port': 'device_ports'", output)
         self.assertIn("'src_port': 'ports'", output)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
-
-

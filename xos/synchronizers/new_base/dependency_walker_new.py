@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +19,7 @@
 #       access. Verify whether or not that's true and reconcile with
 #       generate/dependency_walker.py
 
+from __future__ import print_function
 import os
 import imp
 import inspect
@@ -33,17 +33,17 @@ import json
 from xosconfig import Config
 from multistructlog import create_logger
 
-log = create_logger(Config().get('logging'))
+log = create_logger(Config().get("logging"))
 
 missing_links = {}
 
 if Config.get("dependency_graph"):
     dep_data = open(Config.get("dependency_graph")).read()
 else:
-    dep_data = '{}'
+    dep_data = "{}"
 
 dependencies = json.loads(dep_data)
-dependencies = {k:[item[0] for item in items] for k,items in dependencies.items()}
+dependencies = {k: [item[0] for item in items] for k, items in dependencies.items()}
 
 inv_dependencies = {}
 for k, lst in dependencies.items():
@@ -55,17 +55,17 @@ for k, lst in dependencies.items():
 
 
 def plural(name):
-    if name.endswith('s'):
-        return name + 'es'
+    if name.endswith("s"):
+        return name + "es"
     else:
-        return name + 's'
+        return name + "s"
 
 
 def walk_deps(fn, object):
     model = object.__class__.__name__
     try:
         deps = dependencies[model]
-    except:
+    except BaseException:
         deps = []
     return __walk_deps(fn, object, deps)
 
@@ -74,7 +74,7 @@ def walk_inv_deps(fn, object):
     model = object.__class__.__name__
     try:
         deps = inv_dependencies[model]
-    except:
+    except BaseException:
         deps = []
     return __walk_deps(fn, object, deps)
 
@@ -93,21 +93,25 @@ def __walk_deps(fn, object, deps):
             try:
                 peer = getattr(object, link)
             except AttributeError:
-                if not missing_links.has_key(model + '.' + link):
-                    print "Model %s missing link for dependency %s" % (model, link)
-                    log.exception("WARNING: Model missing link for dependency.", model = model, link = link)
-                    missing_links[model + '.' + link] = True
+                if model + "." + link not in missing_links:
+                    print("Model %s missing link for dependency %s" % (model, link))
+                    log.exception(
+                        "WARNING: Model missing link for dependency.",
+                        model=model,
+                        link=link,
+                    )
+                    missing_links[model + "." + link] = True
 
-        if (peer):
+        if peer:
             try:
                 peer_objects = peer.all()
             except AttributeError:
                 peer_objects = [peer]
-            except:
+            except BaseException:
                 peer_objects = []
 
             for o in peer_objects:
-                if (hasattr(o, 'updated')):
+                if hasattr(o, "updated"):
                     fn(o, object)
                     ret.append(o)
                 # Uncomment the following line to enable recursion

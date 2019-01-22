@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +35,7 @@ from xosconfig import Config
 from multistructlog import create_logger
 from xosutil.autodiscover_version import autodiscover_version_of_main
 
-log = create_logger(Config().get('logging'))
+log = create_logger(Config().get("logging"))
 
 orig_sigint = None
 model_accessor = None
@@ -120,6 +119,7 @@ def import_models_to_globals():
     # xosbase doesn't exist from the synchronizer's perspective, so fake out
     # ModelLink.
     if "ModelLink" not in globals():
+
         class ModelLink:
             def __init__(self, dest, via, into=None):
                 self.dest = dest
@@ -139,14 +139,14 @@ def keep_trying(client, reactor):
 
     try:
         client.utility.NoOp(Empty())
-    except Exception,e:
+    except Exception as e:
         # If we caught an exception, then the API has become unavailable.
         # So reconnect.
 
         log.exception("exception in NoOp", e=e)
         log.info("restarting synchronizer")
 
-        os.execv(sys.executable, ['python'] + sys.argv)
+        os.execv(sys.executable, ["python"] + sys.argv)
         return
 
     reactor.callLater(1, functools.partial(keep_trying, client, reactor))
@@ -162,9 +162,16 @@ def grpcapi_reconnect(client, reactor):
         version = autodiscover_version_of_main(max_parent_depth=0) or "unknown"
         log.info("Service version is %s" % version)
         try:
-            ModelLoadClient(client).upload_models(Config.get("name"), Config.get("models_dir"), version=version)
-        except Exception, e:  # TODO: narrow exception scope
-            if (hasattr(e, "code") and callable(e.code) and hasattr(e.code(), "name") and (e.code().name) == "UNAVAILABLE"):
+            ModelLoadClient(client).upload_models(
+                Config.get("name"), Config.get("models_dir"), version=version
+            )
+        except Exception as e:  # TODO: narrow exception scope
+            if (
+                hasattr(e, "code")
+                and callable(e.code)
+                and hasattr(e.code(), "name")
+                and (e.code().name) == "UNAVAILABLE"
+            ):
                 # We need to make sure we force a reconnection, as it's possible that we will end up downloading a
                 # new xos API.
                 log.info("grpc unavailable during loadmodels. Force a reconnect")
@@ -189,6 +196,7 @@ def grpcapi_reconnect(client, reactor):
     client.xos_orm.restart_on_disconnect = True
 
     from apiaccessor import CoreApiModelAccessor
+
     model_accessor = CoreApiModelAccessor(orm=client.xos_orm)
 
     # If required_models is set, then check to make sure the required_models
@@ -207,9 +215,9 @@ def grpcapi_reconnect(client, reactor):
             else:
                 missing.append(model)
 
-        log.info("required_models, found:", models =  ", ".join(found))
+        log.info("required_models, found:", models=", ".join(found))
         if missing:
-            log.warning("required_models: missing",models = ", ".join(missing))
+            log.warning("required_models: missing", models=", ".join(missing))
             # We're missing a required model. Give up and wait for the connection
             # to reconnect, and hope our missing model has shown up.
             reactor.callLater(1, functools.partial(keep_trying, client, reactor))
@@ -223,6 +231,7 @@ def grpcapi_reconnect(client, reactor):
 
     # Restore the sigint handler
     signal.signal(signal.SIGINT, orig_sigint)
+
 
 def config_accessor_grpcapi():
     global orig_sigint
@@ -243,8 +252,12 @@ def config_accessor_grpcapi():
     from xosapi.xos_grpc_client import SecureClient
     from twisted.internet import reactor
 
-    grpcapi_client = SecureClient(endpoint=grpcapi_endpoint, username=grpcapi_username, password=grpcapi_password)
-    grpcapi_client.set_reconnect_callback(functools.partial(grpcapi_reconnect, grpcapi_client, reactor))
+    grpcapi_client = SecureClient(
+        endpoint=grpcapi_endpoint, username=grpcapi_username, password=grpcapi_password
+    )
+    grpcapi_client.set_reconnect_callback(
+        functools.partial(grpcapi_reconnect, grpcapi_client, reactor)
+    )
     grpcapi_client.start()
 
     # Start reactor. This will cause the client to connect and then execute
@@ -259,13 +272,16 @@ def config_accessor_grpcapi():
 
     reactor.run()
 
+
 def config_accessor_mock():
     global model_accessor
     from mock_modelaccessor import model_accessor as mock_model_accessor
+
     model_accessor = mock_model_accessor
 
     # mock_model_accessor doesn't have an all_model_classes field, so make one.
     import mock_modelaccessor as mma
+
     all_model_classes = {}
     for k in dir(mma):
         v = getattr(mma, k)
@@ -275,6 +291,7 @@ def config_accessor_mock():
     model_accessor.all_model_classes = all_model_classes
 
     import_models_to_globals()
+
 
 def config_accessor():
     accessor_kind = Config.get("accessor.kind")
@@ -290,5 +307,6 @@ def config_accessor():
     if Config.get("wrappers"):
         for wrapper_name in Config.get("wrappers"):
             importlib.import_module(wrapper_name)
+
 
 config_accessor()

@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +15,16 @@
 
 # NOTE this appear not to be used, can we delete it?
 
+
 class Deleter:
-	model=None # Must be overridden
+    model = None  # Must be overridden
 
-        def __init__(self, *args, **kwargs):
-                pass
+    def __init__(self, *args, **kwargs):
+        pass
 
-	def call(self, pk, model_dict):
-		# Fetch object from XOS db and delete it
-		pass
+    def call(self, pk, model_dict):
+        # Fetch object from XOS db and delete it
+        pass
 
-	def __call__(self, *args, **kwargs):
-		return self.call(*args, **kwargs)
+    def __call__(self, *args, **kwargs):
+        return self.call(*args, **kwargs)

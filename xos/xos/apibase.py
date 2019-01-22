@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,26 +23,29 @@ from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
 from django.core.exceptions import ValidationError as DjangoValidationError
 from xos.exceptions import *
 
+
 class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     # To handle fine-grained field permissions, we have to check can_update
     # the object has been updated but before it has been saved.
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+        partial = kwargs.pop("partial", False)
         self.object = self.get_object()
 
         if self.object is None:
             raise XOSProgrammingError("Use the List API for creating objects")
 
-        serializer = self.get_serializer(self.object, data=request.data, partial=partial)
+        serializer = self.get_serializer(
+            self.object, data=request.data, partial=partial
+        )
 
         if not serializer.is_valid():
-            raise XOSValidationError('Invalid serializer', fields=serializer._errors)
+            raise XOSValidationError("Invalid serializer", fields=serializer._errors)
 
         # Do the XOS perm check
 
-        assert(serializer.instance is not None)
+        assert serializer.instance is not None
         obj = serializer.instance
         for attr, value in serializer.validated_data.items():
             setattr(obj, attr, value)
@@ -63,11 +65,21 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         # REST API drops the string attached to Django's PermissionDenied
         # exception, and replaces it with a generic "Permission Denied"
         if isinstance(exc, DjangoPermissionDenied):
-            response=Response({'detail': {"error": "PermissionDenied", "specific_error": str(exc), "fields": {}}}, status=status.HTTP_403_FORBIDDEN)
-            response.exception=True
+            response = Response(
+                {
+                    "detail": {
+                        "error": "PermissionDenied",
+                        "specific_error": str(exc),
+                        "fields": {},
+                    }
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+            response.exception = True
             return response
         else:
             return super(XOSRetrieveUpdateDestroyAPIView, self).handle_exception(exc)
+
 
 class XOSListCreateAPIView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
@@ -76,7 +88,7 @@ class XOSListCreateAPIView(generics.ListCreateAPIView):
         # In rest_framework 3.x: we can pass raise_exception=True instead of
         # raising the exception ourselves
         if not serializer.is_valid():
-            raise XOSValidationError('Invalid serializer', fields=serializer._errors)
+            raise XOSValidationError("Invalid serializer", fields=serializer._errors)
 
         # now do XOS can_update permission checking
         obj = serializer.Meta.model(**serializer.validated_data)
@@ -84,16 +96,25 @@ class XOSListCreateAPIView(generics.ListCreateAPIView):
         self.perform_create(serializer)
 
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED,
-                        headers=headers)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
     def handle_exception(self, exc):
         # REST API drops the string attached to Django's PermissionDenied
         # exception, and replaces it with a generic "Permission Denied"
         if isinstance(exc, DjangoPermissionDenied):
-            response=Response({'detail': {"error": "PermissionDenied", "specific_error": str(exc), "fields": {}}}, status=status.HTTP_403_FORBIDDEN)
-            response.exception=True
+            response = Response(
+                {
+                    "detail": {
+                        "error": "PermissionDenied",
+                        "specific_error": str(exc),
+                        "fields": {},
+                    }
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+            response.exception = True
             return response
         else:
             return super(XOSListCreateAPIView, self).handle_exception(exc)
-

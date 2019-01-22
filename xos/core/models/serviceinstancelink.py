@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,35 +15,53 @@
 from xos.exceptions import *
 from serviceinstancelink_decl import *
 
+
 class ServiceInstanceLink(ServiceInstanceLink_decl):
     class Meta:
         proxy = True
 
     def save(self, *args, **kwargs):
-        subCount = sum([1 for e in [self.subscriber_service, self.subscriber_service_instance, self.subscriber_network] if e is not None])
-        if (subCount > 1):
+        subCount = sum(
+            [
+                1
+                for e in [
+                    self.subscriber_service,
+                    self.subscriber_service_instance,
+                    self.subscriber_network,
+                ]
+                if e is not None
+            ]
+        )
+        if subCount > 1:
             raise XOSConflictingField(
-                "Only one of subscriber_service, subscriber_service_instance, subscriber_network should be set")
+                "Only one of subscriber_service, subscriber_service_instance, subscriber_network should be set"
+            )
 
         try:
             existing_instance = ServiceInstanceLink.objects.get(
                 provider_service_instance=self.provider_service_instance,
                 subscriber_service_instance=self.subscriber_service_instance,
                 subscriber_service=self.subscriber_service,
-                subscriber_network=self.subscriber_network
+                subscriber_network=self.subscriber_network,
             )
 
-            if (not self.pk and existing_instance) or (self.pk and self.pk != existing_instance.pk):
+            if (not self.pk and existing_instance) or (
+                self.pk and self.pk != existing_instance.pk
+            ):
                 raise XOSValidationError(
                     "A ServiceInstanceLink with attributes 'provider_service_instance=%s, subscriber_service_instance=%s, subscriber_service=%s, subscriber_network=%s' already exists"
-                    % (self.provider_service_instance, self.subscriber_service_instance, self.subscriber_service,
-                       self.subscriber_network))
+                    % (
+                        self.provider_service_instance,
+                        self.subscriber_service_instance,
+                        self.subscriber_service,
+                        self.subscriber_network,
+                    )
+                )
         except self.DoesNotExist:
             # NOTE this is correct, no duplicated links
             pass
 
         super(ServiceInstanceLink, self).save(*args, **kwargs)
-
 
     def delete(self, *args, **kwargs):
         provider_service_instance = self.provider_service_instance
@@ -54,4 +71,7 @@ class ServiceInstanceLink(ServiceInstanceLink_decl):
         # model policy for core objects, so handle it during the save method.
         if provider_service_instance and (not provider_service_instance.deleted):
             provider_service_instance.link_deleted_count += 1
-            provider_service_instance.save(always_update_timestamp=True, update_fields=["updated", "link_deleted_count"])
+            provider_service_instance.save(
+                always_update_timestamp=True,
+                update_fields=["updated", "link_deleted_count"],
+            )

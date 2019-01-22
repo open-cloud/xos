@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +15,16 @@
 from xos.exceptions import *
 from controllernetwork_decl import *
 
+
 class ControllerNetwork(ControllerNetwork_decl):
     class Meta:
         proxy = True
 
     def tologdict(self):
-        d=super(ControllerNetwork,self).tologdict()
+        d = super(ControllerNetwork, self).tologdict()
         try:
-            d['network_name']=self.network.name
-            d['controller_name']=self.controller.name
-        except:
+            d["network_name"] = self.network.name
+            d["controller_name"] = self.controller.name
+        except BaseException:
             pass
         return d

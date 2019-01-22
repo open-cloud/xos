@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 """ fake_stub.py
 
     Implements a simple fake grpc stub to use for unit testing.
@@ -23,8 +21,9 @@ import functools
 
 ContentTypeMap = {}
 
+
 class FakeObj(object):
-    BASES=[]
+    BASES = []
 
     def __init__(self, fields=[], **kwargs):
         super(FakeObj, self).__setattr__("is_set", {})
@@ -36,7 +35,7 @@ class FakeObj(object):
             setattr(self, name, f["default"])
 
         super(FakeObj, self).__setattr__("is_set", {})
-        for (k,v) in kwargs.items():
+        for (k, v) in kwargs.items():
             setattr(self, k, v)
 
     def __repr__(self):
@@ -74,15 +73,16 @@ class FakeObj(object):
 
     def ListFields(self):
         fbn = self.DESCRIPTOR.fields_by_name
-        l = []
-        for (k,v) in fbn.items():
+        fieldlist = []
+        for (k, v) in fbn.items():
             if self.is_set.get(k, False):
-                l.append( (v, getattr(self, k)) )
-        return l
+                fieldlist.append((v, getattr(self, k)))
+        return fieldlist
 
     @property
     def self_content_type_id(self):
         return "xos.%s" % self.__class__.__name__.lower()
+
 
 class FakeExtensionManager(object):
     def __init__(self, obj, extensions):
@@ -97,10 +97,12 @@ class FakeExtensionManager(object):
             return self.extensions[name]
         return default
 
+
 class FakeFieldOption(object):
     def __init__(self, modelName=None, reverseFieldName=None):
         self.modelName = modelName
         self.reverseFieldName = reverseFieldName
+
 
 class FakeField(object):
     def __init__(self, field):
@@ -112,7 +114,9 @@ class FakeField(object):
         fk_model = field.get("fk_model", None)
         if fk_model:
             reverseFieldName = field.get("fk_reverseFieldName", None)
-            extensions["xos.foreignKey"] = FakeFieldOption(modelName=fk_model, reverseFieldName=reverseFieldName)
+            extensions["xos.foreignKey"] = FakeFieldOption(
+                modelName=fk_model, reverseFieldName=reverseFieldName
+            )
 
         fk_reverse = field.get("fk_reverse", None)
         if fk_reverse:
@@ -122,6 +126,7 @@ class FakeField(object):
 
     def GetOptions(self):
         return self
+
 
 class FakeDescriptor(object):
     def __init__(self, objName):
@@ -144,101 +149,128 @@ class FakeDescriptor(object):
         fbn = {}
         for field in cls.FIELDS:
             fake_field = FakeField(field)
-            fbn[ field["name"] ] = fake_field
+            fbn[field["name"]] = fake_field
 
         return fbn
 
+
 class Controller(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "name", "default": ""},
-               {"name": "deployment_id", "default": 0, "fk_model": "Deployment"},
-               {"name": "class_names", "default": "Controller"}
-             )
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "name", "default": ""},
+        {"name": "deployment_id", "default": 0, "fk_model": "Deployment"},
+        {"name": "class_names", "default": "Controller"},
+    )
 
     def __init__(self, **kwargs):
         return super(Controller, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("Controller")
 
+
 class Deployment(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "name", "default": ""},
-               {"name": "class_names", "default": "Deployment"}
-             )
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "name", "default": ""},
+        {"name": "class_names", "default": "Deployment"},
+    )
 
     def __init__(self, **kwargs):
         return super(Deployment, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("Controller")
 
+
 class User(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "email", "default": ""},
-               {"name": "site_id", "default": 0, "fk_model": "Site"},
-               {"name": "class_names", "default": "User"} )
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "email", "default": ""},
+        {"name": "site_id", "default": 0, "fk_model": "Site"},
+        {"name": "class_names", "default": "User"},
+    )
 
     def __init__(self, **kwargs):
         return super(User, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("User")
 
+
 class Slice(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "name", "default": ""},
-               {"name": "site_id", "default": 0, "fk_model": "Site", "fk_reverseFieldName": "slices"},
-               {"name": "service_id", "default": 0, "fk_model": "Service"},
-               {"name": "creator_id", "default": 0, "fk_model": "User"},
-               {"name": "networks_ids", "default": [], "fk_reverse": "Network"},
-               {"name": "network", "default": ""},
-               {"name": "leaf_model_name", "default": "Slice"},
-               {"name": "class_names", "default": "Slice"} )
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "name", "default": ""},
+        {
+            "name": "site_id",
+            "default": 0,
+            "fk_model": "Site",
+            "fk_reverseFieldName": "slices",
+        },
+        {"name": "service_id", "default": 0, "fk_model": "Service"},
+        {"name": "creator_id", "default": 0, "fk_model": "User"},
+        {"name": "networks_ids", "default": [], "fk_reverse": "Network"},
+        {"name": "network", "default": ""},
+        {"name": "leaf_model_name", "default": "Slice"},
+        {"name": "class_names", "default": "Slice"},
+    )
 
     def __init__(self, **kwargs):
         return super(Slice, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("Slice")
 
+
 class Site(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "name", "default": ""},
-               {"name": "login_base", "default": ""},
-               {"name": "slices_ids", "default": [], "fk_reverse": "Slice"},
-               {"name": "leaf_model_name", "default": "Site"},
-               {"name": "class_names", "default": "Site"})
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "name", "default": ""},
+        {"name": "login_base", "default": ""},
+        {"name": "slices_ids", "default": [], "fk_reverse": "Slice"},
+        {"name": "leaf_model_name", "default": "Site"},
+        {"name": "class_names", "default": "Site"},
+    )
 
     def __init__(self, **kwargs):
         return super(Site, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("Site")
 
+
 class Service(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "name", "default": ""},
-               {"name": "slices_ids", "default": [], "fk_reverse": "Slice"},
-               {"name": "leaf_model_name", "default": "Service"},
-               {"name": "class_names", "default": "Service"})
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "name", "default": ""},
+        {"name": "slices_ids", "default": [], "fk_reverse": "Slice"},
+        {"name": "leaf_model_name", "default": "Service"},
+        {"name": "class_names", "default": "Service"},
+    )
 
     def __init__(self, **kwargs):
         return super(Service, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("Service")
 
+
 class ServiceInstance(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "owher", "default": 0, "fk_model": "Service"},
-               {"name": "leaf_model_name", "default": "ServiceInstance"},
-               {"name": "class_names", "default": "ServiceInstance"})
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "owher", "default": 0, "fk_model": "Service"},
+        {"name": "leaf_model_name", "default": "ServiceInstance"},
+        {"name": "class_names", "default": "ServiceInstance"},
+    )
 
     def __init__(self, **kwargs):
         return super(ServiceInstance, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("ServiceInstance")
 
+
 class ONOSService(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "name", "default": ""},
-               {"name": "leaf_model_name", "default": "ONOSService"},
-               {"name": "class_names", "default": "ONOSService,Service"})
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "name", "default": ""},
+        {"name": "leaf_model_name", "default": "ONOSService"},
+        {"name": "class_names", "default": "ONOSService,Service"},
+    )
 
     BASES = ["Service"]
 
@@ -247,89 +279,119 @@ class ONOSService(FakeObj):
 
     DESCRIPTOR = FakeDescriptor("ONOSService")
 
+
 class Network(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "name", "default": ""},
-               {"name": "owner_id", "default": 0, "fk_model": "Slice"},
-               {"name": "template_id", "default": 0, "fk_model": "NetworkTemplate"},
-               {"name": "controllernetworks_ids", "default": [], "fk_reverse": "ControllerNetwork"},
-               {"name": "leaf_model_name", "default": "Network"},
-               {"name": "class_names", "default": "Network"})
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "name", "default": ""},
+        {"name": "owner_id", "default": 0, "fk_model": "Slice"},
+        {"name": "template_id", "default": 0, "fk_model": "NetworkTemplate"},
+        {
+            "name": "controllernetworks_ids",
+            "default": [],
+            "fk_reverse": "ControllerNetwork",
+        },
+        {"name": "leaf_model_name", "default": "Network"},
+        {"name": "class_names", "default": "Network"},
+    )
 
     def __init__(self, **kwargs):
         return super(Network, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("Network")
 
+
 class NetworkTemplate(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "name", "default": ""},
-               {"name": "vtn_kind", "default": ""},
-               {"name": "leaf_model_name", "default": "NetworkTemplate"},
-               {"name": "class_names", "default": "NetworkTemplate"})
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "name", "default": ""},
+        {"name": "vtn_kind", "default": ""},
+        {"name": "leaf_model_name", "default": "NetworkTemplate"},
+        {"name": "class_names", "default": "NetworkTemplate"},
+    )
 
     def __init__(self, **kwargs):
         return super(NetworkTemplate, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("NetworkTemplate")
 
+
 class ControllerNetwork(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "network_id", "default": 0, "fk_model": "Network"},
-               {"name": "controller_id", "default": 0, "fk_model": "Controller"},
-               {"name": "leaf_model_name", "default": "ControllerNetwork"},
-               {"name": "class_names", "default": "ControllerNetwork"})
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "network_id", "default": 0, "fk_model": "Network"},
+        {"name": "controller_id", "default": 0, "fk_model": "Controller"},
+        {"name": "leaf_model_name", "default": "ControllerNetwork"},
+        {"name": "class_names", "default": "ControllerNetwork"},
+    )
 
     def __init__(self, **kwargs):
         return super(ControllerNetwork, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("ControllerNetwork")
 
+
 class NetworkSlice(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "network_id", "default": 0, "fk_model": "Network"},
-               {"name": "slice_id", "default": 0, "fk_model": "Slice"},
-               {"name": "leaf_model_name", "default": "NetworkSlice"},
-               {"name": "class_names", "default": "NetworkSlice"})
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "network_id", "default": 0, "fk_model": "Network"},
+        {"name": "slice_id", "default": 0, "fk_model": "Slice"},
+        {"name": "leaf_model_name", "default": "NetworkSlice"},
+        {"name": "class_names", "default": "NetworkSlice"},
+    )
 
     def __init__(self, **kwargs):
         return super(NetworkSlice, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("NetworkSlice")
 
+
 class Tag(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "service_id", "default": None},
-               {"name": "name", "default": ""},
-               {"name": "value", "default": ""},
-               {"name": "content_type", "default": None},
-               {"name": "object_id", "default": None},
-               {"name": "leaf_model_name", "default": "Tag"},
-               {"name": "class_names", "default": "Tag"})
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "service_id", "default": None},
+        {"name": "name", "default": ""},
+        {"name": "value", "default": ""},
+        {"name": "content_type", "default": None},
+        {"name": "object_id", "default": None},
+        {"name": "leaf_model_name", "default": "Tag"},
+        {"name": "class_names", "default": "Tag"},
+    )
 
     def __init__(self, **kwargs):
         return super(Tag, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("Tag")
 
+
 class TestModel(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "intfield", "default": 0},
-               {"name": "stringfield", "default": "somestring"},
-               {"name": "testmodeltwos_ids", "default": [], "fk_reverse": "TestModelTwo"},
-               {"name": "class_names", "default": "TestModel"} )
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "intfield", "default": 0},
+        {"name": "stringfield", "default": "somestring"},
+        {"name": "testmodeltwos_ids", "default": [], "fk_reverse": "TestModelTwo"},
+        {"name": "class_names", "default": "TestModel"},
+    )
 
     def __init__(self, **kwargs):
         return super(TestModel, self).__init__(self.FIELDS, **kwargs)
 
     DESCRIPTOR = FakeDescriptor("TestModel")
 
+
 class TestModelTwo(FakeObj):
-    FIELDS = ( {"name": "id", "default": 0},
-               {"name": "intfieldtwo", "default": 0},
-               {"name": "stringfieldtwo", "default": "somestringtwo"},
-               {"name": "testmodel_id", "default": 0, "fk_model": "TestModel", "fk_reverseFieldName": "testmodeltwos"},
-               {"name": "class_names", "default": "TestModel"})
+    FIELDS = (
+        {"name": "id", "default": 0},
+        {"name": "intfieldtwo", "default": 0},
+        {"name": "stringfieldtwo", "default": "somestringtwo"},
+        {
+            "name": "testmodel_id",
+            "default": 0,
+            "fk_model": "TestModel",
+            "fk_reverseFieldName": "testmodeltwos",
+        },
+        {"name": "class_names", "default": "TestModel"},
+    )
 
     def __init__(self, **kwargs):
         return super(TestModelTwo, self).__init__(self.FIELDS, **kwargs)
@@ -340,23 +402,26 @@ class TestModelTwo(FakeObj):
 class ID(FakeObj):
     pass
 
+
 class FakeItemList(object):
     def __init__(self, items):
         self.items = items
 
+
 class FakeElement(object):
-    EQUAL="equal"
-    IEXACT="iexact"
+    EQUAL = "equal"
+    IEXACT = "iexact"
 
     def __init__(self):
         pass
+
 
 class FakeElements(object):
     def __init__(self):
         self.items = []
 
     def add(self):
-        el=FakeElement()
+        el = FakeElement()
         self.items.append(el)
         return el
 
@@ -366,8 +431,9 @@ class FakeElements(object):
     def __len__(self):
         return len(self.items)
 
+
 class FakeQuery(object):
-    DEFAULT=0
+    DEFAULT = 0
     ALL = 1
     SYNCHRONIZER_DIRTY_OBJECTS = 2
     SYNCHRONIZER_DELETED_OBJECTS = 3
@@ -377,21 +443,35 @@ class FakeQuery(object):
     def __init__(self):
         self.elements = FakeElements()
 
+
 class FakeStub(object):
     def __init__(self):
         self.id_counter = 1
         self.objs = {}
         self.deleted_objs = {}
-        for name in ["Controller", "Deployment", "Slice", "Site", "Tag", "Service", "ServiceInstance", "ONOSService",
-                     "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice",
-                     "TestModel", "TestModelTwo"]:
+        for name in [
+            "Controller",
+            "Deployment",
+            "Slice",
+            "Site",
+            "Tag",
+            "Service",
+            "ServiceInstance",
+            "ONOSService",
+            "User",
+            "Network",
+            "NetworkTemplate",
+            "ControllerNetwork",
+            "NetworkSlice",
+            "TestModel",
+            "TestModelTwo",
+        ]:
             setattr(self, "Get%s" % name, functools.partial(self.get, name))
             setattr(self, "List%s" % name, functools.partial(self.list, name))
             setattr(self, "Create%s" % name, functools.partial(self.create, name))
             setattr(self, "Delete%s" % name, functools.partial(self.delete, name))
             setattr(self, "Update%s" % name, functools.partial(self.update, name))
             setattr(self, "Filter%s" % name, functools.partial(self.filter, name))
-
 
     def make_key(self, name, id):
         return "%s:%d" % (name, id.id)
@@ -402,10 +482,10 @@ class FakeStub(object):
 
     def list(self, classname, empty, metadata=None):
         items = []
-        for (k,v) in self.objs.items():
+        for (k, v) in self.objs.items():
             (this_classname, id) = k.split(":")
             if this_classname == classname:
-                    items.append(v)
+                items.append(v)
         return FakeItemList(items)
 
     def filter(self, classname, query, metadata=None):
@@ -416,14 +496,14 @@ class FakeStub(object):
         else:
             objs = self.objs.items()
 
-        for (k,v) in objs:
+        for (k, v) in objs:
             (this_classname, id) = k.split(":")
             if this_classname != classname:
                 continue
             match = True
             for q in query.elements.items:
                 iValue = getattr(q, "iValue", None)
-                if (iValue is not None) and getattr(v,q.name)!=iValue:
+                if (iValue is not None) and getattr(v, q.name) != iValue:
                     match = False
                 sValue = getattr(q, "sValue", None)
                 if (sValue is not None) and getattr(v, q.name) != sValue:
@@ -440,7 +520,7 @@ class FakeStub(object):
 
         for base_classname in obj.BASES:
             base_class = globals()[base_classname]
-            base_obj = base_class(id=obj.id, leaf_model_name = classname)
+            base_obj = base_class(id=obj.id, leaf_model_name=classname)
             k = self.make_key(base_classname, base_obj)
             self.objs[k] = base_obj
 
@@ -458,26 +538,56 @@ class FakeStub(object):
         del self.objs[k]
         self.deleted_objs[k] = obj
 
+
 class FakeCommonProtos(object):
     def __init__(self):
         self.ID = ID
         self.Query = FakeQuery
 
+
 class FakeProtos(object):
     def __init__(self):
-        for name in ["Controller", "Deployment", "Slice", "Site", "ID", "Tag", "Service", "ServiceInstance",
-                     "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice",
-                     "TestModel", "TestModelTwo"]:
+        for name in [
+            "Controller",
+            "Deployment",
+            "Slice",
+            "Site",
+            "ID",
+            "Tag",
+            "Service",
+            "ServiceInstance",
+            "ONOSService",
+            "User",
+            "Network",
+            "NetworkTemplate",
+            "ControllerNetwork",
+            "NetworkSlice",
+            "TestModel",
+            "TestModelTwo",
+        ]:
             setattr(self, name, globals()[name])
             self.common__pb2 = FakeCommonProtos()
+
 
 class FakeSymDb(object):
     def __init__(self):
         self._classes = {}
-        for name in ["Controller", "Deployment", "Slice", "Site", "ID", "Tag", "Service", "ServiceInstance",
-                     "ONOSService", "User", "Network", "NetworkTemplate", "ControllerNetwork", "NetworkSlice",
-                     "TestModel", "TestModelTwo"]:
+        for name in [
+            "Controller",
+            "Deployment",
+            "Slice",
+            "Site",
+            "ID",
+            "Tag",
+            "Service",
+            "ServiceInstance",
+            "ONOSService",
+            "User",
+            "Network",
+            "NetworkTemplate",
+            "ControllerNetwork",
+            "NetworkSlice",
+            "TestModel",
+            "TestModelTwo",
+        ]:
             self._classes["xos.%s" % name] = globals()[name]
-
-
-

@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +18,12 @@ import mock
 import pdb
 import networkx as nx
 
-import os, sys
+import os
+import sys
 
 test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-xos_dir = os.path.join(test_path, '..', '..', '..')
+xos_dir = os.path.join(test_path, "..", "..", "..")
+
 
 class TestControllerDependencies(unittest.TestCase):
 
@@ -34,22 +35,30 @@ class TestControllerDependencies(unittest.TestCase):
         self.sys_path_save = sys.path
         self.cwd_save = os.getcwd()
         sys.path.append(xos_dir)
-        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
-        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base', 'tests', 'steps'))
+        sys.path.append(os.path.join(xos_dir, "synchronizers", "new_base"))
+        sys.path.append(
+            os.path.join(xos_dir, "synchronizers", "new_base", "tests", "steps")
+        )
 
         config = os.path.join(test_path, "test_config.yaml")
         from xosconfig import Config
-        Config.clear()
-        Config.init(config, 'synchronizer-config-schema.yaml')
 
-        from synchronizers.new_base.mock_modelaccessor_build import build_mock_modelaccessor
+        Config.clear()
+        Config.init(config, "synchronizer-config-schema.yaml")
+
+        from synchronizers.new_base.mock_modelaccessor_build import (
+            build_mock_modelaccessor,
+        )
+
         build_mock_modelaccessor(xos_dir, services_dir=None, service_xprotos=[])
 
-        os.chdir(os.path.join(test_path, '..'))  # config references tests/model-deps
+        os.chdir(os.path.join(test_path, ".."))  # config references tests/model-deps
 
         import event_loop
+
         reload(event_loop)
         import backend
+
         reload(backend)
         from mock_modelaccessor import mock_enumerator
         from modelaccessor import model_accessor
@@ -91,9 +100,9 @@ class TestControllerDependencies(unittest.TestCase):
         s.site = t
         ct.site = t
         t.controllersite = mock_enumerator([ct])
-        cohorts = self.synchronizer.compute_dependent_cohorts([p,ct], False)
+        cohorts = self.synchronizer.compute_dependent_cohorts([p, ct], False)
         self.assertEqual([ct, p], cohorts[0])
-        cohorts = self.synchronizer.compute_dependent_cohorts([ct,p], False)
+        cohorts = self.synchronizer.compute_dependent_cohorts([ct, p], False)
         self.assertEqual([ct, p], cohorts[0])
 
     def test_controller_deletion_path(self):
@@ -106,10 +115,10 @@ class TestControllerDependencies(unittest.TestCase):
         s.site = t
 
         t.controllersite = mock_enumerator([ct])
-        
-        cohorts = self.synchronizer.compute_dependent_cohorts([p,s,t,ct], False)
+
+        cohorts = self.synchronizer.compute_dependent_cohorts([p, s, t, ct], False)
         self.assertEqual([t, ct, s, p], cohorts[0])
-        cohorts = self.synchronizer.compute_dependent_cohorts([p,s,t,ct], True)
+        cohorts = self.synchronizer.compute_dependent_cohorts([p, s, t, ct], True)
         self.assertEqual([p, s, ct, t], cohorts[0])
 
     def test_multi_controller_schedule(self):
@@ -125,7 +134,9 @@ class TestControllerDependencies(unittest.TestCase):
         i = Instance()
         i.slice = slice
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([i, slice, site, csl, csi], False)
+        cohorts = self.synchronizer.compute_dependent_cohorts(
+            [i, slice, site, csl, csi], False
+        )
         self.assertEqual([site, csi, slice, csl, i], cohorts[0])
 
     def test_multi_controller_path_negative(self):
@@ -152,7 +163,7 @@ class TestControllerDependencies(unittest.TestCase):
         s.site = t
         ct.site = t
         t.controllersite = mock_enumerator([])
-        cohorts = self.synchronizer.compute_dependent_cohorts([p,ct], False)
+        cohorts = self.synchronizer.compute_dependent_cohorts([p, ct], False)
         self.assertIn([ct], cohorts)
         self.assertIn([p], cohorts)
 
@@ -164,16 +175,15 @@ class TestControllerDependencies(unittest.TestCase):
         s.site = t
 
         t.controllersite = mock_enumerator([])
-        
-        cohorts = self.synchronizer.compute_dependent_cohorts([p,s,t,ct], False)
-        self.assertIn([t,s], cohorts)
-        self.assertIn([p], cohorts)
-        self.assertIn([ct], cohorts)
-        cohorts = self.synchronizer.compute_dependent_cohorts([p,s,t,ct], True)
-        self.assertIn([s,t], cohorts)
-        self.assertIn([p], cohorts)
-        self.assertIn([ct], cohorts)
 
+        cohorts = self.synchronizer.compute_dependent_cohorts([p, s, t, ct], False)
+        self.assertIn([t, s], cohorts)
+        self.assertIn([p], cohorts)
+        self.assertIn([ct], cohorts)
+        cohorts = self.synchronizer.compute_dependent_cohorts([p, s, t, ct], True)
+        self.assertIn([s, t], cohorts)
+        self.assertIn([p], cohorts)
+        self.assertIn([ct], cohorts)
 
     def test_multi_controller_deletion_schedule(self):
         csl = ControllerSlice()
@@ -186,7 +196,9 @@ class TestControllerDependencies(unittest.TestCase):
         i = Instance()
         i.slice = slice
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([i, slice, site, csl, csi], False)
+        cohorts = self.synchronizer.compute_dependent_cohorts(
+            [i, slice, site, csl, csi], False
+        )
         self.assertIn([site, slice, i], cohorts)
         self.assertIn([csl], cohorts)
         self.assertIn([csi], cohorts)
@@ -202,10 +214,13 @@ class TestControllerDependencies(unittest.TestCase):
         i = Instance()
         i.slice = slice
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([i, slice, site, csl, csi], False)
+        cohorts = self.synchronizer.compute_dependent_cohorts(
+            [i, slice, site, csl, csi], False
+        )
         self.assertIn([site, slice, i], cohorts)
         self.assertIn([csl], cohorts)
         self.assertIn([csi], cohorts)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

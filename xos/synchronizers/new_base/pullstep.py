@@ -12,17 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 class PullStep(object):
     """
     All the pull steps defined in each synchronizer needs to inherit from this class in order to be loaded
     """
+
     def __init__(self, **kwargs):
         """
         Initialize a pull step
         :param kwargs:
         -- observed_model: name of the model that is being polled
         """
-        self.observed_model = kwargs.get('observed_model')
+        self.observed_model = kwargs.get("observed_model")
 
     def pull_records(self):
-        self.log.debug("There is no default pull_records, please provide a pull_records method for %s" % self.observed_model)
+        self.log.debug(
+            "There is no default pull_records, please provide a pull_records method for %s"
+            % self.observed_model
+        )

@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
 import yaml
 from protos import modeldefs_pb2, modeldefs_pb2_grpc
 import grpc
-from xos.exceptions import *
 from apihelper import XOSAPIHelperMixin
 from apistats import REQUEST_COUNT, track_request_time
 from xosconfig import Config
@@ -25,9 +24,10 @@ from multistructlog import create_logger
 
 log = create_logger(Config().get('logging'))
 
-def yaml_to_grpc(yaml_repr, grpc_container, yaml_key = None, grpc_parent = None):
+
+def yaml_to_grpc(yaml_repr, grpc_container, yaml_key=None, grpc_parent=None):
     if isinstance(yaml_repr, dict):
-        for k,v in yaml_repr.items():
+        for k, v in yaml_repr.items():
             grpc_sub_container = getattr(grpc_container, k)
             yaml_to_grpc(v, grpc_sub_container, k, grpc_container)
     elif isinstance(yaml_repr, list):
@@ -53,6 +53,7 @@ def yaml_to_grpc(yaml_repr, grpc_container, yaml_key = None, grpc_parent = None)
             log.exception("Failed to set attribute %s on element %s has it value is %s and has the wrong type %s" % (yaml_key, grpc_parent.__class__.__name__, yaml_repr, type(yaml_repr)))
             raise e
 
+
 class ModelDefsService(modeldefs_pb2_grpc.modeldefsServicer, XOSAPIHelperMixin):
     def __init__(self, thread_pool):
         self.thread_pool = thread_pool
@@ -62,22 +63,23 @@ class ModelDefsService(modeldefs_pb2_grpc.modeldefsServicer, XOSAPIHelperMixin):
 
     @track_request_time("Modeldefs", "ListModelDefs")
     def ListModelDefs(self, request, context):
-        ystr = open('protos/modeldefs.yaml').read()
+        ystr = open("protos/modeldefs.yaml").read()
         yaml_repr = yaml.load(ystr)
 
         modeldefs = modeldefs_pb2.ModelDefs()
 
         yaml_to_grpc(yaml_repr, modeldefs)
 
-        REQUEST_COUNT.labels('xos-core', "Modeldefs", "ListModelDefs", grpc.StatusCode.OK).inc()
+        REQUEST_COUNT.labels(
+            "xos-core", "Modeldefs", "ListModelDefs", grpc.StatusCode.OK
+        ).inc()
         return modeldefs
 
 
-if __name__=='__main__':
-    ystr = open('protos/modeldefs.yaml').read()
-
+if __name__ == "__main__":
+    ystr = open("protos/modeldefs.yaml").read()
     yaml_repr = yaml.load(ystr)
 
     modeldefs = modeldefs_pb2.ModelDefs()
     yaml_to_grpc(yaml_repr, modeldefs)
-    print modeldefs
+    print(modeldefs)

@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +23,7 @@
 import inspect
 import os
 
+
 def autodiscover_version(caller_filename=None, save_to=None, max_parent_depth=None):
     """ walk back along the path to the current module, searching for a VERSION file """
     if not caller_filename:
@@ -42,8 +42,8 @@ def autodiscover_version(caller_filename=None, save_to=None, max_parent_depth=No
             return version
 
         # limit_parent_depth can be used to limit how far back we search the tree for a VERSION file.
-        if (max_parent_depth is not None):
-            if (max_parent_depth <= 0):
+        if max_parent_depth is not None:
+            if max_parent_depth <= 0:
                 return None
             max_parent_depth -= 1
 
@@ -51,13 +51,16 @@ def autodiscover_version(caller_filename=None, save_to=None, max_parent_depth=No
         if not remainder:
             return None
 
+
 def autodiscover_version_of_caller(*args, **kwargs):
     frame = inspect.stack()[1]
     module = inspect.getmodule(frame[0])
     return autodiscover_version(module.__file__, *args, **kwargs)
 
+
 def autodiscover_version_of_main(*args, **kwargs):
     import __main__
+
     if hasattr(__main__, "__file__"):
         return autodiscover_version(__main__.__file__, *args, **kwargs)
     else:

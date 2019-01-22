@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,31 +15,35 @@
 
 #! /usr/bin/env python
 
+from __future__ import print_function
 import json
 import os
 import requests
 import sys
 
-REST_API="http://alpha.opencloud.us:8000/xos/"
+REST_API = "http://alpha.opencloud.us:8000/xos/"
 
 NODES_API = REST_API + "nodes/"
 SLICES_API = REST_API + "slices/"
 SLIVERS_API = REST_API + "instances/"
 
-opencloud_auth=("demo@onlab.us", "demo")
+opencloud_auth = ("demo@onlab.us", "demo")
+
 
 def get_slice_id(slice_name):
     r = requests.get(SLICES_API + "?name=%s" % slice_name, auth=opencloud_auth)
     return r.json()[0]["id"]
 
+
 def get_node_id(host_name):
-     r = requests.get(NODES_API)
-     nodes = r.json()
-     for node in nodes:
-         if node["name"].lower() == host_name.lower():
-             return node["id"]
-     print >> sys.stderr, "Error: failed to find node %s" % host_name
-     sys.exit(-1)
+    r = requests.get(NODES_API)
+    nodes = r.json()
+    for node in nodes:
+        if node["name"].lower() == host_name.lower():
+            return node["id"]
+    print("Error: failed to find node %s" % host_name, file=sys.stderr)
+    sys.exit(-1)
+
 
 def get_instances(slice_id=None, node_id=None):
     queries = []
@@ -57,11 +60,15 @@ def get_instances(slice_id=None, node_id=None):
     r = requests.get(SLIVERS_API + query_string, auth=opencloud_auth)
     return r.json()
 
+
 def main():
     global opencloud_auth
 
-    if len(sys.argv)!=5:
-        print >> sys.stderr, "syntax: get_instance_name.py <username>, <password>, <hostname> <slicename>"
+    if len(sys.argv) != 5:
+        print(
+            "syntax: get_instance_name.py <username>, <password>, <hostname> <slicename>",
+            file=sys.stderr,
+        )
         sys.exit(-1)
 
     username = sys.argv[1]
@@ -69,7 +76,7 @@ def main():
     hostname = sys.argv[3]
     slice_name = sys.argv[4]
 
-    opencloud_auth=(username, password)
+    opencloud_auth = (username, password)
 
     slice_id = get_slice_id(slice_name)
     node_id = get_node_id(hostname)
@@ -79,8 +86,8 @@ def main():
 
     # return the last one in the list (i.e. the newest one)
 
-    print sorted(instance_names)[-1]
+    print(sorted(instance_names)[-1])
+
 
 if __name__ == "__main__":
     main()
-

@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,20 +27,23 @@ message VRouterPort {
   required int32 vrouter_service = 4 [ null = "False",  blank = "False",  model = "VRouterService",  modifier = "required",  type = "link",  port = "device_ports",  link_type = "manytoone",  db_index = "True" ];
 }
 """
-VROUTER_XPROTO = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/xproto/vrouterport.xproto")
+VROUTER_XPROTO = os.path.abspath(
+    os.path.dirname(os.path.realpath(__file__)) + "/xproto/vrouterport.xproto"
+)
 
 # Generate other formats from xproto
+
+
 class XProtoTranslatorTest(unittest.TestCase):
     def _test_proto_generator(self):
         args = XOSProcessorArgs()
         args.files = [VROUTER_XPROTO]
-        args.target = 'proto.xtarget'
+        args.target = "proto.xtarget"
         output = XOSProcessor.process(args)
         self.assertEqual(output, PROTO_EXPECTED_OUTPUT)
 
     def test_yaml_generator(self):
-        xproto = \
-"""
+        xproto = """
 option app_label = "test";
 
 message Port (PlCoreBase,ParameterMixin){
@@ -120,15 +122,14 @@ message Slice (PlCoreBase){
 
         args = XOSProcessorArgs()
         args.inputs = xproto
-        args.target = 'modeldefs.xtarget'
+        args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
 
         yaml_ir = yaml.load(output)
-        self.assertEqual(len(yaml_ir['items']), 4)
+        self.assertEqual(len(yaml_ir["items"]), 4)
 
     def test_gui_hidden_models(self):
-        xproto = \
-"""
+        xproto = """
 option app_label = "test";
 
 message Foo {
@@ -143,16 +144,15 @@ message Bar {
 """
         args = XOSProcessorArgs()
         args.inputs = xproto
-        args.target = 'modeldefs.xtarget'
+        args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
         yaml_ir = yaml.load(output)
-        self.assertEqual(len(yaml_ir['items']), 1)
-        self.assertIn('Bar', output)
-        self.assertNotIn('Foo', output)
+        self.assertEqual(len(yaml_ir["items"]), 1)
+        self.assertIn("Bar", output)
+        self.assertNotIn("Foo", output)
 
     def test_gui_hidden_model_fields(self):
-        xproto = \
-"""
+        xproto = """
 option app_label = "test";
 
 message Foo {
@@ -162,16 +162,15 @@ message Foo {
 """
         args = XOSProcessorArgs()
         args.inputs = xproto
-        args.target = 'modeldefs.xtarget'
+        args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
         yaml_ir = yaml.load(output)
-        self.assertEqual(len(yaml_ir['items']), 1)
-        self.assertIn('name', output)
-        self.assertNotIn('secret', output)
+        self.assertEqual(len(yaml_ir["items"]), 1)
+        self.assertIn("name", output)
+        self.assertNotIn("secret", output)
 
     def test_static_options(self):
-        xproto = \
-"""
+        xproto = """
 option app_label = "test";
 
 message Foo {
@@ -182,14 +181,13 @@ message Foo {
 
         args = XOSProcessorArgs()
         args.inputs = xproto
-        args.target = 'modeldefs.xtarget'
+        args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
         self.assertIn("options:", output)
         self.assertIn(" {'id': 'container_vm', 'label': 'Container In VM'}", output)
 
     def test_not_static_options(self):
-        xproto = \
-"""
+        xproto = """
 option app_label = "test";
 
 message Foo {
@@ -199,13 +197,12 @@ message Foo {
 
         args = XOSProcessorArgs()
         args.inputs = xproto
-        args.target = 'modeldefs.xtarget'
+        args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
         self.assertNotIn("options:", output)
 
     def test_default_value_in_modeldef(self):
-        xproto = \
-"""
+        xproto = """
 option app_label = "test";
 
 message Foo {
@@ -219,7 +216,7 @@ message Foo {
 
         args = XOSProcessorArgs()
         args.inputs = xproto
-        args.target = 'modeldefs.xtarget'
+        args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
         self.assertIn('default: "bar"', output)
         self.assertIn('default: "false"', output)
@@ -228,8 +225,7 @@ message Foo {
         self.assertIn('default: "0"', output)
 
     def test_not_default_value_in_modeldef(self):
-        xproto = \
-"""
+        xproto = """
 option app_label = "test";
 
 message Foo {
@@ -239,13 +235,12 @@ message Foo {
 
         args = XOSProcessorArgs()
         args.inputs = xproto
-        args.target = 'modeldefs.xtarget'
+        args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
-        self.assertNotIn('default:', output)
+        self.assertNotIn("default:", output)
 
     def test_one_to_many_in_modeldef(self):
-        xproto = \
-"""
+        xproto = """
 option app_label = "test";
 
 message ServiceDependency {
@@ -260,19 +255,28 @@ message Service {
 
         args = XOSProcessorArgs()
         args.inputs = xproto
-        args.target = 'modeldefs.xtarget'
+        args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
         # Service deps model
-        self.assertIn('{model: Service, type: manytoone, on_field: provider_service}', output)
-        self.assertIn('{model: Service, type: manytoone, on_field: provider_service}', output)
+        self.assertIn(
+            "{model: Service, type: manytoone, on_field: provider_service}", output
+        )
+        self.assertIn(
+            "{model: Service, type: manytoone, on_field: provider_service}", output
+        )
 
         # Service model
-        self.assertIn('{model: ServiceDependency, type: onetomany, on_field: provider_service}', output)
-        self.assertIn('{model: ServiceDependency, type: onetomany, on_field: provider_service}', output)
+        self.assertIn(
+            "{model: ServiceDependency, type: onetomany, on_field: provider_service}",
+            output,
+        )
+        self.assertIn(
+            "{model: ServiceDependency, type: onetomany, on_field: provider_service}",
+            output,
+        )
 
     def test_model_description(self):
-        xproto = \
-"""
+        xproto = """
 option app_label = "test";
 
 message Foo {
@@ -288,13 +292,12 @@ message Bar {
 
         args = XOSProcessorArgs()
         args.inputs = xproto
-        args.target = 'modeldefs.xtarget'
+        args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
         self.assertIn('description: "This is the Foo model"', output)
 
     def test_model_verbose_name(self):
-        xproto = \
-"""
+        xproto = """
 option app_label = "test";
 
 message Foo {
@@ -310,13 +313,12 @@ message Bar {
 
         args = XOSProcessorArgs()
         args.inputs = xproto
-        args.target = 'modeldefs.xtarget'
+        args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
         self.assertIn('verbose_name: "Verbose Foo Name"', output)
 
     def test_feedback_field(self):
-        xproto = \
-"""
+        xproto = """
 option app_label = "test";
 
 message ParentFoo {
@@ -330,13 +332,12 @@ message Foo (ParentFoo) {
 
         args = XOSProcessorArgs()
         args.inputs = xproto
-        args.target = 'modeldefs.xtarget'
+        args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
 
-        read_only = filter(lambda s: 'read_only: True' in s, output.splitlines())
-        self.assertEqual(len(read_only), 3) # readonly is 1 for ParentFoo and 2 for Foo
+        read_only = filter(lambda s: "read_only: True" in s, output.splitlines())
+        self.assertEqual(len(read_only), 3)  # readonly is 1 for ParentFoo and 2 for Foo
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
-
-

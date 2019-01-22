@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,10 +20,10 @@ import time
 from xosconfig import Config
 from multistructlog import create_logger
 
-log = create_logger(Config().get('logging'))
+log = create_logger(Config().get("logging"))
 
 
-class XOSPullStepScheduler():
+class XOSPullStepScheduler:
     """ XOSPullStepThread
 
         A Thread for servicing pull steps. There is one event_step associated with one XOSPullStepThread.
@@ -40,11 +39,11 @@ class XOSPullStepScheduler():
             self.run_once()
 
     def run_once(self):
-        log.trace('Starting pull steps', steps=self.steps)
+        log.trace("Starting pull steps", steps=self.steps)
 
         threads = []
         for step in self.steps:
-            thread = threading.Thread(target=step().pull_records, name='pull_step')
+            thread = threading.Thread(target=step().pull_records, name="pull_step")
             threads.append(thread)
 
         for t in threads:
@@ -53,7 +52,7 @@ class XOSPullStepScheduler():
         for t in threads:
             t.join()
 
-        log.trace('Done with pull steps', steps=self.steps)
+        log.trace("Done with pull steps", steps=self.steps)
 
 
 class XOSPullStepEngine:
@@ -78,7 +77,12 @@ class XOSPullStepEngine:
         # NOTE we'll load all the classes that inherit from PullStep
         for fn in os.listdir(pull_step_dir):
             pathname = os.path.join(pull_step_dir, fn)
-            if os.path.isfile(pathname) and fn.endswith(".py") and (fn != "__init__.py") and ("test" not in fn):
+            if (
+                os.path.isfile(pathname)
+                and fn.endswith(".py")
+                and (fn != "__init__.py")
+                and ("test" not in fn)
+            ):
                 event_module = imp.load_source(fn[:-3], pathname)
 
                 for classname in dir(event_module):
@@ -86,7 +90,7 @@ class XOSPullStepEngine:
 
                     if inspect.isclass(c):
                         base_names = [b.__name__ for b in c.__bases__]
-                        if 'PullStep' in base_names:
+                        if "PullStep" in base_names:
                             self.pull_steps.append(c)
         log.info("Loaded pull steps", steps=self.pull_steps)
 

@@ -16,17 +16,19 @@ import unittest
 from mock import patch, call, Mock, PropertyMock
 import json
 
-import os, sys
+import os
+import sys
 
 # Hack to load synchronizer framework
-test_path=os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-xos_dir=os.path.join(test_path, "../../..")
+test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+xos_dir = os.path.join(test_path, "../../..")
 if not os.path.exists(os.path.join(test_path, "new_base")):
-    xos_dir=os.path.join(test_path, "../../../../../../orchestration/xos/xos")
+    xos_dir = os.path.join(test_path, "../../../../../../orchestration/xos/xos")
     services_dir = os.path.join(xos_dir, "../../xos_services")
 sys.path.append(xos_dir)
-sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
+sys.path.append(os.path.join(xos_dir, "synchronizers", "new_base"))
 # END Hack to load synchronizer framework
+
 
 class TestDiffs(unittest.TestCase):
 
@@ -36,16 +38,19 @@ class TestDiffs(unittest.TestCase):
 
         self.sys_path_save = sys.path
         sys.path.append(xos_dir)
-        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
+        sys.path.append(os.path.join(xos_dir, "synchronizers", "new_base"))
 
         # Setting up the config module
         from xosconfig import Config
+
         config = os.path.join(test_path, "test_config.yaml")
         Config.clear()
         Config.init(config, "synchronizer-config-schema.yaml")
         # END Setting up the config module
 
-        from synchronizers.new_base.mock_modelaccessor_build import build_mock_modelaccessor
+        from synchronizers.new_base.mock_modelaccessor_build import (
+            build_mock_modelaccessor,
+        )
 
         # FIXME this is to get jenkins to pass the tests, somehow it is running tests in a different order
         # and apparently it is not overriding the generated model accessor
@@ -53,15 +58,18 @@ class TestDiffs(unittest.TestCase):
         import synchronizers.new_base.modelaccessor
 
         # import all class names to globals
-        for (k, v) in synchronizers.new_base.modelaccessor.model_accessor.all_model_classes.items():
+        for (
+            k,
+            v,
+        ) in (
+            synchronizers.new_base.modelaccessor.model_accessor.all_model_classes.items()
+        ):
             globals()[k] = v
 
         self.log = Mock()
 
-
     def tearDown(self):
         sys.path = self.sys_path_save
-
 
     def test_new_diff(self):
         site = Site(name="mysite")
@@ -75,8 +83,8 @@ class TestDiffs(unittest.TestCase):
 
         site.login_base = "bar"
 
-        self.assertEqual(site._dict, {'login_base': 'bar', 'name': 'mysite'})
-        self.assertEqual(site.diff, {'login_base': (None, 'bar')})
+        self.assertEqual(site._dict, {"login_base": "bar", "name": "mysite"})
+        self.assertEqual(site.diff, {"login_base": (None, "bar")})
         self.assertIn("name", site.changed_fields)
         self.assertIn("login_base", site.changed_fields)
         self.assertEqual(site.has_field_changed("name"), False)
@@ -100,11 +108,12 @@ class TestDiffs(unittest.TestCase):
 
         site.login_base = "bar"
 
-        self.assertEqual(site._dict, {'id': 1, 'login_base': 'bar', 'name': 'mysite'})
-        self.assertEqual(site.diff, {'login_base': ("foo", 'bar')})
+        self.assertEqual(site._dict, {"id": 1, "login_base": "bar", "name": "mysite"})
+        self.assertEqual(site.diff, {"login_base": ("foo", "bar")})
         self.assertIn("login_base", site.changed_fields)
         self.assertEqual(site.has_field_changed("name"), False)
         self.assertEqual(site.has_field_changed("login_base"), True)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

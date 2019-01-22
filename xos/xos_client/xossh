@@ -5,7 +5,8 @@
 
 import argparse
 import functools
-import os, sys
+import os
+import sys
 import atexit
 import readline
 import traceback
@@ -14,6 +15,7 @@ from twisted.internet import reactor
 from xosapi.version import __version__
 
 current_client = None
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -71,13 +73,13 @@ def parse_args():
                         action='count',
                         help=_help)
 
-    _help = 'enable verbose logging'
+    _help = 'increase verbosity level (can be used multiple times)'
     parser.add_argument('-v', '--verbose',
                         dest='verbose',
                         action='count',
                         help=_help)
 
-    _help = 'enable verbose logging'
+    _help = 'print version'
     parser.add_argument('-V', '--version',
                         dest='version',
                         action='store_true',
@@ -87,6 +89,7 @@ def parse_args():
     args = parser.parse_args()
 
     return args
+
 
 def login(username=None, password=None):
     from xosapi.xos_grpc_client import InsecureClient, SecureClient
@@ -105,14 +108,18 @@ def login(username=None, password=None):
         client.set_reconnect_callback(functools.partial(start_xossh, client))
         client.start()
 
+
 def setDirtyModels(*args, **kwargs):
     return current_client.utility.SetDirtyModels(current_client.utility_pb2.ModelFilter(*args, **kwargs))
+
 
 def listDirtyModels(*args, **kwargs):
     return current_client.utility.ListDirtyModels(current_client.utility_pb2.ModelFilter(*args, **kwargs))
 
+
 def listModelDefs():
     return current_client.modeldefs.ListModelDefs(Empty())
+
 
 def loadModels(name, version, xproto_filenames=[], decl_filenames=[], attic_filenames=[]):
     request = current_client.dynamicload_pb2.LoadModelsRequest(name=name, version=version)
@@ -130,13 +137,16 @@ def loadModels(name, version, xproto_filenames=[], decl_filenames=[], attic_file
         item.contents = open(fn).read()
     return current_client.dynamicload.LoadModels(request)
 
+
 def unloadModels(name, version):
     request = current_client.dynamicload_pb2.UnloadModelsRequest(name=name, version=version)
     return current_client.dynamicload.UnloadModels(request)
 
+
 def getLoadStatus():
     request = Empty()
     return current_client.dynamicload.GetLoadStatus(request)
+
 
 def listUtility():
     print 'setDirtyModels(class_name=None)'
@@ -145,6 +155,7 @@ def listUtility():
     print 'loadModels(name, version, xproto_filenames, decl_filenames, attic_filenames)'
     print 'unloadModels(name, version)'
     print 'getLoadStatus()'
+
 
 def examples():
     print 'Slice.objects.all() # list all slices'
@@ -155,6 +166,7 @@ def examples():
     print 's.save() # save the slice'
     print
 
+
 def start_xossh(client):
     global coreapi, current_client
     coreapi = client.xos_orm
@@ -164,12 +176,12 @@ def start_xossh(client):
 
     if not args.no_banner:
         print
-        print "__   __   ____     _____    _____   _    _"
-        print "\ \ / /  / __ \   / ____|  / ____| | |  | |"
-        print " \ V /  | |  | | | (___   | (___   | |__| |"
-        print "  > <   | |  | |  \___ \   \___ \  |  __  |"
-        print " / . \  | |__| |  ____) |  ____) | | |  | |"
-        print "/_/ \_\  \____/  |_____/  |_____/  |_|  |_|"
+        print r"__   __   ____     _____    _____   _    _"
+        print r"\ \ / /  / __ \   / ____|  / ____| | |  | |"
+        print r" \ V /  | |  | | | (___   | (___   | |__| |"
+        print r"  > <   | |  | |  \___ \   \___ \  |  __  |"
+        print r" / . \  | |__| |  ____) |  ____) | | |  | |"
+        print r"/_/ \_\  \____/  |_____/  |_____/  |_|  |_|"
         print
 
         print "XOS Core server at %s" % client.endpoint
@@ -192,6 +204,7 @@ def start_xossh(client):
     readline.parse_and_bind("tab: complete")
 
     reactor.callLater(0, functools.partial(do_xossh_prompt, client))
+
 
 def do_xossh_prompt(client):
     for k in client.xos_orm.all_model_names:
@@ -252,6 +265,7 @@ def do_xossh_prompt(client):
         print
         reactor.stop()
 
+
 def main():
     global args
     args = parse_args()
@@ -261,16 +275,13 @@ def main():
     config_file = args.config
     Config.init(config_file, 'synchronizer-config-schema.yaml')
 
-    from xosapi.xos_grpc_client import setup_logging
-
-    setup_logging()
-
     if args.version:
         print __version__
         sys.exit(0)
 
     login(username=args.username, password=args.password)
     reactor.run()
+
 
 if __name__ == "__main__":
     main()

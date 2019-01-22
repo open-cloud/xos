@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+from django.core.wsgi import get_wsgi_application
 
 """
 WSGI config for XOS.
@@ -40,7 +41,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.
-from django.core.wsgi import get_wsgi_application
+
 application = get_wsgi_application()
 
 # Apply WSGI middleware here.

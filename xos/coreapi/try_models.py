@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +17,7 @@ import sys
 
 import django
 
-xos_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/..')
+xos_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/..")
 sys.path.append(xos_path)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")

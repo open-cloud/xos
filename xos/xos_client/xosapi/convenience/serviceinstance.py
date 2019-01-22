@@ -16,10 +16,10 @@ from xosapi.orm import ORMWrapper, register_convenience_wrapper
 from xosconfig import Config
 from multistructlog import create_logger
 
-log = create_logger(Config().get('logging'))
+log = create_logger(Config().get("logging"))
+
 
 class ORMWrapperServiceInstance(ORMWrapper):
-
     @property
     def serviceinstanceattribute_dict(self):
         attrs = {}
@@ -71,7 +71,9 @@ class ORMWrapperServiceInstance(ORMWrapper):
             eastbound_si = eastbound_si_class()
             eastbound_si.owner_id = link.provider_service_id
             eastbound_si.save()
-            link = ServiceInstanceLink(provider_service_instance=eastbound_si, subscriber_service_instance=si)
+            link = ServiceInstanceLink(
+                provider_service_instance=eastbound_si, subscriber_service_instance=si
+            )
             link.save()
 
     def get_westbound_service_instance_properties(self, prop_name, include_self=False):
@@ -81,8 +83,14 @@ class ORMWrapperServiceInstance(ORMWrapper):
         wi = self.westbound_service_instances
 
         if len(wi) == 0:
-            log.error("ServiceInstance with id %s has no westbound service instances, can't find property %s in the chain" % (self.id, prop_name))
-            raise Exception("ServiceInstance with id %s has no westbound service instances" % self.id)
+            log.error(
+                "ServiceInstance with id %s has no westbound service instances, can't find property %s in the chain"
+                % (self.id, prop_name)
+            )
+            raise Exception(
+                "ServiceInstance with id %s has no westbound service instances"
+                % self.id
+            )
 
         for i in wi:
             if hasattr(i, prop_name):
@@ -91,5 +99,6 @@ class ORMWrapperServiceInstance(ORMWrapper):
                 # cast to the ServiceInstance model
                 i = self.stub.ServiceInstance.objects.get(id=i.id)
                 return i.get_westbound_service_instance_properties(prop_name)
+
 
 register_convenience_wrapper("ServiceInstance", ORMWrapperServiceInstance)

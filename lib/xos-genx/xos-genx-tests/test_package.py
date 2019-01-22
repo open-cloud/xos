@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,18 +18,19 @@ import os
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from helpers import XProtoTestHelpers
 
+
 class XProtoPackageTest(unittest.TestCase):
     def test_package_fqn(self):
         args = XOSProcessorArgs()
         target = XProtoTestHelpers.write_tmp_target(
-"""
+            """
   {% for m in proto.messages %}
   {{ m.name }},{{ m.package }},{{ m.fqn }}
   {% endfor %}
-""")
-
-        xproto =\
 """
+        )
+
+        xproto = """
 package xos.core;
 
 message Port (PlCoreBase,ParameterMixin) {
@@ -48,11 +48,11 @@ message Port (PlCoreBase,ParameterMixin) {
 
         output = XOSProcessor.process(args)
 
-        self.assertIn('Port,xos.core,xos.core.Port', output)
+        self.assertIn("Port,xos.core,xos.core.Port", output)
 
     def test_cross_model(self):
-        target = XProtoTestHelpers.write_tmp_target( \
-"""
+        target = XProtoTestHelpers.write_tmp_target(
+            """
   {% for m in proto.messages %}
   {{ m.fqn }} {
   {%- for l in m.links %}
@@ -75,10 +75,10 @@ message Port (PlCoreBase,ParameterMixin) {
   {% endfor %}
   }
   {% endfor %}
-""")
-
-        xproto = \
 """
+        )
+
+        xproto = """
 package xos.network;
 
 message Port (PlCoreBase,ParameterMixin){
@@ -164,13 +164,17 @@ message Slice (PlCoreBase){
         args.target = target
         output = XOSProcessor.process(args)
 
-        self.assertIn('numberCores', output) # Instance showed up via cross-package call
-        self.assertIn('ip;', output) # Network showed up via cross-package call
-        self.assertIn('max_instances', output) # Slice showed up via implicit in-package call
+        self.assertIn(
+            "numberCores", output
+        )  # Instance showed up via cross-package call
+        self.assertIn("ip;", output)  # Network showed up via cross-package call
+        self.assertIn(
+            "max_instances", output
+        )  # Slice showed up via implicit in-package call
 
     def test_base_class_fields(self):
         target = XProtoTestHelpers.write_tmp_target(
-"""
+            """
   {% for m in proto.messages %}
   {{ m.name }} {
   {%- for b in m.bases %}
@@ -183,10 +187,10 @@ message Slice (PlCoreBase){
   {% endfor %}
   }
   {% endfor %}
-""")
-
-        xproto =\
 """
+        )
+
+        xproto = """
 package xos.network;
 
 message Port (PlCoreBase,ParameterMixin){
@@ -225,18 +229,18 @@ message Instance (xos.network.Port){
         args.target = target
         output = XOSProcessor.process(args)
 
-        self.assertIn('xos_created', output)
+        self.assertIn("xos_created", output)
 
     def test_from_base(self):
-        target = XProtoTestHelpers.write_tmp_target( \
-"""
+        target = XProtoTestHelpers.write_tmp_target(
+            """
   {% for f in xproto_base_fields(proto.messages.3, proto.message_table) %}
         {{ f.type }} {{ f.name }};
   {% endfor %}
-""")
-
-        xproto =\
 """
+        )
+
+        xproto = """
 option app_name = "firstapp";
 
 message Port (PlCoreBase,ParameterMixin){
@@ -326,21 +330,21 @@ message Slice (Network){
         args.target = target
         output = XOSProcessor.process(args)
 
-        self.assertIn('easter_egg', output)
+        self.assertIn("easter_egg", output)
 
     def test_model_options(self):
         target = XProtoTestHelpers.write_tmp_target(
-"""
+            """
   Options:
 
   {{ proto.options }}
   {% for m in proto.messages %}
         {{ m.options.app_name }}
   {% endfor %}
-""")
-
-        xproto =\
 """
+        )
+
+        xproto = """
 option app_name = "firstapp";
 
 message Port (PlCoreBase,ParameterMixin){
@@ -426,17 +430,15 @@ message Slice (Network){
      required manytomany tags->Tag = 18 [db_index = False, null = False, blank = True];
 }
 """
-         
+
         args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = target
         output = XOSProcessor.process(args)
 
-        self.assertEqual(output.count('firstapp'), 2)
-        self.assertEqual(output.count('networkapp'), 2)
+        self.assertEqual(output.count("firstapp"), 2)
+        self.assertEqual(output.count("networkapp"), 2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-
-

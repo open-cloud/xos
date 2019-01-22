@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,21 +20,27 @@ from helpers import FakeObject, XProtoTestHelpers
 """The function below is for eliminating warnings arising due to the missing policy_output_validator,
 which is generated and loaded dynamically.
 """
+
+
 def policy_output_validator(x, y):
     raise Exception("Validator not generated. Test failed.")
     return False
 
+
 """
-The tests below use the Python code target to generate 
+The tests below use the Python code target to generate
 Python validation policies, set up an appropriate environment and execute the Python.
 """
+
+
 class XProtoXOSModelValidationTest(unittest.TestCase):
     def setUp(self):
-        self.target = XProtoTestHelpers.write_tmp_target("{{ xproto_fol_to_python_validator('output', proto.policies.test_policy, None, 'Necessary Failure') }}")
+        self.target = XProtoTestHelpers.write_tmp_target(
+            "{{ xproto_fol_to_python_validator('output', proto.policies.test_policy, None, 'Necessary Failure') }}"
+        )
 
     def test_instance_container(self):
-        xproto = \
-"""
+        xproto = """
     policy test_policy < (obj.isolation = "container" | obj.isolation = "container_vm" ) -> (obj.image.kind = "container") >
 """
         args = XOSProcessorArgs()
@@ -45,10 +50,10 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
         output = XOSProcessor.process(args)
 
         obj = FakeObject()
-        obj.isolation = 'container'
-        obj.kind = 'not a container'
+        obj.isolation = "container"
+        obj.kind = "not a container"
 
-        exec(output) # This loads the generated function, which should look like this:
+        exec(output)  # This loads the generated function, which should look like this:
 
         """
         def policy_output_validator(obj, ctx):
@@ -61,11 +66,10 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
         """
 
         with self.assertRaises(Exception):
-           policy_output_validator(obj, {})
-    
+            policy_output_validator(obj, {})
+
     def test_slice_name_validation(self):
-        xproto = \
-"""
+        xproto = """
     policy test_policy < not obj.id -> {{ obj.name.startswith(obj.site.login_base) }} >
 """
         args = XOSProcessorArgs()
@@ -75,10 +79,10 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
         output = XOSProcessor.process(args)
 
         obj = FakeObject()
-        obj.isolation = 'container'
-        obj.kind = 'not a container'
+        obj.isolation = "container"
+        obj.kind = "not a container"
 
-        exec(output) # This loads the generated function, which should look like this:
+        exec(output)  # This loads the generated function, which should look like this:
 
         """
         def policy_output_validator(obj, ctx):
@@ -91,11 +95,10 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
         """
 
         with self.assertRaises(Exception):
-           policy_output_validator(obj, {})
+            policy_output_validator(obj, {})
 
     def test_equal(self):
-        xproto = \
-"""
+        xproto = """
     policy test_policy < not (ctx.user = obj.user) >
 """
 
@@ -105,7 +108,7 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
 
         output = XOSProcessor.process(args)
 
-        exec(output) # This loads the generated function, which should look like this:
+        exec(output)  # This loads the generated function, which should look like this:
 
         """
         def policy_output_validator(obj, ctx):
@@ -121,11 +124,10 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
         ctx.user = 1
 
         with self.assertRaises(Exception):
-           policy_output_validator(obj, ctx)
+            policy_output_validator(obj, ctx)
 
     def test_bin(self):
-        xproto = \
-"""
+        xproto = """
     policy test_policy < not (ctx.is_admin = True | obj.empty = True) | False>
 """
 
@@ -134,7 +136,7 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
         args.target = self.target
 
         output = XOSProcessor.process(args)
-        exec(output) # This loads the generated function, which should look like this:
+        exec(output)  # This loads the generated function, which should look like this:
 
         """
         def policy_output_validator(obj, ctx):
@@ -154,10 +156,8 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
         with self.assertRaises(Exception):
             verdict = policy_output_validator(obj, ctx)
 
-        
     def test_exists(self):
-        xproto = \
-"""
+        xproto = """
     policy test_policy < exists Privilege: Privilege.object_id = obj.id >
 """
         args = XOSProcessorArgs()
@@ -165,7 +165,7 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
         args.target = self.target
 
         output = XOSProcessor.process(args)
-        exec(output) # This loads the generated function, which should look like this:
+        exec(output)  # This loads the generated function, which should look like this:
 
         """
         def policy_output_validator(obj, ctx):
@@ -175,17 +175,16 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
         """
 
         self.assertTrue(policy_output_validator is not None)
-	
+
     def test_python(self):
-        xproto = \
-"""
+        xproto = """
     policy test_policy < {{ "jack" in ["the", "box"] }} = True >
 """
         args = XOSProcessorArgs()
         args.inputs = xproto
         args.target = self.target
         output = XOSProcessor.process(args)
-        exec(output) # This loads the generated function, which should look like this:
+        exec(output)  # This loads the generated function, which should look like this:
 
         """
         def policy_output_validator(obj, ctx):
@@ -200,8 +199,7 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
 
     def test_forall(self):
         # This one we only parse
-        xproto = \
-"""
+        xproto = """
     policy test_policy < forall Credential: Credential.obj_id = obj_id >
 """
 
@@ -218,7 +216,8 @@ class XProtoXOSModelValidationTest(unittest.TestCase):
             return i1
         """
 
-        self.assertIn('policy_output_validator', output)
+        self.assertIn("policy_output_validator", output)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

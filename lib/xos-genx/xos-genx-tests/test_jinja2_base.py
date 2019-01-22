@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +27,7 @@ def _field(name, singular=None, plural=None):
     if plural:
         f["options"]["plural"] = plural
     return f
+
 
 class Jinja2BaseTests(unittest.TestCase):
     def test_xproto_is_true(self):
@@ -68,14 +68,16 @@ class Jinja2BaseTests(unittest.TestCase):
         self.assertEqual(xproto_singularize_pluralize(_field("sheep")), "sheep")
         self.assertEqual(xproto_singularize_pluralize(_field("slices")), "slices")
         self.assertEqual(xproto_singularize_pluralize(_field("networks")), "networks")
-        self.assertEqual(xproto_singularize_pluralize(_field("omf_friendlies")), "omf_friendlies")
+        self.assertEqual(
+            xproto_singularize_pluralize(_field("omf_friendlies")), "omf_friendlies"
+        )
         # invalid words, should usually return <word>-es
         self.assertEqual(xproto_singularize_pluralize(_field("xxx")), "xxxes")
         # if a field option is set, use that
-        self.assertEqual(xproto_singularize(_field("sheep", singular="turtle")), "turtle")
+        self.assertEqual(
+            xproto_singularize(_field("sheep", singular="turtle")), "turtle"
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-
-

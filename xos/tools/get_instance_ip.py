@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,7 @@
 
 #! /usr/bin/env python
 
+from __future__ import print_function
 import json
 import os
 import requests
@@ -24,24 +24,27 @@ from optparse import OptionParser
 
 from operator import itemgetter, attrgetter
 
+
 def get_slice_id(slice_name):
     r = requests.get(SLICES_API + "?name=%s" % slice_name, auth=OPENCLOUD_AUTH)
-    if (r.status_code!=200):
-        print >> sys.stderr, "Error: Slice REST API failed"
+    if r.status_code != 200:
+        print("Error: Slice REST API failed", file=sys.stderr)
         sys.exit(-1)
     return r.json()[0]["id"]
 
+
 def get_node_id(host_name):
-     r = requests.get(NODES_API, auth=OPENCLOUD_AUTH)
-     if (r.status_code!=200):
-        print >> sys.stderr, "Error: Node REST API failed"
+    r = requests.get(NODES_API, auth=OPENCLOUD_AUTH)
+    if r.status_code != 200:
+        print("Error: Node REST API failed", file=sys.stderr)
         sys.exit(-1)
-     nodes = r.json()
-     for node in nodes:
-         if node["name"].lower() == host_name.lower():
-             return node["id"]
-     print >> sys.stderr, "Error: failed to find node %s" % host_name
-     sys.exit(-1)
+    nodes = r.json()
+    for node in nodes:
+        if node["name"].lower() == host_name.lower():
+            return node["id"]
+    print("Error: failed to find node %s" % host_name, file=sys.stderr)
+    sys.exit(-1)
+
 
 def get_instances(slice_id=None, node_id=None):
     queries = []
@@ -56,40 +59,89 @@ def get_instances(slice_id=None, node_id=None):
         query_string = ""
 
     r = requests.get(INSTANCES_API + query_string, auth=OPENCLOUD_AUTH)
-    if (r.status_code!=200):
-        print >> sys.stderr, "Error: Instance REST API failed"
+    if r.status_code != 200:
+        print("Error: Instance REST API failed", file=sys.stderr)
         sys.exit(-1)
     return r.json()
 
+
 def get_networks():
     r = requests.get(NETWORKS_API, auth=OPENCLOUD_AUTH)
-    if (r.status_code!=200):
-        print >> sys.stderr, "Error: Network REST API failed"
+    if r.status_code != 200:
+        print("Error: Network REST API failed", file=sys.stderr)
         sys.exit(-1)
     return r.json()
+
 
 def main():
     global OPENCLOUD_AUTH, REST_API, NODES_API, SLICES_API, INSTANCES_API, PORTS_API, NETWORKS_API
 
-    parser = OptionParser(usage="get_instance_ip.py [options] <rest_hostname> <rest_port>", )
+    parser = OptionParser(
+        usage="get_instance_ip.py [options] <rest_hostname> <rest_port>"
+    )
 
-    parser.add_option("-u", "--username", dest="username", help="XOS admin username", metavar="NAME", default="padmin@vicci.org")
-    parser.add_option("-p", "--password", dest="password", help="XOS admin password", metavar="PASSWORD", default="letmein")
-    parser.add_option("-n", "--node", dest="node", help="show instances on node", metavar="HOSTNAME", default=None)
-    parser.add_option("-s", "--slice", dest="slice", help="show instances in slice", metavar="SLICENAME", default=None)
-    parser.add_option("-N", "--network", dest="filter_network_name", help="filter network name", metavar="NAME", default=None)
-    parser.add_option("-b", "--brief", dest="brief", help="only display the IP, nothing else", action="store_true", default=False)
+    parser.add_option(
+        "-u",
+        "--username",
+        dest="username",
+        help="XOS admin username",
+        metavar="NAME",
+        default="padmin@vicci.org",
+    )
+    parser.add_option(
+        "-p",
+        "--password",
+        dest="password",
+        help="XOS admin password",
+        metavar="PASSWORD",
+        default="letmein",
+    )
+    parser.add_option(
+        "-n",
+        "--node",
+        dest="node",
+        help="show instances on node",
+        metavar="HOSTNAME",
+        default=None,
+    )
+    parser.add_option(
+        "-s",
+        "--slice",
+        dest="slice",
+        help="show instances in slice",
+        metavar="SLICENAME",
+        default=None,
+    )
+    parser.add_option(
+        "-N",
+        "--network",
+        dest="filter_network_name",
+        help="filter network name",
+        metavar="NAME",
+        default=None,
+    )
+    parser.add_option(
+        "-b",
+        "--brief",
+        dest="brief",
+        help="only display the IP, nothing else",
+        action="store_true",
+        default=False,
+    )
 
     (options, args) = parser.parse_args(sys.argv[1:])
 
-    if len(args)!=2:
-        print >> sys.stderr, "syntax: get_instance_name.py [options] <rest_hostname> <rest_port>"
+    if len(args) != 2:
+        print(
+            "syntax: get_instance_name.py [options] <rest_hostname> <rest_port>",
+            file=sys.stderr,
+        )
         sys.exit(-1)
 
     rest_hostname = args[0]
     rest_port = args[1]
 
-    REST_API="http://%s:%s/api/core/" % (rest_hostname, rest_port)
+    REST_API = "http://%s:%s/api/core/" % (rest_hostname, rest_port)
 
     NODES_API = REST_API + "nodes/"
     SLICES_API = REST_API + "slices/"
@@ -97,7 +149,7 @@ def main():
     PORTS_API = REST_API + "ports/"
     NETWORKS_API = REST_API + "networks/"
 
-    OPENCLOUD_AUTH=(options.username, options.password)
+    OPENCLOUD_AUTH = (options.username, options.password)
 
     if options.slice:
         slice_id = get_slice_id(options.slice)
@@ -118,21 +170,26 @@ def main():
     # get (instance_name, ip) pairs for instances with names and ips
 
     instances = [x for x in instances if x["instance_name"]]
-    instances = sorted(instances, key = lambda instance: instance["instance_name"])
+    instances = sorted(instances, key=lambda instance: instance["instance_name"])
 
     for instance in instances:
-        r = requests.get(PORTS_API + "?instance=%s&no_hyperlinks=1" % instance["id"], auth=OPENCLOUD_AUTH)
+        r = requests.get(
+            PORTS_API + "?instance=%s&no_hyperlinks=1" % instance["id"],
+            auth=OPENCLOUD_AUTH,
+        )
         ports = r.json()
 
         for x in ports:
-           net_name = networks_by_id.get(x["network"],{"name": "unknown"})["name"]
-           if (options.filter_network_name) and (net_name!=options.filter_network_name):
-              continue
-           if options.brief:
-                print x["ip"]
-           else:
-               print instance["instance_name"], net_name, x["ip"]
+            net_name = networks_by_id.get(x["network"], {"name": "unknown"})["name"]
+            if (options.filter_network_name) and (
+                net_name != options.filter_network_name
+            ):
+                continue
+            if options.brief:
+                print(x["ip"])
+            else:
+                print(instance["instance_name"], net_name, x["ip"])
+
 
 if __name__ == "__main__":
     main()
-

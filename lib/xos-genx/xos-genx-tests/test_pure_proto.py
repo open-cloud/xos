@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +13,16 @@
 # limitations under the License.
 
 
-
 import unittest
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from helpers import XProtoTestHelpers
 
 # Generate from xproto, then generate from equivalent proto
+
+
 class XPureProtobufGenerator(unittest.TestCase):
     def test_pure_proto(self):
-		xproto = \
-"""
+        xproto = """
 message VRouterPort (XOSBase){
      optional string name = 1 [help_text = "port friendly name", max_length = 20, null = True, db_index = False, blank = True];
      required string openflow_id = 2 [help_text = "port identifier in ONOS", max_length = 21, null = False, db_index = False, blank = False];
@@ -32,8 +31,7 @@ message VRouterPort (XOSBase){
 }
 """
 
-		proto = \
-"""
+        proto = """
 message VRouterPort {
   option bases = "XOSBase";
   optional string name = 1 [ null = "True",  max_length = "20",  blank = "True",  help_text = "port friendly name",  modifier = "optional",  db_index = "False" ];
@@ -42,8 +40,8 @@ message VRouterPort {
   required int32 vrouter_service = 4 [ null = "False",  blank = "False",  model = "VRouterService",  modifier = "required",  type = "link",  port = "device_ports",  db_index = "True", link = "manytoone"];
 }
 """
-		target = XProtoTestHelpers.write_tmp_target(
-"""
+        target = XProtoTestHelpers.write_tmp_target(
+            """
 from header import *
 {% for m in proto.messages %}
 {% if file_exists(xproto_base_name(m.name)|lower+'_header.py') -%}from {{xproto_base_name(m.name)|lower }}_header import *{% endif %}
@@ -81,53 +79,52 @@ class {{ m.name }}{{ xproto_base_def(m, m.bases) }}:
 
 {% if file_exists(xproto_base_name(m.name)|lower+'_bottom.py') -%}{{ include_file(xproto_base_name(m.name)|lower+'_bottom.py') }}{% endif %}
 {% endfor %}
-""")
+"""
+        )
 
-		args_xproto = XOSProcessorArgs()
-		args_xproto.inputs = xproto
-		args_xproto.target = target
-		xproto_gen = XOSProcessor.process(args_xproto)
+        args_xproto = XOSProcessorArgs()
+        args_xproto.inputs = xproto
+        args_xproto.target = target
+        xproto_gen = XOSProcessor.process(args_xproto)
 
-		count1 = len(xproto_gen.split('\n'))
+        count1 = len(xproto_gen.split("\n"))
 
-		args_proto = XOSProcessorArgs()
-		args_proto.inputs = proto
-		args_proto.target = target
-		args_proto.rev = True
-		proto_gen = XOSProcessor.process(args_proto)
-		count2 = len(proto_gen.split('\n'))
+        args_proto = XOSProcessorArgs()
+        args_proto.inputs = proto
+        args_proto.target = target
+        args_proto.rev = True
+        proto_gen = XOSProcessor.process(args_proto)
+        count2 = len(proto_gen.split("\n"))
 
-		self.assertEqual(count1, count2)
+        self.assertEqual(count1, count2)
 
     def test_pure_policies(self):
-		xproto = \
-"""
+        xproto = """
 policy my_policy < exists x:a=b >
 """
 
-		proto = \
-"""
+        proto = """
 option my_policy = "policy:< exists x:a=b >";
 """
-		target = XProtoTestHelpers.write_tmp_target(
-"""
+        target = XProtoTestHelpers.write_tmp_target(
+            """
 {{ policies }}
-""")
+"""
+        )
 
-		args_xproto = XOSProcessorArgs()
-		args_xproto.inputs = xproto
-		args_xproto.target = target
-		xproto_gen = XOSProcessor.process(args_xproto)
+        args_xproto = XOSProcessorArgs()
+        args_xproto.inputs = xproto
+        args_xproto.target = target
+        xproto_gen = XOSProcessor.process(args_xproto)
 
-		args_proto = XOSProcessorArgs()
-		args_proto.inputs = proto
-		args_proto.target = target
-		args_proto.rev = True
-		proto_gen = XOSProcessor.process(args_proto)
+        args_proto = XOSProcessorArgs()
+        args_proto.inputs = proto
+        args_proto.target = target
+        args_proto.rev = True
+        proto_gen = XOSProcessor.process(args_proto)
 
-		self.assertEqual(proto_gen, xproto_gen)
+        self.assertEqual(proto_gen, xproto_gen)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
-
-

@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,38 +12,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from __future__ import print_function
 import exceptions
 import os
 import random
 import string
 import sys
 import unittest
-from mock import patch, ANY
+from mock import patch
 from StringIO import StringIO
 
 # by default, use fake stub rather than real core
-USE_FAKE_STUB=True
+USE_FAKE_STUB = True
 
-PARENT_DIR=os.path.join(os.path.dirname(__file__), "..")
+PARENT_DIR = os.path.join(os.path.dirname(__file__), "..")
+
 
 class TestORM(unittest.TestCase):
     def setUp(self):
         from xosconfig import Config
+
         test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
         config = os.path.join(test_path, "test_config.yaml")
         Config.clear()
-        Config.init(config, 'synchronizer-config-schema.yaml')
-        if (USE_FAKE_STUB):
+        Config.init(config, "synchronizer-config-schema.yaml")
+        if USE_FAKE_STUB:
             sys.path.append(PARENT_DIR)
 
         # Import these after config, in case they depend on config
         from xosapi.orm import ORMQuerySet, ORMLocalObjectManager
+
         self.ORMQuerySet = ORMQuerySet
         self.ORMLocalObjectManager = ORMLocalObjectManager
 
     def tearDown(self):
-        if (USE_FAKE_STUB):
+        if USE_FAKE_STUB:
             sys.path.remove(PARENT_DIR)
 
     def make_coreapi(self):
@@ -55,7 +57,13 @@ class TestORM(unittest.TestCase):
             xosapi.orm.import_convenience_methods()
 
             stub = FakeStub()
-            api = xosapi.orm.ORMStub(stub=stub, package_name = "xos", protos=FakeProtos(), empty = FakeObj, enable_backoff = False)
+            api = xosapi.orm.ORMStub(
+                stub=stub,
+                package_name="xos",
+                protos=FakeProtos(),
+                empty=FakeObj,
+                enable_backoff=False,
+            )
             return api
         else:
             return xos_grpc_client.coreapi
@@ -94,7 +102,7 @@ class TestORM(unittest.TestCase):
         orm = self.make_coreapi()
         s = orm.Slice()
         self.assertNotEqual(s, None)
-        self.assertEqual(s.dumpstr(), '')
+        self.assertEqual(s.dumpstr(), "")
 
     def test_dump(self):
         """ dump() is like dumpstr() but prints to stdout. Mock stdout by using a stringIO. """
@@ -117,7 +125,7 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        got_site = orm.Site.objects.get(id = site.id)
+        got_site = orm.Site.objects.get(id=site.id)
         self.assertNotEqual(got_site, None)
         self.assertEqual(got_site.id, site.id)
 
@@ -136,7 +144,6 @@ class TestORM(unittest.TestCase):
 
     def test_save_new(self):
         orm = self.make_coreapi()
-        orig_len_sites = len(orm.Site.objects.all())
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
@@ -149,12 +156,12 @@ class TestORM(unittest.TestCase):
         self.assertTrue(site.id > 0)
 
         # there should be one new site
-        self.assertEqual(len(orm.Site.objects.all()), orig_len_sites+1)
+        self.assertEqual(len(orm.Site.objects.all()), orig_len_sites + 1)
 
         # retrieve the site, and update it
         created_site_id = site.id
         site = orm.Site.objects.get(id=created_site_id)
-        site.name="mysitetwo"
+        site.name = "mysitetwo"
         site.save()
 
         # the site_id should not have changed
@@ -182,7 +189,7 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         sites = orm.Site.objects.all()
-        self.assertEqual(len(sites), orig_len_sites+1)
+        self.assertEqual(len(sites), orig_len_sites + 1)
 
     def test_objects_first(self):
         orm = self.make_coreapi()
@@ -193,19 +200,25 @@ class TestORM(unittest.TestCase):
 
     def test_content_type_map(self):
         orm = self.make_coreapi()
-        self.assertTrue( "Slice" in orm.content_type_map.values() )
-        self.assertTrue( "Site" in orm.content_type_map.values() )
-        self.assertTrue( "Tag" in orm.content_type_map.values() )
+        self.assertTrue("Slice" in orm.content_type_map.values())
+        self.assertTrue("Site" in orm.content_type_map.values())
+        self.assertTrue("Tag" in orm.content_type_map.values())
 
     def test_foreign_key_get(self):
         orm = self.make_coreapi()
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user = orm.User(
+            email="fake_"
+            + "".join(
+                random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+            ),
+            site_id=site.id,
+        )
         user.save()
         self.assertTrue(user.id > 0)
-        slice = orm.Slice(name="mysite_foo", site_id = site.id, creator_id = user.id)
+        slice = orm.Slice(name="mysite_foo", site_id=site.id, creator_id=user.id)
         slice.save()
         self.assertTrue(slice.id > 0)
         self.assertNotEqual(slice.site, None)
@@ -216,10 +229,16 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user = orm.User(
+            email="fake_"
+            + "".join(
+                random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+            ),
+            site_id=site.id,
+        )
         user.save()
         self.assertTrue(user.id > 0)
-        slice = orm.Slice(name="mysite_foo", site = site, creator_id=user.id)
+        slice = orm.Slice(name="mysite_foo", site=site, creator_id=user.id)
         slice.save()
         slice.invalidate_cache()
         self.assertTrue(slice.id > 0)
@@ -233,10 +252,16 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user = orm.User(
+            email="fake_"
+            + "".join(
+                random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+            ),
+            site_id=site.id,
+        )
         user.save()
         self.assertTrue(user.id > 0)
-        slice = orm.Slice(name="mysite_foo", site = site, creator_id=user.id)
+        slice = orm.Slice(name="mysite_foo", site=site, creator_id=user.id)
         slice.save()
         self.assertTrue(slice.id > 0)
         self.assertNotEqual(slice.site, None)
@@ -251,10 +276,16 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user = orm.User(
+            email="fake_"
+            + "".join(
+                random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+            ),
+            site_id=site.id,
+        )
         user.save()
         self.assertTrue(user.id > 0)
-        slice = orm.Slice(name="mysite_foo", site = site, creator_id=user.id)
+        slice = orm.Slice(name="mysite_foo", site=site, creator_id=user.id)
         slice.save()
         self.assertTrue(slice.id > 0)
         self.assertNotEqual(slice.site, None)
@@ -284,10 +315,16 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user = orm.User(
+            email="fake_"
+            + "".join(
+                random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+            ),
+            site_id=site.id,
+        )
         user.save()
         self.assertTrue(user.id > 0)
-        slice = orm.Slice(name="mysite_foo", site = site, creator_id=user.id)
+        slice = orm.Slice(name="mysite_foo", site=site, creator_id=user.id)
         slice.save()
         self.assertTrue(slice.id > 0)
         self.assertNotEqual(slice.site, None)
@@ -316,10 +353,16 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user = orm.User(
+            email="fake_"
+            + "".join(
+                random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+            ),
+            site_id=site.id,
+        )
         user.save()
         self.assertTrue(user.id > 0)
-        slice = orm.Slice(name="mysite_foo", site = site, creator_id=user.id)
+        slice = orm.Slice(name="mysite_foo", site=site, creator_id=user.id)
         slice.save()
         self.assertTrue(slice.id > 0)
         self.assertNotEqual(slice.site, None)
@@ -349,10 +392,18 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user = orm.User(
+            email="fake_"
+            + "".join(
+                random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+            ),
+            site_id=site.id,
+        )
         user.save()
         self.assertTrue(user.id > 0)
-        slice = orm.Slice(name="mysite_foo", site = site, service=None, creator_id=user.id)
+        slice = orm.Slice(
+            name="mysite_foo", site=site, service=None, creator_id=user.id
+        )
         slice.save()
         slice.invalidate_cache()
         self.assertTrue(slice.id > 0)
@@ -363,14 +414,22 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        user = orm.User(email="fake_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)), site_id=site.id)
+        user = orm.User(
+            email="fake_"
+            + "".join(
+                random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+            ),
+            site_id=site.id,
+        )
         user.save()
         self.assertTrue(user.id > 0)
         service = orm.Service(name="myservice")
         service.save()
         self.assertTrue(service.id > 0)
         # start out slice.service is non-None
-        slice = orm.Slice(name="mysite_foo", site = site, service=service, creator_id=user.id)
+        slice = orm.Slice(
+            name="mysite_foo", site=site, service=service, creator_id=user.id
+        )
         slice.save()
         slice.invalidate_cache()
         self.assertTrue(slice.id > 0)
@@ -382,7 +441,6 @@ class TestORM(unittest.TestCase):
         slice.invalidate_cache()
         self.assertEqual(slice.service, None)
 
-
     def test_generic_foreign_key_get(self):
         orm = self.make_coreapi()
         service = orm.Service(name="myservice")
@@ -390,7 +448,13 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        tag = orm.Tag(service=service, name="mytag", value="somevalue", content_type=site.self_content_type_id, object_id=site.id)
+        tag = orm.Tag(
+            service=service,
+            name="mytag",
+            value="somevalue",
+            content_type=site.self_content_type_id,
+            object_id=site.id,
+        )
         tag.save()
         self.assertTrue(tag.id > 0)
         self.assertNotEqual(tag.content_object, None)
@@ -403,7 +467,13 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        tag = orm.Tag(service=service, name="mytag", value="somevalue", content_type=site.self_content_type_id + "_decl", object_id=site.id)
+        tag = orm.Tag(
+            service=service,
+            name="mytag",
+            value="somevalue",
+            content_type=site.self_content_type_id + "_decl",
+            object_id=site.id,
+        )
         tag.save()
         self.assertTrue(tag.id > 0)
         self.assertNotEqual(tag.content_object, None)
@@ -416,12 +486,21 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        tag = orm.Tag(service=service, name="mytag", value="somevalue", content_type="does_not_exist", object_id=site.id)
+        tag = orm.Tag(
+            service=service,
+            name="mytag",
+            value="somevalue",
+            content_type="does_not_exist",
+            object_id=site.id,
+        )
         tag.save()
         self.assertTrue(tag.id > 0)
         with self.assertRaises(Exception) as e:
-            obj = tag.content_object
-        self.assertEqual(e.exception.message, "Content_type does_not_exist not found in self.content_type_map")
+
+            self.assertEqual(
+                e.exception.message,
+                "Content_type does_not_exist not found in self.content_type_map",
+            )
 
     def test_generic_foreign_key_get_bad_id(self):
         orm = self.make_coreapi()
@@ -430,12 +509,19 @@ class TestORM(unittest.TestCase):
         site = orm.Site(name="mysite")
         site.save()
         self.assertTrue(site.id > 0)
-        tag = orm.Tag(service=service, name="mytag", value="somevalue", content_type=site.self_content_type_id, object_id=4567)
+        tag = orm.Tag(
+            service=service,
+            name="mytag",
+            value="somevalue",
+            content_type=site.self_content_type_id,
+            object_id=4567,
+        )
         tag.save()
         self.assertTrue(tag.id > 0)
         with self.assertRaises(Exception) as e:
-            obj = tag.content_object
-        self.assertEqual(e.exception.message, "Object 4567 of model Site was not found")
+            self.assertEqual(
+                e.exception.message, "Object 4567 of model Site was not found"
+            )
 
     def test_generic_foreign_key_set(self):
         orm = self.make_coreapi()
@@ -513,12 +599,15 @@ class TestORM(unittest.TestCase):
         tm = orm.TestModel()
         with self.assertRaises(Exception) as e:
             tm.intfile = None
-        self.assertEqual(e.exception.message, "Setting a non-foreignkey field to None is not supported")
+        self.assertEqual(
+            e.exception.message,
+            "Setting a non-foreignkey field to None is not supported",
+        )
 
     def test_query_iexact(self):
         orm = self.make_coreapi()
         with patch.object(orm.grpc_stub, "FilterTestModel", autospec=True) as filter:
-            orm.TestModel.objects.filter(name__iexact = "foo")
+            orm.TestModel.objects.filter(name__iexact="foo")
             self.assertEqual(filter.call_count, 1)
             q = filter.call_args[0][0]
 
@@ -530,7 +619,7 @@ class TestORM(unittest.TestCase):
     def test_query_equal(self):
         orm = self.make_coreapi()
         with patch.object(orm.grpc_stub, "FilterTestModel", autospec=True) as filter:
-            orm.TestModel.objects.filter(name = "foo")
+            orm.TestModel.objects.filter(name="foo")
             self.assertEqual(filter.call_count, 1)
             q = filter.call_args[0][0]
 
@@ -559,8 +648,8 @@ class TestORM(unittest.TestCase):
 
         site.login_base = "bar"
 
-        self.assertEqual(site._dict, {'login_base': 'bar', 'name': 'mysite'})
-        self.assertEqual(site.diff, {'login_base': (None, 'bar')})
+        self.assertEqual(site._dict, {"login_base": "bar", "name": "mysite"})
+        self.assertEqual(site.diff, {"login_base": (None, "bar")})
         self.assertIn("name", site.changed_fields)
         self.assertIn("login_base", site.changed_fields)
         self.assertEqual(site.has_field_changed("name"), False)
@@ -582,8 +671,8 @@ class TestORM(unittest.TestCase):
 
         site.login_base = "bar"
 
-        self.assertEqual(site._dict, {'id': 1, 'login_base': 'bar', 'name': 'mysite'})
-        self.assertEqual(site.diff, {'login_base': ("foo", 'bar')})
+        self.assertEqual(site._dict, {"id": 1, "login_base": "bar", "name": "mysite"})
+        self.assertEqual(site.diff, {"login_base": ("foo", "bar")})
         self.assertIn("login_base", site.changed_fields)
         self.assertEqual(site.has_field_changed("name"), False)
         self.assertEqual(site.has_field_changed("login_base"), True)
@@ -598,7 +687,7 @@ class TestORM(unittest.TestCase):
 
         site.login_base = "bar"
 
-        self.assertEqual(site.diff, {'login_base': ("foo", 'bar')})
+        self.assertEqual(site.diff, {"login_base": ("foo", "bar")})
 
         site.save()
 
@@ -633,14 +722,18 @@ class TestORM(unittest.TestCase):
         testModel = orm.TestModel(intfield=7, stringfield="foo")
         testModel.save()
 
-        testModel.intfield=9
+        testModel.intfield = 9
 
-        with patch.object(orm.grpc_stub, "UpdateTestModel", wraps=orm.grpc_stub.UpdateTestModel) as update:
+        with patch.object(
+            orm.grpc_stub, "UpdateTestModel", wraps=orm.grpc_stub.UpdateTestModel
+        ) as update:
             testModel.save_changed_fields()
 
             self.assertEqual(update.call_count, 1)
             self.assertIn("metadata", update.call_args[1])
-            update_fields_arg = [x[1] for x in update.call_args[1]["metadata"] if x[0]=="update_fields"]
+            update_fields_arg = [
+                x[1] for x in update.call_args[1]["metadata"] if x[0] == "update_fields"
+            ]
             self.assertEqual(update_fields_arg, ["intfield"])
 
     def test_ORMWrapper_get_generic_foreignkeys(self):
@@ -658,11 +751,17 @@ class TestORM(unittest.TestCase):
 
         testModelTwo = orm.TestModelTwo()
 
-        self.assertDictEqual(testModelTwo.gen_fkmap(),
-                             {'testmodel': {'kind': 'fk',
-                                            'modelName': 'TestModel',
-                                            'reverse_fieldName': 'testmodeltwos',
-                                            'src_fieldName': 'testmodel_id'}})
+        self.assertDictEqual(
+            testModelTwo.gen_fkmap(),
+            {
+                "testmodel": {
+                    "kind": "fk",
+                    "modelName": "TestModel",
+                    "reverse_fieldName": "testmodeltwos",
+                    "src_fieldName": "testmodel_id",
+                }
+            },
+        )
 
     def test_ORMWrapper_gen_reverse_fkmap(self):
         """ TestModel includes a reverse relation back to TestModelTwo, and the reverse_fkmap should contain that
@@ -673,10 +772,16 @@ class TestORM(unittest.TestCase):
 
         testModel = orm.TestModel()
 
-        self.assertDictEqual(testModel.gen_reverse_fkmap(),
-                             {'testmodeltwos': {'modelName': 'TestModelTwo',
-                                                'src_fieldName': 'testmodeltwos_ids',
-                                                'writeable': False}})
+        self.assertDictEqual(
+            testModel.gen_reverse_fkmap(),
+            {
+                "testmodeltwos": {
+                    "modelName": "TestModelTwo",
+                    "src_fieldName": "testmodeltwos_ids",
+                    "writeable": False,
+                }
+            },
+        )
 
     def test_ORMWrapper_fk_resolve(self):
         """ If we create a TestModelTwo that has a foreign key reference to a TestModel, then calling fk_resolve should
@@ -716,7 +821,9 @@ class TestORM(unittest.TestCase):
         self.assertEqual(testModelTwos_resolved.count(), 1)
 
         # the reverse_cache should have been populated
-        self.assertIn(("testmodeltwos", testModelTwos_resolved), testModel.reverse_cache.items())
+        self.assertIn(
+            ("testmodeltwos", testModelTwos_resolved), testModel.reverse_cache.items()
+        )
 
     def test_ORMWrapper_fk_set(self):
         """ fk_set will set the testmodel field on TesTModelTwo to point to the TestModel. """
@@ -745,11 +852,15 @@ class TestORM(unittest.TestCase):
         # fake_stub.py doesn't populate the reverse relations for us, so force what the server would have done...
         testModel._wrapped_class.testmodeltwos_ids = [testModelTwo.id]
 
-        post_save_fixups = [{"src_fieldName": "testmodel",
-                             "dest_id": None, # this field appears to not be used...
-                             "dest_model": testModel,
-                             "remove": True,
-                             "reverse_fieldName": "testmodeltwos"}]
+        post_save_fixups = [
+            {
+                "src_fieldName": "testmodel",
+                "dest_id": None,  # this field appears to not be used...
+                "dest_model": testModel,
+                "remove": True,
+                "reverse_fieldName": "testmodeltwos",
+            }
+        ]
 
         testModelTwo.post_save_fixups = post_save_fixups
         testModelTwo.do_post_save_fixups()
@@ -771,17 +882,20 @@ class TestORM(unittest.TestCase):
         # the reverse relation. But let's be sure, in case someone fixes that.
         testModel._wrapped_class.testmodeltwos_ids = []
 
-        post_save_fixups = [{"src_fieldName": "testmodel",
-                             "dest_id": None, # this field appears to not be used...
-                             "dest_model": testModel,
-                             "remove": False,
-                             "reverse_fieldName": "testmodeltwos"}]
+        post_save_fixups = [
+            {
+                "src_fieldName": "testmodel",
+                "dest_id": None,  # this field appears to not be used...
+                "dest_model": testModel,
+                "remove": False,
+                "reverse_fieldName": "testmodeltwos",
+            }
+        ]
 
         testModelTwo.post_save_fixups = post_save_fixups
         testModelTwo.do_post_save_fixups()
 
         self.assertEqual(testModel._wrapped_class.testmodeltwos_ids, [testModelTwo.id])
-
 
     def test_ORMWrapper_tologdict(self):
         """ Tologdict contains the model name and id, used for structured logging """
@@ -789,7 +903,9 @@ class TestORM(unittest.TestCase):
 
         testModel = orm.TestModel(intfield=7, stringfile="foo")
 
-        self.assertDictEqual(testModel.tologdict(), {'model_name': 'TestModel', 'pk': 0})
+        self.assertDictEqual(
+            testModel.tologdict(), {"model_name": "TestModel", "pk": 0}
+        )
 
     def test_ORMWrapper_ansible_tag(self):
         """ Ansible_tag is used by old-style synchronizers. Deprecated. """
@@ -799,7 +915,6 @@ class TestORM(unittest.TestCase):
         testModel = orm.TestModel(id=7)
 
         self.assertEqual(testModel.ansible_tag, "TestModel_7")
-
 
     def test_deleted_objects_all(self):
         orm = self.make_coreapi()
@@ -811,21 +926,23 @@ class TestORM(unittest.TestCase):
         sites = orm.Site.objects.all()
         self.assertEqual(len(sites), orig_len_sites)
         deleted_sites = orm.Site.deleted_objects.all()
-        self.assertEqual(len(deleted_sites), orig_len_deleted_sites+1)
+        self.assertEqual(len(deleted_sites), orig_len_deleted_sites + 1)
 
     def test_deleted_objects_filter(self):
         orm = self.make_coreapi()
-        with patch.object(orm.grpc_stub, "FilterTestModel", wraps=orm.grpc_stub.FilterTestModel) as filter:
+        with patch.object(
+            orm.grpc_stub, "FilterTestModel", wraps=orm.grpc_stub.FilterTestModel
+        ) as filter:
             foo = orm.TestModel(name="foo")
             foo.save()
             foo.delete()
 
             # There should be no live objects
-            objs = orm.TestModel.objects.filter(name = "foo")
+            objs = orm.TestModel.objects.filter(name="foo")
             self.assertEqual(len(objs), 0)
 
             # There should be one deleted object
-            deleted_objs = orm.TestModel.deleted_objects.filter(name = "foo")
+            deleted_objs = orm.TestModel.deleted_objects.filter(name="foo")
             self.assertEqual(len(deleted_objs), 1)
 
             # Two calls, one for when we checked live objects, the other for when we checked deleted objects
@@ -839,7 +956,7 @@ class TestORM(unittest.TestCase):
             self.assertEqual(q.elements[0].sValue, "foo")
 
     def test_ORMQuerySet_first_nonempty(self):
-        qs = self.ORMQuerySet([1,2,3])
+        qs = self.ORMQuerySet([1, 2, 3])
         self.assertEqual(qs.first(), 1)
 
     def test_ORMQuerySet_first_empty(self):
@@ -847,7 +964,7 @@ class TestORM(unittest.TestCase):
         self.assertEqual(qs.first(), None)
 
     def test_ORMQuerySet_exists_nonempty(self):
-        qs = self.ORMQuerySet([1,2,3])
+        qs = self.ORMQuerySet([1, 2, 3])
         self.assertEqual(qs.exists(), True)
 
     def test_ORMQuerySet_exists_empty(self):
@@ -923,6 +1040,7 @@ class TestORM(unittest.TestCase):
         lobjs.remove(t)
         self.assertEqual(lobjs.count(), 0)
 
+
 def main():
     global USE_FAKE_STUB
     global xos_grpc_client
@@ -941,22 +1059,24 @@ def main():
         # This assumes xos-client python library is installed, and a gRPC server
         # is available.
 
-        from twisted.internet import reactor
         from xosapi import xos_grpc_client
 
-        print "Using xos-client library and core server"
+        print("Using xos-client library and core server")
 
         def test_callback():
             try:
-                sys.argv = sys.argv[:1] # unittest does not like xos_grpc_client's command line arguments (TODO: find a cooperative approach)
+                sys.argv = sys.argv[
+                    :1
+                ]  # unittest does not like xos_grpc_client's command line arguments (TODO: find a cooperative approach)
                 unittest.main()
-            except exceptions.SystemExit, e:
+            except exceptions.SystemExit as e:
                 global exitStatus
                 exitStatus = e.code
 
         xos_grpc_client.start_api_parseargs(test_callback)
 
         sys.exit(exitStatus)
+
 
 if __name__ == "__main__":
     main()

@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from __future__ import print_function
+from testconfig import USERNAME, PASSWORD
+import grpc_client
 import random
 import string
 import sys
+
 sys.path.append("..")
 
-import grpc_client
-from testconfig import *
 
-SLICE_NAME="mysite_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+SLICE_NAME = "mysite_" + "".join(
+    random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+)
 
-TOSCA_RECIPE="""tosca_definitions_version: tosca_simple_yaml_1_0
+TOSCA_RECIPE = (
+    """tosca_definitions_version: tosca_simple_yaml_1_0
 
 description: Just some test...
 
@@ -42,36 +45,38 @@ topology_template:
           - slice:
                 node: mysite
                 relationship: tosca.relationships.MemberOfSite
-""" % SLICE_NAME
+"""
+    % SLICE_NAME
+)
 
-print "tosca_test"
+print("tosca_test")
 
-c=grpc_client.SecureClient("xos-core.cord.lab", username=USERNAME, password=PASSWORD)
-request=grpc_client.ToscaRequest()
+c = grpc_client.SecureClient("xos-core.cord.lab", username=USERNAME, password=PASSWORD)
+request = grpc_client.ToscaRequest()
 request.recipe = TOSCA_RECIPE
 
-print "Execute"
+print("Execute")
 
-response=c.utility.RunTosca(request)
+response = c.utility.RunTosca(request)
 
 if response.status == response.SUCCESS:
-    print "  success"
+    print("  success")
 else:
-    print "  failure"
+    print("  failure")
 
 for line in response.messages.split("\n"):
-    print "    %s" % line
+    print("    %s" % line)
 
-print "Destroy"
+print("Destroy")
 
 response = c.utility.DestroyTosca(request)
 
 if response.status == response.SUCCESS:
-    print "  success"
+    print("  success")
 else:
-    print "  failure"
+    print("  failure")
 
 for line in response.messages.split("\n"):
-    print "    %s" % line
+    print("    %s" % line)
 
-print "Done"
+print("Done")

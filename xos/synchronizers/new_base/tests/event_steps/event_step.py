@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
 from synchronizers.new_base.eventstep import EventStep
 from mock_modelaccessor import *
+
 
 class TestEventStep(EventStep):
     technology = "kafka"
@@ -24,5 +26,4 @@ class TestEventStep(EventStep):
         super(TestEventStep, self).__init__(log, *args, **kwargs)
 
     def process_event(self, event):
-        print "received an event", event
-
+        print("received an event", event)

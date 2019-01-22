@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
 import os
 import inspect
 import imp
@@ -24,7 +25,7 @@ from synchronizers.new_base.event_loop import XOSObserver
 from xosconfig import Config
 from multistructlog import create_logger
 
-log = create_logger(Config().get('logging'))
+log = create_logger(Config().get("logging"))
 
 
 class Backend:
@@ -33,6 +34,7 @@ class Backend:
         policies_dir = Config("model_policies_dir")
         if policies_dir:
             from synchronizers.model_policy import run_policy
+
             model_policy_thread = threading.Thread(target=run_policy)
             model_policy_thread.start()
         else:
@@ -43,8 +45,7 @@ class Backend:
             try:
                 time.sleep(1000)
             except KeyboardInterrupt:
-                print "exiting due to keyboard interrupt"
+                print("exiting due to keyboard interrupt")
                 if model_policy_thread:
                     model_policy_thread._Thread__stop()
                 sys.exit(1)
-

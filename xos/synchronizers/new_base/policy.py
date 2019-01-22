@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +21,8 @@
 from xosconfig import Config
 from multistructlog import create_logger
 
-log = create_logger(Config().get('logging'))
+log = create_logger(Config().get("logging"))
+
 
 class Policy(object):
     """ An XOS Model Policy
@@ -38,4 +38,3 @@ class Policy(object):
 
     def __init__(self):
         self.logger = log
-

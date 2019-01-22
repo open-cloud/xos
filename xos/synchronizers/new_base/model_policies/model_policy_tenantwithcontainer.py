@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,8 +64,7 @@ class LeastLoadedNodeScheduler(Scheduler):
         nodes = sorted(nodes, key=lambda node: node.instances.count())
 
         if not nodes:
-            raise Exception(
-                "LeastLoadedNodeScheduler: No suitable nodes to pick from")
+            raise Exception("LeastLoadedNodeScheduler: No suitable nodes to pick from")
 
         picked_node = nodes[0]
 
@@ -88,22 +86,24 @@ class TenantWithContainerPolicy(Policy):
         return self.handle_update(tenant)
 
     def handle_update(self, service_instance):
-        if (service_instance.link_deleted_count > 0) and (not service_instance.provided_links.exists()):
+        if (service_instance.link_deleted_count > 0) and (
+            not service_instance.provided_links.exists()
+        ):
             model = globals()[self.model_name]
             self.log.info(
-                "The last provided link has been deleted -- self-destructing.")
+                "The last provided link has been deleted -- self-destructing."
+            )
             self.handle_delete(service_instance)
             if model.objects.filter(id=service_instance.id).exists():
                 service_instance.delete()
             else:
-                self.log.info("Tenant %s is already deleted" %
-                              service_instance)
+                self.log.info("Tenant %s is already deleted" % service_instance)
             return
         self.manage_container(service_instance)
 
-#    def handle_delete(self, tenant):
-#        if tenant.vcpe:
-#            tenant.vcpe.delete()
+    #    def handle_delete(self, tenant):
+    #        if tenant.vcpe:
+    #            tenant.vcpe.delete()
 
     def save_instance(self, instance):
         # Override this function to do custom pre-save or post-save processing,
@@ -111,7 +111,7 @@ class TenantWithContainerPolicy(Policy):
         instance.save()
 
     def ip_to_mac(self, ip):
-        (a, b, c, d) = ip.split('.')
+        (a, b, c, d) = ip.split(".")
         return "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
 
     def allocate_public_service_instance(self, **kwargs):
@@ -128,16 +128,15 @@ class TenantWithContainerPolicy(Policy):
         am_service = am_service[0]
 
         ap = AddressPool.objects.filter(
-            name=address_pool_name, service_id=am_service.id)
+            name=address_pool_name, service_id=am_service.id
+        )
         if not ap:
-            raise Exception(
-                "Addressing service unable to find addresspool %s" % name)
+            raise Exception("Addressing service unable to find addresspool %s" % name)
         ap = ap[0]
 
         ip = ap.get_address()
         if not ip:
-            raise Exception(
-                "AddressPool '%s' has run out of addresses." % ap.name)
+            raise Exception("AddressPool '%s' has run out of addresses." % ap.name)
 
         ap.save()  # save the AddressPool to account for address being removed from it
 
@@ -149,15 +148,15 @@ class TenantWithContainerPolicy(Policy):
         if "subscriber_tenant" in kwargs:
             subscriber_service_instance = kwargs.pop("subscriber_tenant")
         elif "subscriber_service_instance" in kwargs:
-            subscriber_service_instance = kwargs.pop(
-                "subscriber_service_instance")
+            subscriber_service_instance = kwargs.pop("subscriber_service_instance")
 
         # TODO: potential partial failure -- AddressPool address is allocated and saved before addressing tenant
 
         t = None
         try:
             t = AddressManagerServiceInstance(
-                owner=am_service, **kwargs)    # TODO: Hardcoded dependency
+                owner=am_service, **kwargs
+            )  # TODO: Hardcoded dependency
             t.public_ip = ip
             t.public_mac = self.ip_to_mac(ip)
             t.address_pool_id = ap.id
@@ -165,18 +164,21 @@ class TenantWithContainerPolicy(Policy):
 
             if subscriber_service:
                 link = ServiceInstanceLink(
-                    subscriber_service=subscriber_service, provider_service_instance=t)
+                    subscriber_service=subscriber_service, provider_service_instance=t
+                )
                 link.save()
 
             if subscriber_service_instance:
                 link = ServiceInstanceLink(
-                    subscriber_service_instance=subscriber_service_instance, provider_service_instance=t)
+                    subscriber_service_instance=subscriber_service_instance,
+                    provider_service_instance=t,
+                )
                 link.save()
-        except:
+        except BaseException:
             # cleanup if anything went wrong
             ap.put_address(ip)
             ap.save()  # save the AddressPool to account for address being added to it
-            if (t and t.id):
+            if t and t.id:
                 t.delete()
             raise
 
@@ -193,7 +195,8 @@ class TenantWithContainerPolicy(Policy):
             return slice.default_image
 
         raise SynchronizerProgrammingError(
-            "Please set a default image for %s" % self.slice.name)
+            "Please set a default image for %s" % self.slice.name
+        )
 
     """ get_legacy_tenant_attribute
         pick_least_loaded_instance_in_slice
@@ -227,7 +230,10 @@ class TenantWithContainerPolicy(Policy):
     def count_of_tenants_of_an_instance(self, tenant, instance):
         tenant_count = 0
         for tenant in self.__class__.objects.all():
-            if self.get_legacy_tenant_attribute(tenant, "instance_id", None) == instance.id:
+            if (
+                self.get_legacy_tenant_attribute(tenant, "instance_id", None)
+                == instance.id
+            ):
                 tenant_count += 1
         return tenant_count
 
@@ -237,22 +243,26 @@ class TenantWithContainerPolicy(Policy):
 
         desired_image = self.get_image(tenant)
 
-        if (tenant.instance is not None) and (tenant.instance.image.id != desired_image.id):
+        if (tenant.instance is not None) and (
+            tenant.instance.image.id != desired_image.id
+        ):
             tenant.instance.delete()
             tenant.instance = None
 
         if tenant.instance is None:
             if not tenant.owner.slices.count():
-                raise SynchronizerConfigurationError(
-                    "The service has no slices")
+                raise SynchronizerConfigurationError("The service has no slices")
 
             new_instance_created = False
             instance = None
-            if self.get_legacy_tenant_attribute(tenant, "use_same_instance_for_multiple_tenants", default=False):
+            if self.get_legacy_tenant_attribute(
+                tenant, "use_same_instance_for_multiple_tenants", default=False
+            ):
                 # Find if any existing instances can be used for this tenant
                 slices = tenant.owner.slices.all()
                 instance = self.pick_least_loaded_instance_in_slice(
-                    tenant, slices, desired_image)
+                    tenant, slices, desired_image
+                )
 
             if not instance:
                 slice = tenant.owner.slices.first()
@@ -261,43 +271,47 @@ class TenantWithContainerPolicy(Policy):
                 if not flavor:
                     flavors = Flavor.objects.filter(name="m1.small")
                     if not flavors:
-                        raise SynchronizerConfigurationError(
-                            "No m1.small flavor")
+                        raise SynchronizerConfigurationError("No m1.small flavor")
                     flavor = flavors[0]
 
                 if slice.default_isolation == "container_vm":
                     raise Exception("Not implemented")
                 else:
-                    scheduler = getattr(self, "scheduler",
-                                        LeastLoadedNodeScheduler)
+                    scheduler = getattr(self, "scheduler", LeastLoadedNodeScheduler)
                     constrain_by_service_instance = getattr(
-                        self, 'constrain_by_service_instance', False)
+                        self, "constrain_by_service_instance", False
+                    )
                     tenant_node_label = getattr(tenant, "node_label", None)
-                    (node, parent) = scheduler(slice, label=tenant_node_label,
-                                               constrain_by_service_instance=constrain_by_service_instance).pick()
+                    (node, parent) = scheduler(
+                        slice,
+                        label=tenant_node_label,
+                        constrain_by_service_instance=constrain_by_service_instance,
+                    ).pick()
 
-                assert(slice is not None)
-                assert(node is not None)
-                assert(desired_image is not None)
-                assert(tenant.creator is not None)
-                assert(node.site_deployment.deployment is not None)
-                assert(flavor is not None)
+                assert slice is not None
+                assert node is not None
+                assert desired_image is not None
+                assert tenant.creator is not None
+                assert node.site_deployment.deployment is not None
+                assert flavor is not None
 
                 try:
-                    instance = Instance(slice=slice,
-                                        node=node,
-                                        image=desired_image,
-                                        creator=tenant.creator,
-                                        deployment=node.site_deployment.deployment,
-                                        flavor=flavor,
-                                        isolation=slice.default_isolation,
-                                        parent=parent)
+                    instance = Instance(
+                        slice=slice,
+                        node=node,
+                        image=desired_image,
+                        creator=tenant.creator,
+                        deployment=node.site_deployment.deployment,
+                        flavor=flavor,
+                        isolation=slice.default_isolation,
+                        parent=parent,
+                    )
                     self.save_instance(instance)
                     new_instance_created = True
 
                     tenant.instance = instance
                     tenant.save()
-                except:
+                except BaseException:
                     # NOTE: We don't have transactional support, so if the synchronizer crashes and exits after
                     #       creating the instance, but before adding it to the tenant, then we will leave an
                     #       orphaned instance.

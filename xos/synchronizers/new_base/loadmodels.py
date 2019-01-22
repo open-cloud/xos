@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +16,8 @@ import os
 from xosconfig import Config
 from multistructlog import create_logger
 
-log = create_logger(Config().get('logging'))
+log = create_logger(Config().get("logging"))
+
 
 class ModelLoadClient(object):
     def __init__(self, api):
@@ -40,7 +40,9 @@ class ModelLoadClient(object):
 
         attic_dir = os.path.join(dir, "attic")
         if os.path.exists(attic_dir):
-            log.warn("Attics are deprecated, please use the legacy=True option in xProto")
+            log.warn(
+                "Attics are deprecated, please use the legacy=True option in xProto"
+            )
             for fn in os.listdir(attic_dir):
                 if fn.endswith(".py"):
                     item = request.attics.add()
@@ -50,10 +52,9 @@ class ModelLoadClient(object):
         api_convenience_dir = os.path.join(dir, "convenience")
         if os.path.exists(api_convenience_dir):
             for fn in os.listdir(api_convenience_dir):
-                if fn.endswith(".py") and not "test" in fn:
+                if fn.endswith(".py") and "test" not in fn:
                     item = request.convenience_methods.add()
                     item.filename = fn
                     item.contents = open(os.path.join(api_convenience_dir, fn)).read()
 
         result = self.api.dynamicload.LoadModels(request)
-

@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +18,7 @@ import os
 import sys
 
 if __name__ == "__main__":
-    os.chdir('..')  # <<<---This is what you want to add
+    os.chdir("..")  # <<<---This is what you want to add
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 
     from django.core.management import execute_from_command_line

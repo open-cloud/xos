@@ -21,7 +21,12 @@ import threading
 import json
 
 from collections import defaultdict
-from networkx import DiGraph, weakly_connected_component_subgraphs, all_shortest_paths, NetworkXNoPath
+from networkx import (
+    DiGraph,
+    weakly_connected_component_subgraphs,
+    all_shortest_paths,
+    NetworkXNoPath,
+)
 from networkx.algorithms.dag import topological_sort
 
 from synchronizers.new_base.steps import *
@@ -31,7 +36,8 @@ from synchronizers.new_base.modelaccessor import *
 from xosconfig import Config
 from multistructlog import create_logger
 
-log = create_logger(Config().get('logging'))
+log = create_logger(Config().get("logging"))
+
 
 class StepNotReady(Exception):
     pass
@@ -39,6 +45,7 @@ class StepNotReady(Exception):
 
 class ExternalDependencyFailed(Exception):
     pass
+
 
 # FIXME: Move drivers into a context shared across sync steps.
 
@@ -86,7 +93,7 @@ class XOSObserver(object):
         self.event_cond.release()
 
     def wake_up(self):
-        self.log.debug('Wake up routine called')
+        self.log.debug("Wake up routine called")
         self.event_cond.acquire()
         self.event_cond.notify()
         self.event_cond.release()
@@ -95,11 +102,14 @@ class XOSObserver(object):
 
         try:
             if Config.get("dependency_graph"):
-                self.log.trace('Loading model dependency graph', path=Config.get("dependency_graph"))
+                self.log.trace(
+                    "Loading model dependency graph",
+                    path=Config.get("dependency_graph"),
+                )
                 dep_graph_str = open(Config.get("dependency_graph")).read()
             else:
-                self.log.trace('Using default model dependency graph', graph={})
-                dep_graph_str = '{}'
+                self.log.trace("Using default model dependency graph", graph={})
+                dep_graph_str = "{}"
 
             # joint_dependencies is of the form { Model1 -> [(Model2, src_port, dst_port), ...] }
             # src_port is the field that accesses Model2 from Model1
@@ -108,28 +118,29 @@ class XOSObserver(object):
             dynamic_dependencies = self.compute_service_dependencies()
 
             joint_dependencies = dict(
-                static_dependencies.items() + dynamic_dependencies)
+                static_dependencies.items() + dynamic_dependencies
+            )
 
             model_dependency_graph = DiGraph()
             for src_model, deps in joint_dependencies.items():
                 for dep in deps:
                     dst_model, src_accessor, dst_accessor = dep
                     if src_model != dst_model:
-                        edge_label = {'src_accessor': src_accessor,
-                                      'dst_accessor': dst_accessor}
+                        edge_label = {
+                            "src_accessor": src_accessor,
+                            "dst_accessor": dst_accessor,
+                        }
                         model_dependency_graph.add_edge(
-                            src_model, dst_model, edge_label)
+                            src_model, dst_model, edge_label
+                        )
 
-            model_dependency_graph_rev = model_dependency_graph.reverse(
-                copy=True)
+            model_dependency_graph_rev = model_dependency_graph.reverse(copy=True)
             self.model_dependency_graph = {
                 # deletion
                 True: model_dependency_graph_rev,
-                False: model_dependency_graph
+                False: model_dependency_graph,
             }
-            self.log.trace(
-                "Loaded dependencies",
-                edges=model_dependency_graph.edges())
+            self.log.trace("Loaded dependencies", edges=model_dependency_graph.edges())
         except Exception as e:
             self.log.exception("Error loading dependency graph", e=e)
             raise e
@@ -157,33 +168,32 @@ class XOSObserver(object):
         self.model_to_step = model_to_step
         self.external_dependencies = list(set(external_dependencies))
         self.log.info(
-            'Loaded external dependencies',
-            external_dependencies=external_dependencies)
-        self.log.info('Loaded model_map', **model_to_step)
+            "Loaded external dependencies", external_dependencies=external_dependencies
+        )
+        self.log.info("Loaded model_map", **model_to_step)
 
     def reset_model_accessor(self, o=None):
         try:
             model_accessor.reset_queries()
         except BaseException:
             # this shouldn't happen, but in case it does, catch it...
-            if (o):
+            if o:
                 logdict = o.tologdict()
             else:
                 logdict = {}
 
             self.log.error("exception in reset_queries", **logdict)
 
-    def delete_record(self, o, dr_log = None):
+    def delete_record(self, o, dr_log=None):
 
         if dr_log is None:
             dr_log = self.log
 
         if getattr(o, "backend_need_reap", False):
             # the object has already been deleted and marked for reaping
-            model_accessor.journal_object(
-                o, "syncstep.call.already_marked_reap")
+            model_accessor.journal_object(o, "syncstep.call.already_marked_reap")
         else:
-            step = getattr(o, 'synchronizer_step', None)
+            step = getattr(o, "synchronizer_step", None)
             if not step:
                 raise ExternalDependencyFailed
 
@@ -199,7 +209,7 @@ class XOSObserver(object):
 
             model_accessor.journal_object(o, "syncstep.call.delete_set_reap")
             o.backend_need_reap = True
-            o.save(update_fields=['backend_need_reap'])
+            o.save(update_fields=["backend_need_reap"])
 
     def sync_record(self, o, sr_log=None):
         try:
@@ -217,7 +227,7 @@ class XOSObserver(object):
         # this now rather than after the syncstep,
         if not (o.backend_need_delete):
             o.backend_need_delete = True
-            o.save(update_fields=['backend_need_delete'])
+            o.save(update_fields=["backend_need_delete"])
 
         model_accessor.journal_object(o, "syncstep.call.sync_record")
 
@@ -230,14 +240,19 @@ class XOSObserver(object):
         sr_log.debug("Synced object", **o.tologdict())
 
         o.enacted = max(o.updated, o.changed_by_policy)
-        scratchpad = {'next_run': 0, 'exponent': 0,
-                      'last_success': time.time()}
+        scratchpad = {"next_run": 0, "exponent": 0, "last_success": time.time()}
         o.backend_register = json.dumps(scratchpad)
         o.backend_status = "OK"
         o.backend_code = 1
         model_accessor.journal_object(o, "syncstep.call.save_update")
-        o.save(update_fields=['enacted', 'backend_status',
-                              'backend_register', 'backend_code'])
+        o.save(
+            update_fields=[
+                "enacted",
+                "backend_status",
+                "backend_register",
+                "backend_code",
+            ]
+        )
 
         if hasattr(step, "after_sync_save"):
             step.log = sr_log.new(step=step)
@@ -252,7 +267,7 @@ class XOSObserver(object):
         self.log.exception("sync step failed!", e=e, **o.tologdict())
         current_code = o.backend_code
 
-        if hasattr(e, 'message'):
+        if hasattr(e, "message"):
             status = str(e.message)
         else:
             status = str(e)
@@ -267,13 +282,16 @@ class XOSObserver(object):
 
         self.set_object_error(o, status, code)
 
-        dependency_error = 'Failed due to error in model %s id %d: %s' % (
-            o.leaf_model_name, o.id, status)
+        dependency_error = "Failed due to error in model %s id %d: %s" % (
+            o.leaf_model_name,
+            o.id,
+            status,
+        )
         return dependency_error, code
 
     def set_object_error(self, o, status, code):
         if o.backend_status:
-            error_list = o.backend_status.split(' // ')
+            error_list = o.backend_status.split(" // ")
         else:
             error_list = []
 
@@ -284,62 +302,63 @@ class XOSObserver(object):
         error_list = error_list[-2:]
 
         o.backend_code = code
-        o.backend_status = ' // '.join(error_list)
+        o.backend_status = " // ".join(error_list)
 
         try:
             scratchpad = json.loads(o.backend_register)
-            scratchpad['exponent']
+            scratchpad["exponent"]
         except BaseException:
-            scratchpad = {'next_run': 0, 'exponent': 0,
-                          'last_success': time.time(), 'failures': 0}
+            scratchpad = {
+                "next_run": 0,
+                "exponent": 0,
+                "last_success": time.time(),
+                "failures": 0,
+            }
 
         # Second failure
-        if (scratchpad['exponent']):
+        if scratchpad["exponent"]:
             if code == 1:
-                delay = scratchpad['exponent'] * 60  # 1 minute
+                delay = scratchpad["exponent"] * 60  # 1 minute
             else:
-                delay = scratchpad['exponent'] * 600  # 10 minutes
+                delay = scratchpad["exponent"] * 600  # 10 minutes
 
             # cap delays at 8 hours
-            if (delay > 8 * 60 * 60):
+            if delay > 8 * 60 * 60:
                 delay = 8 * 60 * 60
-            scratchpad['next_run'] = time.time() + delay
+            scratchpad["next_run"] = time.time() + delay
 
-        scratchpad['exponent'] += 1
+        scratchpad["exponent"] += 1
 
         try:
-            scratchpad['failures'] += 1
+            scratchpad["failures"] += 1
         except KeyError:
-            scratchpad['failures'] = 1
+            scratchpad["failures"] = 1
 
-        scratchpad['last_failure'] = time.time()
+        scratchpad["last_failure"] = time.time()
 
         o.backend_register = json.dumps(scratchpad)
 
         # TOFIX:
         # DatabaseError: value too long for type character varying(140)
-        if (model_accessor.obj_exists(o)):
+        if model_accessor.obj_exists(o):
             try:
                 o.backend_status = o.backend_status[:1024]
-                o.save(update_fields=['backend_status',
-                                      'backend_register'],
-                       always_update_timestamp=True)
+                o.save(
+                    update_fields=["backend_status", "backend_register"],
+                    always_update_timestamp=True,
+                )
             except BaseException as e:
-                self.log.exception(
-                    "Could not update backend status field!", e=e)
+                self.log.exception("Could not update backend status field!", e=e)
                 pass
 
     def sync_cohort(self, cohort, deletion):
-        threading.current_thread().is_sync_thread=True
+        threading.current_thread().is_sync_thread = True
 
         sc_log = self.log.new(thread_id=threading.current_thread().ident)
 
         try:
             start_time = time.time()
-            sc_log.debug(
-                "Starting to work on cohort",
-                cohort=cohort,
-                deletion=deletion)
+            sc_log.debug("Starting to work on cohort", cohort=cohort, deletion=deletion)
 
             cohort_emptied = False
             dependency_error = None
@@ -354,27 +373,28 @@ class XOSObserver(object):
 
                     if dependency_error:
                         self.set_object_error(
-                            o, dependency_error, dependency_error_code)
+                            o, dependency_error, dependency_error_code
+                        )
                         continue
 
                     try:
-                        if (deletion):
+                        if deletion:
                             self.delete_record(o, sc_log)
                         else:
                             self.sync_record(o, sc_log)
                     except ExternalDependencyFailed:
-                        dependency_error = 'External dependency on object %s id %d not met' % (
-                            o.leaf_model_name, o.id)
+                        dependency_error = (
+                            "External dependency on object %s id %d not met"
+                            % (o.leaf_model_name, o.id)
+                        )
                         dependency_error_code = 1
                     except (DeferredException, InnocuousException, Exception) as e:
                         dependency_error, dependency_error_code = self.handle_sync_exception(
-                            o, e)
+                            o, e
+                        )
 
                 except StopIteration:
-                    sc_log.debug(
-                        "Cohort completed",
-                        cohort=cohort,
-                        deletion=deletion)
+                    sc_log.debug("Cohort completed", cohort=cohort, deletion=deletion)
                     cohort_emptied = True
         finally:
             self.reset_model_accessor()
@@ -382,11 +402,11 @@ class XOSObserver(object):
 
     def tenant_class_name_from_service(self, service_name):
         """ This code supports legacy functionality. To be cleaned up. """
-        name1 = service_name + 'Instance'
+        name1 = service_name + "Instance"
         if hasattr(Slice().stub, name1):
             return name1
         else:
-            name2 = service_name.replace('Service', 'Tenant')
+            name2 = service_name.replace("Service", "Tenant")
             if hasattr(Slice().stub, name2):
                 return name2
             else:
@@ -396,41 +416,54 @@ class XOSObserver(object):
         """ FIXME: Implement more cleanly via xproto """
 
         model_names = self.model_to_step.keys()
-        ugly_tuples = [(m, m.replace('Instance', '').replace('Tenant', 'Service'))
-                       for m in model_names if m.endswith('ServiceInstance') or m.endswith('Tenant')]
+        ugly_tuples = [
+            (m, m.replace("Instance", "").replace("Tenant", "Service"))
+            for m in model_names
+            if m.endswith("ServiceInstance") or m.endswith("Tenant")
+        ]
         ugly_rtuples = [(v, k) for k, v in ugly_tuples]
 
         ugly_map = dict(ugly_tuples)
         ugly_rmap = dict(ugly_rtuples)
 
         s_model_names = [v for k, v in ugly_tuples]
-        s_models0 = [getattr(Slice().stub, model_name, None)
-                     for model_name in s_model_names]
+        s_models0 = [
+            getattr(Slice().stub, model_name, None) for model_name in s_model_names
+        ]
         s_models1 = [model.objects.first() for model in s_models0]
         s_models = [m for m in s_models1 if m is not None]
 
         dependencies = []
         for model in s_models:
-            deps = ServiceDependency.objects.filter(
-                subscriber_service_id=model.id)
+            deps = ServiceDependency.objects.filter(subscriber_service_id=model.id)
             if deps:
-                services = [self.tenant_class_name_from_service(
-                    d.provider_service.leaf_model_name) for d in deps]
-                dependencies.append((ugly_rmap[model.leaf_model_name], [
-                                    (s, '', '') for s in services]))
+                services = [
+                    self.tenant_class_name_from_service(
+                        d.provider_service.leaf_model_name
+                    )
+                    for d in deps
+                ]
+                dependencies.append(
+                    (ugly_rmap[model.leaf_model_name], [(s, "", "") for s in services])
+                )
 
         return dependencies
 
     def compute_service_instance_dependencies(self, objects):
-        link_set = [ServiceInstanceLink.objects.filter(
-            subscriber_service_instance_id=o.id) for o in objects]
+        link_set = [
+            ServiceInstanceLink.objects.filter(subscriber_service_instance_id=o.id)
+            for o in objects
+        ]
 
-        dependencies = [(l.provider_service_instance, l.subscriber_service_instance)
-                        for links in link_set for l in links]
+        dependencies = [
+            (l.provider_service_instance, l.subscriber_service_instance)
+            for links in link_set
+            for l in links
+        ]
         providers = []
 
         for p, s in dependencies:
-            if not p.enacted or p.enacted<p.updated:
+            if not p.enacted or p.enacted < p.updated:
                 p.dependent = s
                 providers.append(p)
 
@@ -440,13 +473,13 @@ class XOSObserver(object):
         # Cleanup: Move self.driver into a synchronizer context
         # made available to every sync step.
         if not self.driver.enabled:
-            self.log.warning('Driver is not enabled. Not running sync steps.')
+            self.log.warning("Driver is not enabled. Not running sync steps.")
             return
 
         while True:
-            self.log.trace('Waiting for event or timeout')
+            self.log.trace("Waiting for event or timeout")
             self.wait_for_event(timeout=5)
-            self.log.trace('Synchronizer awake')
+            self.log.trace("Synchronizer awake")
 
             self.run_once()
 
@@ -465,7 +498,7 @@ class XOSObserver(object):
             step = step_class(driver=self.driver)
             step.log = self.log.new(step=step)
 
-            if not hasattr(step, 'call'):
+            if not hasattr(step, "call"):
                 pending = step.fetch_pending(deletion)
                 for obj in pending:
                     step = step_class(driver=self.driver)
@@ -473,7 +506,8 @@ class XOSObserver(object):
                     obj.synchronizer_step = step
 
                 pending_service_dependencies = self.compute_service_instance_dependencies(
-                    pending)
+                    pending
+                )
 
                 for obj in pending_service_dependencies:
                     obj.synchronizer_step = None
@@ -486,9 +520,10 @@ class XOSObserver(object):
                 pending_steps.append(step)
 
         self.log.trace(
-            'Fetched pending data',
+            "Fetched pending data",
             pending_objects=pending_objects,
-            legacy_steps=pending_steps)
+            legacy_steps=pending_steps,
+        )
         return pending_objects, pending_steps
 
     def linked_objects(self, o):
@@ -518,10 +553,13 @@ class XOSObserver(object):
         o1_lst, edge_type = self.linked_objects(o1)
 
         try:
-            found = next(obj for obj in o1_lst if obj.leaf_model_name ==
-                         o2.leaf_model_name and obj.pk == o2.pk)
+            found = next(
+                obj
+                for obj in o1_lst
+                if obj.leaf_model_name == o2.leaf_model_name and obj.pk == o2.pk
+            )
         except AttributeError as e:
-            self.log.exception('Compared objects could not be identified', e=e)
+            self.log.exception("Compared objects could not be identified", e=e)
             raise e
         except StopIteration:
             # This is a temporary workaround to establish dependencies between
@@ -530,7 +568,7 @@ class XOSObserver(object):
             # the following line would change back to found = False
             # - Sapan
 
-            found = getattr(o2, 'deleted', False)
+            found = getattr(o2, "deleted", False)
 
         return found, edge_type
 
@@ -543,8 +581,8 @@ class XOSObserver(object):
             # No dependency
             return False, None
 
-        if m1.endswith('ServiceInstance') and m2.endswith('ServiceInstance'):
-            return getattr(o2, 'dependent', None) == o1, DIRECT_EDGE
+        if m1.endswith("ServiceInstance") and m2.endswith("ServiceInstance"):
+            return getattr(o2, "dependent", None) == o1, DIRECT_EDGE
 
         # FIXME: Dynamic dependency check
         G = self.model_dependency_graph[False]
@@ -565,11 +603,10 @@ class XOSObserver(object):
                 src = p[i]
                 dst = p[i + 1]
                 edge_label = G[src][dst]
-                sa = edge_label['src_accessor']
+                sa = edge_label["src_accessor"]
                 try:
                     dst_accessor = getattr(src_object, sa)
-                    dst_objects, link_edge_type = self.linked_objects(
-                        dst_accessor)
+                    dst_objects, link_edge_type = self.linked_objects(dst_accessor)
                     if link_edge_type == PROXY_EDGE:
                         edge_type = link_edge_type
 
@@ -595,9 +632,15 @@ class XOSObserver(object):
                     else:
                         dst_object = dst_objects[0]
                 except AttributeError as e:
-                    if sa!='fake_accessor':
+                    if sa != "fake_accessor":
                         self.log.debug(
-                            'Could not check object dependencies, making conservative choice %s', e, src_object=src_object, sa=sa, o1=o1, o2=o2)
+                            "Could not check object dependencies, making conservative choice %s",
+                            e,
+                            src_object=src_object,
+                            sa=sa,
+                            o1=o1,
+                            o2=o2,
+                        )
                     return True, edge_type
 
                 src_object = dst_object
@@ -652,23 +695,23 @@ class XOSObserver(object):
                         else:
                             path_args = (objects[i0], objects[i1])
 
-                        is_connected, edge_type = self.concrete_path_exists(
-                            *path_args)
+                        is_connected, edge_type = self.concrete_path_exists(*path_args)
                         if is_connected:
                             try:
-                                edge_type = oG[i1][i0]['type']
+                                edge_type = oG[i1][i0]["type"]
                                 if edge_type == PROXY_EDGE:
                                     oG.remove_edge(i1, i0)
-                                    oG.add_edge(i0, i1, {'type': edge_type})
+                                    oG.add_edge(i0, i1, {"type": edge_type})
                             except KeyError:
-                                oG.add_edge(i0, i1, {'type': edge_type})
+                                oG.add_edge(i0, i1, {"type": edge_type})
         except KeyError:
             pass
 
         components = weakly_connected_component_subgraphs(oG)
         cohort_indexes = [reversed(topological_sort(g)) for g in components]
-        cohorts = [[objects[i] for i in cohort_index]
-                   for cohort_index in cohort_indexes]
+        cohorts = [
+            [objects[i] for i in cohort_index] for cohort_index in cohort_indexes
+        ]
 
         return cohorts
 
@@ -685,18 +728,20 @@ class XOSObserver(object):
             for deletion in (False, True):
                 objects_to_process = []
 
-                objects_to_process, steps_to_process = self.fetch_pending(
-                    deletion)
+                objects_to_process, steps_to_process = self.fetch_pending(deletion)
                 dependent_cohorts = self.compute_dependent_cohorts(
-                    objects_to_process, deletion)
+                    objects_to_process, deletion
+                )
 
                 threads = []
-                self.log.trace('In run once inner loop', deletion=deletion)
+                self.log.trace("In run once inner loop", deletion=deletion)
 
                 for cohort in dependent_cohorts:
                     thread = threading.Thread(
-                        target=self.sync_cohort, name='synchronizer', args=(
-                            cohort, deletion))
+                        target=self.sync_cohort,
+                        name="synchronizer",
+                        args=(cohort, deletion),
+                    )
 
                     threads.append(thread)
 
@@ -716,13 +761,13 @@ class XOSObserver(object):
                     try:
                         step.call(deletion=deletion)
                     except Exception as e:
-                        self.log.exception(
-                            "Legacy step failed", step=step, e=e)
+                        self.log.exception("Legacy step failed", step=step, e=e)
 
             loop_end = time.time()
 
         except Exception as e:
             self.log.exception(
-                'Core error. This seems like a misconfiguration or bug. This error will not be relayed to the user!',
-                e=e)
+                "Core error. This seems like a misconfiguration or bug. This error will not be relayed to the user!",
+                e=e,
+            )
             self.log.error("Exception in observer run loop")

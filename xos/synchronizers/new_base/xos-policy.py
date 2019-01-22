@@ -24,15 +24,13 @@
 
 import os
 import sys
-
-sys.path.append('/opt/xos')
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
-from xosconfig import Config
-
 import time
-from synchronizers.new_base.model_policy_loop import XOSPolicyEngine
+
+sys.path.append("/opt/xos")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
+
 from synchronizers.new_base.modelaccessor import *
+from synchronizers.new_base.model_policy_loop import XOSPolicyEngine
 
 from xosconfig import Config
 from multistructlog import create_logger
@@ -40,7 +38,7 @@ from multistructlog import create_logger
 
 def main():
 
-    log = create_logger(Config().get('logging'))
+    log = create_logger(Config().get("logging"))
 
     models_active = False
     wait = False
@@ -49,20 +47,22 @@ def main():
             _ = Instance.objects.first()
             _ = NetworkTemplate.objects.first()
             models_active = True
-        except Exception,e:
-            log.exception("Exception", e = e)
-            log.info('Waiting for data model to come up before starting...')
+        except Exception as e:
+            log.exception("Exception", e=e)
+            log.info("Waiting for data model to come up before starting...")
             time.sleep(10)
             wait = True
 
-    if (wait):
-        time.sleep(60) # Safety factor, seeing that we stumbled waiting for the data model to come up.
+    if wait:
+        time.sleep(
+            60
+        )  # Safety factor, seeing that we stumbled waiting for the data model to come up.
 
     # start model policies thread
     policies_dir = Config.get("model_policies_dir")
 
-
     XOSPolicyEngine(policies_dir=policies_dir, log=log).run()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
