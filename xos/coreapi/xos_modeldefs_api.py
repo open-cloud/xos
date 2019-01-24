@@ -19,6 +19,11 @@ import grpc
 from xos.exceptions import *
 from apihelper import XOSAPIHelperMixin
 from apistats import REQUEST_COUNT, track_request_time
+from xosconfig import Config
+
+from multistructlog import create_logger
+
+log = create_logger(Config().get('logging'))
 
 def yaml_to_grpc(yaml_repr, grpc_container, yaml_key = None, grpc_parent = None):
     if isinstance(yaml_repr, dict):
@@ -30,7 +35,23 @@ def yaml_to_grpc(yaml_repr, grpc_container, yaml_key = None, grpc_parent = None)
             grpc_sub_container = grpc_container.add()
             yaml_to_grpc(i, grpc_sub_container, None, grpc_container)
     else:
-        setattr(grpc_parent, yaml_key, yaml_repr)
+        try:
+            setattr(grpc_parent, yaml_key, yaml_repr)
+        except Exception, e:
+            # NOTE would be nice to get the parent,
+            # for example given this data structure:
+            # - hint: ''
+            #   name: AdmControl
+            #   default: "0"
+            #   options:
+            #   - {'id': 0, 'label': 'ALL'}
+            #   - {'id': 1, 'label': 'Voice Only'}
+            #   - {'id': 2, 'label': 'Data Only'}
+            #
+            # we'll get the error: Failed to set attribute id on element FieldOption has it value is 0 and has the wrong type <type 'int'>
+            # while printing "name: AdmControl" would be much better
+            log.exception("Failed to set attribute %s on element %s has it value is %s and has the wrong type %s" % (yaml_key, grpc_parent.__class__.__name__, yaml_repr, type(yaml_repr)))
+            raise e
 
 class ModelDefsService(modeldefs_pb2_grpc.modeldefsServicer, XOSAPIHelperMixin):
     def __init__(self, thread_pool):
@@ -54,6 +75,7 @@ class ModelDefsService(modeldefs_pb2_grpc.modeldefsServicer, XOSAPIHelperMixin):
 
 if __name__=='__main__':
     ystr = open('protos/modeldefs.yaml').read()
+
     yaml_repr = yaml.load(ystr)
 
     modeldefs = modeldefs_pb2.ModelDefs()
