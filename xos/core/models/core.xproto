@@ -410,38 +410,165 @@ message Role (XOSBase) {
 policy service_policy <ctx.user.is_admin | exists Privilege: Privilege.accessor_id = ctx.user.id & Privilege.accessor_type = "User" & Privilege.object_type = "Service" & Privilege.object_id = obj.id >
 
 message Service (XOSBase,AttributeMixin) {
-     optional string description = 1 [help_text = "Description of Service", max_length = 254, null = True, db_index = False, blank = True, varchar = True];
-     required bool enabled = 2 [default = True, null = False, db_index = False, blank = True, gui_hidden = True];
-     required string kind = 3 [default = "generic", max_length = 30, content_type = "stripped", blank = False, help_text = "Kind of service", null = False, db_index = False, choices="(('generic', 'Generic'), ('data', 'Data Plane'), ('control', 'Control Plane'), ('oss', 'OSS'))"];
-     required string name = 4 [max_length = 30, content_type = "stripped", blank = False, help_text = "Service Name", null = False, db_index = False, unique = True];
-     optional string versionNumber = 5 [max_length = 30, content_type = "stripped", blank = True, help_text = "Version of Service Definition", null = True, db_index = False];
-     required bool published = 6 [default = True, null = False, db_index = False, blank = True, gui_hidden = True];
-     optional string icon_url = 8 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True, gui_hidden = True];
-     optional string public_key = 9 [help_text = "Public key string", max_length = 4096, null = True, db_index = False, blank = True, varchar = True, gui_hidden = True];
-     optional string private_key_fn = 10 [db_index = False, max_length = 4096, null = True, content_type = "stripped", blank = True, gui_hidden = True];
-     optional string service_specific_id = 11 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
-     optional string service_specific_attribute = 12 [db_index = False, null = True, blank = True, varchar = True, gui_hidden = True];
+     option description = "A service managed by XOS";
+
+     optional string description = 1 [
+         help_text = "Description of Service",
+         blank = True,
+         db_index = False,
+         max_length = 254,
+         null = True,
+         varchar = True];
+     required bool enabled = 2 [
+         help_text = "Whether or not service is Enabled",
+         blank = True,
+         db_index = False,
+         default = True,
+         null = False,
+         gui_hidden = True];
+     required string kind = 3 [
+         help_text = "Kind of service",
+         blank = False,
+         choices="(('generic', 'Generic'), ('data', 'Data Plane'), ('control', 'Control Plane'), ('oss', 'OSS'))",
+         content_type = "stripped",
+         db_index = False,
+         default = "generic",
+         max_length = 30,
+         null = False];
+     required string name = 4 [
+         help_text = "Unique name of service",
+         blank = False,
+         content_type = "stripped",
+         db_index = False,
+         max_length = 30,
+         null = False,
+         unique = True];
+     optional string versionNumber = 5 [
+         help_text = "Version of Service Definition",
+         blank = True,
+         content_type = "stripped",
+         db_index = False,
+         max_length = 30,
+         null = True];
+     required bool published = 6 [
+         help_text = "True if this service should be published in XOS",
+         blank = True,
+         db_index = False,
+         default = True,
+         gui_hidden = True,
+         null = False]; // deprecated?
+     optional string icon_url = 8 [
+         blank = True,
+         content_type = "stripped",
+         db_index = False,
+         gui_hidden = True,
+         max_length = 1024,
+         null = True]; // deprecated?
+     optional string public_key = 9 [
+         help_text = "Public key string",
+         blank = True,
+         db_index = False,
+         gui_hidden = True,
+         max_length = 4096,
+         null = True,
+         varchar = True]; // likely only used by VM-based services. deprecated?
+     optional string private_key_fn = 10 [
+         help_text = "Filename of private key file, located within core container",
+         blank = True,
+         content_type = "stripped",
+         db_index = False,
+         gui_hidden = True,
+         max_length = 4096,
+         null = True]; // likely only used by VM-based services. deprecated?
+     optional string service_specific_id = 11 [
+         help_text = "Service-specific identifier, opaque to XOS core",
+         blank = True,
+         content_type = "stripped",
+         db_index = False,
+         max_length = 30,
+         null = True];
+     optional string service_specific_attribute = 12 [
+         help_text = "Service-specific string attribute, opaque to XOS core",
+         blank = True,
+         db_index = False,
+         gui_hidden = True,
+         null = True,
+         varchar = True];
 }
 
 message ServicePort (XOSBase) {
-     required string name = 1 [max_length = 128, null = False, db_index = False, blank = False, help_text = "Service Port Name"];
-     required int32 external_port = 2 [blank = False, help_text = "external port number"];
-     required int32 internal_port = 3 [blank = False, help_text = "internal port number"];
-     required string protocol = 4 [max_length = 32, null = False, db_index = False, blank = False, default="TCP", help_text = "Protocol"];
-     required manytoone service->Service:serviceports = 5:1002 [null = False, db_index = True, blank = False, help_text = "The Service this ServicePort is associated with"];
+     option description = "Exposes a port in a service outside of the pod, implementation depends on Compute Service";
+
+     required string name = 1 [
+         help_text = "Unique service port name",
+         blank = False,
+         db_index = False,
+         max_length = 128,
+         null = False];
+     required int32 external_port = 2 [
+         help_text = "external port number",
+         blank = False];
+     required int32 internal_port = 3 [
+         help_text = "internal port number",
+         blank = False];
+     required string protocol = 4 [
+         help_text = "Protocol",
+         blank = False,
+         db_index = False,
+         default="TCP",
+         max_length = 32,
+         null = False];
+     required manytoone service->Service:serviceports = 5:1002 [
+         help_text = "The Service this ServicePort is associated with",
+         blank = False,
+         db_index = True,
+         null = False];
 }
 
 message ServiceAttribute (XOSBase) {
-     required string name = 1 [help_text = "Attribute Name", max_length = 128, null = False, db_index = False, blank = False, unique_with="service"];
-     required string value = 2 [help_text = "Attribute Value", null = False, db_index = False, blank = False, varchar = True];
-     required manytoone service->Service:serviceattributes = 3:1003 [help_text = "The Service this attribute is associated with", null = False, db_index = True, blank = False];
+     option description = "An (key, value) attribute associated with a Service";
+
+     required string name = 1 [
+         help_text = "Attribute Name",
+         blank = False,
+         db_index = False,
+         max_length = 128,
+         null = False,
+         unique_with="service"];
+     required string value = 2 [
+         help_text = "Attribute Value",
+         blank = False,
+         db_index = False,
+         null = False,
+         varchar = True];
+     required manytoone service->Service:serviceattributes = 3:1003 [
+         help_text = "The Service this attribute is associated with",
+         blank = False,
+         db_index = True,
+         null = False];
 }
 
 
 message ServiceDependency (XOSBase) {
-     required manytoone provider_service->Service:provided_dependencies = 1:1004 [help_text = "The service that provides this dependency", null=False, db_index = True, blank=False, tosca_key=True];
-     required manytoone subscriber_service->Service:subscribed_dependencies = 2:1005 [help_text = "The services that subscribes to this dependency", null=False, db_index=True, blank=False, tosca_key=True];
-     required string connect_method = 3 [max_length = 30, help_text = "method to connect the two services", default="none", choices = "(('none', 'None'), ('private', 'Private'), ('public', 'Public'))"];
+     option description = "A dependency relation between a provider and a subscriber service";
+
+     required manytoone provider_service->Service:provided_dependencies = 1:1004 [
+         help_text = "The service that provides this dependency",
+         blank=False,
+         db_index = True,
+         null=False,
+         tosca_key=True];
+     required manytoone subscriber_service->Service:subscribed_dependencies = 2:1005 [
+         help_text = "The services that subscribes to this dependency",
+         blank=False,
+         db_index=True,
+         null=False,
+         tosca_key=True];
+     required string connect_method = 3 [
+         help_text = "method to connect the two services",
+         choices = "(('none', 'None'), ('private', 'Private'), ('public', 'Public'))",
+         default="none",
+         max_length = 30];
 }
 
 
@@ -526,44 +653,172 @@ message Tag::tag_policy (XOSBase) {
 }
 
 message InterfaceType (XOSBase) {
-     required string name = 1 [db_index = False, max_length = 200, null = False, content_type = "stripped", blank = False, unique_with = "direction"];
-     required string direction = 2 [db_index = False, max_length = 30, null = False, content_type = "stripped", blank = False, choices = "(('in', 'In'), ('out', 'Out'))"];
+     option description = "Defines an InterfaceType that may be used by Services to connect ServiceInstances";
+
+     required string name = 1 [
+         help_text = "Name of this interface type",
+         blank = False,
+         content_type = "stripped",
+         db_index = False,
+         max_length = 200,
+         null = False,
+         unique_with = "direction"];
+     required string direction = 2 [
+         help_text = "Direction, either in or out",
+         blank = False,
+         choices = "(('in', 'In'), ('out', 'Out'))",
+         content_type = "stripped",
+         db_index = False,
+         max_length = 30,
+         null = False];
 }
 
 message ServiceInterface (XOSBase) {
-     required manytoone service->Service:service_interfaces = 1:1008 [db_index = True, null = False, blank = False, tosca_key=True];
-     required manytoone interface_type->InterfaceType:service_interfaces = 2:1001 [db_index = True, null = False, blank = False, tosca_key=True];
+     option description = "Describes the type of connection attached to a ServiceInstanceLink";
+
+     required manytoone service->Service:service_interfaces = 1:1008 [
+         help_text = "Service that this ServiceInterface is associated with",
+         blank = False,
+         db_index = True,
+         null = False,
+         tosca_key=True];
+     required manytoone interface_type->InterfaceType:service_interfaces = 2:1001 [
+         help_text = "Interface type that describes this interface",
+         blank = False,
+         db_index = True,
+         null = False,
+         tosca_key=True];
 }
 
 message ServiceInstance (XOSBase, AttributeMixin) {
-     optional string name = 1 [db_index = False, max_length = 200, null = True, content_type = "stripped", blank = True];
-     required manytoone owner->Service:service_instances = 2:1009 [db_index = True, null = False, blank = False];
-     optional string service_specific_id = 3 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True, gui_hidden = True];
-     optional string service_specific_attribute = 10 [db_index = False, null = True, blank = True, varchar = True, gui_hidden = True];
-     optional uint32 link_deleted_count = 11 [default = 0, help_text = "Incremented each time a provided_link is deleted from this ServiceInstance", gui_hidden = True];
-     optional manytoone master_serviceinstance->ServiceInstance:child_serviceinstances = 12:1002 [help_text = "The master service instance that set this service instance up", gui_hidden = True, blank = True];
+     option description = "A portion of a service broken up into a tenant-sized piece";
+
+     optional string name = 1 [
+         help_text = "Name of ServiceInstance",
+         blank = True,
+         content_type = "stripped",
+         db_index = False,
+         max_length = 200,
+         null = True];
+     required manytoone owner->Service:service_instances = 2:1009 [
+         help_text = "The Service that owns this ServiceInstance",
+         blank = False,
+         db_index = True,
+         null = False];
+     optional string service_specific_id = 3 [
+         help_text = "Service-specific identifier, opaque to the XOS core",
+         blank = True,
+         content_type = "stripped",
+         db_index = False,
+         gui_hidden = True,
+         max_length = 30,
+         null = True];
+     optional string service_specific_attribute = 10 [
+         help_text = "Service-specific text attribute, opaque to the XOS core",
+         blank = True,
+         db_index = False,
+         gui_hidden = True,
+         null = True,
+         varchar = True];
+     optional uint32 link_deleted_count = 11 [
+         help_text = "Incremented each time a provided_link is deleted from this ServiceInstance",
+         default = 0,
+         gui_hidden = True];
+     optional manytoone master_serviceinstance->ServiceInstance:child_serviceinstances = 12:1002 [
+         help_text = "The master service instance that set this service instance up",
+         blank = True,
+         gui_hidden = True];
 }
 
 message ServiceInstanceLink (XOSBase) {
-     required manytoone provider_service_instance->ServiceInstance:provided_links = 1:1003 [db_index = True, null = False, blank = False, tosca_key=True];
-     optional manytoone provider_service_interface->ServiceInterface:provided_links = 2:1004 [db_index = True, null = True, blank = True];
-     optional manytoone subscriber_service_instance->ServiceInstance:subscribed_links = 3:1005 [db_index = True, null = True, blank = True];
-     optional manytoone subscriber_service->Service:subscribed_links = 4:1010 [db_index = True, null = True, blank = True, tosca_key_one_of=subscriber_service_instance];
-     optional manytoone subscriber_network->Network:subscribed_links = 5:1004 [db_index = True, null = True, blank = True, tosca_key_one_of=subscriber_service_instance];
+     option description = "A link in a chain between two ServiceInstances";
+
+     required manytoone provider_service_instance->ServiceInstance:provided_links = 1:1003 [
+         help_text = "Eastbound serviceinstance of this link",
+         db_index = True,
+         null = False,
+         blank = False,
+         tosca_key=True];
+     optional manytoone provider_service_interface->ServiceInterface:provided_links = 2:1004 [
+         help_text = "Interface descrption of the eastbound linkage point",
+         db_index = True,
+         null = True,
+         blank = True];
+     optional manytoone subscriber_service_instance->ServiceInstance:subscribed_links = 3:1005 [
+         help_text = "Westbound ServiceInstance of this link",
+         db_index = True,
+         null = True,
+         blank = True];
+     optional manytoone subscriber_service->Service:subscribed_links = 4:1010 [
+         help_text = "Interface description of the westbound linkage point",
+         db_index = True,
+         null = True,
+         blank = True,
+         tosca_key_one_of = subscriber_service_instance];
+     optional manytoone subscriber_network->Network:subscribed_links = 5:1004 [
+         help_text = "Alternative to subscriber_service_instance, if a Network model is the subscriber instead of a ServiceInstance",
+         db_index = True,
+         null = True,
+         blank = True,
+         tosca_key_one_of=subscriber_service_instance];
 }
 
 message ServiceInstanceAttribute (XOSBase) {
-     required string name = 1 [help_text = "Attribute Name", max_length = 128, null = False, db_index = False, blank = False, unique_with="service_instance"];
-     required string value = 2 [help_text = "Attribute Value", null = False, db_index = False, blank = False];
-     required manytoone service_instance->ServiceInstance:service_instance_attributes = 3:1006 [help_text = "The Tenant this attribute is associated with", null = False, db_index = True, blank = False];
+     option description = "A (key, value) attribute associated with a ServiceInstance";
+
+     required string name = 1 [
+         help_text = "Attribute Name",
+         blank = False,
+         db_index = False,
+         max_length = 128,
+         null = False,
+         unique_with = "service_instance"];
+     required string value = 2 [
+         help_text = "Attribute Value",
+         blank = False,
+         db_index = False,
+         null = False];
+     required manytoone service_instance->ServiceInstance:service_instance_attributes = 3:1006 [
+         help_text = "The Tenant this attribute is associated with",
+         blank = False,
+         db_index = True,
+         null = False];
 }
 
 message TenantWithContainer (ServiceInstance) {
-     optional manytoone instance->Instance:+ = 1:1003 [help_text = "Instance used by this Tenant", null = True, db_index = True, blank = True];
-     optional manytoone creator->User:+ = 2:1006 [help_text = "Creator of this Tenant", null = True, db_index = True, blank = True];
-     optional string external_hostname = 3 [max_length = 30, content_type = "stripped", blank = True, help_text = "External host name", null = True, db_index = False];
-     optional string external_container = 4 [max_length = 30, content_type = "stripped", blank = True, help_text = "External host name", null = True, db_index = False];
-     optional string node_label = 5 [max_length = 30, content_type = "stripped", blank = True, help_text = "Node constraint", null = True, db_index = False];
+     option description = "A ServiceInstance that uses an Instance to house its compute services";
+
+     optional manytoone instance->Instance:+ = 1:1003 [
+         help_text = "Instance used by this Tenant",
+         blank = True,
+         db_index = True,
+         null = True];
+     optional manytoone creator->User:+ = 2:1006 [
+         help_text = "Creator of this Tenant",
+         blank = True,
+         db_index = True,
+         null = True];
+     optional string external_hostname = 3 [
+         help_text = "External host name",
+         blank = True,
+         content_type = "stripped",
+         db_index = False,
+         max_length = 30,
+         null = True];
+     optional string external_container = 4 [
+         help_text = "External host name",
+         blank = True,
+         content_type = "stripped",
+         db_index = False,
+         max_length = 30,
+         null = True];
+     optional string node_label = 5 [
+         help_text = "Node constraint",
+         blank = True,
+         content_type = "stripped",
+         db_index = False,
+         max_length = 30,
+         null = True];
 }
 
 message TrustDomain (XOSBase) {
