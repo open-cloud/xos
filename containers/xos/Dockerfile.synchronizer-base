@@ -13,11 +13,10 @@
 # limitations under the License.
 
 # xosproject/xos-synchronizer-base
-FROM xosproject/xos-client:2.1.33
+FROM xosproject/xos-client:2.1.34
 
 COPY xos/synchronizers/new_base /opt/xos/synchronizers/new_base
 COPY xos/xos/logger.py /opt/xos/xos/logger.py
-COPY xos/xos/xml_util.py /opt/xos/xos/xml_util.py
 COPY xos/xos/__init__.py /opt/xos/xos/__init__.py
 COPY xos/synchronizers/__init__.py /opt/xos/synchronizers/__init__.py
 
