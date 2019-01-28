@@ -56,9 +56,9 @@ python setup.py install
 echo "xos-kafka Installed"
 popd
 
-pushd "$XOS_DIR/xos/xos_client"
+pushd "$XOS_DIR/lib/xos-api"
 make
-echo "xos-client Installed"
+echo "xos-api Installed"
 popd
 
 echo "XOS dev/test virtualenv created. Run 'source ${VENVDIR}/bin/activate'."
