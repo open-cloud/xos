@@ -39,7 +39,7 @@ class DynamicBuilder(object):
         self.protos_dir = os.path.join(base_dir, "coreapi/protos")
         self.app_metadata_dir = os.path.join(base_dir, "xos")
         self.convenience_methods_dir = os.path.join(
-            base_dir, "xos_client/xosapi/convenience"
+            base_dir, "dynamic_services/convenience_methods"
         )
 
     def pre_validate_file(self, item):
@@ -181,6 +181,9 @@ class DynamicBuilder(object):
 
         if not os.path.exists(self.manifest_dir):
             os.makedirs(self.manifest_dir)
+
+        if not os.path.exists(self.convenience_methods_dir):
+            os.makedirs(self.convenience_methods_dir)
 
         manifest_fn = os.path.join(self.manifest_dir, request.name + ".json")
 
