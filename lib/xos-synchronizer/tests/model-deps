@@ -1,0 +1,656 @@
+{ 
+     
+    
+    "User": [
+        
+        
+        
+        
+        
+         
+        
+        
+        
+        
+        
+        
+        
+        ["ControllerUser", "controllerusers", "user"],
+        
+        
+        ["Site", "site", "users"],
+        ["DashboardView", "dashboards", "user"]
+        
+    ], 
+    
+    "Privilege": [
+        
+        
+        
+        
+        
+         
+        
+        
+        
+        
+        
+        
+        
+        ["ControllerPrivilege", "controllerprivileges", "privilege"]
+        
+        
+        
+    ], 
+    
+    "AddressPool": [
+        
+        
+        
+        
+        
+        ["Service", "service", "addresspools"]
+        
+    ], 
+     
+    
+    "ControllerDashboardView": [
+        
+        
+        
+        
+        
+        ["Controller", "controller", "controllerdashboardviews"],
+        ["DashboardView", "dashboardView", "controllerdashboardviews"]
+        
+    ], 
+    
+    "ControllerImages": [
+        
+        
+        
+        
+        
+        ["Image", "image", "controllerimages"],
+        ["Controller", "controller", "controllerimages"]
+        
+    ], 
+    
+    "ControllerNetwork": [
+        
+        
+        
+        
+        
+        ["Network", "network", "controllernetworks"],
+        ["Controller", "controller", "controllernetworks"]
+        
+    ], 
+    
+    "ControllerRole": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "ControllerSite": [
+        
+        
+        
+        
+        
+        ["Site", "site", "controllersite"],
+        ["Controller", "controller", "controllersite"]
+        
+    ], 
+    
+    "ControllerPrivilege": [
+        
+        
+        
+        
+        
+        ["Controller", "controller", "controllerprivileges"],
+        ["Privilege", "privilege", "controllerprivileges"]
+        
+    ], 
+    
+    "ControllerSitePrivilege": [
+        
+        
+        
+        
+        
+        ["Controller", "controller", "controllersiteprivileges"],
+        ["SitePrivilege", "site_privilege", "controllersiteprivileges"]
+        
+    ], 
+    
+    "ControllerSlice": [
+        
+        
+        
+        
+        
+        ["Controller", "controller", "controllerslices"],
+        ["Slice", "slice", "controllerslices"]
+        
+    ], 
+    
+    "ControllerSlicePrivilege": [
+        
+        
+        
+        
+        
+        ["Controller", "controller", "controllersliceprivileges"],
+        ["SlicePrivilege", "slice_privilege", "controllersliceprivileges"]
+        
+    ], 
+    
+    "ControllerUser": [
+        
+        
+        
+        
+        
+        ["User", "user", "controllerusers"],
+        ["Controller", "controller", "controllersusers"]
+        
+    ], 
+    
+    "DashboardView": [
+        
+        
+        
+        
+        
+         
+        
+        
+        
+        
+        
+        
+        
+        ["ControllerDashboardView", "controllerdashboardviews", "dashboardView"],
+        
+        
+        ["Controller", "controllers", "dashboardviews"],
+        ["Deployment", "deployments", "dashboardviews"]
+        
+    ], 
+    
+    "Deployment": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "DeploymentPrivilege": [
+        
+        
+        
+        
+        
+        ["User", "user", "deploymentprivileges"],
+        ["Deployment", "deployment", "deploymentprivileges"],
+        ["DeploymentRole", "role", "deploymentprivileges"]
+        
+    ], 
+    
+    "DeploymentRole": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "Flavor": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "Image": [
+        
+        
+        
+        
+        
+         
+        
+        
+        
+        
+        
+        
+        
+        ["ControllerImages", "controllerimages", "image"]
+        
+        
+        
+    ], 
+    
+    "ImageDeployments": [
+        
+        
+        
+        
+        
+        ["Image", "image", "imagedeployments"],
+        ["Deployment", "deployment", "imagedeployments"]
+        
+    ], 
+    
+    "Instance": [
+        
+        
+        
+        
+        
+        ["Image", "image", "instances"],
+        ["User", "creator", "instances"],
+        ["Slice", "slice", "instances"],
+        ["Deployment", "deployment", "instance_deployment"],
+        ["Node", "node", "instances"],
+        ["Flavor", "flavor", "instance"],
+        ["Instance", "parent", "instance"]
+        
+    ], 
+    
+    "Network": [
+        
+        
+        
+        
+        
+         
+        
+        
+        
+        
+        
+        
+        
+        ["ControllerNetwork", "controllernetworks", "network"],
+        
+        
+        ["NetworkTemplate", "template", "network"],
+        ["Slice", "owner", "ownedNetworks"],
+        ["Slice", "permitted_slices", "availableNetworks"]
+    ], 
+    
+    "NetworkParameter": [
+        
+        
+        
+        
+        
+        ["NetworkParameterType", "parameter", "networkparameters"]
+        
+    ], 
+    
+    "NetworkParameterType": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "NetworkSlice": [
+        
+        
+        
+        
+        
+        ["Network", "network", "networkslices"],
+        ["Slice", "slice", "networkslices"]
+        
+    ], 
+    
+    "NetworkTemplate": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "Node": [
+        
+        
+        
+        
+        
+        ["SiteDeployment", "site_deployment", "nodes"]
+        
+    ], 
+    
+    "NodeLabel": [
+        
+        
+        
+        
+        
+        ["Node", "node", "nodelabels"]
+        
+    ], 
+    
+    "Port": [
+        
+        
+        
+        
+        
+        ["Network", "network", "links"],
+        ["Instance", "instance", "ports"]
+        
+    ], 
+    
+    "Role": [
+        
+        
+        
+        
+        
+         
+        
+        
+        
+        
+        
+    ], 
+    
+    "Service": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "ServiceAttribute": [
+        
+        
+        
+        
+        
+        ["Service", "service", "serviceattributes"]
+        
+    ], 
+    
+    "ServiceDependency": [
+        
+        
+        
+        
+        
+        ["Service", "provider_service", "provided_dependencies"],
+        ["Service", "subscriber_service", "subscribed_dependencies"]
+        
+    ], 
+    
+    "ServiceMonitoringAgentInfo": [
+        
+        
+        
+        
+        
+        ["Service", "service", "servicemonitoringagents"]
+        
+    ], 
+    
+    "ServicePrivilege": [
+        
+        
+        
+        
+        
+        ["User", "user", "serviceprivileges"],
+        ["Service", "service", "serviceprivileges"],
+        ["ServiceRole", "role", "serviceprivileges"]
+        
+    ], 
+    
+    "ServiceRole": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "Site": [
+        
+        
+        
+        
+        
+         
+        
+        
+        
+        
+        
+        
+        
+        ["ControllerSite", "controllersite", "site"],
+        
+        
+        ["Deployment", "deployments", "sites"]
+        
+    ], 
+    
+    "SiteDeployment": [
+        
+        
+        
+        
+        
+        ["Site", "site", "sitedeployments"],
+        ["Deployment", "deployment", "sitedeployments"],
+        ["Controller", "controller", "sitedeployments"]
+        
+    ], 
+    
+    "SitePrivilege": [
+        
+        
+        
+        
+        
+         
+        
+        
+        
+        
+        
+        
+        
+        ["ControllerSitePrivilege", "controllersiteprivileges", "site_privilege"],
+        
+        
+        ["User", "user", "siteprivileges"],
+        ["Site", "site", "siteprivileges"],
+        ["SiteRole", "role", "siteprivileges"]
+        
+    ], 
+    
+    "SiteRole": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "Slice": [
+        
+        
+        
+        
+        
+         
+        
+        
+        
+        
+        
+        
+        
+        ["ControllerSlice", "controllerslices", "slice"],
+        
+        
+        ["Site", "site", "slices"],
+        ["Service", "service", "slices"],
+        ["User", "creator", "slices"],
+        ["Flavor", "default_flavor", "slices"],
+        ["Image", "default_image", "slices"],
+        ["Node", "default_node", "slices"]
+        
+    ], 
+    
+    "SlicePrivilege": [
+        
+        
+        
+        
+        
+         
+        
+        
+        
+        
+        
+        
+        
+        ["ControllerSlicePrivilege", "controllersliceprivileges", "slice_privilege"],
+        
+        
+        ["User", "user", "sliceprivileges"],
+        ["Slice", "slice", "sliceprivileges"],
+        ["SliceRole", "role", "sliceprivileges"]
+        
+    ], 
+    
+    "SliceRole": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "Tag": [
+        
+        
+        
+        
+        
+        ["Service", "service", "tags"]
+        
+    ], 
+    
+    "InterfaceType": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "ServiceInterface": [
+        
+        
+        
+        
+        
+        ["Service", "service", "service_interfaces"],
+        ["InterfaceType", "interface_type", "service_interfaces"]
+        
+    ], 
+    
+    "ServiceInstance": [
+        
+        
+        
+        
+        
+        ["Service", "owner", "service_instances"]
+        
+    ], 
+    
+    "ServiceInstanceLink": [
+        
+        
+        
+        
+        
+        ["ServiceInstance", "provider_service_instance", "provided_links"],
+        ["ServiceInterface", "provider_service_interface", "provided_links"],
+        ["ServiceInstance", "subscriber_service_instance", "subscribed_links"],
+        ["Service", "subscriber_service", "subscribed_links"],
+        ["Network", "subscriber_network", "subscribed_links"]
+        
+    ], 
+    
+    "ServiceInstanceAttribute": [
+        
+        
+        
+        
+        
+        ["ServiceInstance", "service_instance", "service_instance_attributes"]
+        
+    ], 
+    
+    "TenantWithContainer": [
+        
+        
+        
+        
+        
+        ["Service", "owner", "service_instances"],
+        ["Instance", "instance", "+"],
+        ["User", "creator", "+"]
+        
+    ], 
+    
+    "XOS": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "XOSGuiExtension": [
+        
+        
+        
+        
+        
+        
+    ]
+}
