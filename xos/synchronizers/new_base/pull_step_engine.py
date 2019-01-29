@@ -39,7 +39,7 @@ class XOSPullStepScheduler:
             self.run_once()
 
     def run_once(self):
-        log.trace("Starting pull steps", steps=self.steps)
+        log.debug("Starting pull steps", steps=self.steps)
 
         threads = []
         for step in self.steps:
@@ -52,7 +52,7 @@ class XOSPullStepScheduler:
         for t in threads:
             t.join()
 
-        log.trace("Done with pull steps", steps=self.steps)
+        log.debug("Done with pull steps", steps=self.steps)
 
 
 class XOSPullStepEngine:

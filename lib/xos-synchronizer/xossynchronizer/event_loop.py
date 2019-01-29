@@ -100,13 +100,13 @@ class XOSObserver(object):
 
         try:
             if Config.get("dependency_graph"):
-                self.log.trace(
+                self.log.debug(
                     "Loading model dependency graph",
                     path=Config.get("dependency_graph"),
                 )
                 dep_graph_str = open(Config.get("dependency_graph")).read()
             else:
-                self.log.trace("Using default model dependency graph", graph={})
+                self.log.debug("Using default model dependency graph", graph={})
                 dep_graph_str = "{}"
 
             # joint_dependencies is of the form { Model1 -> [(Model2, src_port, dst_port), ...] }
@@ -138,7 +138,7 @@ class XOSObserver(object):
                 True: model_dependency_graph_rev,
                 False: model_dependency_graph,
             }
-            self.log.trace("Loaded dependencies", edges=model_dependency_graph.edges())
+            self.log.debug("Loaded dependencies", edges=model_dependency_graph.edges())
         except Exception as e:
             self.log.exception("Error loading dependency graph", e=e)
             raise e
@@ -410,9 +410,9 @@ class XOSObserver(object):
             return
 
         while True:
-            self.log.trace("Waiting for event or timeout")
+            self.log.debug("Waiting for event or timeout")
             self.wait_for_event(timeout=5)
-            self.log.trace("Synchronizer awake")
+            self.log.debug("Synchronizer awake")
 
             self.run_once()
 
@@ -449,7 +449,7 @@ class XOSObserver(object):
                 # This needs to be dropped soon.
                 pending_steps.append(step)
 
-        self.log.trace(
+        self.log.debug(
             "Fetched pending data",
             pending_objects=pending_objects,
             legacy_steps=pending_steps,
@@ -664,7 +664,7 @@ class XOSObserver(object):
                 )
 
                 threads = []
-                self.log.trace("In run once inner loop", deletion=deletion)
+                self.log.debug("In run once inner loop", deletion=deletion)
 
                 for cohort in dependent_cohorts:
                     thread = threading.Thread(

@@ -78,4 +78,4 @@ class XOSKafkaProducer:
         if err:
             log.error("Message failed delivery: %s" % err)
         else:
-            log.trace("Message delivered", message=msg)
+            pass
