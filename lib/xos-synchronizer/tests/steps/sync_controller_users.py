@@ -16,13 +16,11 @@
 import os
 import base64
 from xossynchronizer.steps.syncstep import SyncStep
-from xossynchronizer.mock_modelaccessor import *
 
 
 class SyncControllerUsers(SyncStep):
-    provides = [User]
     requested_interval = 0
-    observes = ControllerUser
+    observes = "ControllerUser"
     playbook = "sync_controller_users.yaml"
 
     def map_sync_inputs(self, controller_user):

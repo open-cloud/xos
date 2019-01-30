@@ -36,5 +36,6 @@ class Policy(object):
             handle_delete ... called when a model is deleted
     """
 
-    def __init__(self):
+    def __init__(self, model_accessor):
+        self.model_accessor = model_accessor
         self.logger = log

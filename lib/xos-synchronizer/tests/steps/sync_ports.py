@@ -16,13 +16,13 @@
 import os
 import base64
 from xossynchronizer.steps.syncstep import SyncStep
-from xossynchronizer.mock_modelaccessor import *
 
 
 class SyncPort(SyncStep):
-    requested_interval = 0  # 3600
-    provides = [Port]
-    observes = Port
+    requested_interval = 0
+
+    # This observes is intentionally a string, to test steps where observes is a string
+    observes = "Port"
 
     def call(self, failed=[], deletion=False):
         if deletion:

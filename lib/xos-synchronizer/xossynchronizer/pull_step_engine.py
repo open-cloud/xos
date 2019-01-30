@@ -30,8 +30,9 @@ class XOSPullStepScheduler:
         The thread's pull_records() function is called for every five seconds.
     """
 
-    def __init__(self, steps, *args, **kwargs):
+    def __init__(self, steps, model_accessor, *args, **kwargs):
         self.steps = steps
+        self.model_accessor = model_accessor
 
     def run(self):
         while True:
@@ -43,7 +44,7 @@ class XOSPullStepScheduler:
 
         threads = []
         for step in self.steps:
-            thread = threading.Thread(target=step().pull_records, name="pull_step")
+            thread = threading.Thread(target=step(model_accessor=self.model_accessor).pull_records, name="pull_step")
             threads.append(thread)
 
         for t in threads:
@@ -67,7 +68,8 @@ class XOSPullStepEngine:
                         will be called before start().
     """
 
-    def __init__(self):
+    def __init__(self, model_accessor):
+        self.model_accessor = model_accessor
         self.pull_steps = []
 
     def load_pull_step_modules(self, pull_step_dir):
@@ -98,5 +100,5 @@ class XOSPullStepEngine:
         log.info("Starting pull steps engine", steps=self.pull_steps)
 
         for step in self.pull_steps:
-            sched = XOSPullStepScheduler(steps=self.pull_steps)
+            sched = XOSPullStepScheduler(steps=self.pull_steps, model_accessor=self.model_accessor)
             sched.run()

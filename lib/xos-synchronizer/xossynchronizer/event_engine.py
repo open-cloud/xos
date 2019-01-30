@@ -43,11 +43,12 @@ class XOSKafkaThread(threading.Thread):
         function is called for each event.
     """
 
-    def __init__(self, step, bootstrap_servers, log, *args, **kwargs):
+    def __init__(self, step, bootstrap_servers, model_accessor, log, *args, **kwargs):
         super(XOSKafkaThread, self).__init__(*args, **kwargs)
         self.consumer = None
         self.step = step
         self.bootstrap_servers = bootstrap_servers
+        self.model_accessor = model_accessor
         self.log = log
         self.daemon = True
 
@@ -129,7 +130,7 @@ class XOSKafkaThread(threading.Thread):
                 )
 
                 try:
-                    self.step(log=self.log).process_event(event_msg)
+                    self.step(model_accessor=self.model_accessor, log=self.log).process_event(event_msg)
 
                 except BaseException:
                     self.log.exception(
@@ -151,9 +152,10 @@ class XOSEventEngine(object):
                         will be called before start().
     """
 
-    def __init__(self, log):
+    def __init__(self, model_accessor, log):
         self.event_steps = []
         self.threads = []
+        self.model_accessor = model_accessor
         self.log = log
 
     def load_event_step_modules(self, event_step_dir):
@@ -205,7 +207,7 @@ class XOSEventEngine(object):
 
         for step in self.event_steps:
             if step.technology == "kafka":
-                thread = XOSKafkaThread(step, [eventbus_endpoint], self.log)
+                thread = XOSKafkaThread(step, [eventbus_endpoint], self.model_accessor, self.log)
                 thread.start()
                 self.threads.append(thread)
             else:

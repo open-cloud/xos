@@ -128,6 +128,8 @@ class TestEventEngine(unittest.TestCase):
 
         build_mock_modelaccessor(sync_lib_dir, xos_dir, services_dir=None, service_xprotos=[])
 
+        from xossynchronizer.modelaccessor import model_accessor
+
         # The test config.yaml references files in `test/` so make sure we're in the parent directory of the
         # test directory.
         os.chdir(os.path.join(test_path, ".."))
@@ -135,7 +137,7 @@ class TestEventEngine(unittest.TestCase):
         from xossynchronizer.event_engine import XOSKafkaThread, XOSEventEngine
 
         self.event_steps_dir = Config.get("event_steps_dir")
-        self.event_engine = XOSEventEngine(log)
+        self.event_engine = XOSEventEngine(model_accessor=model_accessor, log=log)
 
     def tearDown(self):
         sys.path = self.sys_path_save

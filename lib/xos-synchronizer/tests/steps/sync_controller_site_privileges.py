@@ -17,12 +17,10 @@ import os
 import base64
 import json
 from xossynchronizer.steps.syncstep import SyncStep
-from xossynchronizer.mock_modelaccessor import *
 
 class SyncControllerSitePrivileges(SyncStep):
-    provides = [SitePrivilege]
     requested_interval = 0
-    observes = ControllerSitePrivilege
+    observes = "ControllerSitePrivilege"
     playbook = "sync_controller_users.yaml"
 
     def map_sync_inputs(self, controller_site_privilege):

@@ -52,10 +52,12 @@ class TestScheduling(unittest.TestCase):
         import xossynchronizer.backend
         reload(xossynchronizer.backend)
 
-        b = xossynchronizer.backend.Backend()
+        from xossynchronizer.modelaccessor import model_accessor
+
+        b = xossynchronizer.backend.Backend(model_accessor=model_accessor)
         steps_dir = Config.get("steps_dir")
         self.steps = b.load_sync_step_modules(steps_dir)
-        self.synchronizer = xossynchronizer.event_loop.XOSObserver(self.steps)
+        self.synchronizer = xossynchronizer.event_loop.XOSObserver(self.steps, model_accessor)
 
     def tearDown(self):
         sys.path = self.sys_path_save
@@ -92,6 +94,9 @@ class TestScheduling(unittest.TestCase):
         self.assertIn(
             ("ControllerSlice", ["SyncControllerSlices"]), model_to_step.items()
         )
+        self.assertIn(
+            ("Port", ["SyncPort"]), model_to_step.items()
+        )
         self.assertIn(("SiteRole", ["SyncRoles"]), model_to_step.items())
 
         for k, v in model_to_step.items():
@@ -100,7 +105,13 @@ class TestScheduling(unittest.TestCase):
             if not isinstance(observes, list):
                 observes = [observes]
 
-            observed_names = [o.__name__ for o in observes]
+            observed_names = []
+            for o in observes:
+                if isinstance(o,str):
+                    observed_names.append(o)
+                else:
+                    observed_names.append(o.__name__)
+
             self.assertIn(k, observed_names)
 
 

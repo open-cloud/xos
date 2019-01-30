@@ -25,11 +25,14 @@ class EventStep(object):
     topics = []
     pattern = None
 
-    def __init__(self, log, **kwargs):
+    def __init__(self, model_accessor, log, **kwargs):
         """
         Initialize a pull step. Override this function to include any initialization. Make sure to call the original
         __init__() from your method.
         """
+
+        # self.model_accessor can be used to create and query models
+        self.model_accessor = model_accessor
 
         # self.log can be used to emit logging messages.
         self.log = log

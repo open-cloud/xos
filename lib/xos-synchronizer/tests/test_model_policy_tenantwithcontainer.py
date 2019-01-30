@@ -60,12 +60,9 @@ class TestModelPolicyTenantWithContainer(unittest.TestCase):
         ) in xossynchronizer.model_policies.model_policy_tenantwithcontainer.model_accessor.all_model_classes.items():
             globals()[k] = v
 
-        # TODO: Mock_model_accessor lacks save or delete methods
-        # Instance.save = mock.Mock
-        # Instance.delete = mock.Mock
-        # TenantWithContainer.save = mock.Mock
+        from xossynchronizer.modelaccessor import model_accessor
 
-        self.policy = TenantWithContainerPolicy()
+        self.policy = TenantWithContainerPolicy(model_accessor=model_accessor)
         self.user = User(email="testadmin@test.org")
         self.tenant = TenantWithContainer(creator=self.user)
         self.flavor = Flavor(name="m1.small")

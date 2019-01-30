@@ -19,20 +19,18 @@ import struct
 import socket
 from netaddr import IPAddress, IPNetwork
 from xossynchronizer.steps.syncstep import SyncStep
-from xossynchronizer.mock_modelaccessor import *
 
 class SyncControllerNetworks(SyncStep):
     requested_interval = 0
-    provides = [Network]
-    observes = ControllerNetwork
-    external_dependencies = [User]
+    observes = "ControllerNetwork"
+    external_dependencies = ["User"]
     playbook = "sync_controller_networks.yaml"
 
     def fetch_pending(self, deleted):
-        ci = ControllerNetwork()
-        i = Network()
+        ci = self.model_accessor.ControllerNetwork()
+        i = self.model_accessor.Network()
         i.name = "Lush Loss"
-        s = Slice()
+        s = self.model_accessor.Slice()
         s.name = "Ghastly Notebook"
         i.owner = s
         ci.i = i

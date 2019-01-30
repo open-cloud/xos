@@ -21,7 +21,6 @@ import base64
 import time
 from xossynchronizer.steps.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from xossynchronizer.steps.syncstep import DeferredException
-from xossynchronizer.mock_modelaccessor import *
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__), "..")
@@ -29,19 +28,18 @@ sys.path.insert(0, parentdir)
 
 
 class SyncContainer(SyncInstanceUsingAnsible):
-    provides = [Instance]
-    observes = Instance
+    observes = "Instance"
     template_name = "sync_container.yaml"
 
     def __init__(self, *args, **kwargs):
         super(SyncContainer, self).__init__(*args, **kwargs)
 
     def fetch_pending(self, deletion=False):
-        i = Instance()
+        i = self.model_accessor.Instance()
         i.name = "Spectacular Sponge"
-        j = Instance()
+        j = self.model_accessor.Instance()
         j.name = "Spontaneous Tent"
-        k = Instance()
+        k = self.model_accessor.Instance()
         k.name = "Embarrassed Cat"
 
         objs = [i, j, k]

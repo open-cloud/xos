@@ -22,8 +22,8 @@ class TestEventStep(EventStep):
     topics = ["sometopic"]
     pattern = None
 
-    def __init__(self, log, *args, **kwargs):
-        super(TestEventStep, self).__init__(log, *args, **kwargs)
+    def __init__(self, model_accessor, log, *args, **kwargs):
+        super(TestEventStep, self).__init__(model_accessor, log, *args, **kwargs)
 
     def process_event(self, event):
         print("received an event", event)

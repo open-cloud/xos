@@ -17,12 +17,10 @@ import os
 import base64
 import json
 from xossynchronizer.steps.syncstep import SyncStep
-from xossynchronizer.mock_modelaccessor import *
 
 class SyncControllerSites(SyncStep):
     requested_interval = 0
-    provides = [Site]
-    observes = ControllerSite
+    observes = "ControllerSite"
     playbook = "sync_controller_sites.yaml"
 
     def fetch_pending(self, deleted=False):

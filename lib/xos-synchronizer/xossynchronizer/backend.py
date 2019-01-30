@@ -24,7 +24,6 @@ from xossynchronizer.event_loop import XOSObserver
 from xossynchronizer.model_policy_loop import XOSPolicyEngine
 from xossynchronizer.event_engine import XOSEventEngine
 from xossynchronizer.pull_step_engine import XOSPullStepEngine
-from xossynchronizer.modelaccessor import *
 
 from xosconfig import Config
 from multistructlog import create_logger
@@ -33,7 +32,8 @@ log = create_logger(Config().get("logging"))
 
 
 class Backend:
-    def __init__(self, log=log):
+    def __init__(self, model_accessor, log=log):
+        self.model_accessor = model_accessor
         self.log = log
 
     def load_sync_step_modules(self, step_dir):
@@ -100,8 +100,8 @@ class Backend:
             # if we have at least one sync_step
             if len(sync_steps) > 0:
                 # start the observer
-                self.log.info("Starting XOSObserver", sync_steps=sync_steps)
-                observer = XOSObserver(sync_steps, self.log)
+                self.log.info("Starting XOSObserver", sync_steps=sync_steps, model_accessor=self.model_accessor)
+                observer = XOSObserver(sync_steps, self.model_accessor, self.log)
                 observer_thread = threading.Thread(
                     target=observer.run, name="synchronizer"
                 )
@@ -113,7 +113,7 @@ class Backend:
         pull_steps_dir = Config.get("pull_steps_dir")
         if pull_steps_dir:
             self.log.info("Starting XOSPullStepEngine", pull_steps_dir=pull_steps_dir)
-            pull_steps_engine = XOSPullStepEngine()
+            pull_steps_engine = XOSPullStepEngine(model_accessor=self.model_accessor)
             pull_steps_engine.load_pull_step_modules(pull_steps_dir)
             pull_steps_thread = threading.Thread(
                 target=pull_steps_engine.start, name="pull_step_engine"
@@ -125,7 +125,7 @@ class Backend:
         event_steps_dir = Config.get("event_steps_dir")
         if event_steps_dir:
             self.log.info("Starting XOSEventEngine", event_steps_dir=event_steps_dir)
-            event_engine = XOSEventEngine(self.log)
+            event_engine = XOSEventEngine(model_accessor=self.model_accessor, log=self.log)
             event_engine.load_event_step_modules(event_steps_dir)
             event_engine.start()
         else:
@@ -134,7 +134,7 @@ class Backend:
         # start model policies thread
         policies_dir = Config.get("model_policies_dir")
         if policies_dir:
-            policy_engine = XOSPolicyEngine(policies_dir=policies_dir, log=self.log)
+            policy_engine = XOSPolicyEngine(policies_dir=policies_dir, model_accessor=self.model_accessor, log=self.log)
             model_policy_thread = threading.Thread(
                 target=policy_engine.run, name="policy_engine"
             )

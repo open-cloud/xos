@@ -20,8 +20,9 @@ from xossynchronizer.mock_modelaccessor import *
 
 
 class SyncRoles(SyncStep):
-    provides = [Role]
     requested_interval = 0
+
+    # This observes is intentionally a list of three classes, to test steps where observes is a list of classes.
     observes = [SiteRole, SliceRole, ControllerRole]
 
     def sync_record(self, role):

@@ -16,17 +16,15 @@
 import os
 import base64
 from xossynchronizer.steps.syncstep import SyncStep
-from xossynchronizer.mock_modelaccessor import *
 
 class SyncControllerImages(SyncStep):
-    provides = [ControllerImages]
-    observes = ControllerImages
+    observes = "ControllerImages"
     requested_interval = 0
     playbook = "sync_controller_images.yaml"
 
     def fetch_pending(self, deleted):
-        ci = ControllerImages()
-        i = Image()
+        ci = self.model_accessor.ControllerImages()
+        i = self.model_accessor.Image()
         i.name = "Lush Loss"
         ci.i = i
         return [ci]

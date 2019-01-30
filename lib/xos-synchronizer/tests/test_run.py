@@ -14,10 +14,7 @@
 
 import json
 import unittest
-from mock import patch
 import mock
-import pdb
-import networkx as nx
 
 import os
 import sys
@@ -70,10 +67,12 @@ class TestRun(unittest.TestCase):
         for (k, v) in model_accessor.all_model_classes.items():
             globals()[k] = v
 
-        b = xossynchronizer.backend.Backend()
+        from xossynchronizer.modelaccessor import model_accessor
+
+        b = xossynchronizer.backend.Backend(model_accessor=model_accessor)
         steps_dir = Config.get("steps_dir")
         self.steps = b.load_sync_step_modules(steps_dir)
-        self.synchronizer = xossynchronizer.event_loop.XOSObserver(self.steps)
+        self.synchronizer = xossynchronizer.event_loop.XOSObserver(self.steps, model_accessor)
         try:
             os.remove("/tmp/sync_ports")
         except OSError:
@@ -88,12 +87,10 @@ class TestRun(unittest.TestCase):
         os.chdir(self.cwd_save)
 
     @mock.patch(
-        "steps.sync_instances.syncstep.run_template",
+        "steps.sync_instances.ansiblesyncstep.run_template",
         side_effect=run_fake_ansible_template,
     )
-    @mock.patch("xossynchronizer.event_loop.model_accessor")
-    def test_run_once(self, mock_run_template, mock_accessor, *_other_accessors):
-
+    def test_run_once(self, mock_run_template):
         pending_objects, pending_steps = self.synchronizer.fetch_pending()
         pending_objects2 = list(pending_objects)
 

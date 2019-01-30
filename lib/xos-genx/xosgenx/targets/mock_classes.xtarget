@@ -170,9 +170,19 @@ def get_MockObjectStore(x):
         AllMockObjectStores.append(store)
     return store
 
-class ModelAccessor:
-    def check_db_connection_ok(self):
+class ModelAccessor(object):
+    def check_db_connection_okay(self):
         return True
+
+    def connection_close(self):
+        pass
+
+    def journal_object(self, *args, **kwargs):
+        pass
+
+    def obj_exists(self, o):
+        # gRPC will default id to '0' for uninitialized objects
+        return (o.id is not None) and (o.id != 0)
 
     def fetch_pending(self, model, deleted = False):
         num = random.randint(1, 5)
@@ -199,6 +209,19 @@ class ModelAccessor:
 
     def get_model_class(self, classname):
         return globals()[classname]
+
+    def has_model_class(self, classname):
+        return classname in globals()
+
+    def __getattr__(self, name):
+        """ Wrapper for getattr to facilitate retrieval of classes """
+        has_model_class = self.__getattribute__("has_model_class")
+        get_model_class = self.__getattribute__("get_model_class")
+        if has_model_class(name):
+            return get_model_class(name)
+
+        # Default behaviour
+        return self.__getattribute__(name)
 
 model_accessor = ModelAccessor()
 

@@ -13,15 +13,11 @@
 # limitations under the License.
 
 
-import os
-import base64
 from xossynchronizer.steps.syncstep import SyncStep
-from xossynchronizer.mock_modelaccessor import *
 
 class SyncImages(SyncStep):
-    provides = [Image]
     requested_interval = 0
-    observes = [Image]
+    observes = ["Image"]
 
     def sync_record(self, role):
         # do nothing

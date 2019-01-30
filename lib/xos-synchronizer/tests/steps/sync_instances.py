@@ -14,13 +14,7 @@
 
 
 import os
-import base64
-import socket
-from xossynchronizer.steps import syncstep
-from xossynchronizer.mock_modelaccessor import *
-
-RESTAPI_HOSTNAME = socket.gethostname()
-RESTAPI_PORT = "8000"
+from xossynchronizer.steps import ansiblesyncstep
 
 
 def escape(s):
@@ -28,10 +22,10 @@ def escape(s):
     return s
 
 
-class SyncInstances(syncstep.SyncStep):
-    provides = [Instance]
+class SyncInstances(ansiblesyncstep.AnsibleSyncStep):
     requested_interval = 0
-    observes = Instance
+    # This observes is intentionally a list of one string, to test steps where observes is a list of strings.
+    observes = ["Instance"]
     playbook = "sync_instances.yaml"
 
     def fetch_pending(self, deletion=False):

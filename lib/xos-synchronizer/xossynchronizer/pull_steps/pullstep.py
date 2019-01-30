@@ -23,8 +23,10 @@ class PullStep(object):
         Initialize a pull step
         :param kwargs:
         -- observed_model: name of the model that is being polled
+        -- model_accessor: used to create and update models
         """
         self.observed_model = kwargs.get("observed_model")
+        self.model_accessor = kwargs.get("model_accessor")
 
     def pull_records(self):
         self.log.debug(

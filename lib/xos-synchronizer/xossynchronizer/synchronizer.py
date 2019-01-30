@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import sys
 import time
 
 from xosconfig import Config
@@ -60,7 +58,7 @@ class Synchronizer(object):
         from backend import Backend
 
         log_closure = self.log.bind(synchronizer_name=Config().get("name"))
-        backend = Backend(log=log_closure)
+        backend = Backend(log=log_closure, model_accessor=self.model_accessor)
         backend.run()
 
 

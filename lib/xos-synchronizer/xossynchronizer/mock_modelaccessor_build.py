@@ -28,6 +28,12 @@ import subprocess
 def build_mock_modelaccessor(
     dest_dir, xos_dir, services_dir, service_xprotos, target="mock_classes.xtarget"
 ):
+    # TODO: deprecate the dest_dir argument
+
+    # force modelaccessor to be found in /tmp
+    dest_dir="/tmp/mock_modelaccessor"
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
     dest_fn = os.path.join(dest_dir, "mock_modelaccessor.py")
 
     args = ["xosgenx", "--target", target]
@@ -69,3 +75,38 @@ def build_mock_modelaccessor(
 
     # Save the context of this invocation of xosgenx
     open(context_fn, "w").write(cPickle.dumps(this_context))
+
+# generate model from xproto
+def get_models_fn(services_dir, service_name, xproto_name):
+    name = os.path.join(service_name, "xos", xproto_name)
+    if os.path.exists(os.path.join(services_dir, name)):
+        return name
+    else:
+        name = os.path.join(service_name, "xos", "synchronizer", "models", xproto_name)
+        if os.path.exists(os.path.join(services_dir, name)):
+            return name
+    raise Exception("Unable to find service=%s xproto=%s" % (service_name, xproto_name))
+# END generate model from xproto
+
+def mock_modelaccessor_config(test_dir, services):
+    """ Automatically configure the mock modelaccessor.
+
+        We start from the test directory, and then back up until we find the orchestration directory. From there we
+        can find the other xproto (core, services) that we need to build the mock modelaccessor.
+    """
+
+    orchestration_dir = test_dir
+    while not orchestration_dir.endswith("orchestration"):
+        # back up a level
+        orchestration_dir = os.path.dirname(orchestration_dir)
+        if len(orchestration_dir)<10:
+            raise Exception("Failed to autodiscovery repository tree")
+
+    xos_dir = os.path.join(orchestration_dir, "xos", "xos")
+    services_dir = os.path.join(orchestration_dir, "xos_services")
+
+    service_xprotos=[]
+    for (service_name, xproto_name) in services:
+        service_xprotos.append(get_models_fn(services_dir, service_name, xproto_name))
+
+    build_mock_modelaccessor(None, xos_dir, services_dir, service_xprotos)

@@ -285,6 +285,11 @@ def config_accessor_grpcapi():
 
 def config_accessor_mock():
     global model_accessor
+
+    # the mock model accessor always gets built to a temporary location
+    if not "/tmp/mock_modelaccessor" in sys.path:
+        sys.path.append("/tmp/mock_modelaccessor")
+
     from mock_modelaccessor import model_accessor as mock_model_accessor
 
     model_accessor = mock_model_accessor

@@ -15,13 +15,12 @@
 
 import os
 import base64
-from xossynchronizer.steps.syncstep import SyncStep, DeferredException
-from xossynchronizer.mock_modelaccessor import *
+from xossynchronizer.steps.syncstep import DeferredException
+from xossynchronizer.steps.ansiblesyncstep import AnsibleSyncStep
 
-class SyncControllerSlices(SyncStep):
-    provides = [Slice]
+class SyncControllerSlices(AnsibleSyncStep):
     requested_interval = 0
-    observes = ControllerSlice
+    observes = "ControllerSlice"
     playbook = "sync_controller_slices.yaml"
 
     def map_sync_inputs(self, controller_slice):

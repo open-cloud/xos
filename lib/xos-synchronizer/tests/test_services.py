@@ -57,10 +57,10 @@ class TestServices(unittest.TestCase):
         for (k, v) in model_accessor.all_model_classes.items():
             globals()[k] = v
 
-        b = xossynchronizer.backend.Backend()
+        b = xossynchronizer.backend.Backend(model_accessor=model_accessor)
         steps_dir = Config.get("steps_dir")
         self.steps = b.load_sync_step_modules(steps_dir)
-        self.synchronizer = xossynchronizer.event_loop.XOSObserver(self.steps)
+        self.synchronizer = xossynchronizer.event_loop.XOSObserver(self.steps, model_accessor)
 
     def tearDown(self):
         sys.path = self.sys_path_save

@@ -14,18 +14,18 @@
 
 
 from __future__ import print_function
-from xossynchronizer.modelaccessor import *
 from xossynchronizer.dependency_walker_new import *
-from xossynchronizer.policy import Policy
+from xossynchronizer.model_policies.policy import Policy
 
 import imp
-import pdb
+import inspect
 import time
 import traceback
 
 
 class XOSPolicyEngine(object):
-    def __init__(self, policies_dir, log):
+    def __init__(self, policies_dir, model_accessor, log):
+        self.model_accessor = model_accessor
         self.model_policies = self.load_model_policies(policies_dir)
         self.policies_by_name = {}
         self.policies_by_class = {}
@@ -94,26 +94,28 @@ class XOSPolicyEngine(object):
                     # provides field (this eliminates the abstract base classes
                     # since they don't have a provides)
 
-                    if (
-                        inspect.isclass(c)
-                        and issubclass(c, Policy)
-                        and hasattr(c, "model_name")
-                        and (c not in policies)
-                    ):
-                        if not c.model_name:
-                            log.info(
-                                "load_model_policies: skipping model policy",
-                                classname=classname,
-                            )
-                            continue
-                        if not model_accessor.has_model_class(c.model_name):
-                            log.error(
-                                "load_model_policies: unable to find model policy",
-                                classname=classname,
-                                model=c.model_name,
-                            )
-                        c.model = model_accessor.get_model_class(c.model_name)
-                        policies.append(c)
+                    if inspect.isclass(c):
+                        base_names = [b.__name__ for b in c.__bases__]
+
+                        if (
+                            "Policy" in base_names
+                            and hasattr(c, "model_name")
+                            and (c not in policies)
+                        ):
+                            if not c.model_name:
+                                log.info(
+                                    "load_model_policies: skipping model policy",
+                                    classname=classname,
+                                )
+                                continue
+                            if not self.model_accessor.has_model_class(c.model_name):
+                                log.error(
+                                    "load_model_policies: unable to find model policy",
+                                    classname=classname,
+                                    model=c.model_name,
+                                )
+                            c.model = self.model_accessor.get_model_class(c.model_name)
+                            policies.append(c)
 
         log.info("Loaded model policies", policies=policies)
         return policies
@@ -141,7 +143,7 @@ class XOSPolicyEngine(object):
                         policy=policy.__name__,
                         method=method_name,
                     )
-                    getattr(policy(), method_name)(instance)
+                    getattr(policy(model_accessor=self.model_accessor), method_name)(instance)
                     log.debug(
                         "MODEL POLICY: completed handler",
                         sender_name=sender_name,
@@ -171,7 +173,7 @@ class XOSPolicyEngine(object):
                 instance.save(update_fields=["policed", "policy_status", "policy_code"])
 
                 if hasattr(policy, "after_policy_save"):
-                    policy().after_policy_save(instance)
+                    policy(model_accessor=self.model_accessor).after_policy_save(instance)
 
                 log.info("MODEL_POLICY: Saved", o=instance)
             except BaseException:
@@ -199,10 +201,10 @@ class XOSPolicyEngine(object):
     def run_policy_once(self):
         models = self.policies_by_class.keys()
 
-        model_accessor.check_db_connection_okay()
+        self.model_accessor.check_db_connection_okay()
 
-        objects = model_accessor.fetch_policies(models, False)
-        deleted_objects = model_accessor.fetch_policies(models, True)
+        objects = self.model_accessor.fetch_policies(models, False)
+        deleted_objects = self.model_accessor.fetch_policies(models, True)
 
         for o in objects:
             if o.deleted:
@@ -217,7 +219,7 @@ class XOSPolicyEngine(object):
             self.execute_model_policy(o, "delete")
 
         try:
-            model_accessor.reset_queries()
+            self.model_accessor.reset_queries()
         except Exception as e:
             # this shouldn't happen, but in case it does, catch it...
             log.exception("MODEL POLICY: exception in reset_queries", e)

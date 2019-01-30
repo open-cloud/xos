@@ -23,7 +23,6 @@ from xosconfig import Config
 
 from xossynchronizer.steps.syncstep import SyncStep, DeferredException
 from xossynchronizer.ansible_helper import run_template_ssh
-from xossynchronizer.modelaccessor import *
 
 
 class SyncInstanceUsingAnsible(SyncStep):

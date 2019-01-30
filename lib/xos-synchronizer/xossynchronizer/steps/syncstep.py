@@ -13,19 +13,6 @@
 # limitations under the License.
 
 
-import os
-import base64
-
-from xosconfig import Config
-from xossynchronizer.modelaccessor import *
-from xossynchronizer.ansible_helper import run_template
-
-# from tests.steps.mock_modelaccessor import model_accessor
-
-import json
-import time
-import pdb
-
 from xosconfig import Config
 from functools import reduce
 
@@ -86,12 +73,15 @@ class SyncStep(object):
     def __init__(self, **args):
         """Initialize a sync step
            Keyword arguments:
-                   name -- Name of the step
-                provides -- XOS models sync'd by this step
+               model_accessor: class used to access models
+               driver: used by openstack synchronizer (DEPRECATED)
+               error_map: used by openstack synchronizer (DEPRECATED)
         """
-        dependencies = []
+        self.model_accessor = args.get("model_accessor")
         self.driver = args.get("driver")
         self.error_map = args.get("error_map")
+
+        assert self.model_accessor is not None
 
         try:
             self.soft_deadline = int(self.get_prop("soft_deadline_seconds"))
@@ -103,56 +93,40 @@ class SyncStep(object):
 
         return
 
+    @property
+    def observes_classes(self):
+        """ Return a list of classes that this syncstep observes. The "observes" class member can be either a list of
+            items or a single item. Those items may be either classes or names of classes. This function always returns
+            a list of classes.
+        """
+        if not self.observes:
+            return []
+        if isinstance(self.observes, list):
+            observes = self.observes
+        else:
+            observes = [self.observes]
+        result = []
+        for class_or_name in observes:
+            if isinstance(class_or_name, str):
+                result.append(self.model_accessor.get_model_class(class_or_name))
+            else:
+                result.append(class_or_name)
+        return result
+
+
     def fetch_pending(self, deletion=False):
         # This is the most common implementation of fetch_pending
         # Steps should override it if they have their own logic
         # for figuring out what objects are outstanding.
 
-        return model_accessor.fetch_pending(self.observes, deletion)
+        return self.model_accessor.fetch_pending(self.observes_classes, deletion)
+
 
     def sync_record(self, o):
-        self.log.debug("In default sync record", **o.tologdict())
+        self.log.debug("In abstract sync record", **o.tologdict())
+        # This method should be overridden by the service
 
-        tenant_fields = self.map_sync_inputs(o)
-        if tenant_fields == SyncStep.SYNC_WITHOUT_RUNNING:
-            return
-
-        main_objs = self.observes
-        if isinstance(main_objs, list):
-            main_objs = main_objs[0]
-
-        path = "".join(main_objs.__name__).lower()
-        res = run_template(self.playbook, tenant_fields, path=path, object=o)
-
-        if hasattr(self, "map_sync_outputs"):
-            self.map_sync_outputs(o, res)
-
-        self.log.debug("Finished default sync record", **o.tologdict())
 
     def delete_record(self, o):
-        self.log.debug("In default delete record", **o.tologdict())
-
-        # If there is no map_delete_inputs, then assume deleting a record is a no-op.
-        if not hasattr(self, "map_delete_inputs"):
-            return
-
-        tenant_fields = self.map_delete_inputs(o)
-
-        main_objs = self.observes
-        if isinstance(main_objs, list):
-            main_objs = main_objs[0]
-
-        path = "".join(main_objs.__name__).lower()
-
-        tenant_fields["delete"] = True
-        res = run_template(self.playbook, tenant_fields, path=path)
-
-        if hasattr(self, "map_delete_outputs"):
-            self.map_delete_outputs(o, res)
-        else:
-            # "rc" is often only returned when something bad happens, so assume that no "rc" implies a successful rc
-            # of 0.
-            if res[0].get("rc", 0) != 0:
-                raise Exception("Nonzero rc from Ansible during delete_record")
-
-        self.log.debug("Finished default delete record", **o.tologdict())
+        self.log.debug("In abstract delete record", **o.tologdict())
+        # This method should be overridden by the service
