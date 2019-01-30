@@ -20,6 +20,7 @@ end-point's schema by calling SchemaService.Schema(Empty) and all of its
 semantics are derived from the recovered schema.
 """
 
+from __future__ import absolute_import
 import os
 import sys
 import time
@@ -33,12 +34,12 @@ from grpc._channel import _Rendezvous
 from structlog import get_logger
 from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks, returnValue
-from werkzeug.exceptions import ServiceUnavailable
+from twisted.internet.error import ConnectError
 
-from protos.schema_pb2_grpc import SchemaServiceStub
+from .protos.schema_pb2_grpc import SchemaServiceStub
 from google.protobuf.empty_pb2 import Empty
 
-from asleep import asleep
+from .asleep import asleep
 
 log = get_logger()
 
@@ -143,14 +144,14 @@ class GrpcClient(object):
 
             return
 
-        except _Rendezvous, e:
+        except _Rendezvous as e:
             if e.code() == grpc.StatusCode.UNAVAILABLE:
                 log.info('grpc-endpoint-not-available')
             else:
                 log.exception('rendezvous error', e=e)
             yield self._backoff('not-available')
 
-        except Exception, e:
+        except Exception:
             if not self.shutting_down:
                 log.exception('cannot-connect', endpoint=_endpoint)
             yield self._backoff('unknown-error')
@@ -277,7 +278,7 @@ class GrpcClient(object):
                       if f.endswith('_pb2.py')]:
             modname = fname[:-len('.py')]
             log.debug('test-import', modname=modname)
-            _ = __import__(modname)
+            _ = __import__(modname)  # noqa: F841
 
     @inlineCallbacks
     def invoke(self, stub, method_name, request, metadata, retry=1):
@@ -291,17 +292,17 @@ class GrpcClient(object):
         """
 
         if not self.connected:
-            raise ServiceUnavailable()
+            raise ConnectError()
 
         try:
             method = getattr(stub(self.channel), method_name)
             response, rendezvous = method.with_call(request, metadata=metadata)
             returnValue((response, rendezvous.trailing_metadata()))
 
-        except grpc._channel._Rendezvous, e:
+        except grpc._channel._Rendezvous as e:
             code = e.code()
             if code == grpc.StatusCode.UNAVAILABLE:
-                e = ServiceUnavailable()
+                e = ConnectError()
 
                 if self.connected:
                     self.connected = False

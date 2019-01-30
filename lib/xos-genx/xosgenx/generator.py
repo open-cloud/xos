@@ -86,7 +86,7 @@ class XOSProcessor:
         input = ""
         for fname in files:
             with open(fname) as infile:
-                line_map.append( (len(input.split("\n")), fname) )
+                line_map.append((len(input.split("\n")), fname))
                 input += infile.read()
         return (input, line_map)
 
@@ -335,7 +335,7 @@ class XOSProcessor:
         validator = XProtoValidator(v.models, line_map)
         validator.validate()
         if validator.errors:
-            if args.strict_validation or (args.verbosity>=0):
+            if args.strict_validation or (args.verbosity >= 0):
                 validator.print_errors()
             if args.strict_validation:
                 sys.exit(-1)

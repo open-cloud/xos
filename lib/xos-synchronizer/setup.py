@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,24 +12,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 
-from xosutil.autoversion_setup import setup_with_auto_version
-from xosutil.version import __version__
+import os
+from shutil import copyfile
 
-setup_with_auto_version(
-    name="XosSynchronizer",
-    version=__version__,
+from setuptools import setup
+
+
+def version():
+    # Copy VERSION file of parent to module directory if not found
+    if not os.path.exists("xossynchronizer/VERSION"):
+        copyfile("../../VERSION", "xossynchronizer/VERSION")
+    with open("xossynchronizer/VERSION") as f:
+        return f.read().strip()
+
+
+def parse_requirements(filename):
+    # parse a requirements.txt file, allowing for blank lines and comments
+    requirements = []
+    for line in open(filename):
+        if line and not line.startswith("#"):
+            requirements.append(line)
+    return requirements
+
+
+setup(
+    name="xossynchronizer",
+    version=version(),
     description="XOS Synchronizer Framework",
     author="Scott Baker",
     author_email="scottb@opennetworking.org",
+    classifiers=["License :: OSI Approved :: Apache Software License"],
+    license="Apache v2",
     packages=[
         "xossynchronizer",
         "xossynchronizer.steps",
         "xossynchronizer.event_steps",
         "xossynchronizer.pull_steps",
-        "xossynchronizer.model_policies"],
+        "xossynchronizer.model_policies"
+    ],
+    install_requires=parse_requirements("requirements.txt"),
     include_package_data=True,
-    test_suite='nose2.collector.collector',
-    tests_require=['nose2'],
-    install_requires=["xosconfig>=2.1.35",],
 )

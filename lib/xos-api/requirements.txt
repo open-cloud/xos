@@ -1,0 +1,9 @@
+Twisted~=16.6.0
+multistructlog~=2.1.0
+xosconfig~=2.2.6
+xosgenx~=2.2.6
+googleapis-common-protos~=1.5.6
+pykwalify~=1.6.0
+PyYAML~=3.12
+python-consul~=1.1.0
+grpcio~=1.12.0

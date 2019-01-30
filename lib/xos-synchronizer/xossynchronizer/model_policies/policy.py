@@ -18,8 +18,10 @@
     Base Classes for Model Policies
 """
 
-from xosconfig import Config
+from __future__ import absolute_import
+
 from multistructlog import create_logger
+from xosconfig import Config
 
 log = create_logger(Config().get("logging"))
 

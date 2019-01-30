@@ -13,7 +13,9 @@
 # limitations under the License.
 
 
+from __future__ import absolute_import
 from xossynchronizer.steps.syncstep import SyncStep
+
 
 class SyncImages(SyncStep):
     requested_interval = 0

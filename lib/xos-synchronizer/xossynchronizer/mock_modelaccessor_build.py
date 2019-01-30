@@ -12,9 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
+
 import os
-import cPickle
 import subprocess
+
+try:
+    # Python 2 has separate pickle and cPickle
+    # pylint: disable=W1648
+    import cPickle
+except ImportError:
+    # Python 3 will use cPickle by dfault
+    import pickle as cPickle
 
 """
     Support for autogenerating mock_modelaccessor.
@@ -31,7 +40,7 @@ def build_mock_modelaccessor(
     # TODO: deprecate the dest_dir argument
 
     # force modelaccessor to be found in /tmp
-    dest_dir="/tmp/mock_modelaccessor"
+    dest_dir = "/tmp/mock_modelaccessor"
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
     dest_fn = os.path.join(dest_dir, "mock_modelaccessor.py")
@@ -44,13 +53,13 @@ def build_mock_modelaccessor(
     # Check to see if we've already run xosgenx. If so, don't run it again.
     context_fn = dest_fn + ".context"
     this_context = (xos_dir, services_dir, service_xprotos, target)
-    need_xosgenx = True
+
     if os.path.exists(context_fn):
         try:
-            context = cPickle.loads(open(context_fn).read())
+            context = cPickle.loads(open(context_fn, 'rb').read())
             if context == this_context:
                 return
-        except (cPickle.UnpicklingError, EOFError):
+        except (cPickle.UnpicklingError, EOFError, ValueError):
             # Something went wrong with the file read or depickling
             pass
 
@@ -74,7 +83,8 @@ def build_mock_modelaccessor(
         )
 
     # Save the context of this invocation of xosgenx
-    open(context_fn, "w").write(cPickle.dumps(this_context))
+    open(context_fn, "wb").write(cPickle.dumps(this_context))
+
 
 # generate model from xproto
 def get_models_fn(services_dir, service_name, xproto_name):
@@ -86,7 +96,10 @@ def get_models_fn(services_dir, service_name, xproto_name):
         if os.path.exists(os.path.join(services_dir, name)):
             return name
     raise Exception("Unable to find service=%s xproto=%s" % (service_name, xproto_name))
+
+
 # END generate model from xproto
+
 
 def mock_modelaccessor_config(test_dir, services):
     """ Automatically configure the mock modelaccessor.
@@ -99,13 +112,13 @@ def mock_modelaccessor_config(test_dir, services):
     while not orchestration_dir.endswith("orchestration"):
         # back up a level
         orchestration_dir = os.path.dirname(orchestration_dir)
-        if len(orchestration_dir)<10:
+        if len(orchestration_dir) < 10:
             raise Exception("Failed to autodiscovery repository tree")
 
     xos_dir = os.path.join(orchestration_dir, "xos", "xos")
     services_dir = os.path.join(orchestration_dir, "xos_services")
 
-    service_xprotos=[]
+    service_xprotos = []
     for (service_name, xproto_name) in services:
         service_xprotos.append(get_models_fn(services_dir, service_name, xproto_name))
 

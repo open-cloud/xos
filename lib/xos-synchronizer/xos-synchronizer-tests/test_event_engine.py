@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import, print_function
 import confluent_kafka
 import functools
 import unittest
@@ -28,7 +29,7 @@ test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 sync_lib_dir = os.path.join(test_path, "..", "xossynchronizer")
 xos_dir = os.path.join(test_path, "..", "..", "..", "xos")
 
-print os.getcwd()
+print(os.getcwd())
 
 def config_get_mock(orig, overrides, key):
     if key in overrides:

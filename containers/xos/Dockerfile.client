@@ -13,13 +13,13 @@
 # limitations under the License.
 
 # xosproject/xos-client
-FROM xosproject/xos-libraries:2.2.9
+FROM xosproject/xos-libraries:2.2.10
 
 # Install XOS client
 COPY lib/xos-api /tmp/xos-api
 
 # Install the VERSION file
-COPY VERSION /tmp/xos-api/VERSION
+COPY VERSION /tmp/xos-api/xosapi/VERSION
 
 # install the client library and xossh
 RUN chdir /tmp/xos-api && python ./setup.py install
@@ -46,6 +46,5 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.opencord.component.chameleon.version=$org_opencord_component_chameleon_version \
       org.opencord.component.chameleon.vcs-url=$org_opencord_component_chameleon_vcs_url \
       org.opencord.component.chameleon.vcs-ref=$org_opencord_component_chameleon_vcs_ref
-
 
 CMD ["xossh"]

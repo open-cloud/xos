@@ -1,0 +1,14 @@
+Jinja2~=2.10
+confluent-kafka==0.11.5
+multistructlog~=2.1.0
+networkx~=1.11
+inflect~=1.0.1
+astunparse~=1.5.0
+xosconfig~=2.2.6
+xosgenx~=2.2.6
+xosutil~=2.2.6
+
+# remove once xosconfig/xosgenx are updated with correct requirements.txt
+plyxproto~=4.0.0
+pykwalify~=1.6.0
+PyYAML~=3.12

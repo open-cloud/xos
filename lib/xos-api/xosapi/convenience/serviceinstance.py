@@ -11,10 +11,11 @@
 # limitations under the License.
 
 
-from xosapi.orm import ORMWrapper, register_convenience_wrapper
+from __future__ import absolute_import
 
-from xosconfig import Config
 from multistructlog import create_logger
+from xosapi.orm import ORMWrapper, register_convenience_wrapper
+from xosconfig import Config
 
 log = create_logger(Config().get("logging"))
 
@@ -26,11 +27,6 @@ class ORMWrapperServiceInstance(ORMWrapper):
         for attr in self.service_instance_attributes.all():
             attrs[attr.name] = attr.value
         return attrs
-
-    @property
-    def tenantattribute_dict(self):
-        log.warn("tenantattribute_dict method is deprecated")
-        return self.serviceinstanceattribute_dict
 
     @property
     def westbound_service_instances(self):
@@ -49,32 +45,6 @@ class ORMWrapperServiceInstance(ORMWrapper):
             instances.append(link.provider_service_instance.leaf_model)
 
         return instances
-
-    def create_eastbound_instance(self):
-
-        # Already has a chain
-        if len(self.eastbound_service_instances) > 0 and not self.is_new:
-            log.debug("MODEL_POLICY: Subscriber %s is already part of a chain" % si.id)
-            return
-
-        # if it does not have a chain,
-        # Find links to the next element in the service chain
-        # and create one
-
-        links = self.owner.subscribed_dependencies.all()
-
-        for link in links:
-            si_class = link.provider_service.get_service_instance_class_name()
-            log.info(" %s creating %s" % (self.model_name, si_class))
-
-            eastbound_si_class = model_accessor.get_model_class(si_class)
-            eastbound_si = eastbound_si_class()
-            eastbound_si.owner_id = link.provider_service_id
-            eastbound_si.save()
-            link = ServiceInstanceLink(
-                provider_service_instance=eastbound_si, subscriber_service_instance=si
-            )
-            link.save()
 
     def get_westbound_service_instance_properties(self, prop_name, include_self=False):
         if include_self and hasattr(self, prop_name):

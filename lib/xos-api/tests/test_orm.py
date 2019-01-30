@@ -13,14 +13,20 @@
 # limitations under the License.
 
 from __future__ import print_function
-import exceptions
+
 import os
 import random
 import string
 import sys
 import unittest
-from mock import patch
-from StringIO import StringIO
+
+try:  # python 3
+    from io import StringIO
+    from unittest.mock import patch
+except ImportError:  # python 2
+    from StringIO import StringIO
+    from mock import patch
+
 
 # by default, use fake stub rather than real core
 USE_FAKE_STUB = True
@@ -498,7 +504,7 @@ class TestORM(unittest.TestCase):
         with self.assertRaises(Exception) as e:
 
             self.assertEqual(
-                e.exception.message,
+                str(e.exception),
                 "Content_type does_not_exist not found in self.content_type_map",
             )
 
@@ -520,7 +526,7 @@ class TestORM(unittest.TestCase):
         self.assertTrue(tag.id > 0)
         with self.assertRaises(Exception) as e:
             self.assertEqual(
-                e.exception.message, "Object 4567 of model Site was not found"
+                str(e.exception), "Object 4567 of model Site was not found"
             )
 
     def test_generic_foreign_key_set(self):
@@ -600,7 +606,7 @@ class TestORM(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             tm.intfile = None
         self.assertEqual(
-            e.exception.message,
+            str(e.exception),
             "Setting a non-foreignkey field to None is not supported",
         )
 
@@ -1013,11 +1019,11 @@ class TestORM(unittest.TestCase):
 
         with self.assertRaises(Exception) as e:
             lobjs.add(123)
-        self.assertEqual(e.exception.message, "Only ManyToMany lists are writeable")
+        self.assertEqual(str(e.exception), "Only ManyToMany lists are writeable")
 
         with self.assertRaises(Exception) as e:
             lobjs.remove(123)
-        self.assertEqual(e.exception.message, "Only ManyToMany lists are writeable")
+        self.assertEqual(str(e.exception), "Only ManyToMany lists are writeable")
 
     def test_ORMLocalObjectManager_add(self):
         orm = self.make_coreapi()
@@ -1067,9 +1073,11 @@ def main():
             try:
                 sys.argv = sys.argv[
                     :1
-                ]  # unittest does not like xos_grpc_client's command line arguments (TODO: find a cooperative approach)
+                ]
+                # unittest does not like xos_grpc_client's command line
+                # arguments (TODO: find a cooperative approach)
                 unittest.main()
-            except exceptions.SystemExit as e:
+            except SystemExit as e:
                 global exitStatus
                 exitStatus = e.code
 

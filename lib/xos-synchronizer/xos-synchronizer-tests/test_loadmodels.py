@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 import unittest
 from mock import patch, Mock, MagicMock
 
@@ -19,6 +20,15 @@ from io import StringIO
 import functools
 import os
 import sys
+
+# Python 3 renamed __builtin__ -> builtins
+# py_builtins is used to help with mocking 'open'
+try:
+    import builtins
+    py_builtins = "builtins"
+except ImportError:
+    import __builtin__ as builtins
+    py_builtins = "__builtin__"
 
 test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 
@@ -30,7 +40,7 @@ def mock_listdir(dir_map, dir):
 
 def mock_exists(file_map, fn):
     """ mock os.path.exists() """
-    return (fn in file_map)
+    return fn in file_map
 
 
 def mock_open(orig_open, file_map, fn, *args, **kwargs):
@@ -79,6 +89,7 @@ class TestLoadModels(unittest.TestCase):
 
         from xossynchronizer import loadmodels
         from xossynchronizer.loadmodels import ModelLoadClient
+
         self.loadmodels = loadmodels
 
         self.api = MagicMock()
@@ -90,22 +101,31 @@ class TestLoadModels(unittest.TestCase):
         os.chdir(self.cwd_save)
 
     def test_upload_models(self):
-        dir_map = {"models_dir": ["models.xproto", "models.py"],
-                   "models_dir/convenience": ["convenience1.py"],
-                   "models_dir/../migrations": ["migration1.py", "migration2.py"]}
+        dir_map = {
+            "models_dir": ["models.xproto", "models.py"],
+            "models_dir/convenience": ["convenience1.py"],
+            "models_dir/../migrations": ["migration1.py", "migration2.py"],
+        }
 
-        file_map = {"models_dir/models.xproto": u"some xproto",
-                    "models_dir/models.py": u"print `python models file`",
-                    "models_dir/convenience": u"directory",
-                    "models_dir/convenience/convenience1.py": u"print `python convenience file`",
-                    "models_dir/../migrations": u"directory",
-                    "models_dir/../migrations/migration1.py": u"print `first migration`",
-                    "models_dir/../migrations/migration2.py": u"print `second migration`"}
+        file_map = {
+            "models_dir/models.xproto": u"some xproto",
+            "models_dir/models.py": u"print `python models file`",
+            "models_dir/convenience": u"directory",
+            "models_dir/convenience/convenience1.py": u"print `python convenience file`",
+            "models_dir/../migrations": u"directory",
+            "models_dir/../migrations/migration1.py": u"print `first migration`",
+            "models_dir/../migrations/migration2.py": u"print `second migration`",
+        }
 
-        orig_open = open
-        with patch("os.listdir", side_effect=functools.partial(mock_listdir, dir_map)), \
-                patch("os.path.exists", side_effect=functools.partial(mock_exists, file_map)), \
-                patch("__builtin__.open", side_effect=functools.partial(mock_open, orig_open, file_map)):
+        orig_open = builtins.open
+        with patch(
+            "os.listdir", side_effect=functools.partial(mock_listdir, dir_map)
+        ), patch(
+            "os.path.exists", side_effect=functools.partial(mock_exists, file_map)
+        ), patch(
+            py_builtins + ".open",
+            side_effect=functools.partial(mock_open, orig_open, file_map),
+        ):
             self.loader.upload_models("myservice", "models_dir", "1.2")
 
             request = self.api.dynamicload.LoadModels.call_args[0][0]
@@ -118,17 +138,28 @@ class TestLoadModels(unittest.TestCase):
 
             self.assertEqual(len(request.decls.items), 1)
             self.assertEqual(request.decls.items[0].filename, "models.py")
-            self.assertEqual(request.decls.items[0].contents, u"print `python models file`")
+            self.assertEqual(
+                request.decls.items[0].contents, u"print `python models file`"
+            )
 
             self.assertEqual(len(request.convenience_methods.items), 1)
-            self.assertEqual(request.convenience_methods.items[0].filename, "convenience1.py")
-            self.assertEqual(request.convenience_methods.items[0].contents, u"print `python convenience file`")
+            self.assertEqual(
+                request.convenience_methods.items[0].filename, "convenience1.py"
+            )
+            self.assertEqual(
+                request.convenience_methods.items[0].contents,
+                u"print `python convenience file`",
+            )
 
             self.assertEqual(len(request.migrations.items), 2)
             self.assertEqual(request.migrations.items[0].filename, "migration1.py")
-            self.assertEqual(request.migrations.items[0].contents, u"print `first migration`")
+            self.assertEqual(
+                request.migrations.items[0].contents, u"print `first migration`"
+            )
             self.assertEqual(request.migrations.items[1].filename, "migration2.py")
-            self.assertEqual(request.migrations.items[1].contents, u"print `second migration`")
+            self.assertEqual(
+                request.migrations.items[1].contents, u"print `second migration`"
+            )
 
 
 if __name__ == "__main__":

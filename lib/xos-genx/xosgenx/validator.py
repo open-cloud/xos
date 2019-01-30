@@ -22,17 +22,18 @@
   with other design aspects of XOS such as the XOS gRPC API  implementation.
 """
 
-
 from __future__ import print_function
 import sys
 import os
 
 
 # Options that are always allowed
-COMMON_OPTIONS = ["help_text", "gui_hidden", "tosca_key", "tosca_key_one_of", "feedback_state", "unique", "unique_with"]
+COMMON_OPTIONS = ["help_text", "gui_hidden", "tosca_key", "tosca_key_one_of",
+                  "feedback_state", "unique", "unique_with"]
 
 # Options that must be either "True" or "False"
 BOOLEAN_OPTIONS = ["blank", "db_index", "feedback_state", "gui_hidden", "null", "tosca_key", "unique", "varchar"]
+
 
 class XProtoValidator(object):
     def __init__(self, models, line_map):
@@ -55,7 +56,7 @@ class XProtoValidator(object):
         error_filename = "unknown"
         error_line_offset = 0
         for (start_line, fn) in self.line_map:
-            if start_line>error_first_line_number:
+            if start_line > error_first_line_number:
                 break
             error_filename = fn
             error_line_offset = start_line
@@ -70,7 +71,7 @@ class XProtoValidator(object):
 
     def print_errors(self):
         # Sort by line number
-        for error in sorted(self.errors, key=lambda error:error["absolute_line_number"]):
+        for error in sorted(self.errors, key=lambda error: error["absolute_line_number"]):
             model = error["model"]
             field = error["field"]
             message = error["message"]
@@ -83,11 +84,11 @@ class XProtoValidator(object):
                 linestr = "%d" % first_line_number
 
             print("[ERROR] %s:%s %s.%s (Type %s): %s" % (os.path.basename(error["filename"]),
-                                                           linestr,
-                                                           model.get("name"),
-                                                           field.get("name"),
-                                                           field.get("type"),
-                                                           message), file=sys.stderr)
+                                                         linestr,
+                                                         model.get("name"),
+                                                         field.get("name"),
+                                                         field.get("type"),
+                                                         message), file=sys.stderr)
 
     def is_option_true(self, field, name):
         options = field.get("options")
@@ -109,14 +110,14 @@ class XProtoValidator(object):
             for option in options:
                 if "=" in option:
                     (optname, optval) = option.split("=")
-                    if optname==k and optval==v:
+                    if optname == k and optval == v:
                         allowed = True
                 else:
-                    if option==k:
+                    if option == k:
                         allowed = True
 
             if not allowed:
-                self.error(model, field, "Option %s=%s is not allowed" % (k,v))
+                self.error(model, field, "Option %s=%s is not allowed" % (k, v))
 
             if k in BOOLEAN_OPTIONS and (v not in ["True", "False"]):
                 self.error(model, field, "Option `%s` must be either True or False, but is '%s'" % (k, v))
@@ -130,7 +131,7 @@ class XProtoValidator(object):
 
     def check_modifier_consistent(self, model, field):
         """ Validates that "modifier" is consistent with options.
-        
+
             Required/optional imply some settings for blank= and null=. These settings are dependent on the type
             of field. See also jinja2_extensions/django.py which has to implement some of the same logic.
         """
@@ -159,11 +160,14 @@ class XProtoValidator(object):
         # print an error if there's a field conflict
         for kmo in mod_out.keys():
             if (kmo in options) and (options[kmo] != mod_out[kmo]):
-                self.error(model, field, "Option `%s`=`%s` is inconsistent with modifier `%s`" % (kmo, options[kmo], modifier))
+                self.error(model, field, "Option `%s`=`%s` is inconsistent with modifier `%s`" %
+                           (kmo, options[kmo], modifier))
 
     def validate_field_date(self, model, field):
         self.check_modifier_consistent(model, field)
-        self.allow_options(model, field, ["auto_now_add", "blank", "db_index", "default", "max_length", "modifier", "null", "content_type"])
+        self.allow_options(model, field,
+                           ["auto_now_add", "blank", "db_index", "default",
+                            "max_length", "modifier", "null", "content_type"])
 
     def validate_field_string(self, model, field):
         # A string with a `content_type="date"` is actually a date
@@ -179,8 +183,8 @@ class XProtoValidator(object):
 
         self.check_modifier_consistent(model, field)
         self.allow_options(model, field,
-                           ["blank", "choices", "content_type", "db_index", "default", "max_length", "modifier", "null",
-                            "varchar"])
+                           ["blank", "choices", "content_type", "db_index", "default",
+                            "max_length", "modifier", "null", "varchar"])
 
     def validate_field_bool(self, model, field):
         self.check_modifier_consistent(model, field)
@@ -204,7 +208,7 @@ class XProtoValidator(object):
                             "modifier", "null", "port", "type=link"])
 
     def validate_field_link(self, model, field):
-        link_type = field.get("options",{}).get("link_type")
+        link_type = field.get("options", {}).get("link_type")
         if link_type == "manytoone":
             self.validate_field_link_onetomany(model, field)
         elif link_type == "manytomany":
@@ -219,7 +223,8 @@ class XProtoValidator(object):
             return
 
         self.check_modifier_consistent(model, field)
-        self.allow_options(model, field, ["blank", "db_index", "default", "max_value", "min_value", "modifier", "null"])
+        self.allow_options(model, field,
+                           ["blank", "db_index", "default", "max_value", "min_value", "modifier", "null"])
 
         if self.is_option_true(field, "blank") and not self.is_option_true(field, "null"):
             self.error(model, field, "If blank is true then null must also be true")

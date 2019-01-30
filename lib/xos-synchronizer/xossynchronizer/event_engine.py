@@ -12,12 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import confluent_kafka
+from __future__ import absolute_import
+
 import imp
 import inspect
 import os
 import threading
 import time
+
+import confluent_kafka
+
 from xosconfig import Config
 
 
@@ -130,7 +134,9 @@ class XOSKafkaThread(threading.Thread):
                 )
 
                 try:
-                    self.step(model_accessor=self.model_accessor, log=self.log).process_event(event_msg)
+                    self.step(
+                        model_accessor=self.model_accessor, log=self.log
+                    ).process_event(event_msg)
 
                 except BaseException:
                     self.log.exception(
@@ -207,7 +213,9 @@ class XOSEventEngine(object):
 
         for step in self.event_steps:
             if step.technology == "kafka":
-                thread = XOSKafkaThread(step, [eventbus_endpoint], self.model_accessor, self.log)
+                thread = XOSKafkaThread(
+                    step, [eventbus_endpoint], self.model_accessor, self.log
+                )
                 thread.start()
                 self.threads.append(thread)
             else:

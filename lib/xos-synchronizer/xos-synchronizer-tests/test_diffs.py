@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 import unittest
 from mock import patch, call, Mock, PropertyMock
 import json
@@ -23,6 +24,7 @@ test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 sync_lib_dir = os.path.join(test_path, "..", "xossynchronizer")
 xos_dir = os.path.join(test_path, "..", "..", "..", "xos")
 services_dir = os.path.join(xos_dir, "../../xos_services")
+
 
 class TestDiffs(unittest.TestCase):
 
@@ -39,9 +41,7 @@ class TestDiffs(unittest.TestCase):
         Config.init(config, "synchronizer-config-schema.yaml")
         # END Setting up the config module
 
-        from xossynchronizer.mock_modelaccessor_build import (
-            build_mock_modelaccessor,
-        )
+        from xossynchronizer.mock_modelaccessor_build import build_mock_modelaccessor
 
         # FIXME this is to get jenkins to pass the tests, somehow it is running tests in a different order
         # and apparently it is not overriding the generated model accessor
@@ -52,9 +52,7 @@ class TestDiffs(unittest.TestCase):
         for (
             k,
             v,
-        ) in (
-            xossynchronizer.modelaccessor.model_accessor.all_model_classes.items()
-        ):
+        ) in xossynchronizer.modelaccessor.model_accessor.all_model_classes.items():
             globals()[k] = v
 
         self.log = Mock()
@@ -68,7 +66,7 @@ class TestDiffs(unittest.TestCase):
         self.assertEqual(site.is_new, True)
         self.assertEqual(site._dict, {"name": "mysite"})
         self.assertEqual(site.diff, {})
-        self.assertEqual(site.changed_fields, ["name"])
+        self.assertEqual(list(site.changed_fields), ["name"])
         self.assertEqual(site.has_field_changed("name"), False)
         self.assertEqual(site.has_field_changed("login_base"), False)
 
@@ -93,7 +91,7 @@ class TestDiffs(unittest.TestCase):
         self.assertEqual(site.is_new, False)
         self.assertEqual(site._dict, {"id": 1, "name": "mysite", "login_base": "foo"})
         self.assertEqual(site.diff, {})
-        self.assertEqual(site.changed_fields, [])
+        self.assertEqual(list(site.changed_fields), [])
         self.assertEqual(site.has_field_changed("name"), False)
         self.assertEqual(site.has_field_changed("login_base"), False)
 

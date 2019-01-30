@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
+
 import os
-from xosconfig import Config
+
 from multistructlog import create_logger
+from xosconfig import Config
 
 log = create_logger(Config().get("logging"))
 
@@ -89,4 +92,3 @@ class ModelLoadClient(object):
         result = self.api.dynamicload.UnloadModels(request)
 
         return result
-

@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
+
 import imp
 import inspect
 import os
 import threading
 import time
-from xosconfig import Config
+
 from multistructlog import create_logger
+from xosconfig import Config
 
 log = create_logger(Config().get("logging"))
 
@@ -44,7 +47,10 @@ class XOSPullStepScheduler:
 
         threads = []
         for step in self.steps:
-            thread = threading.Thread(target=step(model_accessor=self.model_accessor).pull_records, name="pull_step")
+            thread = threading.Thread(
+                target=step(model_accessor=self.model_accessor).pull_records,
+                name="pull_step",
+            )
             threads.append(thread)
 
         for t in threads:
@@ -100,5 +106,7 @@ class XOSPullStepEngine:
         log.info("Starting pull steps engine", steps=self.pull_steps)
 
         for step in self.pull_steps:
-            sched = XOSPullStepScheduler(steps=self.pull_steps, model_accessor=self.model_accessor)
+            sched = XOSPullStepScheduler(
+                steps=self.pull_steps, model_accessor=self.model_accessor
+            )
             sched.run()

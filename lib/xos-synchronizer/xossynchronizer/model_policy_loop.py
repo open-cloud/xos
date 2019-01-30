@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import, print_function
 
-from __future__ import print_function
-from xossynchronizer.dependency_walker_new import *
-from xossynchronizer.model_policies.policy import Policy
-
+import os
 import imp
 import inspect
 import time
@@ -25,11 +23,13 @@ import traceback
 
 class XOSPolicyEngine(object):
     def __init__(self, policies_dir, model_accessor, log):
+
+        self.log = log  # has to come before self.load_model_policies(), which logs
+
         self.model_accessor = model_accessor
         self.model_policies = self.load_model_policies(policies_dir)
         self.policies_by_name = {}
         self.policies_by_class = {}
-        self.log = log
 
         for policy in self.model_policies:
             if policy.model_name not in self.policies_by_name:
@@ -53,7 +53,7 @@ class XOSPolicyEngine(object):
 
     def update_dep(self, d, o):
         try:
-            print("Trying to update %s" % d)
+            self.log.info("Trying to update %s", d)
             save_fields = []
             if d.updated < o.updated:
                 save_fields = ["updated"]
@@ -61,15 +61,15 @@ class XOSPolicyEngine(object):
             if save_fields:
                 d.save(update_fields=save_fields)
         except AttributeError as e:
-            log.exception("AttributeError in update_dep", e=e)
+            self.log.exception("AttributeError in update_dep", e=e)
             raise e
         except Exception as e:
-            log.exception("Exception in update_dep", e=e)
+            self.log.exception("Exception in update_dep", e=e)
 
     def delete_if_inactive(self, d, o):
         try:
             d.delete()
-            print("Deleted %s (%s)" % (d, d.__class__.__name__))
+            self.log.info("Deleted %s (%s)" % (d, d.__class__.__name__))
         except BaseException:
             pass
         return
@@ -103,13 +103,13 @@ class XOSPolicyEngine(object):
                             and (c not in policies)
                         ):
                             if not c.model_name:
-                                log.info(
+                                self.log.info(
                                     "load_model_policies: skipping model policy",
                                     classname=classname,
                                 )
                                 continue
                             if not self.model_accessor.has_model_class(c.model_name):
-                                log.error(
+                                self.log.error(
                                     "load_model_policies: unable to find model policy",
                                     classname=classname,
                                     model=c.model_name,
@@ -117,12 +117,12 @@ class XOSPolicyEngine(object):
                             c.model = self.model_accessor.get_model_class(c.model_name)
                             policies.append(c)
 
-        log.info("Loaded model policies", policies=policies)
+        self.log.info("Loaded model policies", policies=policies)
         return policies
 
     def execute_model_policy(self, instance, action):
         # These are the models whose children get deleted when they are
-        delete_policy_models = ["Slice", "Instance", "Network"]
+        # delete_policy_models = ["Slice", "Instance", "Network"]
         sender_name = getattr(instance, "model_name", instance.__class__.__name__)
 
         # if (action != "deleted"):
@@ -136,15 +136,17 @@ class XOSPolicyEngine(object):
             method_name = "handle_%s" % action
             if hasattr(policy, method_name):
                 try:
-                    log.debug(
+                    self.log.debug(
                         "MODEL POLICY: calling handler",
                         sender_name=sender_name,
                         instance=instance,
                         policy=policy.__name__,
                         method=method_name,
                     )
-                    getattr(policy(model_accessor=self.model_accessor), method_name)(instance)
-                    log.debug(
+                    getattr(policy(model_accessor=self.model_accessor), method_name)(
+                        instance
+                    )
+                    self.log.debug(
                         "MODEL POLICY: completed handler",
                         sender_name=sender_name,
                         instance=instance,
@@ -152,7 +154,7 @@ class XOSPolicyEngine(object):
                         method=method_name,
                     )
                 except Exception as e:
-                    log.exception("MODEL POLICY: Exception when running handler", e=e)
+                    self.log.exception("MODEL POLICY: Exception when running handler", e=e)
                     policies_failed = True
 
                     try:
@@ -160,7 +162,7 @@ class XOSPolicyEngine(object):
                         instance.policy_code = 2
                         instance.save(update_fields=["policy_status", "policy_code"])
                     except Exception as e:
-                        log.exception(
+                        self.log.exception(
                             "MODEL_POLICY: Exception when storing policy_status", e=e
                         )
 
@@ -173,11 +175,13 @@ class XOSPolicyEngine(object):
                 instance.save(update_fields=["policed", "policy_status", "policy_code"])
 
                 if hasattr(policy, "after_policy_save"):
-                    policy(model_accessor=self.model_accessor).after_policy_save(instance)
+                    policy(model_accessor=self.model_accessor).after_policy_save(
+                        instance
+                    )
 
-                log.info("MODEL_POLICY: Saved", o=instance)
+                self.log.info("MODEL_POLICY: Saved", o=instance)
             except BaseException:
-                log.exception(
+                self.log.exception(
                     "MODEL POLICY: Object failed to update policed timestamp",
                     instance=instance,
                 )
@@ -191,7 +195,7 @@ class XOSPolicyEngine(object):
             try:
                 self.run_policy_once()
             except Exception as e:
-                log.exception("MODEL_POLICY: Exception in run()", e=e)
+                self.log.exception("MODEL_POLICY: Exception in run()", e=e)
             if time.time() - start < 5:
                 time.sleep(5)
 
@@ -199,7 +203,7 @@ class XOSPolicyEngine(object):
     # ways to combine them.
 
     def run_policy_once(self):
-        models = self.policies_by_class.keys()
+        models = list(self.policies_by_class.keys())
 
         self.model_accessor.check_db_connection_okay()
 
@@ -222,4 +226,4 @@ class XOSPolicyEngine(object):
             self.model_accessor.reset_queries()
         except Exception as e:
             # this shouldn't happen, but in case it does, catch it...
-            log.exception("MODEL POLICY: exception in reset_queries", e)
+            self.log.exception("MODEL POLICY: exception in reset_queries", e)

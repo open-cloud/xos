@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+from __future__ import absolute_import
 import sys
 
 from google.protobuf.compiler import plugin_pb2 as plugin
@@ -23,7 +24,7 @@ from google.protobuf.descriptor_pb2 import ServiceDescriptorProto, \
 from jinja2 import Template
 from simplejson import dumps
 
-from xosapi.chameleon_client.protos import annotations_pb2, http_pb2
+from xosapi.chameleon_client.protos import http_pb2
 
 template = Template("""
 # Generated file; please do not edit

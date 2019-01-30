@@ -14,22 +14,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from multistructlog import create_logger
-from xosconfig import Config
-from ansible.plugins.callback import CallbackBase
-from ansible.utils.display import Display
-from ansible.executor import playbook_executor
-from ansible.parsing.dataloader import DataLoader
-from ansible.vars.manager import VariableManager
-from ansible.inventory.manager import InventoryManager
-from tempfile import NamedTemporaryFile
-import os
-import sys
-import pdb
+from __future__ import absolute_import
+
 import json
+import os
 import uuid
 
 from ansible import constants
+from ansible.executor import playbook_executor
+from ansible.inventory.manager import InventoryManager
+from ansible.parsing.dataloader import DataLoader
+from ansible.plugins.callback import CallbackBase
+from ansible.utils.display import Display
+from ansible.vars.manager import VariableManager
+
+from multistructlog import create_logger
+from xosconfig import Config
+
+try:
+    # Python 2: "reload" is built-in
+    # pylint: disable=W1626
+    reload
+except NameError:
+    # Python 3: "reload" is part of importlib
+    from importlib import reload
 
 constants = reload(constants)
 

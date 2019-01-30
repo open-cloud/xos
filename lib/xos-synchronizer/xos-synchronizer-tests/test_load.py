@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 import unittest
 from mock import patch
 import mock
@@ -20,6 +21,12 @@ import networkx as nx
 
 import os
 import sys
+
+try:
+    # Python 2: "reload" is built-in
+    reload  # pylint: disable=reload-builtin
+except NameError:
+    from importlib import reload
 
 test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 sync_lib_dir = os.path.join(test_path, "..", "xossynchronizer")
@@ -77,10 +84,8 @@ class TestScheduling(unittest.TestCase):
         self.synchronizer.load_sync_steps()
         model_to_step = self.synchronizer.model_to_step
         step_lookup = self.synchronizer.step_lookup
-        self.assertIn(
-            ("Port", ["SyncPort"]), model_to_step.items()
-        )
-        self.assertIn(("Image", ["SyncImages"]), model_to_step.items())
+        self.assertIn(("Port", ["SyncPort"]), list(model_to_step.items()))
+        self.assertIn(("Image", ["SyncImages"]), list(model_to_step.items()))
 
         for k, v in model_to_step.items():
             val = v[0]

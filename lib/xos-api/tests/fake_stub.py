@@ -17,6 +17,8 @@
     Implements a simple fake grpc stub to use for unit testing.
 """
 
+from __future__ import absolute_import
+
 import functools
 
 ContentTypeMap = {}
@@ -492,9 +494,9 @@ class FakeStub(object):
         items = []
 
         if query.kind == FakeQuery.SYNCHRONIZER_DELETED_OBJECTS:
-            objs = self.deleted_objs.items()
+            objs = list(self.deleted_objs.items())
         else:
-            objs = self.objs.items()
+            objs = list(self.objs.items())
 
         for (k, v) in objs:
             (this_classname, id) = k.split(":")

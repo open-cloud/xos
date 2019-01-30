@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Copyright 2018-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from xosutil.autoversion_setup import setup_with_auto_version
-from xosutil.version import __version__
+from __future__ import absolute_import
+
+import os
+from shutil import copyfile
+
+from setuptools import setup
 
 
 def readme():
@@ -23,21 +25,33 @@ def readme():
         return f.read()
 
 
-setup_with_auto_version(
+def version():
+    # Copy VERSION file of parent to module directory if not found
+    if not os.path.exists("xoskafka/VERSION"):
+        copyfile("../../VERSION", "xoskafka/VERSION")
+    with open("xoskafka/VERSION") as f:
+        return f.read().strip()
+
+
+def parse_requirements(filename):
+    # parse a requirements.txt file, allowing for blank lines and comments
+    requirements = []
+    for line in open(filename):
+        if line and not line.startswith("#"):
+            requirements.append(line)
+    return requirements
+
+
+setup(
     name="xoskafka",
-    version=__version__,
+    version=version(),
     description="Wrapper around kafka for XOS",
     long_description=readme(),
-    classifiers=["License :: OSI Approved :: Apache Software License"],
     author="Zack Williams",
     author_email="zdw@opennetworking.org",
-    packages=["xoskafka"],
+    classifiers=["License :: OSI Approved :: Apache Software License"],
     license="Apache v2",
-    install_requires=[
-        "confluent-kafka>=0.11.5",
-        "xosconfig>=2.1.0",
-        "multistructlog>=1.5",
-    ],
+    packages=["xoskafka"],
+    install_requires=parse_requirements("requirements.txt"),
     include_package_data=True,
-    zip_safe=False,
 )

@@ -5,3 +5,6 @@ dist
 .coverage
 coverage.xml
 cover
+
+# setup.py copies this, don't commit it
+VERSION

@@ -12,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
+
 from xossynchronizer.ansible_helper import run_template
-from syncstep import SyncStep
+
+from .syncstep import SyncStep
+
 
 class AnsibleSyncStep(SyncStep):
     def sync_record(self, o):

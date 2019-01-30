@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from xosapi.orm import ORMWrapper, ORMLocalObjectManager, register_convenience_wrapper
+from __future__ import absolute_import
+
+from xosapi.orm import (ORMLocalObjectManager, ORMWrapper,
+                        register_convenience_wrapper)
 
 
 class ORMWrapperSlice(ORMWrapper):

@@ -13,9 +13,11 @@
 # limitations under the License.
 
 
-from modelaccessor import ModelAccessor
+from __future__ import absolute_import
+
 import datetime
-import time
+
+from .modelaccessor import ModelAccessor
 
 
 class CoreApiModelAccessor(ModelAccessor):

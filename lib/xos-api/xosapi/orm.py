@@ -12,15 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
+
+import imp
 import os
 import sys
 import threading
 import time
-import imp
 import traceback
-from xosconfig import Config
+
 from multistructlog import create_logger
+from xosconfig import Config
 
 """
 Django-like ORM layer for gRPC
@@ -43,22 +45,25 @@ c=grpc_client.SecureClient("xos-core.cord.lab", username="padmin@vicci.org", pas
 u=c.xos_orm.User.objects.get(id=1)
 """
 
-
 log = create_logger(Config().get("logging"))
 
 convenience_wrappers = {}
 
-# Find the topmost synchronizer-specific function in the call stack
+
 def get_synchronizer_function():
+    """
+    Find the topmost synchronizer-specific function in the call stack
+    """
     result = None
-    for file,line,func,stmt in traceback.extract_stack():
+    for file, line, func, stmt in traceback.extract_stack():
         if file.startswith("/opt/xos/synchronizers"):
             if not result:
-                result = "%s:%s()" % (file,func)
+                result = "%s:%s()" % (file, func)
             if not file.startswith("/opt/xos/synchronizers/new_base"):
-                result = "%s:%s()" % (file,func)
+                result = "%s:%s()" % (file, func)
                 break
     return result
+
 
 class ORMGenericContentNotFoundException(Exception):
     pass
@@ -106,7 +111,7 @@ class ORMWrapper(object):
     def diff(self):
         d1 = self._initial
         d2 = self._dict
-        all_field_names = self._wrapped_class.DESCRIPTOR.fields_by_name.keys()
+        all_field_names = list(self._wrapped_class.DESCRIPTOR.fields_by_name.keys())
         diffs = []
         for k in all_field_names:
             if d1.get(k, None) != d2.get(k, None):
@@ -127,11 +132,11 @@ class ORMWrapper(object):
             that are set to default values.
         """
         if self.is_new:
-            return self._dict.keys()
-        return self.diff.keys()
+            return list(self._dict.keys())
+        return list(self.diff.keys())
 
     def has_field_changed(self, field_name):
-        return field_name in self.diff.keys()
+        return field_name in list(self.diff.keys())
 
     def get_field_diff(self, field_name):
         return self.diff.get(field_name, None)
@@ -166,7 +171,7 @@ class ORMWrapper(object):
     def gen_fkmap(self):
         fkmap = {}
 
-        all_field_names = self._wrapped_class.DESCRIPTOR.fields_by_name.keys()
+        all_field_names = list(self._wrapped_class.DESCRIPTOR.fields_by_name.keys())
 
         for (name, field) in self._wrapped_class.DESCRIPTOR.fields_by_name.items():
             if name.endswith("_id"):
@@ -349,10 +354,10 @@ class ORMWrapper(object):
         if name == "pk":
             name = "id"
 
-        if name in self._fkmap.keys():
+        if name in list(self._fkmap.keys()):
             return self.fk_resolve(name)
 
-        if name in self._reverse_fkmap.keys():
+        if name in list(self._reverse_fkmap.keys()):
             return self.reverse_fk_resolve(name)
 
         try:
@@ -368,7 +373,7 @@ class ORMWrapper(object):
         return getattr(self._wrapped_class, name, *args, **kwargs)
 
     def __setattr__(self, name, value):
-        if name in self._fkmap.keys():
+        if name in list(self._fkmap.keys()):
             self.fk_set(name, value)
         elif name in self.__dict__:
             super(ORMWrapper, self).__setattr__(name, value)
@@ -423,17 +428,28 @@ class ORMWrapper(object):
     ):
         classname = self._wrapped_class.__class__.__name__
         if self.is_new:
-            log.debug("save(): is new", classname=classname, syncstep=get_synchronizer_function())
-            new_class = self.stub.invoke(
-                "Create%s" % classname, self._wrapped_class
+            log.debug(
+                "save(): is new",
+                classname=classname,
+                syncstep=get_synchronizer_function(),
             )
+            new_class = self.stub.invoke("Create%s" % classname, self._wrapped_class)
             self._wrapped_class = new_class
             self.is_new = False
         else:
             if self.has_changed:
-              log.debug("save(): updated", classname=classname, changed_fields=self.changed_fields, syncstep=get_synchronizer_function())
+                log.debug(
+                    "save(): updated",
+                    classname=classname,
+                    changed_fields=self.changed_fields,
+                    syncstep=get_synchronizer_function(),
+                )
             else:
-              log.debug("save(): no changes", classname=classname, syncstep=get_synchronizer_function())
+                log.debug(
+                    "save(): no changes",
+                    classname=classname,
+                    syncstep=get_synchronizer_function(),
+                )
             metadata = []
             if update_fields:
                 metadata.append(("update_fields", ",".join(update_fields)))
@@ -444,9 +460,7 @@ class ORMWrapper(object):
             if is_sync_save:
                 metadata.append(("is_sync_save", "1"))
             self.stub.invoke(
-                "Update%s" % classname,
-                self._wrapped_class,
-                metadata=metadata,
+                "Update%s" % classname, self._wrapped_class, metadata=metadata
             )
         self.do_post_save_fixups()
 
@@ -648,7 +662,7 @@ class ORMObjectManager(object):
         return self.wrap_list(self._stub.invoke("Filter%s" % self._modelName, q))
 
     def get(self, **kwargs):
-        if kwargs.keys() == ["id"]:
+        if list(kwargs.keys()) == ["id"]:
             # the fast and easy case, look it up by id
             return self.wrap_single(
                 self._stub.invoke(

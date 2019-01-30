@@ -12,21 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import print_function
-import os
-import inspect
+from __future__ import absolute_import, print_function
+
 import imp
+import inspect
+import os
 import sys
 import threading
 import time
-from xossynchronizer.steps.syncstep import SyncStep
+
+from multistructlog import create_logger
+from xosconfig import Config
+from xossynchronizer.event_engine import XOSEventEngine
 from xossynchronizer.event_loop import XOSObserver
 from xossynchronizer.model_policy_loop import XOSPolicyEngine
-from xossynchronizer.event_engine import XOSEventEngine
 from xossynchronizer.pull_step_engine import XOSPullStepEngine
-
-from xosconfig import Config
-from multistructlog import create_logger
 
 log = create_logger(Config().get("logging"))
 
@@ -100,7 +100,11 @@ class Backend:
             # if we have at least one sync_step
             if len(sync_steps) > 0:
                 # start the observer
-                self.log.info("Starting XOSObserver", sync_steps=sync_steps, model_accessor=self.model_accessor)
+                self.log.info(
+                    "Starting XOSObserver",
+                    sync_steps=sync_steps,
+                    model_accessor=self.model_accessor,
+                )
                 observer = XOSObserver(sync_steps, self.model_accessor, self.log)
                 observer_thread = threading.Thread(
                     target=observer.run, name="synchronizer"
@@ -131,14 +135,20 @@ class Backend:
             self.log.info("Skipping event engine due to synchronizer unloading.")
         else:
             self.log.info("Starting XOSEventEngine", event_steps_dir=event_steps_dir)
-            event_engine = XOSEventEngine(model_accessor=self.model_accessor, log=self.log)
+            event_engine = XOSEventEngine(
+                model_accessor=self.model_accessor, log=self.log
+            )
             event_engine.load_event_step_modules(event_steps_dir)
             event_engine.start()
 
         # start model policies thread
         policies_dir = Config.get("model_policies_dir")
         if policies_dir:
-            policy_engine = XOSPolicyEngine(policies_dir=policies_dir, model_accessor=self.model_accessor, log=self.log)
+            policy_engine = XOSPolicyEngine(
+                policies_dir=policies_dir,
+                model_accessor=self.model_accessor,
+                log=self.log,
+            )
             model_policy_thread = threading.Thread(
                 target=policy_engine.run, name="policy_engine"
             )

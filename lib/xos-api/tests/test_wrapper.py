@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from __future__ import print_function
-import exceptions
+
 import os
 import random
 import string
@@ -213,9 +213,11 @@ def main():
             try:
                 sys.argv = sys.argv[
                     :1
-                ]  # unittest does not like xos_grpc_client's command line arguments (TODO: find a cooperative approach)
+                ]
+                # unittest does not like xos_grpc_client's command line arguments
+                # (TODO: find a cooperative approach)
                 unittest.main()
-            except exceptions.SystemExit as e:
+            except SystemExit as e:
                 global exitStatus
                 exitStatus = e.code
 

@@ -13,8 +13,11 @@
 # limitations under the License.
 
 
-from xosconfig import Config
+from __future__ import absolute_import
+
 from functools import reduce
+
+from xosconfig import Config
 
 
 def f7(seq):
@@ -113,7 +116,6 @@ class SyncStep(object):
                 result.append(class_or_name)
         return result
 
-
     def fetch_pending(self, deletion=False):
         # This is the most common implementation of fetch_pending
         # Steps should override it if they have their own logic
@@ -121,11 +123,9 @@ class SyncStep(object):
 
         return self.model_accessor.fetch_pending(self.observes_classes, deletion)
 
-
     def sync_record(self, o):
         self.log.debug("In abstract sync record", **o.tologdict())
         # This method should be overridden by the service
-
 
     def delete_record(self, o):
         self.log.debug("In abstract delete record", **o.tologdict())

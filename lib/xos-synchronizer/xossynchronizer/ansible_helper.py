@@ -14,24 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import print_function
-import jinja2
-import tempfile
-import os
-import json
-import pickle
-import pdb
-import string
-import random
-import re
-import traceback
-import subprocess
-import threading
+from __future__ import absolute_import, print_function
 
-from multiprocessing import Process, Queue
-from xosconfig import Config
+import json
+import os
+import pickle
+import random
+import string
+import tempfile
+
+import jinja2
 
 from multistructlog import create_logger
+from xosconfig import Config
+from six.moves import range
 
 log = create_logger(Config().get("logging"))
 
@@ -108,7 +104,7 @@ def run_playbook(ansible_hosts, ansible_config, fqp, opts):
 
         stats = result.get("stats", None)
         aresults = result.get("aresults", None)
-    except Exception as e:
+    except BaseException:
         log.exception("Exception running ansible_main")
         stats = None
         aresults = None
@@ -220,7 +216,7 @@ def run_template(
             if t["failures"] > 0:
                 raise ValueError("Ansible playbook reported failures for host %s" % h)
 
-    except ValueError as e:
+    except ValueError:
         if error_msg:
             try:
                 error = " // ".join(error_msg)
@@ -230,7 +226,7 @@ def run_template(
         else:
             raise
 
-    processed_results = map(lambda x: x._result, ok_results)
+    processed_results = [x._result for x in ok_results]
     return processed_results[1:]  # 0 is setup
 
 

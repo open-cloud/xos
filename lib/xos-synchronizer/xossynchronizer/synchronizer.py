@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
+
 import time
 
-from xosconfig import Config
 from multistructlog import create_logger
+from xosconfig import Config
+
 
 class Synchronizer(object):
     def __init__(self):
         self.log = create_logger(Config().get("logging"))
 
     def create_model_accessor(self):
-        from modelaccessor import model_accessor
+        from .modelaccessor import model_accessor
 
         self.model_accessor = model_accessor
 
@@ -33,7 +34,8 @@ class Synchronizer(object):
         wait = False
         while not models_active:
             try:
-                _i = self.model_accessor.Site.objects.first()
+                # variable is unused
+                _i = self.model_accessor.Site.objects.first()  # noqa: F841
                 models_active = True
             except Exception as e:
                 self.log.info("Exception", e=e)
@@ -54,12 +56,8 @@ class Synchronizer(object):
         # use `from xossynchronizer.modelaccessor import ...` and require the model accessor to be initialized before
         # their code can be imported.
 
-        from backend import Backend
+        from .backend import Backend
 
         log_closure = self.log.bind(synchronizer_name=Config().get("name"))
         backend = Backend(log=log_closure, model_accessor=self.model_accessor)
         backend.run()
-
-
-if __name__ == "__main__":
-    main()

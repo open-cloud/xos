@@ -12,14 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 
 import os
 import pickle
 import sys
-
-# import json
 import traceback
+
 from xosconfig import Config
+
+try:
+    # Python 2: "reload" is built-in
+    reload  # pylint: disable=reload-builtin
+except NameError:
+    from importlib import reload
 
 sys.path.append("/opt/xos")
 
@@ -42,7 +48,7 @@ def run_playbook(ansible_hosts, ansible_config, fqp, opts):
             except KeyError:
                 pass
 
-        import ansible_runner
+        from . import ansible_runner
 
         reload(ansible_runner)
 
@@ -52,7 +58,7 @@ def run_playbook(ansible_hosts, ansible_config, fqp, opts):
         )
 
         stats, aresults = runner.run()
-    except Exception as e:
+    except Exception:
         return {"stats": None, "aresults": None, "exception": traceback.format_exc()}
 
     return {"stats": stats, "aresults": aresults}

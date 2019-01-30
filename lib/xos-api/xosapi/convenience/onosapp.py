@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from xosapi.orm import register_convenience_wrapper
+from __future__ import absolute_import
+
 from xosapi.convenience.serviceinstance import ORMWrapperServiceInstance
+from xosapi.orm import register_convenience_wrapper
 
 
 class ORMWrapperONOSApp(ORMWrapperServiceInstance):

@@ -12,26 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-#!/usr/bin/env python
-
 # TODO: Moved this into the synchronizer, as it appeared to require model
 #       access. Verify whether or not that's true and reconcile with
 #       generate/dependency_walker.py
 
-from __future__ import print_function
-import os
-import imp
-import inspect
-import time
-import traceback
-import commands
-import threading
-from xosconfig import Config
+from __future__ import absolute_import, print_function
+
 import json
 
-from xosconfig import Config
 from multistructlog import create_logger
+from xosconfig import Config
 
 log = create_logger(Config().get("logging"))
 

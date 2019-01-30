@@ -32,6 +32,7 @@ from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from xosconfig import Config
 from multistructlog import create_logger
 
+
 def get_abs_path(dir_):
     """ Convert a path specified by the user, which might be relative or based on
         home directory location, into an absolute path.
@@ -330,7 +331,6 @@ def run():
 
     # find absolute path to the code
     xos_path = get_abs_path(os.path.join(args.repo_root, "orchestration/xos/xos/"))
-    django_path = get_abs_path(os.path.join(xos_path, "manage.py"))
     core_dir = get_abs_path(os.path.join(xos_path, "core/models/"))
     service_base_dir = get_abs_path(os.path.join(xos_path, "../../xos_services/"))
     service_dest_dir = get_abs_path(os.path.join(xos_path, "services/"))

@@ -21,3 +21,4 @@ Django==1.11.11
 django-extensions==2.1.5
 djangorestframework==3.9.1
 flake8==3.7.5
+python-consul~=1.1.0

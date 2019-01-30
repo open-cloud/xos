@@ -12,18 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import print_function
-import os
-import inspect
-import imp
+from __future__ import absolute_import, print_function
+
 import sys
 import threading
 import time
-from syncstep import SyncStep
-from synchronizers.new_base.event_loop import XOSObserver
 
-from xosconfig import Config
 from multistructlog import create_logger
+from xosconfig import Config
 
 log = create_logger(Config().get("logging"))
 

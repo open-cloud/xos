@@ -12,5 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This file will be replaced by setup.py
-__version__ = "unknown"
+from __future__ import absolute_import
+
+import os
+
+# read the version in from VERSION file, which is installed next to this file.
+with open(os.path.join(os.path.dirname(__file__), "VERSION")) as vf:
+    __version__ = vf.read()
