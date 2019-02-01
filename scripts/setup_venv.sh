@@ -61,4 +61,10 @@ make
 echo "xos-api Installed"
 popd
 
+pushd "$XOS_DIR/lib/xos-synchronizer"
+python ./setup.py install
+echo "xos-synchronizer Installed"
+popd
+
+
 echo "XOS dev/test virtualenv created. Run 'source ${VENVDIR}/bin/activate'."
