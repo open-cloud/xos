@@ -113,7 +113,7 @@ class XOSObserver(object):
             # src_port is the field that accesses Model2 from Model1
             # dst_port is the field that accesses Model1 from Model2
             static_dependencies = json.loads(dep_graph_str)
-            dynamic_dependencies = self.compute_service_dependencies()
+            dynamic_dependencies = []  # Dropped Service and ServiceInstance dynamic dependencies
 
             joint_dependencies = dict(
                 static_dependencies.items() + dynamic_dependencies
@@ -402,75 +402,6 @@ class XOSObserver(object):
             self.reset_model_accessor()
             self.model_accessor.connection_close()
 
-    def tenant_class_name_from_service(self, service_name):
-        """ This code supports legacy functionality. To be cleaned up. """
-        name1 = service_name + "Instance"
-        if hasattr(self.model_accessor.Slice().stub, name1):
-            return name1
-        else:
-            name2 = service_name.replace("Service", "Tenant")
-            if hasattr(self.model_accessor.Slice().stub, name2):
-                return name2
-            else:
-                return None
-
-    def compute_service_dependencies(self):
-        """ FIXME: Implement more cleanly via xproto """
-
-        model_names = self.model_to_step.keys()
-        ugly_tuples = [
-            (m, m.replace("Instance", "").replace("Tenant", "Service"))
-            for m in model_names
-            if m.endswith("ServiceInstance") or m.endswith("Tenant")
-        ]
-        ugly_rtuples = [(v, k) for k, v in ugly_tuples]
-
-        ugly_map = dict(ugly_tuples)
-        ugly_rmap = dict(ugly_rtuples)
-
-        s_model_names = [v for k, v in ugly_tuples]
-        s_models0 = [
-            getattr(self.model_accessor.Slice().stub, model_name, None) for model_name in s_model_names
-        ]
-        s_models1 = [model.objects.first() for model in s_models0]
-        s_models = [m for m in s_models1 if m is not None]
-
-        dependencies = []
-        for model in s_models:
-            deps = self.model_accessor.ServiceDependency.objects.filter(subscriber_service_id=model.id)
-            if deps:
-                services = [
-                    self.tenant_class_name_from_service(
-                        d.provider_service.leaf_model_name
-                    )
-                    for d in deps
-                ]
-                dependencies.append(
-                    (ugly_rmap[model.leaf_model_name], [(s, "", "") for s in services])
-                )
-
-        return dependencies
-
-    def compute_service_instance_dependencies(self, objects):
-        link_set = [
-            self.model_accessor.ServiceInstanceLink.objects.filter(subscriber_service_instance_id=o.id)
-            for o in objects
-        ]
-
-        dependencies = [
-            (l.provider_service_instance, l.subscriber_service_instance)
-            for links in link_set
-            for l in links
-        ]
-        providers = []
-
-        for p, s in dependencies:
-            if not p.enacted or p.enacted < p.updated:
-                p.dependent = s
-                providers.append(p)
-
-        return providers
-
     def run(self):
         # Cleanup: Move self.driver into a synchronizer context
         # made available to every sync step.
@@ -512,15 +443,7 @@ class XOSObserver(object):
                     step.log = self.log.new(step=step)
                     obj.synchronizer_step = step
 
-                pending_service_dependencies = self.compute_service_instance_dependencies(
-                    pending
-                )
-
-                for obj in pending_service_dependencies:
-                    obj.synchronizer_step = None
-
                 pending_objects.extend(pending)
-                pending_objects.extend(pending_service_dependencies)
             else:
                 # Support old and broken legacy synchronizers
                 # This needs to be dropped soon.
