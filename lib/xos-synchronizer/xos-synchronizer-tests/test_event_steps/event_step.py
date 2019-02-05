@@ -1,4 +1,3 @@
----
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,25 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: test-synchronizer
-accessor:
-  username: xosadmin@opencord.org
-  password: "sample"
-  kind: testframework
-event_bus:
-  endpoint: "fake"
-  kind: kafka
-logging:
-  version: 1
-  handlers:
-    console:
-      class: logging.StreamHandler
-  loggers:
-    '':
-      handlers:
-          - console
-      level: DEBUG
-dependency_graph: "tests/model-deps"
-steps_dir: "tests/steps"
-pull_steps_dir: "tests/pull_steps"
-event_steps_dir: "tests/event_steps"
+from __future__ import print_function
+from xossynchronizer.event_steps.eventstep import EventStep
+from mock_modelaccessor import *
+
+
+class TestEventStep(EventStep):
+    technology = "kafka"
+    topics = ["sometopic"]
+    pattern = None
+
+    def __init__(self, model_accessor, log, *args, **kwargs):
+        super(TestEventStep, self).__init__(model_accessor, log, *args, **kwargs)
+
+    def process_event(self, event):
+        print("received an event", event)

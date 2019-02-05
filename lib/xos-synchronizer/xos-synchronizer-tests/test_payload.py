@@ -67,7 +67,7 @@ class TestPayload(unittest.TestCase):
 
     def setUp(self):
 
-        global log, steps, event_loop
+        global log, test_steps, event_loop
 
         self.sys_path_save = sys.path
         self.cwd_save = os.getcwd()
@@ -84,7 +84,7 @@ class TestPayload(unittest.TestCase):
 
         build_mock_modelaccessor(sync_lib_dir, xos_dir, services_dir=None, service_xprotos=[])
 
-        os.chdir(os.path.join(test_path, ".."))  # config references tests/model-deps
+        os.chdir(os.path.join(test_path, ".."))  # config references xos-synchronizer-tests/model-deps
 
         import xossynchronizer.event_loop
 
@@ -92,8 +92,8 @@ class TestPayload(unittest.TestCase):
         import xossynchronizer.backend
 
         reload(xossynchronizer.backend)
-        import steps.sync_instances
-        import steps.sync_controller_slices
+        import test_steps.sync_instances
+        import test_steps.sync_controller_slices
         from xossynchronizer.modelaccessor import model_accessor
 
         # import all class names to globals
@@ -109,7 +109,7 @@ class TestPayload(unittest.TestCase):
         os.chdir(self.cwd_save)
 
     @mock.patch(
-        "steps.sync_instances.ansiblesyncstep.run_template",
+        "test_steps.sync_instances.ansiblesyncstep.run_template",
         side_effect=run_fake_ansible_template,
     )
     def test_delete_record(self, mock_run_template):
@@ -117,7 +117,7 @@ class TestPayload(unittest.TestCase):
             o = Instance()
             o.name = "Sisi Pascal"
 
-            o.synchronizer_step = steps.sync_instances.SyncInstances(model_accessor = self.synchronizer.model_accessor)
+            o.synchronizer_step = test_steps.sync_instances.SyncInstances(model_accessor = self.synchronizer.model_accessor)
             self.synchronizer.delete_record(o, log)
 
             a = get_ansible_output()
@@ -125,7 +125,7 @@ class TestPayload(unittest.TestCase):
             o.save.assert_called_with(update_fields=["backend_need_reap"])
 
     @mock.patch(
-        "steps.sync_instances.ansiblesyncstep.run_template",
+        "test_steps.sync_instances.ansiblesyncstep.run_template",
         side_effect=run_fake_ansible_template_fail,
     )
     def test_delete_record_fail(self, mock_run_template):
@@ -133,7 +133,7 @@ class TestPayload(unittest.TestCase):
             o = Instance()
             o.name = "Sisi Pascal"
 
-            o.synchronizer_step = steps.sync_instances.SyncInstances(model_accessor = self.synchronizer.model_accessor)
+            o.synchronizer_step = test_steps.sync_instances.SyncInstances(model_accessor = self.synchronizer.model_accessor)
 
             with self.assertRaises(Exception) as e:
                 self.synchronizer.delete_record(o, log)
@@ -143,7 +143,7 @@ class TestPayload(unittest.TestCase):
             )
 
     @mock.patch(
-        "steps.sync_instances.ansiblesyncstep.run_template",
+        "test_steps.sync_instances.ansiblesyncstep.run_template",
         side_effect=run_fake_ansible_template,
     )
     def test_sync_record(self, mock_run_template):
@@ -151,7 +151,7 @@ class TestPayload(unittest.TestCase):
             o = Instance()
             o.name = "Sisi Pascal"
 
-            o.synchronizer_step = steps.sync_instances.SyncInstances(model_accessor = self.synchronizer.model_accessor)
+            o.synchronizer_step = test_steps.sync_instances.SyncInstances(model_accessor = self.synchronizer.model_accessor)
             self.synchronizer.sync_record(o, log)
 
             a = get_ansible_output()
@@ -166,7 +166,7 @@ class TestPayload(unittest.TestCase):
             )
 
     @mock.patch(
-        "steps.sync_instances.ansiblesyncstep.run_template",
+        "test_steps.sync_instances.ansiblesyncstep.run_template",
         side_effect=run_fake_ansible_template,
     )
     def test_sync_cohort(self, mock_run_template):
@@ -182,8 +182,8 @@ class TestPayload(unittest.TestCase):
             o.slice = s
 
             cohort = [cs, o]
-            o.synchronizer_step = steps.sync_instances.SyncInstances(model_accessor = self.synchronizer.model_accessor)
-            cs.synchronizer_step = steps.sync_controller_slices.SyncControllerSlices(
+            o.synchronizer_step = test_steps.sync_instances.SyncInstances(model_accessor = self.synchronizer.model_accessor)
+            cs.synchronizer_step = test_steps.sync_controller_slices.SyncControllerSlices(
                 model_accessor = self.synchronizer.model_accessor
             )
 
@@ -209,7 +209,7 @@ class TestPayload(unittest.TestCase):
             )
 
     @mock.patch(
-        "steps.sync_instances.ansiblesyncstep.run_template",
+        "test_steps.sync_instances.ansiblesyncstep.run_template",
         side_effect=run_fake_ansible_template,
     )
     def test_deferred_exception(self, mock_run_template):
@@ -224,8 +224,8 @@ class TestPayload(unittest.TestCase):
             o.slice = s
 
             cohort = [cs, o]
-            o.synchronizer_step = steps.sync_instances.SyncInstances(model_accessor=self.synchronizer.model_accessor)
-            cs.synchronizer_step = steps.sync_controller_slices.SyncControllerSlices(
+            o.synchronizer_step = test_steps.sync_instances.SyncInstances(model_accessor=self.synchronizer.model_accessor)
+            cs.synchronizer_step = test_steps.sync_controller_slices.SyncControllerSlices(
                 model_accessor=self.synchronizer.model_accessor
             )
 
@@ -240,7 +240,7 @@ class TestPayload(unittest.TestCase):
             self.assertIn("Failed due to", o.backend_status)
 
     @mock.patch(
-        "steps.sync_instances.ansiblesyncstep.run_template",
+        "test_steps.sync_instances.ansiblesyncstep.run_template",
         side_effect=run_fake_ansible_template,
     )
     def test_backend_status(self, mock_run_template):
@@ -255,8 +255,8 @@ class TestPayload(unittest.TestCase):
             o.slice = s
 
             cohort = [cs, o]
-            o.synchronizer_step = steps.sync_instances.SyncInstances(model_accessor=self.synchronizer.model_accessor)
-            cs.synchronizer_step = steps.sync_controller_slices.SyncControllerSlices(
+            o.synchronizer_step = test_steps.sync_instances.SyncInstances(model_accessor=self.synchronizer.model_accessor)
+            cs.synchronizer_step = test_steps.sync_controller_slices.SyncControllerSlices(
                 model_accessor=self.synchronizer.model_accessor)
 
             self.synchronizer.sync_cohort(cohort, False)
@@ -268,7 +268,7 @@ class TestPayload(unittest.TestCase):
             self.assertIn("Failed due to", o.backend_status)
 
     @mock.patch(
-        "steps.sync_instances.ansiblesyncstep.run_template",
+        "test_steps.sync_instances.ansiblesyncstep.run_template",
         side_effect=run_fake_ansible_template,
     )
     def test_fetch_pending(self, mock_run_template):
@@ -293,7 +293,7 @@ class TestPayload(unittest.TestCase):
         self.assertEqual(set(flat_objects), set(pending_objects))
 
     @mock.patch(
-        "steps.sync_instances.ansiblesyncstep.run_template",
+        "test_steps.sync_instances.ansiblesyncstep.run_template",
         side_effect=run_fake_ansible_template,
     )
     def test_fetch_pending_with_external_dependencies(
@@ -319,7 +319,7 @@ class TestPayload(unittest.TestCase):
         self.assertIsNotNone(any_user)
 
     @mock.patch(
-        "steps.sync_instances.ansiblesyncstep.run_template",
+        "test_steps.sync_instances.ansiblesyncstep.run_template",
         side_effect=run_fake_ansible_template,
     )
     def test_external_dependency_exception(self, mock_run_template):
@@ -333,7 +333,7 @@ class TestPayload(unittest.TestCase):
 
         cohort = [cs, o]
         o.synchronizer_step = None
-        o.synchronizer_step = steps.sync_instances.SyncInstances(model_accessor=self.synchronizer.model_accessor)
+        o.synchronizer_step = test_steps.sync_instances.SyncInstances(model_accessor=self.synchronizer.model_accessor)
 
         self.synchronizer.sync_cohort(cohort, False)
 

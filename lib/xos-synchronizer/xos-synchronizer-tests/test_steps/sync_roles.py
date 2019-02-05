@@ -16,7 +16,7 @@
 import os
 import base64
 from xossynchronizer.steps.syncstep import SyncStep
-from xossynchronizer.mock_modelaccessor import *
+from mock_modelaccessor import *
 
 
 class SyncRoles(SyncStep):

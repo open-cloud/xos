@@ -51,7 +51,7 @@ class TestModelPolicyTenantWithContainer(unittest.TestCase):
             LeastLoadedNodeScheduler,
         )
 
-        from xossynchronizer.mock_modelaccessor import MockObjectList
+        from mock_modelaccessor import MockObjectList
 
         # import all class names to globals
         for (

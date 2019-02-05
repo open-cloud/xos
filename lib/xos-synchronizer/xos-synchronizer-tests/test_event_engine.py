@@ -130,8 +130,8 @@ class TestEventEngine(unittest.TestCase):
 
         from xossynchronizer.modelaccessor import model_accessor
 
-        # The test config.yaml references files in `test/` so make sure we're in the parent directory of the
-        # test directory.
+        # The test config.yaml references files in `xos-synchronizer-tests/` so make sure we're in the parent
+        # directory of the test directory.
         os.chdir(os.path.join(test_path, ".."))
 
         from xossynchronizer.event_engine import XOSKafkaThread, XOSEventEngine

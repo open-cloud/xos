@@ -42,8 +42,8 @@ class TestScheduling(unittest.TestCase):
 
         build_mock_modelaccessor(sync_lib_dir, xos_dir, services_dir=None, service_xprotos=[])
 
-        # The test config.yaml references files in `test/` so make sure we're in the parent directory of the
-        # test directory.
+        # The test config.yaml references files in `xos-synchronizer-tests/` so make sure we're in the parent
+        # directory of the test directory.
         os.chdir(os.path.join(test_path, ".."))
 
         import xossynchronizer.event_loop

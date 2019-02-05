@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import unittest
-from mock import patch
 import mock
-import pdb
-import networkx as nx
 
 import os
 import sys
@@ -25,8 +23,20 @@ test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 sync_lib_dir = os.path.join(test_path, "..", "xossynchronizer")
 xos_dir = os.path.join(test_path, "..", "..", "..", "xos")
 
+ANSIBLE_FILE = "/tmp/payload_test"
 
-class TestServices(unittest.TestCase):
+
+def run_fake_ansible_template(*args, **kwargs):
+    opts = args[1]
+    open(ANSIBLE_FILE, "w").write(json.dumps(opts))
+
+
+def get_ansible_output():
+    ansible_str = open(ANSIBLE_FILE).read()
+    return json.loads(ansible_str)
+
+
+class TestRun(unittest.TestCase):
     def setUp(self):
         self.sys_path_save = sys.path
         self.cwd_save = os.getcwd()
@@ -43,7 +53,7 @@ class TestServices(unittest.TestCase):
 
         build_mock_modelaccessor(sync_lib_dir, xos_dir, services_dir=None, service_xprotos=[])
 
-        os.chdir(os.path.join(test_path, ".."))  # config references tests/model-deps
+        os.chdir(os.path.join(test_path, ".."))  # config references xos-synchronizer-tests/model-deps
 
         import xossynchronizer.event_loop
 
@@ -57,30 +67,51 @@ class TestServices(unittest.TestCase):
         for (k, v) in model_accessor.all_model_classes.items():
             globals()[k] = v
 
+        from xossynchronizer.modelaccessor import model_accessor
+
         b = xossynchronizer.backend.Backend(model_accessor=model_accessor)
         steps_dir = Config.get("steps_dir")
         self.steps = b.load_sync_step_modules(steps_dir)
         self.synchronizer = xossynchronizer.event_loop.XOSObserver(self.steps, model_accessor)
+        try:
+            os.remove("/tmp/sync_ports")
+        except OSError:
+            pass
+        try:
+            os.remove("/tmp/delete_ports")
+        except OSError:
+            pass
 
     def tearDown(self):
         sys.path = self.sys_path_save
         os.chdir(self.cwd_save)
 
-    def test_service_models(self):
-        s = Service()
-        a = ServiceInstance(owner=s)
+    @mock.patch(
+        "test_steps.sync_instances.ansiblesyncstep.run_template",
+        side_effect=run_fake_ansible_template,
+    )
+    def test_run_once(self, mock_run_template):
+        pending_objects, pending_steps = self.synchronizer.fetch_pending()
+        pending_objects2 = list(pending_objects)
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([a, s], False)
-        self.assertIn([s, a], cohorts)
+        any_cs = next(
+            obj for obj in pending_objects if obj.leaf_model_name == "ControllerSlice"
+        )
+        any_instance = next(
+            obj for obj in pending_objects2 if obj.leaf_model_name == "Instance"
+        )
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([s, a], False)
-        self.assertIn([s, a], cohorts)
+        slice = Slice()
+        any_instance.slice = slice
+        any_cs.slice = slice
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([a, s], True)
-        self.assertIn([a, s], cohorts)
+        self.synchronizer.run_once()
 
-        cohorts = self.synchronizer.compute_dependent_cohorts([s, a], True)
-        self.assertIn([a, s], cohorts)
+        sync_ports = open("/tmp/sync_ports").read()
+        delete_ports = open("/tmp/delete_ports").read()
+
+        self.assertIn("successful", sync_ports)
+        self.assertIn("successful", delete_ports)
 
 
 if __name__ == "__main__":
