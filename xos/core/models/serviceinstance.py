@@ -84,11 +84,15 @@ class ServiceInstance(ServiceInstance_decl):
                     id=self._meta.get_field("owner").default
                 )
 
-    def save(self, *args, **kwargs):
-        # NOTE(CORD-3128): Only set the owner if not in deleted state.
+    def full_clean(self, *args, **kwargs):
+        # NOTE: SEBA-222 Must be called before full_clean, otherwise a non-null violation will occur if the
+        # owner is None.
         if not self.deleted:
             self.set_owner()
 
+        super(ServiceInstance,self).full_clean()
+
+    def save(self, *args, **kwargs):
         # If the model has a Creator and it's not specified, then attempt to default to the Caller. Caller is
         # automatically filled in my the API layer. This code was typically used by ServiceInstances that lead to
         # instance creation.
