@@ -66,5 +66,10 @@ python ./setup.py install
 echo "xos-synchronizer Installed"
 popd
 
+pushd "$XOS_DIR/lib/xos-migrate"
+python ./setup.py install
+echo "xos-migrate Installed"
+popd
+
 
 echo "XOS dev/test virtualenv created. Run 'source ${VENVDIR}/bin/activate'."

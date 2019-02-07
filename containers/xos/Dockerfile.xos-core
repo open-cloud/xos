@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # xosproject/xos-core
-FROM xosproject/xos-libraries:2.1.47
+FROM xosproject/xos-libraries:2.1.48
 
 # Install XOS
 ADD xos /opt/xos
@@ -49,4 +49,3 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.label-schema.vcs-ref=$org_label_schema_vcs_ref \
       org.label-schema.build-date=$org_label_schema_build_date \
       org.opencord.vcs-commit-date=$org_opencord_vcs_commit_date
-

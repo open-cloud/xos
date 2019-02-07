@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # xosproject/chameleon
-FROM xosproject/xos-base:2.1.47
+FROM xosproject/xos-base:2.1.48
 
 # xos-base already has protoc and dependencies installed
 
@@ -52,4 +52,3 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
 
 # Exposing process and default entry point
 CMD ["python", "/chameleon/chameleon/main.py"]
-

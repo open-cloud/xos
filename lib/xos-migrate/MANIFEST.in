@@ -1,0 +1,2 @@
+include xosmigrate/migration_cfg_schema.yaml
+include xosmigrate/migration_cfg.yaml

@@ -45,15 +45,22 @@ LOGIN_REDIRECT_URL = "/admin/loggedin/"
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": Config.get("database.name"),
-        "USER": Config.get("database.username"),
-        "PASSWORD": Config.get("database.password"),
-        "HOST": "xos-db",
-        "PORT": 5432,
+DB = {
+    "ENGINE": "django.db.backends.postgresql_psycopg2",
+    "NAME": Config.get("database.name"),
+    "USER": Config.get("database.username"),
+    "PASSWORD": Config.get("database.password"),
+    "HOST": "xos-db",
+    "PORT": 5432,
+}
+
+if "MIGRATIONS" in os.environ and os.environ["MIGRATIONS"] == "true":
+    DB = {
+        'ENGINE': 'django.db.backends.dummy',
     }
+
+DATABASES = {
+    'default': DB
 }
 
 AUTH_USER_MODEL = "core.User"
@@ -180,11 +187,21 @@ if os.path.exists("/opt/xos/xos/xosbuilder_app_list"):
         if line:
             INSTALLED_APPS = list(INSTALLED_APPS) + [line]
 
+# add services that needs to be migrated to INSTALLED_APPS
+# this is used by xos-migrate.py
+if "INSTALLED_APPS" in os.environ:
+    apps = os.environ["INSTALLED_APPS"].split(',')
+    for app in apps:
+        INSTALLED_APPS = list(INSTALLED_APPS) + [app]
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+LOG_FILE = "/var/log/django_debug.log"
+if "LOG_FILE" in os.environ:
+    LOG_FILE = os.environ["LOG_FILE"]
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -193,7 +210,7 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": "/var/log/django_debug.log",
+            "filename": LOG_FILE,
         },
         "mail_admins": {
             "level": "ERROR",

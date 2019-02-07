@@ -1,0 +1,7 @@
+.noseids
+build
+XosSynchronizer.egg-info
+dist
+.coverage
+coverage.xml
+cover

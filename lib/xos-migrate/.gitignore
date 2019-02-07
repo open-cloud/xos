@@ -1,0 +1,6 @@
+build
+dist
+XosMigrate.egg-info
+.coverage
+coverage.xml
+cover
