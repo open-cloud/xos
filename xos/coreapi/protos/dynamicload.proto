@@ -25,6 +25,11 @@ message APIConvenienceFile {
     string contents = 2;
 };
 
+message MigrationFile {
+    string filename = 1;
+    string contents = 2;
+};
+
 message LoadModelsRequest {
     string name = 1;
     string version = 2;
@@ -32,6 +37,7 @@ message LoadModelsRequest {
     repeated DeclFile decls = 4;
     repeated AtticFile attics = 5;
     repeated APIConvenienceFile convenience_methods = 6;
+    repeated MigrationFile migrations = 7;
 };
 
 message ListConvenienceMethodsReply {

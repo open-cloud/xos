@@ -33,6 +33,7 @@ class DynamicLoadRequest:
         self.xprotos = []
         self.decls = []
         self.attics = []
+        self.migrations = []
         for (k, v) in kwargs.items():
             setattr(self, k, v)
 
@@ -167,6 +168,64 @@ message EmbeddedImage (XOSBase){
                 ).read()
             )
             self.assertEqual(manifest.get("state"), "load")
+
+    def test_handle_loadmodels_request_with_migrations(self):
+        with patch.object(
+            dynamicbuild.DynamicBuilder, "save_models", wraps=self.builder.save_models
+        ) as save_models, patch.object(
+            dynamicbuild.DynamicBuilder,
+            "run_xosgenx_service",
+            wraps=self.builder.run_xosgenx_service,
+        ) as run_xosgenx_service, patch.object(
+            dynamicbuild.DynamicBuilder,
+            "remove_service",
+            wraps=self.builder.remove_service,
+        ) as remove_service:
+            migration1_contents = "print 'one'"
+            migration1 = DynamicLoadItem(
+                filename="migration1.py", contents=migration1_contents
+            )
+            migration2_contents = "print 'one'"
+            migration2 = DynamicLoadItem(
+                filename="migration2.py", contents=migration2_contents
+            )
+
+            self.example_request.migrations = [migration1, migration2]
+
+            result = self.builder.handle_loadmodels_request(self.example_request)
+
+            save_models.assert_called()
+            run_xosgenx_service.assert_called()
+            remove_service.assert_not_called()
+
+            self.assertEqual(result, self.builder.SOMETHING_CHANGED)
+
+            self.assertTrue(os.path.exists(self.builder.manifest_dir))
+            self.assertTrue(
+                os.path.exists(
+                    os.path.join(self.builder.manifest_dir, "exampleservice.json")
+                )
+            )
+
+            service_dir = os.path.join(self.base_dir, "services", "exampleservice")
+
+            self.assertTrue(os.path.exists(service_dir))
+            self.assertTrue(os.path.exists(os.path.join(service_dir, "__init__.py")))
+            self.assertTrue(os.path.exists(os.path.join(service_dir, "models.py")))
+            self.assertTrue(os.path.exists(os.path.join(service_dir, "security.py")))
+
+            self.assertTrue(os.path.exists(os.path.join(service_dir, "migrations", "migration1.py")))
+            self.assertTrue(os.path.exists(os.path.join(service_dir, "migrations", "migration2.py")))
+            self.assertTrue(os.path.exists(os.path.join(service_dir, "migrations", "__init__.py")))
+
+            manifest = json.loads(
+                open(
+                    os.path.join(self.builder.manifest_dir, "exampleservice.json"), "r"
+                ).read()
+            )
+            self.assertEqual(manifest.get("state"), "load")
+
+            self.assertEqual(manifest.get("migrations"), [{u'filename': u'migration1.py'}, {u'filename': u'migration2.py'}])
 
     def test_handle_unloadmodels_request(self):
         with patch.object(
