@@ -101,10 +101,18 @@ def map_xproto_to_django(f):
         "max_value",
     ]
 
-    # TODO evaluate if setting Null = False for all strings
-    m = {
-        "modifier": {"optional": True, "required": False, "_targets": ["null", "blank"]}
-    }
+    if f.get("link_type") == "manytomany":
+        # map for fields that do not support null
+        m = {
+            "modifier": {"optional": True, "required": False, "_targets": ["blank"]}
+        }
+    else:
+        # map for fields that do support null
+        # TODO evaluate if setting Null = False for all strings
+        m = {
+            "modifier": {"optional": True, "required": False, "_targets": ["null", "blank"]}
+        }
+
     out = {}
 
     for k, v in f["options"].items():
@@ -122,6 +130,8 @@ def map_xproto_to_django(f):
 
 
 def xproto_django_link_options_str(field, dport=None):
+    # Note that this function is called for links (ForeignKeys, M2Ms)
+
     output_dict = map_xproto_to_django(field)
 
     if dport and (dport == "+" or "+" not in dport):
@@ -203,6 +213,8 @@ def format_options_string(d):
 
 
 def xproto_django_options_str(field, dport=None):
+    # This function is called for non-links (Strings, Ints, Booleans, ...)
+
     output_dict = map_xproto_to_django(field)
 
     if dport == "_":
