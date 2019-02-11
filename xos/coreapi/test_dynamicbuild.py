@@ -121,6 +121,76 @@ message EmbeddedImage (XOSBase){
     def test_pre_validate_file(self):
         self.builder.pre_validate_file(self.example_xproto_item)
 
+        # dashes are okay
+        item = DynamicLoadItem(
+            filename="example-service.xproto", contents=self.example_xproto
+        )
+        self.builder.pre_validate_file(item)
+
+        # undestcores are okay
+        item = DynamicLoadItem(
+            filename="example_service.xproto", contents=self.example_xproto
+        )
+        self.builder.pre_validate_file(item)
+
+        # mixed case is okay
+        item = DynamicLoadItem(
+            filename="ExampleService.xproto", contents=self.example_xproto
+        )
+        self.builder.pre_validate_file(item)
+
+        # no "." is still considered valid
+        item = DynamicLoadItem(
+            filename="ExampleServicexproto", contents=self.example_xproto
+        )
+        self.builder.pre_validate_file(item)
+
+    def test_pre_validate_file_illegal_char(self):
+        item = DynamicLoadItem(
+            filename="/exampleservice.xproto", contents=self.example_xproto
+        )
+        with self.assertRaises(Exception) as e:
+            self.builder.pre_validate_file(item)
+        self.assertEqual(
+            str(e.exception), "illegal character in filename /exampleservice.xproto"
+        )
+
+        item = DynamicLoadItem(
+            filename="\"exampleservice.xproto\"", contents=self.example_xproto
+        )
+        with self.assertRaises(Exception) as e:
+            self.builder.pre_validate_file(item)
+        self.assertEqual(
+            str(e.exception), "illegal character in filename \"exampleservice.xproto\""
+        )
+
+        item = DynamicLoadItem(
+            filename="'exampleservice.xproto'", contents=self.example_xproto
+        )
+        with self.assertRaises(Exception) as e:
+            self.builder.pre_validate_file(item)
+        self.assertEqual(
+            str(e.exception), "illegal character in filename 'exampleservice.xproto'"
+        )
+
+        item = DynamicLoadItem(
+            filename="example service.xproto", contents=self.example_xproto
+        )
+        with self.assertRaises(Exception) as e:
+            self.builder.pre_validate_file(item)
+        self.assertEqual(
+            str(e.exception), "illegal character in filename example service.xproto"
+        )
+
+        item = DynamicLoadItem(
+            filename="", contents=self.example_xproto
+        )
+        with self.assertRaises(Exception) as e:
+            self.builder.pre_validate_file(item)
+        self.assertEqual(
+            str(e.exception), "illegal character in filename "
+        )
+
     def test_pre_validate_models(self):
         self.builder.pre_validate_models(self.example_request)
 
@@ -322,7 +392,7 @@ y="abc"
             self.builder.pre_validate_python(python_item)
 
         self.assertEqual(
-            e.exception.message, "python file somefile.py failed compile test"
+            str(e.exception), "python file somefile.py failed compile test"
         )
 
 

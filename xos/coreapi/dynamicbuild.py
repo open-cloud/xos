@@ -15,6 +15,7 @@
 import json
 import hashlib
 import os
+import re
 import shutil
 import tempfile
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
@@ -43,8 +44,9 @@ class DynamicBuilder(object):
         )
 
     def pre_validate_file(self, item):
-        # someone might be trying to trick us into writing files outside the designated directory
-        if "/" in item.filename:
+        # various filename validations
+        #   alphas (upper and lower), digits, underscore, dash, and period.
+        if not re.match("^[\w.-]+$", item.filename):
             raise Exception("illegal character in filename %s" % item.filename)
 
     def pre_validate_python(self, item):
