@@ -17,7 +17,7 @@ import os
 import shutil
 import tempfile
 import unittest
-from mock import patch
+from mock import patch, MagicMock, Mock
 
 from xosconfig import Config
 
@@ -39,7 +39,12 @@ class DynamicLoadRequest:
 
 
 class DynamicUnloadRequest:
+    REQUIRE_CLEAN = 0
+    AUTOMATICALLY_CLEAN = 1
+    PURGE = 2
+
     def __init__(self, **kwargs):
+        self.cleanup_behavior = self.REQUIRE_CLEAN
         for (k, v) in kwargs.items():
             setattr(self, k, v)
 
@@ -216,7 +221,7 @@ message EmbeddedImage (XOSBase){
             run_xosgenx_service.assert_called()
             remove_service.assert_not_called()
 
-            self.assertEqual(result, self.builder.SOMETHING_CHANGED)
+            self.assertEqual(result, self.builder.SUCCESS)
 
             self.assertTrue(os.path.exists(self.builder.manifest_dir))
             self.assertTrue(
@@ -268,7 +273,7 @@ message EmbeddedImage (XOSBase){
             run_xosgenx_service.assert_called()
             remove_service.assert_not_called()
 
-            self.assertEqual(result, self.builder.SOMETHING_CHANGED)
+            self.assertEqual(result, self.builder.SUCCESS)
 
             self.assertTrue(os.path.exists(self.builder.manifest_dir))
             self.assertTrue(
@@ -295,7 +300,9 @@ message EmbeddedImage (XOSBase){
             )
             self.assertEqual(manifest.get("state"), "load")
 
-            self.assertEqual(manifest.get("migrations"), [{u'filename': u'migration1.py'}, {u'filename': u'migration2.py'}])
+            self.assertEqual(
+                manifest.get("migrations"),
+                [{u'filename': u'migration1.py'}, {u'filename': u'migration2.py'}])
 
     def test_handle_unloadmodels_request(self):
         with patch.object(
@@ -310,14 +317,15 @@ message EmbeddedImage (XOSBase){
             wraps=self.builder.remove_service,
         ) as remove_service:
             result = self.builder.handle_unloadmodels_request(
-                self.example_unload_request
+                self.example_unload_request,
+                {}
             )
 
             save_models.assert_called()
             run_xosgenx_service.assert_not_called()
             remove_service.assert_called()
 
-            self.assertEqual(result, self.builder.SOMETHING_CHANGED)
+            self.assertEqual(result, self.builder.SUCCESS)
 
             self.assertTrue(os.path.exists(self.builder.manifest_dir))
             self.assertTrue(
@@ -333,12 +341,95 @@ message EmbeddedImage (XOSBase){
             )
             self.assertEqual(manifest.get("state"), "unload")
 
+    def test_handle_unloadmodels_request_live_models(self):
+        with patch.object(
+            dynamicbuild.DynamicBuilder, "save_models", wraps=self.builder.save_models
+        ) as save_models, patch.object(
+            dynamicbuild.DynamicBuilder,
+            "remove_service",
+            wraps=self.builder.remove_service,
+        ) as remove_service:
+            someobject = Mock()
+            somemodel = MagicMock()
+            somemodel.objects.all.return_value = [someobject]
+            somemodel.objects.exists.return_value = True
+
+            # Test with cleanup_behavior = REQUIRE_CLEAN
+
+            result = self.builder.handle_unloadmodels_request(
+                self.example_unload_request,
+                {"somemodel": somemodel, }
+            )
+
+            save_models.assert_not_called()
+            remove_service.assert_not_called()
+
+            self.assertEqual(result, self.builder.ERROR_LIVE_MODELS)
+
+            # Test with cleanup_behavior = AUTOMATICALLY_CLEAN
+
+            self.example_unload_request.cleanup_behavior = self.example_unload_request.AUTOMATICALLY_CLEAN
+            somemodel.objects.exists.return_value = False
+            somemodel.deleted_objects.all.return_value = [someobject]
+
+            result = self.builder.handle_unloadmodels_request(
+                self.example_unload_request,
+                {"somemodel": somemodel, }
+            )
+
+            save_models.assert_not_called()
+            remove_service.assert_not_called()
+
+            self.assertEqual(result, self.builder.TRYAGAIN)
+
+            # Test with cleanup_behavior = PURGE
+
+            self.example_unload_request.cleanup_behavior = self.example_unload_request.PURGE
+            somemodel.objects.exists.return_value = False
+            somemodel.deleted_objects.all.return_value = [someobject]
+
+            result = self.builder.handle_unloadmodels_request(
+                self.example_unload_request,
+                {"somemodel": somemodel, }
+            )
+
+            save_models.assert_called()
+            remove_service.assert_called()
+
+            self.assertEqual(result, self.builder.SUCCESS)
+
+    def test_handle_unloadmodels_request_softdeleted_models(self):
+        with patch.object(
+            dynamicbuild.DynamicBuilder, "save_models", wraps=self.builder.save_models
+        ) as save_models, patch.object(
+            dynamicbuild.DynamicBuilder,
+            "remove_service",
+            wraps=self.builder.remove_service,
+        ) as remove_service:
+            someobject = Mock()
+            somemodel = MagicMock()
+            somemodel.objects.all.return_value = []
+            somemodel.objects.exists.return_value = False
+            somemodel.deleted_objects.all.return_value = [someobject]
+
+            # Test with cleanup_behavior = REQUIRE_CLEAN
+
+            result = self.builder.handle_unloadmodels_request(
+                self.example_unload_request,
+                {"somemodel": somemodel, }
+            )
+
+            save_models.assert_not_called()
+            remove_service.assert_not_called()
+
+            self.assertEqual(result, self.builder.ERROR_DELETION_IN_PROGRESS)
+
     def test_handle_loadmodels_request_twice(self):
         result = self.builder.handle_loadmodels_request(self.example_request)
-        self.assertEqual(result, self.builder.SOMETHING_CHANGED)
+        self.assertEqual(result, self.builder.SUCCESS)
 
         result = self.builder.handle_loadmodels_request(self.example_request)
-        self.assertEqual(result, self.builder.NOTHING_TO_DO)
+        self.assertEqual(result, self.builder.SUCCESS_NOTHING_CHANGED)
 
     def test_save_models(self):
         manifest = self.builder.save_models(self.example_request, state="load")

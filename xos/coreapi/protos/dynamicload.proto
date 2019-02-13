@@ -47,14 +47,25 @@ message ListConvenienceMethodsReply {
 message LoadModelsReply {
     enum LoadModelsStatus {
         SUCCESS = 0;
-        ERROR = 1;
+        SUCCESS_NOTHING_CHANGED = 1;      // Succeeded by not doing anything
+        ERROR = 101;                      // Unspecified Error
+        ERROR_LIVE_MODELS = 102;          // Live models are present during unload request
+        ERROR_DELETION_IN_PROGRESS = 103; // Soft-deleted models are present, waiting for delete steps
+        TRYAGAIN = 201;                   // Caller should try again
     }
     LoadModelsStatus status = 1;
 };
 
 message UnloadModelsRequest {
+    enum CleanupBehavior {
+        REQUIRE_CLEAN = 0;          // Return an error if live data is present (DEFAULT)
+        AUTOMATICALLY_CLEAN = 1;    // Automatically delete live data, return an in-progress response as necessary
+        PURGE = 2;                  // Forcibly purge database tables without running delete steps
+    };
+
     string name = 1;
     string version = 2;
+    CleanupBehavior cleanup_behavior = 3;
 };
 
 message ServiceModelStatus {
