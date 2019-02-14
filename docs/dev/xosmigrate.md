@@ -134,3 +134,22 @@ Here are some good reads about migrations:
 
 - <https://realpython.com/django-migrations-a-primer/#creating-migrations>
 - <https://realpython.com/data-migrations/>
+
+## Development workflow
+
+During development multiple changes to the models are often necessary. In order to continuously upgrade the service to
+proceed with development we suggest to generate a new migration every time the models are changed. This is required to
+upgrade the service multiple times during the development loop (as the core expects new migrations).
+
+This will probably lead to multiple migration files by the time your feature is complete, for example:
+
+```yaml
+- 0003-modelA-fieldA.py
+- 0004-modelA-fieldB.py
+...
+- 0007-modelB-fieldX.py
+```
+
+However, in order to maintain clarity, we suggest to submit a single migration as part of a patch.
+To do that you can simply remove all the migrations you have generated as part of your development and run the
+`xos-migrate` tool again. This will generate a single migration file for all your changes.

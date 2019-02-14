@@ -36,7 +36,7 @@ from multistructlog import create_logger
 
 def get_abs_path(dir_):
     if os.path.isabs(dir_):
-        return dir_
+        return os.path.realpath(dir_)
     if dir_[0] == '~' and not os.path.exists(dir_):
         dir_ = os.path.expanduser(dir_)
         return os.path.abspath(dir_)
@@ -54,8 +54,6 @@ def print_banner(root):
     log.info(r"---------------------------------------------------------------")
     log.debug("CORD repo root", root=root)
     log.debug("Storing logs in: %s" % os.environ["LOG_FILE"])
-    # log.debug("Config schema: %s" % os.environ['XOS_CONFIG_SCHEMA'])
-    # log.debug("Config: %s" % os.environ['XOS_CONFIG_FILE'])
     log.debug(r"---------------------------------------------------------------")
 
 
@@ -207,13 +205,14 @@ def copy_service_migrations(service_dir, service_dest_dir, service_name):
     :param service_name: string (name of the service)
     :return: void
     """
-    # FIXME Django eats this message
     log.debug("Copying %s migrations to %s" % (service_name, service_dir))
     migration_dir = os.path.join(service_dest_dir, service_name, "migrations")
     dest_dir = os.path.join(service_dir, "xos", "synchronizer", "migrations")
     if os.path.isdir(dest_dir):
         shutil.rmtree(dest_dir)  # empty the folder, we'll copy everything again
     shutil.copytree(migration_dir, dest_dir)
+    # clean after the tool, generated migrations has been moved in the service repo
+    shutil.rmtree(get_abs_path(os.path.join(migration_dir, "../")))
 
 
 def monkey_patch_migration_template():
