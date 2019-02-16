@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-from base import xproto_string_type, unquote
+from __future__ import absolute_import
+from .base import xproto_string_type, unquote
 
 
 def xproto_type_to_ui_type(f):
@@ -47,6 +47,20 @@ def xproto_options_choices_to_dict(choices):
         return list
     else:
         return None
+
+
+def xproto_dict_to_sorted_string(d):
+    """
+    sorts the dict by key and returns a string representation, which makes
+    for better consistency when testing
+    """
+    ft = []  # formatted tuples
+    for k, v in sorted(d.items(), key=lambda t: t[0]):  # sorted by key
+        if v is not None:
+            ft.append("'%s': '%s'" % (k, v))
+        else:
+            ft.append("'%s': None" % k)
+    return "{%s}" % ", ".join(ft)
 
 
 def xproto_validators(f):

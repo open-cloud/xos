@@ -134,11 +134,13 @@ function genkeys {
 }
 
 function makemigrations {
+    echo "Making migrations for core"
     python ./manage.py makemigrations core
 
     if [[ -e /opt/xos/xos/xosbuilder_migration_list ]]; then
         cat /opt/xos/xos/xosbuilder_migration_list | while read line; do
             if [[ ! -z "$line" ]]; then
+                echo "Making migrations for $line"
                 python ./manage.py makemigrations $line
             fi
         done

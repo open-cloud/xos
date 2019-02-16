@@ -13,12 +13,16 @@
 # limitations under the License.
 
 
+from __future__ import absolute_import
+
 import os
 import sys
-import yaml
-import default
-from pykwalify.core import Core as PyKwalify
+
 import pykwalify
+import yaml
+from pykwalify.core import Core as PyKwalify
+
+from . import default
 
 pykwalify.init_logging(1)
 

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-#!/usr/bin/env python
 import os
 import sys
 
@@ -23,6 +23,7 @@ if __name__ == "__main__":
 
     from django.core.management import execute_from_command_line
 
+    # this if seems circular - the xos-manage script calls this script!
     if "--makemigrations" in sys.argv:
         os.system("/opt/xos/tools/xos-manage makemigrations")
         sys.argv.remove("--makemigrations")

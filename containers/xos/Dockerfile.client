@@ -13,13 +13,13 @@
 # limitations under the License.
 
 # xosproject/xos-client
-FROM xosproject/xos-libraries:2.2.5
+FROM xosproject/xos-libraries:2.2.6
 
 # Install XOS client
 COPY lib/xos-api /tmp/xos-api
 
 # Install the VERSION file
-COPY VERSION tmp/xos-api
+COPY VERSION /tmp/xos-api/VERSION
 
 # install the client library and xossh
 RUN chdir /tmp/xos-api && python ./setup.py install

@@ -12,28 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from __future__ import absolute_import
 import unittest
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from helpers import FakeObject, XProtoTestHelpers
 
-"""The function below is for eliminating warnings arising due to the missing policy_output_validator,
-which is generated and loaded dynamically.
-"""
-
 
 def policy_output_validator(x, y):
+    """
+    For eliminating warnings arising due to the missing
+    policy_output_validator, which is generated and loaded dynamically.
+    """
     raise Exception("Validator not generated. Test failed.")
     return False
 
-
-"""
-The tests below use the Python code target to generate
-Python validation policies, set up an appropriate environment and execute the Python.
-"""
-
-
 class XProtoXOSModelValidationTest(unittest.TestCase):
+    """
+    Use the Python code target to generate Python validation policies, set up an
+    appropriate environment and execute the Python.
+    """
+
     def setUp(self):
         self.target = XProtoTestHelpers.write_tmp_target(
             "{{ xproto_fol_to_python_validator('output', proto.policies.test_policy, None, 'Necessary Failure') }}"

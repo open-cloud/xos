@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,23 +12,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-try:
-    from xosutil.autoversion_setup import setup_with_auto_version as setup
-except ImportError:
-    # xosutil is not installed. Expect this to happen when we build an egg, in which case xosgenx.version will
-    # automatically have the right version.
-    from setuptools import setup
+from __future__ import absolute_import
 
-from xosconfig.version import __version__
+import os
+from shutil import copyfile
+
+from setuptools import setup
+
+
+def version():
+    # Copy VERSION file of parent to module directory if not found
+    if not os.path.exists("xosconfig/VERSION"):
+        copyfile("../../VERSION", "xosconfig/VERSION")
+    with open("xosconfig/VERSION") as f:
+        return f.read().strip()
+
+
+def parse_requirements(filename):
+    # parse a requirements.txt file, allowing for blank lines and comments
+    requirements = []
+    for line in open(filename):
+        if line and line.startswith("#"):
+            requirements.append(line)
+    return requirements
+
 
 setup(
-    name="XosConfig",
-    version=__version__,
+    name="xosconfig",
+    version=version(),
     description="XOS Config Library",
     author="Matteo Scandolo",
-    author_email="teo@onlab.us",
+    author_email="teo@opennetworking.org",
+    classifiers=["License :: OSI Approved :: Apache Software License"],
+    license="Apache v2",
     packages=["xosconfig"],
+    install_requires=parse_requirements("requirements.txt"),
     include_package_data=True,
-    # TODO add all deps to the install_requires section
-    install_requires=["pykwalify>=1.6.0"],
 )

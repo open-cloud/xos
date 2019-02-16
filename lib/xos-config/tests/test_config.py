@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 
-import unittest
 import os
+import unittest
+
 from xosconfig import Config
 from xosconfig import Config as Config2
 
@@ -79,7 +81,7 @@ class XOSConfigTest(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             Config.init(sample_conf)
             Config2.init(sample_conf)
-        self.assertEqual(e.exception.message, "[XOS-Config] Module already initialized")
+        self.assertEqual(str(e.exception), "[XOS-Config] Module already initialized")
 
     def test_config_not_initialized(self):
         """
@@ -88,7 +90,7 @@ class XOSConfigTest(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             Config.get("database")
         self.assertEqual(
-            e.exception.message, "[XOS-Config] Module has not been initialized"
+            str(e.exception), "[XOS-Config] Module has not been initialized"
         )
 
     def test_missing_file_exception(self):
@@ -98,7 +100,7 @@ class XOSConfigTest(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             Config.init("missing_conf")
         self.assertEqual(
-            e.exception.message, "[XOS-Config] Config file not found at: missing_conf"
+            str(e.exception), "[XOS-Config] Config file not found at: missing_conf"
         )
 
     def test_yaml_not_valid(self):
@@ -108,7 +110,7 @@ class XOSConfigTest(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             Config.init(yaml_not_valid)
         self.assertTrue(
-            e.exception.message.startswith("[XOS-Config] The config format is wrong:")
+            str(e.exception).startswith("[XOS-Config] The config format is wrong:")
         )
 
     def test_invalid_format(self):
@@ -118,7 +120,7 @@ class XOSConfigTest(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             Config.init(invalid_format)
         self.assertEqual(
-            e.exception.message,
+            str(e.exception),
             (
                 "[XOS-Config] The config format is wrong: Schema validation failed:\n"
                 " - Value '['I am', 'a yaml', 'but the', 'format is not', 'correct']' is not a dict. Value path: ''."
@@ -133,7 +135,7 @@ class XOSConfigTest(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             Config.init("missing_conf")
         self.assertEqual(
-            e.exception.message, "[XOS-Config] Config file not found at: env.yaml"
+            str(e.exception), "[XOS-Config] Config file not found at: env.yaml"
         )
         del os.environ["XOS_CONFIG_FILE"]
 
@@ -145,10 +147,10 @@ class XOSConfigTest(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             Config.init(basic_conf)
         self.assertRegexpMatches(
-            e.exception.message,
+            str(e.exception),
             r"\[XOS\-Config\] Config schema not found at: (.+)env-schema\.yaml",
         )
-        # self.assertEqual(e.exception.message, "[XOS-Config] Config schema not found at: env-schema.yaml")
+        # self.assertEqual(str(e.exception), "[XOS-Config] Config schema not found at: env-schema.yaml")
         del os.environ["XOS_CONFIG_SCHEMA"]
 
     def test_schema_override_usage(self):
@@ -159,7 +161,7 @@ class XOSConfigTest(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             Config.init(basic_conf)
         self.assertEqual(
-            e.exception.message,
+            str(e.exception),
             (
                 "[XOS-Config] The config format is wrong: Schema validation failed:\n"
                 " - Key 'database' was not defined. Path: ''."

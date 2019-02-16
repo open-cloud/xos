@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 import unittest
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from helpers import XProtoTestHelpers
@@ -145,7 +146,7 @@ message Foo {
         args.inputs = xproto
         args.target = self.target_tosca_keys
         output = XOSProcessor.process(args)
-        self.assertIn("['name', ['key_4', 'key_3'], ['key_1', 'key_2']]", output)
+        self.assertIn("['name', ['key_1', 'key_2'], ['key_3', 'key_4']]", output)
 
         xproto = """
             option app_label = "test";
@@ -163,4 +164,4 @@ message Foo {
 
         args.inputs = xproto
         output = XOSProcessor.process(args)
-        self.assertIn("['name', ['key_1_id', 'key_3_id', 'key_2_id']]", output)
+        self.assertIn("['name', ['key_1_id', 'key_2_id', 'key_3_id']]", output)

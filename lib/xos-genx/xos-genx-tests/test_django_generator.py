@@ -13,6 +13,7 @@
 # limitations under the License.
 
 
+from __future__ import absolute_import
 import unittest
 import os
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
@@ -32,9 +33,9 @@ class XProtoProtobufGeneratorTest(unittest.TestCase):
         args = XOSProcessorArgs(files=[VROUTER_XPROTO], target="django.xtarget")
         output = XOSProcessor.process(args)
 
-        fields = filter(lambda s: "Field(" in s, output.splitlines())
+        fields = [s for s in output.splitlines() if "Field(" in s]
         self.assertEqual(len(fields), 2)
-        links = filter(lambda s: "Key(" in s, output.splitlines())
+        links = [s for s in output.splitlines() if "Key(" in s]
         self.assertEqual(len(links), 2)
 
     def test_optional_relations(self):
@@ -59,11 +60,11 @@ class XProtoProtobufGeneratorTest(unittest.TestCase):
         args = XOSProcessorArgs(inputs=xproto, target="django.xtarget")
         output = XOSProcessor.process(args)
 
-        null_true = filter(lambda s: "null = True" in s, output.splitlines())
-        null_false = filter(lambda s: "null = False" in s, output.splitlines())
+        null_true = [s for s in output.splitlines() if "null = True" in s]
+        null_false = [s for s in output.splitlines() if "null = False" in s]
 
-        blank_true = filter(lambda s: "blank = True" in s, output.splitlines())
-        blank_false = filter(lambda s: "blank = False" in s, output.splitlines())
+        blank_true = [s for s in output.splitlines() if "blank = True" in s]
+        blank_false = [s for s in output.splitlines() if "blank = False" in s]
 
         self.assertEqual(len(null_true), 1)
         self.assertEqual(len(null_false), 1)

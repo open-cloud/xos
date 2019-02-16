@@ -1,0 +1,8 @@
+Jinja2~=2.10
+PyYAML~=3.12
+astunparse~=1.5.0
+colorama~=0.4.1
+inflect~=1.0.1
+plyxproto~=4.0.0
+ply~=3.11
+six~=1.12.0

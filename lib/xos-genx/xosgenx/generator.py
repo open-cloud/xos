@@ -12,16 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import, print_function
 
-from __future__ import print_function
-import plyxproto.parser as plyxproto
-import jinja2
 import os
-from xos2jinja import XOS2Jinja
-from proto2xproto import Proto2XProto
-import jinja2_extensions
+import jinja2
+import plyxproto.parser as plyxproto
 import yaml
 from colorama import Fore
+
+from . import jinja2_extensions
+from .proto2xproto import Proto2XProto
+from .xos2jinja import XOS2Jinja
 
 loader = jinja2.PackageLoader(__name__, "templates")
 env = jinja2.Environment(loader=loader)
@@ -147,7 +148,7 @@ class XOSProcessor:
                 context[k] = val
             return context
         except Exception as e:
-            print(e.message)
+            print(e)
 
     @staticmethod
     def _write_single_file(rendered, dir, dest_file, quiet):
@@ -308,7 +309,11 @@ class XOSProcessor:
                 if message["name"] in args.include_models:
                     message["is_included"] = True
                 else:
-                    app_label = message.get("options", {}).get("app_label").strip('"')
+                    app_label = (
+                        message.get("options", {})
+                        .get("app_label")
+                        .strip('"')
+                    )
                     if app_label in args.include_apps:
                         message["is_included"] = True
         else:

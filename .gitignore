@@ -38,13 +38,13 @@ _book/
 
 # testing/coverage files
 nose2-junit.xml
+nose2-results.xml
 .coverage
-coverage.xml
+*coverage.xml
+cover
+.tox
 
-lib/xos-config/cover/
-lib/xos-genx/cover/
-.vscode
-
-lib/xos-kafka/build/
-lib/xos-kafka/dist/
-lib/xos-kafka/xoskafka.egg-info/
+# python module build files
+*.egg-info
+dist
+build

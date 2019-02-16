@@ -12,29 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from __future__ import absolute_import
 import unittest
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from helpers import XProtoTestHelpers
 
-"""The function below is for eliminating warnings arising due to the missing policy_output_enforcer,
-which is generated and loaded dynamically.
-"""
-
 
 def policy_output_enforcer(x, y):
+    """
+    eliminating warnings arising due to the missing policy_output_enforcer,
+    which is generated and loaded dynamically.
+    """
     raise Exception("Security enforcer not generated. Test failed.")
     return False
 
 
-"""
-The tests below use the Python code target to generate
-Python security policies, set up an appropriate environment and execute the Python.
-The security policies here deliberately made complex in order to stress the processor.
-"""
-
 
 class XProtoXOSSecurityTest(unittest.TestCase):
+    """
+    Use the Python code target to generate Python security policies, set up an
+    appropriate environment and execute the Python.  The security policies here
+    deliberately made complex in order to stress the processor.
+    """
+
     def setUp(self):
         self.target = XProtoTestHelpers.write_tmp_target(
             "{{ xproto_fol_to_python_test('output',proto.policies.test_policy, None, '0') }}"

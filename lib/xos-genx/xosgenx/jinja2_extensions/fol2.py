@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 import astunparse
 import ast
 import random
 import string
 import jinja2
-from plyxproto.parser import *
+from plyxproto.parser import lex, yacc
+from plyxproto.logicparser import FOLParser, FOLLexer
+from six.moves import range
+from six.moves import input
 
 BINOPS = ["|", "&", "->"]
 QUANTS = ["exists", "forall"]
@@ -45,10 +47,12 @@ class AutoVariable:
         self.idx = 0
         return self
 
-    def next(self):
+    def __next__(self):
         var = "i%d" % self.idx
         self.idx += 1
         return var
+
+    next = __next__  # 2to3
 
 
 def gen_random_string():
@@ -63,18 +67,18 @@ class FOL2Python:
         self.loopvar = iter(AutoVariable("i"))
         self.verdictvar = iter(AutoVariable("result"))
 
-        self.loop_variable = self.loopvar.next()
-        self.verdict_variable = self.verdictvar.next()
+        self.loop_variable = next(self.loopvar)
+        self.verdict_variable = next(self.verdictvar)
         self.context_map = context_map
 
         if not self.context_map:
             self.context_map = {"user": "self", "obj": "obj"}
 
     def loop_next(self):
-        self.loop_variable = self.loopvar.next()
+        self.loop_variable = next(self.loopvar)
 
     def verdict_next(self):
-        self.verdict_variable = self.verdictvar.next()
+        self.verdict_variable = next(self.verdictvar)
 
     def gen_enumerate(self, fol):
         pass
@@ -398,7 +402,8 @@ class FOL2Python:
                     if result['result'] == 'True':
                         return {'hoist': ['const'], 'result': result['hoist'][1]}
                     elif result['hoist'][0] in BINOPS:
-                        return {'hoist': ['const'], 'result': {result['hoist'][0]: [result['hoist'][1], {k: [var2, result['result']]}]}}
+                        return {'hoist': ['const'], 'result': {result['hoist'][0]:
+                                [result['hoist'][1], {k: [var2, result['result']]}]}}
                     else:
                         return {'hoist': ['const'], 'result': {k: [var2, result['result']]}}
                 else:
@@ -731,9 +736,10 @@ def xproto_fol_to_python_test(policy, fol, model, tag=None):
 
     if fol_reduced in ["True", "False"] and fol != fol_reduced:
         raise TrivialPolicy(
-            "Policy %(name)s trivially reduces to %(reduced)s. If this is what you want, replace its contents with %(reduced)s" % {
-                "name": policy,
-                "reduced": fol_reduced})
+            "Policy %(name)s trivially reduces to %(reduced)s."
+            "If this is what you want, replace its contents with %(reduced)s"
+            % {"name": policy, "reduced": fol_reduced}
+        )
 
     a = f2p.gen_test_function(fol_reduced, policy, tag="security_check")
 
@@ -749,9 +755,10 @@ def xproto_fol_to_python_validator(policy, fol, model, message, tag=None):
 
     if fol_reduced in ["True", "False"] and fol != fol_reduced:
         raise TrivialPolicy(
-            "Policy %(name)s trivially reduces to %(reduced)s. If this is what you want, replace its contents with %(reduced)s" % {
-                "name": policy,
-                "reduced": fol_reduced})
+            "Policy %(name)s trivially reduces to %(reduced)s."
+            "If this is what you want, replace its contents with %(reduced)s"
+            % {"name": policy, "reduced": fol_reduced}
+        )
 
     a = f2p.gen_validation_function(fol_reduced, policy, message, tag="validator")
 
@@ -762,7 +769,7 @@ def main():
     while True:
         inp = ""
         while True:
-            inp_line = raw_input()
+            inp_line = input()
             if inp_line == "EOF":
                 break
             else:

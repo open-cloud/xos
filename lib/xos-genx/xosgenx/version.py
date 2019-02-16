@@ -14,5 +14,6 @@
 
 import os
 
-# This file will be replaced by setup.py
-__version__ = "unknown"
+# read the version in from VERSION file, which is installed next to this file.
+with open(os.path.join(os.path.dirname(__file__), "VERSION")) as vf:
+    __version__ = vf.read()

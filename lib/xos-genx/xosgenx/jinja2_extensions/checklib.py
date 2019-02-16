@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 import ast
 
 
@@ -27,13 +28,13 @@ def xproto_check_synchronizer(m):
     except SyntaxError:
         return "511 Could not parse sync step %s" % sync_step_path
 
-    classes = filter(lambda x: isinstance(x, ast.ClassDef), sync_step_ast.body)
+    classes = [x for x in sync_step_ast.body if isinstance(x, ast.ClassDef)]
     found_sync_step_class = False
 
     for c in classes:
         base_names = [v.id for v in c.bases]
         if "SyncStep" in base_names or "SyncInstanceUsingAnsible" in base_names:
-            attributes = filter(lambda x: isinstance(x, ast.Assign), c.body)
+            attributes = [x for x in c.body if isinstance(x, ast.Assign)]
             for a in attributes:
                 target_names = [t.id for t in a.targets]
                 values = a.value.elts if isinstance(a.value, ast.List) else [a.value]
@@ -66,7 +67,7 @@ def xproto_check_policy(m):
     except SyntaxError:
         return "511 Could not parse sync step %s" % model_policy_path
 
-    classes = filter(lambda x: isinstance(x, ast.ClassDef), model_policy_ast.body)
+    classes = [x for x in model_policy_ast.body if isinstance(x, ast.ClassDef)]
     found_model_policy_class = False
     for c in classes:
         base_names = [v.id for v in c.bases]

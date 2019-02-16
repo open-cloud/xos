@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 import pdb
 import re
 from inflect import engine as inflect_engine_class
@@ -319,10 +318,11 @@ def xproto_base_links(m, table):
 
 
 def xproto_string_type(xptags):
-    try:
-        max_length = eval(xptags["max_length"])
-    except BaseException:
-        max_length = 1024
+    # FIXME: this try/except block assigns but never uses max_length?
+    #   try:
+    #       max_length = eval(xptags["max_length"])
+    #   except BaseException:
+    #       max_length = 1024
 
     if "varchar" not in xptags:
         return "string"
@@ -340,26 +340,59 @@ def xproto_tuplify(nested_list_or_set):
 
 
 def xproto_field_graph_components(fields, model, tag="unique_with"):
+    """
+    NOTE: Don't use set theory operators if you want repeatable tests - many
+    of them have non-deterministic behavior
+    """
+
     def find_components(graph):
+
+        # 'graph' dict structure:
+        #   - keys are strings
+        #   - values are sets containing strings that are names of other keys in 'graph'
+
+        # take keys from 'graph' dict and put in 'pending' set
         pending = set(graph.keys())
+
+        # create an empty list named 'components'
         components = []
 
+        # loop while 'pending' is true - while there are still items in the 'pending' set
         while pending:
+
+            # remove a random item from pending set, and put in 'front'
+            # this is the primary source of nondeterminism
             front = {pending.pop()}
+
+            # create an empty set named 'component'
             component = set()
 
+            # loop while 'front' is true. Front is modified below
             while front:
+
+                # take the (only?) item out of the 'front' dict, and put in 'node'
                 node = front.pop()
+
+                # from 'graph' dict take set with key of 'node' and put into 'neighbors'
                 neighbours = graph[node]
+
+                # remove the set of items in components from neighbors
                 neighbours -= component  # These we have already visited
+
+                # add all remaining neighbors to front
                 front |= neighbours
 
+                # remove neighbors from pending
                 pending -= neighbours
+
+                # add neighbors to component
                 component |= neighbours
 
-            components.append(component)
+            # append component set to components list, sorted
+            components.append(sorted(component))
 
-        return components
+        # return 'components', which is a list of sets
+        return sorted(components)
 
     field_graph = {}
     field_names = {f["name"] for f in fields}
@@ -378,6 +411,7 @@ def xproto_field_graph_components(fields, model, tag="unique_with"):
 
                 field_graph.setdefault(f["name"], set()).add(uf)
                 field_graph.setdefault(uf, set()).add(f["name"])
+
         except KeyError:
             pass
 
@@ -434,12 +468,12 @@ def xproto_type_to_swagger_type(f):
 
 def xproto_field_to_swagger_enum(f):
     if "choices" in f["options"]:
-        list = []
+        c_list = []
 
         for c in eval(xproto_unquote(f["options"]["choices"])):
-            list.append(c[0])
+            c_list.append(c[0])
 
-        return list
+        return sorted(c_list)
     else:
         return False
 

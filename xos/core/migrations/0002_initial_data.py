@@ -26,7 +26,7 @@ FIXTURES = os.path.abspath(
 def load_data_from_yaml():
     file = open(FIXTURES, "r").read()
     try:
-        data = yaml.load(file)
+        data = yaml.safe_load(file)
         return data
     except Exception as e:
         raise Exception("Cannot load inital data file: %s" % e.message)

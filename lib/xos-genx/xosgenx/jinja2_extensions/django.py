@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import print_function
-from base import *
-import pdb
+from __future__ import absolute_import, print_function
+from .base import unquote
 import re
 import sys
+from six.moves import map
 
 
 def django_content_type_string(xptags):
@@ -48,7 +48,7 @@ def django_string_type(xptags):
 
     if "content_type" in xptags:
         return django_content_type_string(xptags)
-    elif max_length < 1024 * 1024:
+    elif int(max_length) < 1024 * 1024:
         return "CharField"
     else:
         return "TextField"
@@ -208,7 +208,7 @@ def format_options_string(d):
     else:
 
         lst = []
-        for k, v in d.items():
+        for k, v in sorted(d.items(), key=lambda t: t[0]):  # sorted by key
             if k in known_validators:
                 validator_lst.append(use_native_django_validators(k, v))
             elif isinstance(v, str) and k == "default" and v.endswith('()"'):
@@ -261,7 +261,7 @@ def xproto_camel_to_underscore(name):
 def xproto_validations(options):
     try:
         return [
-            map(str.strip, validation.split(":"))
+            list(map(str.strip, validation.split(":")))
             for validation in unquote(options["validators"]).split(",")
         ]
     except KeyError:
@@ -280,7 +280,7 @@ def xproto_optioned_fields_to_list(fields, option, val):
     optioned_fields = []
     for f in fields:
         option_names = []
-        for k, v in f["options"].items():
+        for k, v in sorted(f["options"].items(), key=lambda t: t[0]):  # sorted by key
             option_names.append(k)
 
         if option in option_names and f["options"][option] == val:

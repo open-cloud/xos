@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 from xosgenx.jinja2_extensions import xproto_field_graph_components
 
 
@@ -58,18 +59,19 @@ def xproto_fields_to_tosca_keys(fields, m):
         ):
             keys.append("%s_id" % f["name"])
     # if not keys are specified and there is a name field, use that as key.
-    if len(keys) == 0 and "name" in map(lambda f: f["name"], fields):
+    if len(keys) == 0 and "name" in [f["name"] for f in fields]:
         keys.append("name")
 
-    for of in one_of:
+    for of in sorted(one_of):
         # check if the field is a link, and in case add _id
         for index, f in enumerate(of):
             try:
-                field = [
+                # FIXME: the 'field' var appears to be dead code, but exists to cause the IndexError?
+                field = [  # noqa: F841
                     x for x in fields if x["name"] == f and ("link" in x and x["link"])
                 ][0]
                 of[index] = "%s_id" % f
-            except IndexError as e:
+            except IndexError:
                 # the field is not a link
                 pass
 

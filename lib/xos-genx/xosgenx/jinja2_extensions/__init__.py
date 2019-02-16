@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Ignore this file as the * imports for Jinja2 functions are too numerous to list
+# flake8: noqa
+
+from __future__ import absolute_import
 from .django import *
 from .base import *
 from .fol2 import *

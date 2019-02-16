@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import, print_function
 
-#!/usr/bin/python
-
-from __future__ import print_function
 import argparse
-from generator import *
-from version import __version__
+import os
+from functools import reduce
+
+from six.moves import range
+
+from .generator import XOSProcessor, XOSProcessorArgs
+from .version import __version__
 
 parse = argparse.ArgumentParser(description="XOS Generative Toolchain")
 parse.add_argument(
@@ -147,7 +152,7 @@ class XosGen:
             else [args.target]
         )
 
-        for i in xrange(len(operators)):
+        for i in range(len(operators)):
             if "/" not in operators[i]:
                 # if the target is not a path, it refer to a library included one
                 operators[i] = os.path.abspath(

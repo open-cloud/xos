@@ -1,3 +1,5 @@
-include xosgenx/targets/*
+include requirements.txt
+include xosgenx/VERSION
 include xosgenx/checkers/*
 include xosgenx/jinja2_extensions/*
+include xosgenx/targets/*

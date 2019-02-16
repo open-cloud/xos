@@ -23,14 +23,16 @@
  automatically load the version number from the VERSION file, if one is detected.
 """
 
-import os
-from setuptools import setup
-
-from setuptools.command.sdist import sdist
-from setuptools.command.build_py import build_py
+from __future__ import absolute_import
 
 import inspect
-from autodiscover_version import autodiscover_version
+import os
+
+from setuptools import setup
+from setuptools.command.build_py import build_py
+from setuptools.command.sdist import sdist
+
+from .autodiscover_version import autodiscover_version
 
 
 class SdistCommand(sdist):

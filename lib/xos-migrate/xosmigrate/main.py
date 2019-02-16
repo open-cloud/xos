@@ -146,7 +146,7 @@ def get_service_name_from_config(path):
         raise Exception("Config file not found at: %s" % config)
 
     cfg_file = open(config)
-    cfg = yaml.load(cfg_file)
+    cfg = yaml.safe_load(cfg_file)
     return cfg["name"]
 
 

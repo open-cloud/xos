@@ -13,10 +13,11 @@
 # limitations under the License.
 
 
+from __future__ import absolute_import
 import unittest
 from xosgenx.jinja2_extensions import FieldNotFound
-from helpers import XProtoTestHelpers
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
+from helpers import XProtoTestHelpers
 from functools import reduce
 
 
@@ -75,7 +76,7 @@ message Foo (PlCoreBase){
             generate()
 
         self.assertEqual(
-            e.exception.message,
+            str(e.exception),
             'Field "B" not found in model "Foo", referenced from field "A" by option "unique_with"',
         )
 

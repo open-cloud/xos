@@ -1,6 +1,1 @@
-build
-dist
-XosUtil.egg-info
-.coverage
-coverage.xml
-cover
+tests/test_version.py

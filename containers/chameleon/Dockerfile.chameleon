@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # xosproject/chameleon
-FROM xosproject/xos-base:2.2.5
+FROM xosproject/xos-base:2.2.6
 
 # xos-base already has protoc and dependencies installed
 

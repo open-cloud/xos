@@ -1,2 +1,4 @@
-include xosconfig/xos-config-schema.yaml
+include requirements.txt
+include xosconfig/VERSION
 include xosconfig/synchronizer-config-schema.yaml
+include xosconfig/xos-config-schema.yaml

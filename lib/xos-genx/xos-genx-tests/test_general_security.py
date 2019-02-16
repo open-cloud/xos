@@ -12,28 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from __future__ import absolute_import
+from __future__ import print_function
 import unittest
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from helpers import XProtoTestHelpers, FakeObject
 
-"""The function below is for eliminating warnings arising due to the missing output_security_check,
-which is generated and loaded dynamically.
-"""
-
 
 def output_security_check(x, y):
+    """
+    This function eliminates warnings arising due to the missing
+    output_security_check, which is generated and loaded dynamically. This is
+    defined in the global namespace, and in python3 the globals() namespace has
+    to be passed to calls to "exec()" for the xproto-generated version to
+    redefine this function.
+    """
+
     raise Exception("Security enforcer not generated. Test failed.")
     return False
 
 
-"""
-The tests below use the Python code target to generate
-Python security policies, set up an appropriate environment and execute the Python.
-"""
-
-
 class XProtoSecurityTest(unittest.TestCase):
+    """
+    Use the Python code target to generate Python security policies, set up an
+    appropriate environment and execute the Python.
+    """
+
     def setUp(self):
         self.target = XProtoTestHelpers.write_tmp_target(
             """
@@ -48,10 +52,8 @@ class XProtoSecurityTest(unittest.TestCase):
     policy output < True >
 """
         args = XOSProcessorArgs(inputs=xproto, target=self.target)
-
         output = XOSProcessor.process(args)
-
-        exec(output)  # This loads the generated function, which should look like this:
+        exec(output, globals())  # This loads the generated function, which should look like this:
 
         """
         def output_security_check(obj, ctx):
@@ -68,10 +70,8 @@ class XProtoSecurityTest(unittest.TestCase):
 """
 
         args = XOSProcessorArgs(inputs=xproto, target=self.target)
-
         output = XOSProcessor.process(args)
-
-        exec(output)  # This loads the generated function, which should look like this:
+        exec(output, globals())  # This loads the generated function, which should look like this:
 
         """
         def output_security_check(obj, ctx):
@@ -93,12 +93,8 @@ class XProtoSecurityTest(unittest.TestCase):
 """
 
         args = XOSProcessorArgs(inputs=xproto, target=self.target)
-
         output = XOSProcessor.process(args)
-
-        exec(
-            output, globals()
-        )  # This loads the generated function, which should look like this:
+        exec(output, globals())  # This loads the generated function, which should look like this:
 
         """
         def sub_policy_security_check(obj, ctx):
@@ -130,12 +126,8 @@ class XProtoSecurityTest(unittest.TestCase):
 """
 
         args = XOSProcessorArgs(inputs=xproto, target=self.target)
-
         output = XOSProcessor.process(args)
-
-        exec(
-            output, globals()
-        )  # This loads the generated function, which should look like this:
+        exec(output, globals())  # This loads the generated function, which should look like this:
 
         """
         def sub_policy_security_check(obj, ctx):
@@ -165,9 +157,8 @@ class XProtoSecurityTest(unittest.TestCase):
 """
 
         args = XOSProcessorArgs(inputs=xproto, target=self.target)
-
         output = XOSProcessor.process(args)
-        exec(output)  # This loads the generated function, which should look like this:
+        exec(output, globals())  # This loads the generated function, which should look like this:
 
         """
         def output_security_check(obj, ctx):
@@ -192,9 +183,8 @@ class XProtoSecurityTest(unittest.TestCase):
     policy output < exists Privilege: Privilege.object_id = obj.id >
 """
         args = XOSProcessorArgs(inputs=xproto, target=self.target)
-
         output = XOSProcessor.process(args)
-        exec(output)  # This loads the generated function, which should look like this:
+        exec(output, globals())  # This loads the generated function, which should look like this:
 
         """
         def output_security_check(obj, ctx):
@@ -210,7 +200,7 @@ class XProtoSecurityTest(unittest.TestCase):
 """
         args = XOSProcessorArgs(inputs=xproto, target=self.target)
         output = XOSProcessor.process(args)
-        exec(output)  # This loads the generated function, which should look like this:
+        exec(output, globals())  # This loads the generated function, which should look like this:
 
         """
         def output_security_check(obj, ctx):
@@ -228,15 +218,15 @@ class XProtoSecurityTest(unittest.TestCase):
 """
 
         args = XOSProcessorArgs(inputs=xproto, target=self.target)
-
         output = XOSProcessor.process(args)
+        exec(output, globals())
+
         """
         def output_security_check(obj, ctx):
             i2 = Credential.objects.filter((~ Q(obj_id=obj_id)))[0]
             i1 = (not i2)
             return i1
         """
-        exec(output)
 
 
 if __name__ == "__main__":

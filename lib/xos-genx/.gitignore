@@ -1,6 +1,2 @@
-build
-dist
-XosGenX.egg-info
-.coverage
-coverage.xml
-cover
+# setup.py copies this, don't commit it
+xosgenx/VERSION

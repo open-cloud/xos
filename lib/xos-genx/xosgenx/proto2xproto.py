@@ -12,19 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 
-import plyxproto.model as m
-from plyxproto.helpers import Visitor
-import pdb
-import argparse
-import plyxproto.parser as plyxproto
-from plyxproto.logicparser import FOLParser, FOLLexer
-import traceback
-import sys
-import jinja2
-import os
 import ply.lex as lex
 import ply.yacc as yacc
+import plyxproto.model as m
+from plyxproto.helpers import Visitor
+from plyxproto.logicparser import FOLLexer, FOLParser
+from six.moves import map
 
 
 class Stack(list):
@@ -136,7 +131,7 @@ class Proto2XProto(Visitor):
             except KeyError:
                 bases = []
 
-            bases = map(lambda x: str_to_dict(x[1:-1]), bases)
+            bases = [str_to_dict(x[1:-1]) for x in bases]
             obj.bases = bases
         except KeyError:
             raise
@@ -212,8 +207,8 @@ class Proto2XProto(Visitor):
 
     def visit_MessageDefinition_post(self, obj):
         self.proto_to_xproto_message(obj)
-        obj.body = filter(lambda x: not hasattr(x, "mark_for_deletion"), obj.body)
-        obj.body = map(replace_link, obj.body)
+        obj.body = [x for x in obj.body if not hasattr(x, "mark_for_deletion")]
+        obj.body = list(map(replace_link, obj.body))
 
         self.current_message_name = None
         return True

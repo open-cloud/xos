@@ -13,6 +13,7 @@
 # limitations under the License.
 
 
+from __future__ import absolute_import
 import unittest
 import os
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
@@ -335,7 +336,7 @@ message Foo (ParentFoo) {
         args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
 
-        read_only = filter(lambda s: "read_only: True" in s, output.splitlines())
+        read_only = [s for s in output.splitlines() if "read_only: True" in s]
         self.assertEqual(len(read_only), 3)  # readonly is 1 for ParentFoo and 2 for Foo
 
 

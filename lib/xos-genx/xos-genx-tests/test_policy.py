@@ -13,10 +13,10 @@
 # limitations under the License.
 
 
+from __future__ import absolute_import
 import unittest
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from helpers import FakeObject, XProtoTestHelpers
-import pdb
 
 """
 The tests below convert the policy logic expression

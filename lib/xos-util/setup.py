@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 
 from xosutil.autoversion_setup import setup_with_auto_version
 from xosutil.version import __version__

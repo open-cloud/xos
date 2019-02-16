@@ -64,7 +64,7 @@ class ModelDefsService(modeldefs_pb2_grpc.modeldefsServicer, XOSAPIHelperMixin):
     @track_request_time("Modeldefs", "ListModelDefs")
     def ListModelDefs(self, request, context):
         ystr = open("protos/modeldefs.yaml").read()
-        yaml_repr = yaml.load(ystr)
+        yaml_repr = yaml.safe_load(ystr)
 
         modeldefs = modeldefs_pb2.ModelDefs()
 

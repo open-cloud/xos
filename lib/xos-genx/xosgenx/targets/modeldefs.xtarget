@@ -8,7 +8,7 @@ items:
   {%- if m.options.verbose_name %}
   verbose_name: "{{ xproto_unquote(m.options.verbose_name) }}"
   {%- endif %}
-  fields: 
+  fields:
   {%- set id_field = {'type':'int32', 'name':'id', 'options':{}} %}
   {% for f in (xproto_base_fields(m, proto.message_table) + m.fields + [id_field]) | sort(attribute='name') -%}
   {% if xproto_unquote(xproto_first_non_empty([f.options.gui_hidden, 'False'])) != 'True' and (not f.link or f.options.link_type != 'manytomany') -%}
@@ -25,7 +25,7 @@ items:
   {%- if f.options.choices %}
     options:
     {% for o in xproto_options_choices_to_dict(xproto_unquote(f.options.choices)) %}
-    - {{ o }}
+    - {{ xproto_dict_to_sorted_string(o) }}
     {% endfor %}
   {%- endif %}
     type: {{ xproto_type_to_ui_type(f) }}
@@ -50,4 +50,4 @@ items:
   relations: []
   {%- endif %}
 {%- endif %}
-{% endfor -%} 
+{% endfor -%}

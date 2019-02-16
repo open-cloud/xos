@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from __future__ import absolute_import
 import unittest
-
-import yaml
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from helpers import OUTPUT_DIR
 

@@ -5,7 +5,7 @@
         {% for l in model.links -%}
             ["{{ l.peer }}", "{{ l.src_port }}", "{{ l.dst_port }}"]{% if not loop.last %},{% endif %}
         {%- endfor %}
-        {%- if model.rlinks %},{% endif %}        
+        {%- if model.rlinks %},{% endif %}
         {% for l in model.rlinks -%}
             ["{{ l.peer }}", "{{ l.src_port }}", "{{ l.dst_port }}"]{% if not loop.last %},{% endif %}
         {%- endfor %}
