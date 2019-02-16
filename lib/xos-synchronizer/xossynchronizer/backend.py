@@ -111,7 +111,11 @@ class Backend:
             self.log.info("Skipping observer thread due to no steps dir.")
 
         pull_steps_dir = Config.get("pull_steps_dir")
-        if pull_steps_dir:
+        if not pull_steps_dir:
+            self.log.info("Skipping pull step engine due to no pull_steps_dir dir.")
+        elif Config.get("desired_state") == "unload":
+            self.log.info("Skipping pull steps engine due to synchronizer unloading.")
+        else:
             self.log.info("Starting XOSPullStepEngine", pull_steps_dir=pull_steps_dir)
             pull_steps_engine = XOSPullStepEngine(model_accessor=self.model_accessor)
             pull_steps_engine.load_pull_step_modules(pull_steps_dir)
@@ -119,17 +123,17 @@ class Backend:
                 target=pull_steps_engine.start, name="pull_step_engine"
             )
             pull_steps_thread.start()
-        else:
-            self.log.info("Skipping pull step engine due to no pull_steps_dir dir.")
 
         event_steps_dir = Config.get("event_steps_dir")
-        if event_steps_dir:
+        if not event_steps_dir:
+            self.log.info("Skipping event engine due to no event_steps dir.")
+        elif Config.get("desired_state") == "unload":
+            self.log.info("Skipping event engine due to synchronizer unloading.")
+        else:
             self.log.info("Starting XOSEventEngine", event_steps_dir=event_steps_dir)
             event_engine = XOSEventEngine(model_accessor=self.model_accessor, log=self.log)
             event_engine.load_event_step_modules(event_steps_dir)
             event_engine.start()
-        else:
-            self.log.info("Skipping event engine due to no event_steps dir.")
 
         # start model policies thread
         policies_dir = Config.get("model_policies_dir")

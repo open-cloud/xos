@@ -20,6 +20,10 @@ log = create_logger(Config().get("logging"))
 
 
 class ModelLoadClient(object):
+    REQUIRE_CLEAN = 0
+    AUTOMATICALLY_CLEAN = 1
+    PURGE = 2
+
     def __init__(self, api):
         self.api = api
 
@@ -67,3 +71,15 @@ class ModelLoadClient(object):
                     item.contents = open(os.path.join(migrations_dir, fn)).read()
 
         result = self.api.dynamicload.LoadModels(request)
+
+        return result
+
+    def unload_models(self, name, version="unknown", cleanup_behavior=REQUIRE_CLEAN):
+        request = self.api.dynamicload_pb2.UnloadModelsRequest(
+            name=name,
+            version=version,
+            cleanup_behavior=cleanup_behavior)
+        result = self.api.dynamicload.UnloadModels(request)
+
+        return result
+

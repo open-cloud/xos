@@ -14,6 +14,7 @@
 
 DEFAULT_VALUES = {
     "xos_dir": "/opt/xos",
+    "desired_state": "load", # synchronizers - default to "load"
     # The configuration below inherits from the standard config of the Python logging module
     # See: https://docs.python.org/2/library/logging.config.html
     # multistructlog supports this config in all of its generality

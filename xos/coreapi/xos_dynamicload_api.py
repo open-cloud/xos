@@ -117,7 +117,7 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
         try:
             builder = DynamicBuilder()
             result = builder.handle_unloadmodels_request(request,
-                                                         self.django_app_models.get("services." + request.name, []))
+                                                         self.django_app_models.get("services." + request.name, {}))
 
             if result == builder.SUCCESS:
                 self.server.delayed_shutdown(5)

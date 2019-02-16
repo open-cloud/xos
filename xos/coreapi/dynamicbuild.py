@@ -145,17 +145,24 @@ class DynamicBuilder(object):
         for (name, model) in models.items():
             if model.objects.exists():
                 if request.cleanup_behavior == request.REQUIRE_CLEAN:
+                    log.info("UnloadModels: Returning error due to live model existence", model=model)
                     return self.ERROR_LIVE_MODELS
                 elif request.cleanup_behavior == request.AUTOMATICALLY_CLEAN:
                     # Deleting the model will add it to model.deleted_objects automatically, and it will be caught
                     # by the next loop and return a TRYAGAIN as necessary.
-                    model.objects.all().delete()
+                    log.info("UnloadModels: Mass deleting", model=model)
+                    # NOTE: model.objects.all().delete() does not behave as expected.
+                    # Loop and delete each one instead.
+                    for object in model.objects.all():
+                        object.delete()
 
         for (name, model) in models.items():
             if model.deleted_objects.exists():
                 if request.cleanup_behavior == request.REQUIRE_CLEAN:
+                    log.info("UnloadModels: Returning error due to models in soft-delete", model=model)
                     return self.ERROR_DELETION_IN_PROGRESS
                 elif request.cleanup_behavior == request.AUTOMATICALLY_CLEAN:
+                    log.info("UnloadModels: Returning tryagain due to models in soft-delete", model=model)
                     return self.TRYAGAIN
 
         hash = self.generate_request_hash(request, state="unload")

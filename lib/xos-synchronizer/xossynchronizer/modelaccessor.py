@@ -28,7 +28,7 @@ import importlib
 import os
 import signal
 import sys
-import time
+from threading import Timer
 from loadmodels import ModelLoadClient
 
 from xosconfig import Config
@@ -37,6 +37,7 @@ from xosutil.autodiscover_version import autodiscover_version_of_main
 
 log = create_logger(Config().get("logging"))
 
+after_reactor_exit_code = None
 orig_sigint = None
 model_accessor = None
 
@@ -161,6 +162,43 @@ def keep_trying(client, reactor):
 
     reactor.callLater(1, functools.partial(keep_trying, client, reactor))
 
+def unload_models(client, reactor, version):
+    # This function is called by a timer until it succeeds.
+    log.info("unload_models initiated by timer")
+
+    try:
+        result = ModelLoadClient(client).unload_models(
+            Config.get("name"),
+            version=version,
+            cleanup_behavior=ModelLoadClient.AUTOMATICALLY_CLEAN)
+
+        log.debug("Unload response", result=result)
+
+        if result.status in [result.SUCCESS, result.SUCCESS_NOTHING_CHANGED]:
+            log.info("Models successfully unloaded. Exiting with status", code=0)
+            sys.exit(0)
+
+        if result.status == result.TRYAGAIN:
+            log.info("TRYAGAIN received. Expect to try again in 30 seconds.")
+
+    except Exception as e:
+        # If the synchronizer is operational, then assume the ORM's restart_on_disconnect will deal with the
+        # connection being lost.
+        log.exception("Error while unloading. Expect to try again in 30 seconds.")
+
+    Timer(30, functools.partial(unload_models, client, reactor, version)).start()
+
+def exit_while_inside_reactor(reactor, code):
+    """ Calling sys.exit() while inside reactor ends up trapped by reactor.
+
+        So what we'll do is set a flag indicating we want to exit, then stop reactor, then return
+    """
+    global after_reactor_exit_code
+
+    reactor.stop()
+    signal.signal(signal.SIGINT, orig_sigint)
+    after_reactor_exit_code = code
+
 
 def grpcapi_reconnect(client, reactor):
     global model_accessor
@@ -172,9 +210,29 @@ def grpcapi_reconnect(client, reactor):
         version = autodiscover_version_of_main(max_parent_depth=0) or "unknown"
         log.info("Service version is %s" % version)
         try:
-            ModelLoadClient(client).upload_models(
-                Config.get("name"), Config.get("models_dir"), version=version
-            )
+            if Config.get("desired_state") == "load":
+                ModelLoadClient(client).upload_models(
+                    Config.get("name"), Config.get("models_dir"), version=version
+                )
+            elif Config.get("desired_state") == "unload":
+                # Try for an easy unload. If there's no dirty models, then unload will succeed without
+                # requiring us to setup the synchronizer.
+                log.info("Trying for an easy unload_models")
+                result = ModelLoadClient(client).unload_models(
+                    Config.get("name"),
+                    version=version,
+                    cleanup_behavior=1)  # FIXME: hardcoded value for automatic delete
+                if result.status in [result.SUCCESS, result.SUCCESS_NOTHING_CHANGED]:
+                    log.info("Models successfully unloaded. Synchronizer exiting")
+                    exit_while_inside_reactor(reactor, 0)
+                    return
+
+                # We couldn't unload the easy way, so we'll have to do it the hard way. Fall through and
+                # setup the synchronizer.
+            else:
+                log.error("Misconfigured", desired_state=Config.get("desired_state"))
+                exit_while_inside_reactor(reactor, -1)
+                return
         except Exception as e:  # TODO: narrow exception scope
             if (
                 hasattr(e, "code")
@@ -242,6 +300,10 @@ def grpcapi_reconnect(client, reactor):
     # Restore the sigint handler
     signal.signal(signal.SIGINT, orig_sigint)
 
+    # Check to see if we still want to unload
+    if Config.get("desired_state") == "unload":
+        Timer(30, functools.partial(unload_models, client, reactor, version)).start()
+
 
 def config_accessor_grpcapi():
     global orig_sigint
@@ -281,6 +343,11 @@ def config_accessor_grpcapi():
     # grpcapi_callback().
 
     reactor.run()
+
+    # Catch if we wanted to stop while inside of a reactor callback
+    if after_reactor_exit_code is not None:
+        log.info("exiting with status", code=after_reactor_exit_code)
+        sys.exit(after_reactor_exit_code)
 
 
 def config_accessor_mock():
