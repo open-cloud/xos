@@ -24,8 +24,7 @@ Once the toolchain is available, you'll be able to generate migrations for the s
 The `xos-migrate` command is now available and you can see the options by running:
 
 ```bash
-xos-migrate -h
-usage: xos-migrate [-h] -s SERVICE_NAMES [-r REPO_ROOT] [-v]
+usage: xos-migrate [-h] -s SERVICE_NAMES [-r REPO_ROOT] [--check] [-v]
 
 XOS Migrations
 
@@ -34,6 +33,8 @@ optional arguments:
   -r REPO_ROOT, --repo REPO_ROOT
                         The location of the folder containing the CORD repo
                         root (default to ~/cord)
+  --check               Check if the migrations are generated for a given
+                        service. Does not apply any change.
   -v, --verbose         increase log verbosity
 
 required arguments:
@@ -153,3 +154,12 @@ This will probably lead to multiple migration files by the time your feature is 
 However, in order to maintain clarity, we suggest to submit a single migration as part of a patch.
 To do that you can simply remove all the migrations you have generated as part of your development and run the
 `xos-migrate` tool again. This will generate a single migration file for all your changes.
+
+## Validate migration status
+
+Once you are done with development you want to make sure that all the necessary migrations are generated and checked in.
+To do that you can run the `xos-migrate` tool using the `--check` flag. Here is an example:
+
+```shell
+xos-migrate -s fabric --check
+```
