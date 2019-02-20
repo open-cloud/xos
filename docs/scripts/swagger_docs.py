@@ -17,11 +17,7 @@ from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 
 CWD = OUTPUT_DIR = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 SWAGGER_DOCS_DIR = os.path.abspath(CWD + '/../swagger/specs')
-ORCHESTRATION_DIR = os.path.abspath(CWD + "/../../../")
-SERVICE_DIR = os.path.abspath(ORCHESTRATION_DIR + "/xos_services")
-PROFILE_DIR = os.path.abspath(ORCHESTRATION_DIR + "/profiles")
-
-XOS_XPROTO = os.path.abspath(CWD + "/../../xos/core/models/core.xproto")
+REPO_DIR = os.path.abspath(CWD + "/../../../")
 
 class Args:
     pass
@@ -54,7 +50,7 @@ def get_xproto_recursively(root):
         item_abs_path = os.path.abspath(root + "/" + item)
         if os.path.isdir(item_abs_path):
             files = files + get_xproto_recursively(item_abs_path)
-        elif os.path.isfile(item_abs_path):
+        elif os.path.isfile(item_abs_path) and ".xproto" in item_abs_path:
             files.append(item_abs_path)
 
     return [f for f in files if "xproto" in f]
@@ -62,13 +58,9 @@ def get_xproto_recursively(root):
 
 def main():
 
-    protos = [XOS_XPROTO]
+    protos = get_xproto_recursively(REPO_DIR)
 
-    service_protos = get_xproto_recursively(SERVICE_DIR)
-
-    profile_protos = get_xproto_recursively(PROFILE_DIR)
-
-    generate_swagger_docs(protos + service_protos + profile_protos)
+    generate_swagger_docs(protos)
 
 
 if __name__ == '__main__':
