@@ -20,7 +20,9 @@ logging:
   handlers:
     console:
       class: logging.StreamHandler
+      formatter: structured-color
+      level: INFO
   loggers:
     'multistructlog':
       handlers:
-          - console
+        - console
