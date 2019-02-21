@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # xosproject/xos-client
-FROM xosproject/xos-libraries:2.1.55
+FROM xosproject/xos-libraries:2.1.56
 
 
 # Install XOS client
@@ -22,11 +22,8 @@ COPY lib/xos-api /tmp/xos-api
 # Install the VERSION file
 COPY VERSION tmp/xos-api
 
-# Install chameleon
-COPY containers/xos/tmp.chameleon /tmp/xos-api/xosapi/chameleon
-
 # install the client library and xossh
-RUN chdir /tmp/xos-api && make
+RUN chdir /tmp/xos-api && python ./setup.py install
 
 # Label image
 ARG org_label_schema_schema_version=1.0

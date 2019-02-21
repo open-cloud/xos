@@ -26,24 +26,16 @@ except ImportError:
 
 from xosapi.version import __version__
 
-CHAMELEON_DIR = "xosapi/chameleon"
-
-if not os.path.exists(CHAMELEON_DIR):
-    raise Exception("%s does not exist!" % CHAMELEON_DIR)
-
-if not os.path.exists(os.path.join(CHAMELEON_DIR, "protos/schema_pb2.py")):
-    raise Exception("Please make the chameleon protos")
-
-# Chameleon requires these files have executable permission set.
-
 
 class InstallFixChameleonPermissions(install):
+    # Chameleon requires these files have executable permission set,
+    # but setup.py installs them without the execute bit.
     def run(self):
         install.run(self)
         for filepath in self.get_outputs():
             if filepath.endswith(
-                "chameleon/protoc_plugins/gw_gen.py"
-            ) or filepath.endswith("chameleon/protoc_plugins/swagger_gen.py"):
+                "chameleon_client/protoc_plugins/gw_gen.py"
+            ):
                 os.chmod(filepath, 0o777)
 
 
@@ -52,20 +44,12 @@ setup_result = setup(
     version=__version__,
     cmdclass={"install": InstallFixChameleonPermissions},
     description="XOS api client",
-    package_dir={"xosapi.chameleon": CHAMELEON_DIR},
     packages=[
-        "xosapi.chameleon.grpc_client",
-        "xosapi.chameleon.protos",
-        "xosapi.chameleon.utils",
-        "xosapi.chameleon.protoc_plugins",
+        "xosapi.chameleon_client",
+        "xosapi.chameleon_client.protos",
+        "xosapi.chameleon_client.protoc_plugins",
         "xosapi",
         "xosapi.convenience",
     ],
-    py_modules=["xosapi.chameleon.__init__"],
-    include_package_data=True,
-    package_data={
-        "xosapi.chameleon.protos": ["*.proto"],
-        "xosapi.chameleon.protoc_plugins": ["*.desc"],
-    },
     scripts=["xossh"],
 )

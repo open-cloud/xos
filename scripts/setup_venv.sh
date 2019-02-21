@@ -57,7 +57,7 @@ echo "xos-kafka Installed"
 popd
 
 pushd "$XOS_DIR/lib/xos-api"
-make
+python setup.py install
 echo "xos-api Installed"
 popd
 

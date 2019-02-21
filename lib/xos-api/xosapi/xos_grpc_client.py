@@ -36,7 +36,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 sys.path = [currentdir] + sys.path
 
 from xosconfig import Config
-import chameleon.grpc_client.grpc_client as chameleon_client
+import chameleon_client.grpc_client as chameleon_client
 
 from multistructlog import create_logger
 log = create_logger(Config().get("logging"))
