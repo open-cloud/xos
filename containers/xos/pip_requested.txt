@@ -49,3 +49,4 @@ shade==1.27.1
 six==1.11.0
 structlog==18.1.0
 tosca-parser==0.9.0
+semver==2.8.1

@@ -41,7 +41,6 @@ after_reactor_exit_code = None
 orig_sigint = None
 model_accessor = None
 
-
 class ModelAccessor(object):
     def __init__(self):
         self.all_model_classes = self.get_all_model_classes()
@@ -208,7 +207,7 @@ def grpcapi_reconnect(client, reactor):
 
     if Config.get("models_dir"):
         version = autodiscover_version_of_main(max_parent_depth=0) or "unknown"
-        log.info("Service version is %s" % version)
+        log.info("Service version is %s" % version, core_version=Config.get("core_version"))
         try:
             if Config.get("desired_state") == "load":
                 ModelLoadClient(client).upload_models(
@@ -246,6 +245,23 @@ def grpcapi_reconnect(client, reactor):
                 client.connected = False
                 client.connect()
                 return
+
+            elif (
+                hasattr(e, "code")
+                and callable(e.code)
+                and hasattr(e.code(), "name")
+                and (e.code().name) == "INVALID_ARGUMENT"
+            ):
+                # in this case there is a version mismatch between the service and the core,
+                # shut down the process so it's clear something is wrong
+                log.error(e.details())
+
+                # kill the process so the operator is aware something is wrong
+                log.info("shutting down")
+                exit_while_inside_reactor(reactor, 1)
+                return
+
+
             log.exception("failed to onboard models")
             # If it's some other error, then we don't need to force a reconnect. Just try the LoadModels() again.
             reactor.callLater(10, functools.partial(grpcapi_reconnect, client, reactor))

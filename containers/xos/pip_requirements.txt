@@ -140,3 +140,4 @@ WebOb==1.8.2
 Werkzeug==0.14.1
 wrapt==1.10.11
 zope.interface==4.5.0
+semver==2.8.1

@@ -32,12 +32,13 @@ message MigrationFile {
 
 message LoadModelsRequest {
     string name = 1;
-    string version = 2;
+    string version = 2; // this is the service version
     repeated Xproto xprotos = 3;
     repeated DeclFile decls = 4;
     repeated AtticFile attics = 5;
     repeated APIConvenienceFile convenience_methods = 6;
     repeated MigrationFile migrations = 7;
+    string core_version = 8; // this is the core version
 };
 
 message ListConvenienceMethodsReply {

@@ -19,7 +19,12 @@ from xosutil.autodiscover_version import autodiscover_version_of_main
 from dynamicbuild import DynamicBuilder
 from apistats import REQUEST_COUNT, track_request_time
 import grpc
+import semver
+import re
+from xosconfig import Config
+from multistructlog import create_logger
 
+log = create_logger(Config().get("logging"))
 
 class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
     def __init__(self, thread_pool, server):
@@ -54,9 +59,57 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
                         django_models[k] = v
                 self.django_app_models[app.name] = django_models
 
+    def match_major_version(self, current, expected):
+        """
+        Returns true if the major version is the same
+        :param current: semver string for the current version
+        :param expected: semver string for the expected version
+        :return: bool
+        """
+        current_parts = semver.parse(current)
+        expected = re.sub("[><=!]", "", expected)
+        expected_parts = semver.parse(expected)
+        match = current_parts["major"] == expected_parts["major"]
+        log.debug("Verifying major version",
+                  expected_major=expected_parts["major"], current_major=current_parts["major"], match=match)
+        return match
+
     @track_request_time("DynamicLoad", "LoadModels")
     def LoadModels(self, request, context):
         try:
+
+            core_version = autodiscover_version_of_main()
+            requested_core_version = request.core_version
+            log.info("Loading service models",
+                     service=request.name,
+                     service_version=request.version,
+                     requested_core_version=requested_core_version
+                )
+
+            if not requested_core_version:
+                requested_core_version = "<3.0.0"
+
+            match_version = semver.match(core_version, requested_core_version)
+            match_major = self.match_major_version(core_version, requested_core_version)
+            if not match_version:
+                log.error("Not loading service because of mismatching versions", service=request.name,
+                          core_version=core_version, requested_core_version=requested_core_version)
+                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                msg = "Service %s is requesting core version %s but actual version is %s" % (
+                request.name, requested_core_version, core_version)
+                context.set_details(msg)
+                raise Exception(msg)
+            if not match_major:
+                log.error("Not loading service because of mismatching major versions", service=request.name,
+                          core_version=core_version, requested_core_version=requested_core_version)
+                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                msg = "Service %s is requesting core version %s but actual version is %s, major version is different" % (
+                    request.name, requested_core_version, core_version)
+                context.set_details(msg)
+                raise Exception(msg)
+                context.set_details(msg)
+                raise Exception(msg)
+
             builder = DynamicBuilder()
             result = builder.handle_loadmodels_request(request)
 

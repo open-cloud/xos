@@ -70,6 +70,13 @@ class ModelLoadClient(object):
                     item.filename = fn
                     item.contents = open(os.path.join(migrations_dir, fn)).read()
 
+        # loading core requested version from synchronizer config
+        core_version = Config.get("core_version")
+        if core_version is None:
+            log.warn("Core version is not set in the config file")
+
+        request.core_version = core_version
+
         result = self.api.dynamicload.LoadModels(request)
 
         return result
