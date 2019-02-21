@@ -20,7 +20,6 @@
 # eg: xos-migrate -r ~/Sites/cord -s core -s fabric
 
 # TODO
-# - add support for services that are in the cord/orchestration/profiles folders
 # - add support to specify a name to be given to the generated migration (--name parameter in django makemigrations)
 # - add support to generate empty migrations (needed for data-only migrations)
 
@@ -31,7 +30,6 @@ import yaml
 import shutil
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from xosconfig import Config
-import subprocess
 from multistructlog import create_logger
 
 
@@ -303,7 +301,6 @@ parser.add_argument(
     help="Check if the migrations are generated for a given service. Does not apply any change."
 )
 
-# FIXME this is not working with multistructlog
 parser.add_argument(
     "-v",
     "--verbose",
@@ -334,7 +331,7 @@ def run():
 
     log.info("Services: %s" % ", ".join(args.service_names))
 
-    django_cli_args = ["makemigrations"]
+    django_cli_args = ['xos-migrate.py', "makemigrations"]
 
     # generate the code for each service and create a list of parameters to pass to django
     app_list = []
@@ -361,16 +358,20 @@ def run():
         django_cli_args.append("--check")
         django_cli_args.append("--dry-run")
 
-    cmd = "python %s %s" % (django_path, " ".join(django_cli_args))
-    result = subprocess.Popen(cmd, shell=True)
-    result.wait()
-    returncode = result.returncode
+    from django.core.management import execute_from_command_line
+
+    try:
+        log.debug("Django CLI Args", args=django_cli_args)
+        execute_from_command_line(django_cli_args)
+        returncode = 0
+    except SystemExit as e:
+        returncode = e.message
 
     if returncode != 0:
         if args.check:
             log.error("Migrations are not up to date with the service changes!")
         else:
-            log.error(result.communicate()[0])
+            log.error("An error occurred")
         sys.exit(returncode)
 
     # copying migrations back to the service
