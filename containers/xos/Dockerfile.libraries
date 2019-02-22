@@ -14,7 +14,7 @@
 
 # xosproject/xos-libraries
 
-FROM xosproject/xos-base:2.2.0
+FROM xosproject/xos-base:2.2.1
 
 # Add libraries
 COPY lib /opt/xos/lib

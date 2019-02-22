@@ -14,7 +14,7 @@
 
 # xosproject/xos-core
 
-FROM xosproject/xos-libraries:2.2.0
+FROM xosproject/xos-libraries:2.2.1
 
 # Install XOS
 ADD xos /opt/xos
