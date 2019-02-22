@@ -18,6 +18,8 @@ from protos import dynamicload_pb2_grpc
 from xosutil.autodiscover_version import autodiscover_version_of_main
 from dynamicbuild import DynamicBuilder
 from apistats import REQUEST_COUNT, track_request_time
+from authhelper import XOSAuthHelperMixin
+from decorators import translate_exceptions, require_authentication
 import grpc
 import semver
 import re
@@ -26,12 +28,13 @@ from multistructlog import create_logger
 
 log = create_logger(Config().get("logging"))
 
-class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
+class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer, XOSAuthHelperMixin):
     def __init__(self, thread_pool, server):
         self.thread_pool = thread_pool
         self.server = server
         self.django_apps = None
         self.django_apps_by_name = {}
+        XOSAuthHelperMixin.__init__(self)
 
     def stop(self):
         pass
@@ -60,6 +63,8 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
                 self.django_app_models[app.name] = django_models
 
     @track_request_time("DynamicLoad", "LoadModels")
+    @translate_exceptions("DynamicLoad", "LoadModels")
+    @require_authentication
     def LoadModels(self, request, context):
         try:
 
@@ -164,6 +169,8 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
             context.set_details(code_names.get(status, "UNKNOWN"))
 
     @track_request_time("DynamicLoad", "UnloadModels")
+    @translate_exceptions("DynamicLoad", "UnloadModels")
+    @require_authentication
     def UnloadModels(self, request, context):
         try:
             builder = DynamicBuilder()
@@ -191,6 +198,8 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
             raise e
 
     @track_request_time("DynamicLoad", "GetLoadStatus")
+    @translate_exceptions("DynamicLoad", "GetLoadStatus")
+    @require_authentication
     def GetLoadStatus(self, request, context):
         try:
             builder = DynamicBuilder()
@@ -233,6 +242,8 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer):
             raise e
 
     @track_request_time("DynamicLoad", "GetConvenienceMethods")
+    @translate_exceptions("DynamicLoad", "GetConvenienceMethods")
+    @require_authentication
     def GetConvenienceMethods(self, request, context):
         # self.authenticate(context, required=True)
         try:

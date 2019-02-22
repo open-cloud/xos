@@ -6,7 +6,8 @@ from apistats import track_request_time, REQUEST_COUNT
 
 from django.contrib.auth import authenticate as django_authenticate
 from xos.exceptions import *
-from apihelper import XOSAPIHelperMixin, translate_exceptions
+from apihelper import XOSAPIHelperMixin
+from decorators import translate_exceptions
 import grpc
 
 class XosService(xos_pb2_grpc.xosServicer, XOSAPIHelperMixin):

@@ -14,7 +14,7 @@
 
 # xosproject/chameleon
 
-FROM xosproject/xos-base:2.2.1
+FROM xosproject/xos-base:2.2.2
 
 # xos-base already has protoc and dependencies installed
 

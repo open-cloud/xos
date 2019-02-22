@@ -32,8 +32,7 @@ sys.path.append(xos_path)
 Config.init()
 log = create_logger(Config().get("logging"))
 
-from xos_dynamicload_api import DynamicLoadService
-from protos import schema_pb2, schema_pb2_grpc, dynamicload_pb2_grpc
+from protos import schema_pb2, schema_pb2_grpc
 
 SERVER_KEY = "/opt/cord_profile/core_api_key.pem"
 SERVER_CERT = "/opt/cord_profile/core_api_cert.pem"
@@ -127,6 +126,18 @@ class XOSGrpcServer(object):
         except BaseException:
             log.exception("Failed to initialize django")
 
+    def register_dynamicload(self):
+        from xos_dynamicload_api import DynamicLoadService
+        from protos import dynamicload_pb2_grpc
+
+        dynamic_load_service = DynamicLoadService(self.thread_pool, self)
+        self.register(
+            "dynamicload",
+            dynamicload_pb2_grpc.add_dynamicloadServicer_to_server,
+            dynamic_load_service,
+        )
+        dynamic_load_service.set_django_apps(self.django_apps)
+
     def register_core(self):
         from xos_grpc_api import XosService
         from protos import xos_pb2_grpc
@@ -164,21 +175,20 @@ class XOSGrpcServer(object):
             SchemaService(self.thread_pool),
         )
 
-        dynamic_load_service = DynamicLoadService(self.thread_pool, self)
-        self.register(
-            "dynamicload",
-            dynamicload_pb2_grpc.add_dynamicloadServicer_to_server,
-            dynamic_load_service,
-        )
+        if self.model_status != 0:
+            log.error("Models are boken. Please remove the synchronizer causing the problem and restart the core.")
+            sys.exit(-1)
 
-        if self.model_status == 0:
-            self.init_django()
+        self.init_django()
 
-        if self.django_initialized:
-            dynamic_load_service.set_django_apps(self.django_apps)
-            self.register_core()
-            self.register_utility()
-            self.register_modeldefs()
+        if not self.django_initialized:
+            log.error("Django is boken. Please remove the synchronizer causing the problem and restart the core.")
+            sys.exit(-1)
+
+        self.register_dynamicload()
+        self.register_core()
+        self.register_utility()
+        self.register_modeldefs()
 
         # open port
         self.server.add_insecure_port("[::]:%s" % self.port)
