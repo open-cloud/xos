@@ -32,7 +32,6 @@ import sys
 from threading import Timer
 
 from xosconfig import Config
-from xosutil.autodiscover_version import autodiscover_version_of_main
 
 from .loadmodels import ModelLoadClient
 
@@ -204,6 +203,19 @@ def exit_while_inside_reactor(reactor, code):
     after_reactor_exit_code = code
 
 
+def get_synchronizer_version():
+    import __main__ as synchronizer_main
+
+    # VERSION file should be in same directory as the synchronizer's __main__
+    if hasattr(synchronizer_main, "__file__"):
+        version_fn = os.path.join(os.path.dirname(synchronizer_main.__file__), "VERSION")
+        if os.path.exists(version_fn):
+            version = open(version_fn, "rt").readline().strip()
+            if version:
+                return version
+        return "unknown"
+
+
 def grpcapi_reconnect(client, reactor):
     global model_accessor
 
@@ -211,7 +223,7 @@ def grpcapi_reconnect(client, reactor):
     # is waiting on our models.
 
     if Config.get("models_dir"):
-        version = autodiscover_version_of_main(max_parent_depth=0) or "unknown"
+        version = get_synchronizer_version()
         log.info("Service version is %s" % version, core_version=Config.get("core_version"))
         try:
             if Config.get("desired_state") == "load":
