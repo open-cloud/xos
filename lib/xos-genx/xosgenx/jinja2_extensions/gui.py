@@ -96,17 +96,23 @@ def is_number(s):
 
 
 def xproto_default_to_gui(default):
+    # TODO: Using `eval` here is potentially dangerous as it may allow code injection
     val = "null"
-    if is_number(default):
-        val = str(default)
-    elif eval(default) is True:
-        val = "true"
-    elif eval(default) is False:
-        val = "false"
-    elif eval(default) is None:
+    try:
+        if is_number(default):
+            val = str(default)
+        elif eval(default) is True:
+            val = "true"
+        elif eval(default) is False:
+            val = "false"
+        elif eval(default) is None:
+            val = "null"
+        else:
+            val = str(default)
+    except NameError:
+        # val was a function call, and we can't pass those to the GUI
         val = "null"
-    else:
-        val = str(default)
+
     return val
 
 

@@ -292,7 +292,6 @@ class TenantWithContainerPolicy(Policy):
                 assert node is not None
                 assert desired_image is not None
                 assert tenant.creator is not None
-                assert node.site_deployment.deployment is not None
                 assert flavor is not None
 
                 try:
@@ -301,7 +300,6 @@ class TenantWithContainerPolicy(Policy):
                         node=node,
                         image=desired_image,
                         creator=tenant.creator,
-                        deployment=node.site_deployment.deployment,
                         flavor=flavor,
                         isolation=slice.default_isolation,
                         parent=parent,

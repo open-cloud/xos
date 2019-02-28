@@ -7,19 +7,7 @@
         
         
         
-         
-        
-        
-        
-        
-        
-        
-        
-        ["ControllerUser", "controllerusers", "user"],
-        
-        
-        ["Site", "site", "users"],
-        ["DashboardView", "dashboards", "user"]
+        ["Site", "site", "users"]
         
     ], 
     
@@ -27,17 +15,6 @@
         
         
         
-        
-        
-         
-        
-        
-        
-        
-        
-        
-        
-        ["ControllerPrivilege", "controllerprivileges", "privilege"]
         
         
         
@@ -52,165 +29,17 @@
         ["Service", "service", "addresspools"]
         
     ], 
-     
     
-    "ControllerDashboardView": [
+    "ComputeServiceInstance": [
         
         
         
         
         
-        ["Controller", "controller", "controllerdashboardviews"],
-        ["DashboardView", "dashboardView", "controllerdashboardviews"]
-        
-    ], 
-    
-    "ControllerImages": [
-        
-        
-        
-        
-        
-        ["Image", "image", "controllerimages"],
-        ["Controller", "controller", "controllerimages"]
-        
-    ], 
-    
-    "ControllerNetwork": [
-        
-        
-        
-        
-        
-        ["Network", "network", "controllernetworks"],
-        ["Controller", "controller", "controllernetworks"]
-        
-    ], 
-    
-    "ControllerRole": [
-        
-        
-        
-        
-        
-        
-    ], 
-    
-    "ControllerSite": [
-        
-        
-        
-        
-        
-        ["Site", "site", "controllersite"],
-        ["Controller", "controller", "controllersite"]
-        
-    ], 
-    
-    "ControllerPrivilege": [
-        
-        
-        
-        
-        
-        ["Controller", "controller", "controllerprivileges"],
-        ["Privilege", "privilege", "controllerprivileges"]
-        
-    ], 
-    
-    "ControllerSitePrivilege": [
-        
-        
-        
-        
-        
-        ["Controller", "controller", "controllersiteprivileges"],
-        ["SitePrivilege", "site_privilege", "controllersiteprivileges"]
-        
-    ], 
-    
-    "ControllerSlice": [
-        
-        
-        
-        
-        
-        ["Controller", "controller", "controllerslices"],
-        ["Slice", "slice", "controllerslices"]
-        
-    ], 
-    
-    "ControllerSlicePrivilege": [
-        
-        
-        
-        
-        
-        ["Controller", "controller", "controllersliceprivileges"],
-        ["SlicePrivilege", "slice_privilege", "controllersliceprivileges"]
-        
-    ], 
-    
-    "ControllerUser": [
-        
-        
-        
-        
-        
-        ["User", "user", "controllerusers"],
-        ["Controller", "controller", "controllersusers"]
-        
-    ], 
-    
-    "DashboardView": [
-        
-        
-        
-        
-        
-         
-        
-        
-        
-        
-        
-        
-        
-        ["ControllerDashboardView", "controllerdashboardviews", "dashboardView"],
-        
-        
-        ["Controller", "controllers", "dashboardviews"],
-        ["Deployment", "deployments", "dashboardviews"]
-        
-    ], 
-    
-    "Deployment": [
-        
-        
-        
-        
-        
-        
-    ], 
-    
-    "DeploymentPrivilege": [
-        
-        
-        
-        
-        
-        ["User", "user", "deploymentprivileges"],
-        ["Deployment", "deployment", "deploymentprivileges"],
-        ["DeploymentRole", "role", "deploymentprivileges"]
-        
-    ], 
-    
-    "DeploymentRole": [
-        
-        
-        
-        
-        
+        ["Service", "owner", "service_instances"],
+        ["ServiceInstance", "master_serviceinstance", "child_serviceinstances"],
+        ["Slice", "slice", "computeserviceinstances"],
+        ["Image", "image", "computeserviceinstances"]
         
     ], 
     
@@ -229,44 +58,6 @@
         
         
         
-         
-        
-        
-        
-        
-        
-        
-        
-        ["ControllerImages", "controllerimages", "image"]
-        
-        
-        
-    ], 
-    
-    "ImageDeployments": [
-        
-        
-        
-        
-        
-        ["Image", "image", "imagedeployments"],
-        ["Deployment", "deployment", "imagedeployments"]
-        
-    ], 
-    
-    "Instance": [
-        
-        
-        
-        
-        
-        ["Image", "image", "instances"],
-        ["User", "creator", "instances"],
-        ["Slice", "slice", "instances"],
-        ["Deployment", "deployment", "instance_deployment"],
-        ["Node", "node", "instances"],
-        ["Flavor", "flavor", "instance"],
-        ["Instance", "parent", "instance"]
         
     ], 
     
@@ -276,20 +67,10 @@
         
         
         
-         
-        
-        
-        
-        
-        
-        
-        
-        ["ControllerNetwork", "controllernetworks", "network"],
-        
-        
         ["NetworkTemplate", "template", "network"],
         ["Slice", "owner", "ownedNetworks"],
         ["Slice", "permitted_slices", "availableNetworks"]
+        
     ], 
     
     "NetworkParameter": [
@@ -337,7 +118,7 @@
         
         
         
-        ["SiteDeployment", "site_deployment", "nodes"]
+        ["Site", "site", "nodes"]
         
     ], 
     
@@ -358,17 +139,22 @@
         
         
         ["Network", "network", "links"],
-        ["Instance", "instance", "ports"]
+        ["ServiceInstance", "service_instance", "ports"]
+        
+    ], 
+    
+    "Principal": [
+        
+        
+        
+        
+        
+        ["TrustDomain", "trust_domain", "principals"]
         
     ], 
     
     "Role": [
         
-        
-        
-        
-        
-         
         
         
         
@@ -382,6 +168,16 @@
         
         
         
+        
+    ], 
+    
+    "ServicePort": [
+        
+        
+        
+        
+        
+        ["Service", "service", "serviceports"]
         
     ], 
     
@@ -406,67 +202,12 @@
         
     ], 
     
-    "ServiceMonitoringAgentInfo": [
-        
-        
-        
-        
-        
-        ["Service", "service", "servicemonitoringagents"]
-        
-    ], 
-    
-    "ServicePrivilege": [
-        
-        
-        
-        
-        
-        ["User", "user", "serviceprivileges"],
-        ["Service", "service", "serviceprivileges"],
-        ["ServiceRole", "role", "serviceprivileges"]
-        
-    ], 
-    
-    "ServiceRole": [
-        
-        
-        
-        
-        
-        
-    ], 
-    
     "Site": [
         
         
         
         
         
-         
-        
-        
-        
-        
-        
-        
-        
-        ["ControllerSite", "controllersite", "site"],
-        
-        
-        ["Deployment", "deployments", "sites"]
-        
-    ], 
-    
-    "SiteDeployment": [
-        
-        
-        
-        
-        
-        ["Site", "site", "sitedeployments"],
-        ["Deployment", "deployment", "sitedeployments"],
-        ["Controller", "controller", "sitedeployments"]
         
     ], 
     
@@ -474,17 +215,6 @@
         
         
         
-        
-        
-         
-        
-        
-        
-        
-        
-        
-        
-        ["ControllerSitePrivilege", "controllersiteprivileges", "site_privilege"],
         
         
         ["User", "user", "siteprivileges"],
@@ -508,23 +238,14 @@
         
         
         
-         
-        
-        
-        
-        
-        
-        
-        
-        ["ControllerSlice", "controllerslices", "slice"],
-        
-        
         ["Site", "site", "slices"],
         ["Service", "service", "slices"],
         ["User", "creator", "slices"],
         ["Flavor", "default_flavor", "slices"],
         ["Image", "default_image", "slices"],
-        ["Node", "default_node", "slices"]
+        ["Node", "default_node", "slices"],
+        ["TrustDomain", "trust_domain", "slices"],
+        ["Principal", "principal", "slices"]
         
     ], 
     
@@ -532,17 +253,6 @@
         
         
         
-        
-        
-         
-        
-        
-        
-        
-        
-        
-        
-        ["ControllerSlicePrivilege", "controllersliceprivileges", "slice_privilege"],
         
         
         ["User", "user", "sliceprivileges"],
@@ -596,7 +306,8 @@
         
         
         
-        ["Service", "owner", "service_instances"]
+        ["Service", "owner", "service_instances"],
+        ["ServiceInstance", "master_serviceinstance", "child_serviceinstances"]
         
     ], 
     
@@ -624,19 +335,17 @@
         
     ], 
     
-    "TenantWithContainer": [
+    "TrustDomain": [
         
         
         
         
         
-        ["Service", "owner", "service_instances"],
-        ["Instance", "instance", "+"],
-        ["User", "creator", "+"]
+        ["Service", "owner", "owned_trust_domains"]
         
     ], 
     
-    "XOS": [
+    "XOSCore": [
         
         
         
@@ -646,6 +355,15 @@
     ], 
     
     "XOSGuiExtension": [
+        
+        
+        
+        
+        
+        
+    ], 
+    
+    "ServiceGraphConstraint": [
         
         
         

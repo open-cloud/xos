@@ -65,39 +65,22 @@ class TestScheduling(unittest.TestCase):
 
     def test_load_steps(self):
         step_names = [s.__name__ for s in self.steps]
-        self.assertIn("SyncControllerSlices", step_names)
+        self.assertIn("SyncPort", step_names)
 
     def test_load_deps(self):
         self.synchronizer.load_dependency_graph()
         graph = self.synchronizer.model_dependency_graph
-        self.assertTrue(graph[False].has_edge("Instance", "Slice"))
-        self.assertTrue(graph[True].has_edge("Slice", "Instance"))
-        self.assertTrue(graph[False].has_edge("Slice", "ControllerSlice"))
-        self.assertTrue(graph[True].has_edge("ControllerSlice", "Slice"))
-
-    def test_load_dep_accessors(self):
-        self.synchronizer.load_dependency_graph()
-        graph = self.synchronizer.model_dependency_graph
-        self.assertDictContainsSubset(
-            {"src_accessor": "controllerslices"},
-            graph[False]["Slice"]["ControllerSlice"],
-        )
-        self.assertDictContainsSubset(
-            {"src_accessor": "slice", "dst_accessor": "controllerslices"},
-            graph[True]["Slice"]["ControllerSlice"],
-        )
+        self.assertTrue(graph[False].has_edge("Slice", "Site"))
+        self.assertTrue(graph[True].has_edge("Site", "Slice"))
 
     def test_load_sync_steps(self):
         self.synchronizer.load_sync_steps()
         model_to_step = self.synchronizer.model_to_step
         step_lookup = self.synchronizer.step_lookup
         self.assertIn(
-            ("ControllerSlice", ["SyncControllerSlices"]), model_to_step.items()
-        )
-        self.assertIn(
             ("Port", ["SyncPort"]), model_to_step.items()
         )
-        self.assertIn(("SiteRole", ["SyncRoles"]), model_to_step.items())
+        self.assertIn(("Image", ["SyncImages"]), model_to_step.items())
 
         for k, v in model_to_step.items():
             val = v[0]

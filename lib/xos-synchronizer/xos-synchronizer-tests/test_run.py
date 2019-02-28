@@ -86,24 +86,11 @@ class TestRun(unittest.TestCase):
         sys.path = self.sys_path_save
         os.chdir(self.cwd_save)
 
-    @mock.patch(
-        "test_steps.sync_instances.ansiblesyncstep.run_template",
-        side_effect=run_fake_ansible_template,
-    )
-    def test_run_once(self, mock_run_template):
+    def test_run_once(self):
         pending_objects, pending_steps = self.synchronizer.fetch_pending()
         pending_objects2 = list(pending_objects)
 
-        any_cs = next(
-            obj for obj in pending_objects if obj.leaf_model_name == "ControllerSlice"
-        )
-        any_instance = next(
-            obj for obj in pending_objects2 if obj.leaf_model_name == "Instance"
-        )
-
         slice = Slice()
-        any_instance.slice = slice
-        any_cs.slice = slice
 
         self.synchronizer.run_once()
 

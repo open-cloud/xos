@@ -225,6 +225,9 @@ class ModelAccessor(object):
 
 model_accessor = ModelAccessor()
 
+def get_first_site():
+    return model_accessor.Site.objects.first().id
+
 class ObjectSet(object):
     def __init__(self, objects):
         self.objects = objects

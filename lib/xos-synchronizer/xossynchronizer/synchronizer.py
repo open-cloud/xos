@@ -33,8 +33,7 @@ class Synchronizer(object):
         wait = False
         while not models_active:
             try:
-                _i = self.model_accessor.Instance.objects.first()
-                _n = self.model_accessor.NetworkTemplate.objects.first()
+                _i = self.model_accessor.Site.objects.first()
                 models_active = True
             except Exception as e:
                 self.log.info("Exception", e=e)

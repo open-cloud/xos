@@ -44,6 +44,12 @@ log = create_logger(Config().get("logging"))
 XOS_GLOBAL_DEFAULT_SECURITY_POLICY = True
 
 
+def get_first_site():
+    # Hackish solution to Node.site needing a default
+    from site import Site
+    return Site.objects.first().id
+
+
 def json_handler(obj):
     if isinstance(obj, pytz.tzfile.DstTzInfo):
         # json can't serialize DstTzInfo

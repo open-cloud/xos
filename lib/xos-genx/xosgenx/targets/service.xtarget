@@ -2,14 +2,14 @@
 {% set legacy_tag = '_decl' %}
 {% set legacy = True %}
 from core.models.xosbase import *
-from core.models import ServiceInstance, TenantWithContainer
+from core.models import ServiceInstance
 {% else %}
 {% set legacy = False %}
 {% set legacy_tag = '' %}
 {% if file_exists('../header.py') or file_exists('header.py')-%}from header import *
 {% else %}
 from core.models.xosbase import *
-from core.models import ServiceInstance, TenantWithContainer
+from core.models import ServiceInstance
 {% endif %}
 {% endif %}
 
