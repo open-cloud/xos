@@ -243,9 +243,9 @@ class XOSProcessor:
             )
 
         if args.output is not None and not os.path.isabs(args.output):
-            raise Exception("[XosGenX] The output dir must be an absolute path!")
+            raise Exception("[XosGenX] The output dir (%s) must be an absolute path!" % args.output)
         if args.output is not None and not os.path.isdir(args.output):
-            raise Exception("[XosGenX] The output dir must be a directory!")
+            raise Exception("[XosGenX] The output dir (%s) must be a directory!" % args.output)
 
         if hasattr(args, "files"):
             inputs = XOSProcessor._read_input_from_files(args.files)

@@ -14,7 +14,7 @@
 
 # xosproject/xos-client
 
-FROM xosproject/xos-libraries:2.2.2
+FROM xosproject/xos-libraries:2.2.3
 
 # Install XOS client
 COPY lib/xos-api /tmp/xos-api

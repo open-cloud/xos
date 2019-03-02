@@ -32,13 +32,20 @@ from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from xosconfig import Config
 from multistructlog import create_logger
 
-
 def get_abs_path(dir_):
+    """ Convert a path specified by the user, which might be relative or based on
+        home directory location, into an absolute path.
+    """
     if os.path.isabs(dir_):
         return os.path.realpath(dir_)
     if dir_[0] == "~" and not os.path.exists(dir_):
         dir_ = os.path.expanduser(dir_)
         return os.path.abspath(dir_)
+    return os.path.abspath(os.path.join(os.getcwd(), dir_))
+
+
+def get_migration_library_path(dir_):
+    """ Return a directory relative to the location of the migration library """
     return os.path.dirname(os.path.realpath(__file__)) + "/" + dir_
 
 
@@ -265,9 +272,9 @@ def configure_logging(verbose):
 
 
 # SETTING ENV
-os.environ["LOG_FILE"] = get_abs_path("django.log")
-os.environ["XOS_CONFIG_SCHEMA"] = get_abs_path("migration_cfg_schema.yaml")
-os.environ["XOS_CONFIG_FILE"] = get_abs_path("migration_cfg.yaml")
+os.environ["LOG_FILE"] = get_migration_library_path("django.log")
+os.environ["XOS_CONFIG_SCHEMA"] = get_migration_library_path("migration_cfg_schema.yaml")
+os.environ["XOS_CONFIG_FILE"] = get_migration_library_path("migration_cfg.yaml")
 os.environ["MIGRATIONS"] = "true"
 # this is populated in case we generate migrations for services and it's used in settings.py
 os.environ["INSTALLED_APPS"] = ""
