@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from __future__ import print_function
 from base import *
 import pdb
 import re
+import sys
 
 
 def django_content_type_string(xptags):
@@ -83,48 +84,75 @@ def xproto_django_link_type(f):
 
 
 def map_xproto_to_django(f):
+
     allowed_keys = [
-        "help_text",
-        "default",
-        "max_length",
-        "modifier",
+        "auto_now_add",
         "blank",
         "choices",
         "db_index",
-        "null",
+        "default",
         "editable",
-        "on_delete",
-        "verbose_name",
-        "auto_now_add",
-        "unique",
-        "min_value",
+        "help_text",
+        "max_length",
         "max_value",
+        "min_value",
+        "null",
+        "on_delete",
+        "unique",
+        "verbose_name",
     ]
 
-    if f.get("link_type") == "manytomany":
-        # map for fields that do not support null
-        m = {
-            "modifier": {"optional": True, "required": False, "_targets": ["blank"]}
-        }
-    else:
-        # map for fields that do support null
-        # TODO evaluate if setting Null = False for all strings
-        m = {
-            "modifier": {"optional": True, "required": False, "_targets": ["null", "blank"]}
-        }
+    out = {}  # output dictionary
 
-    out = {}
-
+    # filter options dict to only have allowed keys
     for k, v in f["options"].items():
         if k in allowed_keys:
-            try:
-                # NOTE this will be used to parse xproto optional/required field prefix
-                # and apply it to the null and blank fields
-                kv2 = m[k]
-                for t in kv2["_targets"]:
-                    out[t] = kv2[v]
-            except BaseException:
-                out[k] = v
+            out[k] = v
+
+    # deal with optional/required modifier fields, and manytomany links
+    # modifier is not added to "out" dict, but affects blank/null truth
+    modifier = f["options"].get('modifier')
+    link_type = f.get("link_type")
+
+    # in some tests, there is no field type
+    if "type" in f:
+        field_type = f["type"]
+    else:
+        field_type = None
+
+    mod_out = {}
+
+    if modifier == "required":
+
+        if field_type == "string":
+            if "blank" not in out:  # if blank is already set, honor that value
+                mod_out["blank"] = 'True'  # by default, required strings can be blank
+        else:
+            mod_out["blank"] = 'False'  # but other required fields can't be blank
+
+        if link_type != "manytomany":
+            mod_out["null"] = 'False'
+
+    elif modifier == "optional":
+
+        mod_out["blank"] = 'True'
+
+        # set defaults on link types
+        if link_type != "manytomany" and field_type != "bool":
+            mod_out["null"] = 'True'
+
+    else:
+        print("map_xproto_to_django - unknown modifier type: %s on %s" % (modifier, f), file=sys.stderr)
+
+    # print an error if there's a field conflict
+    for kmo in mod_out.keys():
+        if kmo in out:
+            if out[kmo] != mod_out[kmo]:
+                print("Option '%s' is manually set to value '%s', which "
+                      "conflicts with value '%s' set automatically by modifier on field: %s" %
+                      (kmo, out[kmo], mod_out[kmo], f), file=sys.stderr)
+
+    out.update(mod_out)  # overwrite out keys with mod_out
 
     return out
 

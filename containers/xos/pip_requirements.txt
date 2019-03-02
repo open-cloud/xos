@@ -86,7 +86,7 @@ pika==0.12.0
 pika-pool==0.1.3
 pipdeptree==0.13.0
 ply==3.11
-plyxproto==3.1.0
+plyxproto==4.0.0
 prettytable==0.7.2
 prometheus-client==0.4.0
 protobuf==3.5.2

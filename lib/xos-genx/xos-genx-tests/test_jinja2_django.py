@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import unittest
 from xosgenx.jinja2_extensions.django import *
 
@@ -33,13 +32,13 @@ class Jinja2BaseTests(unittest.TestCase):
         field = {"name": "foo", "options": {"modifier": "required"}}
 
         res = map_xproto_to_django(field)
-        self.assertEqual(res, {"blank": False, "null": False})
+        self.assertEqual(res, {"blank": "False", "null": "False"})
 
     def test_xproto_optional_to_django(self):
         field = {"name": "foo", "options": {"modifier": "optional"}}
 
         res = map_xproto_to_django(field)
-        self.assertEqual(res, {"blank": True, "null": True})
+        self.assertEqual(res, {"blank": "True", "null": "True"})
 
     def test_map_xproto_to_django(self):
 
