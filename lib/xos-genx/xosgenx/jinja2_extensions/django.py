@@ -124,11 +124,7 @@ def map_xproto_to_django(f):
 
     if modifier == "required":
 
-        if field_type == "string":
-            if "blank" not in out:  # if blank is already set, honor that value
-                mod_out["blank"] = 'True'  # by default, required strings can be blank
-        else:
-            mod_out["blank"] = 'False'  # but other required fields can't be blank
+        mod_out["blank"] = 'False'
 
         if link_type != "manytomany":
             mod_out["null"] = 'False'

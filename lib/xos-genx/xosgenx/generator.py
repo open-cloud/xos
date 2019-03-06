@@ -19,10 +19,12 @@ import jinja2
 import plyxproto.parser as plyxproto
 import yaml
 from colorama import Fore
+import sys
 
 from . import jinja2_extensions
 from .proto2xproto import Proto2XProto
 from .xos2jinja import XOS2Jinja
+from .validator import XProtoValidator
 
 loader = jinja2.PackageLoader(__name__, "templates")
 env = jinja2.Environment(loader=loader)
@@ -49,6 +51,7 @@ class XOSProcessorArgs:
         []
     )  # If neither include_models nor include_apps is specified, then all models will
     default_include_apps = []  # be included.
+    default_strict_validation = False
 
     def __init__(self, **kwargs):
         # set defaults
@@ -64,6 +67,7 @@ class XOSProcessorArgs:
         self.default_checkers = XOSProcessorArgs.default_target
         self.include_models = XOSProcessorArgs.default_include_models
         self.include_apps = XOSProcessorArgs.default_include_apps
+        self.strict_validation = XOSProcessorArgs.default_strict_validation
 
         # override defaults with kwargs
         for (k, v) in kwargs.items():
@@ -73,11 +77,18 @@ class XOSProcessorArgs:
 class XOSProcessor:
     @staticmethod
     def _read_input_from_files(files):
+        """ Read the files and return the combined text read.
+
+            Also returns a list of (line_number, filename) tuples that tell which
+            starting line corresponds to each file.
+        """
+        line_map = []
         input = ""
         for fname in files:
             with open(fname) as infile:
+                line_map.append( (len(input.split("\n")), fname) )
                 input += infile.read()
-        return input
+        return (input, line_map)
 
     @staticmethod
     def _attach_parser(ast, args):
@@ -249,9 +260,10 @@ class XOSProcessor:
             raise Exception("[XosGenX] The output dir (%s) must be a directory!" % args.output)
 
         if hasattr(args, "files"):
-            inputs = XOSProcessor._read_input_from_files(args.files)
+            (inputs, line_map) = XOSProcessor._read_input_from_files(args.files)
         elif hasattr(args, "inputs"):
             inputs = args.inputs
+            line_map = []
         else:
             raise Exception("[XosGenX] No inputs provided!")
 
@@ -319,6 +331,14 @@ class XOSProcessor:
         else:
             for message in v.messages:
                 message["is_included"] = True
+
+        validator = XProtoValidator(v.models, line_map)
+        validator.validate()
+        if validator.errors:
+            if args.strict_validation or (args.verbosity>=0):
+                validator.print_errors()
+            if args.strict_validation:
+                sys.exit(-1)
 
         if args.output is not None and args.write_to_file == "model":
             rendered = {}

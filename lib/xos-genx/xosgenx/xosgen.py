@@ -125,6 +125,14 @@ parse.add_argument(
     help="xproto files to compile",
 )
 
+parse.add_argument(
+    "--strict-validation",
+    dest="strict_validation",
+    action="store_true",
+    default=XOSProcessorArgs.default_strict_validation,
+    help="Exit if validation fails",
+)
+
 CHECK = 1
 GEN = 2
 

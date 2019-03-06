@@ -162,7 +162,7 @@ policy slice_policy <
 
 message Flavor (XOSBase) {
      required string name = 1 [max_length = 32, content_type = "stripped", blank = False, help_text = "name of this flavor, as displayed to users", null = False, db_index = False, unique = True];
-     optional string description = 2 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
+     optional string description = 2 [db_index = False, max_length = 1024, null = True, content_type = "stripped"];
      required string flavor = 3 [max_length = 32, content_type = "stripped", blank = True, help_text = "flavor string used to configure deployments", null = False, db_index = False];
 }
 
@@ -181,11 +181,11 @@ policy network_policy < *slice_policy(owner) >
 message Network::network_policy (XOSBase) {
      required string name = 1 [db_index = False, max_length = 32, null = False, blank = False, unique = True];
      required manytoone template->NetworkTemplate:network = 2:1001 [db_index = True, null = False, blank = False];
-     required string subnet = 3 [db_index = False, max_length = 32, null = False, blank = True];
-     required string start_ip = 4 [db_index = False, max_length = 32, null = False, blank = True];
-     required string end_ip = 5 [db_index = False, max_length = 32, null = False, blank = True];
-     optional string ports = 6 [db_index = False, max_length = 1024, null = True, blank = True];
-     optional string labels = 7 [db_index = False, max_length = 1024, null = True, blank = True];
+     optional string subnet = 3 [db_index = False, max_length = 32];
+     optional string start_ip = 4 [db_index = False, max_length = 32];
+     optional string end_ip = 5 [db_index = False, max_length = 32];
+     optional string ports = 6 [db_index = False, max_length = 1024];
+     optional string labels = 7 [db_index = False, max_length = 1024];
      required manytoone owner->Slice:ownedNetworks = 8:1004 [help_text = "Slice that owns control of this Network", null = False, db_index = True, blank = False];
      required bool permit_all_slices = 10 [default = False, null = False, db_index = False, blank = True];
      required bool autoconnect = 17 [help_text = "This network can be autoconnected to the slice that owns it", default = True, null = False, db_index = False, blank = True];
@@ -203,7 +203,7 @@ message NetworkParameter (XOSBase) {
 
 message NetworkParameterType (XOSBase) {
      required string name = 1 [help_text = "The name of this parameter", max_length = 128, null = False, db_index = True, blank = False, unique = True];
-     required string description = 2 [db_index = False, max_length = 1024, null = False, blank = True];
+     optional string description = 2 [db_index = False, max_length = 1024, null = False];
 }
 
 policy network_slice_validator < (obj.slice in obj.network.permitted_slices.all()) | (obj.slice = obj.network.owner) | obj.network.permit_all_slices >
@@ -217,7 +217,7 @@ message NetworkSlice::network_slice_policy (XOSBase) {
 
 message NetworkTemplate (XOSBase) {
      required string name = 1 [db_index = False, max_length = 32, null = False, blank = False, unique = True];
-     optional string description = 2 [db_index = False, max_length = 1024, null = True, blank = True];
+     optional string description = 2 [db_index = False, max_length = 1024];
      required string visibility = 4 [default = "private", choices = "(('public', 'public'), ('private', 'private'))", max_length = 30, blank = False, null = False, db_index = False];
      required string translation = 5 [default = "none", choices = "(('none', 'none'), ('NAT', 'NAT'))", max_length = 30, blank = False, null = False, db_index = False];
      optional string access = 6 [choices = "((None, 'None'), ('indirect', 'Indirect'), ('direct', 'Direct'))", max_length = 30, blank = True, help_text = "Advertise this network as a means for other slices to contact this slice", null = True, db_index = False];
@@ -260,7 +260,7 @@ message Principal (XOSBase) {
 message Role (XOSBase) {
      required string role_type = 1 [db_index = False, max_length = 80, null = False, content_type = "stripped", blank = False];
      optional string role = 2 [db_index = False, max_length = 80, null = True, content_type = "stripped", blank = True];
-     required string description = 3 [db_index = False, max_length = 120, null = False, content_type = "stripped", blank = False];
+     optional string description = 3 [db_index = False, max_length = 120, content_type = "stripped"];
 }
 
 policy service_policy <ctx.user.is_admin | exists Privilege: Privilege.accessor_id = ctx.user.id & Privilege.accessor_type = "User" & Privilege.object_type = "Service" & Privilege.object_id = obj.id >
@@ -270,10 +270,8 @@ message Service (XOSBase,AttributeMixin) {
 
      optional string description = 1 [
          help_text = "Description of Service",
-         blank = True,
          db_index = False,
          max_length = 254,
-         null = True,
          varchar = True];
      required bool enabled = 2 [
          help_text = "Whether or not service is Enabled",
@@ -450,7 +448,7 @@ message Slice::slice_policy (XOSBase) {
 
      required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", null = False, db_index = False, unique = True];
      required bool enabled = 2 [help_text = "Status for this Slice", default = True, null = False, db_index = False, blank = True];
-     required string description = 4 [help_text = "High level description of the slice and expected activities", max_length = 1024, null = False, db_index = False, blank = True, varchar = True];
+     optional string description = 4 [help_text = "High level description of the slice and expected activities", max_length = 1024, db_index = False, varchar = True];
      required manytoone site->Site:slices = 6:1005 [help_text = "The Site this Slice belongs to", null = False, db_index = True, blank = False];
      required int32 max_instances = 7 [default = 10, null = False, db_index = False, blank = False];
      optional manytoone service->Service:slices = 8:1006 [db_index = True, null = True, blank = True];
