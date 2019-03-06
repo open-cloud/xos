@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # xosproject/xos-libraries
-FROM xosproject/xos-base:2.2.13
+FROM xosproject/xos-base:2.2.14
 
 # Add libraries
 COPY lib /opt/xos/lib

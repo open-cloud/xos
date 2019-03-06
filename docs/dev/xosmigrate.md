@@ -20,20 +20,24 @@ bash scripts/setup_venv.sh
 
 ## Generating Migrations
 
-Once the toolchain is available, you will be able to generate
-migrations for the services (or the core) using the `xos-migrate`
-command. Execute the command to see the available options:
+Once the toolchain is available, you will be able to generate migrations for
+the services (or the core) using the `xos-migrate` command. Execute the command
+to see the available options:
 
 ```bash
-usage: xos-migrate [-h] -s SERVICE_NAMES [-r REPO_ROOT] [--check] [-v]
+usage: xos-migrate [-h] -s SERVICE_NAMES [-r REPO_ROOT | -x XOS_ROOT]
+                   [--check] [-v]
 
 XOS Migrations
 
 optional arguments:
   -h, --help            show this help message and exit
   -r REPO_ROOT, --repo REPO_ROOT
-                        The location of the folder containing the CORD repo
-                        root (default to ~/cord)
+                        Path to the CORD repo root (defaults to '../..').
+                        Mutually exclusive with '--xos'.
+  -x XOS_ROOT, --xos XOS_ROOT
+                        Path to directory of the XOS repo. Incompatible with '
+                        --repo' and only works for core migrations.
   --check               Check if the migrations are generated for a given
                         service. Does not apply any change.
   -v, --verbose         increase log verbosity
@@ -41,7 +45,7 @@ optional arguments:
 required arguments:
   -s SERVICE_NAMES, --service SERVICE_NAMES
                         The name of the folder containing the service in
-                        cord/orchestration/xos-services
+                        cord/orchestration/xos_services
 ```
 
 For example, if the code you want to migrate is in `~/Sites` and you
@@ -171,4 +175,11 @@ necessary migrations are generated and checked in. To do that, run the
 
 ```shell
 xos-migrate -s fabric --check
+```
+
+The XOS core can be checked in place (without the entire source tree checked
+out by the `repo` tool) with:
+
+```shell
+xos-migrate -x xos -s core --check
 ```

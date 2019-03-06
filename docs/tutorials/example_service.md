@@ -31,7 +31,7 @@ ServiceInstance.
 The result of preparing *ExampleService* for on-boarding is the following set
 of files, all located in the `xos` directory of the `exampleservice`
 repository. When checked out, these files live in the
-`CORD_ROOT/orchestration/xos_services/exampleservice` directory on
+`CORD_ROOT/orchestration/xos-services/exampleservice` directory on
 your local development machine.
 
 | Component | Source Code (https://github.com/opencord/exampleservice/) |
@@ -41,12 +41,6 @@ your local development machine.
 | Sync Steps  | `xos/synchronizer/steps/sync_exampletenant.py` `xos/synchronizer/steps/exampletenant_playbook.yaml` |
 | Model Policies | `xos/synchronizer/model_policies/model_policy_exampleserviceinstance.py` |
 | On-Boarding Spec | `xos/exampleservice-onboard.yaml`
-
-Earlier releases (3.0 and before) required additional files (mostly Python
-code) to on-board a service, including a REST API, a TOSCA API, and an Admin
-GUI. These components are now auto-generated from the models rather than coded
-by hand, although it is still possible to [extend the
-GUI](/xos-gui/developer/README.md).
 
 In addition to implementing these service-specific files, the final step to
 on-boarding a service requires you to modify an existing (or write a new)
@@ -463,7 +457,7 @@ topology_template:
     exampleservice:
       type: tosca.nodes.ServiceController
       properties:
-          base_url: file:///opt/xos_services/exampleservice/xos/
+          base_url: file:///opt/xos-services/exampleservice/xos/
           # The following will concatenate with base_url automatically, if
           # base_url is non-null.
           private_key: file:///opt/xos/key_import/exampleservice_rsa
@@ -498,16 +492,16 @@ modifying one of the `.yml` files in
 In the following, we use `rcord.yml` as an illustrative example. There
 are potentially three sections of this file that need attention.
 
-First, modify the `xos_services` section to identify `exampleservice`
+First, modify the `xos-services` section to identify `exampleservice`
 as a service to include in the profile. Doing this effectively points
 the build system at the model and synchronizer specifications you've
 just defined.
 
 ```yaml
-xos_services:
+xos-services:
   ... (lines omitted)...
   - name: exampleservice
-    path: orchestration/xos_services/exampleservice
+    path: orchestration/xos-services/exampleservice
     keypair: exampleservice_rsa
     synchronizer: true
 ```

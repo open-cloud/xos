@@ -23,7 +23,7 @@ import sys
 test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 sync_lib_dir = os.path.join(test_path, "..", "xossynchronizer")
 xos_dir = os.path.join(test_path, "..", "..", "..", "xos")
-services_dir = os.path.join(xos_dir, "../../xos_services")
+services_dir = os.path.join(xos_dir, "../../xos-services")
 
 
 class TestDiffs(unittest.TestCase):

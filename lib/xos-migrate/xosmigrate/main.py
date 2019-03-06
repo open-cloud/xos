@@ -290,7 +290,7 @@ required.add_argument(
     action="append",
     required=True,
     dest="service_names",
-    help="The name of the folder containing the service in cord/orchestration/xos_services"
+    help="The name of the folder containing the service in cord/orchestration/xos-services"
 )
 
 pathgroup = parser.add_mutually_exclusive_group()

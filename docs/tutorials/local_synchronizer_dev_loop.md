@@ -37,7 +37,7 @@ meaningful fields have been reported:
       - /home/user/cord_profile/node_key:/opt/cord_profile/node_key:ro
       - /home/user/cord/build/platform-install/credentials:/opt/xos/services/<service>/credentials:ro
       - /home/user/cord_profile/im_cert_chain.pem:/usr/local/share/ca-certificates/local_certs.crt:ro
-      - /home/user/cord/orchestration/xos_services/<service>/xos/synchronizer:/opt/xos/synchronizers/<service>
+      - /home/user/cord/orchestration/xos-services/<service>/xos/synchronizer:/opt/xos/synchronizers/<service>
 ```
 
 The important bits are the sleep command and the last volume

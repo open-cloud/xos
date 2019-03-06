@@ -116,7 +116,7 @@ def mock_modelaccessor_config(test_dir, services):
             raise Exception("Failed to autodiscovery repository tree")
 
     xos_dir = os.path.join(orchestration_dir, "xos", "xos")
-    services_dir = os.path.join(orchestration_dir, "xos_services")
+    services_dir = os.path.join(orchestration_dir, "xos-services")
 
     service_xprotos = []
     for (service_name, xproto_name) in services:

@@ -38,7 +38,7 @@ The XOS API is relatively large, but if you want to only operate over a subset o
 ```shell
 mkdir -p ~/cord/sample_client
 cd ~/cord/sample_client
-xosgenx --target protoapi.xtarget --include-apps volt --include-apps rcord --include-apps att-workflow-driver --include-apps fabric-crossconnect  ~/cord/orchestration/xos/xos/core/models/core.xproto ~/cord/orchestration/xos_services/olt-service/xos/synchronizer/models/volt.xproto ~/cord/orchestration/xos_services/att-workflow-driver/xos/synchronizer/models/att-workflow-driver.xproto ~/cord/orchestration/xos_services/fabric-crossconnect/xos/synchronizer/models/fabric-crossconnect.xproto ~/cord/orchestration/profiles/rcord/xos/synchronizer/models/rcord.xproto > ~/cord/sample_client/seba.proto
+xosgenx --target protoapi.xtarget --include-apps volt --include-apps rcord --include-apps att-workflow-driver --include-apps fabric-crossconnect  ~/cord/orchestration/xos/xos/core/models/core.xproto ~/cord/orchestration/xos-services/olt-service/xos/synchronizer/models/volt.xproto ~/cord/orchestration/xos-services/att-workflow-driver/xos/synchronizer/models/att-workflow-driver.xproto ~/cord/orchestration/xos-services/fabric-crossconnect/xos/synchronizer/models/fabric-crossconnect.xproto ~/cord/orchestration/xos-services/rcord/xos/synchronizer/models/rcord.xproto > ~/cord/sample_client/seba.proto
 ```
 
 Note that it's necessary to supply the source xproto files that you're going to use. For this example, we've provided a list that includes popular SEBA services. We've also included the core xprotos, since they include necessary base classes for the services.

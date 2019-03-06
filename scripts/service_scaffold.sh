@@ -296,7 +296,7 @@ xos_dir = os.path.join(test_path, "../../..")
 
 if not os.path.exists(os.path.join(test_path, "new_base")):
     xos_dir = os.path.join(test_path, "../../../../../../orchestration/xos/xos")
-    services_dir = os.path.join(xos_dir, "../../xos_services")
+    services_dir = os.path.join(xos_dir, "../../xos-services")
 
 sys.path.append(xos_dir)
 sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
@@ -430,7 +430,7 @@ xos_dir = os.path.join(test_path, "../../..")
 
 if not os.path.exists(os.path.join(test_path, "new_base")):
     xos_dir = os.path.join(test_path, "../../../../../../orchestration/xos/xos")
-    services_dir = os.path.join(xos_dir, "../../xos_services")
+    services_dir = os.path.join(xos_dir, "../../xos-services")
 
 sys.path.append(xos_dir)
 sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))

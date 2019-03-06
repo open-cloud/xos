@@ -13,13 +13,13 @@
 # limitations under the License.
 
 # xosproject/xos-core
-FROM xosproject/xos-libraries:2.2.13
+FROM xosproject/xos-libraries:2.2.14
 
 # Install XOS
 ADD xos /opt/xos
 ADD lib /opt/xos/lib
 
-RUN mkdir -p /opt/cord_profile /opt/xos_services /opt/xos_libraries \
+RUN mkdir -p /opt/cord_profile /opt/xos-services /opt/xos_libraries \
  && xosgenx --output /opt/xos/core/models --target django.xtarget --dest-extension py \
       --write-to-file model /opt/xos/core/models/core.xproto \
  && xosgenx --output /opt/xos/core/models --target django-security.xtarget --dest-file security.py \

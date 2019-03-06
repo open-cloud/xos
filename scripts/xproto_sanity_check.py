@@ -21,7 +21,7 @@ from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 
 SCRIPT_DIR=os.path.dirname(os.path.realpath(__file__))
 BASE_DIR=os.path.join(SCRIPT_DIR,"..","..","..")
-SERVICES_DIR=os.path.join(BASE_DIR,"orchestration","xos_services")
+SERVICES_DIR=os.path.join(BASE_DIR,"orchestration","xos-services")
 CORE_XPROTO=os.path.join(BASE_DIR,"orchestration","xos","xos","core","models","core.xproto")
 TARGET=os.path.join(BASE_DIR,"orchestration","xos","lib","xos-genx","xosgenx","targets","fieldlist.xtarget")
 
