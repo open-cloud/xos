@@ -32,7 +32,7 @@ def parse_requirements(filename):
     # parse a requirements.txt file, allowing for blank lines and comments
     requirements = []
     for line in open(filename):
-        if line and line.startswith("#"):
+        if line and not line.startswith("#"):
             requirements.append(line)
     return requirements
 
@@ -42,7 +42,8 @@ setup(
     version=version(),
     description="XOS Generative Toolchain",
     author="Sapan Bhatia, Matteo Scandolo",
-    author_email="sapan@opennetworking.org, teo@opennetworking.org",
+    author_email="cord-dev@opencord.org",
+    url="https://gerrit.opencord.org/gitweb?p=xos.git",
     classifiers=["License :: OSI Approved :: Apache Software License"],
     license="Apache v2",
     packages=["xosgenx"],

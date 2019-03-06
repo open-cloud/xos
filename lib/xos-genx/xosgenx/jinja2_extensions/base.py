@@ -35,7 +35,7 @@ def xproto_unquote(s):
 
 
 def unquote(s):
-    if s.startswith('"') and s.endswith('"'):
+    if s and s.startswith('"') and s.endswith('"'):
         return s[1:-1]
     else:
         return s

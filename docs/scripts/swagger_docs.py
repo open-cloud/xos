@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import traceback
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 
 CWD = OUTPUT_DIR = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
@@ -38,9 +39,9 @@ def generate_swagger_docs(xproto):
     args.quiet = False
     try:
         XOSProcessor.process(args)
-    except Exception, e:
+    except Exception:
         print "ERROR: Couldn't generate swagger specs"
-        print e
+        traceback.print_exc()
 
 def get_xproto_recursively(root):
     files = []

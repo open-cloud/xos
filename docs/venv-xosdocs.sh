@@ -23,6 +23,7 @@ VENVDIR=venv-xosdocs
 if [ ! -d "$BASEDIR/$VENVDIR" ]; then
   echo "Setting up virtualenv for XOS Swagger Docs"
   virtualenv -q $BASEDIR/$VENVDIR --no-site-packages
+  source $BASEDIR/$VENVDIR/bin/activate
   pip install --upgrade pip
   echo "Virtualenv created."
 fi
@@ -35,4 +36,3 @@ fi
 
 # install pip packages
 pip install -e $BASEDIR/$VENVDIR/../../lib/xos-genx
-pip install plyxproto jinja2 astunparse pyyaml colorama
