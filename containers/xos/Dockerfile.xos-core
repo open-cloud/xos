@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # xosproject/xos-core
-FROM xosproject/xos-libraries:2.2.6
+FROM xosproject/xos-libraries:2.2.7
 
 # Install XOS
 ADD xos /opt/xos
