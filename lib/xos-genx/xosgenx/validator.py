@@ -125,8 +125,9 @@ class XProtoValidator(object):
     def require_options(self, model, field, options):
         """ Require an option to be present.
         """
+        options = field.get("options", {})
         for optname in options:
-            if not field.get(optname):
+            if optname not in options:
                 self.error(model, field, "Required option '%s' is not present" % optname)
 
     def check_modifier_consistent(self, model, field):

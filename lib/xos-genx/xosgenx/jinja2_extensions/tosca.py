@@ -19,7 +19,8 @@ from xosgenx.jinja2_extensions import xproto_field_graph_components
 def xproto_tosca_required(null, blank, default=None, modifier=None):
     # `null` is not currently considered. `blank` is deprecated.
     if (modifier == "optional") or (blank == "True") or (default is not None):
-         return "false"
+        return "false"
+
     return "true"
 
 

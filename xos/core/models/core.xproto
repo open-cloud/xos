@@ -15,20 +15,20 @@ message XOSBase {
      optional string enacted = 4 [null = True, content_type = "date", blank = True, default = None, help_text = "When synced, set to the timestamp of the data that was synced"];
      optional string policed = 5 [null = True, content_type = "date", blank = True, default = None, help_text = "When policed, set to the timestamp of the data that was policed"];
      optional string backend_register = 6 [default = "{}", max_length = 1024, feedback_state = True];
-     required bool backend_need_delete = 7 [default = False, blank = True];
-     required bool backend_need_reap = 8 [default = False, blank = True];
+     required bool backend_need_delete = 7 [default = False];
+     required bool backend_need_reap = 8 [default = False];
      required string backend_status = 9 [default = "Provisioning in progress", max_length = 1024, feedback_state = True];
      required int32 backend_code = 10 [default = 0, feedback_state = True];
-     required bool deleted = 11 [default = False, blank = True];
-     required bool write_protect = 12 [default = False, blank = True];
-     required bool lazy_blocked = 13 [default = False, blank = True];
-     required bool no_sync = 14 [default = False, blank = True];
-     required bool no_policy = 15 [default = False, blank = True];
+     required bool deleted = 11 [default = False];
+     required bool write_protect = 12 [default = False];
+     required bool lazy_blocked = 13 [default = False];
+     required bool no_sync = 14 [default = False];
+     required bool no_policy = 15 [default = False];
      optional string policy_status = 16 [default = "Policy in process", max_length = 1024, feedback_state = True];
      optional int32 policy_code = 17 [default = 0, feedback_state = True];
      required string leaf_model_name = 18 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
-     required bool backend_need_delete_policy = 19 [default = False, help_text = "True if delete model_policy must be run before object can be reaped", blank = True];
-     required bool xos_managed = 20 [default = True, help_text = "True if xos is responsible for creating/deleting this object", blank = True, gui_hidden = True];
+     required bool backend_need_delete_policy = 19 [default = False, help_text = "True if delete model_policy must be run before object can be reaped"];
+     required bool xos_managed = 20 [default = True, help_text = "True if xos is responsible for creating/deleting this object", gui_hidden = True];
      optional string backend_handle = 21 [max_length = 1024, feedback_state = True, blank=True, null=True, help_text = "Handle used by the backend to track this object", gui_hidden = True];
      optional string changed_by_step = 22 [null = True, content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a sync step"];
      optional string changed_by_policy = 23 [null = True, content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a model policy"];
@@ -60,32 +60,32 @@ message User::user_policy (AbstractBaseUser,PlModelMixIn) {
      optional string user_url = 9 [db_index = False, max_length = 200, null = True, content_type = "url", blank = True];
      required manytoone site->Site:users = 10:1001 [help_text = "Site this user will be homed too", null = False, db_index = True, blank = False];
      optional string public_key = 11 [help_text = "Public key string", max_length = 1024, null = True, db_index = False, blank = True, varchar = True];
-     required bool is_active = 12 [default = True, null = False, db_index = False, blank = True];
-     required bool is_admin = 13 [default = False, null = False, db_index = False, blank = True];
-     required bool is_staff = 14 [default = True, null = False, db_index = False, blank = True];
-     required bool is_readonly = 15 [default = False, null = False, db_index = False, blank = True];
-     required bool is_registering = 16 [default = False, null = False, db_index = False, blank = True];
-     required bool is_appuser = 17 [default = False, null = False, db_index = False, blank = True];
+     required bool is_active = 12 [default = True, null = False, db_index = False];
+     required bool is_admin = 13 [default = False, null = False, db_index = False];
+     required bool is_staff = 14 [default = True, null = False, db_index = False];
+     required bool is_readonly = 15 [default = False, null = False, db_index = False];
+     required bool is_registering = 16 [default = False, null = False, db_index = False];
+     required bool is_appuser = 17 [default = False, null = False, db_index = False];
      optional string login_page = 18 [max_length = 200, content_type = "stripped", blank = True, help_text = "send this user to a specific page on login", null = True, db_index = False];
-     required string created = 19 [db_index = False, null = False, content_type = "date", blank = True];
-     required string updated = 20 [db_index = False, null = False, content_type = "date", blank = True];
-     optional string enacted = 21 [db_index = False, null = True, content_type = "date"];
-     optional string policed = 22 [db_index = False, null = True, content_type = "date"];
+     required string created = 19 [content_type = "date", auto_now_add = True, help_text = "Time this model was created"];
+     required string updated = 20 [default = "now()", content_type = "date", help_text = "Time this model was changed by a non-synchronizer"];
+     optional string enacted = 21 [null = True, content_type = "date", blank = True, default = None, help_text = "When synced, set to the timestamp of the data that was synced"];
+     optional string policed = 22 [null = True, content_type = "date", blank = True, default = None, help_text = "When policed, set to the timestamp of the data that was policed"];
      required string backend_status = 23 [default = "Provisioning in progress", max_length = 1024, content_type = "stripped", blank = False, null = False, db_index = False];
      required int32 backend_code = 24 [default = 0];
-     required bool backend_need_delete = 25 [default = False, null = False, db_index = False, blank = True];
-     required bool backend_need_reap = 26 [default = False, null = False, db_index = False, blank = True];
-     required bool deleted = 27 [default = False, null = False, db_index = False, blank = True];
-     required bool write_protect = 28 [default = False, null = False, db_index = False, blank = True];
-     required bool lazy_blocked = 29 [default = False, null = False, db_index = False, blank = True];
-     required bool no_sync = 30 [default = False, null = False, db_index = False, blank = True];
-     required bool no_policy = 31 [default = False, null = False, db_index = False, blank = True];
+     required bool backend_need_delete = 25 [default = False, null = False, db_index = False];
+     required bool backend_need_reap = 26 [default = False, null = False, db_index = False];
+     required bool deleted = 27 [default = False, null = False, db_index = False];
+     required bool write_protect = 28 [default = False, null = False, db_index = False];
+     required bool lazy_blocked = 29 [default = False, null = False, db_index = False];
+     required bool no_sync = 30 [default = False, null = False, db_index = False];
+     required bool no_policy = 31 [default = False, null = False, db_index = False];
      required string timezone = 32 [default = "America/New_York", max_length = 100, blank = False, null = False, db_index = False];
      optional string policy_status = 33 [default = "0 - Policy in process", max_length = 1024];
      optional int32 policy_code = 34 [default = 0];
      required string leaf_model_name = 35 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
-     required bool backend_need_delete_policy = 36 [default = False, help_text = "True if delete model_policy must be run before object can be reaped", blank = True];
-     required bool xos_managed = 37 [default = True, help_text = "True if xos is responsible for creating/deleting this object", blank = True, gui_hidden = True];
+     required bool backend_need_delete_policy = 36 [default = False, help_text = "True if delete model_policy must be run before object can be reaped"];
+     required bool xos_managed = 37 [default = True, help_text = "True if xos is responsible for creating/deleting this object", gui_hidden = True];
      optional string backend_handle = 38 [max_length = 1024, feedback_state = True, blank=True, null=True, help_text = "Handle used by the backend to track this object", gui_hidden = True];
      optional string changed_by_step = 39 [null = True, content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a sync step"];
      optional string changed_by_policy = 40 [null = True, content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a model policy"];
@@ -163,7 +163,7 @@ policy slice_policy <
 message Flavor (XOSBase) {
      required string name = 1 [max_length = 32, content_type = "stripped", blank = False, help_text = "name of this flavor, as displayed to users", null = False, db_index = False, unique = True];
      optional string description = 2 [db_index = False, max_length = 1024, null = True, content_type = "stripped"];
-     required string flavor = 3 [max_length = 32, content_type = "stripped", blank = True, help_text = "flavor string used to configure deployments", null = False, db_index = False];
+     required string flavor = 3 [max_length = 32, content_type = "stripped", help_text = "flavor string used to configure deployments", db_index = False];
 }
 
 
@@ -187,9 +187,9 @@ message Network::network_policy (XOSBase) {
      optional string ports = 6 [db_index = False, max_length = 1024];
      optional string labels = 7 [db_index = False, max_length = 1024];
      required manytoone owner->Slice:ownedNetworks = 8:1004 [help_text = "Slice that owns control of this Network", null = False, db_index = True, blank = False];
-     required bool permit_all_slices = 10 [default = False, null = False, db_index = False, blank = True];
-     required bool autoconnect = 17 [help_text = "This network can be autoconnected to the slice that owns it", default = True, null = False, db_index = False, blank = True];
-     required manytomany permitted_slices->Slice/Network_permitted_slices:availableNetworks = 18:1005 [db_index = False, blank = True];
+     required bool permit_all_slices = 10 [default = False, null = False, db_index = False];
+     required bool autoconnect = 17 [help_text = "This network can be autoconnected to the slice that owns it", default = True, null = False, db_index = False];
+     optional manytomany permitted_slices->Slice/Network_permitted_slices:availableNetworks = 18:1005 [db_index = False];
 }
 
 
@@ -203,7 +203,7 @@ message NetworkParameter (XOSBase) {
 
 message NetworkParameterType (XOSBase) {
      required string name = 1 [help_text = "The name of this parameter", max_length = 128, null = False, db_index = True, blank = False, unique = True];
-     optional string description = 2 [db_index = False, max_length = 1024, null = False];
+     optional string description = 2 [db_index = False, max_length = 1024];
 }
 
 policy network_slice_validator < (obj.slice in obj.network.permitted_slices.all()) | (obj.slice = obj.network.owner) | obj.network.permit_all_slices >
@@ -238,7 +238,7 @@ message Node (XOSBase) {
 }
 message NodeLabel (XOSBase) {
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "label name", null = False, db_index = False, unique = True];
-     required manytomany node->Node/NodeLabel_node:nodelabels = 2:1002 [db_index = False, blank = True];
+     optional manytomany node->Node/NodeLabel_node:nodelabels = 2:1002 [db_index = False];
 }
 
 policy port_policy < *network_policy(network) >
@@ -248,7 +248,7 @@ message Port::port_policy (XOSBase) {
      optional string ip = 3 [max_length = 39, content_type = "ip", blank = True, help_text = "Instance ip address", null = True, db_index = False];
      optional string port_id = 4 [help_text = "Neutron port id", max_length = 256, null = True, db_index = False, blank = True];
      optional string mac = 5 [help_text = "MAC address associated with this port", max_length = 256, null = True, db_index = False, blank = True];
-     required bool xos_created = 6 [default = False, null = False, db_index = False, blank = True];
+     required bool xos_created = 6 [default = False, db_index = False];
      optional manytoone service_instance->ServiceInstance:ports = 7:1001 [db_index = True, null = True, blank = True, help_text = "ServiceInstance bound to this port"];
 }
 
@@ -275,10 +275,8 @@ message Service (XOSBase,AttributeMixin) {
          varchar = True];
      required bool enabled = 2 [
          help_text = "Whether or not service is Enabled",
-         blank = True,
          db_index = False,
          default = True,
-         null = False,
          gui_hidden = True];
      required string kind = 3 [
          help_text = "Kind of service",
@@ -306,11 +304,9 @@ message Service (XOSBase,AttributeMixin) {
          null = True];
      required bool published = 6 [
          help_text = "True if this service should be published in XOS",
-         blank = True,
          db_index = False,
          default = True,
-         gui_hidden = True,
-         null = False]; // deprecated?
+         gui_hidden = True]; // deprecated?
      optional string icon_url = 8 [
          blank = True,
          content_type = "stripped",
@@ -429,13 +425,13 @@ message ServiceDependency (XOSBase) {
 message Site::site_policy (XOSBase) {
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name for this Site", null = False, db_index = False, unique = True];
      optional string site_url = 2 [max_length = 512, content_type = "url", blank = True, help_text = "Site's Home URL Page", null = True, db_index = False];
-     required bool enabled = 3 [help_text = "Status for this Site", default = True, null = False, db_index = False, blank = True];
-     required bool hosts_nodes = 4 [help_text = "Indicates whether or not the site host nodes", default = True, null = False, db_index = False, blank = True];
-     required bool hosts_users = 5 [help_text = "Indicates whether or not the site manages user accounts", default = True, null = False, db_index = False, blank = True];
+     required bool enabled = 3 [help_text = "Status for this Site", default = True, db_index = False];
+     required bool hosts_nodes = 4 [help_text = "Indicates whether or not the site host nodes", default = True, db_index = False];
+     required bool hosts_users = 5 [help_text = "Indicates whether or not the site manages user accounts", default = True, db_index = False];
      optional float longitude = 6 [db_index = False, null = True, blank = True];
      optional float latitude = 7 [db_index = False, null = True, blank = True];
      required string login_base = 8 [max_length = 50, content_type = "stripped", blank = False, help_text = "Prefix for Slices associated with this Site", null = False, db_index = False];
-     required bool is_public = 9 [help_text = "Indicates the visibility of this site to other members", default = True, null = False, db_index = False, blank = True];
+     required bool is_public = 9 [help_text = "Indicates the visibility of this site to other members", default = True, db_index = False];
      required string abbreviated_name = 10 [db_index = False, max_length = 80, null = False, content_type = "stripped", blank = False];
 }
 
@@ -447,7 +443,7 @@ message Slice::slice_policy (XOSBase) {
      option plural = "Slices";
 
      required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", null = False, db_index = False, unique = True];
-     required bool enabled = 2 [help_text = "Status for this Slice", default = True, null = False, db_index = False, blank = True];
+     required bool enabled = 2 [help_text = "Status for this Slice", default = True, db_index = False];
      optional string description = 4 [help_text = "High level description of the slice and expected activities", max_length = 1024, db_index = False, varchar = True];
      required manytoone site->Site:slices = 6:1005 [help_text = "The Site this Slice belongs to", null = False, db_index = True, blank = False];
      required int32 max_instances = 7 [default = 10, null = False, db_index = False, blank = False];
@@ -618,7 +614,7 @@ message TrustDomain (XOSBase) {
 message XOSCore (XOSBase) {
      option singular="XOSCore";
      option plural="XOSCores";
-     required string name = 1 [default = "XOS", max_length = 200, content_type = "stripped", blank = False, help_text = "Name of XOS", null = False, db_index = False, unique = "True"];
+     required string name = 1 [default = "XOS", max_length = 200, content_type = "stripped", blank = False, help_text = "Name of XOS", null = False, db_index = False, unique = True];
 }
 
 message XOSGuiExtension::admin_policy (XOSBase) {
@@ -634,6 +630,6 @@ message XOSGuiExtension::admin_policy (XOSBase) {
 message ServiceGraphConstraint (XOSBase) {
     option verbose_name="Graph Constraint";
     option description="Define the position of the nodes in the service graph";
-    required string constraints = 1 [max_length = 1024, content_type = "stripped", blank = True, help_text = "A composite array defining positions, eg [volt, vsg, [address_manager, vrouter]]", null = False, tosca_key=True];
+    required string constraints = 1 [max_length = 1024, content_type = "stripped", help_text = "A composite array defining positions, eg [volt, vsg, [address_manager, vrouter]]", tosca_key=True];
 }
 
