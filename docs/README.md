@@ -17,26 +17,20 @@ ways:
   monitoring information, allocate resources and isolate performance,
   and distribute/migrate functionality.
 
-XOS is currently being used in three projects:
-
-* **CORD Controller:** XOS is a central part of CORD (Central Office
-  Re-architected as a Datacenter), providing a coherent service
-  control plane that runs on on top of a mix of disaggregated
-  access technologies, legacy VNFs running in OpenStack VMs, horizontally
-  scalable micro-services running in Kubernetes, and SDN control
-  applications running on ONOS.
+XOS currently has two use cases:
 
 * **Network Edge Mediator (NEM):** XOS is being used to provide a
-  mediation layer for SEBA (Software-Enabled Broadband Access),
-  addressing the challenge of how to integrate an edge sites with different
-  (and potentially multiple) global orchestrators and legacy OSS/BSS.
+  mediation layer for CORD-based edge solutions, including SEBA
+  (SDN-Enabled Broadband Access) and COMAC (Converged Multi-Access
+  and Core). NEM replaces the "CORD Controller" component of earlier
+  CORD solutions (e.g., R-CORD, M-CORD, and E-CORD).
 
 * **End-to-End Service Chains in a Multi-Cloud:** XOS is being used
   to manage end-to-end service chains that span customer premises,
   operator edge sites, Internet exchanges, and commodity clouds.
 
 For additional white papers describing XOS, see the project
-[wiki page](https://wiki.opencord.org/display/CORD/XOS+and+the+CORD+Controller).
+[wiki page](https://wiki.opencord.org/display/CORD/XOS+and+NEM).
 
 
 

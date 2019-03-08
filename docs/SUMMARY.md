@@ -14,6 +14,7 @@
         * [Synchronizer Implementation](dev/sync_impl.md)
         * [Synchronizer Reference](dev/sync_reference.md)
     * [Core Models](core_models.md)
+    * [Migrating XOS Models](dev/xosmigrate.md)
     * [Security Policies](security_policies.md)
     * [Tutorial](tutorials/basic_synchronizer.md)
     * [XOS Shell (xossh)](dev/xossh.md)

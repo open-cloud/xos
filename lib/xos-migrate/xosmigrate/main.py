@@ -293,12 +293,22 @@ required.add_argument(
     help="The name of the folder containing the service in cord/orchestration/xos_services"
 )
 
-parser.add_argument(
+pathgroup = parser.add_mutually_exclusive_group()
+
+pathgroup.add_argument(
     "-r",
     "--repo",
-    default=get_abs_path("~/cord"),
+    default=get_abs_path("../.."),
     dest="repo_root",
-    help="The location of the folder containing the CORD repo root (default to ~/cord)"
+    help="Path to the CORD repo root (defaults to '../..'). Mutually exclusive with '--xos'."
+)
+
+pathgroup.add_argument(
+    "-x",
+    "--xos",
+    default=None,
+    dest="xos_root",
+    help="Path to directory of the XOS repo. Incompatible with '--repo' and only works for core migrations."
 )
 
 parser.add_argument(
@@ -330,10 +340,17 @@ def run():
     print_banner(args.repo_root)
 
     # find absolute path to the code
-    xos_path = get_abs_path(os.path.join(args.repo_root, "orchestration/xos/xos/"))
+    if args.xos_root:  # if args.xos_root is set, testing only the core
+        xos_path = get_abs_path(args.xos_root)
+        if args.service_names != ["core"]:
+            log.error("When using --xos, can only check the core models")
+            sys.exit(1)
+    else:
+        xos_path = get_abs_path(os.path.join(args.repo_root, "orchestration/xos/xos/"))
+        service_base_dir = get_abs_path(os.path.join(xos_path, "../../xos_services/"))
+        service_dest_dir = get_abs_path(os.path.join(xos_path, "services/"))
+
     core_dir = get_abs_path(os.path.join(xos_path, "core/models/"))
-    service_base_dir = get_abs_path(os.path.join(xos_path, "../../xos_services/"))
-    service_dest_dir = get_abs_path(os.path.join(xos_path, "services/"))
 
     # we need to append the xos folder to sys.path
     original_sys_path = sys.path
