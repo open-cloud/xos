@@ -9,7 +9,7 @@ The only difference is that their models are part of the
 than service extensions. This section describes three example platform
 services in more detail:
 
-* [Kubernetes](kubernetes/kubernetes-service.md)
-* [OpenStack](openstack/openstack-service.md)
-* [ONOS](onos/README.md)
+* [Kubernetes](./external_content/kubernetes.md)
+* [OpenStack](./external_content/openstack.md)
+* [ONOS](./external_content/onos.md)
 

@@ -51,3 +51,9 @@ exclude_rule 'MD036'
 
 # Gitbook won't care about multiple blank lines
 exclude_rule 'MD012'
+
+# Gitbook does not care about bare URLs
+exclude_rule 'MD034'
+
+# This is not true in case of "includes" placeholder
+exclude_rule 'MD041'

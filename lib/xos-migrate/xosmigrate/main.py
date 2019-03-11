@@ -32,6 +32,8 @@ from xosgenx.generator import XOSProcessor, XOSProcessorArgs
 from xosconfig import Config
 from multistructlog import create_logger
 
+REPO_ROOT = "~/cord"
+
 
 def get_abs_path(dir_):
     """ Convert a path specified by the user, which might be relative or based on
@@ -293,22 +295,28 @@ required.add_argument(
     help="The name of the folder containing the service in cord/orchestration/xos-services"
 )
 
-pathgroup = parser.add_mutually_exclusive_group()
-
-pathgroup.add_argument(
+parser.add_argument(
     "-r",
     "--repo",
-    default=get_abs_path("../.."),
+    default=REPO_ROOT,
     dest="repo_root",
     help="Path to the CORD repo root (defaults to '../..'). Mutually exclusive with '--xos'."
 )
 
-pathgroup.add_argument(
+parser.add_argument(
     "-x",
-    "--xos",
+    "--xos-dir",
     default=None,
     dest="xos_root",
-    help="Path to directory of the XOS repo. Incompatible with '--repo' and only works for core migrations."
+    help="Path to directory of the XOS repo. Incompatible with '--repo'."
+)
+
+parser.add_argument(
+    "--services-dir",
+    default=None,
+    dest="services_root",
+    help="Path to directory of the XOS services root. Incompatible with '--repo'." +
+         "Note that all the services repo needs to be siblings"
 )
 
 parser.add_argument(
@@ -329,6 +337,8 @@ parser.add_argument(
 
 
 def run():
+    service_base_dir = None
+
     # cleaning up from possible incorrect states
     if "INSTALLED_APPS" in os.environ:
         del os.environ["INSTALLED_APPS"]
@@ -339,17 +349,35 @@ def run():
 
     print_banner(args.repo_root)
 
+    # validating args, the solution is hacky but it does not fit `add_mutually_exclusive_group`
+    # and it's not complex enough for the solution proposed here:
+    # https://stackoverflow.com/questions/17909294/python-argparse-mutual-exclusive-group
+    if args.service_names != ["core"] and \
+            ((args.xos_root and not args.services_root) or (args.services_root and not args.xos_root)):
+        # if we're only generating migrations for the core,
+        # the --xos-dir is the only think we need
+        log.error("You need to set both --xos-dir and \
+                --services-dir parameters when generating migrations for a service")
+        sys.exit(1)
+
+    if (args.xos_root or args.services_root) and (args.repo_root != REPO_ROOT):
+        log.error("The --xos-dir or --services-dir parameters are not compatible with the --repo parameter")
+        sys.exit(1)
+
     # find absolute path to the code
-    if args.xos_root:  # if args.xos_root is set, testing only the core
-        xos_path = get_abs_path(args.xos_root)
-        if args.service_names != ["core"]:
-            log.error("When using --xos, can only check the core models")
-            sys.exit(1)
+    if args.xos_root or args.services_root:
+        xos_path = get_abs_path(os.path.join(args.xos_root, "xos"))
+        if args.services_root:
+            # NOTE this params is optional (we may be generating migrations for the core only
+            service_base_dir = get_abs_path(args.services_root)
     else:
         xos_path = get_abs_path(os.path.join(args.repo_root, "orchestration/xos/xos/"))
-        service_base_dir = get_abs_path(os.path.join(xos_path, "../../xos_services/"))
-        service_dest_dir = get_abs_path(os.path.join(xos_path, "services/"))
+        service_base_dir = get_abs_path(os.path.join(xos_path, "../../xos-services/"))
 
+    log.debug("XOS Path: %s" % xos_path)
+    log.debug("Service Base Dir: %s" % service_base_dir)
+
+    service_dest_dir = get_abs_path(os.path.join(xos_path, "services/"))
     core_dir = get_abs_path(os.path.join(xos_path, "core/models/"))
 
     # we need to append the xos folder to sys.path

@@ -37,7 +37,7 @@ xos-test: venv-xos
 
 migration-test: venv-xos
 	source ./venv-xos/bin/activate ; set -u ;\
-	xos-migrate -x xos -s core --check
+	xos-migrate --xos-dir . -s core --check
 
 clean:
 	find . -name '*.pyc' | xargs rm -f

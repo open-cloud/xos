@@ -25,8 +25,8 @@ the services (or the core) using the `xos-migrate` command. Execute the command
 to see the available options:
 
 ```bash
-usage: xos-migrate [-h] -s SERVICE_NAMES [-r REPO_ROOT | -x XOS_ROOT]
-                   [--check] [-v]
+usage: xos-migrate [-h] -s SERVICE_NAMES [-r REPO_ROOT] [-x XOS_ROOT]
+                   [--services-dir SERVICES_ROOT] [--check] [-v]
 
 XOS Migrations
 
@@ -35,9 +35,13 @@ optional arguments:
   -r REPO_ROOT, --repo REPO_ROOT
                         Path to the CORD repo root (defaults to '../..').
                         Mutually exclusive with '--xos'.
-  -x XOS_ROOT, --xos XOS_ROOT
+  -x XOS_ROOT, --xos-dir XOS_ROOT
                         Path to directory of the XOS repo. Incompatible with '
-                        --repo' and only works for core migrations.
+                        --repo'.
+  --services-dir SERVICES_ROOT
+                        Path to directory of the XOS services root.
+                        Incompatible with '--repo'.Note that all the services
+                        repo needs to be siblings
   --check               Check if the migrations are generated for a given
                         service. Does not apply any change.
   -v, --verbose         increase log verbosity
@@ -45,7 +49,7 @@ optional arguments:
 required arguments:
   -s SERVICE_NAMES, --service SERVICE_NAMES
                         The name of the folder containing the service in
-                        cord/orchestration/xos_services
+                        cord/orchestration/xos-services
 ```
 
 For example, if the code you want to migrate is in `~/Sites` and you
@@ -53,8 +57,14 @@ want to generate migrations for `core` and `fabric`, then run the
 following command:
 
 ```bash
-xos-migrate -r ~/Sites -s core -s fabric
+xos-migrate -r ~/Sites/cord -s core -s fabric
 ```
+
+> NOTE:
+> The command above is equivalent to:
+> ```bash
+> xos-migrate --xos-dir ~/Sites/cord/orchestration/xos --services-dir ~/Sites/cord/orchestration/xos-services/ -s core -s fabric
+> ```
 
 If no migrations were present for your service, you will see a new
 folder `migrations` (a sibling of `models`) that contains the file
