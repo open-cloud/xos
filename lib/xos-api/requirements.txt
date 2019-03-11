@@ -1,9 +1,11 @@
+PyYAML~=3.12
 Twisted~=16.6.0
+googleapis-common-protos~=1.5.6
+grpcio-tools~=1.12.0
+grpcio~=1.12.0
 multistructlog~=2.1.0
+pykwalify~=1.6.0
+python-consul~=1.1.0
+simplejson~=3.16.0
 xosconfig~=2.2.6
 xosgenx~=2.2.6
-googleapis-common-protos~=1.5.6
-pykwalify~=1.6.0
-PyYAML~=3.12
-python-consul~=1.1.0
-grpcio~=1.12.0
