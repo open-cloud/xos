@@ -12,8 +12,8 @@ message XOSBase {
      // field 1 is reserved for "id"
      required string created = 2 [content_type = "date", auto_now_add = True, help_text = "Time this model was created"];
      required string updated = 3 [default = "now()", content_type = "date", help_text = "Time this model was changed by a non-synchronizer"];
-     optional string enacted = 4 [null = True, content_type = "date", blank = True, default = None, help_text = "When synced, set to the timestamp of the data that was synced"];
-     optional string policed = 5 [null = True, content_type = "date", blank = True, default = None, help_text = "When policed, set to the timestamp of the data that was policed"];
+     optional string enacted = 4 [content_type = "date", blank = True, default = None, help_text = "When synced, set to the timestamp of the data that was synced"];
+     optional string policed = 5 [content_type = "date", blank = True, default = None, help_text = "When policed, set to the timestamp of the data that was policed"];
      optional string backend_register = 6 [default = "{}", max_length = 1024, feedback_state = True];
      required bool backend_need_delete = 7 [default = False];
      required bool backend_need_reap = 8 [default = False];
@@ -26,12 +26,12 @@ message XOSBase {
      required bool no_policy = 15 [default = False];
      optional string policy_status = 16 [default = "Policy in process", max_length = 1024, feedback_state = True];
      optional int32 policy_code = 17 [default = 0, feedback_state = True];
-     required string leaf_model_name = 18 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
+     required string leaf_model_name = 18 [max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
      required bool backend_need_delete_policy = 19 [default = False, help_text = "True if delete model_policy must be run before object can be reaped"];
      required bool xos_managed = 20 [default = True, help_text = "True if xos is responsible for creating/deleting this object", gui_hidden = True];
-     optional string backend_handle = 21 [max_length = 1024, feedback_state = True, blank=True, null=True, help_text = "Handle used by the backend to track this object", gui_hidden = True];
-     optional string changed_by_step = 22 [null = True, content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a sync step"];
-     optional string changed_by_policy = 23 [null = True, content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a model policy"];
+     optional string backend_handle = 21 [max_length = 1024, feedback_state = True, blank=True, help_text = "Handle used by the backend to track this object", gui_hidden = True];
+     optional string changed_by_step = 22 [content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a sync step"];
+     optional string changed_by_policy = 23 [content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a model policy"];
 }
 
 // The calling user represents the user being accessed, or is a site admin.
@@ -50,45 +50,45 @@ message User::user_policy (AbstractBaseUser,PlModelMixIn) {
      option description = "An XOS User";
 
      // field 1 is reserved for "id"
-     required string email = 2 [db_index = True, max_length = 255, null = False, blank = False, tosca_key=True];
-     required string username = 3 [default = "Something", max_length = 255, content_type = "stripped", blank = False, null = False, db_index = False];
-     required string password = 4 [default = "Something", max_length = 255, blank = False, null = False, db_index = False];
-     optional string last_login = 5 [db_index = False, null = True, content_type = "date", blank = True];
-     required string firstname = 6 [max_length = 200, content_type = "stripped", blank = False, help_text = "person's given name", null = False, db_index = False];
-     required string lastname = 7 [max_length = 200, content_type = "stripped", blank = False, help_text = "person's surname", null = False, db_index = False];
-     optional string phone = 8 [max_length = 100, content_type = "stripped", blank = True, help_text = "phone number contact", null = True, db_index = False];
-     optional string user_url = 9 [db_index = False, max_length = 200, null = True, content_type = "url", blank = True];
-     required manytoone site->Site:users = 10:1001 [help_text = "Site this user will be homed too", null = False, db_index = True, blank = False];
-     optional string public_key = 11 [help_text = "Public key string", max_length = 1024, null = True, db_index = False, blank = True, varchar = True];
-     required bool is_active = 12 [default = True, null = False, db_index = False];
-     required bool is_admin = 13 [default = False, null = False, db_index = False];
-     required bool is_staff = 14 [default = True, null = False, db_index = False];
-     required bool is_readonly = 15 [default = False, null = False, db_index = False];
-     required bool is_registering = 16 [default = False, null = False, db_index = False];
-     required bool is_appuser = 17 [default = False, null = False, db_index = False];
-     optional string login_page = 18 [max_length = 200, content_type = "stripped", blank = True, help_text = "send this user to a specific page on login", null = True, db_index = False];
+     required string email = 2 [db_index = True, max_length = 255, blank = False, tosca_key=True];
+     required string username = 3 [default = "Something", max_length = 255, content_type = "stripped", blank = False, db_index = False];
+     required string password = 4 [default = "Something", max_length = 255, blank = False, db_index = False];
+     optional string last_login = 5 [db_index = False, content_type = "date", blank = True];
+     required string firstname = 6 [max_length = 200, content_type = "stripped", blank = False, help_text = "person's given name", db_index = False];
+     required string lastname = 7 [max_length = 200, content_type = "stripped", blank = False, help_text = "person's surname", db_index = False];
+     optional string phone = 8 [max_length = 100, content_type = "stripped", blank = True, help_text = "phone number contact", db_index = False];
+     optional string user_url = 9 [db_index = False, max_length = 200, content_type = "url", blank = True];
+     required manytoone site->Site:users = 10:1001 [help_text = "Site this user will be homed too", db_index = True, blank = False];
+     optional string public_key = 11 [help_text = "Public key string", max_length = 1024, db_index = False, blank = True, varchar = True];
+     required bool is_active = 12 [default = True, db_index = False];
+     required bool is_admin = 13 [default = False, db_index = False];
+     required bool is_staff = 14 [default = True, db_index = False];
+     required bool is_readonly = 15 [default = False, db_index = False];
+     required bool is_registering = 16 [default = False, db_index = False];
+     required bool is_appuser = 17 [default = False, db_index = False];
+     optional string login_page = 18 [max_length = 200, content_type = "stripped", blank = True, help_text = "send this user to a specific page on login", db_index = False];
      required string created = 19 [content_type = "date", auto_now_add = True, help_text = "Time this model was created"];
      required string updated = 20 [default = "now()", content_type = "date", help_text = "Time this model was changed by a non-synchronizer"];
-     optional string enacted = 21 [null = True, content_type = "date", blank = True, default = None, help_text = "When synced, set to the timestamp of the data that was synced"];
-     optional string policed = 22 [null = True, content_type = "date", blank = True, default = None, help_text = "When policed, set to the timestamp of the data that was policed"];
-     required string backend_status = 23 [default = "Provisioning in progress", max_length = 1024, content_type = "stripped", blank = False, null = False, db_index = False];
+     optional string enacted = 21 [content_type = "date", blank = True, default = None, help_text = "When synced, set to the timestamp of the data that was synced"];
+     optional string policed = 22 [content_type = "date", blank = True, default = None, help_text = "When policed, set to the timestamp of the data that was policed"];
+     required string backend_status = 23 [default = "Provisioning in progress", max_length = 1024, content_type = "stripped", blank = False, db_index = False];
      required int32 backend_code = 24 [default = 0];
-     required bool backend_need_delete = 25 [default = False, null = False, db_index = False];
-     required bool backend_need_reap = 26 [default = False, null = False, db_index = False];
-     required bool deleted = 27 [default = False, null = False, db_index = False];
-     required bool write_protect = 28 [default = False, null = False, db_index = False];
-     required bool lazy_blocked = 29 [default = False, null = False, db_index = False];
-     required bool no_sync = 30 [default = False, null = False, db_index = False];
-     required bool no_policy = 31 [default = False, null = False, db_index = False];
-     required string timezone = 32 [default = "America/New_York", max_length = 100, blank = False, null = False, db_index = False];
+     required bool backend_need_delete = 25 [default = False, db_index = False];
+     required bool backend_need_reap = 26 [default = False, db_index = False];
+     required bool deleted = 27 [default = False, db_index = False];
+     required bool write_protect = 28 [default = False, db_index = False];
+     required bool lazy_blocked = 29 [default = False, db_index = False];
+     required bool no_sync = 30 [default = False, db_index = False];
+     required bool no_policy = 31 [default = False, db_index = False];
+     required string timezone = 32 [default = "America/New_York", max_length = 100, blank = False, db_index = False];
      optional string policy_status = 33 [default = "0 - Policy in process", max_length = 1024];
      optional int32 policy_code = 34 [default = 0];
-     required string leaf_model_name = 35 [null = False, max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
+     required string leaf_model_name = 35 [max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
      required bool backend_need_delete_policy = 36 [default = False, help_text = "True if delete model_policy must be run before object can be reaped"];
      required bool xos_managed = 37 [default = True, help_text = "True if xos is responsible for creating/deleting this object", gui_hidden = True];
-     optional string backend_handle = 38 [max_length = 1024, feedback_state = True, blank=True, null=True, help_text = "Handle used by the backend to track this object", gui_hidden = True];
-     optional string changed_by_step = 39 [null = True, content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a sync step"];
-     optional string changed_by_policy = 40 [null = True, content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a model policy"];
+     optional string backend_handle = 38 [max_length = 1024, feedback_state = True, blank=True, help_text = "Handle used by the backend to track this object", gui_hidden = True];
+     optional string changed_by_step = 39 [content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a sync step"];
+     optional string changed_by_policy = 40 [content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a model policy"];
 }
 
 // A user may give a permission that he has to another user
@@ -100,28 +100,28 @@ policy grant_policy < ctx.user.is_admin
                         & Privilege.permission = "role:admin" >
 
 message Privilege::grant_policy (XOSBase) {
-     required int32 accessor_id = 1 [null = False, blank=False];
-     required string accessor_type = 2 [null = False, max_length=1024, blank = False];
-     required int32 object_id = 4 [null = False, blank=False];
-     required string object_type = 5 [null = False, max_length=1024, blank = False];
-     required string permission = 6 [null = False, default = "all", max_length=1024, tosca_key=True];
+     required int32 accessor_id = 1 [blank=False];
+     required string accessor_type = 2 [max_length=1024, blank = False];
+     required int32 object_id = 4 [blank=False];
+     required string object_type = 5 [max_length=1024, blank = False];
+     required string permission = 6 [default = "all", max_length=1024, tosca_key=True];
      required string granted = 7 [content_type = "date", auto_now_add = True, max_length=1024];
      optional string expires = 8 [content_type = "date", max_length=1024];
 }
 
 message AddressPool (XOSBase) {
-     required string name = 1 [db_index = False, max_length = 32, null = False, blank = False, unique = True, help_text="Name of this AddressPool"];
-     optional string addresses = 2 [db_index = False, null = True, blank = True, varchar = True, help_text="Space-separated list of available addresses"];
-     required string gateway_ip = 3 [db_index = False, max_length = 32, help_text="Gateway IP address for this AddressPool"];
-     required string gateway_mac = 4 [db_index = False, max_length = 32, help_text="Gateway MAC address for this AddressPool"];
-     required string cidr = 5 [db_index = False, max_length = 32, help_text="Subnet for this AddressPool"];
-     optional string inuse = 6 [db_index = False, null = True, blank = True, varchar = True, help_text="Space-separated list of inuse addresses"];
-     optional manytoone service->Service:addresspools = 7:1001 [db_index = True, null = True, blank = True, help_text="Service this AddressPool belongs to"];
+     required string name = 1 [db_index = False, max_length = 32, blank = False, unique = True, help_text="Name of this AddressPool"];
+     optional string addresses = 2 [db_index = False, blank = True, varchar = True, help_text="Space-separated list of available addresses"];
+     required string gateway_ip = 3 [max_length = 32, help_text="Gateway IP address for this AddressPool"];
+     required string gateway_mac = 4 [max_length = 32, help_text="Gateway MAC address for this AddressPool"];
+     required string cidr = 5 [max_length = 32, help_text="Subnet for this AddressPool"];
+     optional string inuse = 6 [db_index = False, blank = True, varchar = True, help_text="Space-separated list of inuse addresses"];
+     optional manytoone service->Service:addresspools = 7:1001 [db_index = True, blank = True, help_text="Service this AddressPool belongs to"];
 }
 
 message ComputeServiceInstance (ServiceInstance) {
-     required manytoone slice->Slice:computeserviceinstances = 1:1001 [db_index = True, null = False, blank = False, help_text = "Slice that controls this ServiceInstance"];
-     required manytoone image->Image:computeserviceinstances = 2:1001 [db_index = True, null = False, blank = False, help_text = "Image used to instantiate this ServiceInstance"];
+     required manytoone slice->Slice:computeserviceinstances = 1:1001 [db_index = True, blank = False, help_text = "Slice that controls this ServiceInstance"];
+     required manytoone image->Image:computeserviceinstances = 2:1001 [db_index = True, blank = False, help_text = "Image used to instantiate this ServiceInstance"];
 }
 
 // Everyone has read access
@@ -161,49 +161,49 @@ policy slice_policy <
 
 
 message Flavor (XOSBase) {
-     required string name = 1 [max_length = 32, content_type = "stripped", blank = False, help_text = "name of this flavor, as displayed to users", null = False, db_index = False, unique = True];
-     optional string description = 2 [db_index = False, max_length = 1024, null = True, content_type = "stripped"];
-     required string flavor = 3 [max_length = 32, content_type = "stripped", help_text = "flavor string used to configure deployments", db_index = False];
+     required string name = 1 [max_length = 32, content_type = "stripped", blank = False, help_text = "name of this flavor, as displayed to users", db_index = False, unique = True];
+     optional string description = 2 [db_index = False, max_length = 1024, content_type = "stripped"];
+     required string flavor = 3 [max_length = 32, content_type = "stripped", help_text = "flavor string used to configure deployments"];
 }
 
 
 message Image (XOSBase) {
-     required string name = 1 [db_index = False, max_length = 256, null = False, content_type = "stripped", blank = False, unique_with = "tag"];
-     required string kind = 2 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'))", max_length = 30, blank = False, null = False, db_index = False];
-     optional string disk_format = 3 [db_index = False, max_length = 256, null = True, content_type = "stripped", blank = True];
-     optional string container_format = 4 [db_index = False, max_length = 256, null = True, content_type = "stripped", blank = True];
-     optional string path = 5 [max_length = 256, content_type = "stripped", blank = True, help_text = "Path to image on local disk", null = True, db_index = False];
-     optional string tag = 6 [max_length = 256, content_type = "stripped", blank = True, help_text = "For Docker Images, tag of image", null = True, db_index = False];
+     required string name = 1 [db_index = False, max_length = 256, content_type = "stripped", blank = False, unique_with = "tag"];
+     required string kind = 2 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'))", max_length = 30, blank = False, db_index = False];
+     optional string disk_format = 3 [db_index = False, max_length = 256, content_type = "stripped", blank = True];
+     optional string container_format = 4 [db_index = False, max_length = 256, content_type = "stripped", blank = True];
+     optional string path = 5 [max_length = 256, content_type = "stripped", blank = True, help_text = "Path to image on local disk", db_index = False];
+     optional string tag = 6 [max_length = 256, content_type = "stripped", blank = True, help_text = "For Docker Images, tag of image", db_index = False];
 }
 
 policy network_policy < *slice_policy(owner) >
 
 message Network::network_policy (XOSBase) {
-     required string name = 1 [db_index = False, max_length = 32, null = False, blank = False, unique = True];
-     required manytoone template->NetworkTemplate:network = 2:1001 [db_index = True, null = False, blank = False];
-     optional string subnet = 3 [db_index = False, max_length = 32];
-     optional string start_ip = 4 [db_index = False, max_length = 32];
-     optional string end_ip = 5 [db_index = False, max_length = 32];
-     optional string ports = 6 [db_index = False, max_length = 1024];
-     optional string labels = 7 [db_index = False, max_length = 1024];
-     required manytoone owner->Slice:ownedNetworks = 8:1004 [help_text = "Slice that owns control of this Network", null = False, db_index = True, blank = False];
-     required bool permit_all_slices = 10 [default = False, null = False, db_index = False];
-     required bool autoconnect = 17 [help_text = "This network can be autoconnected to the slice that owns it", default = True, null = False, db_index = False];
-     optional manytomany permitted_slices->Slice/Network_permitted_slices:availableNetworks = 18:1005 [db_index = False];
+     required string name = 1 [db_index = False, max_length = 32, blank = False, unique = True];
+     required manytoone template->NetworkTemplate:network = 2:1001 [db_index = True, blank = False];
+     optional string subnet = 3 [max_length = 32];
+     optional string start_ip = 4 [max_length = 32];
+     optional string end_ip = 5 [max_length = 32];
+     optional string ports = 6 [max_length = 1024];
+     optional string labels = 7 [max_length = 1024];
+     required manytoone owner->Slice:ownedNetworks = 8:1004 [help_text = "Slice that owns control of this Network", db_index = True, blank = False];
+     required bool permit_all_slices = 10 [default = False, db_index = False];
+     required bool autoconnect = 17 [help_text = "This network can be autoconnected to the slice that owns it", default = True, db_index = False];
+     optional manytomany permitted_slices->Slice/Network_permitted_slices:availableNetworks = 18:1005 [];
 }
 
 
 message NetworkParameter (XOSBase) {
-     required manytoone parameter->NetworkParameterType:networkparameters = 1:1001 [help_text = "The type of the parameter", null = False, db_index = True, blank = False];
-     required string value = 2 [help_text = "The value of this parameter", max_length = 1024, null = False, db_index = False, blank = False];
-     required string content_type = 4 [max_length = 1024, content_type = "stripped", blank = False, help_text = "Content type id linked to this network parameter", null = False, db_index = False];
-     required uint32 object_id = 5 [db_index = False, null = False, blank = False, help_text = "Object linked to this NetworkParameter"];
+     required manytoone parameter->NetworkParameterType:networkparameters = 1:1001 [help_text = "The type of the parameter", db_index = True, blank = False];
+     required string value = 2 [help_text = "The value of this parameter", max_length = 1024, db_index = False, blank = False];
+     required string content_type = 4 [max_length = 1024, content_type = "stripped", blank = False, help_text = "Content type id linked to this network parameter", db_index = False];
+     required uint32 object_id = 5 [db_index = False, blank = False, help_text = "Object linked to this NetworkParameter"];
 }
 
 
 message NetworkParameterType (XOSBase) {
-     required string name = 1 [help_text = "The name of this parameter", max_length = 128, null = False, db_index = True, blank = False, unique = True];
-     optional string description = 2 [db_index = False, max_length = 1024];
+     required string name = 1 [help_text = "The name of this parameter", max_length = 128, db_index = True, blank = False, unique = True];
+     optional string description = 2 [max_length = 1024];
 }
 
 policy network_slice_validator < (obj.slice in obj.network.permitted_slices.all()) | (obj.slice = obj.network.owner) | obj.network.permit_all_slices >
@@ -211,56 +211,56 @@ policy network_slice_policy < *slice_policy(slice) & *network_policy(network) >
 
 message NetworkSlice::network_slice_policy (XOSBase) {
      option validators = "network_slice_validator:Slice {obj.slice.name} is not allowed to connect to networks {obj.network}";
-     required manytoone network->Network:networkslices = 1:1002 [db_index = True, null = False, blank = False, unique_with = "slice", tosca_key=True];
-     required manytoone slice->Slice:networkslices = 2:1006 [db_index = True, null = False, blank = False, tosca_key=True];
+     required manytoone network->Network:networkslices = 1:1002 [db_index = True, blank = False, unique_with = "slice", tosca_key=True];
+     required manytoone slice->Slice:networkslices = 2:1006 [db_index = True, blank = False, tosca_key=True];
 }
 
 message NetworkTemplate (XOSBase) {
-     required string name = 1 [db_index = False, max_length = 32, null = False, blank = False, unique = True];
-     optional string description = 2 [db_index = False, max_length = 1024];
-     required string visibility = 4 [default = "private", choices = "(('public', 'public'), ('private', 'private'))", max_length = 30, blank = False, null = False, db_index = False];
-     required string translation = 5 [default = "none", choices = "(('none', 'none'), ('NAT', 'NAT'))", max_length = 30, blank = False, null = False, db_index = False];
-     optional string access = 6 [choices = "((None, 'None'), ('indirect', 'Indirect'), ('direct', 'Direct'))", max_length = 30, blank = True, help_text = "Advertise this network as a means for other slices to contact this slice", null = True, db_index = False];
-     optional string shared_network_name = 7 [db_index = False, max_length = 30, null = True, blank = True];
-     optional string shared_network_id = 8 [help_text = "Quantum network", max_length = 256, null = True, db_index = False, blank = True];
-     required string topology_kind = 9 [default = "bigswitch", choices = "(('bigswitch', 'BigSwitch'), ('physical', 'Physical'), ('custom', 'Custom'))", max_length = 30, blank = False, null = False, db_index = False];
-     optional string controller_kind = 10 [blank = True, max_length = 30, null = True, db_index = False, choices = "((None, 'None'), ('onos', 'ONOS'), ('custom', 'Custom'))"];
-     optional string vtn_kind = 11 [default = "PRIVATE", choices = "(('PRIVATE', 'Private'), ('PUBLIC', 'Public'), ('MANAGEMENT_LOCAL', 'Management Local'), ('MANAGEMENT_HOST', 'Management Host'), ('VSG', 'VSG'), ('ACCESS_AGENT', 'Access Agent'), ('FLAT', 'Flat'))", max_length = 30, blank = True, null = True, db_index = False];
+     required string name = 1 [db_index = False, max_length = 32, blank = False, unique = True];
+     optional string description = 2 [max_length = 1024];
+     required string visibility = 4 [default = "private", choices = "(('public', 'public'), ('private', 'private'))", max_length = 30, blank = False, db_index = False];
+     required string translation = 5 [default = "none", choices = "(('none', 'none'), ('NAT', 'NAT'))", max_length = 30, blank = False, db_index = False];
+     optional string access = 6 [choices = "((None, 'None'), ('indirect', 'Indirect'), ('direct', 'Direct'))", max_length = 30, blank = True, help_text = "Advertise this network as a means for other slices to contact this slice", db_index = False];
+     optional string shared_network_name = 7 [db_index = False, max_length = 30, blank = True];
+     optional string shared_network_id = 8 [help_text = "Quantum network", max_length = 256, db_index = False, blank = True];
+     required string topology_kind = 9 [default = "bigswitch", choices = "(('bigswitch', 'BigSwitch'), ('physical', 'Physical'), ('custom', 'Custom'))", max_length = 30, blank = False, db_index = False];
+     optional string controller_kind = 10 [blank = True, max_length = 30, db_index = False, choices = "((None, 'None'), ('onos', 'ONOS'), ('custom', 'Custom'))"];
+     optional string vtn_kind = 11 [default = "PRIVATE", choices = "(('PRIVATE', 'Private'), ('PUBLIC', 'Public'), ('MANAGEMENT_LOCAL', 'Management Local'), ('MANAGEMENT_HOST', 'Management Host'), ('VSG', 'VSG'), ('ACCESS_AGENT', 'Access Agent'), ('FLAT', 'Flat'))", max_length = 30, blank = True, db_index = False];
 }
 
 message Node (XOSBase) {
-     required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the Node", null = False, db_index = False, unique = True];
-     optional string bridgeId = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "Bridge Id", null = True, db_index = False];
-     optional string dataPlaneIntf = 4 [max_length = 200, content_type = "stripped", blank = True, help_text = "Dataplane Interface", null = True, db_index = False];
-     optional string dataPlaneIp = 5 [max_length = 200, content_type = "stripped", blank = True, help_text = "Dataplane Ip", null = True, db_index = False];
-     optional string hostManagementIface = 6 [max_length = 200, content_type = "stripped", blank = True, help_text = "Host Management Interface", null = True, db_index = False];
-     required manytoone site->Site:nodes = 7:1006 [db_index = True, null = False, blank = False, default=get_first_site];
+     required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the Node", db_index = False, unique = True];
+     optional string bridgeId = 3 [max_length = 200, content_type = "stripped", blank = True, help_text = "Bridge Id", db_index = False];
+     optional string dataPlaneIntf = 4 [max_length = 200, content_type = "stripped", blank = True, help_text = "Dataplane Interface", db_index = False];
+     optional string dataPlaneIp = 5 [max_length = 200, content_type = "stripped", blank = True, help_text = "Dataplane Ip", db_index = False];
+     optional string hostManagementIface = 6 [max_length = 200, content_type = "stripped", blank = True, help_text = "Host Management Interface", db_index = False];
+     required manytoone site->Site:nodes = 7:1006 [db_index = True, blank = False, default=get_first_site];
 }
 message NodeLabel (XOSBase) {
-     required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "label name", null = False, db_index = False, unique = True];
-     optional manytomany node->Node/NodeLabel_node:nodelabels = 2:1002 [db_index = False];
+     required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "label name", db_index = False, unique = True];
+     optional manytomany node->Node/NodeLabel_node:nodelabels = 2:1002 [];
 }
 
 policy port_policy < *network_policy(network) >
 
 message Port::port_policy (XOSBase) {
-     required manytoone network->Network:links = 1:1003 [db_index = True, null = False, blank = False, unique_with = "service_instance", help_text = "Network bound to this port"];
-     optional string ip = 3 [max_length = 39, content_type = "ip", blank = True, help_text = "Instance ip address", null = True, db_index = False];
-     optional string port_id = 4 [help_text = "Neutron port id", max_length = 256, null = True, db_index = False, blank = True];
-     optional string mac = 5 [help_text = "MAC address associated with this port", max_length = 256, null = True, db_index = False, blank = True];
-     required bool xos_created = 6 [default = False, db_index = False];
-     optional manytoone service_instance->ServiceInstance:ports = 7:1001 [db_index = True, null = True, blank = True, help_text = "ServiceInstance bound to this port"];
+     required manytoone network->Network:links = 1:1003 [db_index = True, blank = False, unique_with = "service_instance", help_text = "Network bound to this port"];
+     optional string ip = 3 [max_length = 39, content_type = "ip", blank = True, help_text = "Instance ip address", db_index = False];
+     optional string port_id = 4 [help_text = "Neutron port id", max_length = 256, db_index = False, blank = True];
+     optional string mac = 5 [help_text = "MAC address associated with this port", max_length = 256, db_index = False, blank = True];
+     required bool xos_created = 6 [default = False];
+     optional manytoone service_instance->ServiceInstance:ports = 7:1001 [db_index = True, blank = True, help_text = "ServiceInstance bound to this port"];
 }
 
 message Principal (XOSBase) {
-     required string name = 1 [max_length = 128, null = False, db_index = True, blank = False, help_text = "The name of this principal"];
-     required manytoone trust_domain->TrustDomain:principals = 2:1001 [db_index = True, null = False, blank = False, help_text = "Trust domain this principal resides in"];
+     required string name = 1 [max_length = 128, db_index = True, blank = False, help_text = "The name of this principal"];
+     required manytoone trust_domain->TrustDomain:principals = 2:1001 [db_index = True, blank = False, help_text = "Trust domain this principal resides in"];
 }
 
 message Role (XOSBase) {
-     required string role_type = 1 [db_index = False, max_length = 80, null = False, content_type = "stripped", blank = False];
-     optional string role = 2 [db_index = False, max_length = 80, null = True, content_type = "stripped", blank = True];
-     optional string description = 3 [db_index = False, max_length = 120, content_type = "stripped"];
+     required string role_type = 1 [db_index = False, max_length = 80, content_type = "stripped", blank = False];
+     optional string role = 2 [db_index = False, max_length = 80, content_type = "stripped", blank = True];
+     optional string description = 3 [max_length = 120, content_type = "stripped"];
 }
 
 policy service_policy <ctx.user.is_admin | exists Privilege: Privilege.accessor_id = ctx.user.id & Privilege.accessor_type = "User" & Privilege.object_type = "Service" & Privilege.object_id = obj.id >
@@ -270,79 +270,52 @@ message Service (XOSBase,AttributeMixin) {
 
      optional string description = 1 [
          help_text = "Description of Service",
-         db_index = False,
          max_length = 254,
          varchar = True];
      required bool enabled = 2 [
          help_text = "Whether or not service is Enabled",
-         db_index = False,
          default = True,
          gui_hidden = True];
      required string kind = 3 [
          help_text = "Kind of service",
-         blank = False,
          choices="(('generic', 'Generic'), ('data', 'Data Plane'), ('control', 'Control Plane'), ('oss', 'OSS'))",
          content_type = "stripped",
-         db_index = False,
          default = "generic",
-         max_length = 30,
-         null = False];
+         max_length = 30];
      required string name = 4 [
          help_text = "Unique name of service",
-         blank = False,
          content_type = "stripped",
-         db_index = False,
          max_length = 30,
-         null = False,
          unique = True];
      optional string versionNumber = 5 [
          help_text = "Version of Service Definition",
-         blank = True,
          content_type = "stripped",
-         db_index = False,
-         max_length = 30,
-         null = True];
+         max_length = 30];
      required bool published = 6 [
          help_text = "True if this service should be published in XOS",
-         db_index = False,
          default = True,
          gui_hidden = True]; // deprecated?
      optional string icon_url = 8 [
-         blank = True,
          content_type = "stripped",
-         db_index = False,
          gui_hidden = True,
-         max_length = 1024,
-         null = True]; // deprecated?
+         max_length = 1024]; // deprecated?
      optional string public_key = 9 [
          help_text = "Public key string",
-         blank = True,
-         db_index = False,
          gui_hidden = True,
          max_length = 4096,
-         null = True,
          varchar = True]; // likely only used by VM-based services. deprecated?
      optional string private_key_fn = 10 [
          help_text = "Filename of private key file, located within core container",
-         blank = True,
          content_type = "stripped",
-         db_index = False,
          gui_hidden = True,
-         max_length = 4096,
-         null = True]; // likely only used by VM-based services. deprecated?
+         max_length = 4096]; // likely only used by VM-based services. deprecated?
      optional string service_specific_id = 11 [
          help_text = "Service-specific identifier, opaque to XOS core",
-         blank = True,
          content_type = "stripped",
-         db_index = False,
-         max_length = 30,
-         null = True];
+         max_length = 30];
      optional string service_specific_attribute = 12 [
          help_text = "Service-specific string attribute, opaque to XOS core",
-         blank = True,
-         db_index = False,
          gui_hidden = True,
-         null = True,
          varchar = True];
 }
 
@@ -351,28 +324,18 @@ message ServicePort (XOSBase) {
 
      required string name = 1 [
          help_text = "Unique service port name",
-         blank = False,
-         db_index = False,
-         max_length = 128,
-         null = False];
+         max_length = 128];
      required int32 external_port = 2 [
-         help_text = "external port number",
-         blank = False];
+         help_text = "external port number"];
      required int32 internal_port = 3 [
-         help_text = "internal port number",
-         blank = False];
+         help_text = "internal port number"];
      required string protocol = 4 [
          help_text = "Protocol",
-         blank = False,
-         db_index = False,
          default="TCP",
-         max_length = 32,
-         null = False];
+         max_length = 32];
      required manytoone service->Service:serviceports = 5:1002 [
          help_text = "The Service this ServicePort is associated with",
-         blank = False,
-         db_index = True,
-         null = False];
+         db_index = True];
 }
 
 message ServiceAttribute (XOSBase) {
@@ -380,22 +343,14 @@ message ServiceAttribute (XOSBase) {
 
      required string name = 1 [
          help_text = "Attribute Name",
-         blank = False,
-         db_index = False,
          max_length = 128,
-         null = False,
          unique_with="service"];
      required string value = 2 [
          help_text = "Attribute Value",
-         blank = False,
-         db_index = False,
-         null = False,
          varchar = True];
      required manytoone service->Service:serviceattributes = 3:1003 [
          help_text = "The Service this attribute is associated with",
-         blank = False,
-         db_index = True,
-         null = False];
+         db_index = True];
 }
 
 
@@ -404,15 +359,11 @@ message ServiceDependency (XOSBase) {
 
      required manytoone provider_service->Service:provided_dependencies = 1:1004 [
          help_text = "The service that provides this dependency",
-         blank=False,
          db_index = True,
-         null=False,
          tosca_key=True];
      required manytoone subscriber_service->Service:subscribed_dependencies = 2:1005 [
          help_text = "The services that subscribes to this dependency",
-         blank=False,
          db_index=True,
-         null=False,
          tosca_key=True];
      required string connect_method = 3 [
          help_text = "method to connect the two services",
@@ -423,16 +374,16 @@ message ServiceDependency (XOSBase) {
 
 
 message Site::site_policy (XOSBase) {
-     required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name for this Site", null = False, db_index = False, unique = True];
-     optional string site_url = 2 [max_length = 512, content_type = "url", blank = True, help_text = "Site's Home URL Page", null = True, db_index = False];
-     required bool enabled = 3 [help_text = "Status for this Site", default = True, db_index = False];
-     required bool hosts_nodes = 4 [help_text = "Indicates whether or not the site host nodes", default = True, db_index = False];
-     required bool hosts_users = 5 [help_text = "Indicates whether or not the site manages user accounts", default = True, db_index = False];
-     optional float longitude = 6 [db_index = False, null = True, blank = True];
-     optional float latitude = 7 [db_index = False, null = True, blank = True];
-     required string login_base = 8 [max_length = 50, content_type = "stripped", blank = False, help_text = "Prefix for Slices associated with this Site", null = False, db_index = False];
-     required bool is_public = 9 [help_text = "Indicates the visibility of this site to other members", default = True, db_index = False];
-     required string abbreviated_name = 10 [db_index = False, max_length = 80, null = False, content_type = "stripped", blank = False];
+     required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name for this Site", db_index = False, unique = True];
+     optional string site_url = 2 [max_length = 512, content_type = "url", blank = True, help_text = "Site's Home URL Page", db_index = False];
+     required bool enabled = 3 [help_text = "Status for this Site", default = True];
+     required bool hosts_nodes = 4 [help_text = "Indicates whether or not the site host nodes", default = True];
+     required bool hosts_users = 5 [help_text = "Indicates whether or not the site manages user accounts", default = True];
+     optional float longitude = 6 [db_index = False, blank = True];
+     optional float latitude = 7 [db_index = False, blank = True];
+     required string login_base = 8 [max_length = 50, content_type = "stripped", blank = False, help_text = "Prefix for Slices associated with this Site", db_index = False];
+     required bool is_public = 9 [help_text = "Indicates the visibility of this site to other members", default = True];
+     required string abbreviated_name = 10 [db_index = False, max_length = 80, content_type = "stripped", blank = False];
 }
 
 policy slice_name_no_spaces < {{ ' ' not in obj.name }} >
@@ -442,35 +393,35 @@ message Slice::slice_policy (XOSBase) {
      option validators = "slice_name_no_spaces:Slice name contains spaces, slice_has_creator:Slice has no creator";
      option plural = "Slices";
 
-     required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", null = False, db_index = False, unique = True];
-     required bool enabled = 2 [help_text = "Status for this Slice", default = True, db_index = False];
-     optional string description = 4 [help_text = "High level description of the slice and expected activities", max_length = 1024, db_index = False, varchar = True];
-     required manytoone site->Site:slices = 6:1005 [help_text = "The Site this Slice belongs to", null = False, db_index = True, blank = False];
-     required int32 max_instances = 7 [default = 10, null = False, db_index = False, blank = False];
-     optional manytoone service->Service:slices = 8:1006 [db_index = True, null = True, blank = True];
-     optional string network = 9 [blank = True, max_length = 256, null = True, db_index = False, choices = "((None, 'Default'), ('host', 'Host'), ('bridged', 'Bridged'), ('noauto', 'No Automatic Networks'))"];
-     optional string exposed_ports = 10 [db_index = False, max_length = 256, null = True, blank = True];
+     required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", db_index = False, unique = True];
+     required bool enabled = 2 [help_text = "Status for this Slice", default = True];
+     optional string description = 4 [help_text = "High level description of the slice and expected activities", max_length = 1024, varchar = True];
+     required manytoone site->Site:slices = 6:1005 [help_text = "The Site this Slice belongs to", db_index = True, blank = False];
+     required int32 max_instances = 7 [default = 10, db_index = False, blank = False];
+     optional manytoone service->Service:slices = 8:1006 [db_index = True, blank = True];
+     optional string network = 9 [blank = True, max_length = 256, db_index = False, choices = "((None, 'Default'), ('host', 'Host'), ('bridged', 'Bridged'), ('noauto', 'No Automatic Networks'))"];
+     optional string exposed_ports = 10 [db_index = False, max_length = 256, blank = True];
      optional manytoone creator->User:slices = 12:1004 [db_index = True];
-     optional manytoone default_flavor->Flavor:slices = 13:1002 [db_index = True, null = True, blank = True];
-     optional manytoone default_image->Image:slices = 14:1005 [db_index = True, null = True, blank = True];
-     optional manytoone default_node->Node:slices = 15:1003 [db_index = True, null = True, blank = True];
-     optional string mount_data_sets = 16 [default = "GenBank", max_length = 256, content_type = "stripped", blank = True, null = True, db_index = False];
-     required string default_isolation = 17 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))", max_length = 30, blank = False, null = False, db_index = False];
+     optional manytoone default_flavor->Flavor:slices = 13:1002 [db_index = True, blank = True];
+     optional manytoone default_image->Image:slices = 14:1005 [db_index = True, blank = True];
+     optional manytoone default_node->Node:slices = 15:1003 [db_index = True, blank = True];
+     optional string mount_data_sets = 16 [default = "GenBank", max_length = 256, content_type = "stripped", blank = True, db_index = False];
+     required string default_isolation = 17 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))", max_length = 30, blank = False, db_index = False];
      optional manytoone trust_domain->TrustDomain:slices = 18:1002 [db_index = True, help_text = "Trust domain this slice resides in"];
      optional manytoone principal->Principal:slices = 19:1001 [db_index = True, help_text = "Principal this slice may use to interact with other components"];
-     optional int32 controller_replica_count = 20 [default = 0, db_index = False, help_text = "Replica count, controller-dependent"];
-     optional string controller_kind = 21 [max_length = 256, content_type = "stripped", blank = True, help_text = "Type of controller, vim-dependent", null = True, db_index = False];
+     optional int32 controller_replica_count = 20 [default = 0, help_text = "Replica count, controller-dependent"];
+     optional string controller_kind = 21 [max_length = 256, content_type = "stripped", blank = True, help_text = "Type of controller, vim-dependent", db_index = False];
 }
 
 
 policy tag_policy < ctx.user.is_admin >
 
 message Tag::tag_policy (XOSBase) {
-     required manytoone service->Service:tags = 1:1007 [help_text = "The Service this Tag is associated with", null = False, db_index = True, blank = False];
-     required string name = 2 [help_text = "The name of this tag", max_length = 128, null = False, db_index = True, blank = False];
-     required string value = 3 [max_length = 1024, content_type = "stripped", blank = False, help_text = "The value of this tag", null = False, db_index = False];
-     required string content_type = 4 [max_length = 1024, content_type = "stripped", blank = False, help_text = "Content type id linked to this tag", null = False, db_index = False];
-     required uint32 object_id = 5 [db_index = False, null = False, blank = False, help_text = "Object linked to this tag"];
+     required manytoone service->Service:tags = 1:1007 [help_text = "The Service this Tag is associated with", db_index = True, blank = False];
+     required string name = 2 [help_text = "The name of this tag", max_length = 128, db_index = True, blank = False];
+     required string value = 3 [max_length = 1024, content_type = "stripped", blank = False, help_text = "The value of this tag", db_index = False];
+     required string content_type = 4 [max_length = 1024, content_type = "stripped", blank = False, help_text = "Content type id linked to this tag", db_index = False];
+     required uint32 object_id = 5 [db_index = False, blank = False, help_text = "Object linked to this tag"];
 }
 
 message InterfaceType (XOSBase) {
@@ -478,20 +429,14 @@ message InterfaceType (XOSBase) {
 
      required string name = 1 [
          help_text = "Name of this interface type",
-         blank = False,
          content_type = "stripped",
-         db_index = False,
          max_length = 200,
-         null = False,
          unique_with = "direction"];
      required string direction = 2 [
          help_text = "Direction, either in or out",
-         blank = False,
          choices = "(('in', 'In'), ('out', 'Out'))",
          content_type = "stripped",
-         db_index = False,
-         max_length = 30,
-         null = False];
+         max_length = 30];
 }
 
 message ServiceInterface (XOSBase) {
@@ -499,15 +444,11 @@ message ServiceInterface (XOSBase) {
 
      required manytoone service->Service:service_interfaces = 1:1008 [
          help_text = "Service that this ServiceInterface is associated with",
-         blank = False,
          db_index = True,
-         null = False,
          tosca_key=True];
      required manytoone interface_type->InterfaceType:service_interfaces = 2:1001 [
          help_text = "Interface type that describes this interface",
-         blank = False,
          db_index = True,
-         null = False,
          tosca_key=True];
 }
 
@@ -516,30 +457,19 @@ message ServiceInstance (XOSBase, AttributeMixin) {
 
      optional string name = 1 [
          help_text = "Name of ServiceInstance",
-         blank = True,
          content_type = "stripped",
-         db_index = False,
-         max_length = 200,
-         null = True];
+         max_length = 200];
      required manytoone owner->Service:service_instances = 2:1009 [
          help_text = "The Service that owns this ServiceInstance",
-         blank = False,
-         db_index = True,
-         null = False];
+         db_index = True];
      optional string service_specific_id = 3 [
          help_text = "Service-specific identifier, opaque to the XOS core",
-         blank = True,
          content_type = "stripped",
-         db_index = False,
          gui_hidden = True,
-         max_length = 30,
-         null = True];
+         max_length = 30];
      optional string service_specific_attribute = 10 [
          help_text = "Service-specific text attribute, opaque to the XOS core",
-         blank = True,
-         db_index = False,
          gui_hidden = True,
-         null = True,
          varchar = True];
      optional uint32 link_deleted_count = 11 [
          help_text = "Incremented each time a provided_link is deleted from this ServiceInstance",
@@ -547,7 +477,6 @@ message ServiceInstance (XOSBase, AttributeMixin) {
          gui_hidden = True];
      optional manytoone master_serviceinstance->ServiceInstance:child_serviceinstances = 12:1002 [
          help_text = "The master service instance that set this service instance up",
-         blank = True,
          gui_hidden = True];
 }
 
@@ -557,30 +486,20 @@ message ServiceInstanceLink (XOSBase) {
      required manytoone provider_service_instance->ServiceInstance:provided_links = 1:1003 [
          help_text = "Eastbound serviceinstance of this link",
          db_index = True,
-         null = False,
-         blank = False,
          tosca_key=True];
      optional manytoone provider_service_interface->ServiceInterface:provided_links = 2:1004 [
          help_text = "Interface descrption of the eastbound linkage point",
-         db_index = True,
-         null = True,
-         blank = True];
+         db_index = True];
      optional manytoone subscriber_service_instance->ServiceInstance:subscribed_links = 3:1005 [
          help_text = "Westbound ServiceInstance of this link",
-         db_index = True,
-         null = True,
-         blank = True];
+         db_index = True];
      optional manytoone subscriber_service->Service:subscribed_links = 4:1010 [
          help_text = "Interface description of the westbound linkage point",
          db_index = True,
-         null = True,
-         blank = True,
          tosca_key_one_of = subscriber_service_instance];
      optional manytoone subscriber_network->Network:subscribed_links = 5:1004 [
          help_text = "Alternative to subscriber_service_instance, if a Network model is the subscriber instead of a ServiceInstance",
          db_index = True,
-         null = True,
-         blank = True,
          tosca_key_one_of=subscriber_service_instance];
 }
 
@@ -589,32 +508,24 @@ message ServiceInstanceAttribute (XOSBase) {
 
      required string name = 1 [
          help_text = "Attribute Name",
-         blank = False,
-         db_index = False,
          max_length = 128,
-         null = False,
          unique_with = "service_instance"];
      required string value = 2 [
-         help_text = "Attribute Value",
-         blank = False,
-         db_index = False,
-         null = False];
+         help_text = "Attribute Value"];
      required manytoone service_instance->ServiceInstance:service_instance_attributes = 3:1006 [
          help_text = "The Tenant this attribute is associated with",
-         blank = False,
-         db_index = True,
-         null = False];
+         db_index = True];
 }
 
 message TrustDomain (XOSBase) {
-     required string name = 1 [max_length = 255, null = False, db_index = True, blank = False, help_text = "Name of this trust domain"];
-     required manytoone owner->Service:owned_trust_domains = 2:1011 [null = False, db_index = True, blank = False, help_text = "Service partioned by this trust domain"];
+     required string name = 1 [max_length = 255, db_index = True, blank = False, help_text = "Name of this trust domain"];
+     required manytoone owner->Service:owned_trust_domains = 2:1011 [db_index = True, blank = False, help_text = "Service partioned by this trust domain"];
 }
 
 message XOSCore (XOSBase) {
      option singular="XOSCore";
      option plural="XOSCores";
-     required string name = 1 [default = "XOS", max_length = 200, content_type = "stripped", blank = False, help_text = "Name of XOS", null = False, db_index = False, unique = True];
+     required string name = 1 [default = "XOS", max_length = 200, content_type = "stripped", blank = False, help_text = "Name of XOS", db_index = False, unique = True];
 }
 
 message XOSGuiExtension::admin_policy (XOSBase) {
@@ -623,8 +534,8 @@ message XOSGuiExtension::admin_policy (XOSBase) {
      // option no_sync = True;
      // option no_policy = True;
 
-     required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the GUI Extensions", null = False, db_index = False, unique = True];
-     required string files = 2 [max_length = 1024, content_type = "stripped", blank = False, help_text = "List of comma separated file composing the view", null = False, db_index = False];
+     required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Name of the GUI Extensions", db_index = False, unique = True];
+     required string files = 2 [max_length = 1024, content_type = "stripped", blank = False, help_text = "List of comma separated file composing the view", db_index = False];
 }
 
 message ServiceGraphConstraint (XOSBase) {
