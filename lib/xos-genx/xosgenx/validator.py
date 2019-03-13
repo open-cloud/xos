@@ -215,7 +215,7 @@ class XProtoValidator(object):
         elif link_type == "manytomany":
             self.validate_field_link_manytomany(model, field)
         else:
-            self.error("Unknown link_type %s" % link_type)
+            self.error(model, field, "Unknown link_type %s" % link_type)
 
     def validate_field_integer(self, model, field):
         # An integer with an option "type=link" is actually a link
