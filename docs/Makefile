@@ -10,7 +10,7 @@ default: serve
 # use bash for pushd/popd, and to fail if commands within  a pipe fail
 SHELL = bash -o pipefail
 
-GENERATED_DOCS = 
+GENERATED_DOCS =
 
 LINT_STYLE ?= mdl_relaxed.rb
 
