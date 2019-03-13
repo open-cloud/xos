@@ -541,6 +541,7 @@ message XOSGuiExtension::admin_policy (XOSBase) {
 message ServiceGraphConstraint (XOSBase) {
     option verbose_name="Graph Constraint";
     option description="Define the position of the nodes in the service graph";
-    required string constraints = 1 [max_length = 1024, content_type = "stripped", help_text = "A composite array defining positions, eg [volt, vsg, [address_manager, vrouter]]", tosca_key=True];
+    required string constraints = 1 [max_length = 1024, content_type = "stripped", help_text = "A composite array defining service positions in the graph, eg [volt, vsg, [address_manager, vrouter]]", tosca_key=True];
+    optional int32 priority = 2 [help_text = "The priority of the constraint, the one with highest priority will be used", default=0];
 }
 
