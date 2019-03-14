@@ -77,18 +77,19 @@ class XOSClient(chameleon_client.GrpcClient):
 
         return self
 
-    def load_convenience_methods(self):
+    def request_convenience_methods(self):
 
-        convenience_methods_dir = (
-            "/usr/local/lib/python2.7/dist-packages/xosapi/convenience/"
-        )
+        convenience_methods_dir = "/var/run/xosapi/convenience"
+        if not os.path.exists(convenience_methods_dir):
+            log.info("Creating convenience methods directory", convenience_methods_dir=convenience_methods_dir)
+            os.makedirs(convenience_methods_dir)
 
         try:
             response = self.dynamicload.GetConvenienceMethods(Empty())
 
             if response:
                 log.info(
-                    "Loading convenience methods",
+                    "Saving convenience methods",
                     methods=[m.filename for m in response.convenience_methods],
                 )
 
@@ -135,7 +136,7 @@ class XOSClient(chameleon_client.GrpcClient):
             self.xos_orm = orm.ORMStub(self.xos, self.xos_pb2, "xos")
 
         # ask the core for the convenience methods
-        self.load_convenience_methods()
+        self.request_convenience_methods()
 
         # Load convenience methods after reconnect
         orm.import_convenience_methods()

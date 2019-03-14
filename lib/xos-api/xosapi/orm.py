@@ -883,19 +883,28 @@ def make_ORMWrapper(wrapped_class, *args, **kwargs):
 
 
 def import_convenience_methods():
+    # The ORM has several built-in convenience methods that are contained here
+    lib_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+    base_convenience_dir = os.path.join(lib_dir, "convenience")
 
-    log.info("Loading convenience methods")
+    # Service convenience methods are placed here during dynamicload
+    service_convenience_dir = "/var/run/xosapi/convenience"
 
-    cwd = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-    api_convenience_dir = os.path.join(cwd, "convenience")
-    for file in os.listdir(api_convenience_dir):
-        if file.endswith(".py") and "test" not in file:
-            pathname = os.path.join(api_convenience_dir, file)
-            try:
-                log.debug("Loading: %s" % file)
-                imp.load_source(file[:-3], pathname)
-            except Exception:
-                log.exception(
-                    "Cannot import api convenience method for: %s, %s"
-                    % (file[:-3], pathname)
-                )
+    for api_convenience_dir in [base_convenience_dir, service_convenience_dir]:
+        log.info("Loading convenience methods", api_convenience_dir=api_convenience_dir)
+
+        if not os.path.exists(api_convenience_dir):
+            log.info("No convenience methods found", api_convenience_dir=api_convenience_dir)
+            continue
+
+        for file in os.listdir(api_convenience_dir):
+            if file.endswith(".py") and "test" not in file:
+                pathname = os.path.join(api_convenience_dir, file)
+                try:
+                    log.debug("Loading: %s" % file)
+                    imp.load_source(file[:-3], pathname)
+                except Exception:
+                    log.exception(
+                        "Cannot import api convenience method for: %s, %s"
+                        % (file[:-3], pathname)
+                    )
