@@ -1,0 +1,96 @@
+option app_label = "testservice";
+option name = "testservice";
+
+message TestserviceService (Service){
+  option verbose_name = "Testservice Service";
+}
+
+message TestserviceServiceInstance (ServiceInstance){
+  option owner_class_name = "TestserviceService";
+  option verbose_name = "Testservice Service Instance";
+
+  required bool sync_after_policy = 1 [default = False];
+  required bool sync_during_policy = 2 [default = False];
+  required bool policy_after_sync = 3 [default = False];
+  required bool policy_during_sync = 4 [default = False];
+
+  required bool update_during_sync = 5 [default = False];
+  required bool update_during_policy = 6 [default = False];
+
+  required bool create_duplicate = 9 [default = False];
+
+  // used by the policy/syncstep ordering tests
+  required int32 some_integer = 7 [default = 0];
+  required int32 some_other_integer = 8 [default = 0];
+
+  // optional strings
+  optional string optional_string = 20 [];
+  optional string optional_string_with_default = 21 [default="some_default"];
+  optional string optional_string_with_choices = 22 [choices="(('one', 'one'), ('two', 'two'))"];
+  optional string optional_string_max_length = 23 [max_length=32];
+  optional string optional_string_stripped = 24 [content_type="stripped", max_length=32];
+  optional string optional_string_date = 25 [content_type = "date"];
+  optional string optional_string_ip = 26 [content_type = "ip"];
+  optional string optional_string_indexed = 27 [db_index = True];
+
+  // required strings
+  required string required_string = 30 [default="some_default"];
+
+  // booleans
+  required bool required_bool_default_false = 40 [default=False];
+  required bool required_bool_default_true = 41 [default=True];
+
+  // integers
+  optional int32 optional_int = 50 [];
+  optional int32 optional_int_with_default = 51 [default=123];
+  optional int32 optional_int_with_min = 52 [min_value=100];
+  optional int32 optional_int_with_max = 53 [max_value=199];
+  required int32 required_int_with_default = 54 [default=456];
+
+  // floats
+  optional float optional_float = 60 [];
+  optional float optional_float_with_default = 61 [default=3.3];
+}
+
+message TestserviceDuplicateServiceInstance (XOSBase){
+  option verbose_name = "Testservice Duplicate Service Instance";
+
+  required manytoone serviceinstance->TestserviceServiceInstance:duplicates = 1:1001 [
+         help_text = "Link to the ServiceInstance this was duplicated from"];
+
+  required string name = 2 [
+         help_text = "Named copied From serviceInstance",
+         max_length = 256];
+
+  // used by the policy/syncstep ordering tests
+  required int32 some_integer = 7 [default = 0];
+  required int32 some_other_integer = 8 [default = 0];
+
+  // optional strings
+  optional string optional_string = 20 [];
+  optional string optional_string_with_default = 21 [default="some_default"];
+  optional string optional_string_with_choices = 22 [choices="(('one', 'one'), ('two', 'two'))"];
+  optional string optional_string_max_length = 23 [max_length=32];
+  optional string optional_string_stripped = 24 [content_type="stripped", max_length=32];
+  optional string optional_string_date = 25 [content_type = "date"];
+  optional string optional_string_ip = 26 [content_type = "ip"];
+  optional string optional_string_indexed = 27 [db_index = True];
+
+  // required strings
+  required string required_string = 30 [default="some_default"];
+
+  // booleans
+  required bool required_bool_default_false = 40 [default=False];
+  required bool required_bool_default_true = 41 [default=True];
+
+  // integers
+  optional int32 optional_int = 50 [];
+  optional int32 optional_int_with_default = 51 [default=123];
+  optional int32 optional_int_with_min = 52 [min_value=100];
+  optional int32 optional_int_with_max = 53 [max_value=199];
+  required int32 required_int_with_default = 54 [default=456];
+
+  // floats
+  optional float optional_float = 60 [];
+  optional float optional_float_with_default = 61 [default=3.3];
+}
