@@ -1,4 +1,7 @@
 PyYAML~=3.12
+django-extensions~=2.1.6
+djangorestframework~=3.9.1
+django~=1.11.20
 multistructlog~=2.1.0
-xosconfig~=2.2.6
-xosgenx~=2.2.6
+xosconfig~=3.0.0
+xosgenx~=3.0.0

@@ -107,8 +107,8 @@ def find_xproto_in_folder(path):
     """
     xprotos = []
     for fn in os.listdir(path):
-        # skip hidden files and folders. plus other useless things
-        if fn.startswith(".") or fn == "venv-xos" or fn == "htmlcov":
+        # skip hidden files and folders
+        if fn.startswith("."):
             continue
         full_path = os.path.join(path, fn)
         if fn.endswith(".xproto"):
@@ -127,8 +127,8 @@ def find_decls_models(path):
     """
     decls = []
     for fn in os.listdir(path):
-        # skip hidden files and folders. plus other useless things
-        if fn.startswith(".") or fn == "venv-xos" or fn == "htmlcov":
+        # skip hidden files and folders
+        if fn.startswith("."):
             continue
         full_path = os.path.join(path, fn)
         if fn == "models.py":
@@ -160,8 +160,9 @@ def generate_service_models(service_dir, service_dest_dir, service_name):
     :param service_name: string (name of the service)
     :return: void
     """
-    xprotos = find_xproto_in_folder(service_dir)
-    decls = find_decls_models(service_dir)
+    sync_dir = os.path.join(service_dir, "xos/synchronizer/models")
+    xprotos = find_xproto_in_folder(sync_dir)
+    decls = find_decls_models(sync_dir)
     log.debug("Generating models for %s from files %s" % (service_name, ", ".join(xprotos)))
     out_dir = os.path.join(service_dest_dir, service_name)
     if not os.path.isdir(out_dir):

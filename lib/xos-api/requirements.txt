@@ -7,5 +7,5 @@ multistructlog~=2.1.0
 pykwalify~=1.6.0
 python-consul~=1.1.0
 simplejson~=3.16.0
-xosconfig~=2.2.6
-xosgenx~=2.2.6
+xosconfig~=3.0.0
+xosgenx~=3.0.0
