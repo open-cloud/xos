@@ -21,7 +21,7 @@ set -e -o pipefail
 
 WORKSPACE=${WORKSPACE:-.}
 XOS_DIR=${XOS_DIR:-.}
-PIP_REQS=${PIP_REQS:-${XOS_DIR}/scripts/xos_dev_reqs.txt}
+PIP_REQS=${PIP_REQS:-${XOS_DIR}/containers/xos/requirements.txt}
 VENVDIR="${WORKSPACE}/venv-xos"
 
 # create venv if it's not yet there
@@ -34,7 +34,7 @@ fi
 echo "Installing python requirements in virtualenv with pip"
 source "${VENVDIR}/bin/activate"
 pip install --upgrade pip
-pip install -r "$PIP_REQS"
+pip install -r "$PIP_REQS" nose2 mock
 
 pushd "$XOS_DIR/lib/xos-util"
 python setup.py install

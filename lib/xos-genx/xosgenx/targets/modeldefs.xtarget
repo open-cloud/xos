@@ -1,53 +1,57 @@
+---
+# Created by modeldefs.xtarget
 items:
 {%- for m in proto.messages | sort(attribute='name') %}
-{%- if m.name != 'XOSBase'  and xproto_unquote(xproto_first_non_empty([m.options.gui_hidden, 'False'])) != 'True' %}
-- app: {{ xproto_unquote(xproto_first_non_empty([m.options.name, m.options.app_label, options.name, context.app_label])) }}
-  {%- if m.options.description %}
-  description: "{{ xproto_unquote(m.options.description) }}"
-  {%- endif %}
-  {%- if m.options.verbose_name %}
-  verbose_name: "{{ xproto_unquote(m.options.verbose_name) }}"
-  {%- endif %}
-  fields:
-  {%- set id_field = {'type':'int32', 'name':'id', 'options':{}} %}
-  {% for f in (xproto_base_fields(m, proto.message_table) + m.fields + [id_field]) | sort(attribute='name') -%}
-  {% if xproto_unquote(xproto_first_non_empty([f.options.gui_hidden, 'False'])) != 'True' and (not f.link or f.options.link_type != 'manytomany') -%}
-  - hint: {% if f.options.help_text %}{{ xproto_unquote(f.options.help_text) }}{% else %}''{% endif %}
-    {% if not f.link -%}
-    name: {{ f.name }}
-    {%- else -%}
-    name: {{ f.name }}_id
-    relation: {model: {{ f.options.model }}, type: {{ f.options.link_type }}}
-    {% endif %}
-  {%- if f.options.default %}
-    default: "{{ xproto_unquote(xproto_default_to_gui(f.options.default)) }}"
-  {%- endif %}
-  {%- if f.options.choices %}
-    options:
-    {% for o in xproto_options_choices_to_dict(xproto_unquote(f.options.choices)) %}
-    - {{ xproto_dict_to_sorted_string(o) }}
-    {% endfor %}
-  {%- endif %}
-    type: {{ xproto_type_to_ui_type(f) }}
-    read_only: {{ xproto_is_true(f.options.feedback_state) }}
-    {% set validators = xproto_validators(f) -%}
-    {% if validators -%}
-    validators:
-    {% for v in validators | sort(attribute='name',reverse=True) -%}
-    - {{ v | yaml }}
-    {% endfor %}
-    {% else -%}
-    validators: []
-    {% endif %}
-  {% endif -%}
-  {% endfor %}
-  name: {{ m.name }}
-  {%- set goodlinks = xproto_links_to_modeldef_relations( xproto_base_links(m, proto.message_table) + m.links ) + xproto_links_to_modeldef_relations( xproto_base_rlinks(m, proto.message_table) + m.rlinks )%}
-  {% if goodlinks %}
-  relations:
-  {{ goodlinks | join('\n') | indent(width=2)}}
-  {%- else %}
-  relations: []
-  {%- endif %}
+{% if m.name != 'XOSBase'  and xproto_unquote(xproto_first_non_empty([m.options.gui_hidden, 'False'])) != 'True' %}
+  - name: {{ m.name }}
+    app: {{ xproto_unquote(xproto_first_non_empty([m.options.name, m.options.app_label, options.name, context.app_label])) }}
+    {%- if m.options.verbose_name %}
+    verbose_name: "{{ xproto_unquote(m.options.verbose_name) }}"
+    {%- endif %}
+    {%- if m.options.description %}
+    description: "{{ xproto_unquote(m.options.description) }}"
+    {%- endif %}
+    {%- set goodlinks = xproto_links_to_modeldef_relations( xproto_base_links(m, proto.message_table) + m.links ) + xproto_links_to_modeldef_relations( xproto_base_rlinks(m, proto.message_table) + m.rlinks )%}
+    {%- if goodlinks %}
+    relations:
+    {%- for gl in goodlinks %}
+      - {{ gl }}
+    {%- endfor %}
+    {%- else %}
+    relations: []
+    {%- endif %}
+    fields:
+      {%- set id_field = {'type':'int32', 'name':'id', 'options':{}} %}
+      {%- for f in (xproto_base_fields(m, proto.message_table) + m.fields + [id_field]) | sort(attribute='name') %}
+      {%- if xproto_unquote(xproto_first_non_empty([f.options.gui_hidden, 'False'])) != 'True' and (not f.link or f.options.link_type != 'manytomany') %}
+      {%- if not f.link %}
+      - name: {{ f.name }}
+      {%- else %}
+      - name: {{ f.name }}_id
+        relation: {model: {{ f.options.model }}, type: {{ f.options.link_type }}}
+      {%- endif %}
+        hint: {% if f.options.help_text %}"{{ xproto_unquote(f.options.help_text) }}"{% else %}""{% endif %}
+        {%- if f.options.default %}
+        default: "{{ xproto_unquote(xproto_default_to_gui(f.options.default)) }}"
+        {%- endif %}
+        {%- if f.options.choices %}
+        options:
+        {%- for o in xproto_options_choices_to_dict(xproto_unquote(f.options.choices)) %}
+          - {{ xproto_dict_to_sorted_string(o) }}
+        {%- endfor %}
+        {%- endif %}
+        type: {{ xproto_type_to_ui_type(f) }}
+        read_only: {{ xproto_is_true(f.options.feedback_state) | lower }}
+        {%- set validators = xproto_validators(f) %}
+        {%- if validators %}
+        validators:
+        {%- for v in validators | sort(attribute='name', reverse=True) %}
+          - {{ v | yaml | indent(width=12)}}
+        {%- endfor %}
+        {%- else %}
+        validators: []
+        {%- endif %}
+      {%- endif %}
+      {%- endfor %}
 {%- endif %}
-{% endfor -%}
+{%- endfor %}

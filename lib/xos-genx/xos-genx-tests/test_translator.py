@@ -125,8 +125,7 @@ message Slice (PlCoreBase){
         args.inputs = xproto
         args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
-
-        yaml_ir = yaml.load(output)
+        yaml_ir = yaml.safe_load(output)
         self.assertEqual(len(yaml_ir["items"]), 4)
 
     def test_gui_hidden_models(self):
@@ -147,7 +146,7 @@ message Bar {
         args.inputs = xproto
         args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
-        yaml_ir = yaml.load(output)
+        yaml_ir = yaml.safe_load(output)
         self.assertEqual(len(yaml_ir["items"]), 1)
         self.assertIn("Bar", output)
         self.assertNotIn("Foo", output)
@@ -165,7 +164,7 @@ message Foo {
         args.inputs = xproto
         args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
-        yaml_ir = yaml.load(output)
+        yaml_ir = yaml.safe_load(output)
         self.assertEqual(len(yaml_ir["items"]), 1)
         self.assertIn("name", output)
         self.assertNotIn("secret", output)
@@ -336,7 +335,7 @@ message Foo (ParentFoo) {
         args.target = "modeldefs.xtarget"
         output = XOSProcessor.process(args)
 
-        read_only = [s for s in output.splitlines() if "read_only: True" in s]
+        read_only = [s for s in output.splitlines() if "read_only: true" in s]
         self.assertEqual(len(read_only), 3)  # readonly is 1 for ParentFoo and 2 for Foo
 
 

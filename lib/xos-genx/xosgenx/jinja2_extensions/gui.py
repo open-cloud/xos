@@ -146,7 +146,7 @@ def xproto_links_to_modeldef_relations(llst):
             elif l["link_type"] == "onetomany":
                 on_field = l["dst_port"]
             outlist.append(
-                "- {model: %s, type: %s, on_field: %s}\n"
+                "{model: %s, type: %s, on_field: %s}"
                 % (l["peer"]["name"], l["link_type"], on_field)
             )
         seen.append(l["peer"])

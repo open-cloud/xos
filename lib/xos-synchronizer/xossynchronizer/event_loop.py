@@ -136,7 +136,7 @@ class XOSObserver(object):
                             "dst_accessor": dst_accessor,
                         }
                         model_dependency_graph.add_edge(
-                            src_model, dst_model, edge_label
+                            src_model, dst_model, **edge_label
                         )
 
             model_dependency_graph_rev = model_dependency_graph.reverse(copy=True)
@@ -635,14 +635,14 @@ class XOSObserver(object):
                                 edge_type = oG[i1][i0]["type"]
                                 if edge_type == PROXY_EDGE:
                                     oG.remove_edge(i1, i0)
-                                    oG.add_edge(i0, i1, {"type": edge_type})
+                                    oG.add_edge(i0, i1, type=edge_type)
                             except KeyError:
-                                oG.add_edge(i0, i1, {"type": edge_type})
+                                oG.add_edge(i0, i1, type=edge_type)
         except KeyError:
             pass
 
         components = weakly_connected_component_subgraphs(oG)
-        cohort_indexes = [reversed(topological_sort(g)) for g in components]
+        cohort_indexes = [reversed(list(topological_sort(g))) for g in components]
         cohorts = [
             [objects[i] for i in cohort_index] for cohort_index in cohort_indexes
         ]

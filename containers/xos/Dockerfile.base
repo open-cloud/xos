@@ -32,15 +32,10 @@ RUN apt-get update && apt-get install -y \
  && pip freeze > /var/xos/pip_freeze_apt_`date -u +%Y%m%dT%H%M%S`
 
 # Install python packages with pip
-# Upgrade methodology - pip_requested.txt is the manually generated list of pip
-# packages desired, without any added dependencies. It is used to generate
-# pip_requirements.txt by running: pip install -r pip_requested.txt then use
-# `pipdeptree` to make sure dependencies aren't broken, then
-# `pip freeze > pip_requirements.txt` and manually clean up.
-COPY pip_requirements.txt /tmp/pip_requirements.txt
-RUN pip install --no-deps -U -I pip==9.0.3 setuptools==39.0.1 requests==2.18.4 \
- && pip install --no-deps -r /tmp/pip_requirements.txt \
- && pip freeze > /var/xos/pip_freeze_pip_up_`date -u +%Y%m%dT%H%M%S`
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install -U -I pip==9.0.3 setuptools==39.0.1 \
+ && pip install -r /tmp/requirements.txt \
+ && pip freeze > /var/xos/pip_freeze_base_`date -u +%Y%m%dT%H%M%S`
 
 # Label image
 ARG org_label_schema_schema_version=1.0

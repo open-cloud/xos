@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # xosproject/xos-synchronizer-base
-FROM xosproject/xos-client:3.0.1
+FROM xosproject/xos-client:3.0.2
 
 COPY xos/xos/logger.py /opt/xos/xos/logger.py
 COPY xos/xos/__init__.py /opt/xos/xos/__init__.py
@@ -21,11 +21,6 @@ RUN mkdir -p /opt/xos/synchronizers
 
 # Copy over ansible hosts
 COPY containers/xos/ansible-hosts /etc/ansible/hosts
-
-# For library-based synchronizers
-COPY lib/xos-synchronizer /tmp/xos-synchronizer
-COPY VERSION /tmp/xos-synchronizer/xossynchronizer/VERSION
-RUN cd /tmp/xos-synchronizer && python setup.py install
 
 # Label image
 ARG org_label_schema_schema_version=1.0

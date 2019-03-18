@@ -1,2 +1,2 @@
-PyYAML~=3.12
-pykwalify~=1.6.0
+PyYAML~=5.1
+pykwalify~=1.7.0

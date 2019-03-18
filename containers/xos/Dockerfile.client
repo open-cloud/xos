@@ -13,16 +13,7 @@
 # limitations under the License.
 
 # xosproject/xos-client
-FROM xosproject/xos-libraries:3.0.1
-
-# Install XOS client
-COPY lib/xos-api /tmp/xos-api
-
-# Install the VERSION file
-COPY VERSION /tmp/xos-api/xosapi/VERSION
-
-# install the client library and xossh
-RUN chdir /tmp/xos-api && python ./setup.py install
+FROM xosproject/xos-libraries:3.0.2
 
 # Label image
 ARG org_label_schema_schema_version=1.0
