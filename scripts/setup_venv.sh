@@ -34,7 +34,7 @@ fi
 echo "Installing python requirements in virtualenv with pip"
 source "${VENVDIR}/bin/activate"
 pip install --upgrade pip
-pip install -r "$PIP_REQS" nose2 mock
+pip install -r "$PIP_REQS" nose2 mock requests_mock
 
 pushd "$XOS_DIR/lib/xos-util"
 python setup.py install
