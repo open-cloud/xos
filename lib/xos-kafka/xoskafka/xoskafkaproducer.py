@@ -19,8 +19,7 @@ import confluent_kafka
 from xosconfig import Config
 from multistructlog import create_logger
 
-log = create_logger(Config().get("logging"))
-
+log = None
 kafka_producer = None
 
 
@@ -32,7 +31,11 @@ class XOSKafkaProducer:
     @staticmethod
     def init():
 
+        global log
         global kafka_producer
+
+        if not log:
+            log = create_logger(Config().get("logging"))
 
         if kafka_producer:
             raise Exception("XOSKafkaProducer already initialized")
