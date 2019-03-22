@@ -1,3 +1,10 @@
 views/
 venv-xos/
 docs/venv-xosdocs
+lib/xos-api/.tox/
+lib/xos-kafka/.tox/
+lib/xos-synchronizer/.tox
+lib/xos-migrate/.tox
+lib/xos-config/.tox
+lib/xos-util/.tox
+lib/xos-genx/.tox
