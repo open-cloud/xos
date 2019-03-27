@@ -8,3 +8,5 @@ lib/xos-migrate/.tox
 lib/xos-config/.tox
 lib/xos-util/.tox
 lib/xos-genx/.tox
+testservice/.tox
+testservice/venv-service

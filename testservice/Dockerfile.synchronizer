@@ -12,14 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# docker build -t smbaker/testservice-synchronizer:test -f Dockerfile.synchronizer .
+# docker build -t smbaker/testservice-synchronizer:test -f Dockerfile.synchronizer ..
 
 # xosproject/testservice
 
-FROM xosproject/xos-synchronizer-base:candidate
+FROM xosproject/alpine-grpc-base:0.9.0
 
-COPY xos/synchronizer /opt/xos/synchronizers/testservice
-COPY VERSION /opt/xos/synchronizers/testservice/
+# Add libraries
+COPY lib /opt/xos/lib
+COPY VERSION /opt/xos
+
+# Install non-xos pip packages
+COPY testservice/requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt \
+ && pip freeze > /var/xos/pip_freeze_requirements_`date -u +%Y%m%dT%H%M%S`
+
+# Install xos packages using pip so their dependencies are installed
+RUN pip install -e /opt/xos/lib/xos-config \
+ && pip install -e /opt/xos/lib/xos-genx \
+ && pip install -e /opt/xos/lib/xos-kafka \
+ && pip install -e /opt/xos/lib/xos-api \
+ && pip install -e /opt/xos/lib/xos-synchronizer \
+ && pip freeze > /var/xos/pip_freeze_libraries_`date -u +%Y%m%dT%H%M%S`
+
+# Install the synchronizer
+COPY testservice/xos/synchronizer /opt/xos/synchronizers/testservice
 
 ENTRYPOINT []
 
@@ -54,5 +71,5 @@ LABEL org.label-schema.schema-version=$org_label_schema_schema_version \
       org.opencord.component.xos.vcs-url=$org_opencord_component_xos_vcs_url \
       org.opencord.component.xos.vcs-ref=$org_opencord_component_xos_vcs_ref
 
-#CMD ["/usr/bin/python", "/opt/xos/synchronizers/testservice/testservice-synchronizer.py"]
-CMD ["/bin/bash", "-c", "echo test && python /opt/xos/synchronizers/testservice/testservice-synchronizer.py"]
+CMD ["/usr/bin/python", "/opt/xos/synchronizers/testservice/testservice-synchronizer.py"]
+

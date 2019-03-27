@@ -20,7 +20,7 @@ import sys
 from xossynchronizer.model_policies.policy import Policy
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from helpers import put_signal, wait_for_signal
+from helpers import put_signal, wait_for_signal  # noqa: E402
 
 DUP_FIELD_NAMES = ["name",
                    "some_integer",

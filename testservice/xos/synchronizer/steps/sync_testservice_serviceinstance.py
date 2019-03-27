@@ -23,7 +23,7 @@ from xosconfig import Config
 from multistructlog import create_logger
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from helpers import put_signal, wait_for_signal
+from helpers import put_signal, wait_for_signal  # noqa: E402
 
 log = create_logger(Config().get('logging'))
 
