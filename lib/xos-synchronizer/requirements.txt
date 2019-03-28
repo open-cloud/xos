@@ -1,5 +1,4 @@
 Jinja2~=2.10
-ansible~=2.7.9
 astunparse~=1.6.2
 confluent-kafka==0.11.5
 inflect~=2.1.0

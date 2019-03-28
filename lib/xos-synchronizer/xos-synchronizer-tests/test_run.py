@@ -30,18 +30,6 @@ test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 sync_lib_dir = os.path.join(test_path, "..", "xossynchronizer")
 xos_dir = os.path.join(test_path, "..", "..", "..", "xos")
 
-ANSIBLE_FILE = "/tmp/payload_test"
-
-
-def run_fake_ansible_template(*args, **kwargs):
-    opts = args[1]
-    open(ANSIBLE_FILE, "w").write(json.dumps(opts))
-
-
-def get_ansible_output():
-    ansible_str = open(ANSIBLE_FILE).read()
-    return json.loads(ansible_str)
-
 
 class TestRun(unittest.TestCase):
     def setUp(self):

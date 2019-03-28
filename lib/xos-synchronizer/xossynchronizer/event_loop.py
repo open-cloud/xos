@@ -27,6 +27,7 @@ from multistructlog import create_logger
 from networkx import (
     DiGraph,
     NetworkXNoPath,
+    NodeNotFound,
     all_shortest_paths,
     weakly_connected_component_subgraphs,
 )
@@ -527,7 +528,7 @@ class XOSObserver(object):
         try:
             any(paths)
             paths = all_shortest_paths(G, m1, m2)
-        except NetworkXNoPath:
+        except (NetworkXNoPath, NodeNotFound):
             # Easy. The two models are unrelated.
             return False, None
 

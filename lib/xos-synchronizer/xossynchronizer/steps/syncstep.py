@@ -60,11 +60,6 @@ class SyncStep(object):
         dependencies    list of names of models that must be synchronized first if the current model depends on them
     """
 
-    # map_sync_outputs can return this value to cause a step to be marked
-    # successful without running ansible. Used for sync_network_controllers
-    # on nat networks.
-    SYNC_WITHOUT_RUNNING = "sync_without_running"
-
     slow = False
 
     def get_prop(self, prop):

@@ -18,36 +18,40 @@
 # Optional parameters are:
 # `REGISTRY=192.168.99.100:3000/ REPOSITORY=xosproject/ DOCKER_BUILD_ARGS="--no-cache" TAG=dev make build`
 
-ifeq ($(TAG),)
-TAG := candidate
-endif
+# Variables
+VERSION                  ?= $(shell cat ../../VERSION)
 
-ifeq ($(REPOSITORY),)
-REPOSITORY := xosproject/
-endif
+## Docker related
+DOCKER_REGISTRY          ?=
+DOCKER_REPOSITORY        ?=
+DOCKER_BUILD_ARGS        ?=
+DOCKER_TAG               ?= ${VERSION}
+DOCKER_IMAGENAME_BASE    := ${DOCKER_REGISTRY}${DOCKER_REPOSITORY}xos-base:${DOCKER_TAG}
+DOCKER_IMAGENAME_LIBRARIES := ${DOCKER_REGISTRY}${DOCKER_REPOSITORY}xos-libraries:${DOCKER_TAG}
+DOCKER_IMAGENAME_CLIENT  := ${DOCKER_REGISTRY}${DOCKER_REPOSITORY}xos-client:${DOCKER_TAG}
+DOCKER_IMAGENAME_CORE    := ${DOCKER_REGISTRY}${DOCKER_REPOSITORY}xos-core:${DOCKER_TAG}
+DOCKER_IMAGENAME_SYNC    := ${DOCKER_REGISTRY}${DOCKER_REPOSITORY}xos-synchronizer-base:${DOCKER_TAG}
 
 summary:
 	@echo Building images with:
 	@echo "    Build args:    $(DOCKER_BUILD_ARGS)"
-	@echo "    Registry:      ${REGISTRY}"
-	@echo "    Repository:    ${REPOSITORY}"
-	@echo "    Tag:           ${TAG}"
+	@echo "    Registry:      ${DOCKER_REGISTRY}"
+	@echo "    Repository:    ${DOCKER_REPOSITORY}"
+	@echo "    Tag:           ${DOCKER_TAG}"
 
 build: summary xos-base xos-libraries xos-client xos-core xos-synchronizer-base
 
 xos-base:
-	docker build $(DOCKER_BUILD_ARGS) -t ${REGISTRY}${REPOSITORY}xos-base:${TAG} -f Dockerfile.base .
+	docker build $(DOCKER_BUILD_ARGS) -t ${DOCKER_IMAGENAME_BASE} -f Dockerfile.base .
 
 xos-libraries:
-	docker build --no-cache $(DOCKER_BUILD_ARGS) -t ${REGISTRY}${REPOSITORY}xos-libraries:${TAG} -f Dockerfile.libraries ../..
+	docker build --no-cache $(DOCKER_BUILD_ARGS) -t ${DOCKER_IMAGENAME_LIBRARIES} -f Dockerfile.libraries ../..
 
 xos-client:
-	rm -rf tmp.chameleon
-	cp -R ../../../../component/chameleon tmp.chameleon
-	docker build --no-cache $(DOCKER_BUILD_ARGS) -t ${REGISTRY}${REPOSITORY}xos-client:${TAG} -f Dockerfile.client ../..
+	docker build --no-cache $(DOCKER_BUILD_ARGS) -t ${DOCKER_IMAGENAME_CLIENT} -f Dockerfile.client ../..
 
 xos-core:
-	docker build --no-cache $(DOCKER_BUILD_ARGS) -t ${REGISTRY}${REPOSITORY}xos-core:${TAG} -f Dockerfile.xos-core ../..
+	docker build --no-cache $(DOCKER_BUILD_ARGS) -t ${DOCKER_IMAGENAME_CORE} -f Dockerfile.xos-core ../..
 
 xos-synchronizer-base:
-	docker build --no-cache $(DOCKER_BUILD_ARGS) -t ${REGISTRY}${REPOSITORY}xos-synchronizer-base:${TAG} -f Dockerfile.synchronizer-base ../..
+	docker build --no-cache $(DOCKER_BUILD_ARGS) -t ${DOCKER_IMAGENAME_SYNC} -f Dockerfile.synchronizer-base ../..
