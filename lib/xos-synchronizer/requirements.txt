@@ -3,7 +3,7 @@ astunparse~=1.6.2
 confluent-kafka==0.11.5
 inflect~=2.1.0
 multistructlog~=2.1.0
-networkx~=2.2
+networkx==2.2
 six~=1.12.0
 xosconfig~=3.0.1
 xosgenx~=3.0.1

@@ -35,6 +35,7 @@ containers/xos/BUILD/
 venv-xos*
 _book/
 .noseids
+testservice/venv-service
 
 # testing/coverage files
 nose2-junit.xml
