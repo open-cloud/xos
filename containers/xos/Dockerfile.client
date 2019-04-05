@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # xosproject/xos-client
-FROM xosproject/xos-libraries:3.0.7
+FROM xosproject/xos-libraries:3.1.0
 
 # Label image
 ARG org_label_schema_schema_version=1.0

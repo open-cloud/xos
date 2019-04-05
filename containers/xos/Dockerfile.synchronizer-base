@@ -13,10 +13,8 @@
 # limitations under the License.
 
 # xosproject/xos-synchronizer-base
-FROM xosproject/xos-client:3.0.7
+FROM xosproject/xos-client:3.1.0
 
-COPY xos/xos/logger.py /opt/xos/xos/logger.py
-COPY xos/xos/__init__.py /opt/xos/xos/__init__.py
 RUN mkdir -p /opt/xos/synchronizers
 
 # Copy over ansible hosts
