@@ -116,6 +116,14 @@ group.add_argument(
     default=XOSProcessorArgs.default_checkers,
     help="Comma-separated list of static checkers",
 )
+group.add_argument(
+    "--lint",
+    dest="lint",
+    action="store_true",
+    default=XOSProcessorArgs.default_lint,
+    help="Parse the xproto but don't execute any xtargets",
+)
+
 
 parse.add_argument(
     "files",
@@ -135,6 +143,7 @@ parse.add_argument(
 
 CHECK = 1
 GEN = 2
+LINT = 3
 
 
 class XosGen:
@@ -148,17 +157,17 @@ class XosGen:
         if args.target:
             op = GEN
             subdir = "/targets/"
+            operators = [args.target]
         elif args.checkers:
             op = CHECK
             subdir = "/checkers/"
+            operators = args.checkers
+        elif args.lint:
+            op = LINT
+            subdir = None
+            operators = []
         else:
-            parse.error("At least one of --target and --checkers is required")
-
-        operators = (
-            args.checkers.split(",")
-            if hasattr(args, "checkers") and args.checkers
-            else [args.target]
-        )
+            parse.error("At least one of --target, --checkers, or --lint is required")
 
         for i in range(len(operators)):
             if "/" not in operators[i]:
@@ -202,9 +211,12 @@ class XosGen:
                     '--dest-extension requires --write-to-file to be set to "model"'
                 )
 
-        else:
+        elif op == CHECK:
             if args.write_to_file or args.dest_extension:
                 parse.error("Checkers cannot write to files")
+        elif op == LINT:
+            # no outputs, so nothing to check
+            pass
 
         inputs = []
 
@@ -238,3 +250,5 @@ class XosGen:
                     exit(1)
                 else:
                     print("%s: OK" % o)
+        elif op == LINT:
+            XOSProcessor.process(args, None)

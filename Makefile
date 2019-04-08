@@ -39,6 +39,10 @@ migration-test: venv-xos
 	source ./venv-xos/bin/activate ; set -u ;\
 	xos-migrate --xos-dir . -s core --check
 
+core-xproto-test: venv-xos
+	source ./venv-xos/bin/activate ; set -u ;\
+	xosgenx xos/core/models/core.xproto --lint --strict
+
 clean:
 	find . -name '*.pyc' | xargs rm -f
 	find . -name '__pycache__' | xargs rm -rf

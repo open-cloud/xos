@@ -32,7 +32,7 @@ COMMON_OPTIONS = ["help_text", "gui_hidden", "tosca_key", "tosca_key_one_of",
                   "feedback_state", "unique", "unique_with"]
 
 # Options that must be either "True" or "False"
-BOOLEAN_OPTIONS = ["blank", "db_index", "feedback_state", "gui_hidden", "null", "tosca_key", "unique", "varchar"]
+BOOLEAN_OPTIONS = ["blank", "db_index", "feedback_state", "gui_hidden", "null", "tosca_key", "unique", "text"]
 
 
 class XProtoValidator(object):
@@ -45,7 +45,7 @@ class XProtoValidator(object):
         self.line_map = line_map
         self.errors = []
 
-    def error(self, model, field, message):
+    def error(self, model, field, message, severity="ERROR"):
         if field and field.get("_linespan"):
             error_first_line_number = field["_linespan"][0]
             error_last_line_number = field["_linespan"][1]
@@ -61,13 +61,17 @@ class XProtoValidator(object):
             error_filename = fn
             error_line_offset = start_line
 
-        self.errors.append({"model": model,
+        self.errors.append({"severity": severity,
+                            "model": model,
                             "field": field,
                             "message": message,
                             "filename": error_filename,
                             "first_line_number": error_first_line_number - error_line_offset,
                             "last_line_number": error_last_line_number - error_line_offset,
                             "absolute_line_number": error_first_line_number})
+
+    def warning(self, *args, **kwargs):
+        self.error(*args, severity="WARNING", **kwargs)
 
     def print_errors(self):
         # Sort by line number
@@ -83,12 +87,13 @@ class XProtoValidator(object):
             else:
                 linestr = "%d" % first_line_number
 
-            print("[ERROR] %s:%s %s.%s (Type %s): %s" % (os.path.basename(error["filename"]),
-                                                         linestr,
-                                                         model.get("name"),
-                                                         field.get("name"),
-                                                         field.get("type"),
-                                                         message), file=sys.stderr)
+            print("[%s] %s:%s %s.%s (Type %s): %s" % (error["severity"],
+                                                      os.path.basename(error["filename"]),
+                                                      linestr,
+                                                      model.get("name"),
+                                                      field.get("name"),
+                                                      field.get("type"),
+                                                      message), file=sys.stderr)
 
     def is_option_true(self, field, name):
         options = field.get("options")
@@ -185,7 +190,30 @@ class XProtoValidator(object):
         self.check_modifier_consistent(model, field)
         self.allow_options(model, field,
                            ["blank", "choices", "content_type", "db_index", "default",
-                            "max_length", "modifier", "null", "varchar"])
+                            "max_length", "modifier", "null", "text"])
+
+        # max_length is a mandatory argument of CharField.
+        if (content_type in [None]) and \
+           (not self.is_option_true(field, "text")) and \
+           ("max_length" not in field["options"]):
+            self.error(model, field, "String field should have a max_length or text=True")
+
+        if "max_length" in field["options"]:
+            max_length = field["options"]["max_length"]
+            try:
+                max_length = int(max_length)
+                if (max_length == 0):
+                    self.error(model, field, "max_length should not be zero")
+
+                if 0 < abs(256-max_length) < 3:
+                    self.warning(model, field,
+                                 "max_length of %s is close to suggested max_length of 256" % max_length)
+
+                if 0 < abs(1024-max_length) < 3:
+                    self.warning(model, field,
+                                 "max_length of %s is close to suggested max_length of 1024" % max_length)
+            except ValueError:
+                self.error(model, field, "max_length must be a number")
 
     def validate_field_bool(self, model, field):
         self.check_modifier_consistent(model, field)

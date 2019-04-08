@@ -50,16 +50,16 @@ message User::user_policy (AbstractBaseUser,PlModelMixIn) {
      option description = "An XOS User";
 
      // field 1 is reserved for "id"
-     required string email = 2 [db_index = True, max_length = 255, blank = False, tosca_key=True];
-     required string username = 3 [default = "Something", max_length = 255, content_type = "stripped", blank = False, db_index = False];
-     required string password = 4 [default = "Something", max_length = 255, blank = False, db_index = False];
+     required string email = 2 [db_index = True, max_length = 256, blank = False, tosca_key=True];
+     required string username = 3 [default = "Something", max_length = 256, content_type = "stripped", blank = False, db_index = False];
+     required string password = 4 [default = "Something", max_length = 256, blank = False, db_index = False];
      optional string last_login = 5 [db_index = False, content_type = "date", blank = True];
      required string firstname = 6 [max_length = 200, content_type = "stripped", blank = False, help_text = "person's given name", db_index = False];
      required string lastname = 7 [max_length = 200, content_type = "stripped", blank = False, help_text = "person's surname", db_index = False];
      optional string phone = 8 [max_length = 100, content_type = "stripped", blank = True, help_text = "phone number contact", db_index = False];
      optional string user_url = 9 [db_index = False, max_length = 200, content_type = "url", blank = True];
      required manytoone site->Site:users = 10:1001 [help_text = "Site this user will be homed too", db_index = True, blank = False];
-     optional string public_key = 11 [help_text = "Public key string", max_length = 1024, db_index = False, blank = True, varchar = True];
+     optional string public_key = 11 [help_text = "Public key string", db_index = False, blank = True, text = True];
      required bool is_active = 12 [default = True, db_index = False];
      required bool is_admin = 13 [default = False, db_index = False];
      required bool is_staff = 14 [default = True, db_index = False];
@@ -111,11 +111,11 @@ message Privilege::grant_policy (XOSBase) {
 
 message AddressPool (XOSBase) {
      required string name = 1 [db_index = False, max_length = 32, blank = False, unique = True, help_text="Name of this AddressPool"];
-     optional string addresses = 2 [db_index = False, blank = True, varchar = True, help_text="Space-separated list of available addresses"];
+     optional string addresses = 2 [db_index = False, blank = True, text = True, help_text="Space-separated list of available addresses"];
      required string gateway_ip = 3 [max_length = 32, help_text="Gateway IP address for this AddressPool"];
      required string gateway_mac = 4 [max_length = 32, help_text="Gateway MAC address for this AddressPool"];
      required string cidr = 5 [max_length = 32, help_text="Subnet for this AddressPool"];
-     optional string inuse = 6 [db_index = False, blank = True, varchar = True, help_text="Space-separated list of inuse addresses"];
+     optional string inuse = 6 [db_index = False, blank = True, text = True, help_text="Space-separated list of inuse addresses"];
      optional manytoone service->Service:addresspools = 7:1001 [db_index = True, blank = True, help_text="Service this AddressPool belongs to"];
 }
 
@@ -270,8 +270,7 @@ message Service (XOSBase,AttributeMixin) {
 
      optional string description = 1 [
          help_text = "Description of Service",
-         max_length = 254,
-         varchar = True];
+         text = True];
      required bool enabled = 2 [
          help_text = "Whether or not service is Enabled",
          default = True,
@@ -302,8 +301,7 @@ message Service (XOSBase,AttributeMixin) {
      optional string public_key = 9 [
          help_text = "Public key string",
          gui_hidden = True,
-         max_length = 4096,
-         varchar = True]; // likely only used by VM-based services. deprecated?
+         text = True]; // likely only used by VM-based services. deprecated?
      optional string private_key_fn = 10 [
          help_text = "Filename of private key file, located within core container",
          content_type = "stripped",
@@ -316,7 +314,7 @@ message Service (XOSBase,AttributeMixin) {
      optional string service_specific_attribute = 12 [
          help_text = "Service-specific string attribute, opaque to XOS core",
          gui_hidden = True,
-         varchar = True];
+         text = True];
 }
 
 message ServicePort (XOSBase) {
@@ -347,7 +345,7 @@ message ServiceAttribute (XOSBase) {
          unique_with="service"];
      required string value = 2 [
          help_text = "Attribute Value",
-         varchar = True];
+         text = True];
      required manytoone service->Service:serviceattributes = 3:1003 [
          help_text = "The Service this attribute is associated with",
          db_index = True];
@@ -395,7 +393,7 @@ message Slice::slice_policy (XOSBase) {
 
      required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", db_index = False, unique = True];
      required bool enabled = 2 [help_text = "Status for this Slice", default = True];
-     optional string description = 4 [help_text = "High level description of the slice and expected activities", max_length = 1024, varchar = True];
+     optional string description = 4 [help_text = "High level description of the slice and expected activities", text = True];
      required manytoone site->Site:slices = 6:1005 [help_text = "The Site this Slice belongs to", db_index = True, blank = False];
      required int32 max_instances = 7 [default = 10, db_index = False, blank = False];
      optional manytoone service->Service:slices = 8:1006 [db_index = True, blank = True];
@@ -470,7 +468,7 @@ message ServiceInstance (XOSBase, AttributeMixin) {
      optional string service_specific_attribute = 10 [
          help_text = "Service-specific text attribute, opaque to the XOS core",
          gui_hidden = True,
-         varchar = True];
+         text = True];
      optional uint32 link_deleted_count = 11 [
          help_text = "Incremented each time a provided_link is deleted from this ServiceInstance",
          default = 0,
@@ -511,14 +509,15 @@ message ServiceInstanceAttribute (XOSBase) {
          max_length = 128,
          unique_with = "service_instance"];
      required string value = 2 [
-         help_text = "Attribute Value"];
+         help_text = "Attribute Value",
+         text = True];
      required manytoone service_instance->ServiceInstance:service_instance_attributes = 3:1006 [
          help_text = "The Tenant this attribute is associated with",
          db_index = True];
 }
 
 message TrustDomain (XOSBase) {
-     required string name = 1 [max_length = 255, db_index = True, blank = False, help_text = "Name of this trust domain"];
+     required string name = 1 [max_length = 256, db_index = True, blank = False, help_text = "Name of this trust domain"];
      required manytoone owner->Service:owned_trust_domains = 2:1011 [db_index = True, blank = False, help_text = "Service partioned by this trust domain"];
 }
 

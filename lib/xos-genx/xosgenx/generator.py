@@ -52,6 +52,7 @@ class XOSProcessorArgs:
     )  # If neither include_models nor include_apps is specified, then all models will
     default_include_apps = []  # be included.
     default_strict_validation = False
+    default_lint = False
 
     def __init__(self, **kwargs):
         # set defaults
@@ -68,6 +69,7 @@ class XOSProcessorArgs:
         self.include_models = XOSProcessorArgs.default_include_models
         self.include_apps = XOSProcessorArgs.default_include_apps
         self.strict_validation = XOSProcessorArgs.default_strict_validation
+        self.lint = XOSProcessorArgs.default_lint
 
         # override defaults with kwargs
         for (k, v) in kwargs.items():
@@ -267,19 +269,6 @@ class XOSProcessor:
         else:
             raise Exception("[XosGenX] No inputs provided!")
 
-        if not operator:
-            operator = args.target
-            template_path = XOSProcessor._get_template(operator)
-        else:
-            template_path = operator
-
-        [template_folder, template_name] = os.path.split(template_path)
-        os_template_loader = jinja2.FileSystemLoader(searchpath=[template_folder])
-        os_template_env = jinja2.Environment(loader=os_template_loader)
-        os_template_env = XOSProcessor._load_jinja2_extensions(
-            os_template_env, args.attic
-        )
-        template = os_template_env.get_template(template_name)
         context = XOSProcessor._add_context(args)
 
         parser = plyxproto.ProtobufAnalyzer()
@@ -337,8 +326,26 @@ class XOSProcessor:
         if validator.errors:
             if args.strict_validation or (args.verbosity >= 0):
                 validator.print_errors()
-            if args.strict_validation:
+            fatal_errors = [x for x in validator.errors if x["severity"] == "ERROR"]
+            if fatal_errors and args.strict_validation:
                 sys.exit(-1)
+
+        if args.lint:
+            return ""
+
+        if not operator:
+            operator = args.target
+            template_path = XOSProcessor._get_template(operator)
+        else:
+            template_path = operator
+
+        [template_folder, template_name] = os.path.split(template_path)
+        os_template_loader = jinja2.FileSystemLoader(searchpath=[template_folder])
+        os_template_env = jinja2.Environment(loader=os_template_loader)
+        os_template_env = XOSProcessor._load_jinja2_extensions(
+            os_template_env, args.attic
+        )
+        template = os_template_env.get_template(template_name)
 
         if args.output is not None and args.write_to_file == "model":
             rendered = {}

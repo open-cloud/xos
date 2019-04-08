@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from __future__ import absolute_import, print_function
-from .base import unquote
+from .base import unquote, xproto_string_type
 import re
 import sys
 from six.moves import map
@@ -41,17 +41,23 @@ def django_content_type_string(xptags):
 
 
 def django_string_type(xptags):
-    try:
-        max_length = eval(xptags["max_length"])
-    except BaseException:
-        max_length = 1024 * 1024
-
-    if "content_type" in xptags:
-        return django_content_type_string(xptags)
-    elif int(max_length) < 1024 * 1024:
-        return "CharField"
-    else:
+    # xproto_string_type will return "string" if the options.text=False or "text" if options.text=True
+    xtype = xproto_string_type(xptags)
+    if xtype == "string":
+        if "content_type" in xptags:
+            return django_content_type_string(xptags)
+        else:
+            # TODO(smbaker): This is a workaround for incorrect xproto in many services. Prior behavior was to
+            # toggle between Charfield and Textfield when max_length was unspecified, rather than to require
+            # max_length to be specified. Remove this workaround as soon as services have been migrated.
+            if "max_length" in xptags:
+                return "CharField"
+            else:
+                return "TextField"
+    elif xtype == "text":
         return "TextField"
+    else:
+        raise Exception("Unknown xproto_string type %s" % xtype, xptags=xptags)
 
 
 def xproto_django_type(xptype, xptags):

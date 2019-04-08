@@ -47,7 +47,7 @@ class XOSProcessorTest(unittest.TestCase):
                  required manytoone node->Node:instances = 10 [db_index = True, null = False, blank = False];
                  required int32 numberCores = 11 [help_text = "Number of cores for instance", default = 0, null = False, db_index = False, blank = False];
                  required manytoone flavor->Flavor:instance = 12 [help_text = "Flavor of this instance", null = False, db_index = True, blank = False];
-                 optional string userData = 13 [help_text = "user_data passed to instance during creation", null = True, db_index = False, blank = True, varchar = True];
+                 optional string userData = 13 [help_text = "user_data passed to instance during creation", null = True, db_index = False, blank = True, text = True];
                  required string isolation = 14 [default = "vm", choices = "(('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))", max_length = 30, blank = False, null = False, db_index = False];
                  optional string volumes = 15 [help_text = "Comma-separated list of directories to expose to parent context", null = True, db_index = False, blank = True];
                  optional manytoone parent->Instance:instance = 16 [help_text = "Parent Instance for containers nested inside of VMs", null = True, db_index = True, blank = True];

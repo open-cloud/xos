@@ -318,15 +318,13 @@ def xproto_base_links(m, table):
 
 
 def xproto_string_type(xptags):
-    # FIXME: this try/except block assigns but never uses max_length?
-    #   try:
-    #       max_length = eval(xptags["max_length"])
-    #   except BaseException:
-    #       max_length = 1024
-
-    if "varchar" not in xptags:
+    if "text" not in xptags:
+        # String fields have a mandatory maximum length.
+        # They are intended for relatively short strings.
         return "string"
     else:
+        # Text fields have an optional maximuim length.
+        # They are intended for long, potentially multiline strings.
         return "text"
 
 
