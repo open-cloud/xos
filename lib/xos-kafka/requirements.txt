@@ -1,3 +1,3 @@
 confluent-kafka==0.11.5
 multistructlog~=2.1.0
-xosconfig~=3.0.1
+xosconfig~=3.2.0

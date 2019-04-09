@@ -25,7 +25,7 @@ venv-xos:
 	./scripts/setup_venv.sh
 
 # tests
-test: lib-test xos-test migration-test
+test: lib-test xos-test migration-test core-xproto-test
 
 lib-test:
 	for lib in $(XOS_LIBRARIES); do pushd $$lib; tox; popd; done
