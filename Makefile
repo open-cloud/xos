@@ -39,6 +39,10 @@ migration-test: venv-xos
 	source ./venv-xos/bin/activate ; set -u ;\
 	xos-migrate --xos-dir . -s core --check
 
+create-migrations: venv-xos
+	source ./venv-xos/bin/activate ; set -u ;\
+        xos-migrate --xos-dir . -s core -v
+
 core-xproto-test: venv-xos
 	source ./venv-xos/bin/activate ; set -u ;\
 	xosgenx xos/core/models/core.xproto --lint --strict

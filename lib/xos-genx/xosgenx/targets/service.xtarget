@@ -1,18 +1,6 @@
-{% if options.legacy =='"True"' -%}
-{% set legacy_tag = '_decl' %}
-{% set legacy = True %}
 from core.models.xosbase import *
 from core.models import ServiceInstance
-{% else %}
-{% set legacy = False %}
-{% set legacy_tag = '' %}
-{% if file_exists('../header.py') or file_exists('header.py')-%}from header import *
-{% else %}
-from core.models.xosbase import *
-from core.models import ServiceInstance
-{% endif %}
-{% endif %}
-
+{% set ns=namespace(any_legacy_tag = '') %}
 {% for m in proto.messages %}
 {% if file_exists(m.name|lower+'_header.py') -%}from {{m.name|lower }}_header import *{% endif %}
 {% if file_exists(m.name|lower+'_top.py') -%}{{ include_file(m.name|lower+'_top.py') }} {% endif %}
@@ -37,8 +25,22 @@ from core.models import {{ b.name }}
 
 {% endfor %}
 
+{# Compute any_legacy_tag by looking to see if any model in the service has legacy sete #}
 {% for m in proto.messages %}
-class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases, legacy_tag, proto.message_names) }}:
+{%- if xproto_list_evaluates_true([m.options.custom_python, m.options.legacy, options.custom_python, options.legacy]) -%}
+{% set ns.any_legacy_tag = '_decl' %}
+{% endif %}
+{% endfor %}
+
+{% for m in proto.messages %}
+{%- if xproto_list_evaluates_true([m.options.custom_python, m.options.legacy, options.custom_python, options.legacy]) -%}
+{% set legacy_tag = '_decl' %}
+{% set legacy = True %}
+{% else %}
+{% set legacy = False %}
+{% set legacy_tag = '' %}
+{% endif %}
+class {{ m.name }}{{ ns.any_legacy_tag }}{{ xproto_base_def(m.name, m.bases, legacy_tag, proto.message_names) }}:
   plural_name = "{{ xproto_pluralize(m) }}"
 
   {%- set feedback_state_fields = xproto_optioned_fields_to_list(xproto_base_fields(m, proto.message_table) + m.fields, 'feedback_state', 'True')  %}
@@ -95,7 +97,7 @@ class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases, legacy_tag
           self.full_clean()
 
       if not base_save_in_attic:
-          super({{ m.name }}{{ legacy_tag }}, self).save(*args, **kwds)
+          super({{ m.name }}{{ ns.any_legacy_tag }}, self).save(*args, **kwds)
   
   def can_access(self, ctx):
       {% if m.policy %}
@@ -106,6 +108,14 @@ class {{ m.name }}{{ legacy_tag }}{{ xproto_base_def(m.name, m.bases, legacy_tag
       return verdict,"xos_default_policy"
       {% endif %}
 
+{# To maintain compatibility with migrations, we need to ensure that both the _decl and the non-_decl model #}
+{# exist. So we automatically create all models as _decl, and then add these trivial stubs #}
+{% if (not legacy) and (ns.any_legacy_tag) %}
+class {{ m.name }}({{ m. name }}{{ ns.any_legacy_tag }}):
+    class Meta:
+        proxy = True
+{% endif %}
+
 {% if file_exists(m.name|lower+'_bottom.py') -%}{{ include_file(m.name|lower+'_bottom.py') }}{% endif %} 
 {% endfor %}
-+++ models{{ legacy_tag }}.py
++++ models{{ ns.any_legacy_tag }}.py

@@ -15,6 +15,7 @@
 from __future__ import absolute_import, print_function
 import pdb
 import re
+from jinja2.runtime import Undefined
 from inflect import engine as inflect_engine_class
 
 inflect_engine = inflect_engine_class()
@@ -94,9 +95,12 @@ def xproto_base_def(model_name, base, suffix="", suffix_list=[]):
 
 
 def xproto_first_non_empty(lst):
-    for l in lst:
-        if l:
-            return l
+    # Returns the first non-empty element in the list. Empty is interpreted to be either
+    # None or the empty string or an instance of jinja2 Undefined(). The value False and the
+    # string "False" are not considered empty, but are values.
+    for item in lst:
+        if (item is not None) and (item != "") and (not isinstance(item, Undefined)):
+            return item
 
 
 def xproto_api_type(field):
@@ -481,3 +485,10 @@ def xproto_is_true(x):
     if x is True or (x == "True") or (x == '"True"'):
         return True
     return False
+
+
+def xproto_list_evaluates_true(lst):
+    # Returns True if the first non-empty item in the list is interpreted
+    # as True.
+    x = xproto_first_non_empty(lst)
+    return xproto_is_true(x)

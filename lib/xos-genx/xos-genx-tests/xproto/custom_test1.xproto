@@ -1,0 +1,13 @@
+// custom_python at the root level should override both models
+
+option custom_python = True;
+
+message XOSModel (XOSBase) {
+     required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Help Name", null = False, db_index = False];
+     required string files = 2 [max_length = 1024, content_type = "stripped", blank = False, help_text = "Help Files", null = False, db_index = False];
+}
+
+message XOSModel2 (XOSBase) {
+     required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "Help Name", null = False, db_index = False];
+     required string files = 2 [max_length = 1024, content_type = "stripped", blank = False, help_text = "Help Files", null = False, db_index = False];
+}

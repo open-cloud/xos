@@ -1,5 +1,4 @@
 option app_label = "core";
-option legacy="True";
 
 // use thi policy to allow access to admins only
 policy admin_policy < ctx.user.is_admin >
@@ -8,6 +7,7 @@ message XOSBase {
      option skip_init = True;
      option custom_header = "xosbase_header";
      option abstract = True;
+     option custom_python=True;
 
      // field 1 is reserved for "id"
      required string created = 2 [content_type = "date", auto_now_add = True, help_text = "Time this model was created"];
@@ -110,6 +110,7 @@ message Privilege::grant_policy (XOSBase) {
 }
 
 message AddressPool (XOSBase) {
+     option custom_python=True;
      required string name = 1 [db_index = False, max_length = 32, blank = False, unique = True, help_text="Name of this AddressPool"];
      optional string addresses = 2 [db_index = False, blank = True, text = True, help_text="Space-separated list of available addresses"];
      required string gateway_ip = 3 [max_length = 32, help_text="Gateway IP address for this AddressPool"];
@@ -237,6 +238,7 @@ message Node (XOSBase) {
      required manytoone site->Site:nodes = 7:1006 [db_index = True, blank = False, default=get_first_site];
 }
 message NodeLabel (XOSBase) {
+     option custom_python=True;
      required string name = 1 [max_length = 200, content_type = "stripped", blank = False, help_text = "label name", db_index = False, unique = True];
      optional manytomany node->Node/NodeLabel_node:nodelabels = 2:1002 [];
 }
@@ -267,6 +269,7 @@ policy service_policy <ctx.user.is_admin | exists Privilege: Privilege.accessor_
 
 message Service (XOSBase,AttributeMixin) {
      option description = "A service managed by XOS";
+     option custom_python=True;
 
      optional string description = 1 [
          help_text = "Description of Service",
@@ -390,6 +393,7 @@ policy slice_has_creator < obj.creator >
 message Slice::slice_policy (XOSBase) {
      option validators = "slice_name_no_spaces:Slice name contains spaces, slice_has_creator:Slice has no creator";
      option plural = "Slices";
+     option custom_python=True;
 
      required string name = 1 [max_length = 80, content_type = "stripped", blank = False, help_text = "The Name of the Slice", db_index = False, unique = True];
      required bool enabled = 2 [help_text = "Status for this Slice", default = True];
@@ -452,6 +456,7 @@ message ServiceInterface (XOSBase) {
 
 message ServiceInstance (XOSBase, AttributeMixin) {
      option description = "A portion of a service broken up into a tenant-sized piece";
+     option custom_python=True;
 
      optional string name = 1 [
          help_text = "Name of ServiceInstance",
@@ -480,6 +485,7 @@ message ServiceInstance (XOSBase, AttributeMixin) {
 
 message ServiceInstanceLink (XOSBase) {
      option description = "A link in a chain between two ServiceInstances";
+     option custom_python=True;
 
      required manytoone provider_service_instance->ServiceInstance:provided_links = 1:1003 [
          help_text = "Eastbound serviceinstance of this link",

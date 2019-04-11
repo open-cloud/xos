@@ -174,20 +174,6 @@ class XOSProcessor:
             print("Saved: %s" % file_name)
 
     @staticmethod
-    def _write_file_per_model(rendered, dir, suffix, quiet):
-        for m in rendered:
-            file_name = "%s/%s%s" % (dir, m.lower(), suffix)
-            if not rendered[m]:
-                if not quiet:
-                    print("Not saving %s as it is empty" % file_name)
-            else:
-                file = open(file_name, "w")
-                file.write(rendered[m])
-                file.close()
-                if not quiet:
-                    print("Saved: %s" % file_name)
-
-    @staticmethod
     def _write_split_target(rendered, dir, quiet):
 
         lines = rendered.splitlines()
@@ -348,16 +334,17 @@ class XOSProcessor:
         template = os_template_env.get_template(template_name)
 
         if args.output is not None and args.write_to_file == "model":
+            # Handle the case where each model is written to a separate python file.
             rendered = {}
+
             for i, model in enumerate(v.models):
-                models = {}
-                models[model] = v.models[model]
+                model_dict = v.models[model]
                 messages = [XOSProcessor._find_message_by_model_name(v.messages, model)]
 
                 rendered[model] = template.render(
                     {
                         "proto": {
-                            "message_table": models,
+                            "message_table": {model: model_dict},
                             "messages": messages,
                             "policies": v.policies,
                             "message_names": [m["name"] for m in v.messages],
@@ -366,14 +353,28 @@ class XOSProcessor:
                         "options": v.options,
                     }
                 )
-            if str(v.options.get("legacy", "false")).strip('"').lower() == "true":
-                suffix = "_decl." + args.dest_extension
-            else:
-                suffix = "." + args.dest_extension
-            XOSProcessor._write_file_per_model(
-                rendered, args.output, suffix, args.quiet
-            )
+                if not rendered[model]:
+                    print("Not saving model %s as it is empty" % model, file=sys.stderr)
+                else:
+                    legacy = jinja2_extensions.base.xproto_list_evaluates_true(
+                        [model_dict.get("options", {}).get("custom_python", None),
+                         model_dict.get("options", {}).get("legacy", None),
+                         v.options.get("custom_python", None),
+                         v.options.get("legacy", None)])
+
+                    if legacy:
+                        file_name = "%s/%s_decl.%s" % (args.output, model.lower(), args.dest_extension)
+                    else:
+                        file_name = "%s/%s.%s" % (args.output, model.lower(), args.dest_extension)
+
+                    file = open(file_name, "w")
+                    file.write(rendered[model])
+                    file.close()
+                    if not args.quiet:
+                        print("Saved: %s" % file_name, file=sys.stderr)
         else:
+            # Handle the case where all models are written to the same python file.
+
             rendered = template.render(
                 {
                     "proto": {

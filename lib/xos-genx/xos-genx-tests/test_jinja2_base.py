@@ -16,6 +16,7 @@
 from __future__ import absolute_import
 import unittest
 from xosgenx.jinja2_extensions.base import *
+from jinja2.runtime import Undefined
 
 
 # Several of the base functions require a Field object.
@@ -78,6 +79,24 @@ class Jinja2BaseTests(unittest.TestCase):
         self.assertEqual(
             xproto_singularize(_field("sheep", singular="turtle")), "turtle"
         )
+
+    def test_xproto_first_non_empty(self):
+        self.assertEqual(xproto_first_non_empty(["a"]), "a")
+        self.assertEqual(xproto_first_non_empty([None,"a"]), "a")
+        self.assertEqual(xproto_first_non_empty([None]), None)
+        self.assertEqual(xproto_first_non_empty([]), None)
+        self.assertEqual(xproto_first_non_empty([False, True]), False)
+        self.assertEqual(xproto_first_non_empty([None, "Foo", True]), "Foo")
+        self.assertEqual(xproto_first_non_empty(["", "Foo", True]), "Foo")
+        self.assertEqual(xproto_first_non_empty([Undefined(), "Foo", True]), "Foo")
+
+    def test_list_evaluates_true(self):
+        self.assertTrue(xproto_list_evaluates_true([True]))
+        self.assertTrue(xproto_list_evaluates_true(["True"]))
+        self.assertTrue(xproto_list_evaluates_true(['"True"']))
+        self.assertFalse(xproto_list_evaluates_true([False, True]))
+        self.assertFalse(xproto_list_evaluates_true([]))
+        self.assertFalse(xproto_list_evaluates_true([False]))
 
 
 if __name__ == "__main__":
