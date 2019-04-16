@@ -106,7 +106,6 @@ class XOSAuthHelperMixin(object):
                 if not id:
                     raise XOSPermissionDenied("failed to authenticate token %s" % v)
                 user = User.objects.get(id=id)
-                log.info("authenticated sessionid %s as %s" % (v, user))
                 return user
 
         if required:

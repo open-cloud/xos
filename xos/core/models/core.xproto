@@ -120,6 +120,66 @@ message AddressPool (XOSBase) {
      optional manytoone service->Service:addresspools = 7:1001 [db_index = True, blank = True, help_text="Service this AddressPool belongs to"];
 }
 
+message BackupFile (XOSBase) {
+    required string name = 1 [
+        help_text = "human-readable name of this backup file",
+        max_length = 256];
+    required string uri = 2 [
+        help_text = "location of the backup file",
+        max_length = 1024];
+    optional string checksum = 3 [
+        help_text = "checksum of backup file, formatted as algorithm:hash",
+        max_length = 1024];
+    // status:
+    //    retrieved - file has been retrieved from URI
+    //    sent - file has been sent to URI
+    //    inprogress - file transfer is in progress
+    optional string status = 4 [
+        help_text = "status of file transfer",
+        choices = "(('retrieved', 'retrieved'), ('sent', 'sent'), ('inprogress', 'inprogress'))",
+        feedback_state = True,
+        max_length = 32];
+    optional string backend_filename = 5 [
+        help_text = "for internal use, local filename",
+        feedback_state = True,
+        max_length = 1024];
+}
+
+message BackupOperation (XOSBase) {
+    // `file` is required for restores.
+    // `file` is optional for backups. If file is unspecified then XOS will create a backup file using
+    // a default mechanism.
+    optional manytoone file->BackupFile:operations = 1:1001 [
+        help_text = "File to backup to or restore from"];
+    required string component = 2 [
+        help_text = "component that this operation applies to",
+        // XOS is currently the only allowed component
+        choices = "(('xos', 'XOS'), )",
+        default = "xos",
+        max_length = 32];
+    required string operation = 3 [
+        help_text = "operation to perform",
+        choices = "(('create', 'create'), ('restore', 'restore'), ('verify', 'verify'))",
+        max_length = 32];
+    optional string status = 4 [
+        help_text = "status of operation",
+        choices = "(('created', 'created'), ('restored', 'restored'), ('failed', 'failed'), ('inprogress', 'in progress'), ('orphaned', 'orphaned'))",
+        feedback_state = True,
+        max_length = 32];
+    optional string error_msg = 5 [
+        help_text = "error message from backup processor, if status is failure",
+        feedback_state = True,
+        max_length = 4096];
+    // `effective_date` may be different from `XOSBase.enacted` if a synchronizer is performing
+    // an operation on an external component. `XOSBase.enacted` is always set to the time the
+    // model is saved, which could differ from the time the backup or restore completed by
+    // a short time.
+    optional string effective_date = 6 [
+        help_text = "the time and date the operation was completed",
+        content_type = "date",
+        feedback_state = True];
+}
+
 message ComputeServiceInstance (ServiceInstance) {
      required manytoone slice->Slice:computeserviceinstances = 1:1001 [db_index = True, blank = False, help_text = "Slice that controls this ServiceInstance"];
      required manytoone image->Image:computeserviceinstances = 2:1001 [db_index = True, blank = False, help_text = "Image used to instantiate this ServiceInstance"];

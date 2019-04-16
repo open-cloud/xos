@@ -31,7 +31,7 @@ all:
 start:
 	bash -c "source env.sh && python ./core_main.py $(START_OPTIONS)"
 
-prep: unload_unwanted app_lists rebuild_protos compile_protos try_models wait_for_db makemigrations migrate
+prep: unload_unwanted app_lists rebuild_protos compile_protos try_models wait_for_db makemigrations migrate backuprestore
 
 unload_unwanted:
 	python unload_unwanted_apps.py
@@ -44,6 +44,9 @@ makemigrations:
 
 migrate:
 	python /opt/xos/manage.py migrate
+
+backuprestore:
+	python backupprocessor.py
 
 rebuild_protos:
 	cd protos && make rebuild-protos

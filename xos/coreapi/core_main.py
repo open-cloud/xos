@@ -14,6 +14,7 @@
 
 import argparse
 import prometheus_client
+import sys
 
 # FIXME: should grpc_server initialize the Config?
 from grpc_server import XOSGrpcServer
@@ -45,6 +46,34 @@ def parse_args():
         default=None,
         help="file containing output of model prep step",
     )
+    parser.add_argument(
+        "--no-backupwatcher",
+        dest="enable_backupwatcher",
+        action="store_false",
+        default=True,
+        help="disable the backupwatcher thread",
+    )
+    parser.add_argument(
+        "--no-reaper",
+        dest="enable_reaper",
+        action="store_false",
+        default=True,
+        help="disable the reaper thread",
+    )
+    parser.add_argument(
+        "--no-server",
+        dest="enable_server",
+        action="store_false",
+        default=True,
+        help="disable the grpc server thread",
+    )
+    parser.add_argument(
+        "--no-prometheus",
+        dest="enable_prometheus",
+        action="store_false",
+        default=True,
+        help="disable the prometheus thread",
+    )
     args = parser.parse_args()
 
     if args.model_output:
@@ -68,23 +97,50 @@ def init_reaper():
     return reaper
 
 
+def init_backupset_watcher(server):
+    backupset_watcher = None
+    try:
+        from backupsetwatcher import BackupSetWatcherThread
+
+        backupset_watcher = BackupSetWatcherThread(server)
+        backupset_watcher.start()
+    except BaseException:
+        log.exception("Failed to initialize backupset watcher")
+
+    return backupset_watcher
+
+
 if __name__ == "__main__":
     args = parse_args()
 
     # start the prometheus server
     # TODO (teone) consider moving this in a separate process so that it won't die when we load services
-    prometheus_client.start_http_server(8000)
+    if args.enable_prometheus:
+        prometheus_client.start_http_server(8000)
 
     server = XOSGrpcServer(
         model_status=args.model_status, model_output=args.model_output
     )
-    server.start()
 
-    if server.django_initialized:
-        reaper = init_reaper()
+    if args.enable_server:
+        server.start()
     else:
-        log.warning("Skipping reaper as django is not initialized")
-        reaper = None
+        # This is primarily to facilitate development, running the reaper and/or the backupwatcher without
+        # actually starting the grpc server.
+        server.init_django()
+        if not server.django_initialized:
+            log.error("Django is broken. Please remove the synchronizer causing the problem and restart the core.")
+            sys.exit(-1)
+
+    reaper = None
+    backup_watcher = None
+    if server.django_initialized:
+        if args.enable_reaper:
+            reaper = init_reaper()
+        if args.enable_backupwatcher:
+            backup_watcher = init_backupset_watcher(server)
+    else:
+        log.warning("Skipping reaper and backupset_watcher as django is not initialized")
 
     log.info("XOS core entering wait loop")
     _ONE_DAY_IN_SECONDS = 60 * 60 * 24
@@ -99,3 +155,6 @@ if __name__ == "__main__":
 
     if reaper:
         reaper.stop()
+
+    if backup_watcher:
+        backup_watcher.stop()
