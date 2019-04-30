@@ -15,6 +15,10 @@
 
 
 name: test-coreapi
+database:
+  name: "xos"
+  username: "postgres"
+  password: "password"
 logging:
   version: 1
   handlers:

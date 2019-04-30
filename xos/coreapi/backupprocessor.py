@@ -39,6 +39,9 @@ class BackupProcessor(object):
         self.backup_file_dir = "/var/run/xos/backup/local"
         self.log = create_logger(Config().get("logging"))
 
+    def get_backuphandler(self):
+        return BackupHandler()
+
     def instrument_fail(self, req, where):
         """ Check to see if the request indicates that a failure should be instrumented for testing
             purposes. This is done by inserting special strings ("fail_before_restore", etc) into
@@ -64,7 +67,7 @@ class BackupProcessor(object):
 
     def emergency_rollback(self, emergency_rollback_fn):
         self.log.warning("Performing emergency rollback")
-        BackupHandler().restore(emergency_rollback_fn)
+        self.get_backuphandler().restore(emergency_rollback_fn)
 
     def finalize_response(self, request, response, status, checksum=None, error_msg=None, exception=False):
         """ Build a response dictionary, incorporating informaiton from the request, as well as information
@@ -74,10 +77,9 @@ class BackupProcessor(object):
             the reponse.
         """
         if error_msg:
-            # TODO(smbaker): Consider also including exception information?
             response["error_msg"] = error_msg
-            response[""] = traceback.format_exc()
             if exception:
+                response["exception"] = traceback.format_exc()
                 self.log.exception(error_msg)
             else:
                 self.log.error(error_msg)
@@ -95,7 +97,8 @@ class BackupProcessor(object):
             response["file_details"]["checksum"] = checksum
 
         fn = os.path.join(self.backup_response_dir, request["request_fn"] + "_response")
-        open(fn, "w").write(json.dumps(response))
+        with open(fn, "w") as resp_f:
+            resp_f.write(json.dumps(response))
         os.remove(request["request_pathname"])
         return status
 
@@ -116,7 +119,7 @@ class BackupProcessor(object):
 
         try:
             self.instrument_fail(req, "fail_before_backup")
-            BackupHandler().backup(backend_filename)
+            self.get_backuphandler().backup(backend_filename)
         except Exception:
             return self.finalize_response(req, resp, "failed",
                                           error_msg="Backup failed",
@@ -160,7 +163,7 @@ class BackupProcessor(object):
 
         try:
             self.instrument_fail(req, "fail_before_rollback")
-            BackupHandler().backup(emergency_rollback_fn)
+            self.get_backuphandler().backup(emergency_rollback_fn)
         except Exception:
             return self.finalize_response(req, resp, "failed",
                                           error_msg="Exception during create emergency rollback",
@@ -170,7 +173,7 @@ class BackupProcessor(object):
 
         try:
             self.instrument_fail(req, "fail_before_restore")
-            BackupHandler().restore(backend_filename)
+            self.get_backuphandler().restore(backend_filename)
         except Exception:
             self.emergency_rollback(emergency_rollback_fn)
             return self.finalize_response(req, resp, "failed",
@@ -182,8 +185,7 @@ class BackupProcessor(object):
         if (not self.try_models()) or ("fail_try_models" in req["file_details"]["backend_filename"]):
             self.emergency_rollback(emergency_rollback_fn)
             return self.finalize_response(req, resp, "failed",
-                                          error_msg="Try_models failed, emergency rollback performed",
-                                          exception=True)
+                                          error_msg="Try_models failed, emergency rollback performed")
 
         return self.finalize_response(req, resp, "restored")
 

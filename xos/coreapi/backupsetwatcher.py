@@ -222,7 +222,8 @@ class BackupSetWatcherThread(threading.Thread):
             "backend_filename": backupop.file.backend_filename}
 
         request_fn = os.path.join(self.backup_request_dir, "request")
-        open(request_fn, "w").write(json.dumps(request))
+        with open(request_fn, "w") as f:
+            f.write(json.dumps(request))
 
     def run_once(self):
         # If we're exiting due to a backup request being saved, then return
