@@ -115,6 +115,7 @@ clean:
     lib/*/coverage.xml \
     lib/*/*results.xml \
     lib/*/*/VERSION \
+    lib/xos-migrate/xosmigrate/django.log \
     lib/xos-genx/xos-genx-tests/out/* \
     lib/xos-util/tests/test_version.py
 

@@ -28,10 +28,6 @@ key_import/
 *.retry
 
 # tmp files
-containers/chameleon/tmp.chameleon/
-containers/xos/local_certs.crt
-containers/xos/tmp.chameleon/
-containers/xos/BUILD/
 venv-xos*
 _book/
 .noseids
@@ -44,6 +40,7 @@ nose2-results.xml
 *coverage.xml
 cover
 .tox
+lib/xos-migrate/xosmigrate/django.log
 
 # python module build files
 *.egg-info

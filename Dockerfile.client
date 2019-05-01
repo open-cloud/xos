@@ -23,6 +23,7 @@ COPY VERSION /opt/xos
 # Install python using pip so their dependencies are installed
 RUN pip install -e /opt/xos/lib/xos-util \
  && pip install -e /opt/xos/lib/xos-config \
+ && pip install -e /opt/xos/lib/xos-genx \
  && pip install -e /opt/xos/lib/xos-api \
  && pip freeze > /var/xos/pip_freeze_xos-client_`date -u +%Y%m%dT%H%M%S`
 
