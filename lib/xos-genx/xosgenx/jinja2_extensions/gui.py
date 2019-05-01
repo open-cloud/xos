@@ -64,6 +64,7 @@ def xproto_dict_to_sorted_string(d):
 
 
 def xproto_validators(f):
+
     # To be cleaned up when we formalize validation in xproto
     validators = []
 
@@ -92,7 +93,7 @@ def xproto_validators(f):
 
     # required validator
     try:
-        required = f["options"]["blank"] == "False" and f["options"]["null"] == "False"
+        required = f["modifier"] == "required"
         if required:
             validators.append({"name": "required", "bool_value": required})
     except KeyError:
