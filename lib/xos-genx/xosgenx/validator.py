@@ -29,10 +29,11 @@ import os
 
 # Options that are always allowed
 COMMON_OPTIONS = ["help_text", "gui_hidden", "tosca_key", "tosca_key_one_of",
-                  "feedback_state", "unique", "unique_with"]
+                  "bookkeeping_state", "feedback_state", "unique", "unique_with"]
 
 # Options that must be either "True" or "False"
-BOOLEAN_OPTIONS = ["blank", "db_index", "feedback_state", "gui_hidden", "null", "tosca_key", "unique", "text"]
+BOOLEAN_OPTIONS = ["blank", "db_index", "bookkeeping_state", "feedback_state", "gui_hidden", "null",
+                   "tosca_key", "unique", "text"]
 
 
 class XProtoValidator(object):

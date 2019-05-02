@@ -35,8 +35,8 @@ message {{ object.name }} {
     repeated int32 {{ ref.src_port }}_ids  = {{ ref["id"] }} [(reverseForeignKey).modelName = "{{ ref.peer.name }}"];
   {%- endif -%}
   {%- endfor %}
-  string class_names = 2046;
-  string self_content_type_id = 2047;
+  string class_names = 2046 [(bookkeepingState) = true];
+  string self_content_type_id = 2047 [(bookkeepingState) = true];
 }
 
 message {{ xproto_pluralize(object) }} {

@@ -19,8 +19,10 @@ import threading
 from collections import OrderedDict
 from os.path import abspath, basename, dirname, join
 import grpc
+from grpc_reflection.v1alpha import reflection
 from concurrent import futures
 import zlib
+from protos import schema_pb2, schema_pb2_grpc
 
 # initialize config and logger
 from xosconfig import Config
@@ -31,8 +33,6 @@ sys.path.append(xos_path)
 
 Config.init()
 log = create_logger(Config().get("logging"))
-
-from protos import schema_pb2, schema_pb2_grpc
 
 SERVER_KEY = "/opt/cord_profile/core_api_key.pem"
 SERVER_CERT = "/opt/cord_profile/core_api_cert.pem"
@@ -95,7 +95,7 @@ class XOSGrpcServer(object):
         self.model_status = model_status
         self.model_output = model_output
         log.info("Initializing GRPC Server", port=port)
-        self.thread_pool = futures.ThreadPoolExecutor(max_workers=1)
+        self.thread_pool = futures.ThreadPoolExecutor(max_workers=10)
         self.server = grpc.server(self.thread_pool)
         self.django_initialized = False
         self.django_apps = []
@@ -128,7 +128,7 @@ class XOSGrpcServer(object):
 
     def register_dynamicload(self):
         from xos_dynamicload_api import DynamicLoadService
-        from protos import dynamicload_pb2_grpc
+        from protos import dynamicload_pb2_grpc, dynamicload_pb2
 
         dynamic_load_service = DynamicLoadService(self.thread_pool, self)
         self.register(
@@ -138,17 +138,21 @@ class XOSGrpcServer(object):
         )
         dynamic_load_service.set_django_apps(self.django_apps)
 
+        self.service_names.append(dynamicload_pb2.DESCRIPTOR.services_by_name['dynamicload'].full_name)
+
     def register_core(self):
         from xos_grpc_api import XosService
-        from protos import xos_pb2_grpc
+        from protos import xos_pb2_grpc, xos_pb2
 
         self.register(
             "xos", xos_pb2_grpc.add_xosServicer_to_server, XosService(self.thread_pool)
         )
 
+        self.service_names.append(xos_pb2.DESCRIPTOR.services_by_name['xos'].full_name)
+
     def register_utility(self):
         from xos_utility_api import UtilityService
-        from protos import utility_pb2_grpc
+        from protos import utility_pb2_grpc, utility_pb2
 
         self.register(
             "utility",
@@ -156,9 +160,11 @@ class XOSGrpcServer(object):
             UtilityService(self.thread_pool),
         )
 
+        self.service_names.append(utility_pb2.DESCRIPTOR.services_by_name['utility'].full_name)
+
     def register_modeldefs(self):
         from xos_modeldefs_api import ModelDefsService
-        from protos import modeldefs_pb2_grpc
+        from protos import modeldefs_pb2_grpc, modeldefs_pb2
 
         self.register(
             "modeldefs",
@@ -166,8 +172,24 @@ class XOSGrpcServer(object):
             ModelDefsService(self.thread_pool),
         )
 
+        self.service_names.append(modeldefs_pb2.DESCRIPTOR.services_by_name['modeldefs'].full_name)
+
+    def register_filetransfer(self):
+        from xos_filetransfer_api import FileTransferService
+        from protos import filetransfer_pb2_grpc, filetransfer_pb2
+
+        self.register(
+            "filetransfer",
+            filetransfer_pb2_grpc.add_filetransferServicer_to_server,
+            FileTransferService(self.thread_pool),
+        )
+
+        self.service_names.append(filetransfer_pb2.DESCRIPTOR.services_by_name['filetransfer'].full_name)
+
     def start(self):
         log.info("Starting GRPC Server")
+
+        self.service_names = []
 
         self.register(
             "schema",
@@ -189,6 +211,10 @@ class XOSGrpcServer(object):
         self.register_core()
         self.register_utility()
         self.register_modeldefs()
+        self.register_filetransfer()
+
+        self.service_names.append(reflection.SERVICE_NAME)
+        reflection.enable_server_reflection(self.service_names, self.server)
 
         # open port
         self.server.add_insecure_port("[::]:%s" % self.port)

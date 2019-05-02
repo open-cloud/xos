@@ -425,6 +425,15 @@ def xproto_api_opts(field):
     if "max_length" in field["options"] and field["type"] == "string":
         options.append("(val).maxLength = %s" % field["options"]["max_length"])
 
+    if field["options"].get("feedback_state"):
+        options.append("(feedbackState) = true")
+
+    if field["options"].get("gui_hidden"):
+        options.append("(guiHidden) = true")
+
+    if field["options"].get("bookkeeping_state"):
+        options.append("(bookkeepingState) = true")
+
     try:
         if field["options"]["null"] == "False":
             options.append("(val).nonNull = true")

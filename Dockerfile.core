@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # xosproject/xos-core
-FROM xosproject/alpine-grpc-base:0.9.0
+FROM xosproject/alpine-grpc-base:0.9.1
 
 # Install libraries and python requirements
 COPY requirements.txt /tmp/requirements.txt

@@ -10,28 +10,28 @@ message XOSBase {
      option custom_python=True;
 
      // field 1 is reserved for "id"
-     required string created = 2 [content_type = "date", auto_now_add = True, help_text = "Time this model was created"];
-     required string updated = 3 [default = "now()", content_type = "date", help_text = "Time this model was changed by a non-synchronizer"];
-     optional string enacted = 4 [content_type = "date", blank = True, default = None, help_text = "When synced, set to the timestamp of the data that was synced"];
-     optional string policed = 5 [content_type = "date", blank = True, default = None, help_text = "When policed, set to the timestamp of the data that was policed"];
+     required string created = 2 [content_type = "date", auto_now_add = True, bookkeeping_state = True, help_text = "Time this model was created"];
+     required string updated = 3 [default = "now()", content_type = "date", bookkeeping_state = True, help_text = "Time this model was changed by a non-synchronizer"];
+     optional string enacted = 4 [content_type = "date", blank = True, default = None, bookkeeping_state = True, help_text = "When synced, set to the timestamp of the data that was synced"];
+     optional string policed = 5 [content_type = "date", blank = True, default = None, bookkeeping_state = True, help_text = "When policed, set to the timestamp of the data that was policed"];
      optional string backend_register = 6 [default = "{}", max_length = 1024, feedback_state = True];
-     required bool backend_need_delete = 7 [default = False];
-     required bool backend_need_reap = 8 [default = False];
+     required bool backend_need_delete = 7 [default = False, bookkeeping_state = True];
+     required bool backend_need_reap = 8 [default = False, bookkeeping_state = True];
      required string backend_status = 9 [default = "Provisioning in progress", max_length = 1024, feedback_state = True];
      required int32 backend_code = 10 [default = 0, feedback_state = True];
-     required bool deleted = 11 [default = False];
-     required bool write_protect = 12 [default = False];
-     required bool lazy_blocked = 13 [default = False];
-     required bool no_sync = 14 [default = False];
-     required bool no_policy = 15 [default = False];
+     required bool deleted = 11 [default = False, bookkeeping_state = True];
+     required bool write_protect = 12 [default = False, bookkeeping_state = True];
+     required bool lazy_blocked = 13 [default = False, bookkeeping_state = True];
+     required bool no_sync = 14 [default = False, bookkeeping_state = True];
+     required bool no_policy = 15 [default = False, bookkeeping_state = True];
      optional string policy_status = 16 [default = "Policy in process", max_length = 1024, feedback_state = True];
      optional int32 policy_code = 17 [default = 0, feedback_state = True];
-     required string leaf_model_name = 18 [max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
-     required bool backend_need_delete_policy = 19 [default = False, help_text = "True if delete model_policy must be run before object can be reaped"];
+     required string leaf_model_name = 18 [max_length = 1024, bookkeeping_state = True, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
+     required bool backend_need_delete_policy = 19 [default = False, bookkeeping_state = True, help_text = "True if delete model_policy must be run before object can be reaped"];
      required bool xos_managed = 20 [default = True, help_text = "True if xos is responsible for creating/deleting this object", gui_hidden = True];
      optional string backend_handle = 21 [max_length = 1024, feedback_state = True, blank=True, help_text = "Handle used by the backend to track this object", gui_hidden = True];
-     optional string changed_by_step = 22 [content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a sync step"];
-     optional string changed_by_policy = 23 [content_type = "date", blank = True, default = None, gui_hidden = True, help_text = "Time this model was changed by a model policy"];
+     optional string changed_by_step = 22 [content_type = "date", blank = True, default = None, bookkeeping_state = True, gui_hidden = True, help_text = "Time this model was changed by a sync step"];
+     optional string changed_by_policy = 23 [content_type = "date", blank = True, default = None, bookkeeping_state = True, gui_hidden = True, help_text = "Time this model was changed by a model policy"];
 }
 
 // The calling user represents the user being accessed, or is a site admin.

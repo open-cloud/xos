@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package xos;
+
+import "google/protobuf/empty.proto";
+import "common.proto";
+import "xosoptions.proto";
+
+message FileRequest {
+    string uri = 1;
+};
+
+message FileContents {
+    string chunk = 1;
+}
+
+message FileUploadChunk {
+    string uri = 1;
+    string chunk = 2;
+}
+
+message FileUploadStatus {
+    enum FileUploadStatusCode {
+        SUCCESS = 0;
+        FAILED = 1;
+    }
+    FileUploadStatusCode status = 1;
+    string checksum = 2;
+    int32 chunks_received = 3;
+    int32 bytes_received = 4;
+}
+
+service filetransfer {
+    rpc Download(FileRequest) returns (stream FileContents) {}
+    rpc Upload(stream FileUploadChunk) returns (FileUploadStatus) {}
+}

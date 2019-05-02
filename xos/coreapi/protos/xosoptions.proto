@@ -28,6 +28,9 @@ extend google.protobuf.FieldOptions {
   ForeignKeyRule foreignKey = 1002;
   ReverseForeignKeyRule reverseForeignKey = 1003;
   ManyToManyForeignKeyRule manyToManyForeignKey = 1004;
+  bool guiHidden = 1005;
+  bool feedbackState = 1006;
+  bool bookkeepingState = 1007;
 }
 
 extend google.protobuf.MessageOptions {
