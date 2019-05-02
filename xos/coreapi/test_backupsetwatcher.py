@@ -238,9 +238,8 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
 
     def test_run_once_create(self):
         file = Mock(id=7,
-                    uri="file:///var/run/xos/backup/local/",
-                    checksum="1234",
-                    backend_filename="/mybackup")
+                    uri="file:///var/run/xos/backup/local/mybackup",
+                    checksum="1234")
         file.name = "mybackup",
 
         request = Mock(id=3,
@@ -260,15 +259,15 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
 
             self.assertEqual(request, saved_op)
             self.assertEqual(saved_op.status, "inprogress")
+            self.assertEqual(saved_op.file.backend_filename, "/var/run/xos/backup/local/mybackup")
             self.assertTrue(self.watcher.exiting)
 
             delayed_shutdown.assert_called()
 
     def test_run_once_restore(self):
         file = Mock(id=7,
-                    uri="file:///var/run/xos/backup/local/",
-                    checksum="1234",
-                    backend_filename="/mybackup")
+                    uri="file:///var/run/xos/backup/local/mybackup",
+                    checksum="1234")
         file.name = "mybackup",
 
         request = Mock(id=3,
@@ -288,15 +287,15 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
 
             self.assertEqual(request, saved_op)
             self.assertEqual(saved_op.status, "inprogress")
+            self.assertEqual(saved_op.file.backend_filename, "/var/run/xos/backup/local/mybackup")
             self.assertTrue(self.watcher.exiting)
 
             delayed_shutdown.assert_called()
 
     def test_run_once_not_xos(self):
         file = Mock(id=7,
-                    uri="file:///var/run/xos/backup/local/",
-                    checksum="1234",
-                    backend_filename="/mybackup")
+                    uri="file:///var/run/xos/backup/local/mybackup",
+                    checksum="1234")
         file.name = "mybackup",
 
         request = Mock(id=3,
