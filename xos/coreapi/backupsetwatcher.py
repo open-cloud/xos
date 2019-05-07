@@ -101,10 +101,10 @@ class BackupSetWatcherThread(threading.Thread):
                 continue
             os.remove(fn)
 
-    def process_response_create(self, id, operation, status, response):
+    def process_response_create(self, uuid, operation, status, response):
         file_details = response["file_details"]
 
-        backupops = BackupOperation.objects.filter(id=id)
+        backupops = BackupOperation.objects.filter(uuid=uuid)
         if not backupops:
             log.exception("Backup response refers to a backupop that does not exist", id=id)
             raise BackupDoesNotExist()
@@ -125,7 +125,7 @@ class BackupSetWatcherThread(threading.Thread):
                       update_fields=["backend_code", "backend_status", "effective_date", "enacted", "file", "status",
                                      "error_msg"])
 
-    def process_response_restore(self, id, operation, status, response):
+    def process_response_restore(self, uuid, operation, status, response):
         file_details = response["file_details"]
 
         # If the restore was successful, then look for any inprogress backups and mark them orphaned.
@@ -141,11 +141,12 @@ class BackupSetWatcherThread(threading.Thread):
         # It's likely the Restore operation doesn't exist, because it went away during the restore
         # process. Check for the existing operation first, and if it doesn't exist, then create
         # one to stand in its place.
-        backupops = BackupOperation.objects.filter(id=id)
+        backupops = BackupOperation.objects.filter(uuid=uuid)
         if backupops:
             backupop = backupops[0]
             log.info("Resolved existing backupop model", backupop=backupop)
         else:
+            # TODO: Should this use a UUID also?
             backupfiles = BackupFile.objects.filter(id=file_details["id"])
             if backupfiles:
                 backupfile = backupfiles[0]
@@ -159,7 +160,8 @@ class BackupSetWatcherThread(threading.Thread):
                 log.info("Created backupfile model", backupfile=backupfile)
 
             backupop = BackupOperation(operation=operation,
-                                       file=backupfile)
+                                       file=backupfile,
+                                       uuid=uuid)
             backupop.save(allow_modify_feedback=True)
             log.info("Created backupop model", backupop=backupop)
 
@@ -195,7 +197,7 @@ class BackupSetWatcherThread(threading.Thread):
                     raise BackupUnreadable()
 
                 try:
-                    id = contents["id"]
+                    uuid = contents["uuid"]
                     operation = contents["operation"]
                     status = contents["status"]
                     _ = contents["file_details"]["backend_filename"]
@@ -205,9 +207,9 @@ class BackupSetWatcherThread(threading.Thread):
                     raise BackupUnreadable()
 
                 if operation == "create":
-                    self.process_response_create(id, operation, status, contents)
+                    self.process_response_create(uuid, operation, status, contents)
                 elif operation == "restore":
-                    self.process_response_restore(id, operation, status, contents)
+                    self.process_response_restore(uuid, operation, status, contents)
 
                 # We've successfully concluded. Delete the response file
                 os.remove(fn)
@@ -218,6 +220,7 @@ class BackupSetWatcherThread(threading.Thread):
 
     def save_request(self, backupop):
         request = {"id": backupop.id,
+                   "uuid": backupop.uuid,
                    "operation": backupop.operation}
 
         request["file_details"] = {

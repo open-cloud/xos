@@ -14,14 +14,12 @@
 
 import json
 import os
-import pdb
 import unittest
 from mock import MagicMock, patch, ANY, call
 from pyfakefs import fake_filesystem_unittest
 from io import open
 
-# pyfakefs breaks these
-from __builtin__ import dir as builtin_dir, True as builtin_True, False as builtin_False
+from __builtin__ import True as builtin_True, False as builtin_False
 
 from xosconfig import Config
 
@@ -81,6 +79,7 @@ class TestBackupProcessor(fake_filesystem_unittest.TestCase):
                         "uri": "file://" + backend_filename,
                         "backend_filename": backend_filename}
         req = {"id": 3,
+               "uuid": "three",
                "operation": operation,
                "file_details": file_details,
                "request_fn": request_fn,
@@ -108,6 +107,7 @@ class TestBackupProcessor(fake_filesystem_unittest.TestCase):
                          u'effective_date': ANY,
                          u'operation': u'create',
                          u'id': 3,
+                         u'uuid': u'three',
                          u'file_details': {u'backend_filename':
                                            u'/var/run/xos/backup/local/mybackup',
                                            u'checksum': u'1234',
@@ -137,6 +137,7 @@ class TestBackupProcessor(fake_filesystem_unittest.TestCase):
                              u'effective_date': ANY,
                              u'operation': u'create',
                              u'id': 3,
+                             u'uuid': u'three',
                              u'file_details': {u'backend_filename': u'/var/run/xos/backup/local/mybackup',
                                                u'checksum': u'sha1:5eee38381388b6f30efdd5c5c6f067dbf32c0bb3',
                                                u'uri': u'file:///var/run/xos/backup/local/mybackup',
@@ -171,6 +172,7 @@ class TestBackupProcessor(fake_filesystem_unittest.TestCase):
                              u'effective_date': ANY,
                              u'operation': u'restore',
                              u'id': 3,
+                             u'uuid': u'three',
                              u'file_details': {u'backend_filename': u'/var/run/xos/backup/local/mybackup',
                                                u'uri': u'file:///var/run/xos/backup/local/mybackup',
                                                u'name': u'mybackup',
@@ -210,6 +212,7 @@ class TestBackupProcessor(fake_filesystem_unittest.TestCase):
                              u'effective_date': ANY,
                              u'operation': u'restore',
                              u'id': 3,
+                             u'uuid': u'three',
                              u'file_details': {u'backend_filename': u'/var/run/xos/backup/local/mybackup',
                                                u'uri': u'file:///var/run/xos/backup/local/mybackup',
                                                u'name': u'mybackup',

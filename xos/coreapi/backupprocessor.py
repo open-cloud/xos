@@ -84,8 +84,9 @@ class BackupProcessor(object):
             else:
                 self.log.error(error_msg)
 
-        self.log.info("Finalizing response", status=status, id=request["id"])
+        self.log.info("Finalizing response", status=status, id=request["id"], uuid=request["uuid"])
         response["id"] = request["id"]
+        response["uuid"] = request["uuid"]
         response["status"] = status
         response["operation"] = request["operation"]
         response["file_details"] = request["file_details"]
@@ -208,6 +209,7 @@ class BackupProcessor(object):
 
             try:
                 id = request["id"]
+                uuid = request["uuid"]
                 operation = request["operation"]
                 backend_filename = request["file_details"]["backend_filename"]
             except Exception:
@@ -218,6 +220,7 @@ class BackupProcessor(object):
             self.log.info(
                 "Processing request",
                 id=id,
+                uuid=uuid,
                 operation=operation,
                 backend_filename=backend_filename)
 

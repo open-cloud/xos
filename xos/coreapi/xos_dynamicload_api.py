@@ -15,18 +15,17 @@
 from protos import dynamicload_pb2
 from protos import dynamicload_pb2_grpc
 
-from xosutil.autodiscover_version import autodiscover_version_of_main
 from dynamicbuild import DynamicBuilder
 from apistats import REQUEST_COUNT, track_request_time
 from authhelper import XOSAuthHelperMixin
 from decorators import translate_exceptions, require_authentication
 import grpc
 import semver
-import re
 from xosconfig import Config
 from multistructlog import create_logger
 
 log = create_logger(Config().get("logging"))
+
 
 class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer, XOSAuthHelperMixin):
     def __init__(self, thread_pool, server):
@@ -62,19 +61,26 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer, XOSAuthHelper
                         django_models[k] = v
                 self.django_app_models[app.name] = django_models
 
+    def get_core_version(self):
+        try:
+            core_version = open("/opt/xos/VERSION").readline().strip()
+        except Exception:
+            core_version = "unknown"
+
+        return core_version
+
     @track_request_time("DynamicLoad", "LoadModels")
     @translate_exceptions("DynamicLoad", "LoadModels")
     @require_authentication
     def LoadModels(self, request, context):
         try:
-
-            core_version = autodiscover_version_of_main()
+            core_version = self.get_core_version()
             requested_core_version = request.core_version
             log.info("Loading service models",
                      service=request.name,
                      service_version=request.version,
                      requested_core_version=requested_core_version
-                )
+                     )
 
             if not requested_core_version:
                 requested_core_version = ">=2.2.1"
@@ -91,7 +97,7 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer, XOSAuthHelper
                               core_version=core_version,
                               requested_min_core_version=min_requested,
                               requested_max_core_version=max_requested
-                        )
+                              )
                     context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
                     msg = "Service %s is requesting core version between %s and %s but actual version is %s" % (
                         request.name,
@@ -109,7 +115,7 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer, XOSAuthHelper
                               core_version=core_version, requested_core_version=requested_core_version)
                     context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
                     msg = "Service %s is requesting core version %s but actual version is %s" % (
-                    request.name, requested_core_version, core_version)
+                        request.name, requested_core_version, core_version)
                     context.set_details(msg)
                     raise Exception(msg)
 
@@ -223,7 +229,7 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer, XOSAuthHelper
             # the core is always onboarded, so doesn't have an explicit manifest
             item = response.services.add()
             item.name = "core"
-            item.version = autodiscover_version_of_main()
+            item.version = self.get_core_version()
             if "core" in self.django_apps_by_name:
                 item.state = "present"
             else:

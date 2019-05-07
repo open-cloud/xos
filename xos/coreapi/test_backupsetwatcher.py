@@ -15,15 +15,11 @@
 import functools
 import json
 import os
-import pdb
 import sys
 import unittest
 from mock import MagicMock, Mock, patch
 from pyfakefs import fake_filesystem_unittest
 from io import open
-
-# pyfakefs breaks these
-from __builtin__ import dir as builtin_dir
 
 from xosconfig import Config
 
@@ -96,7 +92,7 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
         self.backupsetwatcher.BackupOperation.objects.filter.return_value = []
 
         with self.assertRaises(self.backupsetwatcher.BackupDoesNotExist):
-            self.watcher.process_response_create(id=1, operation="create", status="created", response=response)
+            self.watcher.process_response_create(uuid="one", operation="create", status="created", response=response)
 
     def test_process_response_create(self):
         file_details = {"checksum": "1234"}
@@ -108,7 +104,7 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
 
         self.backupsetwatcher.BackupOperation.objects.filter.return_value = [op]
 
-        self.watcher.process_response_create(id=1, operation="create", status="created", response=response)
+        self.watcher.process_response_create(uuid="one", operation="create", status="created", response=response)
 
         self.assertEqual(op.file.checksum, "1234")
         op.file.save.assert_called()
@@ -135,7 +131,7 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
         self.backupsetwatcher.BackupOperation.objects.filter.return_value = []
         self.backupsetwatcher.BackupOperation.side_effect = functools.partial(make_model, mockvars, "newop")
 
-        self.watcher.process_response_restore(id=1, operation="restore", status="restored", response=response)
+        self.watcher.process_response_restore(uuid="one", operation="restore", status="restored", response=response)
 
         newfile = mockvars["newfile"]
         self.assertEqual(newfile.name, "mybackup")
@@ -161,7 +157,7 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
 
         self.backupsetwatcher.BackupOperation.objects.filter.return_value = [op]
 
-        self.watcher.process_response_restore(id=1, operation="restore", status="restored", response=response)
+        self.watcher.process_response_restore(uuid="one", operation="restore", status="restored", response=response)
 
         self.assertEqual(op.status, "restored")
         self.assertEqual(op.error_msg, "")
@@ -175,7 +171,7 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
         self.assertTrue(os.path.exists(self.watcher.backup_response_dir))
 
         file_details = {"backend_filename": "/mybackup"}
-        resp = {"id": 7, "operation": "create", "status": "created", "file_details": file_details}
+        resp = {"uuid": "seven", "operation": "create", "status": "created", "file_details": file_details}
         resp_fn = os.path.join(self.watcher.backup_response_dir, "response")
 
         with open(resp_fn, "w") as resp_f:
@@ -195,7 +191,7 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
         self.assertTrue(os.path.exists(self.watcher.backup_response_dir))
 
         file_details = {"backend_filename": "/mybackup"}
-        resp = {"id": 7, "operation": "restore", "status": "restored", "file_details": file_details}
+        resp = {"uuid": "seven", "operation": "restore", "status": "restored", "file_details": file_details}
         resp_fn = os.path.join(self.watcher.backup_response_dir, "response")
 
         with open(resp_fn, "w") as resp_f:
@@ -216,6 +212,7 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
         file.name = "mybackup",
 
         request = Mock(id=3,
+                       uuid="three",
                        file=file,
                        operation="create")
 
@@ -228,6 +225,7 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
 
         expected_data = {u'operation': u'create',
                          u'id': 3,
+                         u'uuid': "three",
                          u'file_details': {u'backend_filename': u'/mybackup',
                                            u'checksum': u'1234',
                                            u'uri': u'file:///mybackup',
@@ -243,6 +241,7 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
         file.name = "mybackup",
 
         request = Mock(id=3,
+                       uuid="three",
                        file=file,
                        component="xos",
                        operation="create",
@@ -271,6 +270,7 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
         file.name = "mybackup",
 
         request = Mock(id=3,
+                       uuid="three",
                        file=file,
                        component="xos",
                        operation="restore",
@@ -299,6 +299,7 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
         file.name = "mybackup",
 
         request = Mock(id=3,
+                       uuid="three",
                        file=file,
                        component="somethingelse",
                        operation="create",

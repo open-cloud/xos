@@ -146,6 +146,8 @@ message BackupFile (XOSBase) {
 }
 
 message BackupOperation (XOSBase) {
+    option custom_python=True;
+
     // `file` is required for restores.
     // `file` is optional for backups. If file is unspecified then XOS will create a backup file using
     // a default mechanism.
@@ -178,6 +180,10 @@ message BackupOperation (XOSBase) {
         help_text = "the time and date the operation was completed",
         content_type = "date",
         feedback_state = True];
+    optional string uuid = 7 [
+        help_text = "unique identifer of this request",
+        bookkeeping_state = True,
+        max_length = 80];
 }
 
 message ComputeServiceInstance (ServiceInstance) {

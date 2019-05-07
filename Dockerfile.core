@@ -28,8 +28,7 @@ COPY xos /opt/xos
 COPY lib /opt/xos/lib
 
 # Install XOS libraries
-RUN pip install -e /opt/xos/lib/xos-util \
- && pip install -e /opt/xos/lib/xos-config \
+RUN pip install -e /opt/xos/lib/xos-config \
  && pip install -e /opt/xos/lib/xos-genx \
  && pip install -e /opt/xos/lib/xos-kafka \
  && pip freeze > /var/xos/pip_freeze_xos-core_libs_`date -u +%Y%m%dT%H%M%S` \
@@ -53,6 +52,9 @@ ARG org_label_schema_vcs_url=unknown
 ARG org_label_schema_vcs_ref=unknown
 ARG org_label_schema_build_date=unknown
 ARG org_opencord_vcs_commit_date=unknown
+
+# Record git build information
+RUN echo $org_label_schema_vcs_ref > /opt/xos/COMMIT
 
 LABEL org.label-schema.schema-version=1.0 \
       org.label-schema.name=xos-core \
