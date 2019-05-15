@@ -52,13 +52,13 @@ class BackupProcessor(object):
             raise Exception("Instrumented Failure: %s" % where)
 
     def compute_checksum(self, fn):
-        m = hashlib.sha1()
+        m = hashlib.sha256()
         with open(fn, "rb") as f:
             block = f.read(4096)
             while block:
                 m.update(block)
                 block = f.read(4096)
-        return "sha1:" + m.hexdigest()
+        return "sha256:" + m.hexdigest()
 
     def try_models(self):
         """ Returns True if django modeling is functional """

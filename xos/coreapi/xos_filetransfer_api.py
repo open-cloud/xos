@@ -57,7 +57,7 @@ class FileTransferService(filetransfer_pb2_grpc.filetransferServicer, XOSAuthHel
     def Upload(self, request_iterator, context):
         backend_file = None
         try:
-            hasher = hashlib.sha1()
+            hasher = hashlib.sha256()
             chunks_received = 0
             bytes_received = 0
             for chunk in request_iterator:
@@ -79,7 +79,7 @@ class FileTransferService(filetransfer_pb2_grpc.filetransferServicer, XOSAuthHel
             response.status = response.SUCCESS
             response.chunks_received = chunks_received
             response.bytes_received = bytes_received
-            response.checksum = "sha1:" + hasher.hexdigest()
+            response.checksum = "sha256:" + hasher.hexdigest()
 
             return response
         finally:

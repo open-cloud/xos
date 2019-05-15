@@ -52,7 +52,7 @@ class TestBackupProcessor(fake_filesystem_unittest.TestCase):
         with open("/tmp/somefile", "w") as somefile:
             somefile.write("test")
             self.assertEqual(self.processor.compute_checksum("/tmp/somefile"),
-                             "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709")
+                             "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
 
     def test_try_models(self):
         with patch("os.system") as os_system:
@@ -139,7 +139,7 @@ class TestBackupProcessor(fake_filesystem_unittest.TestCase):
                              u'id': 3,
                              u'uuid': u'three',
                              u'file_details': {u'backend_filename': u'/var/run/xos/backup/local/mybackup',
-                                               u'checksum': u'sha1:5eee38381388b6f30efdd5c5c6f067dbf32c0bb3',
+                                               u'checksum': u'sha256:35bafb1ce99aef3ab068afbaabae8f21fd9b9f02d3a9442e364fa92c0b3eeef0',
                                                u'uri': u'file:///var/run/xos/backup/local/mybackup',
                                                u'name': u'mybackup',
                                                u'id': 7}}
