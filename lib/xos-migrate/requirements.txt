@@ -2,5 +2,5 @@ Django~=1.11.20
 django-extensions~=2.1.6
 djangorestframework~=3.9.1
 multistructlog~=2.1.0
-xosconfig~=3.2.0
-xosgenx~=3.2.0
+xosconfig~=3.2.5
+xosgenx~=3.2.5
