@@ -198,13 +198,13 @@ class XOSGrpcServer(object):
         )
 
         if self.model_status != 0:
-            log.error("Models are boken. Please remove the synchronizer causing the problem and restart the core.")
+            log.error("Models are broken. Please remove the synchronizer causing the problem and restart the core.")
             sys.exit(-1)
 
         self.init_django()
 
         if not self.django_initialized:
-            log.error("Django is boken. Please remove the synchronizer causing the problem and restart the core.")
+            log.error("Django is broken. Please remove the synchronizer causing the problem and restart the core.")
             sys.exit(-1)
 
         self.register_dynamicload()
