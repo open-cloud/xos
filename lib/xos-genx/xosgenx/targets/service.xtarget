@@ -72,7 +72,7 @@ class {{ m.name }}{{ ns.any_legacy_tag }}{{ xproto_base_def(m.name, m.bases, leg
 
   # Relations
   {% for l in m.links %}{% set peer_name=l.peer.name %}
-  {% if legacy and peer_name in proto.message_names %}{% set peer_tag = legacy_tag %}{% else %}{% set peer_tag = '' %}{% endif -%}
+  {% if ns.any_legacy_tag!='' and peer_name in proto.message_names %}{% set peer_tag = ns.any_legacy_tag %}{% else %}{% set peer_tag = '' %}{% endif -%}
   {{ l.src_port }} = {{ xproto_django_link_type(l) }}( {%- if peer_name==m.name -%}'self'{%- else -%}{{ peer_name }}{{ peer_tag }} {%- endif -%}, {{ xproto_django_options_str(l, l.dst_port ) }} )
   {%- endfor %}
 
