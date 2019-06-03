@@ -261,31 +261,34 @@ class XOSProcessor:
         try:
             ast = parser.parse_string(inputs, debug=0)
         except plyxproto.ParsingError as e:
-            line, start, end = e.error_range
-
-            ptr = XOSProcessor._find_last_nonempty_line(inputs, start)
-
-            if start == 0:
-                beginning = ""
-            else:
-                beginning = inputs[ptr: start - 1]
-
-            line_end_char = inputs[start + end:].find("\n")
-            line_end = inputs[line_end_char]
-
             if e.message:
                 error = e.message
             else:
                 error = "xproto parsing error"
+            if e.error_range is None:
+                # No line number information
+                print(error + "\n")
+            else:
+                line, start, end = e.error_range
 
-            print(error + "\n" + Fore.YELLOW + "Line %d:" % line + Fore.WHITE)
-            print(
-                beginning
-                + Fore.YELLOW
-                + inputs[start - 1: start + end]
-                + Fore.WHITE
-                + line_end
-            )
+                ptr = XOSProcessor._find_last_nonempty_line(inputs, start)
+
+                if start == 0:
+                    beginning = ""
+                else:
+                    beginning = inputs[ptr: start - 1]
+
+                line_end_char = inputs[start + end:].find("\n")
+                line_end = inputs[line_end_char]
+
+                print(error + "\n" + Fore.YELLOW + "Line %d:" % line + Fore.WHITE)
+                print(
+                    beginning
+                    + Fore.YELLOW
+                    + inputs[start - 1: start + end]
+                    + Fore.WHITE
+                    + line_end
+                )
             exit(1)
 
         v = XOSProcessor._attach_parser(ast, args)
