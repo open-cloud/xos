@@ -48,6 +48,12 @@ def get_xproto_recursively(root):
     items = os.listdir(root)
     # iterate over the content of the folder excluding hidden items
     for item in [i for i in items if i[0] is not "."]:
+        if ("venv" in item) or ("virtualenv" in item):
+            # avoid recursing through virtual env directories
+            continue
+        if "xos-genx-tests" in item:
+            # don't generate docs for xosgenx's unit tests
+            continue
         item_abs_path = os.path.abspath(root + "/" + item)
         if os.path.isdir(item_abs_path):
             files = files + get_xproto_recursively(item_abs_path)
