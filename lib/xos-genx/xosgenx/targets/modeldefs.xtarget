@@ -11,6 +11,12 @@ items:
     {%- if m.options.description %}
     description: "{{ xproto_unquote(m.options.description) }}"
     {%- endif %}
+    {%- if m.options.sync_implemented %}
+    sync_implemented : "{{ xproto_unquote(m.options.sync_implemented) }}"
+    {%- endif %}
+    {%- if m.options.policy_implemented %}
+    policy_implemented : "{{ xproto_unquote(m.options.policy_implemented) }}"
+    {%- endif %}
     {%- set goodlinks = xproto_links_to_modeldef_relations( xproto_base_links(m, proto.message_table) + m.links ) + xproto_links_to_modeldef_relations( xproto_base_rlinks(m, proto.message_table) + m.rlinks )%}
     {%- if goodlinks %}
     relations:
