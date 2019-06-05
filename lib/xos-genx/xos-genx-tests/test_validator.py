@@ -121,5 +121,28 @@ class XProtoValidatorTest(unittest.TestCase):
             self.assertEqual(validator.errors[0]["severity"], "ERROR")
             self.assertEqual(validator.errors[0]["message"], "String field should have a max_length or text=True")
 
+    def test_bookkeeping_state_allowed(self):
+        args = XOSProcessorArgs()
+        args.files = ["/tmp/testvalidator.xproto"]
+
+        open("/tmp/testvalidator.xproto", "w").write("""
+
+                    message BackupOperation (XOSBase){
+                        option custom_python=True;
+                        optional string uuid = 7 [
+                            help_text = "unique identifer of this request",
+                            bookkeeping_state = True,
+                            max_length = 80];
+                    }
+                    """)
+        args.target = "modeldefs.xtarget"
+
+        with patch.object(XProtoValidator, "print_errors", autospec=True) as print_errors:
+            print_errors.return_value = None
+
+            output = XOSProcessor.process(args)
+
+            print_errors.assert_not_called()
+
 if __name__ == "__main__":
     unittest.main()
