@@ -63,7 +63,22 @@ def get_xproto_recursively(root):
         elif os.path.isfile(item_abs_path) and ".xproto" in item_abs_path:
             files.append(item_abs_path)
 
-    return [f for f in files if "xproto" in f]
+    protos = [f for f in files if "xproto" in f]
+
+    protos = sorted(protos)
+
+    # remove the core xproto...
+    core_proto = None
+    for proto in protos[:]:
+        if "core.xproto" in proto:
+            protos.remove(proto)
+            core_proto = proto
+
+    # ... and put it at the front of the list
+    if core_proto:
+        protos = [core_proto] + protos
+
+    return protos
 
 
 def main():
