@@ -54,6 +54,9 @@ def get_xproto_recursively(root):
         if "xos-genx-tests" in item:
             # don't generate docs for xosgenx's unit tests
             continue
+        if "xos-tosca" in item:
+            # don't generate docs for xos-tosca's unit tests
+            continue
         item_abs_path = os.path.abspath(root + "/" + item)
         if os.path.isdir(item_abs_path):
             files = files + get_xproto_recursively(item_abs_path)
