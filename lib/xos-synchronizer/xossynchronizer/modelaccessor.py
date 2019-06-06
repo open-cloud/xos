@@ -227,9 +227,11 @@ def grpcapi_reconnect(client, reactor):
         log.info("Service version is %s" % version, core_version=Config.get("core_version"))
         try:
             if Config.get("desired_state") == "load":
+                log.info("Calling Loadmodels")
                 ModelLoadClient(client).upload_models(
                     Config.get("name"), Config.get("models_dir"), version=version
                 )
+                log.info("Back from Loadmodels")
             elif Config.get("desired_state") == "unload":
                 # Try for an easy unload. If there's no dirty models, then unload will succeed without
                 # requiring us to setup the synchronizer.
@@ -362,6 +364,7 @@ def config_accessor_grpcapi():
     grpcapi_client.set_reconnect_callback(
         functools.partial(grpcapi_reconnect, grpcapi_client, reactor)
     )
+    grpcapi_client.restart_on_protobuf_change = True
     grpcapi_client.start()
 
     # Start reactor. This will cause the client to connect and then execute

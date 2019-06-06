@@ -17,6 +17,7 @@ from __future__ import absolute_import, print_function
 import argparse
 import base64
 import functools
+import hashlib
 import inspect
 import os
 import sys
@@ -72,6 +73,11 @@ class XOSClient(chameleon_client.GrpcClient):
     # We layer our own reconnect_callback functionality so we can setup the
     # ORM before calling reconnect_callback.
 
+    def __init__(self, *args, **kwargs):
+        self.hashes = {}
+        self.restart_on_protobuf_change = False
+        super(XOSClient, self).__init__(*args, **kwargs)
+
     def set_reconnect_callback(self, reconnect_callback):
         self.reconnect_callback2 = reconnect_callback
 
@@ -109,19 +115,42 @@ class XOSClient(chameleon_client.GrpcClient):
                 # NOTE if the core is not available, restart the synchronizer
                 os.execv(sys.executable, ["python"] + sys.argv)
 
+    def hash_check(self, pb2_file_name, pb2_grpc_file_name):
+        # If the protobufs have changed, then it's likely that new models
+        # have been downloaded. One way we have dealt with this in the past
+        # is to force a reload() of the affected modules. However, it seems
+        # safer to force a full synchronizer restart as this will allow
+        # the synchronizer to perform a version check against the core, and
+        # it will refresh any data structures that might be affected by the
+        # new models.
+
+        pb2_hash = hashlib.sha256(open(pb2_file_name).read())
+        pb2_grpc_hash = hashlib.sha256(open(pb2_grpc_file_name).read())
+
+        if (pb2_file_name in self.hashes) or (pb2_grpc_file_name in self.hashes):
+            if (pb2_hash != self.hashes[pb2_file_name]) or (pb2_grpc_hash != self.hashes[pb2_grpc_file_name]):
+                log.warning(
+                    "Protobuf change detected, restarting the synchronzier"
+                )
+                os.execv(sys.executable, ["python"] + sys.argv)
+
+        self.hashes[pb2_file_name] = pb2_hash
+        self.hashes[pb2_grpc_file_name] = pb2_grpc_hash
+
     def reconnected(self):
         for api in ["modeldefs", "utility", "xos", "dynamicload"]:
             pb2_file_name = os.path.join(self.work_dir, api + "_pb2.py")
             pb2_grpc_file_name = os.path.join(self.work_dir, api + "_pb2_grpc.py")
 
             if os.path.exists(pb2_file_name) and os.path.exists(pb2_grpc_file_name):
+                if self.restart_on_protobuf_change:
+                    self.hash_check(pb2_file_name, pb2_grpc_file_name)
+
                 orig_sys_path = sys.path
                 try:
                     sys.path.append(self.work_dir)
                     m_protos = __import__(api + "_pb2")
-                    # reload(m_protos)
                     m_grpc = __import__(api + "_pb2_grpc")
-                    # reload(m_grpc)
                 finally:
                     sys.path = orig_sys_path
 
