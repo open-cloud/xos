@@ -144,7 +144,7 @@ they are inherited by all of the models in the file, unless they are overridden
 by a particular model.
 
 Currently supported model options include: `name`, `app_label`, `verbose_name`,
-`custom_python`, `tosca_description`, `validators`, `plural`, `singular`, and
+`custom_python`, `tosca_description`, `validators`, `plural`, `singular`, `sync_implemented`, `policy_implemented` and
 `gui_hidden`.
 
 The name option is a short name used to refer to your service. For example, in
@@ -239,11 +239,20 @@ not pass validation.
 option validators = "instance_creator:Instance has no creator, instance_isolation: Container instance {obj.name} must use container image, instance_isolation_container_vm_parent:Container-vm instance {obj.name} must have a parent";
 ```
 
-The gui\_hidden option is a directive to the XOS GUI to exclude the present
+The gui_hidden option is a directive to the XOS GUI to exclude the present
 model from the default view provided to users.
 
 ```protobuf
-option null = True
+option gui_hidden = "True";
+```
+
+Then `sync_implemented` and `policy_implemented` are used to identify a model that implements respectively a
+`sync_step` or a `model_policy`.
+
+
+```protobuf
+option sync_implemented = "True";
+option policy_implemented = "True";
 ```
 
 ### Field Options
