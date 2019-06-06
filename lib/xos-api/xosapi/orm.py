@@ -133,6 +133,7 @@ class ORMWrapper(object):
         """
         if self.is_new:
             return list(self._dict.keys())
+
         return list(self.diff.keys())
 
     def has_field_changed(self, field_name):
@@ -145,8 +146,13 @@ class ORMWrapper(object):
         self._initial = self._dict
 
     def save_changed_fields(self, always_update_timestamp=False):
+
+        # we need to ignore many-to-many fields as they are saved by do_post_save_fixups
+        # and can't be sent over the wire
+        m2m_fields = [v['src_fieldName'] for k, v in self._reverse_fkmap.items()]
+
         if self.has_changed:
-            update_fields = self.changed_fields
+            update_fields = [f for f in self.changed_fields if f not in m2m_fields]
             if always_update_timestamp and "updated" not in update_fields:
                 update_fields.append("updated")
             self.save(
@@ -426,6 +432,7 @@ class ORMWrapper(object):
         is_sync_save=False,
         is_policy_save=False,
     ):
+
         classname = self._wrapped_class.__class__.__name__
         if self.is_new:
             log.debug(
