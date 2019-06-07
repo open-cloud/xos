@@ -13,35 +13,87 @@
 # limitations under the License.
 
 from __future__ import print_function
+import argparse
 import psycopg2
 import time
 import traceback
 
 from xosconfig import Config
 
-Config.init()
+def wait_for_database(db_host, db_port, retry_interval):
 
+    retry_count = 0
 
-def wait_for_database():
+    db_user = Config.get("database.username")
+    db_password = Config.get("database.password")
+
     while True:
-        db_user = Config.get("database.username")
-        db_password = Config.get("database.password")
-        db_host = "xos-db"  # TODO: this should be configurable
-        db_port = 5432  # TODO: this should be configurable
+
 
         try:
             myConnection = psycopg2.connect(
-                host=db_host, port=db_port, user=db_user, password=db_password
+                host=db_host,
+                port=db_port,
+                user=db_user,
+                password=db_password,
+                connect_timeout=5,
             )
-
-            myConnection.close()
 
             # Exit on successful connection
             print("Database is available")
+
+            myConnection.close()
             return
+
+        except psycopg2.OperationalError:
+            # timeout reached, retrying
+            retry_count += 1
+            print("Timeout connecting to db, retrying (retry count: %d)" % retry_count)
+
         except BaseException:
-            traceback.print_exc("Exception while connecting to db")
-            time.sleep(1)
+            traceback.print_exc("Unknown exception while connecting to db")
+
+        # sleep for the retry interval between retries
+        time.sleep(float(retry_interval))
 
 
-wait_for_database()
+# parse argumens
+parser = argparse.ArgumentParser()
+
+parser.add_argument(
+    "-c",
+    "--config",
+    dest="config",
+    default="/opt/xos/xos_config.yaml",
+    help="Location of XOS configuration file",
+)
+
+parser.add_argument(
+    "-s",
+    "--server",
+    dest="db_host",
+    default="xos-db",
+    help="Database server hostname (DNS or IP) to connect to",
+)
+
+parser.add_argument(
+    "-p",
+    "--port",
+    dest="db_port",
+    default="5432",
+    help="Database port on host to connect to",
+)
+
+parser.add_argument(
+    "-r",
+    "--retry-interval",
+    dest="retry_interval",
+    default="5",
+    help="Interval between connection retries in seconds",
+)
+
+args = parser.parse_args()
+
+Config.init(args.config)
+
+wait_for_database(args.db_host, args.db_port, args.retry_interval)
