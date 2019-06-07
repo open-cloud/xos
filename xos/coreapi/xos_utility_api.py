@@ -21,6 +21,7 @@ from decorators import translate_exceptions, require_authentication
 from xos.exceptions import XOSNotAuthenticated
 from core.models import ServiceInstance
 from django.db.models import F, Q
+from django.db import connection
 import django.apps
 from django.contrib.auth import authenticate as django_authenticate
 import fnmatch
@@ -273,8 +274,8 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAuthHelperMixin):
         ).inc()
         return response
 
-    @translate_exceptions("Utilities", "GetXproto")
-    @track_request_time("Utilities", "GetXproto")
+    @translate_exceptions("Utilities", "GetVersion")
+    @track_request_time("Utilities", "GetVersion")
     def GetVersion(self, request, context):
         res = utility_pb2.VersionInfo()
 
@@ -297,10 +298,47 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAuthHelperMixin):
         res.os = os.uname()[0].lower()
         res.arch = os.uname()[4].lower()
 
-        # TODO(smbaker): res.builTime
-        # TODO(smbaker): res.gitCommit
-
         REQUEST_COUNT.labels(
             "xos-core", "Utilities", "GetVersion", grpc.StatusCode.OK
+        ).inc()
+        return res
+
+    @translate_exceptions("Utilities", "GetDatabaseInfo")
+    @track_request_time("Utilities", "GetDatabaseInfo")
+    def GetDatabaseInfo(self, request, context):
+        res = utility_pb2.DatabaseInfo()
+
+        res.name = settings.DB["NAME"]
+        res.connection = "%s:%s" % (settings.DB["HOST"], settings.DB["PORT"])
+
+        # Start by assuming the db is operational, then we'll perform some tests
+        # to make sure it's working as we expect.
+        res.status = res.OPERATIONAL
+
+        # TODO(smbaker): Think about whether these are postgres-specific checks and what might happen
+        # if another db is configured.
+
+        try:
+            server_version = connection.cursor().connection.server_version
+            # example: '100003' for postgres 10.3
+            res.version = "%d.%d" % (server_version/10000, server_version % 10000)
+        except Exception:
+            res.version = "Unknown"
+            res.status = res.ERROR
+
+        if res.status == res.OPERATIONAL:
+            # Try performing a simple query that evaluates a constant. This will prove we are talking
+            # to the database.
+            try:
+                cursor = connection.cursor()
+                cursor.execute("select 1")
+                result = cursor.fetchone()
+                assert(len(result) == 1)
+                assert(result[0] == 1)
+            except Exception:
+                res.status = res.ERROR
+
+        REQUEST_COUNT.labels(
+            "xos-core", "Utilities", "GetDatabaseInfo", grpc.StatusCode.OK
         ).inc()
         return res

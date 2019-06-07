@@ -14,10 +14,8 @@
 
 
 from django import VERSION as DJANGO_VERSION
-import socket
 import os
 import warnings
-from urlparse import urlparse
 
 # Initializing xosconfig module
 from xosconfig import Config
