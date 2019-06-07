@@ -20,6 +20,7 @@ logging:
   handlers:
     console:
       class: logging.StreamHandler
+      level: WARNING
   loggers:
     'multistructlog':
       handlers:
