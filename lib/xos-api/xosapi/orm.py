@@ -54,15 +54,11 @@ def get_synchronizer_function():
     """
     Find the topmost synchronizer-specific function in the call stack
     """
-    result = None
     for file, line, func, stmt in traceback.extract_stack():
         if file.startswith("/opt/xos/synchronizers"):
-            if not result:
-                result = "%s:%s()" % (file, func)
-            if not file.startswith("/opt/xos/synchronizers/new_base"):
-                result = "%s:%s()" % (file, func)
-                break
-    return result
+            result = "%s:%s()" % (file, func)
+            return result
+    return None
 
 
 class ORMGenericContentNotFoundException(Exception):
