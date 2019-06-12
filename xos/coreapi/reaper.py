@@ -35,6 +35,7 @@ if __name__ == "__main__":
     sys.path.append("/opt/xos")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 
+from decorators import check_db_connection
 from xosconfig import Config
 from multistructlog import create_logger
 log = create_logger(Config().get("logging"))
@@ -49,24 +50,6 @@ class ReaperThread(threading.Thread):
     def __init__(self, *args, **kwargs):
         self.terminate_signal = False
         super(ReaperThread, self).__init__(*args, **kwargs)
-
-    def check_db_connection_okay(self):
-        # django implodes if the database connection is closed by docker-compose
-        from django import db
-
-        try:
-            db.connection.cursor()
-        except Exception as e:
-            if "connection already closed" in traceback.format_exc():
-                log.exception("XXX connection already closed", e=e)
-                try:
-                    #               if db.connection:
-                    #                   db.connection.close()
-                    db.close_old_connections()
-                except Exception as e:
-                    log.exception("XXX we failed to fix the failure", e=e)
-            else:
-                log.exception("XXX some other error", e=e)
 
     def journal_object(self, o, operation, msg=None, timestamp=None):
         # not implemented at this time
@@ -95,10 +78,9 @@ class ReaperThread(threading.Thread):
                 deps.append(model)
         return deps
 
+    @check_db_connection
     def run_reaper_once(self):
         # logger.debug("REAPER: run_reaper_once()")
-
-        self.check_db_connection_okay()
 
         # Reap non-sync'd models here
         # models_to_reap = [Slice,Network,NetworkSlice]

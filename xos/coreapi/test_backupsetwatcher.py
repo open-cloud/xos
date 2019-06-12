@@ -20,9 +20,9 @@ import unittest
 from mock import MagicMock, Mock, patch
 from pyfakefs import fake_filesystem_unittest
 from io import open
-
 from xosconfig import Config
 
+XOS_DIR = os.path.join(os.path.dirname(__file__), "..")
 
 def make_model(vars_dict, var_name, **kwargs):
     """ Helper function to mock creating objects. Creates a MagicMock with the
@@ -61,6 +61,13 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
         sys.modules["core.models"] = Mock(BackupOperation=self.mock_backup_operation,
                                           BackupFile=self.mock_backup_file)
 
+        # needed because decorators.py imports xos.exceptions
+        self.sys_path_save = sys.path
+        sys.path = [XOS_DIR] + sys.path
+
+        import decorators
+        decorators.disable_check_db_connection_decorator = True
+
         import backupsetwatcher
         self.backupsetwatcher = backupsetwatcher
 
@@ -70,7 +77,7 @@ class TestBackupWatcher(fake_filesystem_unittest.TestCase):
         self.watcher = backupsetwatcher.BackupSetWatcherThread(self.server)
 
     def tearDown(self):
-        pass
+        sys.path = self.sys_path_save
 
     def test_init_request_dir(self):
         self.assertFalse(os.path.exists(self.watcher.backup_request_dir))

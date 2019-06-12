@@ -14,7 +14,7 @@
 
 from apistats import track_request_time
 from authhelper import XOSAuthHelperMixin
-from decorators import translate_exceptions, require_authentication
+from decorators import translate_exceptions, require_authentication, check_db_connection
 import os
 from protos import filetransfer_pb2, filetransfer_pb2_grpc
 
@@ -35,6 +35,7 @@ class FileTransferService(filetransfer_pb2_grpc.filetransferServicer, XOSAuthHel
 
     @translate_exceptions("FileTransfer", "Download")
     @track_request_time("FileTransfer", "Download")
+    @check_db_connection
     @require_authentication
     def Download(self, request, context):
         if not request.uri.startswith("file://"):
@@ -53,6 +54,7 @@ class FileTransferService(filetransfer_pb2_grpc.filetransferServicer, XOSAuthHel
 
     @translate_exceptions("FileTransfer", "Upload")
     @track_request_time("FileTransfer", "Upload")
+    @check_db_connection
     @require_authentication
     def Upload(self, request_iterator, context):
         backend_file = None

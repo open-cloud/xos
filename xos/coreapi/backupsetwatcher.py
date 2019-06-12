@@ -39,6 +39,7 @@ import time
 
 from core.models import BackupFile, BackupOperation
 from django.db.models import Q, F
+from decorators import check_db_connection
 
 from xosconfig import Config
 from multistructlog import create_logger
@@ -234,6 +235,7 @@ class BackupSetWatcherThread(threading.Thread):
         with open(request_fn, "w") as f:
             f.write(json.dumps(request))
 
+    @check_db_connection
     def run_once(self):
         # If we're exiting due to a backup request being saved, then return
         if self.exiting:

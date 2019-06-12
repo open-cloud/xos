@@ -16,6 +16,7 @@ from __future__ import print_function
 from apistats import REQUEST_COUNT
 import time
 import grpc
+from django import db
 
 from xos.exceptions import (
     XOSNotAuthenticated,
@@ -28,6 +29,9 @@ from xosconfig import Config
 from multistructlog import create_logger
 
 log = create_logger(Config().get("logging"))
+
+# This decorator causes issues with unit tests, so provide a means to disable it.
+disable_check_db_connection_decorator = False
 
 
 def translate_exceptions(model, method):
@@ -108,6 +112,34 @@ def require_authentication(function):
     def wrapper(self, request, context):
         self.authenticate(context, required=True)
         result = function(self, request, context)
+        return result
+
+    return wrapper
+
+
+def check_db_connection(function):
+    """ Check that the database connection is not in "already closed" state.
+        This tends to happen when postgres is restarted. Connections will persist
+        in this state throwing "connection already closed" errors until the
+        old connections are disposed of.
+    """
+    def wrapper(self, *args, **kwargs):
+        if not disable_check_db_connection_decorator:
+            try:
+                db.connection.cursor()
+            except Exception as e:
+                if "connection already closed" in str(e):
+                    log.warning("check_db_connection: connection already closed")
+                    try:
+                        db.close_old_connections()
+                        log.info("check_db_connection: removed old connections")
+                    except Exception as e:
+                        log.exception("check_db_connection: we failed to fix the failure", e=e)
+                        raise
+                else:
+                    raise
+
+        result = function(self, *args, **kwargs)
         return result
 
     return wrapper

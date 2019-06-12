@@ -18,7 +18,7 @@ from protos import dynamicload_pb2_grpc
 from dynamicbuild import DynamicBuilder
 from apistats import REQUEST_COUNT, track_request_time
 from authhelper import XOSAuthHelperMixin
-from decorators import translate_exceptions, require_authentication
+from decorators import translate_exceptions, require_authentication, check_db_connection
 import grpc
 import semver
 from xosconfig import Config
@@ -71,6 +71,7 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer, XOSAuthHelper
 
     @track_request_time("DynamicLoad", "LoadModels")
     @translate_exceptions("DynamicLoad", "LoadModels")
+    @check_db_connection
     @require_authentication
     def LoadModels(self, request, context):
         try:
@@ -176,6 +177,7 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer, XOSAuthHelper
 
     @track_request_time("DynamicLoad", "UnloadModels")
     @translate_exceptions("DynamicLoad", "UnloadModels")
+    @check_db_connection
     @require_authentication
     def UnloadModels(self, request, context):
         try:
@@ -205,6 +207,7 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer, XOSAuthHelper
 
     @track_request_time("DynamicLoad", "GetLoadStatus")
     @translate_exceptions("DynamicLoad", "GetLoadStatus")
+    @check_db_connection
     @require_authentication
     def GetLoadStatus(self, request, context):
         try:
@@ -249,6 +252,7 @@ class DynamicLoadService(dynamicload_pb2_grpc.dynamicloadServicer, XOSAuthHelper
 
     @track_request_time("DynamicLoad", "GetConvenienceMethods")
     @translate_exceptions("DynamicLoad", "GetConvenienceMethods")
+    @check_db_connection
     @require_authentication
     def GetConvenienceMethods(self, request, context):
         # self.authenticate(context, required=True)

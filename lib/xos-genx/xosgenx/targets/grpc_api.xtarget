@@ -7,7 +7,7 @@ from apistats import track_request_time, REQUEST_COUNT
 from django.contrib.auth import authenticate as django_authenticate
 from xos.exceptions import *
 from apihelper import XOSAPIHelperMixin
-from decorators import translate_exceptions
+from decorators import translate_exceptions, check_db_connection
 import grpc
 
 class XosService(xos_pb2_grpc.xosServicer, XOSAPIHelperMixin):
@@ -22,6 +22,7 @@ class XosService(xos_pb2_grpc.xosServicer, XOSAPIHelperMixin):
 {%- if object.name!='XOSBase' %}
     @translate_exceptions("{{ object.name }}", "List{{ object.name }}")
     @track_request_time("{{ object.name }}", "List{{ object.name }}")
+    @check_db_connection
     def List{{ object.name }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.name }}")
@@ -31,6 +32,7 @@ class XosService(xos_pb2_grpc.xosServicer, XOSAPIHelperMixin):
 
     @translate_exceptions("{{ object.name }}", "Filter{{ object.name }}")
     @track_request_time("{{ object.name }}", "Filter{{ object.name }}")
+    @check_db_connection
     def Filter{{ object.name }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.name }}")
@@ -40,6 +42,7 @@ class XosService(xos_pb2_grpc.xosServicer, XOSAPIHelperMixin):
 
     @translate_exceptions("{{ object.name }}", "Get{{ object.name }}")
     @track_request_time("{{ object.name }}", "Get{{ object.name }}")
+    @check_db_connection
     def Get{{ object.name }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.name }}")
@@ -49,6 +52,7 @@ class XosService(xos_pb2_grpc.xosServicer, XOSAPIHelperMixin):
 
     @translate_exceptions("{{ object.name }}", "Create{{ object.name }}")
     @track_request_time("{{ object.name }}", "Create{{ object.name }}")
+    @check_db_connection
     def Create{{ object.name }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.name }}")
@@ -58,6 +62,7 @@ class XosService(xos_pb2_grpc.xosServicer, XOSAPIHelperMixin):
 
     @translate_exceptions("{{ object.name }}", "Delete{{ object.name }}")
     @track_request_time("{{ object.name }}", "Delete{{ object.name }}")
+    @check_db_connection
     def Delete{{ object.name }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.name }}")
@@ -67,6 +72,7 @@ class XosService(xos_pb2_grpc.xosServicer, XOSAPIHelperMixin):
 
     @translate_exceptions("{{ object.name }}", "Update{{ object.name }}")
     @track_request_time("{{ object.name }}", "Update{{ object.name }}")
+    @check_db_connection
     def Update{{ object.name }}(self, request, context):
       user=self.authenticate(context)
       model=self.get_model("{{ object.name }}")

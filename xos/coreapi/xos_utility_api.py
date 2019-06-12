@@ -17,7 +17,7 @@ import inspect
 from apistats import REQUEST_COUNT, track_request_time
 import grpc
 from authhelper import XOSAuthHelperMixin
-from decorators import translate_exceptions, require_authentication
+from decorators import translate_exceptions, require_authentication, check_db_connection
 from xos.exceptions import XOSNotAuthenticated
 from core.models import ServiceInstance
 from django.db.models import F, Q
@@ -79,6 +79,7 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAuthHelperMixin):
 
     @translate_exceptions("Utilities", "Login")
     @track_request_time("Utilities", "Login")
+    @check_db_connection
     def Login(self, request, context):
         if not request.username:
             raise XOSNotAuthenticated("No username")
@@ -104,6 +105,7 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAuthHelperMixin):
 
     @translate_exceptions("Utilities", "Logout")
     @track_request_time("Utilities", "Logout")
+    @check_db_connection
     def Logout(self, request, context):
         for (k, v) in context.invocation_metadata():
             if k.lower() == "x-xossession":
@@ -122,6 +124,7 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAuthHelperMixin):
 
     @translate_exceptions("Utilities", "AuthenticatedNoOp")
     @track_request_time("Utilities", "AuthenticatedNoOp")
+    @check_db_connection
     @require_authentication
     def AuthenticatedNoOp(self, request, context):
         REQUEST_COUNT.labels(
@@ -131,6 +134,7 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAuthHelperMixin):
 
     @translate_exceptions("Utilities", "ListDirtyModels")
     @track_request_time("Utilities", "ListDirtyModels")
+    @check_db_connection
     @require_authentication
     def ListDirtyModels(self, request, context):
         dirty_models = utility_pb2.ModelList()
@@ -159,6 +163,7 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAuthHelperMixin):
 
     @translate_exceptions("Utilities", "SetDirtyModels")
     @track_request_time("Utilities", "SetDirtyModels")
+    @check_db_connection
     @require_authentication
     def SetDirtyModels(self, request, context):
         user = self.authenticate(context, required=True)
@@ -196,6 +201,7 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAuthHelperMixin):
         return dirty_models
 
     @translate_exceptions("Utilities", "GetXproto")
+    @check_db_connection
     @track_request_time("Utilities", "GetXproto")
     # TODO(smbaker): Tosca engine calls this without authentication
     def GetXproto(self, request, context):
@@ -233,6 +239,7 @@ class UtilityService(utility_pb2_grpc.utilityServicer, XOSAuthHelperMixin):
 
     @translate_exceptions("Utilities", "GetPopulatedServiceInstances")
     @track_request_time("Utilities", "GetPopulatedServiceInstances")
+    @check_db_connection
     @require_authentication
     def GetPopulatedServiceInstances(self, request, context):
         """
