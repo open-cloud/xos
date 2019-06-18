@@ -34,6 +34,9 @@ sys.path.append(xos_path)
 Config.init()
 log = create_logger(Config().get("logging"))
 
+# Must be imported after Config.init()
+from xos_version import get_version_dict
+
 SERVER_KEY = "/opt/cord_profile/core_api_key.pem"
 SERVER_CERT = "/opt/cord_profile/core_api_cert.pem"
 SERVER_CA = "/usr/local/share/ca-certificates/local_certs.crt"
@@ -188,6 +191,8 @@ class XOSGrpcServer(object):
 
     def start(self):
         log.info("Starting GRPC Server")
+
+        log.info("XOS Core Build Details", **get_version_dict())
 
         self.service_names = []
 

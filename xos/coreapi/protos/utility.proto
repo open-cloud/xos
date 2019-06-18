@@ -41,6 +41,7 @@ message VersionInfo {
     string buildTime = 4;
     string os = 5;
     string arch = 6;
+    string djangoVersion = 7;
 };
 
 message DatabaseInfo {
