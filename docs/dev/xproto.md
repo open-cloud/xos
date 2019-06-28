@@ -93,11 +93,17 @@ field that contains the reference (_slice_ in the following example), its type
 the current model, and a “through” field, specifying a model declared
 separately as an xproto message, that stores properties of the link.
 
+Links may be considered bidirectional, a link from Model A to Model B creates an implicit link from B back to A.
+Due to this bidirectionality, links typically have two protobuf field numbers associated with them.
+The first number is the field number in the model that is declaring the link.
+The second number is the field number in the model that is implicitly declaring the reverse link.
+Reverse link numbers are by convention allocated by the developer starting at 1001. The developer is responsible for ensuring reverse link numbers do not collide with respect to the destination model.
+
 * xproto
 
   ```protobuf
   message Instance {
-        required manytoone slice:Slice->instances = 1;
+        required manytoone slice:Slice->instances = 1:1001;
   }
   ```
 
@@ -107,6 +113,13 @@ separately as an xproto message, that stores properties of the link.
   message Instance {
         required int32 slice = 1 [model="Slice", link="manytoone", src_port="slice", dst_port="instances"];
   }
+
+  message Slice {
+        ...
+        other fields declared in the slice model
+        ...
+        repeated int32 instances_ids = 1001 [(reverseForeignKey).modelName = "Instance"];
+  }
   ```
 
 The example shown below illustrates a manytomany link from Image to Deployment,
@@ -115,13 +128,24 @@ which goes through the model `ImageDeployments`:
 * xproto
 
   ```protobuf
-  required manytomany deployments->Deployment/ImageDeployments:images = 7 [help_text = "Select which images should be instantiated on this deployment", null = False, db_index = False, blank = True];
+  message Image {
+      required manytomany deployments->Deployment/ImageDeployments:images = 7:1003 [help_text = "Select which images should be instantiated on this deployment", null = False, db_index = False, blank = True];
+  }
   ```
 
 * protobuf
 
   ```protobuf
-  required int32 deployments = 7 [help_text = "Select which images should be instantiated on this deployment", null = False, db_index = False, blank = True, model="Deployment", through="ImageDeployments", dst_port="images", link="manytomany"];
+  message Image {
+      required int32 deployments = 7 [help_text = "Select which images should be instantiated on this deployment", null = False, db_index = False, blank = True, model="Deployment", through="ImageDeployments", dst_port="images", link="manytomany"];
+  }
+
+  message Deployment {
+      ...
+      other fields declared in the Deployment model
+      ...
+      repeated int32 images_ids = 1003 [(reverseForeignKey).modelName = "Image")];
+  }
   ```
 
 ### Access Policies
@@ -239,6 +263,8 @@ not pass validation.
 option validators = "instance_creator:Instance has no creator, instance_isolation: Container instance {obj.name} must use container image, instance_isolation_container_vm_parent:Container-vm instance {obj.name} must have a parent";
 ```
 
+How validators are used is described in the `Policies` section later in this document.
+
 The gui_hidden option is a directive to the XOS GUI to exclude the present
 model from the default view provided to users.
 
@@ -260,30 +286,21 @@ option policy_implemented = "True";
 Options are also supported on a per-field basis. The following lists the
 currently available field options.
 
-The null option specifies whether a field has to be set or not (equivalent to
-annotating the field as `required` or `optional`):
+#### auto_now_add
+
+fields: *string with content_type=date*
+
+The `auto_now_add` option will set the field to the current datetime when the object is created.
+Note that this option is mutually exclusive with the `default` option. This option is only
+usable on strings whose `content_type` is set to `date`.
 
 ```protobuf
-option null = True
+option auto_now_add = True;
 ```
 
-Help text describes a field:
+#### blank
 
-```protobuf
-option help_text = “Descriptive text goes here”;
-```
-
-The default value of the field:
-
-```protobuf
-option default = “Default value of field”;
-```
-
-The maximum length of a field whose type is string:
-
-```protobuf
-option max_length = 128;
-```
+fields: *string, int32, float, manytoone, manytomany*
 
 Whether a field can be empty:
 
@@ -291,25 +308,11 @@ Whether a field can be empty:
 option blank = False;
 ```
 
-A label to be used by the GUI display for this field:
+The `blank` option is generally implied by whether a field has a `required` or `optional` modifier and it is not necessary to explicitly specify the `blank` option. Note that the permitted fields specifically excludes booleans. Boolean fields must either be `true` or `false` and cannot be blank.
 
-```protobuf
-option verbose_name = “Verbose name goes here”;
-```
+#### bookkeeping_state
 
-A min/max value for the field
-
-```protobuf
-option min_value = 10;
-option max_value = 100;
-```
-
-Designates a field as `feedback_state`, by default preventing it from being updated using GUI
-or CLI tools.
-
-```protobuf
-option feedback_state = True;
-```
+fields: *all*
 
 Designates a field as `bookkeeping_state`, by default hiding it from GUI or CLI tools.
 
@@ -317,11 +320,9 @@ Designates a field as `bookkeeping_state`, by default hiding it from GUI or CLI 
 option bookkeeping_state = True;
 ```
 
-Do not display this field in the GUI (also available at the model level):
+#### choices
 
-```protobuf
-option gui_hidden = True;
-```
+fields: *string*
 
 The set of valid values for a field, where each inner-tuple specifies
 equivalence classes (e.g., vm is equivalent to Virtual Machine):
@@ -330,11 +331,9 @@ equivalence classes (e.g., vm is equivalent to Virtual Machine):
 option choices = "(('vm', 'Virtual Machine'), ('container', 'Container'))";
 ```
 
-Whether the field is an index field, that is, is used by database targets:
+#### content_type
 
-```protobuf
-option db_index = True;
-```
+fields: *string*
 
 How to interpret/parse string fields:
 
@@ -345,20 +344,121 @@ option content_type = “url”;
 option content_type = “ip”;
 ```
 
-Whether an assignment to a field is permitted, where the option setting is a
-named policy:
+The content type controls how the field is encoded in Django and what database schema is created by Django. The currently supported content types are implemented as follows:
+
+* *stripped*. Implemented as a StrippedCharField, which is a derivative of CharField. Leading and trailing spaces are removed.
+* *date*. Implemented as a DateTimeField.
+* *url*. Implemented as a URLField, which is a derivative of CharField. Enforces URL syntax validation.
+* *ip*. Implemented as a GenericIPAddressField. Capable of storing IPv4 or IPv6 addresses.
+
+Content type may imply validation semantics. For example, since a `GenericIPAddressField` is only capable of storing an IPv4 or IPv6 addresses, attempting to store something else will fail. If no content type is specified for a string field, then `CharField` or `TextField` will be used depending on whether or not the field has a `max_length` or `text=True` option specified.
+
+#### db_index
+
+fields: *all*
+
+Whether the field is an index field by the XOS core. Index fields permit more efficient searching.
 
 ```protobuf
-option validators = “port_validator:Slice is not allowed to connect to network”;
+option db_index = True;
 ```
 
-How policies (e.g., `port_validator`) are specified is described below.
+#### default
 
-Whether a field should be shown in the GUI:
+fields: *all*
+
+The default value of the field:
+
+```protobuf
+option default = “Default value of field”;
+```
+
+The default option is required on boolean fields.
+
+#### feedback_state
+
+fields: *all*
+
+Designates a field as `feedback_state`, by default preventing it from being updated using GUI
+or CLI tools.
+
+```protobuf
+option feedback_state = True;
+```
+
+#### gui_hidden
+
+fields: *all*
+
+Do not display this field in the GUI (also available at the model level):
 
 ```protobuf
 option gui_hidden = True;
 ```
+
+#### help_text
+
+fields: *all*
+
+Help text describes a field. This descriptive text is often displayed in GUI tools when editing existing models or adding new models. For example:
+
+```protobuf
+option help_text = “Descriptive text goes here”;
+```
+
+#### max_length
+
+fields: *string*
+
+The maximum length of a field whose type is string:
+
+```protobuf
+option max_length = 128;
+```
+
+A string field must either specify a `max_length` or use `text=True` to indicate the string is of variable length.
+The maximum length must be greater than zero.
+If a maximum length is near but not equal to `256` or `1024` (for example, `254` or `1024`) then it is recommended to use the convention of `256` or `1024`.
+
+#### max_value / min_value
+
+fields: *int32*
+
+A min/max value for the field
+
+```protobuf
+option min_value = 10;
+option max_value = 100;
+```
+
+#### null
+
+fields: *all*
+
+The null option specifies whether a field allows a `null` value to be stored in the database. Note that `null` is a different value than the empty string or the number `0`.
+
+```protobuf
+option null = True
+```
+
+The `null` option is generally implied by whether a field has a `required` or `optional` modifier and it is not necessary to explicitly specify the `null` option. The only exception to this rule are the `manytomany` and `bool` fields. For `manytomany` fields, it is up to the developer to choose a setting for `null`.
+For boolean fields `null=False` is always the case.
+
+There are limitations on the XOS API on when `null` values can be saved to a field. The API permits them to be saved to link fields such as `manytoone` or `manytomany` fields but the API does not permit saving `null` to a string, int32, or other type of non-link field. In these cases although the database permits storing the `null` value, there is no practical way to set the `null` value over the API.
+
+#### text
+
+fields: *string*
+
+The text option is set to `true` to convey that a string has no maximum length. This option is mutually exclusive with `max_length`.
+
+```protobuf
+option text = True
+```
+
+#### tosca_key, tosca_key_one_of
+
+fields: *all*
 
 Identify a field that is used as key by the TOSCA engine. A model can have
 multiple keys in case we need a composite key:
@@ -386,8 +486,49 @@ message ServiceInstanceLink (XOSBase) {
 }
 ```
 
+
 the key is composed by `provider_service_instance` and one of
 `subscriber_service_instance`, `subscriber_service`, `subscriber_network`
+
+#### unique
+
+fields: *all*
+
+Signifies that this field is unique. Two different objects with the same field value should not be permitted.
+
+```protobuf
+unique = True
+```
+
+#### unique_with
+
+fields: *all*
+
+Signifies that this field, in combination with other fields, forms a composite key that is unique.
+Two different objects with the same set of field values for the `unique_together` keys should not be permitted.
+
+```protobuf
+unique_with = "service_instance"
+```
+
+In the following example, the `network` and `service_instance` fields form a unique composite key.
+
+```protobuf
+message Port::port_policy (XOSBase) {
+     required manytoone network->Network:links = 1:1003 [db_index = True, blank = False, unique_with = "service_instance", help_text = "Network bound to this port"];
+     optional manytoone service_instance->ServiceInstance:ports = 7:1001 [db_index = True, blank = True, help_text = "ServiceInstance bound to this port"];
+}
+```
+
+#### verbose_name
+
+fields: *all*
+
+A label to be used by the GUI display for this field:
+
+```protobuf
+option verbose_name = “Verbose name goes here”;
+```
 
 ### Naming Conventions
 
