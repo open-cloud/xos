@@ -10,6 +10,7 @@
     * [XOS Modeling Framework](dev/xproto.md)
         * [XOS Tool Chain (Internals)](dev/xosgenx.md)
     * [XOS Synchronizer Framework](dev/synchronizers.md)
+        * [Synchronizer Development Environment](dev/sync_environment.md)
         * [Synchronizer Design](dev/sync_arch.md)
         * [Synchronizer Implementation](dev/sync_impl.md)
         * [Synchronizer Reference](dev/sync_reference.md)
