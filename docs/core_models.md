@@ -118,13 +118,21 @@ The ServiceInterfaceLink associated with a ServiceInstance of A and a the
 corresponding ServiceInstance of B would then record specific state about that
 data plane connection (e.g., what address each is known by).
 
-## Model Glossary
+## Service-related Model Glossary
 
 The XOS core models are defined by a set of [xproto](dev/xproto.md)
 specifications. They are defined in their full detail in the source code (see
 [core.xproto](https://github.com/opencord/xos/blob/master/xos/core/models/core.xproto)).
 The following summarizes these core models—along with the key relationships
 (bindings) among them—in words.
+
+* **TrustDomain:** Trust domains represent a namespace where resources
+  are often grouped together. This can be used to isolate groups of services
+  from one another. There is typically a default `TrustDomain` provided.
+
+* **Principal:** Principals provide identities for compute resources. For
+  example, a `Principal` might convey a set of rights to perform operations on
+  a particular API.
 
 * **Service:** Represents an elastically scalable, multi-tenant program,
   including the declarative state needed to instantiate, control, and scale
@@ -177,7 +185,7 @@ The following summarizes these core models—along with the key relationships
 * **Slice:** Represents a distributed resource container that includes the
   compute and network resources that belong to (are used by) some `Service`.
 
-    * Bound to a set of `Instances` that provide compute resources for the
+    * Bound to a set of `ComputeServiceInstances` that provide compute resources for the
       `Slice`.
 
     * Bound to a set of `Networks` that connect the  slice's `Instances` to
@@ -187,14 +195,28 @@ The following summarizes these core models—along with the key relationships
       disk, memory, and cores) allocated to an instance. Current flavors borrow
       from EC2.
 
-    * Bound to a default `Image` that boots in each of the slice's`Instances`.
+    * Bound to a default `Image` that boots in each of the slice's`ComputeServiceInstances`.
       Each `Image` implies a virtualization layer (e.g., Docker, KVM).
 
-* **Instance:** Represents a single compute instance associated with a Slice
-  and instantiated on some physical Node. Each Instance is of some `isolation`
-  type: `vm` (implemented as a KVM virtual machine), `container` (implemented
-  as a Docker container), or `container_vm` (implemented as a Docker container
-  running inside a KVM virtual machine).
+    * Optionally bound to a `TrustDomain` that specifies the namespace where the Slice's
+      resources should be created.
+
+    * Optionally bound to a `Principal` that permits compute resources of this
+      slice to interact with APIs and other components.
+
+* **ComputeServiceInstance:** This is derived from `ServiceInstance` and
+  represents a single compute instance associated with a Slice
+  and instantiated on some physical Node. A `ComputeServiceInstance`
+  inherently links two services. The first is the service that realizes
+  the compute resource, and is the `owner` of the
+  `ComputerServiceIsntance`. An example is the `Kubernetes` service, which
+  creates pods. The second is the service that owns the `Slice` that is
+  linked to the `ComputeServiceInstance`. This is the service that
+  is requesting the `ComputeServiceInstance`. The `ComputeServiceInstance`
+  also includes an `image` field which describes the image that should
+  be deployed. The `SimpleExampleService` service is a working example
+  of the interplay between two services (`SimpleExampleService` and
+  `Kubernetes`) via the `ComputeServiceInstance` model.
 
 * **Network:** Represents a virtual network associated with a `Slice`. The
   behavior of a given `Network`is defined by a `NetworkTemplate`, which
@@ -206,7 +228,7 @@ The following summarizes these core models—along with the key relationships
   `MANAGEMENT_LOCAL`, `MANAGEMENT_HOST`, `VSG`, or `ACCESS__AGENT`.
 
 * **Node:** Represents a physical server that can be virtualized and host
-  Instances.
+  resources
 
     * Bound to the `Site` where the `Node` is physically located.
 
@@ -219,9 +241,14 @@ The following summarizes these core models—along with the key relationships
 
 * **Site:** Represents a logical grouping of `Nodes` that are co-located at the
   same geographic location, which also typically corresponds to the nodes'
-  location in the physical network.  The typical use case involves one
-  configuration of a system deployed at a single location, although the
-  underlying core includes allows for multi-site deployments.
+  location in the physical network. The current convention is that there is
+  only one Site in the data model.
 
     * Bound to a set of `Nodes` located at the `Site`.
 
+The above models comprise the core Service abstraction of XOS, but there are
+additional models in the data model that provide additional features. For
+example, there are models for initiating Backup and Restore and models for
+controlling the appearance of the XOS GUI. Please see
+[core.xproto](https://github.com/opencord/xos/blob/master/xos/core/models/core.xproto)
+and/or separate documentation on these features for more information.

@@ -37,7 +37,7 @@ model.
 
 ## Actors and Types of State
 
-There are three actors in a Synchronizer that interact with a Data Model:
+There are four actors in a Synchronizer that interact with a Data Model:
 
 * **Synchronizer Actuators:** An actuator is notified of changes to the data
   model, upon which it refers to the current state of its service in the data
@@ -46,20 +46,16 @@ There are three actors in a Synchronizer that interact with a Data Model:
   core in an ordering consistent with the dependencies on the model that it
   synchronizes, with possible retries and error management.
 
-* **Synchronizer Watchers:** A watcher is also notified of changes to a data
-  model, with the difference that it is not responsible for actuating its state
-  by applying it to the system substrate. A Watcher for a given model is an
-  actuator for a different model (i.e., not the one it watches). It subscribes
-  to the watched model to gather information that it needs in addition to the
-  data model that it synchronizes. For example, a synchronizer for a daemon may
-  watch the IP address of the host it runs on, not because it configures the
-  host with the IP address, but because it needs to advertise its address to
-  clients that use the daemon.
-
 * **Model Policies:** A model policy encapsulates data relationships between
   related data models, such as “for every Network there must be at least one
   interface.” Concretely in this example, a model policy would intercept
   creations of Network models and create Interface models accordingly.
+
+* **Event Steps:** Event steps listen for external events and update the
+  data model.
+
+* **Pull Steps:** Pull steps poll external components for state and update
+  the data model.
 
 The Data Model represents the authoritative and abstract state of the system.
 By authoritative, we mean that if there is a conflict, then it is given
@@ -86,15 +82,13 @@ The actors of a synchronizer interact with this state in the following manner:
     * Read/Write Feedback state
     * Be scheduled upon changes to Declarative state
 
-* Watchers can:
-    * Read Declarative state
-    * Read Feedback state
-    * Subscribe to changes to Declarative state (meaning no dependency
-      ordering, no retries, no error propagation)
-
 * Model Policies can
     * Read/Write Declarative state
     * Subscribe to changes to Declarative state
+
+* Event Steps and Pull Steps can
+    * Read/Write Declarative state
+    * Read/Write Feedback state
 
 ## Relationships Between Synchronizers and Models
 
@@ -202,13 +196,13 @@ XOS models come with a variety of timestamps. The first three timestamps indicat
 
 * `changed_by_policy`. This timestamp is set whenever non-bookkeeping fields in the model are changed during the execution of a model policy. If no changes occur during a save, then this timestamp is not set.
 
-For a given model, if we take the maximum of the three timestamps, `max(model.updated, model.changed_by_step, model.changed.by_policy)`, we can use that calculation as an overall version of the substantive fields of the model. If a user updated the model, or if a policy or syncstep changed the model, then one of those timestamps will be updated. 
+For a given model, if we take the maximum of the three timestamps, `max(model.updated, model.changed_by_step, model.changed.by_policy)`, we can use that calculation as an overall version of the substantive fields of the model. If a user updated the model, or if a policy or syncstep changed the model, then one of those timestamps will be updated.
 
 The following two timestamps are set when a sync or a model_policy is completed.
 
 * `enacted`. Enacted indicates the model has been successfully synced. It is set to `max(model.updated, model.changed_by_policy)`. The enacted timestamp does not indicate the time of the synchronization, but rather indicates the version of the data that was synchronized.
 
-* `policed`. Policed indicates the model has successfully had model policies applied. It is set to `max(model.updated, model.changed_by_step)`. The policed timestamp does not indicate the time the policy completed, but rather indicates the version of the data that had policies applied. 
+* `policed`. Policed indicates the model has successfully had model policies applied. It is set to `max(model.updated, model.changed_by_step)`. The policed timestamp does not indicate the time the policy completed, but rather indicates the version of the data that had policies applied.
 
 The rules for running steps and policies are as follows:
 

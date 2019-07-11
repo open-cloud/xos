@@ -22,9 +22,6 @@
     * [XOS Shell (xossh)](dev/xossh.md)
 * [Platform Services](platform.md)
     * [Kubernetes](kubernetes/kubernetes-service.md)
-    * [OpenStack](openstack/openstack-service.md)
     * [ONOS](onos/README.md)
 * [Example Services](examples.md)
     * [Simple Example Service](simpleexampleservice/simple-example-service.md)
-    * [Example Service](exampleservice/example-service.md)
-

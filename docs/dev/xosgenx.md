@@ -136,9 +136,12 @@ were multiple files, then it generates python Django models for each of them.
 You can print the tool’s syntax by running `xosgenx --help`.
 
 ```shell
-usage: xosgenx [-h] [--rev] --target TARGET [--output OUTPUT] [--attic ATTIC]
-               [--kvpairs KV] [--write-to-file {single,model,target}]
+usage: xosgenx [-h] [--rev] [--output OUTPUT] [--attic ATTIC] [--kvpairs KV]
+               [--write-to-file {single,model,target}] [--version] [-v]
+               [--include-models INCLUDE_MODELS] [--include-apps INCLUDE_APPS]
                [--dest-file DEST_FILE | --dest-extension DEST_EXTENSION]
+               (--target TARGET | --checkers CHECKERS | --lint)
+               [--strict-validation]
                <input file> [<input file> ...]
 
 XOS Generative Toolchain
@@ -149,18 +152,27 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   --rev                 Convert proto to xproto
-  --target TARGET       Output format, corresponding to <output>.yaml file
   --output OUTPUT       Destination dir
   --attic ATTIC         The location at which static files are stored
   --kvpairs KV          Key value pairs to make available to the target
   --write-to-file {single,model,target}
                         Single output file (single) or output file per model
                         (model) or let target decide (target)
+  --version             show program's version number and exit
+  -v, --verbosity       increase output verbosity
+  --include-models INCLUDE_MODELS
+                        list of models to include
+  --include-apps INCLUDE_APPS
+                        list of models to include
   --dest-file DEST_FILE
                         Output file name (if write-to-file is set to single)
   --dest-extension DEST_EXTENSION
                         Output file extension (if write-to-file is set to
                         single)
+  --target TARGET       Output format, corresponding to <output>.yaml file
+  --checkers CHECKERS   Comma-separated list of static checkers
+  --lint                Parse the xproto but don't execute any xtargets
+  --strict-validation   Exit if validation fails
 ```
 
 For example usage of `xosgenx`, see the Dockerfiles in
