@@ -116,8 +116,7 @@ Dependencies between models can be specified in two ways:
 * Explicitly through annotations, which are in turn read by the synchronizer
   core
 
-Once these dependencies have been extracted, they decide whether synchronizer
-modules are actuators or they are watchers. They also configure the scheduling
+Once these dependencies have been extracted, they configure the scheduling
 of actuators in a way that they are run in dependency order, and so that errors
 in the execution of an actuator are propagated to its dependencies. Consider
 the diagram below.
@@ -133,11 +132,10 @@ the following kind
 1. Loops caused because a synchronizer modifies declarative state indirectly -
    say by triggering an external action that modifies the state via the API.
 
-2. Loops in which feedback state written by one Synchronizer is watched (read)
+2. Loops in which feedback state written by one Synchronizer is read
    by a second Synchronizer, and feedback state written by the second
-   Synchronizer is watched (read) by the first Synchronizer. Of course, this
-   type of interference can also happen across a chain of Synchronizers. These
-   loops can be detected by analyzing the synchronizer-watcher-model graph.
+   Synchronizer is read by the first Synchronizer. Of course, this
+   type of interference can also happen across a chain of Synchronizers.
 
 3. Spin loops and other general loops found in programs.
 
@@ -154,9 +152,7 @@ states defined by individual data models will be actuated in a valid order.
 This order is implied by the dependencies described in the previous section.
 For example, if a host model depends on an interface model, then it is
 guaranteed that the actuator of a host will execute only when the actuator of
-the corresponding interface has completed successfully. Note that this
-sequencing guarantee does not apply to watchers. The watchers for a model are
-executed in an arbitrary order.
+the corresponding interface has completed successfully.
 
 Outside of the ordering mandated by dependencies in the data model, operations
 may be rearranged randomly, or to favor the concurrent scheduling of actuators.
