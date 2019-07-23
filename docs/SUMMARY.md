@@ -14,6 +14,7 @@
         * [Synchronizer Design](dev/sync_arch.md)
         * [Synchronizer Implementation](dev/sync_impl.md)
         * [Synchronizer Reference](dev/sync_reference.md)
+    * [xosapi library](dev/xos-api.md)
     * [Core Models](core_models.md)
     * [Migrating XOS Models](dev/xosmigrate.md)
     * [Backup and Restore](dev/backup.md)
