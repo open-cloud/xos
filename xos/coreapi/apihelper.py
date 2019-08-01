@@ -471,6 +471,14 @@ class XOSAPIHelperMixin(XOSAuthHelperMixin):
             q = Q(**{element.name + "__gte": value})
         elif element.operator == element.IEXACT:
             q = Q(**{element.name + "__iexact": value})
+        elif element.operator == element.CONTAINS:
+            q = Q(**{element.name + "__contains": value})
+        elif element.operator == element.ICONTAINS:
+            q = Q(**{element.name + "__icontains": value})
+        elif element.operator == element.REGEX:
+            q = Q(**{element.name + "__regex": value})
+        elif element.operator == element.IREGEX:
+            q = Q(**{element.name + "__iregex": value})
         else:
             raise Exception("unknown operator")
 

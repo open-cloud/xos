@@ -14,6 +14,10 @@ message QueryElement {
         GREATER_THAN_OR_EQUAL = 3;
         LESS_THAN_OR_EQUAL = 4;
         IEXACT = 5;
+        CONTAINS = 6;
+        ICONTAINS = 7;
+        REGEX = 8;
+        IREGEX = 9;
     }
     QueryOperator operator = 1;
     bool invert = 2;
