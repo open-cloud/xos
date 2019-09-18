@@ -21,6 +21,7 @@
     * [Security Policies](security_policies.md)
     * [Tutorial](tutorials/basic_synchronizer.md)
     * [XOS Shell (xossh)](dev/xossh.md)
+    * [gRPC API](dev/grpc_api.md)
 * [Platform Services](platform.md)
     * [Kubernetes](kubernetes/kubernetes-service.md)
     * [ONOS](onos/README.md)

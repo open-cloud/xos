@@ -1,20 +1,21 @@
 # Unit Testing
 
-XOS supports automated unit tests using the `nose2` unit testing framework.
+XOS supports automated unit tests using the `nose2` unit testing framework
+and `tox`.
 
 ## Setting up a unit testing environment
 
 To run unit tests, an environment needs to be setup with the appropriate python
 libraries used by the unit testing framework and also the XOS libraries that
-are being tested. There is a development/test convenience script,
-`setup_venv.sh`, that sets up a python virtualenv and installs all the required
-packages to run local CLI tools.
+are being tested.
 
-Assuming you've checked out the whole source repository with `repo` into `~/cord`:
+Assuming you've checked out the whole source repository with `repo` into `~/cord`,
+run this command to set up a Python virtualenv and install all the required
+packages to run local CLI tools:
 
 ```bash
 cd ~/cord/orchestration/xos
-./scripts/setup_venv.sh
+make venv-xos
 source venv-xos/bin/activate
 ```
 
@@ -27,7 +28,7 @@ To run unit tests, go to the root of the `xos` repository and run the following
 to run the tests and print a coverage report:
 
 ```shell
-nose2 --verbose --with-coverage --coverage-report term
+make unit-test
 ```
 
 You can also run unit tests in a service repository by going into the `xos`
