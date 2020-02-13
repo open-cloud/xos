@@ -3,7 +3,7 @@ syntax = "proto3";
 package xos;
 
 import "google/protobuf/empty.proto";
-import "annotations.proto";
+import "google/api/annotations.proto";
 import "common.proto";
 import "xosoptions.proto";
 
@@ -79,66 +79,66 @@ message PopulatedServiceInstance {
 service utility {
 
   rpc Login(LoginRequest) returns (LoginResponse) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             post: "/xosapi/v1/utility/login"
             body: "*"
         };
   }
 
   rpc Logout(google.protobuf.Empty) returns (google.protobuf.Empty) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             post: "/xosapi/v1/utility/logout"
             body: "*"
         };
   }
 
   rpc NoOp(google.protobuf.Empty) returns (google.protobuf.Empty) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             post: "/xosapi/v1/utility/noop"
             body: "*"
         };
   }
 
   rpc AuthenticatedNoOp(google.protobuf.Empty) returns (google.protobuf.Empty) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             post: "/xosapi/v1/utility/auth_noop"
             body: "*"
         };
   }
 
   rpc SetDirtyModels(ModelFilter) returns (ModelList) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             post: "/xosapi/v1/utility/dirty_models"
             body: "*"
         };
   }
 
   rpc ListDirtyModels(ModelFilter) returns (ModelList) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             get: "/xosapi/v1/utility/dirty_models"
         };
   }
 
   rpc GetXproto(google.protobuf.Empty) returns (XProtos) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             get: "/xosapi/v1/xproto"
         };
   }
 
   rpc GetPopulatedServiceInstances(ID) returns (PopulatedServiceInstance) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             get: "/xosapi/v1/core/populatedserviceinstance/{id}"
         };
   }
 
   rpc GetVersion(google.protobuf.Empty) returns (VersionInfo) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             get: "/xosapi/v1/version"
         };
   }
 
   rpc GetDatabaseInfo(google.protobuf.Empty) returns (DatabaseInfo) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             get: "/xosapi/v1/dbinfo"
         };
   }

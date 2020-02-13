@@ -6,3 +6,4 @@ prometheus_client~=0.6.0
 psycopg2-binary~=2.8.2
 pytz~=2019.1
 semver~=2.8.1
+googleapis-common-protos~=1.51.0

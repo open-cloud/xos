@@ -3,7 +3,7 @@ syntax = "proto3";
 package xos;
 
 import "google/protobuf/empty.proto";
-import "annotations.proto";
+import "google/api/annotations.proto";
 
 message Xproto {
     string filename = 1;
@@ -83,24 +83,24 @@ message LoadStatusReply {
 
 service dynamicload {
   rpc LoadModels(LoadModelsRequest) returns (LoadModelsReply) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             post: "/xosapi/v1/dynamicload/load_models"
             body: "*"
         };
   }
   rpc UnloadModels(UnloadModelsRequest) returns (LoadModelsReply) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             post: "/xosapi/v1/dynamicload/unload_models"
             body: "*"
         };
   }
   rpc GetLoadStatus(google.protobuf.Empty) returns (LoadStatusReply) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             get: "/xosapi/v1/dynamicload/load_status"
         };
   }
   rpc GetConvenienceMethods(google.protobuf.Empty) returns (ListConvenienceMethodsReply) {
-        option (googleapi.http) = {
+        option (google.api.http) = {
             // NOTE do we need to expose this via rest? maybe for debug...
             get: "/xosapi/v1/dynamicload/convenience_methods"
         };

@@ -1,5 +1,4 @@
 // Copyright 2018 Google LLC
-// Modififications (C) 2018, Open Networking Foundation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,48 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// NOTE: On the provenance of and modifications to http.proto and
-// annotations.proto
-//
-// TL;DR: The files http.proto and annotations.proto are originally from here:
-//  https://github.com/googleapis/googleapis
-// They have been modified slightly to avoid a namespace conflict.
-//
-// Long winded explanation:
-// These files are designed to interact with Google's first party API's, and
-// the recommended way to use them is to compiled them to code with protoc and
-// included in your codebase before being used.  Due to the fact that we're not
-// using them that way, and because of how Chameleon and XOS work (dynamically
-// defining our own API's), we have to ship these *.proto files as a part of
-// our artifacts.
-//
-// The problems start when you try to include these specific .proto files in
-// python. The protoc compiler includes the `google.protobuf` classes, which
-// python can look up in the standard python library path. Unfortunately these
-// files are namespaced with `google.api` in the path and aren't shipped with
-// protoc.  This leads to a path conflict - you can't have two library paths
-// start with the same path component (`google` in this case) without getting
-// an "ImportError: No module named ..." on one of the paths when you import
-// them.
-//
-// Historically, various confusing hacks were implemented to override and
-// special-case the python `include` directive to include a file at a different
-// path than was specified. These hacks also failed when updating the base OS,
-// and would likely continue to fail in other, stranger ways as we update the
-// codebase.  Specifically, Python 3 reimplemented these features in the
-// importlib section of the standard library, so there's little confidence our
-// hacks would continue to work.  As an aside, there are various protobuf
-// `options` statements to deal with this sort of issue in other languages (see
-// the `go_package` and `java_package` below ) but these don't currently exist
-// for python: https://github.com/google/protobuf/issues/973
-//
-// To avoid this entire psychotic namespace hellscape, it's much easier to
-// modify these files to remove the google.api path component, and have them
-// included directly at a path of our own choice.
-
 syntax = "proto3";
 
-package googleapi;
+package google.api;
 
 option cc_enable_arenas = true;
 option go_package = "google.golang.org/genproto/googleapis/api/annotations;annotations";
@@ -336,6 +296,11 @@ message HttpRule {
   // body. NOTE: the referred field must not be a repeated field and must be
   // present at the top-level of request message type.
   string body = 7;
+
+  // Optional. The name of the response field whose value is mapped to the HTTP
+  // body of response. Other response fields are ignored. When
+  // not set, the response message will be used as HTTP body of response.
+  string response_body = 12;
 
   // Additional HTTP bindings for the selector. Nested bindings must
   // not contain an `additional_bindings` field themselves (that is,

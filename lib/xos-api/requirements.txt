@@ -1,5 +1,5 @@
 Twisted~=18.9.0
-googleapis-common-protos~=1.5.8
+googleapis-common-protos~=1.51.0
 grpcio-tools~=1.19.0
 grpcio~=1.19.0
 multistructlog~=2.1.0

@@ -1,5 +1,4 @@
 // Copyright (c) 2015, Google Inc.
-// Modififications (C) 2018, Open Networking Foundation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// See NOTE in http.proto for the modifications made to these files
-
 syntax = "proto3";
 
-package googleapi;
+package google.api;
 
-import "http.proto";
+import "google/api/http.proto";
 import "google/protobuf/descriptor.proto";
 
 option go_package = "google.golang.org/genproto/googleapis/api/annotations;annotations";

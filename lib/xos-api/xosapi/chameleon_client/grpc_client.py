@@ -60,7 +60,8 @@ class GrpcClient(object):
         self.reconnect_callback = reconnect_callback
         self.credentials = credentials
         self.restart_on_disconnect = restart_on_disconnect
-
+        self.google_api_dir = os.path.abspath(os.path.join(
+            os.path.dirname(__file__), 'protos'))
         self.plugin_dir = os.path.abspath(os.path.join(
             os.path.dirname(__file__), 'protoc_plugins'))
 
@@ -254,7 +255,7 @@ class GrpcClient(object):
                 'cd %s && '
                 'env PATH=%s PYTHONPATH=%s '
                 'python -m grpc.tools.protoc '
-                '-I. '
+                '-I. -I %s '
                 '--python_out=. '
                 '--grpc_python_out=. '
                 '--plugin=protoc-gen-gw=%s/gw_gen.py '
@@ -263,6 +264,7 @@ class GrpcClient(object):
                     self.work_dir,
                     ':'.join([os.environ['PATH'], self.plugin_dir]),
                     chameleon_base_dir,
+                    self.google_api_dir,
                     self.plugin_dir,
                     fname)
             )
