@@ -482,7 +482,8 @@ def xproto_field_to_swagger_enum(f):
         c_list = []
 
         for c in eval(xproto_unquote(f["options"]["choices"])):
-            c_list.append(c[0])
+            if c[0] is not None:
+                c_list.append(c[0])
 
         return sorted(c_list)
     else:

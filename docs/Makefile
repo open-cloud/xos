@@ -49,11 +49,15 @@ DOCSDIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 swagger: swagger_clean swagger_docs swagger_serve_spec
 
-venv-xosdocs:
-	./venv-xosdocs.sh
+venv_xosdocs:
+	virtualenv -p python3 $@ ;\
+    source ./$@/bin/activate ;\
+    pip install --upgrade pip ;\
+    pip install -e ../lib/xos-genx
 
-swagger_docs: venv-xosdocs
-	bash -c 'source $(DOCSDIR)venv-xosdocs/bin/activate && python $(DOCSDIR)scripts/swagger_docs.py'
+swagger_docs: venv_xosdocs
+	source ./$</bin/activate ; set -u ;\
+    python $(DOCSDIR)scripts/swagger_docs.py
 
 swagger_clean:
 	rm -rf swagger/specs/*

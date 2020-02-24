@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
+
 import os
 import traceback
 from xosgenx.generator import XOSProcessor, XOSProcessorArgs
@@ -23,13 +25,14 @@ REPO_DIR = os.path.abspath(CWD + "/../../../")
 class Args:
     pass
 
+
 def generate_swagger_docs(xproto):
 
     # if not os.path.isfile(xproto):
     #     print "ERROR: Couldn't find xproto file for %s at: %s" % (service, xproto)
     #     return
 
-    print "Generating swagger docs for %s" % (xproto)
+    print("Generating swagger docs for %s" % (xproto))
     args = XOSProcessorArgs()
     args.files = xproto
     args.target = 'swagger.xtarget'
@@ -40,8 +43,9 @@ def generate_swagger_docs(xproto):
     try:
         XOSProcessor.process(args)
     except Exception:
-        print "ERROR: Couldn't generate swagger specs"
+        print("ERROR: Couldn't generate swagger specs")
         traceback.print_exc()
+
 
 def get_xproto_recursively(root):
     files = []
@@ -63,9 +67,7 @@ def get_xproto_recursively(root):
         elif os.path.isfile(item_abs_path) and ".xproto" in item_abs_path:
             files.append(item_abs_path)
 
-    protos = [f for f in files if "xproto" in f]
-
-    protos = sorted(protos)
+    protos = sorted([f for f in files if "xproto" in f])
 
     # remove the core xproto...
     core_proto = None
@@ -81,12 +83,6 @@ def get_xproto_recursively(root):
     return protos
 
 
-def main():
-
-    protos = get_xproto_recursively(REPO_DIR)
-
-    generate_swagger_docs(protos)
-
-
 if __name__ == '__main__':
-    main()
+    protos = get_xproto_recursively(REPO_DIR)
+    generate_swagger_docs(protos)
