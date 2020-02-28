@@ -1,2 +1,4 @@
 include requirements.txt
 include xosapi/VERSION
+include xosapi/chameleon_client/protos/google/api/annotations.proto
+include xosapi/chameleon_client/protos/google/api/http.proto
