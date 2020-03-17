@@ -384,6 +384,10 @@ message Service (XOSBase,AttributeMixin) {
          help_text = "Service-specific string attribute, opaque to XOS core",
          gui_hidden = True,
          text = True];
+     optional manytoone site->Site:service = 13:1012 [
+         help_text = "The Site this Service belongs to",
+         db_index = True];
+
 }
 
 message ServicePort (XOSBase) {
