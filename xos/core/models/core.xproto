@@ -67,7 +67,7 @@ message User::user_policy (AbstractBaseUser,PlModelMixIn) {
      required bool is_registering = 16 [default = False, db_index = False];
      required bool is_appuser = 17 [default = False, db_index = False];
      optional string login_page = 18 [max_length = 200, content_type = "stripped", blank = True, help_text = "send this user to a specific page on login", db_index = False];
-     required string created = 19 [content_type = "date", auto_now_add = True, help_text = "Time this model was created"];
+     required string created = 19 [content_type = "date", auto_now_add = True, help_text = "Time this model was created", bookkeeping_state = True];
      required string updated = 20 [default = "now()", content_type = "date", help_text = "Time this model was changed by a non-synchronizer"];
      optional string enacted = 21 [content_type = "date", blank = True, default = None, help_text = "When synced, set to the timestamp of the data that was synced"];
      optional string policed = 22 [content_type = "date", blank = True, default = None, help_text = "When policed, set to the timestamp of the data that was policed"];
@@ -83,7 +83,7 @@ message User::user_policy (AbstractBaseUser,PlModelMixIn) {
      required string timezone = 32 [default = "America/New_York", max_length = 100, blank = False, db_index = False];
      optional string policy_status = 33 [default = "0 - Policy in process", max_length = 1024];
      optional int32 policy_code = 34 [default = 0];
-     required string leaf_model_name = 35 [max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer"];
+     required string leaf_model_name = 35 [max_length = 1024, help_text = "The most specialized model in this chain of inheritance, often defined by a service developer", bookkeeping_state = True];
      required bool backend_need_delete_policy = 36 [default = False, help_text = "True if delete model_policy must be run before object can be reaped"];
      required bool xos_managed = 37 [default = True, help_text = "True if xos is responsible for creating/deleting this object", gui_hidden = True];
      optional string backend_handle = 38 [max_length = 1024, feedback_state = True, blank=True, help_text = "Handle used by the backend to track this object", gui_hidden = True];

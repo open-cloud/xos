@@ -134,22 +134,22 @@ def xproto_default_to_gui(default):
 def xproto_links_to_modeldef_relations(llst):
     outlist = []
     seen = []
-    for l in llst:
+    for ll in llst:
         try:
-            t = l["link_type"]
+            t = ll["link_type"]
         except KeyError as e:
             raise e
 
-        if l["peer"]["fqn"] not in seen and t != "manytomany":
+        if ll["peer"]["fqn"] not in seen and t != "manytomany":
             on_field = "null"
-            if l["link_type"] == "manytoone":
-                on_field = l["src_port"]
-            elif l["link_type"] == "onetomany":
-                on_field = l["dst_port"]
+            if ll["link_type"] == "manytoone":
+                on_field = ll["src_port"]
+            elif ll["link_type"] == "onetomany":
+                on_field = ll["dst_port"]
             outlist.append(
                 "{model: %s, type: %s, on_field: %s}"
-                % (l["peer"]["name"], l["link_type"], on_field)
+                % (ll["peer"]["name"], ll["link_type"], on_field)
             )
-        seen.append(l["peer"])
+        seen.append(ll["peer"])
 
     return outlist

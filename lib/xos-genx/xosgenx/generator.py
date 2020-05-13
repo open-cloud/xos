@@ -178,11 +178,11 @@ class XOSProcessor:
 
         lines = rendered.splitlines()
         current_buffer = []
-        for l in lines:
-            if l.startswith("+++"):
+        for line in lines:
+            if line.startswith("+++"):
 
                 if dir:
-                    path = dir + "/" + l[4:].lower()
+                    path = dir + "/" + line[4:].lower()
 
                 fil = open(path, "w")
                 buf = "\n".join(current_buffer)
@@ -197,7 +197,7 @@ class XOSProcessor:
 
                 current_buffer = []
             else:
-                current_buffer.append(l)
+                current_buffer.append(line)
 
     @staticmethod
     def _find_message_by_model_name(messages, model):
