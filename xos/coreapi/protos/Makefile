@@ -15,6 +15,9 @@
 
 # Makefile to build all protobuf and gRPC related artifacts
 
+THIS_MAKEFILE = $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
+MAKEFILE_PATH := $(dir $(realpath $(THIS_MAKEFILE)))
+
 default: build
 
 PROTO_FILES := $(wildcard *.proto)
@@ -41,8 +44,7 @@ clean:
 	rm -f $(PROTO_PB2_FILES) $(PROTO_DESC_FILES)
 
 # xproto related targets
-
-XOS_DIR=/opt/xos
+XOS_DIR=$(shell dirname $(shell dirname $(MAKEFILE_PATH)))
 XOSGEN_PATH := $(XOS_DIR)/lib/xos-genx/xosgenx
 
 # Note: If you want to generate a new file, you need to do two things: Add a
