@@ -600,7 +600,14 @@ message TrustDomain (XOSBase) {
 message XOSCore (XOSBase) {
      option singular="XOSCore";
      option plural="XOSCores";
+
      required string name = 1 [default = "XOS", max_length = 200, content_type = "stripped", blank = False, help_text = "Name of XOS", db_index = False, unique = True];
+     required string maintenance_mode = 2 [
+        help_text = "Displays current maintenance mode of XOS",
+        max_length = 256,
+	default = "NORMAL",
+        choices = "(('NORMAL', 'NORMAL'), ('DRAIN', 'DRAIN'), ('READONLY', 'READONLY'), ('OFFLINE', 'OFFLINE'))",
+        tosca_key = True];
 }
 
 message XOSGuiExtension::admin_policy (XOSBase) {
